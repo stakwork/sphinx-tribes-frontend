@@ -92,7 +92,7 @@ services:
         hard: 1000000
 
   tribes-frontend:
-    image: stakwork/sphinx-tribes-frontend:latest
+    image: sphinxlightning/sphinx-tribes-frontend:latest
     depends_on:
       - tribes
       - reverse-proxy
