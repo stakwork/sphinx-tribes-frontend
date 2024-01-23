@@ -2,11 +2,15 @@
 
 **npm run build**
 
-# publish
+### docker build
 
-docker tag sphinx-tribes sphinxlightning/sphinx-tribes-frontend:0.1.0
+docker build -t sphinx-tribes-frontend .
 
-docker push sphinxlightning/sphinx-tribes-frontend:0.1.0
+### docker publish
+
+docker tag sphinx-tribes sphinxlightning/sphinx-tribes-frontend:0.1.1
+
+docker push sphinxlightning/sphinx-tribes-frontend:0.1.1
 
 docker tag sphinx-tribes sphinxlightning/sphinx-tribes-frontend:latest
 
