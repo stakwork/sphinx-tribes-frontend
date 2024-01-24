@@ -309,7 +309,7 @@ function FocusedView(props: FocusViewProps) {
   let altInitialValue = {};
   if (window.location.href.includes('/org')) {
     altInitialValue = {
-      org_uuid:uuid
+      org_uuid: uuid
     };
   }
 
