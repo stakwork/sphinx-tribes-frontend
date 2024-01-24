@@ -185,7 +185,7 @@ export default function Person(props: PersonProps) {
         </a>
       );
     } else {
-      // desktop mode
+      // Desktop mode
       return (
         <a
           href={`/p/${owner_pubkey}`}
