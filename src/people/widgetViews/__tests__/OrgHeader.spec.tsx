@@ -33,7 +33,7 @@ describe('OrgHeader Component', () => {
     expect(screen.getByText('Bounties')).toBeInTheDocument();
   });
 
-  it('should calls getPeopleBounties with correct parameters', () => {
+  it('should call getPeopleBounties with correct parameters', () => {
     const orgUuid = 'cmkln4tm098m49vhlt80';
     Object.defineProperty(window, 'location', {
       value: {
