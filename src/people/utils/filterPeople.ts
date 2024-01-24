@@ -1,10 +1,7 @@
+import { CodingLanguageFilter } from 'hooks/usePeopleFilters';
 import { Person } from 'store/main';
 
-interface CodingLanguage {
-  [language: string]: boolean;
-}
-
-const filterByCodingLanguage = (users: Person[], codingLanguages: CodingLanguage) => {
+const filterByCodingLanguage = (users: Person[], codingLanguages: CodingLanguageFilter) => {
   const requiredLanguages = Object.keys(codingLanguages).filter(
     (key: string) => codingLanguages[key]
   );

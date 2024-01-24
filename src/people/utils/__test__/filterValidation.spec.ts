@@ -1,3 +1,4 @@
+import { CodingLanguageFilter } from 'hooks/usePeopleFilters';
 import { bountyHeaderFilter, bountyHeaderLanguageFilter } from '../filterValidation';
 import filterByCodingLanguage from '../filterPeople';
 import { users } from '../__test__/__mockData__/users';
@@ -51,19 +52,27 @@ describe('testing filters', () => {
   });
   describe('peopleHeaderCodingLanguageFilters', () => {
     test('match', () => {
-      expect(filterByCodingLanguage(users, { Typescript: true })).toStrictEqual([users[0]]);
+      expect(
+        filterByCodingLanguage(users, { Typescript: true } as CodingLanguageFilter)
+      ).toStrictEqual([users[0]]);
     });
     test('no_match', () => {
-      expect(filterByCodingLanguage(users, { Rust: true })).toStrictEqual([]);
+      expect(filterByCodingLanguage(users, { Rust: true } as CodingLanguageFilter)).toStrictEqual(
+        []
+      );
     });
     test('no filters', () => {
-      expect(filterByCodingLanguage(users, {})).toEqual(users);
+      expect(filterByCodingLanguage(users, {} as CodingLanguageFilter)).toEqual(users);
     });
     test('false filters', () => {
-      expect(filterByCodingLanguage(users, { PHP: false, MySQL: false })).toStrictEqual(users);
+      expect(
+        filterByCodingLanguage(users, { PHP: false, MySQL: false } as CodingLanguageFilter)
+      ).toStrictEqual(users);
     });
     test('no users', () => {
-      expect(filterByCodingLanguage([], { Typescript: true })).toStrictEqual([]);
+      expect(
+        filterByCodingLanguage([], { Typescript: true } as CodingLanguageFilter)
+      ).toStrictEqual([]);
     });
   });
 });
