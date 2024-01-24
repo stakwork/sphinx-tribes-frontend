@@ -225,7 +225,7 @@ function Form(props: FormProps) {
         );
         const onClickHandler = () => {
           if (!isOnline) {
-            toast.error('Bounty creation failed. Please try again.', {
+            toast.error('Bounty creation failed, Please try again.', {
               closeOnClick: true,
               toastId: 'xa12'
             });
