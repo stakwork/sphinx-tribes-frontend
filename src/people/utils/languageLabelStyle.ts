@@ -141,7 +141,9 @@ export const coding_languages = [
   'Postgres',
   'Elastic search',
   'Other'
-];
+] as const;
+
+export type CodingLanguage = (typeof coding_languages)[number];
 
 export const status = ['Open', 'Assigned', 'Paid'];
 
