@@ -17,7 +17,7 @@ describe('UiStore', () => {
     container = null!;
   });
 
-  it('clears search text when clicking outside of search input', () => {
+  it('clears search text when user clicking outside of search input', () => {
     const { getByTestId } = render(
       <div>
         <input
