@@ -33,7 +33,7 @@ jest.mock('react-router-dom', () => ({
 }));
 
 describe('TicketModalPage Component', () => {
-  it('should redirect to the appropriate page on close based on the route and referrer', async () => {
+  it('should redirect to the appropriate page on close based on the route', async () => {
     (useIsMobile as jest.Mock).mockReturnValue(false);
 
     (useStores as jest.Mock).mockReturnValue({
