@@ -498,7 +498,7 @@ function WantedSummary(props: WantedSummaryProps) {
               }}
               style={{ marginLeft: 3, fontWeight: 500, cursor: 'pointer' }}
             >
-              {assigneeInfo.owner_alias}
+              {/* {assigneeInfo.owner_alias} */}
             </Assignee>
           </div>
         );
