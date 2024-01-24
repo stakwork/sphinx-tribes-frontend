@@ -46,7 +46,7 @@ All code contributions, including those of people having commit access, must go 
 We truly ❤️ pull requests! If you wish to help, you can learn more about how you can contribute to this project in the [contribution guide](CONTRIBUTING.md).
 ## Community and Support 💬
 
-Join our community on [Forum/Chat](link-to-community) to connect with other users and get support.
+Join our community on [Forum/Chat](https://people.sphinx.chat) to connect with other users and get support.
 
 Feel free to explore the potential of **sphinx-tribes** and contribute to its vibrant ecosystem! 🌟
 
