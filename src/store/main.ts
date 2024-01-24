@@ -184,6 +184,7 @@ export interface QueryParams {
   search?: string;
   resetPage?: boolean;
   languages?: string;
+  org_uuid?: string;
 }
 
 export interface ClaimOnLiquid {
