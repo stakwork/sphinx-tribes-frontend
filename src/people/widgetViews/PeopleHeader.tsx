@@ -6,7 +6,7 @@ import { EuiCheckboxGroup, EuiPopover, EuiText } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
 import { colors } from 'config';
 import { filterCount } from '../../helpers';
-import { GetValue, coding_languages } from '../utils/languageLabelStyle';
+import { CodingLanguage, GetValue, coding_languages } from '../utils/languageLabelStyle';
 
 interface styledProps {
   color?: any;
@@ -159,7 +159,7 @@ const EuiPopOverCheckboxWrapper = styled.div<styledProps>`
   }
 `;
 
-const Coding_Languages = GetValue(coding_languages);
+const Coding_Languages = GetValue<CodingLanguage>(coding_languages);
 
 const PeopleHeader = ({ onChangeLanguage, checkboxIdToSelectedMapLanguage }: PeopleHeaderProps) => {
   const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
@@ -226,8 +226,8 @@ const PeopleHeader = ({ onChangeLanguage, checkboxIdToSelectedMapLanguage }: Peo
               <EuiCheckboxGroup
                 options={Coding_Languages}
                 idToSelectedMap={checkboxIdToSelectedMapLanguage}
-                onChange={(id: any) => {
-                  onChangeLanguage(id);
+                onChange={(id: string) => {
+                  onChangeLanguage(id as CodingLanguage);
                 }}
               />
             </EuiPopOverCheckboxWrapper>

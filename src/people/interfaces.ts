@@ -3,6 +3,7 @@ import { Extras } from '../components/form/inputs/widgets/interfaces';
 import { Organization, Person, PersonBounty } from '../store/main';
 import { MeData } from '../store/ui';
 import { Widget } from './main/types';
+import { CodingLanguage } from './utils/languageLabelStyle';
 
 export interface AuthProps {
   style?: React.CSSProperties;
@@ -429,7 +430,7 @@ export interface OrgBountyHeaderProps {
   organizationData: Organization;
 }
 export interface PeopleHeaderProps {
-  onChangeLanguage: (number) => void;
+  onChangeLanguage: (lang: CodingLanguage) => void;
   checkboxIdToSelectedMapLanguage: any;
 }
 
