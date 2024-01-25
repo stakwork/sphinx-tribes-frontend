@@ -223,7 +223,7 @@ function Form(props: FormProps) {
         const valid = schemaData.required.every((key: string) =>
           key === '' ? true : values?.[key]
         );
-        const onClickHandler = () => {
+        const onClickHandler = async () => {
           if (!isOnline) {
             toast.error('Bounty creation failed, Please try again.', {
               closeOnClick: true,
@@ -238,7 +238,21 @@ function Form(props: FormProps) {
               setFieldValue('type', dynamicSchemaName);
             }
             if (assigneeName !== '') {
-              handleSubmit();
+              try {
+                const response = await handleSubmit();
+        
+                if (response && response.status === 406) {
+                  toast.error('Bounty creation failed, Please try again.', {
+                    closeOnClick: true,
+                    toastId: 'uniqueIdFor406'
+                  });
+                }
+              } catch (error) {
+                toast.error('Bounty creation failed, Please try again.', {
+                  closeOnClick: true,
+                  toastId: 'other'
+                });
+              }
             } else {
               setAssigneeName('a');
             }
