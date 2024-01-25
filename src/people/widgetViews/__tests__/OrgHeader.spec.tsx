@@ -80,7 +80,8 @@ describe('OrgHeader Component', () => {
         languageString: MockProps.languageString
       });
     });
-      
+  });
+
   it('validates the buttons appear when website and github is available', () => {
     const { getByText } = render(<OrgHeader {...MockProps} />);
     const websiteButton = getByText(/Website/i);
