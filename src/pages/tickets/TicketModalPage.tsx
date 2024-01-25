@@ -15,6 +15,7 @@ const focusedDesktopModalStyles = widgetConfigs.wanted.modalStyle;
 
 type Props = {
   setConnectPerson: (p: any) => void;
+  visible?: boolean;
 };
 
 export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
@@ -71,10 +72,21 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
     getBounty();
   }, [getBounty, removeNextAndPrev]);
 
-  const goBack = async () => {
+  const isDirectAccess = useCallback(
+    () => !document.referrer && location.pathname.includes('/bounty/'),
+    [location.pathname]
+  );
+
+  const goBack = () => {
     setVisible(false);
     setisDeleted(false);
-    history.goBack();
+
+    if (isDirectAccess()) {
+      const homePageUrl = uuid ? `/org/bounties/${uuid}` : '/bounties';
+      history.push(homePageUrl);
+    } else {
+      history.goBack();
+    }
   };
 
   const getUuidFromUrl = () => {
