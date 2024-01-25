@@ -70,6 +70,7 @@ const SkillContainer = styled.span`
   padding: 10px 0px;
   align-items: center;
   gap: 4px;
+  width: max-content;
 `;
 const Skill = styled.select`
   border: none;
@@ -328,6 +329,19 @@ export const OrgHeader = ({
     window.open(githubUrl, '_blank');
   };
 
+  const handleSearch = (searchText: string) => {
+    const currentPath = window.location.pathname;
+    const pathSegments = currentPath.split('/');
+    const paramValue = pathSegments[pathSegments.length - 1];
+
+    main.getPeopleBounties({
+      page: 1,
+      resetPage: true,
+      search: searchText,
+      org_uuid: paramValue
+    });
+  };
+
   useEffect(() => {
     if (org_uuid) {
       main.getSpecificOrganizationBounties(org_uuid, {
@@ -458,15 +472,7 @@ export const OrgHeader = ({
               }}
               onKeyUp={(e: any) => {
                 if (e.key === 'Enter' || e.keyCode === 13) {
-                  const currentPath = window.location.pathname;
-                  const pathSegments = currentPath.split('/');
-                  const paramValue = pathSegments[pathSegments.length - 1];
-                  main.getPeopleBounties({
-                    page: 1,
-                    resetPage: true,
-                    search: e.target.value,
-                    org_uuid: paramValue
-                  });
+                  handleSearch(e.target.value);
                 }
               }}
               TextColor={color.grayish.G100}
