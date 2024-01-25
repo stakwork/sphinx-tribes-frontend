@@ -14,7 +14,11 @@ const MockProps: OrgBountyHeaderProps = {
   },
   languageString: '',
   org_uuid: 'clf6qmo4nncmf23du7ng',
-  onChangeStatus: jest.fn()
+  onChangeStatus: jest.fn(),
+  organizationUrls: {
+    github: 'https://github.com/stakwork/sphinx-tribes',
+    website: 'https://ecurrencyhodler.com/'
+  }
 };
 
 describe('OrgHeader Component', () => {
@@ -60,7 +64,6 @@ describe('OrgHeader Component', () => {
     await waitFor(() => {
       expect(MockProps.onChangeStatus).toHaveBeenCalledWith('Open');
 
-      // Simulate a change in checkboxIdToSelectedMap
       const updatedCheckboxIdToSelectedMap = {
         ...MockProps.checkboxIdToSelectedMap,
         Open: true
@@ -77,5 +80,19 @@ describe('OrgHeader Component', () => {
         languageString: MockProps.languageString
       });
     });
+      
+  it('validates the buttons appear when website and github is available', () => {
+    const { getByText } = render(<OrgHeader {...MockProps} />);
+    const websiteButton = getByText(/Website/i);
+    const githubButton = getByText(/Github/i);
+    expect(websiteButton).toBeInTheDocument();
+    expect(githubButton).toBeInTheDocument();
+  });
+
+  it('UrlButtons are left-aligned if visible', () => {
+    const { getByTestId } = render(<OrgHeader {...MockProps} />);
+    const urlButtonContainer = getByTestId('url-button-container');
+    const containerStyle = window.getComputedStyle(urlButtonContainer);
+    expect(containerStyle.marginLeft).toBe('0px');
   });
 });

@@ -15,6 +15,10 @@ export interface BountyModalProps {
   fromPage?: 'usertickets' | 'bounties' | 'organization';
 }
 
+export interface OrgBountyHeaderProps {
+  organizationUrls: any;
+}
+
 export interface FocusViewProps {
   goBack?: () => void;
   config: { [key: string]: any };

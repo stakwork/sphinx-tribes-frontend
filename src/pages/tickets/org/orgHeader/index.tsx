@@ -10,22 +10,32 @@ import addBounty from './Icons/addBounty.svg';
 import searchIcon from './Icons/searchIcon.svg';
 import file from './Icons/file.svg';
 import checkboxImage from './Icons/checkboxImage.svg';
+import githubIcon from './Icons/githubIcon.svg';
+import websiteIcon from './Icons/websiteIcon.svg';
 
 interface styledProps {
   color?: any;
 }
 
 const Header = styled.div`
-  width: 1366px;
+  display: flex;
   height: 130px;
-  padding: 45px 132px 45px 1089px;
-  justify-content: flex-end;
+  padding: 45px 20px 45px 130px;
+  justify-content: center;
   align-items: center;
   align-self: stretch;
   border-bottom: 1px solid var(--Input-BG-1, #f2f3f5);
   background: #fff;
-  margin-left: auto;
-  margin-right: auto;
+`;
+
+const UrlButtonContainer = styled.div`
+  width: 180px;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  margin-top: 40px;
+  margin-right: 690px;
+  margin-left: 0px;
 `;
 
 const FillContainer = styled.div`
@@ -82,6 +92,28 @@ const Button = styled.button`
   text-align: center;
   font-family: Barlow;
   font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 0px; /* 0% */
+  letter-spacing: 0.14px;
+`;
+
+const UrlButton = styled.button`
+  border-radius: 4px;
+  margin-right: auto;
+  border: 1px solid #dde1e5;
+  background: #ffffff;
+  display: flex;
+  width: 85px;
+  height: 28px;
+  padding: 8px 16px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  color: var(--Black, #5f6368);
+  text-align: center;
+  font-family: 'Barlow';
+  font-size: 13px;
   font-style: normal;
   font-weight: 500;
   line-height: 0px; /* 0% */
@@ -296,7 +328,8 @@ export const OrgHeader = ({
   onChangeStatus,
   checkboxIdToSelectedMap,
   org_uuid,
-  languageString
+  languageString,
+  organizationUrls
 }: OrgBountyHeaderProps) => {
   const { main } = useStores();
   const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
@@ -307,11 +340,19 @@ export const OrgHeader = ({
   const closeStatusPopover = () => setIsStatusPopoverOpen(false);
 
   const selectedWidget = 'wanted';
+  const { website, github } = organizationUrls;
   const handlePostBountyClick = () => {
     setIsPostBountyModalOpen(true);
   };
   const handlePostBountyClose = () => {
     setIsPostBountyModalOpen(false);
+  };
+  const handleWebsiteButton = (websiteUrl: string) => {
+    window.open(websiteUrl, '_blank');
+  };
+
+  const handleGithubButton = (githubUrl: string) => {
+    window.open(githubUrl, '_blank');
   };
 
   useEffect(() => {
@@ -329,6 +370,24 @@ export const OrgHeader = ({
     <>
       <FillContainer>
         <Header>
+          <UrlButtonContainer data-testid="url-button-container">
+            {website !== '' ? (
+              <UrlButton onClick={() => handleWebsiteButton(website)}>
+                <img src={websiteIcon} alt="" />
+                Website
+              </UrlButton>
+            ) : (
+              ''
+            )}
+            {github !== '' ? (
+              <UrlButton onClick={() => handleGithubButton(github)}>
+                <img src={githubIcon} alt="" />
+                Github
+              </UrlButton>
+            ) : (
+              ''
+            )}
+          </UrlButtonContainer>
           <Button onClick={handlePostBountyClick}>
             <img src={addBounty} alt="" />
             Post a Bounty
