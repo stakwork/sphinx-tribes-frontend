@@ -10,6 +10,8 @@ import { colors } from '../../../config/colors';
 import { useIsMobile } from '../../../hooks';
 import { useStores } from '../../../store';
 import { OrgBody, Body, Backdrop } from '../style';
+import { defaultOrgBountyStatus } from '../../../store/main';
+import api from '../../../api';
 import { OrgHeader } from './orgHeader';
 
 function OrgBodyComponent() {
@@ -18,9 +20,11 @@ function OrgBodyComponent() {
   const [showDropdown, setShowDropdown] = useState(false);
   const selectedWidget = 'wanted';
   const [scrollValue, setScrollValue] = useState<boolean>(false);
-  const [checkboxIdToSelectedMap, setCheckboxIdToSelectedMap] = useState({});
+  const [checkboxIdToSelectedMap, setCheckboxIdToSelectedMap] = useState(defaultOrgBountyStatus);
   const [checkboxIdToSelectedMapLanguage, setCheckboxIdToSelectedMapLanguage] = useState({});
+  const [languageString, setLanguageString] = useState('');
   const { uuid } = useParams<{ uuid: string; bountyId: string }>();
+  const [organizationUrls, setOrganizationUrls] = useState({});
 
   const color = colors['light'];
 
@@ -33,7 +37,9 @@ function OrgBodyComponent() {
       await main.getBadgeList();
       await main.getPeople();
       if (uuid) {
-        await main.getOrganizationBounties(uuid, { page: 1, resetPage: true });
+        await main.getSpecificOrganizationBounties(uuid, { page: 1, resetPage: true });
+        const orgUrls = await api.get(`organizations/${uuid}`);
+        setOrganizationUrls(orgUrls);
       }
       setLoading(false);
     })();
@@ -41,9 +47,10 @@ function OrgBodyComponent() {
 
   useEffect(() => {
     setCheckboxIdToSelectedMap({
-      Open: true,
+      Open: false,
       Assigned: false,
-      Paid: false
+      Paid: false,
+      Completed: false
     });
   }, [loading]);
 
@@ -151,7 +158,13 @@ function OrgBodyComponent() {
           height: 'calc(100% - 65px)'
         }}
       >
-        <OrgHeader />
+        <OrgHeader
+          onChangeStatus={onChangeStatus}
+          checkboxIdToSelectedMap={checkboxIdToSelectedMap}
+          org_uuid={uuid}
+          languageString={languageString}
+          organizationUrls={organizationUrls}
+        />
         <>
           <div
             style={{
@@ -180,6 +193,7 @@ function OrgBodyComponent() {
                 fromBountyPage={true}
                 selectedWidget={selectedWidget}
                 loading={loading}
+                org_uuid={uuid}
               />
             </div>
           </div>
@@ -189,5 +203,4 @@ function OrgBodyComponent() {
     )
   );
 }
-
 export default observer(OrgBodyComponent);
