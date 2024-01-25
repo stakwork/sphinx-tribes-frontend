@@ -156,12 +156,11 @@ export const ViewTribe = (props: any) => {
   );
 };
 
-
 type BountyEstimatesProp = {
   completion_date?: string;
   session_length?: string;
-}
-export const BountyEstimates = (props: BountyEstimatesProp ) => {
+};
+export const BountyEstimates = (props: BountyEstimatesProp) => {
   const color = colors['light'];
   const SessionContainer = styled.div`
     padding-left: 20px;
@@ -182,28 +181,24 @@ export const BountyEstimates = (props: BountyEstimatesProp ) => {
     }
   `;
 
-  return <>
-    {
-      (props.completion_date || props.session_length) ?
+  return (
+    <>
+      {props.completion_date || props.session_length ? (
         <DividerContainer>
           <Divider />
         </DividerContainer>
-        : <></>
-    }
-    <div className="d-flex align-items-center">
-      {
-        (props.completion_date || props.session_length) ?
-          <SessionContainer >
-            <img
-              className="schedule_img"
-              src="/static/schedule.svg"
-              alt=""
-            />
+      ) : (
+        <></>
+      )}
+      <div className="d-flex align-items-center">
+        {props.completion_date || props.session_length ? (
+          <SessionContainer>
+            <img className="schedule_img" src="/static/schedule.svg" alt="" />
           </SessionContainer>
-          : <></>
-      }
-      {
-        props.session_length ?
+        ) : (
+          <></>
+        )}
+        {props.session_length ? (
           <SessionContainer>
             <EuiText className="session_text">
               <span
@@ -216,11 +211,12 @@ export const BountyEstimates = (props: BountyEstimatesProp ) => {
               </span>{' '}
               <span>{getSessionValue(props.session_length || '') || props.session_length}</span>
             </EuiText>
-          </SessionContainer> : <></>
-      }
-      {
-        props.completion_date ?
-          <SessionContainer >
+          </SessionContainer>
+        ) : (
+          <></>
+        )}
+        {props.completion_date ? (
+          <SessionContainer>
             <EuiText className="session_text">
               <span
                 className="label_text"
@@ -230,10 +226,15 @@ export const BountyEstimates = (props: BountyEstimatesProp ) => {
               >
                 Due date:
               </span>{' '}
-              <span>{props.completion_date ? moment(props.completion_date).format('MMM DD, YYYY') : ''}</span>
+              <span>
+                {props.completion_date ? moment(props.completion_date).format('MMM DD, YYYY') : ''}
+              </span>
             </EuiText>
-          </SessionContainer> : <></>
-      }
-    </div>
-  </>
-}
+          </SessionContainer>
+        ) : (
+          <></>
+        )}
+      </div>
+    </>
+  );
+};

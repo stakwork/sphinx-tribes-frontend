@@ -150,7 +150,10 @@ export default function MobileView(props: CodingViewProps) {
 
           <div style={{ height: 10 }} />
           {showPayBounty && payBounty}
-          <BountyEstimates completion_date={estimated_completion_date} session_length={estimated_session_length} />
+          <BountyEstimates
+            completion_date={estimated_completion_date}
+            session_length={estimated_session_length}
+          />
           <ButtonRow style={{ margin: '10px 0' }}>
             <ViewGithub {...props} />
             <ViewTribe {...props} />

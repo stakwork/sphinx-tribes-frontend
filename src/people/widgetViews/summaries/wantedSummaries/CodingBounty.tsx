@@ -740,7 +740,10 @@ function MobileView(props: CodingBountiesProps) {
                       </>
                     )}
                   </BountyPriceContainer>
-                  <BountyEstimates completion_date={props.estimated_completion_date} session_length={props.estimated_session_length} />
+                  <BountyEstimates
+                    completion_date={props.estimated_completion_date}
+                    session_length={props.estimated_session_length}
+                  />
                   <div className="buttonSet">
                     <ButtonSet
                       githubShareAction={() => {
@@ -1137,7 +1140,10 @@ function MobileView(props: CodingBountiesProps) {
                     }}
                   />
                 </BountyPriceContainer>
-                <BountyEstimates completion_date={props.estimated_completion_date} session_length={props.estimated_session_length} />
+                <BountyEstimates
+                  completion_date={props.estimated_completion_date}
+                  session_length={props.estimated_session_length}
+                />
                 <ButtonSet
                   showGithubBtn={!!ticket_url}
                   githubShareAction={() => {
@@ -1205,7 +1211,10 @@ function MobileView(props: CodingBountiesProps) {
                     }}
                   />
                 </BountyPriceContainer>
-                <BountyEstimates completion_date={props.estimated_completion_date} session_length={props.estimated_session_length} />
+                <BountyEstimates
+                  completion_date={props.estimated_completion_date}
+                  session_length={props.estimated_session_length}
+                />
                 <ButtonSet
                   showGithubBtn={!!ticket_url}
                   githubShareAction={() => {
@@ -1279,7 +1288,10 @@ function MobileView(props: CodingBountiesProps) {
                     }}
                   />
                 </BountyPriceContainer>
-                <BountyEstimates completion_date={props.estimated_completion_date} session_length={props.estimated_session_length} />
+                <BountyEstimates
+                  completion_date={props.estimated_completion_date}
+                  session_length={props.estimated_session_length}
+                />
                 <ButtonSet
                   showGithubBtn={!!ticket_url}
                   githubShareAction={() => {
