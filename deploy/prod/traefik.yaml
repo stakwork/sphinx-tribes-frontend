@@ -1,0 +1,30 @@
+api:
+  insecure: true
+
+providers:
+  docker: {}
+
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: "websecure"
+          scheme: "https"
+          permanent: true
+
+  websecure:
+    address: ":443"
+
+  mqttsecure:
+    address: ":8883"
+
+certificatesResolvers:
+  myresolver:
+    acme:
+      email: evanfeenstra@gmail.com
+      storage: /letsencrypt/acme.json
+      caServer: https://acme-v02.api.letsencrypt.org/directory
+      dnsChallenge:
+        provider: route53
