@@ -14,7 +14,8 @@ import {
   CopyLink,
   ShareOnTwitter,
   ViewTribe,
-  ViewGithub
+  ViewGithub,
+  BountyEstimates
 } from './Components';
 import { ButtonRow, Pad, Img, GithubIconMobile, T, Y, P, D, B, LoomIconMobile } from './style';
 
@@ -35,7 +36,8 @@ export default function MobileView(props: CodingViewProps) {
     owner_id,
     created,
     markPaidOrUnpaid,
-    paid
+    paid,
+    estimated_completion_date
   } = props;
 
   const color = colors['light'];
@@ -148,6 +150,7 @@ export default function MobileView(props: CodingViewProps) {
 
           <div style={{ height: 10 }} />
           {showPayBounty && payBounty}
+          <BountyEstimates completion_date={estimated_completion_date} session_length={estimated_session_length} />
           <ButtonRow style={{ margin: '10px 0' }}>
             <ViewGithub {...props} />
             <ViewTribe {...props} />

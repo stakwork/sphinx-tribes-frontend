@@ -1,10 +1,15 @@
 /* eslint-disable func-style */
 import React from 'react';
 import { CodingLanguageLabel } from 'people/interfaces';
+import { EuiText } from '@elastic/eui';
+import moment from 'moment';
+import styled from 'styled-components';
+import { colors } from '../../../../config/colors';
 import FavoriteButton from '../../../utils/FavoriteButton';
-import { Button } from '../../../../components/common';
-import { sendToRedirect } from '../../../../helpers';
+import { Button, Divider } from '../../../../components/common';
+import { getSessionValue, sendToRedirect } from '../../../../helpers';
 import { getTwitterLink } from './lib';
+import { DividerContainer } from './style';
 
 export const Heart = () => <FavoriteButton />;
 
@@ -150,3 +155,85 @@ export const ViewTribe = (props: any) => {
     />
   );
 };
+
+
+type BountyEstimatesProp = {
+  completion_date?: string;
+  session_length?: string;
+}
+export const BountyEstimates = (props: BountyEstimatesProp ) => {
+  const color = colors['light'];
+  const SessionContainer = styled.div`
+    padding-left: 20px;
+    .schedule_img {
+      padding-left: 17px;
+    }
+    .session_text {
+      font-size: 13px;
+      font-weight: 700;
+      color: ${color.grayish.G10};
+      font-family: 'Barlow';
+      display: flex;
+      flex-direction: column;
+    }
+    .label_text {
+      font-weight: 400;
+      font-family: 'Barlow';
+    }
+  `;
+
+  return <>
+    {
+      (props.completion_date || props.session_length) ?
+        <DividerContainer>
+          <Divider />
+        </DividerContainer>
+        : <></>
+    }
+    <div className="d-flex align-items-center">
+      {
+        (props.completion_date || props.session_length) ?
+          <SessionContainer >
+            <img
+              className="schedule_img"
+              src="/static/schedule.svg"
+              alt=""
+            />
+          </SessionContainer>
+          : <></>
+      }
+      {
+        props.session_length ?
+          <SessionContainer>
+            <EuiText className="session_text">
+              <span
+                className="label_text"
+                style={{
+                  color: color.grayish.G100
+                }}
+              >
+                Estimate:
+              </span>{' '}
+              <span>{getSessionValue(props.session_length || '') || props.session_length}</span>
+            </EuiText>
+          </SessionContainer> : <></>
+      }
+      {
+        props.completion_date ?
+          <SessionContainer >
+            <EuiText className="session_text">
+              <span
+                className="label_text"
+                style={{
+                  color: color.grayish.G100
+                }}
+              >
+                Due date:
+              </span>{' '}
+              <span>{props.completion_date ? moment(props.completion_date).format('MMM DD, YYYY') : ''}</span>
+            </EuiText>
+          </SessionContainer> : <></>
+      }
+    </div>
+  </>
+}

@@ -343,3 +343,26 @@ export async function userCanManageBounty(
   }
   return false;
 }
+
+const session = [
+  {
+    label: 'Less than 1 hour',
+    value: '< 1 hrs'
+  },
+  {
+    label: 'Less than 3 hours',
+    value: '< 3 hrs'
+  },
+  {
+    label: 'More than 3 hours',
+    value: '> 3 hrs'
+  },
+  {
+    label: 'Not sure yet',
+    value: 'Not Sure'
+  }
+];
+
+export const getSessionValue = (label: string) : string => {
+  return session.find(s => s.label === label)?.value || '';
+}
