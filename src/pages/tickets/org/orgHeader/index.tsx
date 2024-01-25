@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { EuiCheckboxGroup, EuiPopover, EuiText } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
 import { PostModal } from 'people/widgetViews/postBounty/PostModal';
+import { Organization } from 'store/main';
 import { colors } from '../../../../config';
 import { OrgBountyHeaderProps } from '../../../../people/interfaces';
 import { useStores } from '../../../../store';
@@ -20,10 +21,9 @@ interface styledProps {
 const Header = styled.div`
   display: flex;
   height: 130px;
-  padding: 45px 20px 45px 130px;
-  justify-content: center;
+  padding: 0px 280px;
+  justify-content: space-between;
   align-items: center;
-  align-self: stretch;
   border-bottom: 1px solid var(--Input-BG-1, #f2f3f5);
   background: #fff;
 `;
@@ -32,10 +32,6 @@ const UrlButtonContainer = styled.div`
   width: 180px;
   display: flex;
   gap: 8px;
-  justify-content: space-between;
-  margin-top: 40px;
-  margin-right: 690px;
-  margin-left: 0px;
 `;
 
 const FillContainer = styled.div`
@@ -128,6 +124,48 @@ const Label = styled.label`
   font-weight: 500;
   line-height: 17px; /* 113.333% */
   letter-spacing: 0.15px;
+`;
+const Leftheader = styled.div`
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+`;
+const CompanyNameAndLink = styled.div`
+   display: flex;
+   flex-direction: column;
+ `;
+
+const CompanyLabel = styled.p`
+  color: var(--Text-2, #3c3f41);
+  font-family: Barlow;
+  font-size: 28px;
+  font-style: normal;
+  font-weight: 700;
+`;
+const ImageContainer = styled.img`
+  width: 72px;
+  height: 72px;
+  border-radius:66px;
+`;
+
+const CompanyDescription = styled.div`
+  max-width: 403px;
+  text-align: right;
+  color: var(--Main-bottom-icons, #5f6368);
+  font-family: Barlow;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px;
+`;
+const RightHeader = styled.div`
+  max-width: 593px;
+  display: flex;
+  gap: 46px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 `;
 
 const SearchWrapper = styled.div`
@@ -333,6 +371,7 @@ export const OrgHeader = ({
 }: OrgBountyHeaderProps) => {
   const { main } = useStores();
   const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
+  const [organization, setOrganization] = useState<Organization>();
   const [isStatusPopoverOpen, setIsStatusPopoverOpen] = useState<boolean>(false);
   const onButtonClick = async () => {
     setIsStatusPopoverOpen((isPopoverOpen: any) => !isPopoverOpen);
@@ -340,18 +379,20 @@ export const OrgHeader = ({
   const closeStatusPopover = () => setIsStatusPopoverOpen(false);
 
   const selectedWidget = 'wanted';
+
   const { website, github } = organizationUrls;
+
   const handlePostBountyClick = () => {
     setIsPostBountyModalOpen(true);
   };
   const handlePostBountyClose = () => {
     setIsPostBountyModalOpen(false);
   };
-  const handleWebsiteButton = (websiteUrl: string) => {
+  const handleWebsiteButton = (websiteUrl: string | undefined) => {
     window.open(websiteUrl, '_blank');
   };
 
-  const handleGithubButton = (githubUrl: string) => {
+  const handleGithubButton = (githubUrl: string | undefined) => {
     window.open(githubUrl, '_blank');
   };
 
@@ -364,12 +405,31 @@ export const OrgHeader = ({
         languageString
       });
     }
-  }, [org_uuid, checkboxIdToSelectedMap]);
+  }, [org_uuid, checkboxIdToSelectedMap, main, languageString]);
+
+  useEffect(() => {
+    (async () => {
+      if (!org_uuid) return;
+
+      const res = await main.getUserOrganizationByUuid(org_uuid);
+
+      if (!res) return;
+      setOrganization(res);
+    })();
+  }, [main, org_uuid]);
+
+  if(!organization) return null
+
+  const { name, img, description } = organization as Organization
 
   return (
     <>
       <FillContainer>
         <Header>
+          <Leftheader>
+            <ImageContainer  src={img} width="72px" height="72px" alt="organization icon"/>
+            <CompanyNameAndLink>
+            <CompanyLabel>{name}</CompanyLabel>
           <UrlButtonContainer data-testid="url-button-container">
             {website !== '' ? (
               <UrlButton onClick={() => handleWebsiteButton(website)}>
@@ -388,10 +448,15 @@ export const OrgHeader = ({
               ''
             )}
           </UrlButtonContainer>
+            </CompanyNameAndLink>
+          </Leftheader>
+          <RightHeader>
+          <CompanyDescription>{description}</CompanyDescription>
           <Button onClick={handlePostBountyClick}>
             <img src={addBounty} alt="" />
             Post a Bounty
           </Button>
+          </RightHeader>
         </Header>
       </FillContainer>
       <FillContainer>
