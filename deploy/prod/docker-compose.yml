@@ -1,4 +1,4 @@
-version: "2"
+version: '2'
 
 services:
   reverse-proxy:
@@ -19,7 +19,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /home/ec2-user/sphinx-deploy/traefik.yaml:/etc/traefik/traefik.yaml
       - /home/ec2-user/letsencrypt:/letsencrypt
-    environment:
+    environment: 
       - AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
       - AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
       - AWS_REGION=$AWS_REGION
@@ -33,22 +33,22 @@ services:
         hard: 1000000
 
   auth:
-    image: sphinx-auth
+    image: sphinxlightning/sphinx-auth:0.2.3
     depends_on:
       - reverse-proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.auth.rule=Host(`auth-test.sphinx.chat`)"
+      - "traefik.http.routers.auth.rule=Host(`auth.sphinx.chat`)"
       - "traefik.http.services.auth.loadbalancer.server.port=9090"
       - "traefik.http.routers.auth.tls=true"
       - "traefik.http.routers.auth.tls.certresolver=myresolver"
       - "traefik.http.routers.auth.entrypoints=websecure"
     restart: on-failure
-    environment:
+    environment: 
       - JWT_KEY=$JWT_KEY
       - CLIENT_KEYS=$CLIENT_KEYS
       - OAUTH_TIMEOUT=$OAUTH_TIMEOUT
-      - HOST=auth-test.sphinx.chat
+      - HOST=auth.sphinx.chat
 
   tribes:
     image: sphinx-tribes
@@ -57,35 +57,35 @@ services:
       - reverse-proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.tribes.rule=Host(`tribes-test.sphinx.chat`) || Host(`people-test.sphinx.chat`) || Host(`community-test.sphinx.chat`)"
+      - "traefik.http.routers.tribes.rule=Host(`tribes.sphinx.chat`) || Host(`people.sphinx.chat`) || Host(`community.sphinx.chat`) || Host(`bounties.sphinx.chat`)"
       - "traefik.http.routers.tribes.priority=1"
       - "traefik.http.services.tribes.loadbalancer.server.port=5002"
       - "traefik.http.routers.tribes.tls=true"
       - "traefik.http.routers.tribes.tls.certresolver=myresolver"
       - "traefik.http.routers.tribes.entrypoints=websecure"
     restart: on-failure
-    environment:
+    environment: 
       - DATABASE_URL=$DATABASE_URL
       - PODCAST_INDEX_SECRET=$PODCAST_INDEX_SECRET
       - PODCAST_INDEX_KEY=$PODCAST_INDEX_KEY
       - YOUTUBE_KEY=$YOUTUBE_KEY
       - GITHUB_TOKEN=$GITHUB_TOKEN
-      - LN_SERVER_BASE_URL=https://people-test.sphinx.chat
-      - LN_JWT_KEY=$LN_JWT_KEY
+      - ALERT_SECRET=$ALERT_SECRET
+      - ALERT_TRIBE_UUID=$ALERT_TRIBE_UUID
+      - ALERT_BOT_ID=$ALERT_BOT_ID
+      - ALERT_URL=$ALERT_URL  
       - RELAY_URL=$RELAY_URL
       - RELAY_AUTH_KEY=$RELAY_AUTH_KEY
       - RELAY_URL_BACKUP=$RELAY_URL_BACKUP
-      - RELAY_AUTH_KEY_BACKUP=$RELAY_AUTH_KEY_BACKUP
-      - HOST=people-test.sphinx.chat
-      - REDIS_URL=$REDIS_URL
-      - ADMIN_PUBKEYS=$ADMINS
-      - ADMINS=$ADMINS
+      - RELAY_AUTH_KEY_BACKUP=
+      - HOST=people.sphinx.chat
+      - STAKWORK_KEY=$STAKWORK_KEY
       - AWS_SECRET_ACCESS=$AWS_SECRET_ACCESS_KEY
       - AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
       - AWS_REGION=us-east-1
       - S3_BUCKET_NAME=sphinx-tribes
       - S3_FOLDER_NAME=metrics
-      - S3_URL=https://sphinx-tribes.s3.amazonaws.com
+      - S3_URL="https://sphinx-tribes.s3.amazonaws.com"
     ulimits:
       nproc: 65535
       nofile:
@@ -99,7 +99,7 @@ services:
       - reverse-proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.tribes-frontend.rule=(Host(`tribes-test.sphinx.chat`) || Host(`people-test.sphinx.chat`) || Host(`community-test.sphinx.chat`)) && (Path(`/`) || PathPrefix(`/static`) || Path(`/manifest.json`) || Path(`/favicon.ico`) || Path(`/logo192.png`) || PathPrefix(`/t/`) || Path(`/t`) || PathPrefix(`/p/`) || Path(`/p`) || Path(`/tickets`) || Path(`/bounties`) || Path(`/bounty`) || PathPrefix(`/bounty/`) || Path(`/leaderboard`) || PathPrefix(`/org/`) || Path(`/admin`))"
+      - "traefik.http.routers.tribes-frontend.rule=(Host(`tribes.sphinx.chat`) || Host(`people.sphinx.chat`) || Host(`community.sphinx.chat`)|| Host(`bounties.sphinx.chat`)) && (Path(`/`) || PathPrefix(`/static`) || Path(`/manifest.json`) || Path(`/favicon.ico`) || Path(`/logo192.png`) || PathPrefix(`/t/`) || Path(`/t`) || PathPrefix(`/p/`) || Path(`/p`) || Path(`/tickets`) || Path(`/bounties`) || Path(`/bounty`) || PathPrefix(`/bounty/`) || Path(`/leaderboard`) || PathPrefix(`/org/`) || Path(`/admin`))"
       - "traefik.http.routers.tribes-frontend.priority=2"
       - "traefik.http.services.tribes-frontend.loadbalancer.server.port=80"
       - "traefik.http.routers.tribes-frontend.tls=true"
@@ -114,7 +114,7 @@ services:
       - reverse-proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.tcp.routers.mqtt.rule=HostSNI(`tribes-test.sphinx.chat`)"
+      - "traefik.tcp.routers.mqtt.rule=HostSNI(`tribes.sphinx.chat`)"
       - "traefik.tcp.services.mqtt.loadbalancer.server.port=1883"
       - "traefik.tcp.routers.mqtt.tls=true"
       - "traefik.tcp.routers.mqtt.tls.certresolver=myresolver"
