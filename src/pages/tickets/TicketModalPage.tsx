@@ -77,6 +77,16 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
     [location.pathname]
   );
 
+  const getUuidFromUrl = () => {
+    const { href } = window.location;
+    const parts = href.split(`/bounty/${bountyId}/`);
+    if (parts.length > 1) {
+      return parts[parts.length - 1];
+    }
+  };
+
+  const uuid = getUuidFromUrl();
+
   const goBack = () => {
     setVisible(false);
     setisDeleted(false);
@@ -88,16 +98,6 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
       history.goBack();
     }
   };
-
-  const getUuidFromUrl = () => {
-    const { href } = window.location;
-    const parts = href.split(`/bounty/${bountyId}/`);
-    if (parts.length > 1) {
-      return parts[parts.length - 1];
-    }
-  };
-
-  const uuid = getUuidFromUrl();
 
   const directionHandler = (person: any, body: any) => {
     if (person && body) {
