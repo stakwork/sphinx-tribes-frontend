@@ -32,7 +32,7 @@ If you wish to run only the frontend, follow these steps:
  - Change `return hosts[host] || AppMode.TRIBES;` to `return hosts[host] || AppMode.COMMUNITY;`
 
 3. Modify line 6 in `src/config/host.ts`: 
- - Change `return host;` to `return 'api.people-test.sphinx.chat';`
+ - Change `return host;` to `return 'people-test.sphinx.chat';`
 
 4. Open the terminal. Locate your folder and then run:
 
