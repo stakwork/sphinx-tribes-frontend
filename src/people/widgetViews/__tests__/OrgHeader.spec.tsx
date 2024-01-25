@@ -50,7 +50,7 @@ describe('OrgHeader Component', () => {
       writable: true
     });
 
-    render(<OrgHeader />);
+    render(<OrgHeader {...MockProps} />);
 
     // Simulate entering search text
     const searchText = 'sample search';

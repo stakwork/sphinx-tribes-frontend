@@ -188,7 +188,7 @@ export const OrgHeader = ({ organizationUrls }: OrgBountyHeaderProps) => {
   };
   const { main, ui } = useStores();
   const color = colors['light'];
-  
+
   const handleWebsiteButton = (websiteUrl: string) => {
     window.open(websiteUrl, '_blank');
   };
