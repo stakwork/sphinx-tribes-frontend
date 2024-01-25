@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { getHost } from '../../config';
+import { getHost } from '../../config/host';
 import { Button, Divider, LazyImgBg } from '../../components/common';
 import ConnectCard from '../../people/utils/ConnectCard';
 import { PersonProps } from '../../people/interfaces';
@@ -29,7 +29,7 @@ const DWrap = styled.div<DWarpProps>`
   background: #fff;
   margin-bottom: 20px;
   margin-right: 20px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.15);
   border-radius: 4px;
   overflow: hidden;
 `;
@@ -128,6 +128,7 @@ export default function Person(props: PersonProps) {
   const addedStyles = hideActions ? { width: 56, height: 56 } : {};
   const qrString = makeQR(owner_pubkey);
   const [showQR, setShowQR] = useState(false);
+
   function renderPersonCard() {
     if (small) {
       return (
@@ -184,52 +185,51 @@ export default function Person(props: PersonProps) {
           </div>
         </a>
       );
-    } else {
-      // Desktop mode
-      return (
-        <a
-          href={`/p/${owner_pubkey}`}
-          style={{ textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}
-        >
-          <DWrap squeeze={squeeze} onClick={() => select(id, unique_name, owner_pubkey)}>
-            <div>
-              <div style={{ height: 210 }}>
-                <Img style={{ height: '100%', width: '100%', borderRadius: 0 }} src={img} />
-              </div>
-              <div style={{ padding: 16 }}>
-                <DTitle>{owner_alias}</DTitle>
-                {description && description !== 'description' && (
-                  <DDescription>{description}</DDescription>
-                )}
-              </div>
-              <div>
-                <Divider />
-                <Row style={{ justifyContent: 'space-between', alignItems: 'center', height: 50 }}>
-                  {owner_pubkey ? (
-                    <>
-                      <Button
-                        text="Connect"
-                        color="clear"
-                        iconStyle={{ color: '#B0B7BC' }}
-                        endingIcon={'open_in_new'}
-                        style={{ fontSize: 13, fontWeight: 500 }}
-                        iconSize={16}
-                        onClick={(e: any) => {
-                          setShowQR(true);
-                          e.stopPropagation();
-                        }}
-                      />
-                    </>
-                  ) : (
-                    <div />
-                  )}
-                </Row>
-              </div>
-            </div>
-          </DWrap>
-        </a>
-      );
     }
+    // desktop mode
+    return (
+      <a
+        href={`/p/${owner_pubkey}`}
+        style={{ textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}
+      >
+        <DWrap squeeze={squeeze} onClick={() => select(id, unique_name, owner_pubkey)}>
+          <div>
+            <div style={{ height: 210 }}>
+              <Img style={{ height: '100%', width: '100%', borderRadius: 0 }} src={img} />
+            </div>
+            <div style={{ padding: 16 }}>
+              <DTitle>{owner_alias}</DTitle>
+              {description && description !== 'description' && (
+                <DDescription>{description}</DDescription>
+              )}
+            </div>
+          </div>
+          <div>
+            <Divider />
+            <Row style={{ justifyContent: 'space-between', alignItems: 'center', height: 50 }}>
+              {owner_pubkey ? (
+                <>
+                  <Button
+                    text="Connect"
+                    color="clear"
+                    iconStyle={{ color: '#B0B7BC' }}
+                    endingIcon={'open_in_new'}
+                    style={{ fontSize: 13, fontWeight: 500 }}
+                    iconSize={16}
+                    onClick={(e: any) => {
+                      setShowQR(true);
+                      e.stopPropagation();
+                    }}
+                  />
+                </>
+              ) : (
+                <div />
+              )}
+            </Row>
+          </div>
+        </DWrap>
+      </a>
+    );
   }
 
   return (
