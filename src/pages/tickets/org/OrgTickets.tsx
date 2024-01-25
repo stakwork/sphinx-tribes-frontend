@@ -10,6 +10,7 @@ import { colors } from '../../../config/colors';
 import { useIsMobile } from '../../../hooks';
 import { useStores } from '../../../store';
 import { OrgBody, Body, Backdrop } from '../style';
+import api from '../../../api';
 import { OrgHeader } from './orgHeader';
 
 function OrgBodyComponent() {
@@ -21,6 +22,7 @@ function OrgBodyComponent() {
   const [checkboxIdToSelectedMap, setCheckboxIdToSelectedMap] = useState({});
   const [checkboxIdToSelectedMapLanguage, setCheckboxIdToSelectedMapLanguage] = useState({});
   const { uuid } = useParams<{ uuid: string; bountyId: string }>();
+  const [organizationUrls, setOrganizationUrls] = useState({});
 
   const color = colors['light'];
 
@@ -34,6 +36,8 @@ function OrgBodyComponent() {
       await main.getPeople();
       if (uuid) {
         await main.getOrganizationBounties(uuid, { page: 1, resetPage: true });
+        const orgUrls = await api.get(`organizations/${uuid}`);
+        setOrganizationUrls(orgUrls);
       }
       setLoading(false);
     })();
@@ -151,7 +155,7 @@ function OrgBodyComponent() {
           height: 'calc(100% - 65px)'
         }}
       >
-        <OrgHeader />
+        <OrgHeader organizationUrls={organizationUrls} />
         <>
           <div
             style={{
@@ -189,5 +193,4 @@ function OrgBodyComponent() {
     )
   );
 }
-
 export default observer(OrgBodyComponent);
