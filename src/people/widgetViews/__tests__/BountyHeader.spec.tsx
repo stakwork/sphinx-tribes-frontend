@@ -15,6 +15,28 @@ const mockProps: BountyHeaderProps = {
   checkboxIdToSelectedMapLanguage: {}
 };
 
+const languageOptions = [
+  'Lightning',
+  'Typescript',
+  'Golang',
+  'Kotlin',
+  'PHP',
+  'Java',
+  'Ruby',
+  'Python',
+  'Postgres',
+  'Elastic search',
+  'Javascript',
+  'Node',
+  'Swift',
+  'MySQL',
+  'R',
+  'Rust',
+  'Other',
+  'C++',
+  'C#'
+];
+
 jest.mock('../../../hooks', () => ({
   useIsMobile: jest.fn()
 }));
@@ -75,27 +97,23 @@ describe('BountyHeader Component', () => {
     });
   });
 
-  const languageOptions = [
-    'Lightning',
-    'Typescript',
-    'Golang',
-    'Kotlin',
-    'PHP',
-    'Java',
-    'Ruby',
-    'Python',
-    'Postgres',
-    'Elastic search',
-    'Javascript',
-    'Node',
-    'Swift',
-    'MySQL',
-    'R',
-    'Rust',
-    'Other',
-    'C++',
-    'C#'
-  ];
+  test('should display all languages without scroll on click of filter button', async () => {
+    render(<BountyHeader {...mockProps} />);
+  
+    // Click on the filter button
+    fireEvent.click(screen.getByText('Filter'));
+  
+    // Wait for the changes to take effect
+    await waitFor(() => {
+      // Check visibility of each language option
+      languageOptions.forEach((language: string) => {
+        const checkbox = screen.getByRole('checkbox', { name: language });
+  
+        // Ensure that the checkbox is visible without being behind a scroll
+        expect(checkbox).toBeVisible();
+      });
+    });
+  });
 
   languageOptions.forEach((language: string) => {
     test(`should call onChangeLanguage when the ${language} filter option is selected`, async () => {
