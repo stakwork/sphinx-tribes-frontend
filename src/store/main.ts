@@ -184,6 +184,7 @@ export interface QueryParams {
   search?: string;
   resetPage?: boolean;
   languages?: string;
+  org_uuid?: string;
 }
 
 export interface ClaimOnLiquid {
@@ -291,6 +292,19 @@ export const defaultBountyStatus: BountyStatus = {
   Paid: false
 };
 
+export interface OrgBountyStatus {
+  Open: boolean;
+  Assigned: boolean;
+  Paid: boolean;
+  Completed: boolean;
+}
+
+export const defaultOrgBountyStatus: OrgBountyStatus = {
+  Open: false,
+  Assigned: false,
+  Paid: false,
+  Completed: false
+};
 export class MainStore {
   [x: string]: any;
   tribes: Tribe[] = [];
@@ -1074,29 +1088,28 @@ export class MainStore {
     }
   }
 
-  async getLanguageOrganizationBounties(
-    uuid: string,
-    params?: QueryParams
-  ): Promise<PersonBounty[]> {
+  getWantedsSpecOrgPrevParams?: QueryParams = {};
+  async getSpecificOrganizationBounties(uuid: string, params?: any): Promise<PersonBounty[]> {
     const queryParams: QueryParams = {
-      limit: 20,
+      limit: queryLimit,
       sortBy: 'created',
       search: uiStore.searchText ?? '',
       page: 1,
       resetPage: false,
       ...params
     };
-    if (queryParams) {
-      this.getWantedsPrevParams = queryParams;
+
+    if (params) {
+      // save previous params
+      this.getWantedsSpecOrgPrevParams = queryParams;
     }
 
     // if we don't pass the params, we should use previous params for invalidate query
     const query2 = this.appendQueryParams(
       `organizations/bounties/${uuid}`,
-      20,
-      params ? queryParams : this.getWantedsPrevParams
+      queryLimit,
+      params ? queryParams : this.getWantedsOrgPrevParams
     );
-
     try {
       const ps2 = await api.get(query2);
       const ps3: any[] = [];
