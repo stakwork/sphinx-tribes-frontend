@@ -1,0 +1,128 @@
+version: "2"
+
+services:
+  reverse-proxy:
+    # The official v2 Traefik docker image
+    image: traefik:v2.2.1
+    # Enables the web UI and tells Traefik to listen to docker
+    # command: --configFile=/home/ec2-user/sphinx-deploy/traefik.yaml
+    ports:
+      # The HTTP port
+      - 80:80
+      # The Web UI (enabled by --api.insecure=true)
+      - 8080:8080
+      # entrypoints
+      - 443:443
+      - 8883:8883
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/ec2-user/sphinx-deploy/traefik.yaml:/etc/traefik/traefik.yaml
+      - /home/ec2-user/letsencrypt:/letsencrypt
+    environment:
+      - AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+      - AWS_REGION=$AWS_REGION
+    logging:
+      options:
+        max-size: 10m
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 1000000
+        hard: 1000000
+
+  auth:
+    image: sphinx-auth
+    depends_on:
+      - reverse-proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.auth.rule=Host(`auth-test.sphinx.chat`)"
+      - "traefik.http.services.auth.loadbalancer.server.port=9090"
+      - "traefik.http.routers.auth.tls=true"
+      - "traefik.http.routers.auth.tls.certresolver=myresolver"
+      - "traefik.http.routers.auth.entrypoints=websecure"
+    restart: on-failure
+    environment:
+      - JWT_KEY=$JWT_KEY
+      - CLIENT_KEYS=$CLIENT_KEYS
+      - OAUTH_TIMEOUT=$OAUTH_TIMEOUT
+      - HOST=auth-test.sphinx.chat
+
+  tribes:
+    image: sphinx-tribes
+    depends_on:
+      - auth
+      - reverse-proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.tribes.rule=Host(`tribes-test.sphinx.chat`) || Host(`people-test.sphinx.chat`) || Host(`community-test.sphinx.chat`)"
+      - "traefik.http.routers.tribes.priority=1"
+      - "traefik.http.services.tribes.loadbalancer.server.port=5002"
+      - "traefik.http.routers.tribes.tls=true"
+      - "traefik.http.routers.tribes.tls.certresolver=myresolver"
+      - "traefik.http.routers.tribes.entrypoints=websecure"
+    restart: on-failure
+    environment:
+      - DATABASE_URL=$DATABASE_URL
+      - PODCAST_INDEX_SECRET=$PODCAST_INDEX_SECRET
+      - PODCAST_INDEX_KEY=$PODCAST_INDEX_KEY
+      - YOUTUBE_KEY=$YOUTUBE_KEY
+      - GITHUB_TOKEN=$GITHUB_TOKEN
+      - LN_SERVER_BASE_URL=https://people-test.sphinx.chat
+      - LN_JWT_KEY=$LN_JWT_KEY
+      - RELAY_URL=$RELAY_URL
+      - RELAY_AUTH_KEY=$RELAY_AUTH_KEY
+      - RELAY_URL_BACKUP=$RELAY_URL_BACKUP
+      - RELAY_AUTH_KEY_BACKUP=$RELAY_AUTH_KEY_BACKUP
+      - HOST=people-test.sphinx.chat
+      - REDIS_URL=$REDIS_URL
+      - ADMIN_PUBKEYS=$ADMINS
+      - ADMINS=$ADMINS
+      - AWS_SECRET_ACCESS=$AWS_SECRET_ACCESS_KEY
+      - AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+      - AWS_REGION=us-east-1
+      - S3_BUCKET_NAME=sphinx-tribes
+      - S3_FOLDER_NAME=metrics
+      - S3_URL=https://sphinx-tribes.s3.amazonaws.com
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 1000000
+        hard: 1000000
+
+  tribes-frontend:
+    image: sphinxlightning/sphinx-tribes-frontend:latest
+    depends_on:
+      - tribes
+      - reverse-proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.tribes-frontend.rule=(Host(`tribes-test.sphinx.chat`) || Host(`people-test.sphinx.chat`) || Host(`community-test.sphinx.chat`)) && (Path(`/`) || PathPrefix(`/static`) || Path(`/manifest.json`) || Path(`/favicon.ico`) || Path(`/logo192.png`) || PathPrefix(`/t/`) || Path(`/t`) || PathPrefix(`/p/`) || Path(`/p`) || Path(`/tickets`) || Path(`/bounties`) || Path(`/bounty`) || PathPrefix(`/bounty/`) || Path(`/leaderboard`) || PathPrefix(`/org/`) || Path(`/admin`))"
+      - "traefik.http.routers.tribes-frontend.priority=2"
+      - "traefik.http.services.tribes-frontend.loadbalancer.server.port=80"
+      - "traefik.http.routers.tribes-frontend.tls=true"
+      - "traefik.http.routers.tribes-frontend.tls.certresolver=myresolver"
+      - "traefik.http.routers.tribes-frontend.entrypoints=websecure"
+    restart: on-failure
+
+  mqtt:
+    image: sphinx-mqtt
+    depends_on:
+      - auth
+      - reverse-proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.tcp.routers.mqtt.rule=HostSNI(`tribes-test.sphinx.chat`)"
+      - "traefik.tcp.services.mqtt.loadbalancer.server.port=1883"
+      - "traefik.tcp.routers.mqtt.tls=true"
+      - "traefik.tcp.routers.mqtt.tls.certresolver=myresolver"
+      - "traefik.tcp.routers.mqtt.entrypoints=mqttsecure"
+      - "traefik.tcp.routers.mqtt.service=mqtt"
+    restart: on-failure
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 1000000
+        hard: 1000000
