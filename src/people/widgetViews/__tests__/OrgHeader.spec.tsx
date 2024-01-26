@@ -34,7 +34,7 @@ describe('OrgHeader Component', () => {
     render(<OrgHeader {...MockProps} />);
     expect(screen.getByText('Post a Bounty')).toBeInTheDocument();
     expect(screen.getByText('Status')).toBeInTheDocument();
-    expect(screen.getByLabelText('Skill')).toBeInTheDocument();
+    expect(screen.getByText('Skill')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Search')).toBeInTheDocument();
     expect(screen.getByText(/Bounties/i)).toBeInTheDocument();
   });
