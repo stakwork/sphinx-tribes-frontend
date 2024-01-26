@@ -22,7 +22,6 @@ function OrgBodyComponent() {
   const [scrollValue, setScrollValue] = useState<boolean>(false);
   const [checkboxIdToSelectedMap, setCheckboxIdToSelectedMap] = useState(defaultOrgBountyStatus);
   const [checkboxIdToSelectedMapLanguage, setCheckboxIdToSelectedMapLanguage] = useState({});
-  const [languageString, setLanguageString] = useState('');
   const { uuid } = useParams<{ uuid: string; bountyId: string }>();
   const [languageString, setLanguageString] = useState('');
   const [organizationUrls, setOrganizationUrls] = useState({});
@@ -167,12 +166,13 @@ function OrgBodyComponent() {
         }}
       >
         <OrgHeader
-          selectedWidget={selectedWidget}
-          scrollValue={scrollValue}
+          organizationUrls={organizationUrls}
           onChangeStatus={onChangeStatus}
           onChangeLanguage={onChangeLanguage}
           checkboxIdToSelectedMap={checkboxIdToSelectedMap}
           checkboxIdToSelectedMapLanguage={checkboxIdToSelectedMapLanguage}
+          languageString={languageString}
+          org_uuid={uuid}
         />
         <>
           <div

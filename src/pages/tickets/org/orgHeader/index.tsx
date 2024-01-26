@@ -8,14 +8,14 @@ import { colors } from 'config';
 import { OrgBountyHeaderProps } from '../../../../people/interfaces';
 import { useStores } from '../../../../store';
 import addBounty from './Icons/addBounty.svg';
+import dropdown from './Icons/dropDownIcon.svg';
 import searchIcon from './Icons/searchIcon.svg';
 import file from './Icons/file.svg';
 import checkboxImage from './Icons/checkboxImage.svg';
 import githubIcon from './Icons/githubIcon.svg';
 import websiteIcon from './Icons/websiteIcon.svg';
 
-
-const Coding_Languages = GetValue(coding_languages);  
+const Coding_Languages = GetValue(coding_languages);
 interface styledProps {
   color?: any;
 }
@@ -285,7 +285,6 @@ const DropDownButton = styled.button`
   padding-top: 5px;
 `;
 
-
 const FiltersLeft = styled.span`
   display: flex;
   height: 40px;
@@ -422,7 +421,7 @@ export const OrgHeader = ({
 }: OrgBountyHeaderProps) => {
   const { main } = useStores();
   const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
-   const [filterClick, setFilterClick] = useState(false);
+  const [filterClick, setFilterClick] = useState(false);
   const [isStatusPopoverOpen, setIsStatusPopoverOpen] = useState<boolean>(false);
   const onButtonClick = async () => {
     setIsStatusPopoverOpen((isPopoverOpen: any) => !isPopoverOpen);
@@ -455,7 +454,7 @@ export const OrgHeader = ({
         languageString
       });
     }
-  }, [org_uuid, checkboxIdToSelectedMap]);
+  }, [org_uuid, checkboxIdToSelectedMap, main, languageString]);
 
   const handleClick = () => {
     setFilterClick(!filterClick);
@@ -508,13 +507,6 @@ export const OrgHeader = ({
       <FillContainer>
         <Filters>
           <FiltersRight>
-            <StatusContainer>
-              <FilterLabel>Status</FilterLabel>
-              <DropDownButton>
-                {' '}
-                <Img src={dropdown} alt="" />
-              </DropDownButton>
-            </StatusContainer>
             <EuiPopover
               button={
                 <StatusContainer onClick={onButtonClick} color={color}>
