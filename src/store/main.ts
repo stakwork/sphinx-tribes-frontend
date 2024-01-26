@@ -1074,7 +1074,10 @@ export class MainStore {
     }
   }
 
-  async getLanguageOrganizationBounties(uuid: string, params?: QueryParams): Promise<PersonBounty[]> {
+  async getLanguageOrganizationBounties(
+    uuid: string,
+    params?: QueryParams
+  ): Promise<PersonBounty[]> {
     const queryParams: QueryParams = {
       limit: 20,
       sortBy: 'created',
