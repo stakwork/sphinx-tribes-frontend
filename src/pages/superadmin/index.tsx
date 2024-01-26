@@ -87,6 +87,7 @@ export const SuperAdmin = () => {
           }
         );
         setBounties(bounties);
+        setTotalBounties(bounties?.length);
       } catch (error) {
         // Handle errors if any
         console.error('Error fetching total bounties:', error);
