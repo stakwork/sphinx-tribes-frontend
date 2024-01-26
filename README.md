@@ -14,7 +14,16 @@ Additionally, a subset of **Sphinx Tribes** is the bounties platform - a global 
 ![Tribes](https://github.com/stakwork/sphinx-tribes/raw/master/img/tribes.jpg)
 
 ### Bounties Platform
-**sphinx-tribes-frontend** A significant part of this repository contains the frontend for the bounties platform. In order to run the website locally on your computer, you'll need to run sphinx-tribes-frontend as a whole. You can find the backend repo at [sphinx-tribes](https://github.com/stakwork/sphinx-tribes).
+A significant part of **sphinx-tribes-frontend** contains the frontend for the bounties platform. In order to run the website locally on your computer, you'll need to run sphinx-tribes-frontend as a whole. You can find the backend repo at [sphinx-tribes](https://github.com/stakwork/sphinx-tribes).
+
+=======
+Welcome to **sphinx-tribes** - the decentralized message broker designed for public groups in Sphinx. Empowering users to run their own **sphinx-tribes** server, this platform seamlessly routes group messages for various applications such as **sphinx-relay** nodes, apps, websites, or IoT devices.
+
+## How it Works 🚀
+
+**sphinx-tribes** operates as an MQTT broker that any node can subscribe to. Message topics always consist of two parts: `{receiverPubKey}/{groupUUID}`. Only the group owner has the privilege to publish messages, and all messages from group members are required to be submitted to the owner as a Lightning keysend payment. The group `uuid` is essentially a timestamp signed by the owner.
+
+![Tribes](https://github.com/stakwork/sphinx-tribes/raw/master/img/tribes.jpg)
 
 ## Authentication 🔒
 
