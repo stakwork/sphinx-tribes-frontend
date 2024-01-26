@@ -5,7 +5,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { EuiLoadingSpinner } from '@elastic/eui';
 import styled from 'styled-components';
-import { BountyMetrics, BountyStatus, defaultBountyStatus } from 'store/main';
+import { BountyMetrics, defaultBountyStatus } from 'store/main';
 import { useStores } from 'store';
 import moment from 'moment';
 import { useInViewPort } from 'hooks';
@@ -14,6 +14,7 @@ import { Header } from './header';
 import { Statistics } from './statistics';
 import AdminAccessDenied from './accessDenied';
 import { normalizeMetrics } from './utils/metrics';
+import { pageSize, visibleTabs } from './constants.ts';
 
 const Container = styled.body`
   height: 100vh; /* Set a fixed height for the container */
@@ -40,19 +41,18 @@ export const SuperAdmin = () => {
   //Todo: Remove all comments when metrcis development is done
   const { main } = useStores();
   const [isSuperAdmin] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
   const [bounties, setBounties] = useState<any[]>([]);
   const [bountyMetrics, setBountyMetrics] = useState<BountyMetrics | undefined>(undefined);
   const mockHunterMetrics: MockHunterMetrics = {
     hunters_total_paid: 145,
     hunters_first_bounty_paid: 12
   };
-  const [bountyStatus, setBountyStatus] = useState<BountyStatus>({
-    ...defaultBountyStatus,
-    Open: false
-  });
   const [sortOrder, setSortOrder] = useState<string>('desc');
-  const [dropdownValue, setDropdownValue] = useState('all');
+  const [checkboxIdToSelectedMap, setCheckboxIdToSelectedMap] = useState(defaultBountyStatus);
   const [loading, setLoading] = useState(false);
+  const [activeTabs, setActiveTabs] = useState<number[]>([]);
+  const [totalBounties, setTotalBounties] = useState(0);
 
   /**
    * Todo use the same date range,
@@ -68,6 +68,8 @@ export const SuperAdmin = () => {
 
   const onDateFilterChange = useCallback((option: string) => setSortOrder(option), []);
 
+  const paginationLimit = Math.floor(totalBounties / pageSize) + 1;
+
   const getBounties = useCallback(async () => {
     setLoading(true);
     if (startDate && endDate) {
@@ -78,8 +80,9 @@ export const SuperAdmin = () => {
             end_date: String(endDate)
           },
           {
+            page: currentPage,
             resetPage: true,
-            ...bountyStatus,
+            ...checkboxIdToSelectedMap,
             direction: sortOrder
           }
         );
@@ -92,11 +95,21 @@ export const SuperAdmin = () => {
         setLoading(false);
       }
     }
-  }, [main, startDate, endDate, bountyStatus, sortOrder]);
+  }, [main, startDate, endDate, checkboxIdToSelectedMap, sortOrder, currentPage]);
 
   useEffect(() => {
     getBounties();
-  }, [getBounties]);
+  }, [getBounties, currentPage]);
+
+  const onChangeStatus = (optionId: any) => {
+    const newCheckboxIdToSelectedMap = {
+      ...checkboxIdToSelectedMap,
+      ...{
+        [optionId]: !checkboxIdToSelectedMap[optionId]
+      }
+    };
+    setCheckboxIdToSelectedMap(newCheckboxIdToSelectedMap);
+  };
 
   const getMetrics = useCallback(async () => {
     if (startDate && endDate) {
@@ -114,6 +127,31 @@ export const SuperAdmin = () => {
     getMetrics();
   }, [getMetrics]);
 
+  const getTotalBounties = useCallback(async () => {
+    if (startDate && endDate) {
+      const totalBounties = await main.getBountiesCountByRange(String(startDate), String(endDate));
+      setTotalBounties(totalBounties);
+    }
+  }, [main, startDate, endDate]);
+
+  useEffect(() => {
+    getTotalBounties();
+  }, [getTotalBounties]);
+
+  const getActiveTabs = useCallback(() => {
+    const dataNumber: number[] = [];
+    for (let i = 1; i <= Math.ceil(paginationLimit); i++) {
+      if (i > visibleTabs) break;
+      dataNumber.push(i);
+    }
+
+    setActiveTabs(dataNumber);
+  }, [paginationLimit]);
+
+  useEffect(() => {
+    getActiveTabs();
+  }, [getActiveTabs]);
+
   return (
     <>
       {!isSuperAdmin ? (
@@ -126,11 +164,7 @@ export const SuperAdmin = () => {
             setStartDate={setStartDate}
             setEndDate={setEndDate}
           />
-          <Statistics
-            freezeHeaderRef={ref}
-            metrics={bountyMetrics}
-            mockHunter={mockHunterMetrics}
-          />
+          <Statistics freezeHeaderRef={ref} metrics={bountyMetrics} />
           {loading ? (
             <LoaderContainer>
               <EuiLoadingSpinner size="l" />
@@ -141,12 +175,16 @@ export const SuperAdmin = () => {
               startDate={startDate}
               endDate={endDate}
               headerIsFrozen={inView}
-              bountyStatus={bountyStatus}
-              setBountyStatus={setBountyStatus}
-              onChangeFilterByDate={onDateFilterChange}
               sortOrder={sortOrder}
-              dropdownValue={dropdownValue}
-              setDropdownValue={setDropdownValue}
+              onChangeFilterByDate={onDateFilterChange}
+              onChangeStatus={onChangeStatus}
+              checkboxIdToSelectedMap={checkboxIdToSelectedMap}
+              currentPage={currentPage}
+              totalBounties={totalBounties}
+              paginationLimit={paginationLimit}
+              setCurrentPage={setCurrentPage}
+              activeTabs={activeTabs}
+              setActiveTabs={setActiveTabs}
             />
           )}
         </Container>

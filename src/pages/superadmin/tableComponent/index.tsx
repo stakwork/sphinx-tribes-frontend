@@ -1,14 +1,15 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { useStores } from 'store';
+import React, { useState } from 'react';
+import styled from 'styled-components';
 import moment from 'moment';
-import { EuiPopover, EuiText } from '@elastic/eui';
+import { EuiCheckboxGroup, EuiPopover, EuiText } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
-import { BountyStatus } from '../../../store/main';
 import paginationarrow1 from '../header/icons/paginationarrow1.svg';
 import paginationarrow2 from '../header/icons/paginationarrow2.svg';
 import defaultPic from '../../../public/static/profile_avatar.svg';
 import copygray from '../header/icons/copygray.svg';
-import { dateFilterOptions, getBountyStatus } from '../utils';
+import { dateFilterOptions } from '../utils';
+import { pageSize, visibleTabs } from '../constants.ts';
+import checkboxImage from './Icons/checkboxImage.svg';
 import { colors } from './../../../config/colors';
 import { Bounty } from './interfaces.ts';
 
@@ -41,22 +42,31 @@ import {
   Paragraph,
   BoxImage,
   DateFilterWrapper,
-  DateFilterContent
+  DateFilterContent,
+  PaginationImg
 } from './TableStyle';
 
-interface TableProps {
+interface styledProps {
+  color?: any;
+}
+
+export interface TableProps {
   bounties: Bounty[];
   startDate?: number;
   endDate?: number;
   headerIsFrozen?: boolean;
-  bountyStatus?: BountyStatus;
-  setBountyStatus?: React.Dispatch<React.SetStateAction<BountyStatus>>;
-  dropdownValue?: string;
   sortOrder?: string;
-  setDropdownValue?: React.Dispatch<React.SetStateAction<string>>;
   onChangeFilterByDate?: (option: string) => void;
+  onChangeStatus: (number) => void;
+  checkboxIdToSelectedMap?: any;
   paginatePrev?: () => void;
   paginateNext?: () => void;
+  currentPage: number;
+  totalBounties: number;
+  paginationLimit: number;
+  setCurrentPage?: React.Dispatch<React.SetStateAction<number>>;
+  activeTabs: number[];
+  setActiveTabs: React.Dispatch<React.SetStateAction<number[]>>;
 }
 
 interface ImageWithTextProps {
@@ -123,46 +133,147 @@ export const TextInColorBox = ({ status }: TextInColorBoxProps) => (
   </>
 );
 
+const EuiPopOverCheckbox = styled.div<styledProps>`
+  width: 147px;
+  height: auto;
+  padding: 15px 18px;
+  border-right: 1px solid ${(p: any) => p.color && p.color.grayish.G700};
+  user-select: none;
+  .leftBoxHeading {
+    font-family: 'Barlow';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 32px;
+    text-transform: uppercase;
+    color: ${(p: any) => p.color && p.color.grayish.G100};
+    margin-bottom: 10px;
+  }
+  &.CheckboxOuter > div {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    .euiCheckboxGroup__item {
+      .euiCheckbox__square {
+        top: 5px;
+        border: 1px solid ${(p: any) => p?.color && p?.color?.grayish.G500};
+        border-radius: 2px;
+      }
+      .euiCheckbox__input + .euiCheckbox__square {
+        background: ${(p: any) => p?.color && p?.color?.pureWhite} no-repeat center;
+      }
+      .euiCheckbox__input:checked + .euiCheckbox__square {
+        border: 1px solid ${(p: any) => p?.color && p?.color?.blue1};
+        background: ${(p: any) => p?.color && p?.color?.blue1} no-repeat center;
+        background-size: contain;
+        background-image: url(${checkboxImage});
+      }
+      .euiCheckbox__label {
+        font-family: 'Barlow';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 13px;
+        line-height: 16px;
+        color: ${(p: any) => p?.color && p?.color?.grayish.G50};
+        &:hover {
+          color: ${(p: any) => p?.color && p?.color?.grayish.G05};
+        }
+      }
+      input.euiCheckbox__input:checked ~ label {
+        color: ${(p: any) => p?.color && p?.color?.grayish.G05};
+      }
+    }
+  }
+`;
+
+const StatusContainer = styled.div<styledProps>`
+  width: 70px;
+  height: 48px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin-left: 19px;
+  margin-top: 4px;
+  cursor: pointer;
+  user-select: none;
+  .filterStatusIconContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 48px;
+    width: 38px;
+    .materialStatusIcon {
+      color: ${(p: any) => p.color && p.color.grayish.G200};
+      cursor: pointer;
+      font-size: 18px;
+      margin-top: 5px;
+    }
+  }
+  .statusText {
+    font-family: 'Barlow';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 17px;
+    letter-spacing: 0.15px;
+    display: flex;
+    align-items: center;
+    color: ${(p: any) => p.color && p.color.grayish.G200};
+  }
+  &:hover {
+    .filterStatusIconContainer {
+      .materialStatusIcon {
+        color: ${(p: any) => p.color && p.color.grayish.G50} !important;
+        cursor: pointer;
+        font-size: 18px;
+        margin-top: 5px;
+      }
+    }
+    .statusText {
+      color: ${(p: any) => p.color && p.color.grayish.G50};
+    }
+  }
+  &:active {
+    .filterStatusIconContainer {
+      .materialStatusIcon {
+        color: ${(p: any) => p.color && p.color.grayish.G10} !important;
+        cursor: pointer;
+        font-size: 18px;
+        margin-top: 5px;
+      }
+    }
+    .statusText {
+      color: ${(p: any) => p.color && p.color.grayish.G10};
+    }
+  }
+`;
+
+const Status = ['Open', 'Assigned', 'Completed', 'Paid'];
+
 export const MyTable = ({
   bounties,
-  startDate,
-  endDate,
-  bountyStatus,
-  setBountyStatus,
-  dropdownValue,
   headerIsFrozen,
   sortOrder,
-  setDropdownValue,
-  onChangeFilterByDate
+  onChangeFilterByDate,
+  onChangeStatus,
+  checkboxIdToSelectedMap,
+  currentPage,
+  setCurrentPage,
+  activeTabs,
+  setActiveTabs,
+  totalBounties,
+  paginationLimit
 }: TableProps) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalBounties, setTotalBounties] = useState(0);
-  const [activeTabs, setActiveTabs] = useState<number[]>([]);
   const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
   const onButtonClick = () => setIsPopoverOpen((isPopoverOpen: any) => !isPopoverOpen);
   const closePopover = () => setIsPopoverOpen(false);
-  const pageSize = 20;
-  const visibleTabs = 7;
 
-  const { main } = useStores();
-
-  const paginationLimit = Math.floor(totalBounties / pageSize) + 1;
-
-  const currentPageData = () => {
-    const indexOfLastPost = currentPage * pageSize;
-    const indexOfFirstPost = indexOfLastPost - pageSize;
-    if (bounties) {
-      const currentPosts = bounties.slice(indexOfFirstPost, indexOfLastPost);
-      return currentPosts;
-    }
+  const [isStatusPopoverOpen, setIsStatusPopoverOpen] = useState<boolean>(false);
+  const onStatusButtonClick = async () => {
+    setIsStatusPopoverOpen((isPopoverOpen: any) => !isPopoverOpen);
   };
-
-  const updateBountyStatus = (e: any) => {
-    if (bountyStatus && setBountyStatus && setDropdownValue) {
-      getBountyStatus(e.target.value);
-      setDropdownValue(e.target.value);
-    }
-  };
+  const closeStatusPopover = () => setIsStatusPopoverOpen(false);
 
   const paginateNext = () => {
     const activeTab = paginationLimit > visibleTabs;
@@ -173,10 +284,10 @@ export const MyTable = ({
       let nextPage: number;
       if (currentPage < visibleTabs) {
         nextPage = visibleTabs + 1;
-        setCurrentPage(nextPage);
+        if (setCurrentPage) setCurrentPage(nextPage);
       } else {
         nextPage = currentPage + 1;
-        setCurrentPage(nextPage);
+        if (setCurrentPage) setCurrentPage(nextPage);
       }
 
       dataNumber.push(nextPage);
@@ -196,36 +307,18 @@ export const MyTable = ({
         nextPage = currentPage - 1;
       }
 
-      setCurrentPage(currentPage - 1);
+      if (setCurrentPage) setCurrentPage(currentPage - 1);
       dataNumber.pop();
       const newActivetabs = [nextPage, ...dataNumber];
       setActiveTabs(newActivetabs);
     }
   };
 
-  const getTotalBounties = useCallback(async () => {
-    if (startDate && endDate) {
-      const totalBounties = await main.getBountiesCountByRange(String(startDate), String(endDate));
-      setTotalBounties(totalBounties);
+  const paginate = (page: number) => {
+    if (setCurrentPage) {
+      setCurrentPage(page);
     }
-  }, [main, startDate, endDate]);
-
-  const getActiveTabs = useCallback(() => {
-    const dataNumber: number[] = [];
-    for (let i = 1; i <= Math.ceil(paginationLimit); i++) {
-      if (i > visibleTabs) break;
-      dataNumber.push(i);
-    }
-    setActiveTabs(dataNumber);
-  }, [paginationLimit]);
-
-  useEffect(() => {
-    getTotalBounties();
-  }, [getTotalBounties]);
-
-  useEffect(() => {
-    getActiveTabs();
-  }, [getActiveTabs]);
+  };
 
   const color = colors['light'];
 
@@ -236,9 +329,9 @@ export const MyTable = ({
           <BountyHeader>
             <img src={copygray} alt="" width="16.508px" height="20px" />
             <LeadingTitle>
-              {bounties.length}
+              {totalBounties}
               <div>
-                <AlternativeTitle>{bounties.length === 1 ? 'Bounty' : 'Bounties'}</AlternativeTitle>
+                <AlternativeTitle>{bounties?.length > 1 ? 'Bounties' : 'Bounty'}</AlternativeTitle>
               </div>
             </LeadingTitle>
           </BountyHeader>
@@ -298,15 +391,64 @@ export const MyTable = ({
                 </DateFilterContent>
               </EuiPopover>
             </FlexDiv>
-            <FlexDiv>
-              <Label>Status:</Label>
-              <StyledSelect2 id="statusFilter" value={dropdownValue} onChange={updateBountyStatus}>
-                <option value="all">All</option>
-                <option value="open">Open</option>
-                <option value="in-progress">In Progress</option>
-                <option value="completed">Completed</option>
-              </StyledSelect2>
-            </FlexDiv>
+            <EuiPopover
+              button={
+                <StatusContainer onClick={onStatusButtonClick} color={color}>
+                  <EuiText
+                    className="statusText"
+                    style={{
+                      color: isStatusPopoverOpen ? color.grayish.G10 : ''
+                    }}
+                  >
+                    Status:
+                  </EuiText>
+                  <div className="filterStatusIconContainer">
+                    <MaterialIcon
+                      className="materialStatusIcon"
+                      icon={`${isStatusPopoverOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}`}
+                      style={{
+                        color: isStatusPopoverOpen ? color.grayish.G10 : ''
+                      }}
+                    />
+                  </div>
+                </StatusContainer>
+              }
+              panelStyle={{
+                border: 'none',
+                boxShadow: `0px 1px 20px ${color.black90}`,
+                background: `${color.pureWhite}`,
+                borderRadius: '0px 0px 6px 6px',
+                maxWidth: '140px',
+                minHeight: '160px',
+                marginTop: '0px',
+                marginLeft: '20px'
+              }}
+              isOpen={isStatusPopoverOpen}
+              closePopover={closeStatusPopover}
+              panelClassName="yourClassNameHere"
+              panelPaddingSize="none"
+              anchorPosition="downLeft"
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row'
+                }}
+              >
+                <EuiPopOverCheckbox className="CheckboxOuter" color={color}>
+                  <EuiCheckboxGroup
+                    options={Status.map((status: any) => ({
+                      label: `${status}`,
+                      id: status
+                    }))}
+                    idToSelectedMap={checkboxIdToSelectedMap}
+                    onChange={(id: any) => {
+                      onChangeStatus(id);
+                    }}
+                  />
+                </EuiPopOverCheckbox>
+              </div>
+            </EuiPopover>
           </Options>
         </Header>
       </HeaderContainer>
@@ -322,57 +464,58 @@ export const MyTable = ({
             <TableHeaderDataRight>Status</TableHeaderDataRight>
           </TableRow>
           <tbody>
-            {currentPageData()?.map((bounty: any) => {
-              const bounty_status =
-                bounty?.paid && bounty.assignee
-                  ? 'paid'
-                  : bounty.assignee && !bounty.paid
-                  ? 'assigned'
-                  : 'open';
+            {bounties &&
+              bounties.map((bounty: any) => {
+                const bounty_status =
+                  bounty?.paid && bounty.assignee
+                    ? 'paid'
+                    : bounty.assignee && !bounty.paid
+                    ? 'assigned'
+                    : 'open';
 
-              const created = moment.unix(bounty.bounty_created).format('YYYY-MM-DD');
-              const time_to_pay = bounty.paid_date
-                ? moment(bounty.paid_date).diff(created, 'days')
-                : 0;
+                const created = moment.unix(bounty.bounty_created).format('YYYY-MM-DD');
+                const time_to_pay = bounty.paid_date
+                  ? moment(bounty.paid_date).diff(created, 'days')
+                  : 0;
 
-              return (
-                <TableDataRow key={bounty?.id}>
-                  <BountyData className="avg">
-                    <a
-                      style={{ textDecoration: 'inherit', color: 'inherit' }}
-                      href={`/bounty/${bounty.bounty_id}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {bounty?.title}
-                    </a>
-                  </BountyData>
-                  <TableData>{created}</TableData>
-                  <TableDataCenter>{time_to_pay}</TableDataCenter>
-                  <TableDataAlternative>
-                    <ImageWithText
-                      text={bounty?.assignee}
-                      image={bounty?.assignee_img || defaultPic}
-                    />
-                  </TableDataAlternative>
-                  <TableDataAlternative className="address">
-                    <ImageWithText
-                      text={bounty?.owner_pubkey}
-                      image={bounty?.providerImage || defaultPic}
-                    />
-                  </TableDataAlternative>
-                  <TableData className="organization">
-                    <ImageWithText
-                      text={bounty?.organization}
-                      image={bounty?.organization_img || defaultPic}
-                    />
-                  </TableData>
-                  <TableData3>
-                    <TextInColorBox status={bounty_status} />
-                  </TableData3>
-                </TableDataRow>
-              );
-            })}
+                return (
+                  <TableDataRow key={bounty?.id}>
+                    <BountyData className="avg">
+                      <a
+                        style={{ textDecoration: 'inherit', color: 'inherit' }}
+                        href={`/bounty/${bounty.bounty_id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {bounty?.title}
+                      </a>
+                    </BountyData>
+                    <TableData>{created}</TableData>
+                    <TableDataCenter>{time_to_pay}</TableDataCenter>
+                    <TableDataAlternative>
+                      <ImageWithText
+                        text={bounty?.assignee}
+                        image={bounty?.assignee_img || defaultPic}
+                      />
+                    </TableDataAlternative>
+                    <TableDataAlternative className="address">
+                      <ImageWithText
+                        text={bounty?.owner_pubkey}
+                        image={bounty?.providerImage || defaultPic}
+                      />
+                    </TableDataAlternative>
+                    <TableData className="organization">
+                      <ImageWithText
+                        text={bounty?.organization}
+                        image={bounty?.organization_img || defaultPic}
+                      />
+                    </TableData>
+                    <TableData3>
+                      <TextInColorBox status={bounty_status} />
+                    </TableData3>
+                  </TableDataRow>
+                );
+              })}
           </tbody>
         </Table>
       </TableContainer>
@@ -380,17 +523,25 @@ export const MyTable = ({
         <FlexDiv>
           {totalBounties > pageSize ? (
             <PageContainer role="pagination">
-              <img src={paginationarrow1} alt="pagination arrow 1" onClick={() => paginatePrev()} />
+              <PaginationImg
+                src={paginationarrow1}
+                alt="pagination arrow 1"
+                onClick={() => paginatePrev()}
+              />
               {activeTabs.map((page: number) => (
                 <PaginationButtons
                   key={page}
-                  onClick={() => setCurrentPage(page)}
+                  onClick={() => paginate(page)}
                   active={page === currentPage}
                 >
                   {page}
                 </PaginationButtons>
               ))}
-              <img src={paginationarrow2} alt="pagination arrow 2" onClick={() => paginateNext()} />
+              <PaginationImg
+                src={paginationarrow2}
+                alt="pagination arrow 2"
+                onClick={() => paginateNext()}
+              />
             </PageContainer>
           ) : null}
         </FlexDiv>
