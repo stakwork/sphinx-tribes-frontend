@@ -426,7 +426,7 @@ export interface OrgBountyHeaderProps {
   onChangeStatus: (number) => void;
   onChangeLanguage: (number) => void;
   checkboxIdToSelectedMap?: any;
-  checkboxIdToSelectedMapLanguage: any;
+  checkboxIdToSelectedMapLanguage?: any;
   languageString?: string;
   org_uuid?: string;
 }

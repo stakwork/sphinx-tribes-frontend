@@ -15,14 +15,12 @@ const MockProps: OrgBountyHeaderProps = {
   languageString: '',
   org_uuid: 'clf6qmo4nncmf23du7ng',
   onChangeStatus: jest.fn(),
+  onChangeLanguage: jest.fn(),
   organizationUrls: {
     github: 'https://github.com/stakwork/sphinx-tribes',
     website: 'https://ecurrencyhodler.com/'
   }
 };
-
-const mockOnChangeLanguage = jest.fn();
-const selectedWidget = 'wanted';
 describe('OrgHeader Component', () => {
   beforeEach(() => {
     jest.spyOn(mainStore, 'getSpecificOrganizationBounties').mockReset();
