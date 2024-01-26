@@ -2,13 +2,20 @@
 
 ![Tribes](https://github.com/stakwork/sphinx-tribes/raw/master/img/sphinx-tribes.png)
 
-Welcome to **sphinx-tribes** - the decentralized message broker designed for public groups in Sphinx. Empowering users to run their own **sphinx-tribes** server, this platform seamlessly routes group messages for various applications such as **sphinx-relay** nodes, apps, websites, or IoT devices.
+Welcome to **Sphinx Tribes** - a decentralized message broker designed for public groups in Sphinx Chat. Empowering users to run their own **Sphinx Tribes** server, this platform seamlessly routes group messages for various applications such as **sphinx-relay** nodes, apps, websites, or IoT devices. 
+
+Additionally, a subset of **Sphinx Tribes** is the Bounties Platform - a global marketplace for work paid out in bitcoin bounties. 
 
 ## How it Works 🚀
 
-**sphinx-tribes** operates as an MQTT broker that any node can subscribe to. Message topics always consist of two parts: `{receiverPubKey}/{groupUUID}`. Only the group owner has the privilege to publish messages, and all messages from group members are required to be submitted to the owner as a Lightning keysend payment. The group `uuid` is essentially a timestamp signed by the owner.
+### Sphinx Tribes
+**Sphinx Tribes** operates as an MQTT broker that any node can subscribe to. Message topics always consist of two parts: `{receiverPubKey}/{groupUUID}`. Only the group owner has the privilege to publish messages, and all messages from group members are required to be submitted to the owner as a Lightning keysend payment. The group `uuid` is essentially a timestamp signed by the owner.
 
 ![Tribes](https://github.com/stakwork/sphinx-tribes/raw/master/img/tribes.jpg)
+
+### Bounties Platform
+The **sphinx-tribes-frontend** also contains the frontend for the bounties platform website. In order to run the website locally on your computer, you'll need to run sphinx-tribes-frontend as a whole. You can find the backend repo at [sphinx-tribes](https://github.com/stakwork/sphinx-tribes).
+
 
 ## Authentication 🔒
 
