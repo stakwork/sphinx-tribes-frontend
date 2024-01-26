@@ -3,11 +3,11 @@ import styled from 'styled-components';
 import { EuiCheckboxGroup, EuiPopover, EuiText } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
 import { PostModal } from 'people/widgetViews/postBounty/PostModal';
-import { colors } from '../../../../config';
-import { OrgBountyHeaderProps } from '../../../../people/interfaces';
+import { SearchBar } from '../../../../components/common/index.tsx';
 import { useStores } from '../../../../store';
+import { colors } from '../../../../config';
+import { OrgBountyHeaderProps } from '../../../../people/interfaces.ts';
 import addBounty from './Icons/addBounty.svg';
-import searchIcon from './Icons/searchIcon.svg';
 import file from './Icons/file.svg';
 import checkboxImage from './Icons/checkboxImage.svg';
 import githubIcon from './Icons/githubIcon.svg';
@@ -70,6 +70,7 @@ const SkillContainer = styled.span`
   padding: 10px 0px;
   align-items: center;
   gap: 4px;
+  width: max-content;
 `;
 const Skill = styled.select`
   border: none;
@@ -128,35 +129,6 @@ const Label = styled.label`
   font-weight: 500;
   line-height: 17px; /* 113.333% */
   letter-spacing: 0.15px;
-`;
-
-const SearchWrapper = styled.div`
-  height: 40px;
-  padding: 0px 16px;
-  align-items: center;
-  gap: 10px;
-  flex: 1 0 0;
-  display: flex;
-  position: relative;
-`;
-
-const Icon = styled.img`
-  position: absolute;
-  right: 30px;
-`;
-
-const SearchBar = styled.input`
-  display: flex;
-  height: 40px;
-  padding: 0px 16px;
-  padding-left: 30px;
-  align-items: center;
-  gap: 10px;
-  flex: 1 0 0;
-  border-radius: 6px;
-  background: var(--Input-BG-1, #f2f3f5);
-  outline: none;
-  border: none;
 `;
 
 const SoryByContainer = styled.span`
@@ -331,7 +303,6 @@ export const OrgHeader = ({
   languageString,
   organizationUrls
 }: OrgBountyHeaderProps) => {
-  const { main } = useStores();
   const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
   const [isStatusPopoverOpen, setIsStatusPopoverOpen] = useState<boolean>(false);
   const onButtonClick = async () => {
@@ -347,6 +318,9 @@ export const OrgHeader = ({
   const handlePostBountyClose = () => {
     setIsPostBountyModalOpen(false);
   };
+  const { main, ui } = useStores();
+  const color = colors['light'];
+
   const handleWebsiteButton = (websiteUrl: string) => {
     window.open(websiteUrl, '_blank');
   };
@@ -355,9 +329,22 @@ export const OrgHeader = ({
     window.open(githubUrl, '_blank');
   };
 
+  const handleSearch = (searchText: string) => {
+    if (org_uuid) {
+      main.getOrganizationBounties(org_uuid, {
+        page: 1,
+        resetPage: true,
+        ...checkboxIdToSelectedMap,
+        search: searchText
+      });
+    } else {
+      console.log('Organization UUID is missing in params');
+    }
+  };
+
   useEffect(() => {
     if (org_uuid) {
-      main.getSpecificOrganizationBounties(org_uuid, {
+      main.getOrganizationBounties(org_uuid, {
         page: 1,
         resetPage: true,
         ...checkboxIdToSelectedMap,
@@ -459,10 +446,40 @@ export const OrgHeader = ({
               <Label htmlFor="statusSelect">Skill</Label>
               <Skill id="statusSelect" />
             </SkillContainer>
-            <SearchWrapper>
-              <SearchBar placeholder="Search" disabled />
-              <Icon src={searchIcon} alt="Search" />
-            </SearchWrapper>
+            <SearchBar
+              name="search"
+              type="search"
+              placeholder="Search"
+              value={ui.searchText}
+              style={{
+                width: '384px',
+                height: '40px',
+                background: color.grayish.G950,
+                fontFamily: 'Barlow',
+                color: color.text2,
+                gap: '10px',
+                flex: '1 0 0',
+                display: 'flex',
+                position: 'relative',
+                marginLeft: '20px',
+                alignItems: 'center',
+                borderRadius: '6px',
+                border: 'none',
+                outline: 'none'
+              }}
+              onChange={(e: any) => {
+                ui.setSearchText(e);
+              }}
+              onKeyUp={(e: any) => {
+                if (e.key === 'Enter' || e.keyCode === 13) {
+                  handleSearch(e.target.value);
+                }
+              }}
+              TextColor={color.grayish.G100}
+              TextColorHover={color.grayish.G50}
+              iconColor={color.grayish.G300}
+              iconColorHover={color.grayish.G50}
+            />
           </FiltersRight>
           <SoryByContainer>
             <Label htmlFor="statusSelect">Sort by:Newest First</Label>

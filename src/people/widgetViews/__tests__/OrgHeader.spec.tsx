@@ -2,8 +2,8 @@ import React from 'react';
 import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { OrgHeader } from 'pages/tickets/org/orgHeader';
+import { mainStore } from 'store/main';
 import { OrgBountyHeaderProps } from '../../interfaces.ts';
-import { mainStore } from '../../../store/main.ts';
 
 const MockProps: OrgBountyHeaderProps = {
   checkboxIdToSelectedMap: {
@@ -23,7 +23,7 @@ const MockProps: OrgBountyHeaderProps = {
 
 describe('OrgHeader Component', () => {
   beforeEach(() => {
-    jest.spyOn(mainStore, 'getSpecificOrganizationBounties').mockReset();
+    jest.spyOn(mainStore, 'getOrganizationBounties').mockReset();
   });
 
   afterEach(() => {
@@ -50,6 +50,35 @@ describe('OrgHeader Component', () => {
     expect(screen.getByText('Bounties')).toBeInTheDocument();
   });
 
+  it('should call getOrganizationBounties with correct parameters', () => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        pathname: `/org/bounties/${MockProps.org_uuid}`
+      },
+      writable: true
+    });
+
+    render(<OrgHeader {...MockProps} />);
+
+    jest.clearAllMocks();
+
+    // Simulate entering search text
+    const searchText = 'sample search';
+    const searchInput = screen.getByPlaceholderText('Search') as HTMLInputElement;
+    fireEvent.change(searchInput, { target: { value: searchText } });
+
+    // Simulate pressing Enter key
+    fireEvent.keyUp(searchInput, { key: 'Enter', code: 'Enter' });
+
+    // Check if getOrganizationBounties is called with correct parameters
+    expect(mainStore.getOrganizationBounties).toHaveBeenCalledWith(MockProps.org_uuid, {
+      page: 1,
+      resetPage: true,
+      search: searchText,
+      ...MockProps.checkboxIdToSelectedMap
+    });
+  });
+
   it('should trigger API call in response to click on status from OrgHeader', async () => {
     const { getByText, getByRole, rerender } = render(<OrgHeader {...MockProps} />);
 
@@ -73,7 +102,7 @@ describe('OrgHeader Component', () => {
         <OrgHeader {...MockProps} checkboxIdToSelectedMap={updatedCheckboxIdToSelectedMap} />
       );
 
-      expect(mainStore.getSpecificOrganizationBounties).toHaveBeenCalledWith(MockProps.org_uuid, {
+      expect(mainStore.getOrganizationBounties).toHaveBeenCalledWith(MockProps.org_uuid, {
         page: 1,
         resetPage: true,
         ...updatedCheckboxIdToSelectedMap,
