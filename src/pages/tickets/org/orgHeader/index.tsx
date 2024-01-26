@@ -174,7 +174,7 @@ const SecondaryText = styled.p`
   line-height: normal;
 `;
 const Img = styled.img`
-  padding-bottom: 10px;
+  padding-bottom: 20px;
 `;
 
 const SkillFilter = styled.div`

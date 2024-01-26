@@ -34,7 +34,7 @@ function OrgBodyComponent() {
       await main.getBadgeList();
       await main.getPeople();
       if (uuid) {
-        await main.getOrganizationBounties(uuid, {
+        await main.getLanguageOrganizationBounties(uuid, {
           page: 1,
           resetPage: true,
           languages: languageString

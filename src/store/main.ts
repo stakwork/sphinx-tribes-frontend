@@ -1074,7 +1074,7 @@ export class MainStore {
     }
   }
 
-  async getOrganizationBounties(uuid: string, params?: QueryParams): Promise<PersonBounty[]> {
+  async getLanguageOrganizationBounties(uuid: string, params?: QueryParams): Promise<PersonBounty[]> {
     const queryParams: QueryParams = {
       limit: 20,
       sortBy: 'created',
@@ -1096,6 +1096,58 @@ export class MainStore {
 
     try {
       const ps2 = await api.get(query2);
+      const ps3: any[] = [];
+
+      if (ps2 && ps2.length) {
+        for (let i = 0; i < ps2.length; i++) {
+          const bounty = { ...ps2[i].bounty };
+          let assignee;
+          let organization;
+          const owner = { ...ps2[i].owner };
+
+          if (bounty.assignee) {
+            assignee = { ...ps2[i].assignee };
+          }
+
+          if (bounty.org_uuid) {
+            organization = { ...ps2[i].organization };
+          }
+
+          ps3.push({
+            body: { ...bounty, assignee: assignee || '' },
+            person: { ...owner, wanteds: [] } || { wanteds: [] },
+            organization: { ...organization }
+          });
+        }
+      }
+
+      // for search always reset page
+      if (queryParams && queryParams.resetPage) {
+        this.setPeopleBounties(ps3);
+        uiStore.setPeopleBountiesPageNumber(1);
+      } else {
+        // all other cases, merge
+        const wanteds = this.doPageListMerger(
+          this.peopleBounties,
+          ps3,
+          (n: any) => uiStore.setPeopleBountiesPageNumber(n),
+          queryParams,
+          'wanted'
+        );
+
+        this.setPeopleBounties(wanteds);
+      }
+      return ps3;
+    } catch (e) {
+      console.log('fetch failed getOrganizationBounties: ', e);
+      return [];
+    }
+  }
+
+  async getOrganizationBounties(uuid: string, queryParams?: any): Promise<PersonBounty[]> {
+    queryParams = { ...queryParams, search: uiStore.searchText };
+    try {
+      const ps2 = await api.get(`organizations/bounties/${uuid}`);
       const ps3: any[] = [];
 
       if (ps2 && ps2.length) {
