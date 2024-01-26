@@ -9,7 +9,7 @@ import PageLoadSpinner from 'people/utils/PageLoadSpinner';
 import React, { useEffect, useState } from 'react';
 import { Route, Switch, useHistory, useRouteMatch, useParams } from 'react-router-dom';
 import { useStores } from 'store';
-import { paginationQueryLimit } from 'store/main'; 
+import { paginationQueryLimit } from 'store/main';
 import styled from 'styled-components';
 import { LoadMoreContainer } from '../../../people/widgetViews/WidgetSwitchViewer';
 import { colors } from '../../../config/colors';
@@ -57,7 +57,10 @@ export const Wanted = observer(() => {
   async function getUserTickets() {
     setIsLoading(true);
     // Fetch bounties for the specified page and limit
-    const response = await main.getPersonCreatedBounties({ page: page, limit: paginationQueryLimit }, personPubkey);
+    const response = await main.getPersonCreatedBounties(
+      { page: page, limit: paginationQueryLimit },
+      personPubkey
+    );
     // Check if the response has fewer bounties than the limit, indicating no more bounties to load
     if (response.length < paginationQueryLimit) {
       setHasMoreBounties(false);
@@ -72,7 +75,7 @@ export const Wanted = observer(() => {
     setPage(nextPage);
     // Fetch bounties for the next page
     const response = await main.getPersonCreatedBounties(
-      { page: nextPage, limit: paginationQueryLimit }, 
+      { page: nextPage, limit: paginationQueryLimit },
       personPubkey
     );
     // Check if the response has fewer bounties than the limit, indicating no more bounties to load
@@ -146,14 +149,14 @@ export const Wanted = observer(() => {
               e.preventDefault();
               ui.setBountyPerson(person?.id);
               history.push({
-                pathname: `${url}/${w.body.id}/${i}`,
+                pathname: `${url}/${w.body.id}/${i}`
               });
             }}
           >
             <WantedView {...w.body} person={person} />
           </Panel>
         ))}
-      {hasMoreBounties && !loading &&(
+      {hasMoreBounties && !loading && (
         <LoadMoreContainer
           color={colors['light']}
           style={{
@@ -161,7 +164,7 @@ export const Wanted = observer(() => {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            margin: '20px 0',
+            margin: '20px 0'
           }}
         >
           <div className="LoadMoreButton" onClick={nextBounties}>
