@@ -37,7 +37,7 @@ function OrgBodyComponent() {
       await main.getBadgeList();
       await main.getPeople();
       if (uuid) {
-        await main.getSpecificOrganizationBounties(uuid, { page: 1, resetPage: true });
+        await main.getOrganizationBounties(uuid, { page: 1, resetPage: true });
         const orgUrls = await api.get(`organizations/${uuid}`);
         setOrganizationUrls(orgUrls);
       }
