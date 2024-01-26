@@ -1,12 +1,9 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { EuiCheckboxGroup, EuiPopover, EuiText } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
 import { PostModal } from 'people/widgetViews/postBounty/PostModal';
-import { EuiCheckboxGroup } from '@elastic/eui';
 import { GetValue, coding_languages } from 'people/utils/languageLabelStyle';
-import { BountyHeaderProps } from 'people/interfaces';
 import { colors } from 'config';
 import { OrgBountyHeaderProps } from '../../../../people/interfaces';
 import { useStores } from '../../../../store';
@@ -72,13 +69,6 @@ const FiltersRight = styled.span`
   width: 1366px;
 `;
 
-const StatusContainer = styled.span`
-  padding: 7px 0px;
-  align-items: center;
-  display: flex;
-  position: relative;
-`;
-
 const SkillContainer = styled.span`
   padding: 7px 0px;
   align-items: center;
@@ -108,7 +98,6 @@ const Button = styled.button`
   letter-spacing: 0.14px;
 `;
 
-const Label = styled.p`
 const UrlButton = styled.button`
   border-radius: 4px;
   margin-right: auto;
@@ -422,7 +411,6 @@ const StatusContainer = styled.div<styledProps>`
 `;
 
 const Status = ['Open', 'Assigned', 'Completed', 'Paid'];
-const color = colors['light'];
 export const OrgHeader = ({
   onChangeLanguage,
   checkboxIdToSelectedMapLanguage,
