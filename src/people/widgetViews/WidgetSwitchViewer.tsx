@@ -75,7 +75,14 @@ function WidgetSwitchViewer(props: any) {
   const [deletePayload, setDeletePayload] = useState<object>({});
   const closeModal = () => setShowDeleteModal(false);
   const showModal = () => setShowDeleteModal(true);
-  const { currentItems, setCurrentItems, totalBounties, page: propsPage, setPage, languageString } = props;
+  const {
+    currentItems,
+    setCurrentItems,
+    totalBounties,
+    page: propsPage,
+    setPage,
+    languageString
+  } = props;
 
   const items = currentItems ?? 0;
   const bountiesTotal = totalBounties ?? 0;

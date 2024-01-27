@@ -25,10 +25,10 @@ const H = styled.div`
   letter-spacing: 0px;
   color: rgb(60, 63, 65);
 `;
-function NoResults({loaded = false}: {loaded?: boolean}) {
+function NoResults({ loaded = false }: { loaded?: boolean }) {
   const { ui } = useStores();
   const { searchText } = ui || {};
-  console.log({searchText})
+  console.log({ searchText });
   if (searchText || loaded) {
     return (
       <div
