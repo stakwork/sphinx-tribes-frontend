@@ -13,6 +13,7 @@ import { colors } from '../../config/colors';
 import WantedView from './WantedView';
 import DeleteTicketModal from './DeleteModal';
 import { LoadMoreContainer } from './WidgetSwitchViewer';
+type BountyType = any;
 
 const Container = styled.div`
   display: flex;
@@ -36,7 +37,6 @@ const Panel = styled.a<PanelProps>`
   padding: 20px;
   box-shadow: ${(p: any) => (p.isMobile ? 'none' : '0px 0px 6px rgb(0 0 0 / 7%)')};
   border-bottom: ${(p: any) => (p.isMobile ? '2px solid #EBEDEF' : 'none')};
-
   &:hover {
     text-decoration: none !important;
   }
@@ -49,20 +49,16 @@ const UserTickets = () => {
   const isMobile = useIsMobile();
   const { path, url } = useRouteMatch();
 
-  const [userTickets, setUserTickets] = useState<any>([]);
-  const [currentItems] = useState<number>(20);
-  const [visibleItems, setVisibleItems] = useState<number>(currentItems);
-
-  const loadMore = () => {
-    setVisibleItems((prevVisibleItems: number) => prevVisibleItems + currentItems);
-  };
-
   const [deletePayload, setDeletePayload] = useState<object>({});
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const closeModal = () => setShowDeleteModal(false);
   const showModal = () => setShowDeleteModal(true);
+  const [displayedBounties, setDisplayedBounties] = useState<BountyType[]>([]);
   const [loading, setIsLoading] = useState<boolean>(false);
+  const [hasMoreBounties, setHasMoreBounties] = useState(true);
   const [bountyOwner, setBountyOwner] = useState<Person>();
+  const [page, setPage] = useState(1);
+  const paginationLimit = 20;
 
   function onPanelClick(id: number, index: number) {
     history.push({
@@ -98,21 +94,39 @@ const UserTickets = () => {
     closeModal();
   };
 
-  useEffect(() => {
-    async function getUserTickets() {
-      setIsLoading(true);
-      const tickets = await main.getPersonAssignedBounties({}, personPubkey);
-      setUserTickets(tickets);
-      setIsLoading(false);
+  async function getUserTickets() {
+    setIsLoading(true);
+    const response = await main.getPersonAssignedBounties(
+      { page: page, limit: paginationLimit },
+      personPubkey
+    );
+    if (response.length < paginationLimit) {
+      setHasMoreBounties(false);
     }
+    setDisplayedBounties((prevBounties: BountyType[]) => [...prevBounties, ...response]);
+    setIsLoading(false);
+  }
 
+  const nextBounties = async () => {
+    const nextPage = page + 1;
+    setPage(nextPage);
+    const response = await main.getPersonAssignedBounties(
+      { page: nextPage, limit: paginationLimit },
+      personPubkey
+    );
+    if (response.length < paginationLimit) {
+      setHasMoreBounties(false);
+    }
+    setDisplayedBounties((prevBounties: BountyType[]) => [...prevBounties, ...response]);
+  };
+
+  useEffect(() => {
     getUserTickets();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [main.getPersonAssignedBounties, personPubkey]);
+  }, [main, personPubkey]);
 
   const listItems =
-    userTickets && userTickets.length ? (
-      userTickets.slice(0, visibleItems).map((item: any, i: number) => {
+    displayedBounties && displayedBounties.length ? (
+      displayedBounties.map((item: any, i: number) => {
         const person = main.people.find((p: any) => p.owner_pubkey === item.body.owner_id);
         const body = { ...item.body };
         // if this person has entries for this widget
@@ -152,7 +166,7 @@ const UserTickets = () => {
         </Switch>
       </Router>
       {listItems}
-      {userTickets.length > visibleItems && (
+      {hasMoreBounties && !loading && (
         <LoadMoreContainer
           color={color}
           style={{
@@ -163,7 +177,7 @@ const UserTickets = () => {
             margin: '20px 0'
           }}
         >
-          <div className="LoadMoreButton" onClick={loadMore}>
+          <div className="LoadMoreButton" onClick={nextBounties}>
             Load More
           </div>
         </LoadMoreContainer>
