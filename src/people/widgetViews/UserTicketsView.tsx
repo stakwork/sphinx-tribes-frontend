@@ -94,7 +94,7 @@ const UserTickets = () => {
     closeModal();
   };
 
-  async function getUserTickets() {
+  const getUserTickets = async () => {
     setIsLoading(true);
     const response = await main.getPersonAssignedBounties(
       { page: page, limit: paginationLimit },
@@ -105,7 +105,7 @@ const UserTickets = () => {
     }
     setDisplayedBounties((prevBounties: BountyType[]) => [...prevBounties, ...response]);
     setIsLoading(false);
-  }
+  };
 
   const nextBounties = async () => {
     const nextPage = page + 1;
@@ -129,7 +129,6 @@ const UserTickets = () => {
       displayedBounties.map((item: any, i: number) => {
         const person = main.people.find((p: any) => p.owner_pubkey === item.body.owner_id);
         const body = { ...item.body };
-        // if this person has entries for this widget
         return (
           <Panel href={`${url}/${body.id}/${i}`} isMobile={isMobile} key={i + body?.created}>
             <WantedView
