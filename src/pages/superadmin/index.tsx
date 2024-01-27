@@ -44,10 +44,6 @@ export const SuperAdmin = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [bounties, setBounties] = useState<any[]>([]);
   const [bountyMetrics, setBountyMetrics] = useState<BountyMetrics | undefined>(undefined);
-  const mockHunterMetrics: MockHunterMetrics = {
-    hunters_total_paid: 145,
-    hunters_first_bounty_paid: 12
-  };
   const [sortOrder, setSortOrder] = useState<string>('desc');
   const [checkboxIdToSelectedMap, setCheckboxIdToSelectedMap] = useState(defaultBountyStatus);
   const [loading, setLoading] = useState(false);
