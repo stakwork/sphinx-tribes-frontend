@@ -115,7 +115,6 @@ function BodyComponent() {
           name="search"
           type="search"
           placeholder="Search"
-          value={ui.searchText}
           style={{
             width: isMobile ? '95vw' : 240,
             height: 40,
