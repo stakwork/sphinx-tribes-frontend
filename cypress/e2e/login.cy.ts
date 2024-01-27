@@ -1,19 +1,18 @@
 describe('User Login', () => {
   it('User gets to login into the app', () => {
     let user;
-    const userAlias = 'bob';
+    const userAlias = 'carol';
     let challenge;
-      let token;
-      let info;
+    let token;
+    let info;
 
     cy.fixture('nodes.json').then((json) => {
-
       for (let i = 0; i < json.length; i++) {
         if (json[i].alias === userAlias) {
           user = json[i];
         }
       }
-      
+
       cy.visit('http://localhost:3000');
       cy.contains('Sign in').click();
 
