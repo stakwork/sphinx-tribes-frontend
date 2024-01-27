@@ -74,7 +74,6 @@ function FocusedView(props: FocusViewProps) {
     return false;
   }
 
-  // close bounty popup window
   function closeModal() {
     if (!manualGoBackOnly) {
       ui.setEditMe(false);
