@@ -16,7 +16,7 @@
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "isolatedModules": false,
+    "isolatedModules": true,
     "noEmit": true,
     "allowImportingTsExtensions": true,
     "jsx": "react",
@@ -24,6 +24,7 @@
     "baseUrl": "./src",
   },
   "include": [
-    "src", "cypress"
-  ]
+    "src",
+  ],
+  "exclude": ["cypress"]
 }
