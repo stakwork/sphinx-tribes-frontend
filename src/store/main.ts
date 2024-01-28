@@ -11,6 +11,7 @@ import { uiStore } from './ui';
 import { getUserAvatarPlaceholder } from './lib';
 
 export const queryLimit = 10;
+export const paginationQueryLimit = 20;
 export const peopleQueryLimit = 500;
 
 function makeTorSaveURL(host: string, key: string) {
@@ -919,10 +920,14 @@ export class MainStore {
   async getPersonAssignedBounties(queryParams?: any, pubkey?: string): Promise<PersonBounty[]> {
     queryParams = { ...queryParams, search: uiStore.searchText };
 
-    const query = this.appendQueryParams(`people/wanteds/assigned/${pubkey}`, queryLimit, {
-      sortBy: 'paid',
-      ...queryParams
-    });
+    const query = this.appendQueryParams(
+      `people/wanteds/assigned/${pubkey}`,
+      paginationQueryLimit,
+      {
+        sortBy: 'paid',
+        ...queryParams
+      }
+    );
 
     try {
       const ps2 = await api.get(query);
@@ -966,7 +971,7 @@ export class MainStore {
   async getPersonCreatedBounties(queryParams?: any, pubkey?: string): Promise<PersonBounty[]> {
     queryParams = { ...queryParams, search: uiStore.searchText };
 
-    const query = this.appendQueryParams(`people/wanteds/created/${pubkey}`, 20, {
+    const query = this.appendQueryParams(`people/wanteds/created/${pubkey}`, paginationQueryLimit, {
       ...queryParams,
       sortBy: 'paid'
     });

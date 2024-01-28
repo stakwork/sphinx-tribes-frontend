@@ -30,6 +30,7 @@ export interface FormField {
   label: string;
   labelStyle?: React.CSSProperties;
   maxCharacterLimit?: number;
+  characterCount?: number;
   itemLabel?: string;
   single?: boolean;
   readOnly?: boolean;
