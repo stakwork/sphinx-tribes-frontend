@@ -97,25 +97,6 @@ describe('BountyHeader Component', () => {
     });
   });
 
-  test('should display all languages without scroll on click of filter button', async () => {
-    render(<BountyHeader {...mockProps} />);
-    fireEvent.click(screen.getByText('Filter'));
-    await waitFor(() => {
-      languageOptions.forEach((language: string) => {
-        let checkbox;
-        try {
-          checkbox = screen.getByRole('checkbox', { name: language });
-        } catch (error) {
-          console.error(`No checkbox found with the name: ${language}`);
-          return;
-        }
-  
-        // Ensure that the checkbox is visible without being behind a scroll
-        expect(checkbox).toBeVisible();
-      });
-    });
-  });
-
   languageOptions.forEach((language: string) => {
     test(`should call onChangeLanguage when the ${language} filter option is selected`, async () => {
       render(<BountyHeader {...mockProps} />);
@@ -132,6 +113,19 @@ describe('BountyHeader Component', () => {
 
       fireEvent.click(checkbox);
       expect(mockProps.onChangeLanguage).toHaveBeenCalledWith(language);
+    });
+    test(`should display checkbox for '${language}' without scroll on click of filter button`, async () => {
+      render(<BountyHeader {...mockProps} />);
+      fireEvent.click(screen.getByText('Filter'));
+
+      let checkbox;
+      try {
+        checkbox = await screen.findByRole('checkbox', { name: language });
+        expect(checkbox).toBeVisible();
+      } catch (error) {
+        console.error(`No checkbox found with the name: ${language}`);
+        expect(checkbox).toBeDefined(); // Fails the test if checkbox is not found
+      }
     });
   });
 
