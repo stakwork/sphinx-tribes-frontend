@@ -28,7 +28,6 @@ const H = styled.div`
 function NoResults({ loaded = false }: { loaded?: boolean }) {
   const { ui } = useStores();
   const { searchText } = ui || {};
-  console.log({ searchText });
   if (searchText || loaded) {
     return (
       <div
