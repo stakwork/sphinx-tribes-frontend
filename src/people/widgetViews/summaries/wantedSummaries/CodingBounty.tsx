@@ -42,6 +42,7 @@ import {
 } from './style';
 import { getTwitterLink } from './lib';
 import CodingMobile from './CodingMobile';
+import { BountyEstimates } from './Components';
 
 let interval;
 
@@ -703,7 +704,6 @@ function MobileView(props: CodingBountiesProps) {
                       priceMin={props?.priceMin}
                       priceMax={props?.priceMax}
                       price={props?.price || 0}
-                      sessionLength={props?.estimated_session_length}
                       style={{
                         padding: 0,
                         margin: 0
@@ -740,6 +740,10 @@ function MobileView(props: CodingBountiesProps) {
                       </>
                     )}
                   </BountyPriceContainer>
+                  <BountyEstimates
+                    completion_date={props.estimated_completion_date}
+                    session_length={props.estimated_session_length}
+                  />
                   <div className="buttonSet">
                     <ButtonSet
                       githubShareAction={() => {
@@ -1130,13 +1134,16 @@ function MobileView(props: CodingBountiesProps) {
                     priceMin={props?.priceMin}
                     priceMax={props?.priceMax}
                     price={props?.price || 0}
-                    sessionLength={props?.estimated_session_length}
                     style={{
                       padding: 0,
                       margin: 0
                     }}
                   />
                 </BountyPriceContainer>
+                <BountyEstimates
+                  completion_date={props.estimated_completion_date}
+                  session_length={props.estimated_session_length}
+                />
                 <ButtonSet
                   showGithubBtn={!!ticket_url}
                   githubShareAction={() => {
@@ -1198,13 +1205,16 @@ function MobileView(props: CodingBountiesProps) {
                     priceMin={props?.priceMin}
                     priceMax={props?.priceMax}
                     price={props?.price || 0}
-                    sessionLength={props?.estimated_session_length}
                     style={{
                       padding: 0,
                       margin: 0
                     }}
                   />
                 </BountyPriceContainer>
+                <BountyEstimates
+                  completion_date={props.estimated_completion_date}
+                  session_length={props.estimated_session_length}
+                />
                 <ButtonSet
                   showGithubBtn={!!ticket_url}
                   githubShareAction={() => {
@@ -1272,13 +1282,16 @@ function MobileView(props: CodingBountiesProps) {
                     priceMin={props?.priceMin}
                     priceMax={props?.priceMax}
                     price={props?.price || 0}
-                    sessionLength={props.estimated_session_length}
                     style={{
                       padding: 0,
                       margin: 0
                     }}
                   />
                 </BountyPriceContainer>
+                <BountyEstimates
+                  completion_date={props.estimated_completion_date}
+                  session_length={props.estimated_session_length}
+                />
                 <ButtonSet
                   showGithubBtn={!!ticket_url}
                   githubShareAction={() => {
