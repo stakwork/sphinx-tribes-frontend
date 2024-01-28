@@ -70,7 +70,7 @@ const FiltersRight = styled.span`
 `;
 
 const SkillContainer = styled.span`
-  padding: 7px 0px;
+  padding: 10px 0px;
   align-items: center;
   display: flex;
   position: relative;
@@ -160,7 +160,7 @@ const SearchBar = styled.input`
 `;
 
 const SoryByContainer = styled.span`
-  padding: 7px 0px;
+  padding: 10px 0px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -346,6 +346,8 @@ const EuiPopOverCheckbox = styled.div<styledProps>`
   }
 `;
 
+const NewStatusContainer = styled.div``;
+
 const StatusContainer = styled.div<styledProps>`
   width: 70px;
   height: 48px;
@@ -507,64 +509,68 @@ export const OrgHeader = ({
       <FillContainer>
         <Filters>
           <FiltersRight>
-            <EuiPopover
-              button={
-                <StatusContainer onClick={onButtonClick} color={color}>
-                  <EuiText
-                    className="statusText"
-                    style={{
-                      color: isStatusPopoverOpen ? color.grayish.G10 : ''
-                    }}
-                  >
-                    Status
-                  </EuiText>
-                  <div className="filterStatusIconContainer">
-                    <MaterialIcon
-                      className="materialStatusIcon"
-                      icon={`${isStatusPopoverOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}`}
+            <NewStatusContainer>
+              <EuiPopover
+                button={
+                  <StatusContainer onClick={onButtonClick} color={color}>
+                    <EuiText
+                      className="statusText"
                       style={{
                         color: isStatusPopoverOpen ? color.grayish.G10 : ''
                       }}
-                    />
-                  </div>
-                </StatusContainer>
-              }
-              panelStyle={{
-                border: 'none',
-                boxShadow: `0px 1px 20px ${color.black90}`,
-                background: `${color.pureWhite}`,
-                borderRadius: '0px 0px 6px 6px',
-                maxWidth: '140px',
-                minHeight: '160px',
-                marginTop: '0px',
-                marginLeft: '20px'
-              }}
-              isOpen={isStatusPopoverOpen}
-              closePopover={closeStatusPopover}
-              panelClassName="yourClassNameHere"
-              panelPaddingSize="none"
-              anchorPosition="downLeft"
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row'
+                    >
+                      Status
+                    </EuiText>
+                    <div className="filterStatusIconContainer">
+                      <MaterialIcon
+                        className="materialStatusIcon"
+                        icon={`${
+                          isStatusPopoverOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down'
+                        }`}
+                        style={{
+                          color: isStatusPopoverOpen ? color.grayish.G10 : ''
+                        }}
+                      />
+                    </div>
+                  </StatusContainer>
+                }
+                panelStyle={{
+                  border: 'none',
+                  boxShadow: `0px 1px 20px ${color.black90}`,
+                  background: `${color.pureWhite}`,
+                  borderRadius: '0px 0px 6px 6px',
+                  maxWidth: '140px',
+                  minHeight: '160px',
+                  marginTop: '0px',
+                  marginLeft: '20px'
                 }}
+                isOpen={isStatusPopoverOpen}
+                closePopover={closeStatusPopover}
+                panelClassName="yourClassNameHere"
+                panelPaddingSize="none"
+                anchorPosition="downLeft"
               >
-                <EuiPopOverCheckbox className="CheckboxOuter" color={color}>
-                  <EuiCheckboxGroup
-                    options={Status.map((status: any) => ({
-                      label: `${status}`,
-                      id: status
-                    }))}
-                    idToSelectedMap={checkboxIdToSelectedMap}
-                    onChange={(id: any) => {
-                      onChangeStatus(id);
-                    }}
-                  />
-                </EuiPopOverCheckbox>
-              </div>
-            </EuiPopover>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row'
+                  }}
+                >
+                  <EuiPopOverCheckbox className="CheckboxOuter" color={color}>
+                    <EuiCheckboxGroup
+                      options={Status.map((status: any) => ({
+                        label: `${status}`,
+                        id: status
+                      }))}
+                      idToSelectedMap={checkboxIdToSelectedMap}
+                      onChange={(id: any) => {
+                        onChangeStatus(id);
+                      }}
+                    />
+                  </EuiPopOverCheckbox>
+                </div>
+              </EuiPopover>
+            </NewStatusContainer>
             <SkillContainer>
               <FilterLabel>Skill</FilterLabel>
               <DropDownButton onClick={handleClick} data-testid="skillDropdown">
