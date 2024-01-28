@@ -49,7 +49,7 @@ describe('EditOrgModal Component', () => {
   test('Padding for the Github repo text field should not be 0', () => {
     render(<EditOrgModal {...props} />);
     expect(screen.getByLabelText(/Github repo/i)).not.toHaveStyle('padding: 0');
-  })
+  });
 
   test('displays the Description box', () => {
     render(<EditOrgModal {...props} />);
