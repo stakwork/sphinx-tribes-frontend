@@ -147,4 +147,18 @@ describe('MobileView component', () => {
 
     expect(screen.getByText(nameTagProps.owner_alias)).toBeInTheDocument();
   });
+
+  it('Should disable the delete bounty button if a hunter is assigned or not paid', () => {
+    defaultProps.isAssigned = true;
+    render(<MobileView {...defaultProps} />);
+    const deleteButton = screen.findByText('Delete');
+    expect(deleteButton).toBeDisabled();
+  });
+
+  it('Should click the delete button if there is no assigned hunter to the bounty', () => {
+    defaultProps.isAssigned = false;
+    render(<MobileView {...defaultProps} />);
+    const deleteButton = screen.findByText('Delete');
+    expect(deleteButton).toBeEnabled();
+  });
 });
