@@ -41,6 +41,20 @@ const EditOrgWrapper = styled.div`
   }
 `;
 
+export const ImgText = styled.h3`
+  color: #b0b7bc;
+  text-align: center;
+  font-family: 'Barlow';
+  font-size: 1.875rem;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 1.0625rem;
+  letter-spacing: 0.01875rem;
+  text-transform: uppercase;
+  opacity: 0.5;
+  margin-bottom: 0;
+`;
+
 const InputWrapper = styled.div`
   display: grid;
   grid-template-columns: 242px 256px;
@@ -286,14 +300,11 @@ const EditOrgModal = (props: EditOrgModalProps) => {
                   <img src="/static/badges/ResetOrgProfile.svg" alt="upload" />
                 </UploadImageContainer>
                 <ImgContainer>
-                  <SelectedImg
-                    src={
-                      selectedImage === ''
-                        ? '/static/badges/editOrganisationImage.svg'
-                        : selectedImage
-                    }
-                    alt="selected file"
-                  />
+                  {selectedImage ? (
+                    <SelectedImg src={selectedImage} alt="selected file" />
+                  ) : (
+                    <ImgText>LOGO</ImgText>
+                  )}
                 </ImgContainer>
               </ImgDashContainer>
               <ImgTextContainer>
