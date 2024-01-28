@@ -28,7 +28,14 @@ describe('WidgetSwitchViewer Component', () => {
     });
 
     // Render the component with a selected widget and empty lists
-    render(<WidgetSwitchViewer selectedWidget="wanted" currentItems={0} totalBounties={0} languageString="Typescript"/>);
+    render(
+      <WidgetSwitchViewer
+        selectedWidget="wanted"
+        currentItems={0}
+        totalBounties={0}
+        languageString="Typescript"
+      />
+    );
 
     // Assert that <NoResults /> is present in the document
     expect(screen.getByText(/No results/i)).toBeInTheDocument();
