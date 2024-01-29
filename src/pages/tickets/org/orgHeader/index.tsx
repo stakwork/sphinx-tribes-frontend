@@ -1,22 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { EuiCheckboxGroup, EuiPopover, EuiText } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
 import { PostModal } from 'people/widgetViews/postBounty/PostModal';
-import { colors } from '../../../../config';
+import { GetValue, coding_languages } from 'people/utils/languageLabelStyle';
+import { colors } from 'config';
 import { OrgBountyHeaderProps } from '../../../../people/interfaces';
 import { useStores } from '../../../../store';
 import addBounty from './Icons/addBounty.svg';
+import dropdown from './Icons/dropDownIcon.svg';
 import searchIcon from './Icons/searchIcon.svg';
 import file from './Icons/file.svg';
 import checkboxImage from './Icons/checkboxImage.svg';
 import githubIcon from './Icons/githubIcon.svg';
 import websiteIcon from './Icons/websiteIcon.svg';
 
+const Coding_Languages = GetValue(coding_languages);
 interface styledProps {
   color?: any;
 }
-
+const color = colors['light'];
 const Header = styled.div`
   display: flex;
   height: 130px;
@@ -69,11 +72,8 @@ const FiltersRight = styled.span`
 const SkillContainer = styled.span`
   padding: 10px 0px;
   align-items: center;
-  gap: 4px;
-`;
-const Skill = styled.select`
-  border: none;
-  background-color: transparent;
+  display: flex;
+  position: relative;
 `;
 
 const Button = styled.button`
@@ -120,7 +120,7 @@ const UrlButton = styled.button`
   letter-spacing: 0.14px;
 `;
 
-const Label = styled.label`
+const FilterLabel = styled.label`
   color: var(--Main-bottom-icons, #5f6368);
   font-family: Barlow;
   font-size: 15px;
@@ -160,14 +160,12 @@ const SearchBar = styled.input`
 `;
 
 const SoryByContainer = styled.span`
+  padding: 10px 0px;
+  display: flex;
   justify-content: center;
   align-items: center;
-  gap: 4px;
 `;
-const SortBy = styled.select`
-  background-color: transparent;
-  border: none;
-`;
+
 const NumberOfBounties = styled.div`
   height: 23px;
   padding: 1.5px 983.492px 1.5px 10px;
@@ -202,6 +200,95 @@ const SecondaryText = styled.p`
 `;
 const Img = styled.img`
   padding-bottom: 10px;
+`;
+
+const SkillFilter = styled.div`
+  width: 480px;
+  height: 280px;
+  background-color: white;
+  position: absolute;
+  top: 50px;
+  z-index: 999;
+  border-radius: 0px 0px 6px 6px;
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+  background: #fff;
+  box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.12);
+
+  /* border-top: 3px solid var(--Primary-blue, #618AFF);
+  border-top-height: 20px; */
+
+  ::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 380px;
+    top: 0;
+    height: 3px;
+    background: var(--Primary-blue, #618aff);
+  }
+`;
+const InternalContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 30px;
+  padding: 24px 20px 28px 20px;
+`;
+
+const EuiPopOverCheckboxRight = styled.div<styledProps>`
+  height: auto;
+  user-select: none;
+  &.CheckboxOuter > div {
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    column-gap: 56px;
+    justify-content: center;
+    .euiCheckboxGroup__item {
+      .euiCheckbox__square {
+        top: 5px;
+        border: 1px solid ${(p: any) => p?.color && p?.color?.grayish.G500};
+        border-radius: 2px;
+      }
+      .euiCheckbox__input + .euiCheckbox__square {
+        background: ${(p: any) => p?.color && p?.color?.pureWhite} no-repeat center;
+      }
+      .euiCheckbox__input:checked + .euiCheckbox__square {
+        border: 1px solid ${(p: any) => p?.color && p?.color?.blue1};
+        background: ${(p: any) => p?.color && p?.color?.blue1} no-repeat center;
+        background-image: url('static/checkboxImage.svg');
+      }
+      .euiCheckbox__label {
+        font-family: 'Barlow';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 13px;
+        line-height: 18px;
+        color: ${(p: any) => p?.color && p?.color?.grayish.G50};
+        &:hover {
+          color: ${(p: any) => p?.color && p?.color?.grayish.G05};
+        }
+      }
+      input.euiCheckbox__input:checked ~ label {
+        color: ${(p: any) => p?.color && p?.color?.blue1};
+      }
+    }
+  }
+`;
+
+const DropDownButton = styled.button`
+  border: none;
+  background-color: transparent;
+  padding-top: 5px;
+`;
+
+const FiltersLeft = styled.span`
+  display: flex;
+  height: 40px;
+  align-items: flex-start;
 `;
 
 const EuiPopOverCheckbox = styled.div<styledProps>`
@@ -258,6 +345,8 @@ const EuiPopOverCheckbox = styled.div<styledProps>`
     }
   }
 `;
+
+const NewStatusContainer = styled.div``;
 
 const StatusContainer = styled.div<styledProps>`
   width: 70px;
@@ -323,8 +412,9 @@ const StatusContainer = styled.div<styledProps>`
 `;
 
 const Status = ['Open', 'Assigned', 'Completed', 'Paid'];
-const color = colors['light'];
 export const OrgHeader = ({
+  onChangeLanguage,
+  checkboxIdToSelectedMapLanguage,
   onChangeStatus,
   checkboxIdToSelectedMap,
   org_uuid,
@@ -333,6 +423,7 @@ export const OrgHeader = ({
 }: OrgBountyHeaderProps) => {
   const { main } = useStores();
   const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
+  const [filterClick, setFilterClick] = useState(false);
   const [isStatusPopoverOpen, setIsStatusPopoverOpen] = useState<boolean>(false);
   const onButtonClick = async () => {
     setIsStatusPopoverOpen((isPopoverOpen: any) => !isPopoverOpen);
@@ -340,6 +431,7 @@ export const OrgHeader = ({
   const closeStatusPopover = () => setIsStatusPopoverOpen(false);
 
   const selectedWidget = 'wanted';
+  const filterRef = useRef<HTMLDivElement | null>(null);
   const { website, github } = organizationUrls;
   const handlePostBountyClick = () => {
     setIsPostBountyModalOpen(true);
@@ -364,7 +456,27 @@ export const OrgHeader = ({
         languageString
       });
     }
-  }, [org_uuid, checkboxIdToSelectedMap]);
+  }, [org_uuid, checkboxIdToSelectedMap, main, languageString]);
+
+  const handleClick = () => {
+    setFilterClick(!filterClick);
+  };
+
+  useEffect(() => {
+    const handleWindowClick = (event: MouseEvent) => {
+      if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
+        setFilterClick(false);
+      }
+    };
+    if (filterClick) {
+      window.addEventListener('click', handleWindowClick);
+    } else {
+      window.removeEventListener('click', handleWindowClick);
+    }
+    return () => {
+      window.removeEventListener('click', handleWindowClick);
+    };
+  }, [filterClick]);
 
   return (
     <>
@@ -397,77 +509,104 @@ export const OrgHeader = ({
       <FillContainer>
         <Filters>
           <FiltersRight>
-            <EuiPopover
-              button={
-                <StatusContainer onClick={onButtonClick} color={color}>
-                  <EuiText
-                    className="statusText"
-                    style={{
-                      color: isStatusPopoverOpen ? color.grayish.G10 : ''
-                    }}
-                  >
-                    Status
-                  </EuiText>
-                  <div className="filterStatusIconContainer">
-                    <MaterialIcon
-                      className="materialStatusIcon"
-                      icon={`${isStatusPopoverOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}`}
+            <NewStatusContainer>
+              <EuiPopover
+                button={
+                  <StatusContainer onClick={onButtonClick} color={color}>
+                    <EuiText
+                      className="statusText"
                       style={{
                         color: isStatusPopoverOpen ? color.grayish.G10 : ''
                       }}
-                    />
-                  </div>
-                </StatusContainer>
-              }
-              panelStyle={{
-                border: 'none',
-                boxShadow: `0px 1px 20px ${color.black90}`,
-                background: `${color.pureWhite}`,
-                borderRadius: '0px 0px 6px 6px',
-                maxWidth: '140px',
-                minHeight: '160px',
-                marginTop: '0px',
-                marginLeft: '20px'
-              }}
-              isOpen={isStatusPopoverOpen}
-              closePopover={closeStatusPopover}
-              panelClassName="yourClassNameHere"
-              panelPaddingSize="none"
-              anchorPosition="downLeft"
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row'
+                    >
+                      Status
+                    </EuiText>
+                    <div className="filterStatusIconContainer">
+                      <MaterialIcon
+                        className="materialStatusIcon"
+                        icon={`${
+                          isStatusPopoverOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down'
+                        }`}
+                        style={{
+                          color: isStatusPopoverOpen ? color.grayish.G10 : ''
+                        }}
+                      />
+                    </div>
+                  </StatusContainer>
+                }
+                panelStyle={{
+                  border: 'none',
+                  boxShadow: `0px 1px 20px ${color.black90}`,
+                  background: `${color.pureWhite}`,
+                  borderRadius: '0px 0px 6px 6px',
+                  maxWidth: '140px',
+                  minHeight: '160px',
+                  marginTop: '0px',
+                  marginLeft: '20px'
                 }}
+                isOpen={isStatusPopoverOpen}
+                closePopover={closeStatusPopover}
+                panelClassName="yourClassNameHere"
+                panelPaddingSize="none"
+                anchorPosition="downLeft"
               >
-                <EuiPopOverCheckbox className="CheckboxOuter" color={color}>
-                  <EuiCheckboxGroup
-                    options={Status.map((status: any) => ({
-                      label: `${status}`,
-                      id: status
-                    }))}
-                    idToSelectedMap={checkboxIdToSelectedMap}
-                    onChange={(id: any) => {
-                      onChangeStatus(id);
-                    }}
-                  />
-                </EuiPopOverCheckbox>
-              </div>
-            </EuiPopover>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row'
+                  }}
+                >
+                  <EuiPopOverCheckbox className="CheckboxOuter" color={color}>
+                    <EuiCheckboxGroup
+                      options={Status.map((status: any) => ({
+                        label: `${status}`,
+                        id: status
+                      }))}
+                      idToSelectedMap={checkboxIdToSelectedMap}
+                      onChange={(id: any) => {
+                        onChangeStatus(id);
+                      }}
+                    />
+                  </EuiPopOverCheckbox>
+                </div>
+              </EuiPopover>
+            </NewStatusContainer>
             <SkillContainer>
-              <Label htmlFor="statusSelect">Skill</Label>
-              <Skill id="statusSelect" />
+              <FilterLabel>Skill</FilterLabel>
+              <DropDownButton onClick={handleClick} data-testid="skillDropdown">
+                {' '}
+                <Img src={dropdown} alt="" />
+              </DropDownButton>
+              {filterClick ? (
+                <SkillFilter ref={filterRef} data-testid="skill-filter">
+                  <InternalContainer>
+                    <EuiPopOverCheckboxRight className="CheckboxOuter" color={color}>
+                      <EuiCheckboxGroup
+                        options={Coding_Languages}
+                        idToSelectedMap={checkboxIdToSelectedMapLanguage}
+                        onChange={(id: any) => {
+                          onChangeLanguage(id);
+                        }}
+                      />
+                    </EuiPopOverCheckboxRight>
+                  </InternalContainer>
+                </SkillFilter>
+              ) : null}
             </SkillContainer>
             <SearchWrapper>
               <SearchBar placeholder="Search" disabled />
               <Icon src={searchIcon} alt="Search" />
             </SearchWrapper>
           </FiltersRight>
-          <SoryByContainer>
-            <Label htmlFor="statusSelect">Sort by:Newest First</Label>
-            <SortBy id="statusSelect" />
-          </SoryByContainer>
+          <FiltersLeft>
+            <SoryByContainer>
+              <FilterLabel>Sort by:Newest First</FilterLabel>
+              <DropDownButton>
+                {' '}
+                <Img src={dropdown} alt="" />
+              </DropDownButton>
+            </SoryByContainer>
+          </FiltersLeft>
         </Filters>
       </FillContainer>
       <NumberOfBounties>
