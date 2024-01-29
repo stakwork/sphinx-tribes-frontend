@@ -22,8 +22,8 @@ function OrgBodyComponent() {
   const [scrollValue, setScrollValue] = useState<boolean>(false);
   const [checkboxIdToSelectedMap, setCheckboxIdToSelectedMap] = useState(defaultOrgBountyStatus);
   const [checkboxIdToSelectedMapLanguage, setCheckboxIdToSelectedMapLanguage] = useState({});
-  const [languageString, setLanguageString] = useState('');
   const { uuid } = useParams<{ uuid: string; bountyId: string }>();
+  const [languageString, setLanguageString] = useState('');
   const [organizationUrls, setOrganizationUrls] = useState({});
 
   const color = colors['light'];
@@ -37,13 +37,17 @@ function OrgBodyComponent() {
       await main.getBadgeList();
       await main.getPeople();
       if (uuid) {
-        await main.getSpecificOrganizationBounties(uuid, { page: 1, resetPage: true });
+        await main.getSpecificOrganizationBounties(uuid, {
+          page: 1,
+          resetPage: true,
+          languages: languageString
+        });
         const orgUrls = await api.get(`organizations/${uuid}`);
         setOrganizationUrls(orgUrls);
       }
       setLoading(false);
     })();
-  }, [main, uuid]);
+  }, [main, uuid, checkboxIdToSelectedMap, languageString]);
 
   useEffect(() => {
     setCheckboxIdToSelectedMap({
@@ -70,14 +74,17 @@ function OrgBodyComponent() {
     setCheckboxIdToSelectedMap(newCheckboxIdToSelectedMap);
   };
 
-  const onChangeLanguage = (optionId: any) => {
+  const onChangeLanguage = (optionId: number) => {
     const newCheckboxIdToSelectedMapLanguage = {
       ...checkboxIdToSelectedMapLanguage,
-      ...{
-        [optionId]: !checkboxIdToSelectedMapLanguage[optionId]
-      }
+      [optionId]: !checkboxIdToSelectedMapLanguage[optionId]
     };
     setCheckboxIdToSelectedMapLanguage(newCheckboxIdToSelectedMapLanguage);
+    const languageString = Object.keys(newCheckboxIdToSelectedMapLanguage)
+      .filter((key: string) => newCheckboxIdToSelectedMapLanguage[key])
+      .join(',');
+    setLanguageString(languageString);
+    main.setBountyLanguages(languageString);
   };
 
   const onPanelClick = (person: any, item: any) => {
@@ -139,6 +146,7 @@ function OrgBodyComponent() {
             fromBountyPage={true}
             selectedWidget={selectedWidget}
             loading={loading}
+            languageString={languageString}
           />
         </div>
 
@@ -159,11 +167,13 @@ function OrgBodyComponent() {
         }}
       >
         <OrgHeader
-          onChangeStatus={onChangeStatus}
-          checkboxIdToSelectedMap={checkboxIdToSelectedMap}
-          org_uuid={uuid}
-          languageString={languageString}
           organizationUrls={organizationUrls}
+          onChangeStatus={onChangeStatus}
+          onChangeLanguage={onChangeLanguage}
+          checkboxIdToSelectedMap={checkboxIdToSelectedMap}
+          checkboxIdToSelectedMapLanguage={checkboxIdToSelectedMapLanguage}
+          languageString={languageString}
+          org_uuid={uuid}
         />
         <>
           <div
@@ -193,7 +203,9 @@ function OrgBodyComponent() {
                 fromBountyPage={true}
                 selectedWidget={selectedWidget}
                 loading={loading}
+                uuid={uuid}
                 org_uuid={uuid}
+                languageString={languageString}
               />
             </div>
           </div>
