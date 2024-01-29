@@ -15,12 +15,12 @@ const MockProps: OrgBountyHeaderProps = {
   languageString: '',
   org_uuid: 'clf6qmo4nncmf23du7ng',
   onChangeStatus: jest.fn(),
+  onChangeLanguage: jest.fn(),
   organizationUrls: {
     github: 'https://github.com/stakwork/sphinx-tribes',
     website: 'https://ecurrencyhodler.com/'
   }
 };
-
 describe('OrgHeader Component', () => {
   beforeEach(() => {
     jest.spyOn(mainStore, 'getSpecificOrganizationBounties').mockReset();
@@ -34,7 +34,7 @@ describe('OrgHeader Component', () => {
     render(<OrgHeader {...MockProps} />);
     expect(screen.getByText('Post a Bounty')).toBeInTheDocument();
     expect(screen.getByText('Status')).toBeInTheDocument();
-    expect(screen.getByLabelText('Skill')).toBeInTheDocument();
+    expect(screen.getByText('Skill')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Search')).toBeInTheDocument();
     expect(screen.getByText(/Bounties/i)).toBeInTheDocument();
   });
@@ -42,6 +42,7 @@ describe('OrgHeader Component', () => {
   it('opens the PostModal on "Post a Bounty" button click', async () => {
     render(<OrgHeader {...MockProps} />);
     fireEvent.click(screen.getByText('Post a Bounty'));
+    // You can add further assertions here to check the modal is open
   });
 
   it('displays the correct number of bounties', () => {

@@ -122,7 +122,7 @@ export const PeopleList = observer(() => {
         style={{ width: '100%', overflowY: 'auto', height: '100%' }}
         onScroll={handleScroll}
       >
-        <PageLoadSpinner show={loadingTop} />;
+        <PageLoadSpinner show={loadingTop} />
         {people?.length ? (
           people.map((t: any, i: number) => (
             <Person
