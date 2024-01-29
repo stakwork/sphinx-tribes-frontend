@@ -473,7 +473,7 @@ export const OrgHeader = ({
   const selectedWidget = 'wanted';
 
   const filterRef = useRef<HTMLDivElement | null>(null);
-    
+
   const handlePostBountyClick = () => {
     setIsPostBountyModalOpen(true);
   };

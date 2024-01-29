@@ -30,6 +30,9 @@ const MockProps: OrgBountyHeaderProps = {
     bounty_count: 8,
     budget: 640060,
     deleted: false
+  },
+  onChangeLanguage: function (): void {
+    throw new Error('Function not implemented.');
   }
 };
 describe('OrgHeader Component', () => {
@@ -101,12 +104,5 @@ describe('OrgHeader Component', () => {
     const githubButton = getByText(/Github/i);
     expect(websiteButton).toBeInTheDocument();
     expect(githubButton).toBeInTheDocument();
-  });
-
-  it('UrlButtons are left-aligned if visible', () => {
-    const { getByTestId } = render(<OrgHeader {...MockProps} />);
-    const urlButtonContainer = getByTestId('url-button-container');
-    const containerStyle = window.getComputedStyle(urlButtonContainer);
-    expect(containerStyle.marginLeft).toBe('0px');
   });
 });

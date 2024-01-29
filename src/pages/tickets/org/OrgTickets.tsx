@@ -26,7 +26,6 @@ function OrgBodyComponent() {
 
   const [organizationData, setOrganizationData] = useState<Organization>();
   const [languageString, setLanguageString] = useState('');
-  
 
   const color = colors['light'];
 
@@ -35,7 +34,7 @@ function OrgBodyComponent() {
 
   useEffect(() => {
     (async () => {
-     saif/bounty
+      saif / bounty;
       if (!uuid) return;
 
       const orgData = await main.getUserOrganizationByUuid(uuid);
@@ -164,7 +163,6 @@ function OrgBodyComponent() {
         }}
       >
         <OrgHeader
-          
           onChangeStatus={onChangeStatus}
           onChangeLanguage={onChangeLanguage}
           checkboxIdToSelectedMap={checkboxIdToSelectedMap}
