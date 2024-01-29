@@ -75,7 +75,14 @@ function WidgetSwitchViewer(props: any) {
   const [deletePayload, setDeletePayload] = useState<object>({});
   const closeModal = () => setShowDeleteModal(false);
   const showModal = () => setShowDeleteModal(true);
-  const { currentItems, setCurrentItems, totalBounties, page: propsPage, setPage } = props;
+  const {
+    currentItems,
+    setCurrentItems,
+    totalBounties,
+    page: propsPage,
+    setPage,
+    languageString
+  } = props;
 
   const items = currentItems ?? 0;
   const bountiesTotal = totalBounties ?? 0;
@@ -96,7 +103,7 @@ function WidgetSwitchViewer(props: any) {
 
   const { peoplePosts, peopleBounties, peopleOffers } = main;
 
-  const { selectedWidget, onPanelClick } = props;
+  const { selectedWidget, onPanelClick, org_uuid } = props;
 
   if (!selectedWidget) {
     return <div style={{ height: 200 }} />;
@@ -110,6 +117,9 @@ function WidgetSwitchViewer(props: any) {
 
   const activeList = [...listSource[selectedWidget]].filter(({ body }: any) => {
     const value = { ...body };
+    if (org_uuid) {
+      return value.org_uuid === org_uuid;
+    }
     return value;
   });
 
@@ -233,14 +243,13 @@ function WidgetSwitchViewer(props: any) {
         );
       })
     ) : (
-      <NoResults />
+      <NoResults loaded={!!languageString} />
     );
   const showLoadMore = bountiesTotal > items && activeList.length >= queryLimit;
   return (
     <>
       {listItems}
       <Spacer key={'spacer2'} />
-
       {showDeleteModal && (
         <DeleteTicketModal closeModal={closeModal} confirmDelete={confirmDelete} />
       )}

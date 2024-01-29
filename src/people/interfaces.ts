@@ -15,6 +15,10 @@ export interface BountyModalProps {
   fromPage?: 'usertickets' | 'bounties' | 'organization';
 }
 
+export interface OrgBountyHeaderProps {
+  organizationUrls: any;
+}
+
 export interface FocusViewProps {
   goBack?: () => void;
   config: { [key: string]: any };
@@ -234,6 +238,7 @@ export interface WantedSummaryProps {
   loomEmbedUrl?: string;
   coding_languages: string[];
   estimated_session_length?: string;
+  estimated_completion_date?: string;
   assignee: Person;
   fromBountyPage: string;
   wanted_type: string;
@@ -418,6 +423,14 @@ export interface BountyHeaderProps {
   checkboxIdToSelectedMapLanguage: any;
 }
 
+export interface OrgBountyHeaderProps {
+  onChangeStatus: (number) => void;
+  onChangeLanguage: (number) => void;
+  checkboxIdToSelectedMap?: any;
+  checkboxIdToSelectedMapLanguage?: any;
+  languageString?: string;
+  org_uuid?: string;
+}
 export interface PeopleHeaderProps {
   onChangeLanguage: (number) => void;
   checkboxIdToSelectedMapLanguage: any;

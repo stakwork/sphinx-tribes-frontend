@@ -41,11 +41,23 @@ export interface MeInfo {
 
 export type MeData = MeInfo | null;
 
-class UiStore {
+export class UiStore {
   ready = false;
 
   constructor() {
     makeAutoObservable(this);
+    document.addEventListener('click', this.handleDocumentClick);
+  }
+
+  handleDocumentClick = (event: MouseEvent) => {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.search-input-wrapper')) {
+      this.clearSearchText();
+    }
+  };
+
+  clearSearchText() {
+    this.searchText = '';
   }
 
   setReady(ready: boolean) {
@@ -57,6 +69,7 @@ class UiStore {
     this.tags = t;
   }
 
+  @persist
   searchText = '';
   setSearchText(s: string) {
     this.searchText = s.toLowerCase();

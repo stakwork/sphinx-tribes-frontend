@@ -23,4 +23,6 @@ export interface Props {
   notProfilePic?: boolean;
   style?: React.CSSProperties;
   testId?: string;
+  maxLength?: number;
+  setColor?: (data: boolean, value: string) => void;
 }
