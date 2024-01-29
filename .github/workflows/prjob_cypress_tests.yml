@@ -63,10 +63,12 @@ jobs:
         run: yarn install
 
       - name: Start Server
-        run: yarn start
+        run: yarn start &
 
       - name: Run Cypress Test
-        run: yarn run cypress:run
+        run: |
+          sleep 20
+          yarn run cypress:run
       
       - name: Stop Stack
         working-directory: ./stack
