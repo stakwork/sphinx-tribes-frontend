@@ -63,7 +63,7 @@ jobs:
         run: yarn install
 
       - name: Start Server
-        run: yarn start &
+        run: yarn run start:cypress &
 
       - name: Run Cypress Test
         run: |
