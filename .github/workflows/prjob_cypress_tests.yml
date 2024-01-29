@@ -60,7 +60,7 @@ jobs:
           target: 'cypress/fixtures/nodes.json'
       
       - name: Install Frontend Dependencies
-        run: pwd
+        run: ls
 
       - name: Run Cypress Test
         run: npm run cypress:run
