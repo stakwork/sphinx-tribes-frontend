@@ -136,7 +136,6 @@ const EditOrgModal = (props: EditOrgModalProps) => {
   const [loading, setLoading] = useState(false);
   const [nameCharacterCount, setNameCharacterCount] = useState(org?.name.length);
   const [nameColor, setNameColor] = useState();
-  const [textboxColor, setTextboxColor] = useState();
   const [labelName, setLabelName] = useState<string>();
   const [descriptionCharacterCount, setDescriptionCharacterCount] = useState(
     org?.description?.length || 0
@@ -158,8 +157,8 @@ const EditOrgModal = (props: EditOrgModalProps) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleColor = (data: any, value: string) => {
-      setNameColor(data);
-      setLabelName(value);
+    setNameColor(data);
+    setLabelName(value);
   };
   const onSubmitEditOrg = async (body: any) => {
     if (!org) {
@@ -395,11 +394,11 @@ const EditOrgModal = (props: EditOrgModalProps) => {
                           maxHeight: isMobile ? '145px' : 'auto'
                         }}
                         newDesign
-                      />                                                   
+                      />
                     </InputContainer>
                   ))}
                   <Button
-                    disabled={nameColor || textboxColor?true:false}
+                    disabled={nameColor ? true : false}
                     onClick={() => handleSubmit()}
                     loading={loading}
                     style={{
@@ -410,9 +409,9 @@ const EditOrgModal = (props: EditOrgModalProps) => {
                       alignSelf: 'center',
                       position: isMobile ? 'initial' : 'absolute',
                       top: '390px',
-                      left: '527px',
+                      left: '527px'
                     }}
-                    color={nameColor?"gray":'primary'}
+                    color={nameColor ? 'gray' : 'primary'}
                     text={'Save changes'}
                   />
                 </InputWrapper>

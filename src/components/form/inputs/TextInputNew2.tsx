@@ -66,7 +66,7 @@ export default function TextInputNew({
   return (
     <InputOuterBox
       color={color}
-      borderColor={characterError || isError? color.red2 : color.grayish.G600}
+      borderColor={characterError || isError ? color.red2 : color.grayish.G600}
       characterError={characterError}
     >
       <input
@@ -76,8 +76,8 @@ export default function TextInputNew({
         value={textValue}
         onFocus={handleFocus}
         onBlur={() => {
-              // setCharacterError(false);
-              // setColor && setColor(false, name);       
+          // setCharacterError(false);
+          // setColor && setColor(false, name);
           handleBlur();
           if (error) {
             setIsError(true);
@@ -120,7 +120,7 @@ export default function TextInputNew({
       >
         {labeltext}
       </label>
-      {characterError? <ErrorText>name is too long</ErrorText> : null}
+      {characterError ? <ErrorText>name is too long</ErrorText> : null}
     </InputOuterBox>
   );
 }
