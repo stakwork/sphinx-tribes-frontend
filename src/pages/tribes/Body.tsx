@@ -168,7 +168,12 @@ function BodyComponent() {
               <EuiSelectable
                 searchable
                 searchProps={{
-                  style: {  background: '#fff', color: '#000', borderBottom: '1px solid #000', borderRadius: 0},
+                  style: {
+                    background: '#fff',
+                    color: '#000',
+                    borderBottom: '1px solid #000',
+                    borderRadius: 0
+                  }
                 }}
                 options={tagOptions}
                 renderOption={(option: any, searchValue: any) => (
