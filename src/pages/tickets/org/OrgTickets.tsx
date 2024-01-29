@@ -33,7 +33,6 @@ function OrgBodyComponent() {
 
   useEffect(() => {
     (async () => {
-    
       if (!uuid) return;
 
       const orgData = await main.getUserOrganizationByUuid(uuid);
