@@ -60,8 +60,7 @@ jobs:
           target: 'cypress/fixtures/nodes.json'
       
       - name: Install Frontend Dependencies
-        working-directory: ./sphinx-tribes-frontend
-        run: npm install
+        run: pwd
 
       - name: Run Cypress Test
         run: npm run cypress:run
