@@ -10,7 +10,6 @@ import { TicketModalPage } from '../TicketModalPage';
 import { useIsMobile } from 'hooks';
 import { useStores } from 'store';
 
-describe('TicketModalPage', () => {
 
 jest.mock('hooks', () => ({
   useIsMobile: jest.fn()
@@ -138,4 +137,5 @@ describe('TicketModalPage Component', () => {
       expect(getByText(mockBountiesMutated[1].body.description)).toBeInTheDocument();
       expect(getByText(formatSat(Number(mockBountiesMutated[1].body.price)))).toBeInTheDocument();
     });
+});
 });
