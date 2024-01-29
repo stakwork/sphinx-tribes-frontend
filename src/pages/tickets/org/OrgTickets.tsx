@@ -11,7 +11,6 @@ import { useIsMobile } from '../../../hooks';
 import { useStores } from '../../../store';
 import { OrgBody, Body, Backdrop } from '../style';
 import { Organization, defaultOrgBountyStatus } from '../../../store/main';
-import api from '../../../api';
 import { OrgHeader } from './orgHeader';
 
 function OrgBodyComponent() {
@@ -34,7 +33,7 @@ function OrgBodyComponent() {
 
   useEffect(() => {
     (async () => {
-      saif / bounty;
+    
       if (!uuid) return;
 
       const orgData = await main.getUserOrganizationByUuid(uuid);
