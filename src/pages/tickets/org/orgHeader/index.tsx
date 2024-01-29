@@ -3,8 +3,8 @@ import styled from 'styled-components';
 import { EuiCheckboxGroup, EuiPopover, EuiText } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
 import { PostModal } from 'people/widgetViews/postBounty/PostModal';
-import { SearchBar } from '../../../../components/common/index.tsx';
 import { GetValue, coding_languages } from 'people/utils/languageLabelStyle';
+import { SearchBar } from '../../../../components/common/index.tsx';
 import { useStores } from '../../../../store';
 import { colors } from '../../../../config';
 import { OrgBountyHeaderProps } from '../../../../people/interfaces.ts';
@@ -72,12 +72,6 @@ const FiltersRight = styled.span`
 const SkillContainer = styled.span`
   padding: 10px 0px;
   align-items: center;
-  gap: 4px;
-  width: max-content;
-`;
-const Skill = styled.select`
-  border: none;
-  background-color: transparent;
   display: flex;
   position: relative;
 `;
