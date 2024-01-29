@@ -13,7 +13,7 @@ describe('User Login', () => {
         }
       }
 
-      cy.visit('http://localhost:3000');
+      cy.visit('http://localhost:3007');
       cy.contains('Sign in').click();
 
       cy.get('[data-challenge]')
