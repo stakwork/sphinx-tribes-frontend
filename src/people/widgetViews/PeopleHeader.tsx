@@ -104,8 +104,8 @@ const FilterCount = styled.div<styledProps>`
 const PopOverBox = styled.div<styledProps>`
   display: flex;
   flex-direction: column;
-  max-height: 304px;
   padding: 15px 0px 20px 21px;
+
   .rightBoxHeading {
     font-family: 'Barlow';
     font-style: normal;
@@ -120,7 +120,6 @@ const PopOverBox = styled.div<styledProps>`
 const EuiPopOverCheckboxWrapper = styled.div<styledProps>`
   min-width: 285px;
   max-width: 285px;
-  height: 240px;
   user-select: none;
 
   &.CheckboxOuter > div {
