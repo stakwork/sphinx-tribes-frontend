@@ -29,6 +29,16 @@ jest.mock('react-router-dom', () => ({
 }));
 
 describe('TicketModalPage Component', () => {
+  beforeEach(() => {
+    const mockIntersectionObserver = jest.fn();
+    mockIntersectionObserver.mockReturnValue({
+      observe: () => null,
+      unobserve: () => null,
+      disconnect: () => null
+    });
+    window.IntersectionObserver = mockIntersectionObserver;
+  });
+
   it('should redirect to the appropriate page on close based on the route', async () => {
     render(<TicketModalPage setConnectPerson={jest.fn()} visible={true} />);
 
@@ -41,16 +51,6 @@ describe('TicketModalPage Component', () => {
 
       expect(mockPush).toHaveBeenCalledWith('/bounties');
     }
-  });
-
-  beforeEach(() => {
-    const mockIntersectionObserver = jest.fn();
-    mockIntersectionObserver.mockReturnValue({
-      observe: () => null,
-      unobserve: () => null,
-      disconnect: () => null
-    });
-    window.IntersectionObserver = mockIntersectionObserver;
   });
 
   it('reder ticket modal', async () => {
