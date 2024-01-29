@@ -10,6 +10,7 @@
     "start:people": "PORT=3007 craco start",
     "start:people:docker": "PORT=23007 craco start",
     "start:people:cluster": "PORT=13007 craco start",
+    "start:cypress": "PORT=3007 craco start",
     "build": "craco build",
     "eject": "craco eject",
     "lint": "eslint src --max-warnings 71 --ext .ts --ext .tsx --ignore-pattern *.spec.tsx --ignore-pattern *.spec.ts",
