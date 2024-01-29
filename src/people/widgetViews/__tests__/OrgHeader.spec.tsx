@@ -23,7 +23,7 @@ const MockProps: OrgBountyHeaderProps = {
 
 describe('OrgHeader Component', () => {
   beforeEach(() => {
-    jest.spyOn(mainStore, 'getOrganizationBounties').mockReset();
+    jest.spyOn(mainStore, 'getSpecificOrganizationBounties').mockReset();
   });
 
   afterEach(() => {
@@ -50,7 +50,7 @@ describe('OrgHeader Component', () => {
     expect(screen.getByText('Bounties')).toBeInTheDocument();
   });
 
-  it('should call getOrganizationBounties with correct parameters', () => {
+  it('should call getSpecificOrganizationBounties with correct parameters', () => {
     Object.defineProperty(window, 'location', {
       value: {
         pathname: `/org/bounties/${MockProps.org_uuid}`
@@ -70,8 +70,8 @@ describe('OrgHeader Component', () => {
     // Simulate pressing Enter key
     fireEvent.keyUp(searchInput, { key: 'Enter', code: 'Enter' });
 
-    // Check if getOrganizationBounties is called with correct parameters
-    expect(mainStore.getOrganizationBounties).toHaveBeenCalledWith(MockProps.org_uuid, {
+    // Check if getSpecificOrganizationBounties is called with correct parameters
+    expect(mainStore.getSpecificOrganizationBounties).toHaveBeenCalledWith(MockProps.org_uuid, {
       page: 1,
       resetPage: true,
       search: searchText,
@@ -102,7 +102,7 @@ describe('OrgHeader Component', () => {
         <OrgHeader {...MockProps} checkboxIdToSelectedMap={updatedCheckboxIdToSelectedMap} />
       );
 
-      expect(mainStore.getOrganizationBounties).toHaveBeenCalledWith(MockProps.org_uuid, {
+      expect(mainStore.getSpecificOrganizationBounties).toHaveBeenCalledWith(MockProps.org_uuid, {
         page: 1,
         resetPage: true,
         ...updatedCheckboxIdToSelectedMap,
