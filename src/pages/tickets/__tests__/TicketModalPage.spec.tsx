@@ -6,6 +6,8 @@ import { formatSat } from 'helpers';
 import React from 'react';
 import { MemoryRouter, Route } from 'react-router-dom';
 import { mainStore } from 'store/main';
+import { useIsMobile } from 'hooks';
+import { useStores } from 'store';
 import { TicketModalPage } from '../TicketModalPage';
 
 const mockPush = jest.fn();
@@ -40,6 +42,15 @@ describe('TicketModalPage Component', () => {
   });
 
   it('should redirect to the appropriate page on close based on the route', async () => {
+    (useIsMobile as jest.Mock).mockReturnValue(false);
+
+    (useStores as jest.Mock).mockReturnValue({
+      main: {
+        getBountyById: jest.fn(),
+        getBountyIndexById: jest.fn()
+      }
+    });
+
     render(<TicketModalPage setConnectPerson={jest.fn()} visible={true} />);
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
