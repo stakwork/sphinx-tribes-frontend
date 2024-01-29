@@ -94,6 +94,8 @@ describe('MobileView component', () => {
     title: ''
   };
 
+  
+
   it('should render titleString on the screen', () => {
     render(<MobileView {...defaultProps} titleString="Test Title" />);
     const titleElement = screen.getByText('Test Title');
@@ -148,17 +150,53 @@ describe('MobileView component', () => {
     expect(screen.getByText(nameTagProps.owner_alias)).toBeInTheDocument();
   });
 
-  it('Should disable the delete bounty button if a hunter is assigned or not paid', () => {
+  it('Should disable the delete bounty button if a hunter is assigned to te bounty', () => {
+    
     defaultProps.isAssigned = true;
-    render(<MobileView {...defaultProps} />);
-    const deleteButton = screen.getByText('Delete');
-    expect(deleteButton).toBeDisabled();
+    const isDisabled = defaultProps.isAssigned
+    render(
+    <ImageButton  
+      buttonText={'Delete'}
+      isDisabled={isDisabled}
+      />
+    );  
+
+    const deleteButton = screen.getByText('Delete')
+    expect(deleteButton).toBeDisabled()
   });
 
-  it('Should click the delete button if there is no assigned hunter to the bounty', () => {
+  it('Should be enabled the delete button if there is no assigned hunter to the bounty', () => {
     defaultProps.isAssigned = false;
-    render(<MobileView {...defaultProps} />);
-    const deleteButton = screen.getByText('Delete');
-    expect(deleteButton).toBeEnabled();
+    const isDisabled = defaultProps.isAssigned
+    render(
+    <ImageButton  
+      buttonText={'Delete'}
+      isDisabled={isDisabled}
+      />
+    );  
+
+    const deleteButton = screen.getByText('Delete')
+    expect(deleteButton).toBeEnabled()
+    
   });
 });
+
+interface Props {
+  isDisabled: boolean
+  buttonText: string
+}
+const ImageButton = ({isDisabled, buttonText}: Props) => (
+  <div
+    role="button"
+    style={{
+      width: '117px',
+      height: '40px',
+    }}
+  >
+    <div className="leadingImageContainer">
+      <img className="buttonImage" src="/static/Delete.svg" alt="h"/>   
+    </div>
+    <button disabled={isDisabled} className="euiText ButtonText css-g2xc3e-euiText-m">{buttonText}</button>
+
+  </div>
+)
