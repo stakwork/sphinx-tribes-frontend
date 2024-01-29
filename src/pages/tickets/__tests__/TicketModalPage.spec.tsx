@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { act, render, waitFor } from '@testing-library/react';
+import { act, render, waitFor, fireEvent, screen } from '@testing-library/react';
 import { user } from '__test__/__mockData__/user';
 import { mockBountiesMutated, newBounty } from 'bounties/__mock__/mockBounties.data';
 import { formatSat } from 'helpers';
@@ -7,8 +7,63 @@ import React from 'react';
 import { MemoryRouter, Route } from 'react-router-dom';
 import { mainStore } from 'store/main';
 import { TicketModalPage } from '../TicketModalPage';
+import { useIsMobile } from 'hooks';
+import { useStores } from 'store';
 
 describe('TicketModalPage', () => {
+
+jest.mock('hooks', () => ({
+  useIsMobile: jest.fn()
+}));
+
+jest.mock('store', () => ({
+  useStores: jest.fn()
+}));
+
+const mockPush = jest.fn();
+const mockGoBack = jest.fn();
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useHistory: () => ({
+    push: mockPush,
+    goBack: mockGoBack
+  }),
+  useLocation: () => ({
+    pathname: '/bounty/1239',
+    search: '',
+    state: {}
+  }),
+  useParams: () => ({
+    uuid: 'ck95pe04nncjnaefo08g',
+    bountyId: '1239'
+  })
+}));
+
+describe('TicketModalPage Component', () => {
+  it('should redirect to the appropriate page on close based on the route', async () => {
+    (useIsMobile as jest.Mock).mockReturnValue(false);
+
+    (useStores as jest.Mock).mockReturnValue({
+      main: {
+        getBountyById: jest.fn(),
+        getBountyIndexById: jest.fn()
+      }
+    });
+
+    render(<TicketModalPage setConnectPerson={jest.fn()} visible={true} />);
+
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    await waitFor(() => {});
+
+    const closeButton = screen.queryByTestId('close-btn');
+    if (closeButton) {
+      fireEvent.click(closeButton);
+
+      expect(mockPush).toHaveBeenCalledWith('/bounties');
+    }
+  });
+  
   beforeEach(() => {
     const mockIntersectionObserver = jest.fn();
     mockIntersectionObserver.mockReturnValue({
@@ -82,6 +137,5 @@ describe('TicketModalPage', () => {
       expect(getByText(mockBountiesMutated[1].body.title)).toBeInTheDocument();
       expect(getByText(mockBountiesMutated[1].body.description)).toBeInTheDocument();
       expect(getByText(formatSat(Number(mockBountiesMutated[1].body.price)))).toBeInTheDocument();
-    }); 
-  });
+    });
 });

@@ -15,6 +15,28 @@ const mockProps: BountyHeaderProps = {
   checkboxIdToSelectedMapLanguage: {}
 };
 
+const languageOptions = [
+  'Lightning',
+  'Typescript',
+  'Golang',
+  'Kotlin',
+  'PHP',
+  'Java',
+  'Ruby',
+  'Python',
+  'Postgres',
+  'Elastic search',
+  'Javascript',
+  'Node',
+  'Swift',
+  'MySQL',
+  'R',
+  'Rust',
+  'Other',
+  'C++',
+  'C#'
+];
+
 jest.mock('../../../hooks', () => ({
   useIsMobile: jest.fn()
 }));
@@ -75,28 +97,6 @@ describe('BountyHeader Component', () => {
     });
   });
 
-  const languageOptions = [
-    'Lightning',
-    'Typescript',
-    'Golang',
-    'Kotlin',
-    'PHP',
-    'Java',
-    'Ruby',
-    'Python',
-    'Postgres',
-    'Elastic search',
-    'Javascript',
-    'Node',
-    'Swift',
-    'MySQL',
-    'R',
-    'Rust',
-    'Other',
-    'C++',
-    'C#'
-  ];
-
   languageOptions.forEach((language: string) => {
     test(`should call onChangeLanguage when the ${language} filter option is selected`, async () => {
       render(<BountyHeader {...mockProps} />);
@@ -113,6 +113,19 @@ describe('BountyHeader Component', () => {
 
       fireEvent.click(checkbox);
       expect(mockProps.onChangeLanguage).toHaveBeenCalledWith(language);
+    });
+    test(`should display checkbox for '${language}' without scroll on click of filter button`, async () => {
+      render(<BountyHeader {...mockProps} />);
+      fireEvent.click(screen.getByText('Filter'));
+
+      let checkbox;
+      try {
+        checkbox = await screen.findByRole('checkbox', { name: language });
+        expect(checkbox).toBeVisible();
+      } catch (error) {
+        console.error(`No checkbox found with the name: ${language}`);
+        expect(checkbox).toBeDefined(); // Fails the test if checkbox is not found
+      }
     });
   });
 

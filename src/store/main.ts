@@ -11,6 +11,7 @@ import { uiStore } from './ui';
 import { getUserAvatarPlaceholder } from './lib';
 
 export const queryLimit = 10;
+export const paginationQueryLimit = 20;
 export const peopleQueryLimit = 500;
 
 function makeTorSaveURL(host: string, key: string) {
@@ -184,6 +185,7 @@ export interface QueryParams {
   search?: string;
   resetPage?: boolean;
   languages?: string;
+  org_uuid?: string;
 }
 
 export interface ClaimOnLiquid {
@@ -291,6 +293,19 @@ export const defaultBountyStatus: BountyStatus = {
   Paid: false
 };
 
+export interface OrgBountyStatus {
+  Open: boolean;
+  Assigned: boolean;
+  Paid: boolean;
+  Completed: boolean;
+}
+
+export const defaultOrgBountyStatus: OrgBountyStatus = {
+  Open: false,
+  Assigned: false,
+  Paid: false,
+  Completed: false
+};
 export class MainStore {
   [x: string]: any;
   tribes: Tribe[] = [];
@@ -906,10 +921,14 @@ export class MainStore {
   async getPersonAssignedBounties(queryParams?: any, pubkey?: string): Promise<PersonBounty[]> {
     queryParams = { ...queryParams, search: uiStore.searchText };
 
-    const query = this.appendQueryParams(`people/wanteds/assigned/${pubkey}`, queryLimit, {
-      sortBy: 'paid',
-      ...queryParams
-    });
+    const query = this.appendQueryParams(
+      `people/wanteds/assigned/${pubkey}`,
+      paginationQueryLimit,
+      {
+        sortBy: 'paid',
+        ...queryParams
+      }
+    );
 
     try {
       const ps2 = await api.get(query);
@@ -953,7 +972,7 @@ export class MainStore {
   async getPersonCreatedBounties(queryParams?: any, pubkey?: string): Promise<PersonBounty[]> {
     queryParams = { ...queryParams, search: uiStore.searchText };
 
-    const query = this.appendQueryParams(`people/wanteds/created/${pubkey}`, 20, {
+    const query = this.appendQueryParams(`people/wanteds/created/${pubkey}`, paginationQueryLimit, {
       ...queryParams,
       sortBy: 'paid'
     });
@@ -1070,6 +1089,78 @@ export class MainStore {
       return ps3;
     } catch (e) {
       console.log('fetch failed getBountyById: ', e);
+      return [];
+    }
+  }
+
+  getWantedsSpecOrgPrevParams?: QueryParams = {};
+  async getSpecificOrganizationBounties(uuid: string, params?: any): Promise<PersonBounty[]> {
+    const queryParams: QueryParams = {
+      limit: queryLimit,
+      sortBy: 'created',
+      search: uiStore.searchText ?? '',
+      page: 1,
+      resetPage: false,
+      ...params
+    };
+
+    if (params) {
+      // save previous params
+      this.getWantedsSpecOrgPrevParams = queryParams;
+    }
+
+    // if we don't pass the params, we should use previous params for invalidate query
+    const query2 = this.appendQueryParams(
+      `organizations/bounties/${uuid}`,
+      queryLimit,
+      params ? queryParams : this.getWantedsOrgPrevParams
+    );
+    try {
+      const ps2 = await api.get(query2);
+      const ps3: any[] = [];
+
+      if (ps2 && ps2.length) {
+        for (let i = 0; i < ps2.length; i++) {
+          const bounty = { ...ps2[i].bounty };
+          let assignee;
+          let organization;
+          const owner = { ...ps2[i].owner };
+
+          if (bounty.assignee) {
+            assignee = { ...ps2[i].assignee };
+          }
+
+          if (bounty.org_uuid) {
+            organization = { ...ps2[i].organization };
+          }
+
+          ps3.push({
+            body: { ...bounty, assignee: assignee || '' },
+            person: { ...owner, wanteds: [] } || { wanteds: [] },
+            organization: { ...organization }
+          });
+        }
+      }
+
+      // for search always reset page
+      if (queryParams && queryParams.resetPage) {
+        this.setPeopleBounties(ps3);
+        uiStore.setPeopleBountiesPageNumber(1);
+      } else {
+        // all other cases, merge
+        const wanteds = this.doPageListMerger(
+          this.peopleBounties,
+          ps3,
+          (n: any) => uiStore.setPeopleBountiesPageNumber(n),
+          queryParams,
+          'wanted'
+        );
+
+        this.setPeopleBounties(wanteds);
+      }
+      return ps3;
+    } catch (e) {
+      console.log('fetch failed getOrganizationBounties: ', e);
       return [];
     }
   }
