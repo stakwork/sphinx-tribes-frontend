@@ -150,6 +150,23 @@ describe('MobileView component', () => {
     expect(screen.getByText(nameTagProps.owner_alias)).toBeInTheDocument();
   });
 
+  it('Should disable the delete bounty button if a hunter is assigned to te bounty', () => {
+    defaultProps.isAssigned = true;
+    const isDisabled = defaultProps.isAssigned;
+    render(<ImageButton buttonText={'Delete'} isDisabled={isDisabled} />);
+
+    const deleteButton = screen.getByText('Delete');
+    expect(deleteButton).toBeDisabled();
+  });
+
+  it('Should be enabled the delete button if there is no assigned hunter to the bounty', () => {
+    defaultProps.isAssigned = false;
+    const isDisabled = defaultProps.isAssigned;
+    render(<ImageButton buttonText={'Delete'} isDisabled={isDisabled} />);
+
+    const deleteButton = screen.getByText('Delete');
+    expect(deleteButton).toBeEnabled();
+    
   it('share render session length if provided', () => {
     render(<MobileView {...defaultProps} />);
 
@@ -164,3 +181,24 @@ describe('MobileView component', () => {
     expect(completionDate).toBeInTheDocument();
   });
 });
+
+interface Props {
+  isDisabled: boolean;
+  buttonText: string;
+}
+const ImageButton = ({ isDisabled, buttonText }: Props) => (
+  <div
+    role="button"
+    style={{
+      width: '117px',
+      height: '40px'
+    }}
+  >
+    <div className="leadingImageContainer">
+      <img className="buttonImage" src="/static/Delete.svg" alt="h" />
+    </div>
+    <button disabled={isDisabled} className="euiText ButtonText css-g2xc3e-euiText-m">
+      {buttonText}
+    </button>
+  </div>
+);
