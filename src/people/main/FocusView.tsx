@@ -69,8 +69,13 @@ function FocusedView(props: FocusViewProps) {
   getOrg();
 
   function getUUIDFromURL(url: string) {
-    const parts = url.split('/');
-    return parts[parts.length - 1];
+    const regex = /.+\/org\/bounties\/([a-zA-Z0-9-]+)$/;
+    const match = url.match(regex);
+    if (match && match[1]) {
+      return match[1];
+    } else {
+      return null;
+    }
   }
   const uuid = getUUIDFromURL(window.location.href);
 
@@ -279,19 +284,16 @@ function FocusedView(props: FocusViewProps) {
 
   //this workflow now gets the org user is in and appends it
   const searchKey = uuid;
-  let variableToAppend = '';
+  let orgToAppend = '';
 
-  const foundObject = userOrganizations.find((obj: any) => obj.value === searchKey);
+  const DefaultOrgObject = userOrganizations.find((obj: any) => obj.value === searchKey);
 
-  if (foundObject) {
-    variableToAppend = foundObject.value;
-    console.log('Found and appended:', variableToAppend);
-  } else {
-    console.log('Key not found');
+  if (DefaultOrgObject) {
+    orgToAppend = DefaultOrgObject.value;
   }
 
   let initialValues: any = {
-    org_uuid: variableToAppend
+    org_uuid: orgToAppend
   };
 
   const personInfo = canEdit ? ui.meInfo : person;
