@@ -9,9 +9,12 @@ import PageLoadSpinner from 'people/utils/PageLoadSpinner';
 import React, { useEffect, useState } from 'react';
 import { Route, Switch, useHistory, useRouteMatch, useParams } from 'react-router-dom';
 import { useStores } from 'store';
+import { paginationQueryLimit } from 'store/main';
 import styled from 'styled-components';
+import { LoadMoreContainer } from '../../../people/widgetViews/WidgetSwitchViewer';
+import { colors } from '../../../config/colors';
 const config = widgetConfigs.wanted;
-
+type BountyType = any;
 const Container = styled.div`
   display: flex;
   flex-flow: row wrap;
@@ -45,14 +48,43 @@ export const Wanted = observer(() => {
   const { path, url } = useRouteMatch();
   const history = useHistory();
   const { personPubkey } = useParams<{ personPubkey: string }>();
+  const [displayedBounties, setDisplayedBounties] = useState<BountyType[]>([]);
   const [loading, setIsLoading] = useState<boolean>(false);
+  const [page, setPage] = useState(1);
+  const [hasMoreBounties, setHasMoreBounties] = useState(true);
 
+  // Function to fetch user tickets with pagination
   async function getUserTickets() {
     setIsLoading(true);
-    await main.getPersonCreatedBounties({}, personPubkey);
-    await main.getPersonAssignedBounties({ sortBy: 'paid' }, personPubkey);
+    // Fetch bounties for the specified page and limit
+    const response = await main.getPersonCreatedBounties(
+      { page: page, limit: paginationQueryLimit },
+      personPubkey
+    );
+    // Check if the response has fewer bounties than the limit, indicating no more bounties to load
+    if (response.length < paginationQueryLimit) {
+      setHasMoreBounties(false);
+    }
+    // Update the displayed bounties by appending the new bounties
+    setDisplayedBounties((prevBounties: BountyType[]) => [...prevBounties, ...response]);
     setIsLoading(false);
   }
+
+  const nextBounties = async () => {
+    const nextPage = page + 1;
+    setPage(nextPage);
+    // Fetch bounties for the next page
+    const response = await main.getPersonCreatedBounties(
+      { page: nextPage, limit: paginationQueryLimit },
+      personPubkey
+    );
+    // Check if the response has fewer bounties than the limit, indicating no more bounties to load
+    if (response.length < paginationQueryLimit) {
+      setHasMoreBounties(false);
+    }
+    // Update the displayed bounties by appending the new bounties
+    setDisplayedBounties((prevBounties: BountyType[]) => [...prevBounties, ...response]);
+  };
 
   useEffect(() => {
     getUserTickets();
@@ -106,26 +138,40 @@ export const Wanted = observer(() => {
       >
         {canEdit && <PostBounty widget="wanted" />}
       </div>
-      {main.createdBounties.map((w: any, i: any) => {
-        if (w.body.owner_id === person?.owner_pubkey) {
-          return (
-            <Panel
-              href={`${url}/${w.body.id}/${i}`}
-              key={w.body.id}
-              isMobile={false}
-              onClick={(e: any) => {
-                e.preventDefault();
-                ui.setBountyPerson(person?.id);
-                history.push({
-                  pathname: `${url}/${w.body.id}/${i}`
-                });
-              }}
-            >
-              <WantedView {...w.body} person={person} />
-            </Panel>
-          );
-        }
-      })}
+      {displayedBounties
+        .filter((w: BountyType) => w.body.owner_id === person?.owner_pubkey)
+        .map((w: BountyType, i: any) => (
+          <Panel
+            href={`${url}/${w.body.id}/${i}`}
+            key={w.body.id}
+            isMobile={false}
+            onClick={(e: any) => {
+              e.preventDefault();
+              ui.setBountyPerson(person?.id);
+              history.push({
+                pathname: `${url}/${w.body.id}/${i}`
+              });
+            }}
+          >
+            <WantedView {...w.body} person={person} />
+          </Panel>
+        ))}
+      {hasMoreBounties && !loading && (
+        <LoadMoreContainer
+          color={colors['light']}
+          style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            margin: '20px 0'
+          }}
+        >
+          <div className="LoadMoreButton" onClick={nextBounties}>
+            Load More
+          </div>
+        </LoadMoreContainer>
+      )}
     </Container>
   );
 });
