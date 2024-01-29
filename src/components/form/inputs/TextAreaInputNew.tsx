@@ -94,8 +94,6 @@ export default function TextAreaInputNew({
           setShowPlaceholder(false);
         }}
         onBlur={() => {
-          // setCharacterError(false);
-          // setColor && setColor(false, name);
           handleBlur();
           if (error) {
             setIsError(true);
