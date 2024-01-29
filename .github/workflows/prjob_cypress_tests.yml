@@ -60,13 +60,13 @@ jobs:
           target: 'cypress/fixtures/nodes.json'
       
       - name: Install Frontend Dependencies
-        run: npm install
+        run: yarn install
 
       - name: Start Server
-        run: npm start
+        run: yarn start
 
       - name: Run Cypress Test
-        run: npm run cypress:run
+        run: yarn run cypress:run
       
       - name: Stop Stack
         working-directory: ./stack
