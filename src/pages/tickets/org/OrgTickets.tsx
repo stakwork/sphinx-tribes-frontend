@@ -139,6 +139,7 @@ function OrgBodyComponent() {
             fromBountyPage={true}
             selectedWidget={selectedWidget}
             loading={loading}
+            languageString={languageString}
           />
         </div>
 
@@ -194,6 +195,7 @@ function OrgBodyComponent() {
                 selectedWidget={selectedWidget}
                 loading={loading}
                 org_uuid={uuid}
+                languageString={languageString}
               />
             </div>
           </div>
