@@ -28,7 +28,7 @@ jobs:
           git clone https://github.com/stakwork/sphinx-stack.git stack
 
       - name: Give Permissions to Sphinx Tribes Frontend
-        run: chmod 777 -R sphinx-tribes-frontend
+        run: chmod 777 -R cypress
       
       - name: Give Permissions to Stack
         working-directory: ./stack
