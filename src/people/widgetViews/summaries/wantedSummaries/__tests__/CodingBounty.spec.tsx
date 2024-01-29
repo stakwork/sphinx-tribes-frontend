@@ -91,7 +91,9 @@ describe('MobileView component', () => {
     formSubmit: jest.fn(),
     ticket_url: '',
     assignee: undefined as any,
-    title: ''
+    title: '',
+    estimated_session_length: 'Less than 3 hours',
+    estimated_completion_date: '2024-01-26T15:39:40.945Z'
   };
 
   it('should render titleString on the screen', () => {
@@ -164,6 +166,19 @@ describe('MobileView component', () => {
 
     const deleteButton = screen.getByText('Delete');
     expect(deleteButton).toBeEnabled();
+    
+  it('share render session length if provided', () => {
+    render(<MobileView {...defaultProps} />);
+
+    const sessionLength = screen.getByText('< 3 hrs');
+    expect(sessionLength).toBeInTheDocument();
+  });
+
+  it('share render esitmate completion date if provided', () => {
+    render(<MobileView {...defaultProps} />);
+
+    const completionDate = screen.getByText('Jan 26, 2024');
+    expect(completionDate).toBeInTheDocument();
   });
 });
 
