@@ -61,12 +61,14 @@ function FocusedView(props: FocusViewProps) {
 
   const isTorSave = canEdit && main.isTorSave();
 
-  const getOrg = async () => {
-    if (uiStore.meInfo?.id) {
-      const res = await main.getUserDropdownOrganizations(uiStore.meInfo?.id);
+  useEffect(() => {
+    async function fetchData() {
+      if (uiStore.meInfo?.id) {
+        await main.getUserDropdownOrganizations(uiStore.meInfo.id);
+      }
     }
-  };
-  getOrg();
+    fetchData();
+  }, [main]);
 
   function getUUIDFromURL(url: string) {
     const regex = /.+\/org\/bounties\/([a-zA-Z0-9-]+)$/;
