@@ -7,17 +7,6 @@ import React from 'react';
 import { MemoryRouter, Route } from 'react-router-dom';
 import { mainStore } from 'store/main';
 import { TicketModalPage } from '../TicketModalPage';
-import { useIsMobile } from 'hooks';
-import { useStores } from 'store';
-
-
-jest.mock('hooks', () => ({
-  useIsMobile: jest.fn()
-}));
-
-jest.mock('store', () => ({
-  useStores: jest.fn()
-}));
 
 const mockPush = jest.fn();
 const mockGoBack = jest.fn();
@@ -41,15 +30,6 @@ jest.mock('react-router-dom', () => ({
 
 describe('TicketModalPage Component', () => {
   it('should redirect to the appropriate page on close based on the route', async () => {
-    (useIsMobile as jest.Mock).mockReturnValue(false);
-
-    (useStores as jest.Mock).mockReturnValue({
-      main: {
-        getBountyById: jest.fn(),
-        getBountyIndexById: jest.fn()
-      }
-    });
-
     render(<TicketModalPage setConnectPerson={jest.fn()} visible={true} />);
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -62,7 +42,7 @@ describe('TicketModalPage Component', () => {
       expect(mockPush).toHaveBeenCalledWith('/bounties');
     }
   });
-  
+
   beforeEach(() => {
     const mockIntersectionObserver = jest.fn();
     mockIntersectionObserver.mockReturnValue({
@@ -74,7 +54,9 @@ describe('TicketModalPage Component', () => {
   });
 
   it('reder ticket modal', async () => {
-    jest.spyOn(mainStore, 'getBountyById').mockReturnValue(Promise.resolve([{ ...newBounty, body: { assignee: user }}]));
+    jest
+      .spyOn(mainStore, 'getBountyById')
+      .mockReturnValue(Promise.resolve([{ ...newBounty, body: { assignee: user } }]));
     jest.spyOn(mainStore, 'getBountyIndexById').mockReturnValue(Promise.resolve(1234));
     await act(async () => {
       const { getByTestId } = render(
@@ -82,15 +64,21 @@ describe('TicketModalPage Component', () => {
           <Route path="/bounty/:bountyId" component={TicketModalPage} />
         </MemoryRouter>
       );
-  
+
       await waitFor(() => getByTestId('testid-modal'));
-  
+
       expect(getByTestId('testid-modal')).toBeInTheDocument();
     });
   });
-  
+
   it('render profile img and username', async () => {
-    jest.spyOn(mainStore, 'getBountyById').mockReturnValue(Promise.resolve([{ ...newBounty, body: { ...mockBountiesMutated[1].body, assignee: user }}]));
+    jest
+      .spyOn(mainStore, 'getBountyById')
+      .mockReturnValue(
+        Promise.resolve([
+          { ...newBounty, body: { ...mockBountiesMutated[1].body, assignee: user } }
+        ])
+      );
     jest.spyOn(mainStore, 'getBountyIndexById').mockReturnValue(Promise.resolve(1234));
     await act(async () => {
       const { getByAltText, getByText } = render(
@@ -98,16 +86,22 @@ describe('TicketModalPage Component', () => {
           <Route path="/bounty/:bountyId" component={TicketModalPage} />
         </MemoryRouter>
       );
-  
+
       await waitFor(() => getByAltText('assigned_person'));
-  
+
       expect(getByAltText('assigned_person')).toBeInTheDocument();
       expect(getByText('Vladimir')).toBeInTheDocument();
-    }); 
+    });
   });
-  
+
   it('render I can help button if user not assigned', async () => {
-    jest.spyOn(mainStore, 'getBountyById').mockReturnValue(Promise.resolve([{ ...newBounty, body: { ...mockBountiesMutated[1].body, assignee: { owner_alias: '' } }}]));
+    jest
+      .spyOn(mainStore, 'getBountyById')
+      .mockReturnValue(
+        Promise.resolve([
+          { ...newBounty, body: { ...mockBountiesMutated[1].body, assignee: { owner_alias: '' } } }
+        ])
+      );
     jest.spyOn(mainStore, 'getBountyIndexById').mockReturnValue(Promise.resolve(1234));
     await act(async () => {
       const { getByText } = render(
@@ -115,15 +109,21 @@ describe('TicketModalPage Component', () => {
           <Route path="/bounty/:bountyId" component={TicketModalPage} />
         </MemoryRouter>
       );
-  
+
       await waitFor(() => getByText('I can help'));
-  
+
       expect(getByText('I can help')).toBeInTheDocument();
-    }); 
+    });
   });
 
   it('render bounty title, description, estimated hours and sats', async () => {
-    jest.spyOn(mainStore, 'getBountyById').mockReturnValue(Promise.resolve([{ ...newBounty, body: { ...mockBountiesMutated[1].body, assignee: user }}]));
+    jest
+      .spyOn(mainStore, 'getBountyById')
+      .mockReturnValue(
+        Promise.resolve([
+          { ...newBounty, body: { ...mockBountiesMutated[1].body, assignee: user } }
+        ])
+      );
     jest.spyOn(mainStore, 'getBountyIndexById').mockReturnValue(Promise.resolve(1234));
     await act(async () => {
       const { getByText, getAllByText } = render(
@@ -131,11 +131,11 @@ describe('TicketModalPage Component', () => {
           <Route path="/bounty/:bountyId" component={TicketModalPage} />
         </MemoryRouter>
       );
-  
+
       await waitFor(() => getByText(mockBountiesMutated[1].body.title));
       expect(getByText(mockBountiesMutated[1].body.title)).toBeInTheDocument();
       expect(getByText(mockBountiesMutated[1].body.description)).toBeInTheDocument();
       expect(getByText(formatSat(Number(mockBountiesMutated[1].body.price)))).toBeInTheDocument();
     });
-});
+  });
 });
