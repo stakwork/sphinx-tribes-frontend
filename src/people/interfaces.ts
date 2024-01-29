@@ -238,6 +238,7 @@ export interface WantedSummaryProps {
   loomEmbedUrl?: string;
   coding_languages: string[];
   estimated_session_length?: string;
+  estimated_completion_date?: string;
   assignee: Person;
   fromBountyPage: string;
   wanted_type: string;
