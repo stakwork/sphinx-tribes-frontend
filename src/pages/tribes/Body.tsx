@@ -39,6 +39,12 @@ const Column = styled.div`
   width: 100%;
 `;
 
+const StyledTagPopupWrapper = styled.div`
+  .euiFormControlLayout {
+    border: 10px solid red;
+  }
+`;
+
 function BodyComponent() {
   const { main, ui } = useStores();
   const [selected, setSelected] = useState('');
@@ -152,52 +158,57 @@ function BodyComponent() {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'baseline' }}>
-          <EuiPopover
-            panelPaddingSize="none"
-            button={button}
-            isOpen={tagsPop}
-            closePopover={() => setTagsPop(false)}
-          >
-            <EuiSelectable
-              searchable
-              options={tagOptions}
-              renderOption={(option: any, searchValue: any) => (
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    opacity: loadingList ? 0.5 : 1
-                  }}
-                >
-                  <Tag type={option.label} iconOnly />
-                  <EuiHighlight
-                    search={searchValue}
+          <StyledTagPopupWrapper>
+            <EuiPopover
+              panelPaddingSize="none"
+              button={button}
+              isOpen={tagsPop}
+              closePopover={() => setTagsPop(false)}
+            >
+              <EuiSelectable
+                searchable
+                searchProps={{
+                  style: {  background: '#fff', color: '#000', borderBottom: '1px solid #000', borderRadius: 0},
+                }}
+                options={tagOptions}
+                renderOption={(option: any, searchValue: any) => (
+                  <div
                     style={{
-                      fontSize: 11,
-                      marginLeft: 5,
-                      color: tags[option.label].color
+                      display: 'flex',
+                      alignItems: 'center',
+                      opacity: loadingList ? 0.5 : 1
                     }}
                   >
-                    {option.label}
-                  </EuiHighlight>
-                </div>
-              )}
-              listProps={{ rowHeight: 30 }} // showIcons:false
-              onChange={(opts: any) => {
-                if (!loadingList) {
-                  setTagOptions(opts);
-                  ui.setTags(opts);
-                }
-              }}
-            >
-              {(list: any, search: any) => (
-                <div style={{ width: 220 }}>
-                  {search}
-                  {list}
-                </div>
-              )}
-            </EuiSelectable>
-          </EuiPopover>
+                    <Tag type={option.label} iconOnly />
+                    <EuiHighlight
+                      search={searchValue}
+                      style={{
+                        fontSize: 11,
+                        marginLeft: 5,
+                        color: tags[option.label].color
+                      }}
+                    >
+                      {option.label}
+                    </EuiHighlight>
+                  </div>
+                )}
+                listProps={{ rowHeight: 30 }} // showIcons:false
+                onChange={(opts: any) => {
+                  if (!loadingList) {
+                    setTagOptions(opts);
+                    ui.setTags(opts);
+                  }
+                }}
+              >
+                {(list: any, search: any) => (
+                  <div>
+                    {search}
+                    {list}
+                  </div>
+                )}
+              </EuiSelectable>
+            </EuiPopover>
+          </StyledTagPopupWrapper>
 
           <SearchTextInput
             name="search"
@@ -208,7 +219,7 @@ function BodyComponent() {
             style={{
               width: 204,
               height: 40,
-              background: '#111',
+              background: '#fff',
               color: '#fff',
               border: 'none',
               marginLeft: 20
