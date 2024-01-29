@@ -170,6 +170,7 @@ function BodyComponent() {
             setCurrentItems={setCurrentItems}
             page={page}
             setPage={setPage}
+            languageString={languageString}
           />
         </div>
 
@@ -194,7 +195,6 @@ function BodyComponent() {
             minHeight: '32px'
           }}
         />
-
         <BountyHeader
           selectedWidget={selectedWidget}
           scrollValue={scrollValue}
@@ -237,6 +237,7 @@ function BodyComponent() {
                 setCurrentItems={setCurrentItems}
                 page={page}
                 setPage={setPage}
+                languageString={languageString}
               />
             </div>
           </div>

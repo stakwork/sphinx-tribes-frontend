@@ -81,7 +81,7 @@ export default function TextInput({
   const [active, setActive] = useState<boolean>(false);
   const color = colors['light'];
 
-  const padStyle = prepend ? { paddingLeft: 0 } : {};
+  const padStyle = prepend && active ? { paddingLeft: 0 } : {};
   return (
     <OuterContainer color={color}>
       <FieldEnv
