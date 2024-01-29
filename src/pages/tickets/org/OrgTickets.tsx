@@ -10,7 +10,7 @@ import { colors } from '../../../config/colors';
 import { useIsMobile } from '../../../hooks';
 import { useStores } from '../../../store';
 import { OrgBody, Body, Backdrop } from '../style';
-import { defaultOrgBountyStatus } from '../../../store/main';
+import { Organization, defaultOrgBountyStatus } from '../../../store/main';
 import api from '../../../api';
 import { OrgHeader } from './orgHeader';
 
@@ -24,7 +24,7 @@ function OrgBodyComponent() {
   const [checkboxIdToSelectedMapLanguage, setCheckboxIdToSelectedMapLanguage] = useState({});
   const [languageString, setLanguageString] = useState('');
   const { uuid } = useParams<{ uuid: string; bountyId: string }>();
-  const [organizationUrls, setOrganizationUrls] = useState({});
+  const [organizationData, setOrganizationData] = useState<Organization>();
 
   const color = colors['light'];
 
@@ -33,14 +33,12 @@ function OrgBodyComponent() {
 
   useEffect(() => {
     (async () => {
-      await main.getOpenGithubIssues();
-      await main.getBadgeList();
-      await main.getPeople();
-      if (uuid) {
-        await main.getSpecificOrganizationBounties(uuid, { page: 1, resetPage: true });
-        const orgUrls = await api.get(`organizations/${uuid}`);
-        setOrganizationUrls(orgUrls);
-      }
+      if (!uuid) return;
+
+      const orgData = await main.getUserOrganizationByUuid(uuid);
+
+      if (!orgData) return;
+      setOrganizationData(orgData);
       setLoading(false);
     })();
   }, [main, uuid]);
@@ -164,7 +162,7 @@ function OrgBodyComponent() {
           checkboxIdToSelectedMap={checkboxIdToSelectedMap}
           org_uuid={uuid}
           languageString={languageString}
-          organizationUrls={organizationUrls}
+          organizationData={organizationData}
         />
         <>
           <div

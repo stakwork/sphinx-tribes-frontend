@@ -19,12 +19,11 @@ interface styledProps {
 }
 
 const Header = styled.div`
-  display: flex;
   height: 130px;
-  padding: 0px 280px;
-  justify-content: space-between;
+  width: 65%;
+  display: flex;
   align-items: center;
-  border-bottom: 1px solid var(--Input-BG-1, #f2f3f5);
+  justify-content: space-between;
   background: #fff;
 `;
 
@@ -36,8 +35,11 @@ const UrlButtonContainer = styled.div`
 
 const FillContainer = styled.div`
   width: 100vw;
-  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: #fff;
+  border-bottom: 1px solid var(--Input-BG-1, #f2f3f5);
 `;
 
 const Filters = styled.div`
@@ -122,7 +124,7 @@ const Label = styled.label`
   font-size: 15px;
   font-style: normal;
   font-weight: 500;
-  line-height: 17px; /* 113.333% */
+  line-height: 17px;
   letter-spacing: 0.15px;
 `;
 const Leftheader = styled.div`
@@ -132,9 +134,9 @@ const Leftheader = styled.div`
   justify-content: center;
 `;
 const CompanyNameAndLink = styled.div`
-   display: flex;
-   flex-direction: column;
- `;
+  display: flex;
+  flex-direction: column;
+`;
 
 const CompanyLabel = styled.p`
   color: var(--Text-2, #3c3f41);
@@ -146,7 +148,7 @@ const CompanyLabel = styled.p`
 const ImageContainer = styled.img`
   width: 72px;
   height: 72px;
-  border-radius:66px;
+  border-radius: 66px;
 `;
 
 const CompanyDescription = styled.div`
@@ -367,11 +369,10 @@ export const OrgHeader = ({
   checkboxIdToSelectedMap,
   org_uuid,
   languageString,
-  organizationUrls
+  organizationData
 }: OrgBountyHeaderProps) => {
   const { main } = useStores();
   const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
-  const [organization, setOrganization] = useState<Organization>();
   const [isStatusPopoverOpen, setIsStatusPopoverOpen] = useState<boolean>(false);
   const onButtonClick = async () => {
     setIsStatusPopoverOpen((isPopoverOpen: any) => !isPopoverOpen);
@@ -380,19 +381,17 @@ export const OrgHeader = ({
 
   const selectedWidget = 'wanted';
 
-  const { website, github } = organizationUrls;
-
   const handlePostBountyClick = () => {
     setIsPostBountyModalOpen(true);
   };
   const handlePostBountyClose = () => {
     setIsPostBountyModalOpen(false);
   };
-  const handleWebsiteButton = (websiteUrl: string | undefined) => {
+  const handleWebsiteButton = (websiteUrl?: string) => {
     window.open(websiteUrl, '_blank');
   };
 
-  const handleGithubButton = (githubUrl: string | undefined) => {
+  const handleGithubButton = (githubUrl?: string) => {
     window.open(githubUrl, '_blank');
   };
 
@@ -407,55 +406,44 @@ export const OrgHeader = ({
     }
   }, [org_uuid, checkboxIdToSelectedMap, main, languageString]);
 
-  useEffect(() => {
-    (async () => {
-      if (!org_uuid) return;
+  if (!organizationData) return null;
 
-      const res = await main.getUserOrganizationByUuid(org_uuid);
-
-      if (!res) return;
-      setOrganization(res);
-    })();
-  }, [main, org_uuid]);
-
-  if(!organization) return null
-
-  const { name, img, description } = organization as Organization
+  const { name, img, description, website, github } = organizationData as Organization;
 
   return (
     <>
       <FillContainer>
         <Header>
           <Leftheader>
-            <ImageContainer  src={img} width="72px" height="72px" alt="organization icon"/>
+            <ImageContainer src={img} width="72px" height="72px" alt="organization icon" />
             <CompanyNameAndLink>
-            <CompanyLabel>{name}</CompanyLabel>
-          <UrlButtonContainer data-testid="url-button-container">
-            {website !== '' ? (
-              <UrlButton onClick={() => handleWebsiteButton(website)}>
-                <img src={websiteIcon} alt="" />
-                Website
-              </UrlButton>
-            ) : (
-              ''
-            )}
-            {github !== '' ? (
-              <UrlButton onClick={() => handleGithubButton(github)}>
-                <img src={githubIcon} alt="" />
-                Github
-              </UrlButton>
-            ) : (
-              ''
-            )}
-          </UrlButtonContainer>
+              <CompanyLabel>{name}</CompanyLabel>
+              <UrlButtonContainer data-testid="url-button-container">
+                {website !== '' ? (
+                  <UrlButton onClick={() => handleWebsiteButton(website)}>
+                    <img src={websiteIcon} alt="" />
+                    Website
+                  </UrlButton>
+                ) : (
+                  ''
+                )}
+                {github !== '' ? (
+                  <UrlButton onClick={() => handleGithubButton(github)}>
+                    <img src={githubIcon} alt="" />
+                    Github
+                  </UrlButton>
+                ) : (
+                  ''
+                )}
+              </UrlButtonContainer>
             </CompanyNameAndLink>
           </Leftheader>
           <RightHeader>
-          <CompanyDescription>{description}</CompanyDescription>
-          <Button onClick={handlePostBountyClick}>
-            <img src={addBounty} alt="" />
-            Post a Bounty
-          </Button>
+            <CompanyDescription>{description}</CompanyDescription>
+            <Button onClick={handlePostBountyClick}>
+              <img src={addBounty} alt="" />
+              Post a Bounty
+            </Button>
           </RightHeader>
         </Header>
       </FillContainer>
