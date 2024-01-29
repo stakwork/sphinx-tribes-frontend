@@ -5,6 +5,28 @@ import React from 'react';
 import NameTag from 'people/utils/NameTag';
 import MobileView from '../CodingBounty';
 
+interface Props {
+  isDisabled: boolean;
+  buttonText: string;
+}
+
+const ImageButton = ({ isDisabled, buttonText }: Props) => (
+  <div
+    role="button"
+    style={{
+      width: '117px',
+      height: '40px'
+    }}
+  >
+    <div className="leadingImageContainer">
+      <img className="buttonImage" src="/static/Delete.svg" alt="h" />
+    </div>
+    <button disabled={isDisabled} className="euiText ButtonText css-g2xc3e-euiText-m">
+      {buttonText}
+    </button>
+  </div>
+);
+
 describe('MobileView component', () => {
   beforeEach(() => {
     const mockIntersectionObserver = jest.fn();
@@ -166,24 +188,3 @@ describe('MobileView component', () => {
     expect(deleteButton).toBeEnabled();
   });
 });
-
-interface Props {
-  isDisabled: boolean;
-  buttonText: string;
-}
-const ImageButton = ({ isDisabled, buttonText }: Props) => (
-  <div
-    role="button"
-    style={{
-      width: '117px',
-      height: '40px'
-    }}
-  >
-    <div className="leadingImageContainer">
-      <img className="buttonImage" src="/static/Delete.svg" alt="h" />
-    </div>
-    <button disabled={isDisabled} className="euiText ButtonText css-g2xc3e-euiText-m">
-      {buttonText}
-    </button>
-  </div>
-);
