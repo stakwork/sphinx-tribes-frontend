@@ -105,10 +105,11 @@ function BodyComponent() {
 
   useEffect(() => {
     setFilterResult(filterByCodingLanguage(main.people, checkboxIdToSelectedMapLanguage));
-  }, [checkboxIdToSelectedMapLanguage]);
+  }, [checkboxIdToSelectedMapLanguage, main.people]);
 
   // update search
   useEffect(() => {
+    setLoading(true);
     (async () => {
       await main.getPeople({ page: 1, resetPage: true });
       setLoading(false);
@@ -175,7 +176,7 @@ function BodyComponent() {
             select={selectPerson}
           />
         ))}
-        {!(ui.searchText ? people : filterResult)?.length && <NoResults />}
+        {!(ui.searchText ? people : filterResult)?.length && <NoResults loaded={!loading} />}
         <PageLoadSpinner noAnimate show={loadingBottom} />
       </div>
 
