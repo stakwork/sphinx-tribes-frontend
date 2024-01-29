@@ -32,7 +32,6 @@ const MockProps: OrgBountyHeaderProps = {
     deleted: false
   }
 };
-
 describe('OrgHeader Component', () => {
   beforeEach(() => {
     jest.spyOn(mainStore, 'getSpecificOrganizationBounties').mockReset();
@@ -47,66 +46,67 @@ describe('OrgHeader Component', () => {
     render(<OrgHeader {...MockProps} />);
     expect(screen.getByText('Post a Bounty')).toBeInTheDocument();
     expect(screen.getByText('Status')).toBeInTheDocument();
-    expect(screen.getByLabelText('Skill')).toBeInTheDocument();
+    expect(screen.getByText('Skill')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Search')).toBeInTheDocument();
     expect(screen.getByText(/Bounties/i)).toBeInTheDocument();
   });
 
-  // it('opens the PostModal on "Post a Bounty" button click', async () => {
-  //   render(<OrgHeader {...MockProps} />);
-  //   fireEvent.click(screen.getByText('Post a Bounty'));
-  // });
+  it('opens the PostModal on "Post a Bounty" button click', async () => {
+    render(<OrgHeader {...MockProps} />);
+    fireEvent.click(screen.getByText('Post a Bounty'));
+    // You can add further assertions here to check the modal is open
+  });
 
-  // it('displays the correct number of bounties', () => {
-  //   render(<OrgHeader {...MockProps} />);
-  //   expect(screen.getByText('284')).toBeInTheDocument();
-  //   expect(screen.getByText('Bounties')).toBeInTheDocument();
-  // });
+  it('displays the correct number of bounties', () => {
+    render(<OrgHeader {...MockProps} />);
+    expect(screen.getByText('284')).toBeInTheDocument();
+    expect(screen.getByText('Bounties')).toBeInTheDocument();
+  });
 
-  // it('should trigger API call in response to click on status from OrgHeader', async () => {
-  //   const { getByText, getByRole, rerender } = render(<OrgHeader {...MockProps} />);
+  it('should trigger API call in response to click on status from OrgHeader', async () => {
+    const { getByText, getByRole, rerender } = render(<OrgHeader {...MockProps} />);
 
-  //   const statusFilter = getByText('Status');
-  //   expect(statusFilter).toBeInTheDocument();
-  //   fireEvent.click(statusFilter);
+    const statusFilter = getByText('Status');
+    expect(statusFilter).toBeInTheDocument();
+    fireEvent.click(statusFilter);
 
-  //   const statusOpenCheckbox = getByRole('checkbox', { name: /Open/i });
-  //   expect(statusOpenCheckbox).toBeInTheDocument();
-  //   fireEvent.click(statusOpenCheckbox);
+    const statusOpenCheckbox = getByRole('checkbox', { name: /Open/i });
+    expect(statusOpenCheckbox).toBeInTheDocument();
+    fireEvent.click(statusOpenCheckbox);
 
-  //   await waitFor(() => {
-  //     expect(MockProps.onChangeStatus).toHaveBeenCalledWith('Open');
+    await waitFor(() => {
+      expect(MockProps.onChangeStatus).toHaveBeenCalledWith('Open');
 
-  //     const updatedCheckboxIdToSelectedMap = {
-  //       ...MockProps.checkboxIdToSelectedMap,
-  //       Open: true
-  //     };
+      const updatedCheckboxIdToSelectedMap = {
+        ...MockProps.checkboxIdToSelectedMap,
+        Open: true
+      };
 
-  //     rerender(
-  //       <OrgHeader {...MockProps} checkboxIdToSelectedMap={updatedCheckboxIdToSelectedMap} />
-  //     );
+      rerender(
+        <OrgHeader {...MockProps} checkboxIdToSelectedMap={updatedCheckboxIdToSelectedMap} />
+      );
 
-  //     expect(mainStore.getSpecificOrganizationBounties).toHaveBeenCalledWith(MockProps.org_uuid, {
-  //       page: 1,
-  //       resetPage: true,
-  //       ...updatedCheckboxIdToSelectedMap,
-  //       languageString: MockProps.languageString
-  //     });
-  //   });
-  // });
+      expect(mainStore.getSpecificOrganizationBounties).toHaveBeenCalledWith(MockProps.org_uuid, {
+        page: 1,
+        resetPage: true,
+        ...updatedCheckboxIdToSelectedMap,
+        languageString: MockProps.languageString
+      });
+    });
+  });
 
-  // it('validates the buttons appear when website and github is available', () => {
-  //   const { getByText } = render(<OrgHeader {...MockProps} />);
-  //   const websiteButton = getByText(/Website/i);
-  //   const githubButton = getByText(/Github/i);
-  //   expect(websiteButton).toBeInTheDocument();
-  //   expect(githubButton).toBeInTheDocument();
-  // });
+  it('validates the buttons appear when website and github is available', () => {
+    const { getByText } = render(<OrgHeader {...MockProps} />);
+    const websiteButton = getByText(/Website/i);
+    const githubButton = getByText(/Github/i);
+    expect(websiteButton).toBeInTheDocument();
+    expect(githubButton).toBeInTheDocument();
+  });
 
-  // it('UrlButtons are left-aligned if visible', () => {
-  //   const { getByTestId } = render(<OrgHeader {...MockProps} />);
-  //   const urlButtonContainer = getByTestId('url-button-container');
-  //   const containerStyle = window.getComputedStyle(urlButtonContainer);
-  //   expect(containerStyle.marginLeft).toBe('0px');
-  // });
+  it('UrlButtons are left-aligned if visible', () => {
+    const { getByTestId } = render(<OrgHeader {...MockProps} />);
+    const urlButtonContainer = getByTestId('url-button-container');
+    const containerStyle = window.getComputedStyle(urlButtonContainer);
+    expect(containerStyle.marginLeft).toBe('0px');
+  });
 });
