@@ -11,6 +11,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Enable docker.host.internal for Ubuntu
+        run: |
+          pwd && sudo bash -c 'echo "172.17.0.1 host.docker.internal" >> /etc/hosts'
+
       - name: Checkout Repository
         uses: actions/checkout@v2
       
