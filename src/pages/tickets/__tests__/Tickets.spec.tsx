@@ -3,9 +3,8 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import WidgetSwitchViewer from 'people/widgetViews/WidgetSwitchViewer';
 import { BrowserRouter as Router } from 'react-router-dom';
-import Tickets from '../Tickets'; // Adjust the import path based on your project structure
+import Tickets from '../Tickets'; 
 
-// Mock data for testing
 const mockBounties = [
   {
     bounty: {
