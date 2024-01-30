@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Organization } from 'store/main';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { EuiCheckboxGroup, EuiPopover, EuiText } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
@@ -20,31 +22,124 @@ interface styledProps {
   color?: any;
 }
 const color = colors['light'];
-const Header = styled.div`
-  display: flex;
-  height: 130px;
-  padding: 45px 20px 45px 130px;
-  justify-content: center;
-  align-items: center;
-  align-self: stretch;
-  border-bottom: 1px solid var(--Input-BG-1, #f2f3f5);
-  background: #fff;
-`;
-
-const UrlButtonContainer = styled.div`
-  width: 180px;
-  display: flex;
-  gap: 8px;
-  justify-content: space-between;
-  margin-top: 40px;
-  margin-right: 690px;
-  margin-left: 0px;
-`;
 
 const FillContainer = styled.div`
   width: 100vw;
+  display: flex;
+  justify-content: center;
   align-self: stretch;
   background: #fff;
+  border-bottom: 1px solid var(--Input-BG-1, #f2f3f5);
+`;
+
+const Header = styled.div`
+  display: flex;
+  min-width: 1366px;
+  height: 130px;
+  align-items: center;
+  align-self: stretch;
+  padding: 0 130px;
+  background: #fff;
+  @media (max-width: 1140px) {
+    min-width: 90%;
+    padding: 0;
+  }
+`;
+
+const OrgDetails = styled.div`
+  display: flex;
+  flex: 4;
+  justify-content: space-between;
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  flex: 1;
+  justify-content: flex-end;
+`;
+
+const OrgDetailsLeft = styled.div`
+  display: flex;
+  
+`;
+
+const OrgDetailsRight = styled.div`
+  display: flex;
+  justify-contents: flex-end;
+  align-items: center;
+  
+`;
+
+const OrgLogo = styled.img`
+  width: 72px;
+  height: 72px;
+  border-radius: 66px;
+  
+`;
+
+const OrgNameLinks = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-left: 20px;
+  
+`;
+
+const OrgName = styled.p`
+  color: var(--Text-2, #3c3f41);
+  font-family: Barlow;
+  font-size: 28px;
+  font-style: normal;
+  font-weight: 700;
+  margin: 0;
+`;
+
+const OrgLinks = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+`;
+
+const SmallButton = styled.a`
+  border-radius: 4px;
+  border: 1px solid var(--Divider-2, #dde1e5);
+  display: flex;
+  width: auto;
+  height: 28px;
+  padding: 0px 10px 0px 7px;
+  align-items: center;
+  gap: 6px;
+  color: var(--Main-bottom-icons, #5f6368);
+  text-decoration: none;
+  cursor: pointer;
+  font-family: Barlow;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 500;
+  outline: none;
+  &:hover {
+    text-decoration: none;
+    color: var(--Main-bottom-icons, #5f6368);
+    border: 1px solid var(--Disabled-Icon-color, #B0B7BC);
+  }
+  &:focus {
+    outline: none;
+  }
+`;
+const OrgDetailsText = styled.div`
+  overflow: hidden;
+  color: var(--Main-bottom-icons, #5F6368);
+  text-align: right;
+  leading-trim: both;
+  text-edge: cap;
+  text-overflow: ellipsis;
+  font-family: Barlow;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px;
+  width: 403px;
+
 `;
 
 const Filters = styled.div`
@@ -92,28 +187,6 @@ const Button = styled.button`
   text-align: center;
   font-family: Barlow;
   font-size: 14px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 0px; /* 0% */
-  letter-spacing: 0.14px;
-`;
-
-const UrlButton = styled.button`
-  border-radius: 4px;
-  margin-right: auto;
-  border: 1px solid #dde1e5;
-  background: #ffffff;
-  display: flex;
-  width: 85px;
-  height: 28px;
-  padding: 8px 16px;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  color: var(--Black, #5f6368);
-  text-align: center;
-  font-family: 'Barlow';
-  font-size: 13px;
   font-style: normal;
   font-weight: 500;
   line-height: 0px; /* 0% */
@@ -425,6 +498,8 @@ export const OrgHeader = ({
   const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
   const [filterClick, setFilterClick] = useState(false);
   const [isStatusPopoverOpen, setIsStatusPopoverOpen] = useState<boolean>(false);
+  const [organization, setOrganization] = useState<Organization>();
+  const { uuid } = useParams<{ uuid: string }>();
   const onButtonClick = async () => {
     setIsStatusPopoverOpen((isPopoverOpen: any) => !isPopoverOpen);
   };
@@ -458,6 +533,15 @@ export const OrgHeader = ({
     }
   }, [org_uuid, checkboxIdToSelectedMap, main, languageString]);
 
+  useEffect(() => {
+    (async () => {
+      if (!uuid) return;
+      const res = await main.getOrganizationByUuid(uuid);
+      if (!res) return;
+      setOrganization(res);      
+    })();
+  }, [main, uuid])
+
   const handleClick = () => {
     setFilterClick(!filterClick);
   };
@@ -482,28 +566,43 @@ export const OrgHeader = ({
     <>
       <FillContainer>
         <Header>
-          <UrlButtonContainer data-testid="url-button-container">
-            {website !== '' ? (
-              <UrlButton onClick={() => handleWebsiteButton(website)}>
-                <img src={websiteIcon} alt="" />
-                Website
-              </UrlButton>
-            ) : (
-              ''
-            )}
-            {github !== '' ? (
-              <UrlButton onClick={() => handleGithubButton(github)}>
-                <img src={githubIcon} alt="" />
-                Github
-              </UrlButton>
-            ) : (
-              ''
-            )}
-          </UrlButtonContainer>
-          <Button onClick={handlePostBountyClick}>
-            <img src={addBounty} alt="" />
-            Post a Bounty
-          </Button>
+          <OrgDetails>
+              <OrgDetailsLeft>
+                <OrgLogo src={organization?.img || '/static/orgdefault.png'} alt={organization?.name + ' logo'}/>
+                <OrgNameLinks>
+                  <OrgName>{organization?.name || ''}</OrgName>
+                  <OrgLinks>
+                    {
+                      organization?.github &&
+                      <SmallButton href={organization?.website} target="_blank">
+                        <img src={websiteIcon} alt="globe-website icon" />
+                        <span>Website</span>
+                      </SmallButton>
+                    }
+                    {
+                      organization?.website &&
+                      <SmallButton href={organization?.github} target="_blank">
+                        {' '}
+                        <img src={githubIcon} alt="github icon" />
+                        <span>Github</span>
+                      </SmallButton>
+                    }
+                    
+                  </OrgLinks>
+                  
+                </OrgNameLinks>
+              </OrgDetailsLeft>
+              <OrgDetailsRight>
+                <OrgDetailsText>{organization?.description || ''}</OrgDetailsText>
+              </OrgDetailsRight>
+            </OrgDetails>
+            <ButtonContainer>
+              <Button onClick={handlePostBountyClick}>
+                <img src={addBounty} alt="" />
+                Post a Bounty
+              </Button>
+            </ButtonContainer>
+
         </Header>
       </FillContainer>
       <FillContainer>
