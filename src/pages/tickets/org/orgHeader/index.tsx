@@ -492,8 +492,7 @@ export const OrgHeader = ({
   onChangeStatus,
   checkboxIdToSelectedMap,
   org_uuid,
-  languageString,
-  organizationUrls
+  languageString
 }: OrgBountyHeaderProps) => {
   const { main } = useStores();
   const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
@@ -508,7 +507,6 @@ export const OrgHeader = ({
 
   const selectedWidget = 'wanted';
   const filterRef = useRef<HTMLDivElement | null>(null);
-  const { website, github } = organizationUrls;
   const handlePostBountyClick = () => {
     setIsPostBountyModalOpen(true);
   };
