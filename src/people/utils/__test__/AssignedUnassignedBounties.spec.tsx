@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import { Router } from 'react-router-dom';
-import { queryByText, render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import nock from 'nock';
 import React from 'react';
 import { setupStore } from '../../../__test__/__mockData__/setupStore';
@@ -32,6 +32,7 @@ beforeEach(() => {
  */
 describe('Bounties Component', () => {
   nock(user.url).get('/person/id/1').reply(200, {});
+
   test('display bounty', () => {
     const bountyProps = {
       assignee: person,
@@ -42,7 +43,7 @@ describe('Bounties Component', () => {
       codingLanguage: [],
       title: 'test_title',
       person: person,
-      onPanelClick: () => {},
+      onPanelClick: jest.fn(),
       widget: {},
       created: 0,
       isPaid: false
@@ -54,5 +55,36 @@ describe('Bounties Component', () => {
       </Router>
     );
     expect(screen.queryByText(bountyProps.title)).toBeInTheDocument();
+  });
+
+  test('display bounty with hover effect on DescriptionPriceContainer', async () => {
+    const bountyProps = {
+      assignee: undefined,
+      price: 0,
+      sessionLength: '',
+      priceMin: 0,
+      priceMax: 0,
+      codingLanguage: [],
+      title: 'test_title',
+      person: person,
+      onPanelClick: jest.fn(),
+      widget: {},
+      created: 0,
+      isPaid: false
+    };
+
+    render(
+      <Router history={history}>
+        <Bounties {...bountyProps} />
+      </Router>
+    );
+
+    const descriptionPriceContainer = screen.getByTestId('description-price-container');
+
+    expect(descriptionPriceContainer).toBeInTheDocument();
+
+    fireEvent.mouseEnter(descriptionPriceContainer);
+
+    expect(descriptionPriceContainer).toHaveStyle('border: 2px solid rgba(0,130,255,0.2)');
   });
 });

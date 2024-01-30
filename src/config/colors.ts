@@ -14,6 +14,7 @@ const palette = {
   green1: '#49C998',
   borderGreen1: '#2FB379',
   borderGreen2: 'rgba(73, 201, 152, 0.2)',
+  borderBlue2: 'rgba(0,140,230,0.2)',
   red1: '#ED7474',
   red2: '#FF8F80',
   red3: '#b75858',

@@ -35,6 +35,7 @@ const BountyContainer = styled.div<containerProps>`
   background-size: cover;
   border: ${(p: any) => (p.assignedBackgroundImage ? `2px solid ${p.color.grayish.G950}` : '')};
   border-radius: 10px;
+  box-sizing: border-box;
   .BountyDescriptionContainer {
     min-width: 553px;
     max-width: 553px;
@@ -61,20 +62,23 @@ const DescriptionPriceContainer = styled.div<containerProps>`
   background: ${(p: any) => (p.unAssignedBackgroundImage ? p.unAssignedBackgroundImage : '')};
   background-repeat: no-repeat;
   background-size: cover;
-
+  border: ${(p: any) => (p.unAssignedBackgroundImage ? `2px solid ${p.color.grayish.G950}` : '')};
+  border-radius: 10px;
   :hover {
-    background: url('static/unassigned_bounty_hover_bg.svg');
+    background: ${(p: any) => (p.unAssignedBackgroundImage ? p.unAssignedBackgroundImage : '')};
+    border: ${(p: any) => (p.unAssignedBackgroundImage ? `2px solid ${p.color.borderBlue2}` : '')};
+    border-radius: ${(p: any) => (p.unAssignedBackgroundImage ? '10px' : '')};
     background-repeat: no-repeat;
     background-size: cover;
   }
   :active {
-    background: url('static/unassigned_bounty_active_bg.svg');
+    background: ${(p: any) => (p.unAssignedBackgroundImage ? p.unAssignedBackgroundImage : '')};
   }
 `;
 
 const UnassignedPersonProfile = styled.div<containerProps>`
-  min-width: 336px;
-  min-height: 160px;
+  min-width: 320px;
+  min-height: 150px;
   max-height: auto;
   background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='10' ry='10' stroke='%23B0B7BCFF' stroke-width='3' stroke-dasharray='4' stroke-dashoffset='0' stroke-linecap='butt'/%3e%3c/svg%3e");
   border-radius: 10px;
@@ -201,8 +205,18 @@ const Bounties = (props: BountiesProps) => {
           </BountyContainer>
         </BountyLink>
       ) : (
-        <BountyContainer color={color}>
-          <DescriptionPriceContainer unAssignedBackgroundImage='url("/static/unassigned_bounty_bg.svg")'>
+        <BountyContainer
+          style={{
+            width: '1100px',
+            height: '160px'
+          }}
+          color={color}
+        >
+          <DescriptionPriceContainer
+            data-testid="description-price-container"
+            color={color}
+            unAssignedBackgroundImage='url("/static/unassigned_bounty_bg.svg")'
+          >
             <BountyLink to={`/bounty/${props.id}`}>
               <div style={{ display: 'flex', flexDirection: 'row' }}>
                 <BountyDescription
