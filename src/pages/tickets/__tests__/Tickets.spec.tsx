@@ -5,7 +5,6 @@ import WidgetSwitchViewer from 'people/widgetViews/WidgetSwitchViewer';
 import { BrowserRouter as Router } from 'react-router-dom';
 import Tickets from '../Tickets';
 
-// Mock data
 const mockBounties = [
   {
     bounty: {
