@@ -2,17 +2,17 @@ import React from 'react';
 import styled from 'styled-components';
 import { TextInputProps } from 'components/interfaces';
 import { colors } from '../../config/colors';
-import { FieldEnv, FieldText } from '../form/inputs/index';
+import { FieldText } from '../form/inputs/index';
 
-const F = styled((props: any) => <FieldEnv {...props} />)`
-  .euiFormLabel[for] {
-    cursor: default;
-  }
+const StyledLabel = styled.span`
+  font-family: Barlow;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  display: flex;
+  margin-bottom: 4px;
 `;
 
-const R = styled.div`
-  position: relative;
-`;
 export default function TextInput({
   label,
   value,
@@ -26,21 +26,20 @@ export default function TextInput({
   const color = colors['light'];
   return (
     <>
-      <F label={label}>
-        <R>
-          <FieldText
-            color={color}
-            name="first"
-            value={value || ''}
-            readOnly={readOnly || false}
-            onChange={(e: any) => onChange(e.target.value)}
-            onBlur={handleBlur}
-            onFocus={handleFocus}
-            prepend={prepend}
-            style={style}
-          />
-        </R>
-      </F>
+      <div>
+        <StyledLabel>{label}</StyledLabel>
+        <FieldText
+          color={color}
+          name="first"
+          value={value || ''}
+          readOnly={readOnly || false}
+          onChange={(e: any) => onChange(e.target.value)}
+          onBlur={handleBlur}
+          onFocus={handleFocus}
+          prepend={prepend}
+          style={style}
+        />
+      </div>
     </>
   );
 }
