@@ -92,6 +92,7 @@ const OrgName = styled.p`
   font-style: normal;
   font-weight: 700;
   margin: 0;
+  text-wrap: nowrap;
 `;
 
 const OrgLinks = styled.div`
