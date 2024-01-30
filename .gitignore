@@ -7,7 +7,7 @@
 
 # testing
 /coverage
-/cypress/fixtures/nodes.json
+cypress/fixtures/nodes.json
 
 # production
 /build
