@@ -2030,6 +2030,25 @@ export class MainStore {
     }
   }
 
+    //for a user who is not logged in
+    async getOrganizationByUuid(uuid: string): Promise<Organization | undefined> {
+      try {
+        const r: any = await fetch(`${TribesURL}/organizations/${uuid}`, {
+          method: 'GET',
+          mode: 'cors',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+  
+        const data = await r.json();
+        return await data;
+      } catch (e) {
+        console.log('Error getOrganizationByUuid', e);
+        return undefined;
+      }
+    }
+
   @action async addOrganization(body: CreateOrganizationInput): Promise<any> {
     try {
       if (!uiStore.meInfo) return null;
