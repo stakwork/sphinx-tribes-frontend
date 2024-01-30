@@ -203,7 +203,9 @@ const Bounties = (props: BountiesProps) => {
       ) : (
         <BountyContainer color={color}>
           <DescriptionPriceContainer unAssignedBackgroundImage='url("/static/unassigned_bounty_bg.svg")'>
-            <BountyLink to={`/bounty/${props.id}`}>
+            <BountyLink
+              to={props.org_uuid ? `/bounty/${props.id}/${props.org_uuid}` : `/bounty/${props.id}`}
+            >
               <div style={{ display: 'flex', flexDirection: 'row' }}>
                 <BountyDescription
                   {...person}
