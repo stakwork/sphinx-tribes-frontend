@@ -3,9 +3,9 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import WidgetSwitchViewer from 'people/widgetViews/WidgetSwitchViewer';
 import { BrowserRouter as Router } from 'react-router-dom';
-import Tickets from '../Tickets'; // Adjust the import path based on your project structure
+import Tickets from '../Tickets';
 
-// Mock data for testing
+// Mock data
 const mockBounties = [
   {
     bounty: {
@@ -19,19 +19,13 @@ const mockBounties = [
         userName: 'MockHunter',
         profileImage: 'mock-image-url'
       }
-      // ... other properties ...
     },
-    assignee: {
-      /* assignee properties */
-    },
-    owner: {
-      /* owner properties */
-    },
+    assignee: {},
+    owner: {},
     organization: {
       name: 'sphinx-tribe'
     }
   }
-  // Add more mock bounties as needed
 ];
 
 jest.mock('../../../store', () => ({
@@ -47,9 +41,7 @@ jest.mock('../../../store', () => ({
       getTribesByOwner: jest.fn()
     },
     ui: {
-      meInfo: {
-        /* Add mock data for ui.meInfo if needed */
-      },
+      meInfo: {},
       toasts: [], // Assuming toasts is an array
       setToasts: jest.fn()
     }
@@ -58,27 +50,24 @@ jest.mock('../../../store', () => ({
 
 jest.mock('people/widgetViews/WidgetSwitchViewer', () => ({
   __esModule: true,
-  default: () => <div data-testid="widget-switch-viewer" /> // Provide a minimal mock
+  default: () => <div data-testid="widget-switch-viewer" />
 }));
 
 // Mock the getPeopleBounties function to return mock data
 jest.mock('../../../store/main', () => ({
-  ...jest.requireActual('../../../store/main'), // Use actual implementation for other functions
+  ...jest.requireActual('../../../store/main'),
   getPeopleBounties: jest.fn(() => Promise.resolve(mockBounties))
 }));
 
-// Mock the useHistory hook
 jest.mock('react-router', () => ({
   ...jest.requireActual('react-router'),
   useHistory: () => ({ push: jest.fn() })
 }));
 
-// Mock the useIsMobile hook
 jest.mock('../../../hooks', () => ({
-  useIsMobile: jest.fn(() => false) // Change to true if testing for mobile view
+  useIsMobile: jest.fn(() => false)
 }));
 
-// Mock the observer HOC
 jest.mock('mobx-react-lite', () => ({
   observer: (component: React.FC) => component
 }));
