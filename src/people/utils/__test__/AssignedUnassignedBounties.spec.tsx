@@ -85,6 +85,6 @@ describe('Bounties Component', () => {
 
     fireEvent.mouseEnter(descriptionPriceContainer);
 
-    expect(descriptionPriceContainer).toHaveStyle('border: 2px solid rgba(0,130,255,0.2)');
+    expect(descriptionPriceContainer).toHaveStyle('border: 2px solid rgba(0,140,230,0.2)');
   });
 });
