@@ -86,7 +86,7 @@ describe('Bounties Component', () => {
     fireEvent.mouseEnter(descriptionPriceContainer);
 
     expect(descriptionPriceContainer).toHaveStyle({
-      background: 'url("/static/unassigned_bounty_hover_bg.svg")' // Replace with the expected image URL
+      background: 'url("/static/unassigned_bounty_hover_bg.svg")'
     });
   });
 });
