@@ -10,6 +10,10 @@ import { useIsMobile } from 'hooks';
 import { useStores } from 'store';
 import { TicketModalPage } from '../TicketModalPage';
 
+jest.mock('hooks', () => ({
+  useIsMobile: jest.fn()
+}));
+
 const mockPush = jest.fn();
 const mockGoBack = jest.fn();
 
@@ -31,25 +35,11 @@ jest.mock('react-router-dom', () => ({
 }));
 
 describe('TicketModalPage Component', () => {
-  beforeEach(() => {
-    const mockIntersectionObserver = jest.fn();
-    mockIntersectionObserver.mockReturnValue({
-      observe: () => null,
-      unobserve: () => null,
-      disconnect: () => null
-    });
-    window.IntersectionObserver = mockIntersectionObserver;
-  });
-
   it('should redirect to the appropriate page on close based on the route', async () => {
     (useIsMobile as jest.Mock).mockReturnValue(false);
 
-    (useStores as jest.Mock).mockReturnValue({
-      main: {
-        getBountyById: jest.fn(),
-        getBountyIndexById: jest.fn()
-      }
-    });
+    jest.spyOn(mainStore, 'getBountyById');
+    jest.spyOn(mainStore, 'getBountyIndexById');
 
     render(<TicketModalPage setConnectPerson={jest.fn()} visible={true} />);
 
@@ -62,6 +52,16 @@ describe('TicketModalPage Component', () => {
 
       expect(mockPush).toHaveBeenCalledWith('/bounties');
     }
+  });
+
+  beforeEach(() => {
+    const mockIntersectionObserver = jest.fn();
+    mockIntersectionObserver.mockReturnValue({
+      observe: () => null,
+      unobserve: () => null,
+      disconnect: () => null
+    });
+    window.IntersectionObserver = mockIntersectionObserver;
   });
 
   it('reder ticket modal', async () => {
