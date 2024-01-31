@@ -1,5 +1,6 @@
 import { Button, Modal, TextInput } from 'components/common';
 import React from 'react';
+import styled from 'styled-components';
 
 type BadgesModalProps = {
   visible: boolean;
@@ -11,6 +12,11 @@ type BadgesModalProps = {
   claiming: boolean;
   claimBadge: any;
 };
+
+const StyledTextInput = styled(TextInput)`
+  width: 240px;
+  border: 1px solid black;
+`;
 
 function BadgesModal({
   setBadgeToPush,
@@ -39,29 +45,21 @@ function BadgesModal({
           gap: '20px'
         }}
       >
-        <>
-          <TextInput
-            style={{ width: 240, border: '1px solid black' }}
-            label={'Liquid Address'}
-            value={liquidAddress}
-            onChange={(e: any) => setLiquidAddress(e)}
-          />
+        <StyledTextInput
+          label={'Liquid Address'}
+          value={liquidAddress}
+          onChange={(e: any) => setLiquidAddress(e)}
+        />
 
-          <TextInput
-            style={{ width: 240, border: '1px solid black' }}
-            label={'Memo (optional)'}
-            value={memo}
-            onChange={(e: any) => setMemo(e)}
-          />
+        <StyledTextInput label={'Memo (optional)'} value={memo} onChange={(e: any) => setMemo(e)} />
 
-          <Button
-            color="primary"
-            text="Claim on Liquid"
-            loading={claiming}
-            disabled={!liquidAddress || claiming}
-            onClick={() => claimBadge()}
-          />
-        </>
+        <Button
+          color="primary"
+          text="Claim on Liquid"
+          loading={claiming}
+          disabled={!liquidAddress || claiming}
+          onClick={() => claimBadge()}
+        />
       </div>
     </Modal>
   );

@@ -25,21 +25,19 @@ export default function TextInput({
 }: TextInputProps) {
   const color = colors['light'];
   return (
-    <>
-      <div>
-        <StyledLabel>{label}</StyledLabel>
-        <FieldText
-          color={color}
-          name="first"
-          value={value || ''}
-          readOnly={readOnly || false}
-          onChange={(e: any) => onChange(e.target.value)}
-          onBlur={handleBlur}
-          onFocus={handleFocus}
-          prepend={prepend}
-          style={style}
-        />
-      </div>
-    </>
+    <div>
+      <StyledLabel>{label}</StyledLabel>
+      <FieldText
+        color={color}
+        name="first"
+        value={value || ''}
+        readOnly={readOnly || false}
+        onChange={(e: any) => onChange(e.target.value)}
+        onBlur={handleBlur}
+        onFocus={handleFocus}
+        prepend={prepend}
+        style={style}
+      />
+    </div>
   );
 }
