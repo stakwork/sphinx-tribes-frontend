@@ -7,6 +7,7 @@ import { GetValue, coding_languages } from 'people/utils/languageLabelStyle';
 import { colors } from 'config';
 import { OrgBountyHeaderProps } from '../../../../people/interfaces';
 import { useStores } from '../../../../store';
+import { userCanManageBounty } from '../../../../helpers';
 import addBounty from './Icons/addBounty.svg';
 import dropdown from './Icons/dropDownIcon.svg';
 import searchIcon from './Icons/searchIcon.svg';
@@ -413,6 +414,7 @@ const StatusContainer = styled.div<styledProps>`
 
 const Status = ['Open', 'Assigned', 'Completed', 'Paid'];
 export const OrgHeader = ({
+  bypassAsyncCheck = false,
   onChangeLanguage,
   checkboxIdToSelectedMapLanguage,
   onChangeStatus,
@@ -420,32 +422,37 @@ export const OrgHeader = ({
   org_uuid,
   languageString,
   organizationUrls
-}: OrgBountyHeaderProps) => {
-  const { main } = useStores();
+}: OrgBountyHeaderProps & { bypassAsyncCheck?: boolean }) => {
+  const { main, ui } = useStores();
   const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
   const [filterClick, setFilterClick] = useState(false);
+  const [canPostBounty, setCanPostBounty] = useState(false);
   const [isStatusPopoverOpen, setIsStatusPopoverOpen] = useState<boolean>(false);
   const onButtonClick = async () => {
     setIsStatusPopoverOpen((isPopoverOpen: any) => !isPopoverOpen);
   };
   const closeStatusPopover = () => setIsStatusPopoverOpen(false);
 
+  useEffect(() => {
+    if (bypassAsyncCheck) {
+      setCanPostBounty(true);
+    } else {
+      const checkUserPermissions = async () => {
+        const isLoggedIn = !!ui.meInfo;
+        const hasPermission =
+          isLoggedIn && (await userCanManageBounty(org_uuid, ui.meInfo?.pubkey, main));
+        setCanPostBounty(hasPermission);
+      };
+
+      if (ui.meInfo && org_uuid) {
+        checkUserPermissions();
+      }
+    }
+  }, [ui.meInfo, org_uuid, main, bypassAsyncCheck]);
+
   const selectedWidget = 'wanted';
   const filterRef = useRef<HTMLDivElement | null>(null);
   const { website, github } = organizationUrls;
-  const handlePostBountyClick = () => {
-    setIsPostBountyModalOpen(true);
-  };
-  const handlePostBountyClose = () => {
-    setIsPostBountyModalOpen(false);
-  };
-  const handleWebsiteButton = (websiteUrl: string) => {
-    window.open(websiteUrl, '_blank');
-  };
-
-  const handleGithubButton = (githubUrl: string) => {
-    window.open(githubUrl, '_blank');
-  };
 
   useEffect(() => {
     if (org_uuid) {
@@ -484,26 +491,24 @@ export const OrgHeader = ({
         <Header>
           <UrlButtonContainer data-testid="url-button-container">
             {website !== '' ? (
-              <UrlButton onClick={() => handleWebsiteButton(website)}>
+              <UrlButton onClick={() => window.open(website, '_blank')}>
                 <img src={websiteIcon} alt="" />
                 Website
               </UrlButton>
-            ) : (
-              ''
-            )}
+            ) : null}
             {github !== '' ? (
-              <UrlButton onClick={() => handleGithubButton(github)}>
+              <UrlButton onClick={() => window.open(github, '_blank')}>
                 <img src={githubIcon} alt="" />
                 Github
               </UrlButton>
-            ) : (
-              ''
-            )}
+            ) : null}
           </UrlButtonContainer>
-          <Button onClick={handlePostBountyClick}>
-            <img src={addBounty} alt="" />
-            Post a Bounty
-          </Button>
+          {canPostBounty && (
+            <Button onClick={() => setIsPostBountyModalOpen(true)}>
+              <img src={addBounty} alt="" />
+              Post a Bounty
+            </Button>
+          )}
         </Header>
       </FillContainer>
       <FillContainer>
@@ -619,7 +624,7 @@ export const OrgHeader = ({
       <PostModal
         widget={selectedWidget}
         isOpen={isPostBountyModalOpen}
-        onClose={handlePostBountyClose}
+        onClose={() => setIsPostBountyModalOpen(false)}
       />
     </>
   );
