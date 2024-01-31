@@ -47,8 +47,8 @@ const MockProps: OrgBountyHeaderProps = {
 };
 describe('OrgHeader Component', () => {
   beforeEach(() => {
+    jest.spyOn(helpers, 'userCanManageBounty').mockResolvedValue(true);
     jest.spyOn(mainStore, 'getSpecificOrganizationBounties').mockReset();
-    uiStore.meInfo = null;
   });
 
   afterEach(() => {
@@ -84,18 +84,22 @@ describe('OrgHeader Component', () => {
     });
   });
 
-  it('renders the component correctly', () => {
-    render(<OrgHeader {...MockProps} bypassAsyncCheck={true} />);
-    expect(screen.getByText('Post a Bounty')).toBeInTheDocument();
-    expect(screen.getByText('Status')).toBeInTheDocument();
-    expect(screen.getByText('Skill')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('Search')).toBeInTheDocument();
-    expect(screen.getByText(/Bounties/i)).toBeInTheDocument();
+  it('renders the component correctly', async () => {
+    render(<OrgHeader {...MockProps} />);
+    await waitFor(() => {
+      expect(screen.getByText('Post a Bounty')).toBeInTheDocument();
+      expect(screen.getByText('Status')).toBeInTheDocument();
+      expect(screen.getByText('Skill')).toBeInTheDocument();
+      expect(screen.getByPlaceholderText('Search')).toBeInTheDocument();
+      expect(screen.getByText(/Bounties/i)).toBeInTheDocument();
+    });
   });
 
   it('opens the PostModal on "Post a Bounty" button click', async () => {
-    render(<OrgHeader {...MockProps} bypassAsyncCheck={true} />);
-    fireEvent.click(screen.getByText('Post a Bounty'));
+    render(<OrgHeader {...MockProps} />);
+    await waitFor(() => {
+      fireEvent.click(screen.getByText('Post a Bounty'));
+    });
     // You can add further assertions here to check the modal is open
   });
 

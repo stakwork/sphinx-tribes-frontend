@@ -413,7 +413,6 @@ const sortDirectionOptions = [
 ];
 
 export const OrgHeader = ({
-  bypassAsyncCheck = false,
   onChangeLanguage,
   checkboxIdToSelectedMapLanguage,
   onChangeStatus,
@@ -421,7 +420,7 @@ export const OrgHeader = ({
   org_uuid,
   languageString,
   organizationUrls
-}: OrgBountyHeaderProps & { bypassAsyncCheck?: boolean }) => {
+}: OrgBountyHeaderProps) => {
   const { main, ui } = useStores();
   const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
   const [filterClick, setFilterClick] = useState(false);
@@ -436,21 +435,17 @@ export const OrgHeader = ({
   const closeStatusPopover = () => setIsStatusPopoverOpen(false);
 
   useEffect(() => {
-    if (bypassAsyncCheck) {
-      setCanPostBounty(true);
-    } else {
-      const checkUserPermissions = async () => {
-        const isLoggedIn = !!ui.meInfo;
-        const hasPermission =
-          isLoggedIn && (await userCanManageBounty(org_uuid, ui.meInfo?.pubkey, main));
-        setCanPostBounty(hasPermission);
-      };
+    const checkUserPermissions = async () => {
+      const isLoggedIn = !!ui.meInfo;
+      const hasPermission =
+        isLoggedIn && (await userCanManageBounty(org_uuid, ui.meInfo?.pubkey, main));
+      setCanPostBounty(hasPermission);
+    };
 
-      if (ui.meInfo && org_uuid) {
-        checkUserPermissions();
-      }
+    if (ui.meInfo && org_uuid) {
+      checkUserPermissions();
     }
-  }, [ui.meInfo, org_uuid, main, bypassAsyncCheck]);
+  }, [ui.meInfo, org_uuid, main]);
 
   const sortDirectionLabel = useMemo(
     () => (sortDirection === 'asc' ? 'Oldest First' : 'Newest First'),
