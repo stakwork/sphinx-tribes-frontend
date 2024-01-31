@@ -35,6 +35,7 @@ const MockProps: OrgBountyHeaderProps = {
     throw new Error('Function not implemented.');
   }
 };
+
 describe('OrgHeader Component', () => {
   beforeEach(() => {
     jest.spyOn(mainStore, 'getSpecificOrganizationBounties').mockReset();
@@ -45,8 +46,9 @@ describe('OrgHeader Component', () => {
     jest.clearAllMocks();
   });
 
-  it('renders the component correctly', () => {
+  it('renders the component correctly', async () => {
     render(<OrgHeader {...MockProps} />);
+    expect(await screen.findByText(MockProps.organizationData.name ?? '')).toBeInTheDocument();
     expect(screen.getByText('Post a Bounty')).toBeInTheDocument();
     expect(screen.getByText('Status')).toBeInTheDocument();
     expect(screen.getByText('Skill')).toBeInTheDocument();
@@ -57,7 +59,6 @@ describe('OrgHeader Component', () => {
   it('opens the PostModal on "Post a Bounty" button click', async () => {
     render(<OrgHeader {...MockProps} />);
     fireEvent.click(screen.getByText('Post a Bounty'));
-    // You can add further assertions here to check the modal is open
   });
 
   it('displays the correct number of bounties', () => {

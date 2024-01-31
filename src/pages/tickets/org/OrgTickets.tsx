@@ -166,7 +166,7 @@ function OrgBodyComponent() {
           checkboxIdToSelectedMap={checkboxIdToSelectedMap}
           checkboxIdToSelectedMapLanguage={checkboxIdToSelectedMapLanguage}
           languageString={languageString}
-          organizationData={organizationData}
+          organizationData={organizationData as Organization}
           org_uuid={uuid}
         />
         <>

@@ -15,10 +15,6 @@ export interface BountyModalProps {
   fromPage?: 'usertickets' | 'bounties' | 'organization';
 }
 
-export interface OrgBountyHeaderProps {
-  organizationData?: Organization;
-}
-
 export interface FocusViewProps {
   goBack?: () => void;
   config: { [key: string]: any };
@@ -430,7 +426,7 @@ export interface OrgBountyHeaderProps {
   checkboxIdToSelectedMapLanguage?: any;
   languageString?: string;
   org_uuid?: string;
-  organizationData?: Organization;
+  organizationData: Organization;
 }
 export interface PeopleHeaderProps {
   onChangeLanguage: (number) => void;
