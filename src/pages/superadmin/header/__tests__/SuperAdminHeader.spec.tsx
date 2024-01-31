@@ -48,7 +48,7 @@ describe('Header Component', () => {
 
     const actualTextContent = monthElement.textContent?.trim();
     const expectedTextContent = `${expectedStartDate.format('DD MMM')} - ${expectedEndDate.format(
-        'DD MMM YYYY'
+      'DD MMM YYYY'
     )}`;
     expect(actualTextContent).toBe(expectedTextContent);
 
@@ -67,7 +67,7 @@ describe('Header Component', () => {
 
     const StartDate30 = today.clone().subtract(30, 'days');
     const expectedTextForSameYear = `${StartDate30.format('DD MMM')} - ${expectedEndDate.format(
-        'DD MMM YYYY'
+      'DD MMM YYYY'
     )}`;
     expect(monthElement).toHaveTextContent(expectedTextForSameYear);
 
