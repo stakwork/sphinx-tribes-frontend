@@ -93,3 +93,11 @@ Cypress.Commands.add('login', (userAlias: string) => {
     cy.contains(userAlias).eq(0);
   });
 });
+
+Cypress.Commands.add("logout", (userAlias: string) => {
+    cy.contains(userAlias).click()
+
+    cy.contains("Sign out").click()
+
+    cy.contains("Sign in").eq(0);
+})
