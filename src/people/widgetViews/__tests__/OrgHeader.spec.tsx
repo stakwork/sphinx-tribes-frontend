@@ -49,6 +49,9 @@ describe('OrgHeader Component', () => {
   it('renders the component correctly', async () => {
     render(<OrgHeader {...MockProps} />);
     expect(await screen.findByText(MockProps.organizationData.name ?? '')).toBeInTheDocument();
+    expect(
+      await screen.findByText(MockProps.organizationData.description ?? '')
+    ).toBeInTheDocument();
     expect(screen.getByText('Post a Bounty')).toBeInTheDocument();
     expect(screen.getByText('Status')).toBeInTheDocument();
     expect(screen.getByText('Skill')).toBeInTheDocument();
