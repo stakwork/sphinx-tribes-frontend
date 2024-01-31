@@ -13,6 +13,7 @@ const MockProps: OrgBountyHeaderProps = {
     Completed: false
   },
   languageString: '',
+  direction: 'desc',
   org_uuid: 'clf6qmo4nncmf23du7ng',
   onChangeStatus: jest.fn(),
   onChangeLanguage: jest.fn(),
@@ -67,7 +68,8 @@ describe('OrgHeader Component', () => {
 
       const updatedCheckboxIdToSelectedMap = {
         ...MockProps.checkboxIdToSelectedMap,
-        Open: true
+        Open: true,
+        direction: 'desc'
       };
 
       rerender(

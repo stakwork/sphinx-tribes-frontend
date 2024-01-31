@@ -66,7 +66,7 @@ describe('Header Component', () => {
 
     const StartDate30 = today.clone().subtract(30, 'days');
     expect(monthElement).toHaveTextContent(
-      `${StartDate30.format('DD MMM YYYY')} - ${expectedEndDate.format('DD MMM YYYY')}`
+      `${StartDate30.format('DD MMM')} - ${expectedEndDate.format('DD MMM YYYY')}`
     );
 
     act(() => {
