@@ -51,7 +51,8 @@ function WantedSummary(props: WantedSummaryProps) {
     formSubmit,
     title,
     org_uuid,
-    id
+    id,
+    isEditButtonDisable
   } = props;
   const titleString = one_sentence_summary || title || '';
   const bountyPath = `/bounty/${id}`;
@@ -582,6 +583,7 @@ function WantedSummary(props: WantedSummaryProps) {
           isMobile={isMobile}
           actionButtons={actionButtons}
           assigneeLabel={assigneeLabel}
+          isEditButtonDisable={isEditButtonDisable}
         />
       );
     }

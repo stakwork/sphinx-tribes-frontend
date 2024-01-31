@@ -143,6 +143,7 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
                 bounty={activeBounty}
                 fromBountyPage={true}
                 goBack={goBack}
+                getBounty={getBounty}
               />
             </Modal>
           )
@@ -207,6 +208,7 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
                   modals.setStartupModal(true);
                 }
               }}
+              getBounty={getBounty}
             />
           </Modal>
         )

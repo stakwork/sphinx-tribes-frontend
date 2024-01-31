@@ -41,7 +41,8 @@ function FocusedView(props: FocusViewProps) {
     setIsModalSideButton,
     bounty,
     setRemoveNextAndPrev,
-    setAfterEdit
+    setAfterEdit,
+    getBounty
   } = props;
   const { ui, main } = useStores();
 
@@ -51,6 +52,7 @@ function FocusedView(props: FocusViewProps) {
   const [deleting, setDeleting] = useState(false);
   const [editMode, setEditMode] = useState(skipEditLayer);
   const [editable, setEditable] = useState<boolean>(!canEdit);
+  const [isEditButtonDisable, setIsEditButtonDisable] = useState(false);
   const [toasts, setToasts]: any = useState([]);
 
   const scrollDiv: any = useRef(null);
@@ -220,6 +222,7 @@ function FocusedView(props: FocusViewProps) {
     const info = ui.meInfo as any;
     if (!info) return console.log('no meInfo');
     setLoading(true);
+    setIsEditButtonDisable(true);
 
     try {
       if (typeof newBody?.assignee !== 'string' || !newBody?.assignee) {
@@ -246,6 +249,8 @@ function FocusedView(props: FocusViewProps) {
 
       await main.saveBounty(newBody);
 
+      if (newBody.assignee === '' && getBounty) await getBounty();
+
       // Refresh the tickets page if a user eidts from the tickets tab
       if (window.location.href.includes('wanted')) {
         await main.getPersonCreatedBounties({}, info.pubkey);
@@ -253,6 +258,8 @@ function FocusedView(props: FocusViewProps) {
     } catch (e) {
       console.log('e', e);
     }
+
+    setIsEditButtonDisable(false);
 
     if (props?.onSuccess) props.onSuccess();
 
@@ -427,6 +434,7 @@ function FocusedView(props: FocusViewProps) {
                     iconSize={18}
                     width={100}
                     text={'Edit'}
+                    disabled={isEditButtonDisable}
                   />
                   <Button
                     onClick={deleteHandler}
@@ -464,6 +472,7 @@ function FocusedView(props: FocusViewProps) {
             editAction={handleEditAction}
             setIsModalSideButton={setIsModalSideButton}
             setIsExtraStyle={props?.setIsExtraStyle}
+            isEditButtonDisable={isEditButtonDisable}
           />
         </>
       )}
