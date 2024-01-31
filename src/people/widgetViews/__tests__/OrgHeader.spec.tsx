@@ -19,7 +19,8 @@ const MockProps: OrgBountyHeaderProps = {
     id: '57',
     uuid: 'cmg6oqitu2rnslkcjbqg',
     name: 'Sample Organization',
-    description: '',
+    description:
+      'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium totam rem aperiam eaque',
     github: 'http://mock-github.com',
     website: 'http://mock-website.com',
     owner_pubkey: '03ba3ac27becedbe9981f5ccc0e7757d3573465e2efa8a39ab2d147908184d0e8e',
