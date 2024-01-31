@@ -35,7 +35,7 @@ async function postAllUsersToTribe() {
         headers: { 'x-user-token': `${node.authToken}` }
       });
     } catch (error) {
-      console.log('This is an error');
+      console.log(`Error creating user on bounty platform: ${JSON.stringify(error)}`);
     }
   }
 }
