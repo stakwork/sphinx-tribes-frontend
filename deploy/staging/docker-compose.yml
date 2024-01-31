@@ -99,7 +99,7 @@ services:
       - reverse-proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.tribes-frontend.rule=(Host(`tribes-test.sphinx.chat`) || Host(`people-test.sphinx.chat`) || Host(`community-test.sphinx.chat`)) && (Path(`/`) || PathPrefix(`/static`) || Path(`/manifest.json`) || Path(`/favicon.ico`) || Path(`/logo192.png`) || PathPrefix(`/t/`) || Path(`/t`) || PathPrefix(`/p/`) || Path(`/p`) || Path(`/tickets`) || Path(`/bounties`) || Path(`/bounty`) || PathPrefix(`/bounty/`) || Path(`/leaderboard`) || PathPrefix(`/org/`) || Path(`/admin`))"
+      - "traefik.http.routers.tribes-frontend.rule=(Host(`tribes-test.sphinx.chat`) || Host(`people-test.sphinx.chat`) || Host(`community-test.sphinx.chat`)) && (Path(`/`) || PathPrefix(`/static`) || Path(`/manifest.json`) || Path(`/favicon.ico`) || Path(`/logo192.png`) || PathPrefix(`/t/`) || Path(`/t`) || PathPrefix(`/p/`) || Path(`/p`) || Path(`/tickets`) || Path(`/bounties`) || Path(`/bounty`) || PathPrefix(`/bounty/`) || Path(`/leaderboard`) || PathPrefix(`/org/`) || Path(`/admin`) || PathPrefix(`/b/`) || Path(`/b`))"
       - "traefik.http.routers.tribes-frontend.priority=2"
       - "traefik.http.services.tribes-frontend.loadbalancer.server.port=80"
       - "traefik.http.routers.tribes-frontend.tls=true"
