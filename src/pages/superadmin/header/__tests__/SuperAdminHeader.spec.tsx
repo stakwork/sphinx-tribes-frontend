@@ -47,9 +47,11 @@ describe('Header Component', () => {
     const monthElement = within(leftWrapperElement).getByTestId('month');
 
     expect(monthElement).toBeInTheDocument();
-    expect(monthElement).toHaveTextContent(
-      `${expectedStartDate.format('DD MMM')} - ${expectedEndDate.format('DD MMM YYYY')}`
-    );
+    const actualTextContent = monthElement.textContent?.trim();
+    const expectedTextContent = `${expectedStartDate.format('DD MMM')} - ${expectedEndDate.format(
+      'DD MMM YYYY'
+    )}`;
+    expect(actualTextContent).toBe(expectedTextContent);
 
     expect(screen.getByText(exportCSVText)).toBeInTheDocument();
 
@@ -65,9 +67,10 @@ describe('Header Component', () => {
     });
 
     const StartDate30 = today.clone().subtract(30, 'days');
-    expect(monthElement).toHaveTextContent(
-      `${StartDate30.format('DD MMM')} - ${expectedEndDate.format('DD MMM YYYY')}`
-    );
+    const expectedTextForSameYear = `${StartDate30.format('DD MMM')} - ${expectedEndDate.format(
+      'DD MMM YYYY'
+    )}`;
+    expect(monthElement).toHaveTextContent(expectedTextForSameYear);
 
     act(() => {
       rerender(
