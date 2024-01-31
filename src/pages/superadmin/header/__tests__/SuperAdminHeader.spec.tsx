@@ -56,7 +56,7 @@ describe('Header Component', () => {
     act(() => {
       rerender(
         <Header
-          startDate={moment().subtract(30, 'days').startOf('day').unix()}
+          startDate={moment().subtract(31, 'days').startOf('day').unix()}
           endDate={moment().startOf('day').unix()}
           setStartDate={setStartDateMock}
           setEndDate={setEndDateMock}
@@ -64,7 +64,7 @@ describe('Header Component', () => {
       );
     });
 
-    const StartDate30 = today.clone().subtract(30, 'days');
+    const StartDate30 = today.clone().subtract(31, 'days');
     expect(monthElement).toHaveTextContent(
       `${StartDate30.format('DD MMM YYYY')} - ${expectedEndDate.format('DD MMM YYYY')}`
     );
