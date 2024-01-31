@@ -338,7 +338,8 @@ export async function userCanManageBounty(
       const userAccess =
         userHasManageBountyRoles(main.bountyRoles, userRoles) &&
         userHasRole(main.bountyRoles, userRoles, 'VIEW REPORT');
-      return isOrganizationAdmin || userAccess;
+      const hasManageBountyRole = userRoles.some((role) => ManageBountiesGroup.includes(role.role));
+      return isOrganizationAdmin || userAccess || hasManageBountyRole;
     }
   }
   return false;

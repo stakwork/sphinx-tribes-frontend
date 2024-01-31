@@ -4,6 +4,29 @@ import '@testing-library/jest-dom';
 import { OrgHeader } from 'pages/tickets/org/orgHeader';
 import { OrgBountyHeaderProps } from '../../interfaces.ts';
 import { mainStore } from '../../../store/main.ts';
+import { uiStore } from '../../../store/ui.ts';
+import * as helpers from '../../../helpers/helpers-extended.ts';
+
+jest.mock('../../../store/main.ts', () => ({
+  mainStore: {
+    getUserRoles: jest.fn(),
+    getUserOrganizationByUuid: jest.fn(),
+    getSpecificOrganizationBounties: jest.fn(),
+    dropDownOrganizations: []
+  }
+}));
+
+jest.mock('../../../store/ui.ts', () => ({
+  uiStore: {
+    meInfo: null,
+    setReady: jest.fn()
+  }
+}));
+
+jest.mock('../../../helpers/helpers-extended.ts', () => ({
+  ...jest.requireActual('.../../../helpers/helpers-extended.ts'),
+  userCanManageBounty: jest.fn()
+}));
 
 const MockProps: OrgBountyHeaderProps = {
   checkboxIdToSelectedMap: {
@@ -25,14 +48,44 @@ const MockProps: OrgBountyHeaderProps = {
 describe('OrgHeader Component', () => {
   beforeEach(() => {
     jest.spyOn(mainStore, 'getSpecificOrganizationBounties').mockReset();
+    uiStore.meInfo = null;
   });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('renders the component correctly', () => {
+  it('does not display "Post a Bounty" button when user is not logged in', () => {
     render(<OrgHeader {...MockProps} />);
+    expect(screen.queryByText('Post a Bounty')).not.toBeInTheDocument();
+  });
+
+  it('does not display "Post a Bounty" button when user is logged in but does not have manage bounty role', async () => {
+    // @ts-ignore
+    uiStore.meInfo = { pubkey: '' };
+    jest.spyOn(helpers, 'userCanManageBounty').mockResolvedValue(false);
+
+    render(<OrgHeader {...MockProps} />);
+
+    await waitFor(() => {
+      expect(screen.queryByText('Post a Bounty')).not.toBeInTheDocument();
+    });
+  });
+
+  it('displays "Post a Bounty" button when user is logged in and has manage bounty role', async () => {
+    // @ts-ignore
+    uiStore.meInfo = { pubkey: '' };
+    jest.spyOn(helpers, 'userCanManageBounty').mockResolvedValue(true);
+
+    render(<OrgHeader {...MockProps} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Post a Bounty')).toBeInTheDocument();
+    });
+  });
+
+  it('renders the component correctly', () => {
+    render(<OrgHeader {...MockProps} bypassAsyncCheck={true} />);
     expect(screen.getByText('Post a Bounty')).toBeInTheDocument();
     expect(screen.getByText('Status')).toBeInTheDocument();
     expect(screen.getByText('Skill')).toBeInTheDocument();
@@ -41,7 +94,7 @@ describe('OrgHeader Component', () => {
   });
 
   it('opens the PostModal on "Post a Bounty" button click', async () => {
-    render(<OrgHeader {...MockProps} />);
+    render(<OrgHeader {...MockProps} bypassAsyncCheck={true} />);
     fireEvent.click(screen.getByText('Post a Bounty'));
     // You can add further assertions here to check the modal is open
   });
