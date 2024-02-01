@@ -80,7 +80,7 @@ export const PeopleList = observer(() => {
 
   function goBack() {
     ui.setSelectingPerson(0);
-    history.goBack();
+    history.replace('/p');
   }
 
   function selectPerson(id: number, unique_name: string, pubkey: string) {
