@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom';
 import { render, screen, within, act } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import moment from 'moment';
 import nock from 'nock';
 import React from 'react';
@@ -58,7 +57,7 @@ describe('Header Component', () => {
     act(() => {
       rerender(
         <Header
-          startDate={moment().subtract(31, 'days').startOf('day').unix()}
+          startDate={moment().subtract(30, 'days').startOf('day').unix()}
           endDate={moment().startOf('day').unix()}
           setStartDate={setStartDateMock}
           setEndDate={setEndDateMock}
