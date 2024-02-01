@@ -40,6 +40,22 @@ If you are using the Apple Silicon(M1), use the command below to pull tribes lat
 docker pull --platform linux/x86_64 sphinxlightning/sphinx-tribes:latest
 ```
 
+### Reset Sphinx Stack Data
+
+1. Stop the Docker Compose if it's currently running.
+
+2. Open your terminal in the root directory of Sphinx Stack.
+
+3. Run the following command:
+
+    ```bash
+    ./clearall.sh
+    ```
+
+4. Proceed to run step 2 in the `Setup Sphinx Stack` section and don't forget to wait for `relaysetup` and `lndsetup` to exit before you procced.
+
+5. Finally, rerun the steps outlined in the `Setup Frontend with Cypress` section
+
 ## Setup Frontend with Cypress
 
 1. Go to the sphinx-stack folder, locate the `NODES.json` file located in `sphinx-stack/relay/NODES.json` and copy the content of the file.
