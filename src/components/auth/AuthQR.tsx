@@ -3,7 +3,7 @@ import { EuiLoadingSpinner } from '@elastic/eui';
 import styled from 'styled-components';
 import { observer } from 'mobx-react-lite';
 import { AuthProps } from 'people/interfaces';
-import { formatRelayPerson } from 'helpers';
+import { formatRelayPerson } from 'helpers/helpers-extended';
 import api from '../../api';
 import { useStores } from '../../store';
 import type { MeInfo } from '../../store/ui';
