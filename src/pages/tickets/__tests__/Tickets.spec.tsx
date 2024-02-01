@@ -3,7 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import WidgetSwitchViewer from 'people/widgetViews/WidgetSwitchViewer';
 import { BrowserRouter as Router } from 'react-router-dom';
-import Tickets from '../Tickets'; 
+import Tickets from '../Tickets';
 
 const mockBounties = [
   {
