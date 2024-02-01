@@ -59,6 +59,7 @@ export default function QR(props: QRProps) {
           justifyContent: 'center',
           alignItems: 'center'
         }}
+        data-challenge={props.value}
       >
         {centerIcon}
       </div>

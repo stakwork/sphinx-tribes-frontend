@@ -7,6 +7,7 @@ import { GetValue, coding_languages } from 'people/utils/languageLabelStyle';
 import { colors } from 'config';
 import { OrgBountyHeaderProps } from '../../../../people/interfaces';
 import { useStores } from '../../../../store';
+import { userCanManageBounty } from '../../../../helpers';
 import addBounty from './Icons/addBounty.svg';
 import dropdown from './Icons/dropDownIcon.svg';
 import searchIcon from './Icons/searchIcon.svg';
@@ -494,23 +495,39 @@ export const OrgHeader = ({
   org_uuid,
   languageString
 }: OrgBountyHeaderProps) => {
-  const { main } = useStores();
+  const { main, ui } = useStores();
   const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
   const [filterClick, setFilterClick] = useState(false);
+  const [canPostBounty, setCanPostBounty] = useState(false);
   const [isStatusPopoverOpen, setIsStatusPopoverOpen] = useState<boolean>(false);
   const onButtonClick = async () => {
     setIsStatusPopoverOpen((isPopoverOpen: any) => !isPopoverOpen);
   };
   const closeStatusPopover = () => setIsStatusPopoverOpen(false);
 
+  useEffect(() => {
+    const checkUserPermissions = async () => {
+      const isLoggedIn = !!ui.meInfo;
+      const hasPermission =
+        isLoggedIn && (await userCanManageBounty(org_uuid, ui.meInfo?.pubkey, main));
+      setCanPostBounty(hasPermission);
+    };
+
+    if (ui.meInfo && org_uuid) {
+      checkUserPermissions();
+    }
+  }, [ui.meInfo, org_uuid, main]);
+
   const selectedWidget = 'wanted';
   const filterRef = useRef<HTMLDivElement | null>(null);
+
   const handlePostBountyClick = () => {
     setIsPostBountyModalOpen(true);
   };
   const handlePostBountyClose = () => {
     setIsPostBountyModalOpen(false);
   };
+
 
   useEffect(() => {
     if (org_uuid) {
@@ -579,10 +596,12 @@ export const OrgHeader = ({
               </OrgDetailsRight>
             </OrgDetails>
             <ButtonContainer>
-              <Button onClick={handlePostBountyClick}>
-                <img src={addBounty} alt="" />
-                Post a Bounty
-              </Button>
+               {canPostBounty && (
+                  <Button onClick={() => handlePostBountyClick(true)}>
+                    <img src={addBounty} alt="" />
+                    Post a Bounty
+                  </Button>
+                )}
             </ButtonContainer>
 
         </Header>
@@ -700,7 +719,7 @@ export const OrgHeader = ({
       <PostModal
         widget={selectedWidget}
         isOpen={isPostBountyModalOpen}
-        onClose={handlePostBountyClose}
+        onClose={() => setIsPostBountyModalOpen(false)}
       />
     </>
   );

@@ -1779,6 +1779,46 @@ export class MainStore {
     }
   }
 
+  async getOrganizationNextBountyById(org_uuid: string, bountyId: string): Promise<number> {
+    try {
+      const count = await api.get(`gobounties/org/next/${org_uuid}/${bountyId}`);
+      return count;
+    } catch (e) {
+      console.log('fetch failed getBountyCount: ', e);
+      return 0;
+    }
+  }
+
+  async getOrganizationPreviousBountyById(org_uuid: string, bountyId: string): Promise<number> {
+    try {
+      const count = await api.get(`gobounties/org/previous/${org_uuid}/${bountyId}`);
+      return count;
+    } catch (e) {
+      console.log('fetch failed getBountyCount: ', e);
+      return 0;
+    }
+  }
+
+  async getNextBountyById(bountyId: string): Promise<number> {
+    try {
+      const count = await api.get(`gobounties/next/${bountyId}`);
+      return count;
+    } catch (e) {
+      console.log('fetch failed getBountyCount: ', e);
+      return 0;
+    }
+  }
+
+  async getPreviousBountyById(bountyId: string): Promise<number> {
+    try {
+      const count = await api.get(`gobounties/previous/${bountyId}`);
+      return count;
+    } catch (e) {
+      console.log('fetch failed getBountyCount: ', e);
+      return 0;
+    }
+  }
+
   @observable
   lnauth: LnAuthData = { encode: '', k1: '' };
 

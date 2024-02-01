@@ -5,8 +5,9 @@ import { observer } from 'mobx-react-lite';
 import { BadgesProps } from 'people/interfaces';
 import { useIsMobile } from '../../hooks';
 import { useStores } from '../../store';
-import { Modal, Button, Divider, TextInput } from '../../components/common';
+import { Button, Divider } from '../../components/common';
 import PageLoadSpinner from './PageLoadSpinner';
+import BadgesModal from './BadgesModal';
 
 interface BProps {
   readonly isMobile?: boolean;
@@ -544,46 +545,16 @@ function Badges(props: BadgesProps) {
         topLevelBadges
       )}
 
-      <Modal
+      <BadgesModal
         visible={badgeToPush ? true : false}
-        close={() => {
-          setBadgeToPush(null);
-        }}
-      >
-        <div
-          style={{
-            padding: 20,
-            height: 300,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center'
-          }}
-        >
-          <>
-            <TextInput
-              style={{ width: 240 }}
-              label={'Liquid Address'}
-              value={liquidAddress}
-              onChange={(e: any) => setLiquidAddress(e)}
-            />
-
-            <TextInput
-              style={{ width: 240 }}
-              label={'Memo (optional)'}
-              value={memo}
-              onChange={(e: any) => setMemo(e)}
-            />
-
-            <Button
-              color="primary"
-              text="Claim on Liquid"
-              loading={claiming}
-              disabled={!liquidAddress || claiming}
-              onClick={() => claimBadge()}
-            />
-          </>
-        </div>
-      </Modal>
+        setBadgeToPush={setBadgeToPush}
+        liquidAddress={liquidAddress}
+        setLiquidAddress={setLiquidAddress}
+        memo={memo}
+        setMemo={setMemo}
+        claiming={claiming}
+        claimBadge={claimBadge}
+      />
     </Wrap>
   );
 }
