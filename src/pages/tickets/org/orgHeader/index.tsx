@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Organization } from 'store/main';
-import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { EuiCheckboxGroup, EuiPopover, EuiText } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
@@ -499,7 +498,6 @@ export const OrgHeader = ({
   const [filterClick, setFilterClick] = useState(false);
   const [isStatusPopoverOpen, setIsStatusPopoverOpen] = useState<boolean>(false);
   const [organization, setOrganization] = useState<Organization>();
-  const { uuid } = useParams<{ uuid: string }>();
   const onButtonClick = async () => {
     setIsStatusPopoverOpen((isPopoverOpen: any) => !isPopoverOpen);
   };
@@ -534,12 +532,12 @@ export const OrgHeader = ({
 
   useEffect(() => {
     (async () => {
-      if (!uuid) return;
-      const res = await main.getOrganizationByUuid(uuid);
+      if (!org_uuid) return;
+      const res = await main.getOrganizationByUuid(org_uuid);
       if (!res) return;
       setOrganization(res);      
     })();
-  }, [main, uuid])
+  }, [main, org_uuid])
 
   const handleClick = () => {
     setFilterClick(!filterClick);
