@@ -450,7 +450,7 @@ function MobileView(props: CodingBountiesProps) {
     );
   }
 
-  const isDisabled = !(isAssigned || paid) ? false : true;
+  const isDisabled = isAssigned || paid;
 
   return (
     <div>
@@ -566,7 +566,7 @@ function MobileView(props: CodingBountiesProps) {
                             leadingImageContainerStyle={{
                               left: 450
                             }}
-                            disabled={isDisabled}
+                            disabled={!props?.deleteAction}
                             buttonAction={props?.deleteAction}
                             buttonTextStyle={{
                               paddingRight: '45px'
