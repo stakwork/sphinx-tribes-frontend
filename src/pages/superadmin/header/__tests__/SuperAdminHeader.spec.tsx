@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom';
 import { render, screen, within, act } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import moment from 'moment';
 import nock from 'nock';
 import React from 'react';
@@ -47,9 +46,11 @@ describe('Header Component', () => {
     const monthElement = within(leftWrapperElement).getByTestId('month');
 
     expect(monthElement).toBeInTheDocument();
-    expect(monthElement).toHaveTextContent(
-      `${expectedStartDate.format('DD MMM')} - ${expectedEndDate.format('DD MMM YYYY')}`
-    );
+    const actualTextContent = monthElement.textContent?.trim();
+    const expectedTextContent = `${expectedStartDate.format('DD MMM')} - ${expectedEndDate.format(
+      'DD MMM YYYY'
+    )}`;
+    expect(actualTextContent).toBe(expectedTextContent);
 
     expect(screen.getByText(exportCSVText)).toBeInTheDocument();
 
