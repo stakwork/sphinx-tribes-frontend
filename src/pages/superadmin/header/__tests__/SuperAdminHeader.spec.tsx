@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom';
 import { render, screen, within, act } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import moment from 'moment';
 import nock from 'nock';
 import React from 'react';
