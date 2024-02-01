@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Organization } from 'store/main';
 import styled from 'styled-components';
 import { EuiCheckboxGroup, EuiPopover, EuiText } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
@@ -486,6 +485,7 @@ const StatusContainer = styled.div<styledProps>`
 
 const Status = ['Open', 'Assigned', 'Completed', 'Paid'];
 export const OrgHeader = ({
+  organizationData,
   onChangeLanguage,
   checkboxIdToSelectedMapLanguage,
   onChangeStatus,
@@ -497,7 +497,6 @@ export const OrgHeader = ({
   const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
   const [filterClick, setFilterClick] = useState(false);
   const [isStatusPopoverOpen, setIsStatusPopoverOpen] = useState<boolean>(false);
-  const [organization, setOrganization] = useState<Organization>();
   const onButtonClick = async () => {
     setIsStatusPopoverOpen((isPopoverOpen: any) => !isPopoverOpen);
   };
@@ -530,14 +529,6 @@ export const OrgHeader = ({
     }
   }, [org_uuid, checkboxIdToSelectedMap, main, languageString]);
 
-  useEffect(() => {
-    (async () => {
-      if (!org_uuid) return;
-      const res = await main.getOrganizationByUuid(org_uuid);
-      if (!res) return;
-      setOrganization(res);      
-    })();
-  }, [main, org_uuid])
 
   const handleClick = () => {
     setFilterClick(!filterClick);
@@ -565,20 +556,20 @@ export const OrgHeader = ({
         <Header>
           <OrgDetails>
               <OrgDetailsLeft>
-                <OrgLogo src={organization?.img || '/static/orgdefault.png'} alt={organization?.name + ' logo'}/>
+                <OrgLogo src={organizationData?.img || '/static/orgdefault.png'} alt={organizationData?.name + ' logo'}/>
                 <OrgNameLinks>
-                  <OrgName>{organization?.name || ''}</OrgName>
+                  <OrgName>{organizationData?.name || ''}</OrgName>
                   <OrgLinks>
                     {
-                      organization?.github &&
-                      <SmallButton href={organization?.website} target="_blank">
+                      organizationData?.github &&
+                      <SmallButton href={organizationData?.website} target="_blank">
                         <img src={websiteIcon} alt="globe-website icon" />
                         <span>Website</span>
                       </SmallButton>
                     }
                     {
-                      organization?.website &&
-                      <SmallButton href={organization?.github} target="_blank">
+                      organizationData?.website &&
+                      <SmallButton href={organizationData?.github} target="_blank">
                         {' '}
                         <img src={githubIcon} alt="github icon" />
                         <span>Github</span>
@@ -590,7 +581,7 @@ export const OrgHeader = ({
                 </OrgNameLinks>
               </OrgDetailsLeft>
               <OrgDetailsRight>
-                <OrgDetailsText>{organization?.description || ''}</OrgDetailsText>
+                <OrgDetailsText>{organizationData?.description || ''}</OrgDetailsText>
               </OrgDetailsRight>
             </OrgDetails>
             <ButtonContainer>
