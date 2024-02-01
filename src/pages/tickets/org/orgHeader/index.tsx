@@ -434,17 +434,6 @@ export const OrgHeader = ({
   };
   const closeStatusPopover = () => setIsStatusPopoverOpen(false);
 
-  const sortDirectionLabel = useMemo(
-    () => (sortDirection === 'asc' ? 'Oldest First' : 'Newest First'),
-    [sortDirection]
-  );
-
-  const onSortButtonClick = async () => {
-    setIsSortByPopoverOpen((isPopoverOpen: any) => !isPopoverOpen);
-  };
-
-  const closeSortByPopover = () => setIsSortByPopoverOpen(false);
-
   useEffect(() => {
     const checkUserPermissions = async () => {
       const isLoggedIn = !!ui.meInfo;
