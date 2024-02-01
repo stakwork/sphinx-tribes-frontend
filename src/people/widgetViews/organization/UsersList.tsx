@@ -46,10 +46,11 @@ const Users = (props: UserListProps) => {
                 <ActionBtn disabled={settingsDisabled}>
                   <MaterialIcon
                     disabled={settingsDisabled}
+                    data-testid="settings-icon"
                     icon={'settings'}
                     style={{
                       fontSize: 24,
-                      cursor: 'pointer',
+                      cursor: settingsDisabled ? 'not-allowed' : 'pointer',
                       color: settingsDisabled ? '#b0b7bc' : '#5f6368'
                     }}
                     onClick={() => handleSettingsClick(user)}
@@ -59,10 +60,11 @@ const Users = (props: UserListProps) => {
               <IconWrap>
                 <ActionBtn disabled={deleteUserDisabled}>
                   <MaterialIcon
+                    data-testid="delete-icon"
                     icon={'delete'}
                     style={{
                       fontSize: 24,
-                      cursor: 'pointer',
+                      cursor: deleteUserDisabled ? 'not-allowed' : 'pointer',
                       color: deleteUserDisabled ? '#b0b7bc' : '#5f6368'
                     }}
                     onClick={() => {
