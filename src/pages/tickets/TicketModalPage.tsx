@@ -2,13 +2,13 @@ import { Modal } from 'components/common';
 import { colors } from 'config';
 import { useIsMobile } from 'hooks';
 import { observer } from 'mobx-react-lite';
-import FocusedView from 'people/main/FocusView';
-import { widgetConfigs } from 'people/utils/Constants';
+import FocusedView from '../../people/main/FocusView';
+import { widgetConfigs } from '../../people/utils/Constants';
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
-import { AlreadyDeleted } from 'components/common/AfterDeleteNotification/AlreadyDeleted';
-import { useStores } from 'store';
-import { PersonBounty } from 'store/main';
+import { AlreadyDeleted } from '../../components/common/AfterDeleteNotification/AlreadyDeleted';
+import { useStores } from '../../store';
+import { PersonBounty } from '../../store/main';
 
 const color = colors['light'];
 const focusedDesktopModalStyles = widgetConfigs.wanted.modalStyle;
