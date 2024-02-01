@@ -24,7 +24,7 @@ describe('OrgHeader Component', () => {
 
     render(
       <OrgHeader
-        organizationUrls={{}}
+        organizationData={{}}
         onChangeStatus={jest.fn()}
         onChangeLanguage={jest.fn()}
         checkboxIdToSelectedMap={defaultOrgBountyStatus}

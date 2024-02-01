@@ -16,7 +16,7 @@ const MockProps: OrgBountyHeaderProps = {
   org_uuid: 'clf6qmo4nncmf23du7ng',
   onChangeStatus: jest.fn(),
   onChangeLanguage: jest.fn(),
-  organizationUrls: {
+  organizationData: {
     github: 'https://github.com/stakwork/sphinx-tribes',
     website: 'https://ecurrencyhodler.com/'
   }

@@ -24,7 +24,7 @@ function OrgBodyComponent() {
   const [checkboxIdToSelectedMapLanguage, setCheckboxIdToSelectedMapLanguage] = useState({});
   const { uuid } = useParams<{ uuid: string; bountyId: string }>();
   const [languageString, setLanguageString] = useState('');
-  const [organizationUrls, setOrganizationUrls] = useState({});
+  const [organizationData, setOrganizationData] = useState({});
 
   const color = colors['light'];
 
@@ -42,8 +42,8 @@ function OrgBodyComponent() {
           resetPage: true,
           languages: languageString
         });
-        const orgUrls = await api.get(`organizations/${uuid}`);
-        setOrganizationUrls(orgUrls);
+        const orgData = await api.get(`organizations/${uuid}`);
+        setOrganizationData(orgData);
       }
       setLoading(false);
     })();
@@ -167,7 +167,7 @@ function OrgBodyComponent() {
         }}
       >
         <OrgHeader
-          organizationUrls={organizationUrls}
+          organizationData={organizationData}
           onChangeStatus={onChangeStatus}
           onChangeLanguage={onChangeLanguage}
           checkboxIdToSelectedMap={checkboxIdToSelectedMap}

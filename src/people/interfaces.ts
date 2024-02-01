@@ -16,7 +16,7 @@ export interface BountyModalProps {
 }
 
 export interface OrgBountyHeaderProps {
-  organizationUrls: any;
+  organizationData: any;
 }
 
 export interface FocusViewProps {
