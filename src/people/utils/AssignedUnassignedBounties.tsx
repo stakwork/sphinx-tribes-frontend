@@ -63,12 +63,9 @@ const DescriptionPriceContainer = styled.div<containerProps>`
   background-size: cover;
 
   :hover {
-    background: url('static/unassigned_bounty_hover_bg.svg');
+    background: url('/static/unassigned_bounty_hover_bg.svg');
     background-repeat: no-repeat;
     background-size: cover;
-  }
-  :active {
-    background: url('static/unassigned_bounty_active_bg.svg');
   }
 `;
 
@@ -156,9 +153,7 @@ const Bounties = (props: BountiesProps) => {
   return (
     <>
       {!!assignee?.owner_pubkey && !!assignee?.owner_alias ? (
-        <BountyLink
-          to={props.org_uuid ? `/bounty/${props.id}/${props.org_uuid}` : `/bounty/${props.id}`}
-        >
+        <BountyLink to={`/bounty/${props.id}`}>
           <BountyContainer
             assignedBackgroundImage={'url("/static/assigned_bounty_bg.svg")'}
             color={color}
@@ -204,10 +199,11 @@ const Bounties = (props: BountiesProps) => {
         </BountyLink>
       ) : (
         <BountyContainer color={color}>
-          <DescriptionPriceContainer unAssignedBackgroundImage='url("/static/unassigned_bounty_bg.svg")'>
-            <BountyLink
-              to={props.org_uuid ? `/bounty/${props.id}/${props.org_uuid}` : `/bounty/${props.id}`}
-            >
+          <DescriptionPriceContainer
+            data-testid="description-price-container"
+            unAssignedBackgroundImage={'url("/static/unassigned_bounty_bg.svg")'}
+          >
+            <BountyLink to={`/bounty/${props.id}`}>
               <div style={{ display: 'flex', flexDirection: 'row' }}>
                 <BountyDescription
                   {...person}
