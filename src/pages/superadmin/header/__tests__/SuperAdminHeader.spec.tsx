@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom';
 import { render, screen, within, act } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import moment from 'moment';
 import nock from 'nock';
 import React from 'react';
@@ -67,10 +66,9 @@ describe('Header Component', () => {
     });
 
     const StartDate30 = today.clone().subtract(30, 'days');
-    const expectedTextForSameYear = `${StartDate30.format('DD MMM')} - ${expectedEndDate.format(
-      'DD MMM YYYY'
-    )}`;
-    expect(monthElement).toHaveTextContent(expectedTextForSameYear);
+    expect(monthElement).toHaveTextContent(
+      `${StartDate30.format('DD MMM')} - ${expectedEndDate.format('DD MMM YYYY')}`
+    );
 
     act(() => {
       rerender(
