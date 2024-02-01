@@ -8,7 +8,6 @@ import { colors } from 'config';
 import { OrgBountyHeaderProps } from '../../../../people/interfaces';
 import { useStores } from '../../../../store';
 import { userCanManageBounty } from '../../../../helpers';
-import { userCanManageBounty } from '../../../../helpers';
 import addBounty from './Icons/addBounty.svg';
 import dropdown from './Icons/dropDownIcon.svg';
 import searchIcon from './Icons/searchIcon.svg';
