@@ -450,7 +450,7 @@ function MobileView(props: CodingBountiesProps) {
     );
   }
 
-  const isDisabled = !(isAssigned || paid) ? false : true;
+  const isDisabled = isAssigned || paid;
 
   return (
     <div>
