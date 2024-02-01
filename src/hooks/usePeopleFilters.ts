@@ -1,9 +1,6 @@
-import filterByCodingLanguage from 'people/utils/filterPeople';
 import { useState } from 'react';
 import { useStores } from 'store';
-import type { Person } from 'store/main';
 import type { CodingLanguage } from 'people/utils/languageLabelStyle';
-import { useFuse } from './useFuse';
 
 export type CodingLanguageFilter = Record<CodingLanguage, boolean>;
 
@@ -16,10 +13,7 @@ export default function usePeopleFilters() {
   const { main } = useStores();
   const [codingLanguageFilter, setCodingLanguageFilter] =
     useState<CodingLanguageFilter>(emptyCodingLanguageFilter);
-  let people = filterByCodingLanguage(
-    useFuse(main.people, ['owner_alias']).filter((p: Person) => !p.hide) || [],
-    codingLanguageFilter
-  );
+  const [languagesQueryParam, setLanguagesQueryParam] = useState('');
 
   const handleCodingLanguageFilterChange = (codingLanguage: CodingLanguage) => {
     const newCodingLanguageFilter = {
@@ -28,12 +22,21 @@ export default function usePeopleFilters() {
     };
     setCodingLanguageFilter(newCodingLanguageFilter);
 
-    people = filterByCodingLanguage(people, newCodingLanguageFilter);
+    const languages = Object.entries(newCodingLanguageFilter)
+      .reduce((languagesQueryParam: Array<string>, [language, state]: [string, boolean]) => {
+        if (state) languagesQueryParam.push(language);
+        return languagesQueryParam;
+      }, [])
+      .join(',');
+
+    setLanguagesQueryParam(languages);
+
+    main.getPeople({ page: 1, resetPage: true, languages });
   };
 
   return {
     codingLanguageFilter,
     handleCodingLanguageFilterChange,
-    people
+    languagesQueryParam
   };
 }

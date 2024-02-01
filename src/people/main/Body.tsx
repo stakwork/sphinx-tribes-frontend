@@ -55,7 +55,8 @@ function BodyComponent() {
   const { main, ui } = useStores();
   const screenWidth = useScreenWidth();
   const [openStartUpModel, setOpenStartUpModel] = useState<boolean>(false);
-  const { codingLanguageFilter, handleCodingLanguageFilterChange, people } = usePeopleFilters();
+  const { codingLanguageFilter, handleCodingLanguageFilterChange, languagesQueryParam } =
+    usePeopleFilters();
   const closeModal = () => setOpenStartUpModel(false);
   const { peoplePageNumber } = ui;
   const history = useHistory();
@@ -124,12 +125,12 @@ function BodyComponent() {
           onChange={(e: any) => {
             // @TODO usePeopleSearchHandler
             ui.setSearchText(e);
-            main.getPeople({ page: 1, resetPage: true });
+            main.getPeople({ page: 1, resetPage: true, languages: languagesQueryParam });
           }}
         />
       </div>
       <div className="content">
-        {people.map((p: Person) => (
+        {main.people.map((p: Person) => (
           <PersonCard
             {...p}
             key={p.id}
@@ -139,7 +140,7 @@ function BodyComponent() {
             select={selectPerson}
           />
         ))}
-        {!people.length && <NoResults />}
+        {!main.people.length && <NoResults />}
         <PageLoadSpinner noAnimate show={loadingBottom} />
       </div>
 
