@@ -100,6 +100,7 @@ function BodyComponent() {
 
   return (
     <Body
+      data-testid="content"
       isMobile={isMobile}
       onScroll={(e: any) => {
         handleScroll(e);
