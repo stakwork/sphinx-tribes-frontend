@@ -97,6 +97,7 @@ const OrgLinks = styled.div`
   display: flex;
   flex-direction: row;
   gap: 8px;
+  margin-left: 0px;
 `;
 
 const SmallButton = styled.a`
@@ -510,13 +511,6 @@ export const OrgHeader = ({
   const handlePostBountyClose = () => {
     setIsPostBountyModalOpen(false);
   };
-  const handleWebsiteButton = (websiteUrl: string) => {
-    window.open(websiteUrl, '_blank');
-  };
-
-  const handleGithubButton = (githubUrl: string) => {
-    window.open(githubUrl, '_blank');
-  };
 
   useEffect(() => {
     if (org_uuid) {
@@ -559,7 +553,7 @@ export const OrgHeader = ({
                 <OrgLogo src={organizationData?.img || '/static/orgdefault.png'} alt={organizationData?.name + ' logo'}/>
                 <OrgNameLinks>
                   <OrgName>{organizationData?.name || ''}</OrgName>
-                  <OrgLinks>
+                  <OrgLinks data-testid="url-button-container">
                     {
                       organizationData?.github &&
                       <SmallButton href={organizationData?.website} target="_blank">
