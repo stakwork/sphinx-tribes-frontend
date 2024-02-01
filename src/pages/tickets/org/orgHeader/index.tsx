@@ -597,7 +597,7 @@ export const OrgHeader = ({
             </OrgDetails>
             <ButtonContainer>
                {canPostBounty && (
-                  <Button onClick={() => handlePostBountyClick(true)}>
+                  <Button onClick={() => handlePostBountyClick()}>
                     <img src={addBounty} alt="" />
                     Post a Bounty
                   </Button>
