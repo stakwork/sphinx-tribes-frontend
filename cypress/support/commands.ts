@@ -101,3 +101,33 @@ Cypress.Commands.add('logout', (userAlias: string) => {
 
   cy.contains('Sign in').eq(0);
 });
+
+Cypress.Commands.add('create_bounty', (bounty) => {
+  cy.contains('Bounties').click();
+  cy.wait(1000);
+  cy.contains('Post a Bounty').click();
+  cy.contains('Start').click();
+  cy.contains('label', 'Bounty Title').type(bounty.title);
+  cy.get('[data-testid="Category *"]').click();
+  cy.contains(bounty.category).click();
+  if (bounty.coding_language && bounty.coding_language.length > 0) {
+    cy.contains('Coding Language').click();
+    for (let i = 0; i < bounty.coding_language.length; i++) {
+      cy.contains(bounty.coding_language[i]).click();
+    }
+    cy.contains('Coding Language').click();
+  }
+  cy.contains('Next').click();
+
+  cy.get('.euiTextArea').type(bounty.description);
+  cy.contains('Next').click();
+  cy.contains('label', 'Price (Sats)').type(bounty.amount);
+  cy.contains('Next').click();
+  if (bounty.assign) {
+    cy.get('.SearchInput').type(bounty.assign);
+    cy.get('.People').contains('Assign').click();
+  } else {
+    cy.contains('Decide Later').click();
+  }
+  cy.contains('Finish').click();
+});
