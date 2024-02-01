@@ -147,7 +147,7 @@ const App = ({ filterStartDate, filterEndDate, setShowCalendar }: Props) => {
     }
   };
 
-  const isValidDate = (value: string) => value.match(/\d{1,2}\/\d{1,2}\/\d{2,4}/) ? true : false;
+  const isValidDate = (value: string) => (value.match(/\d{1,2}\/\d{1,2}\/\d{2,4}/) ? true : false);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.name === 'start') {
