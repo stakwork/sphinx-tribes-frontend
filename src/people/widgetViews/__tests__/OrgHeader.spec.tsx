@@ -54,6 +54,9 @@ const MockProps: OrgBountyHeaderProps = {
     website: 'https://ecurrencyhodler.com/'
   }
 };
+
+const NoDescriptionOrg = { ...MockProps, organizationData: { ...MockProps, description: '' } };
+
 describe('OrgHeader Component', () => {
   beforeEach(() => {
     jest.spyOn(helpers, 'userCanManageBounty').mockResolvedValue(true);
@@ -171,5 +174,16 @@ describe('OrgHeader Component', () => {
     waitFor(() =>
       expect(screen.findByAltText(`${MockProps.organizationData.name} logo`)).toBeInTheDocument()
     );
+  });
+
+  it('renders the component with description', async () => {
+    render(<OrgHeader {...MockProps} />);
+    waitFor(() => expect(screen.findByText(MockProps.organizationData.description)).toBeInTheDocument());
+    waitFor(() => expect(screen.getAllByTestId('org-description')).toContain(MockProps.organizationData.description));
+  });
+
+  it('it does not render the component with description if there is no description', async () => {
+    render(<OrgHeader {...NoDescriptionOrg} />);
+    waitFor(() => expect(screen.getAllByTestId('org-description')).toContain(''));
   });
 });

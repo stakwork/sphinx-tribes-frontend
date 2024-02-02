@@ -584,7 +584,9 @@ export const OrgHeader = ({
               </OrgNameLinks>
             </OrgDetailsLeft>
             <OrgDetailsRight>
-              <OrgDetailsText>{organizationData?.description || ''}</OrgDetailsText>
+              <OrgDetailsText data-testid="org-description">
+                {organizationData?.description || ''}
+              </OrgDetailsText>
             </OrgDetailsRight>
           </OrgDetails>
           <ButtonContainer>
@@ -615,9 +617,8 @@ export const OrgHeader = ({
                     <div className="filterStatusIconContainer">
                       <MaterialIcon
                         className="materialStatusIcon"
-                        icon={`${
-                          isStatusPopoverOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down'
-                        }`}
+                        icon={`${isStatusPopoverOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down'
+                          }`}
                         style={{
                           color: isStatusPopoverOpen ? color.grayish.G10 : ''
                         }}

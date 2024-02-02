@@ -11,7 +11,6 @@ import { useIsMobile } from '../../../hooks';
 import { useStores } from '../../../store';
 import { OrgBody, Body, Backdrop } from '../style';
 import { defaultOrgBountyStatus } from '../../../store/main';
-import api from '../../../api';
 import { OrgHeader } from './orgHeader';
 
 function OrgBodyComponent() {
@@ -42,8 +41,8 @@ function OrgBodyComponent() {
           resetPage: true,
           languages: languageString
         });
-        const orgData = await api.get(`organizations/${uuid}`);
-        setOrganizationData(orgData);
+        const orgData = await main.getOrganizationByUuid(uuid)
+        if (orgData) setOrganizationData(orgData);
       }
       setLoading(false);
     })();
