@@ -14,6 +14,7 @@ declare namespace Cypress {
     | 'Bitcoin / Lightning'
     | 'Other';
 
+    type EstimateSessionLength = "Less than 1 hour"|"Less than 3 hour"|"More than 3 hour"|"Not sure yet"
   type Bounty = {
     organization?: string;
     title: string;
@@ -23,7 +24,7 @@ declare namespace Cypress {
     description: string;
     amount: string;
     tribe?: string;
-    estimate_session_length?: string;
+    estimate_session_length?: EstimateSessionLength;
     estimate_completion_date?: string; // MM/DD/YYYY
     deliverables?: string;
     assign?: string;
