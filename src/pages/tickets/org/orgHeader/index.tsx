@@ -65,7 +65,7 @@ export const OrgHeader = ({
   const { main, ui } = useStores();
   const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
   const [filterClick, setFilterClick] = useState(false);
-  const [canPostBounty, setCanPostBounty] = useState(false);
+  const [, setCanPostBounty] = useState(false);
   const [isStatusPopoverOpen, setIsStatusPopoverOpen] = useState<boolean>(false);
   const onButtonClick = async () => {
     setIsStatusPopoverOpen((isPopoverOpen: any) => !isPopoverOpen);
@@ -92,9 +92,9 @@ export const OrgHeader = ({
   const handlePostBountyClick = () => {
     setIsPostBountyModalOpen(true);
   };
-  const handlePostBountyClose = () => {
-    setIsPostBountyModalOpen(false);
-  };
+  // const handlePostBountyClose = () => {
+  //   setIsPostBountyModalOpen(false);
+  // };
   const handleWebsiteButton = (websiteUrl: string) => {
     window.open(websiteUrl, '_blank');
   };
