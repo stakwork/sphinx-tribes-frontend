@@ -14,7 +14,7 @@ describe('Alice tries to create a bounty', () => {
       assign: 'carol',
       deliverables: 'We are good to go man',
       tribe: '',
-      estimate_session_length: "Less than 3 hour",
+      estimate_session_length: 'Less than 3 hour',
       estimate_completion_date: '09/09/2024',
       organization: 'Testing Org'
     });
