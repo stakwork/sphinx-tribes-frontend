@@ -15,8 +15,8 @@ describe('Alice tries to create a bounty', () => {
       deliverables: 'We are good to go man',
       tribe: '',
       estimate_session_length: 'Less than 3 hour',
-      estimate_completion_date: '09/09/2024',
-      organization: 'Testing Org'
+      estimate_completion_date: '09/09/2024'
+      // organization: 'Testing Org'
     });
 
     cy.wait(1000);
