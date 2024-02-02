@@ -19,6 +19,7 @@ export const UrlButtonContainer = styled.div`
   width: 180px;
   display: flex;
   gap: 8px;
+  margin-left: 0px;
 `;
 
 export const FillContainer = styled.div`

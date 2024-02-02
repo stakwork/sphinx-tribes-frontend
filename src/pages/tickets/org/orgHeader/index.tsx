@@ -65,7 +65,7 @@ export const OrgHeader = ({
   const { main, ui } = useStores();
   const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
   const [filterClick, setFilterClick] = useState(false);
-  const [, setCanPostBounty] = useState(false);
+  const [canPostBounty, setCanPostBounty] = useState(false);
   const [isStatusPopoverOpen, setIsStatusPopoverOpen] = useState<boolean>(false);
   const onButtonClick = async () => {
     setIsStatusPopoverOpen((isPopoverOpen: any) => !isPopoverOpen);
@@ -164,13 +164,15 @@ export const OrgHeader = ({
               </UrlButtonContainer>
             </CompanyNameAndLink>
           </Leftheader>
-          <RightHeader>
-            <CompanyDescription>{description}</CompanyDescription>
-            <Button onClick={handlePostBountyClick}>
-              <img src={addBounty} alt="" />
-              Post a Bounty
-            </Button>
-          </RightHeader>
+          {canPostBounty && (
+            <RightHeader>
+              <CompanyDescription>{description}</CompanyDescription>
+              <Button onClick={handlePostBountyClick}>
+                <img src={addBounty} alt="" />
+                Post a Bounty
+              </Button>
+            </RightHeader>
+          )}
         </Header>
       </FillContainer>
       <FillContainer>
