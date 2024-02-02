@@ -22,7 +22,7 @@ import {
   convertLocaleToNumber,
   extractRepoAndIssueFromIssueUrl,
   toCapitalize
-} from '../../helpers/helpers-extended';
+} from '../../helpers';
 import { B, BWrap } from './style';
 
 // selected bounty popup window
