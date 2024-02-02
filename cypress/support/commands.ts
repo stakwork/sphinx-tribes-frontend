@@ -107,27 +107,41 @@ Cypress.Commands.add('create_bounty', (bounty) => {
   cy.wait(1000);
   cy.contains('Post a Bounty').click();
   cy.contains('Start').click();
+
+  if (bounty.organization) {
+    cy.get('button[data-testid="Organization"]').click({ force: true });
+    cy.contains(bounty.organization).click();
+  }
+
   cy.contains('label', 'Bounty Title').type(bounty.title);
-  cy.get('[data-testid="Category *"]').click();
-  cy.contains(bounty.category).click();
+  if (bounty.github_issue_url) {
+    cy.get('[data-testid="Github"]').type(bounty.github_issue_url);
+  }
+
+  cy.wait(1000);
+
   if (bounty.coding_language && bounty.coding_language.length > 0) {
     cy.contains('Coding Language').click();
     for (let i = 0; i < bounty.coding_language.length; i++) {
-      cy.contains(bounty.coding_language[i]).click();
+      cy.get('.CheckboxOuter').contains(bounty.coding_language[i]).scrollIntoView().click();
     }
     cy.contains('Coding Language').click();
   }
+  
+  cy.get('[data-testid="Category *"]').click();
+  cy.get('.euiSuperSelect__listbox').contains(bounty.category).click();
+
   cy.contains('Next').click();
 
-  cy.get('.euiTextArea').type(bounty.description);
-  cy.contains('Next').click();
-  cy.contains('label', 'Price (Sats)').type(bounty.amount);
-  cy.contains('Next').click();
-  if (bounty.assign) {
-    cy.get('.SearchInput').type(bounty.assign);
-    cy.get('.People').contains('Assign').click();
-  } else {
-    cy.contains('Decide Later').click();
-  }
-  cy.contains('Finish').click();
+  //   cy.get('.euiTextArea').type(bounty.description);
+  //   cy.contains('Next').click();
+  //   cy.contains('label', 'Price (Sats)').type(bounty.amount);
+  //   cy.contains('Next').click();
+  //   if (bounty.assign) {
+  //     cy.get('.SearchInput').type(bounty.assign);
+  //     cy.get('.People').contains('Assign').click();
+  //   } else {
+  //     cy.contains('Decide Later').click();
+  //   }
+  //   cy.contains('Finish').click();
 });
