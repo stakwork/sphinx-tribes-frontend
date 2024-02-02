@@ -63,12 +63,9 @@ const DescriptionPriceContainer = styled.div<containerProps>`
   background-size: cover;
 
   :hover {
-    background: url('static/unassigned_bounty_hover_bg.svg');
+    background: url('/static/unassigned_bounty_hover_bg.svg');
     background-repeat: no-repeat;
     background-size: cover;
-  }
-  :active {
-    background: url('static/unassigned_bounty_active_bg.svg');
   }
 `;
 
@@ -204,7 +201,10 @@ const Bounties = (props: BountiesProps) => {
         </BountyLink>
       ) : (
         <BountyContainer color={color}>
-          <DescriptionPriceContainer unAssignedBackgroundImage='url("/static/unassigned_bounty_bg.svg")'>
+          <DescriptionPriceContainer
+            data-testid="description-price-container"
+            unAssignedBackgroundImage={'url("/static/unassigned_bounty_bg.svg")'}
+          >
             <BountyLink
               to={props.org_uuid ? `/bounty/${props.id}/${props.org_uuid}` : `/bounty/${props.id}`}
             >
