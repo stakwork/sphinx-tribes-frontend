@@ -35,25 +35,6 @@ jest.mock('react-router-dom', () => ({
 }));
 
 describe('TicketModalPage Component', () => {
-  it('should redirect to the appropriate page on close based on the route', async () => {
-    (useIsMobile as jest.Mock).mockReturnValue(false);
-
-    jest.spyOn(mainStore, 'getBountyById');
-    jest.spyOn(mainStore, 'getBountyIndexById');
-
-    render(<TicketModalPage setConnectPerson={jest.fn()} visible={true} />);
-
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    await waitFor(() => {});
-
-    const closeButton = screen.queryByTestId('close-btn');
-    if (closeButton) {
-      fireEvent.click(closeButton);
-
-      expect(mockPush).toHaveBeenCalledWith('/bounties');
-    }
-  });
-
   beforeEach(() => {
     const mockIntersectionObserver = jest.fn();
     mockIntersectionObserver.mockReturnValue({
@@ -148,5 +129,23 @@ describe('TicketModalPage Component', () => {
       expect(getByText(mockBountiesMutated[1].body.description)).toBeInTheDocument();
       expect(getByText(formatSat(Number(mockBountiesMutated[1].body.price)))).toBeInTheDocument();
     });
+  });
+  it('should redirect to the appropriate page on close based on the route', async () => {
+    (useIsMobile as jest.Mock).mockReturnValue(false);
+
+    jest.spyOn(mainStore, 'getBountyById');
+    jest.spyOn(mainStore, 'getBountyIndexById');
+
+    render(<TicketModalPage setConnectPerson={jest.fn()} visible={true} />);
+
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    await waitFor(() => {});
+
+    const closeButton = screen.queryByTestId('close-btn');
+    if (closeButton) {
+      fireEvent.click(closeButton);
+
+      expect(mockPush).toHaveBeenCalledWith('/bounties');
+    }
   });
 });
