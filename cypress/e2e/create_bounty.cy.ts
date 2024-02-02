@@ -20,6 +20,7 @@ describe('Alice tries to create a bounty', () => {
     });
 
     cy.wait(1000);
-    // cy.logout(activeUser);
+
+    cy.logout(activeUser);
   });
 });
