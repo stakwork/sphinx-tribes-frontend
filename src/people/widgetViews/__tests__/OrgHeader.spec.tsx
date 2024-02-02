@@ -40,18 +40,18 @@ const MockProps: OrgBountyHeaderProps = {
   onChangeStatus: jest.fn(),
   onChangeLanguage: jest.fn(),
   organizationData: {
-    created: "2024-01-18T17:10:43.329567Z",
+    created: '2024-01-18T17:10:43.329567Z',
     deleted: false,
-    description: "This is a test organization for the Org Homepage Epic.",
-    github: "https://github.com/stakwork/sphinx-tribes",
-    id: "67",
-    img: "https://memes.sphinx.chat/public/UPWRvxiceSND60S9_7XwQGtj8MmPsQ1_ijX8aUR7kZ8=",
+    description: 'This is a test organization for the Org Homepage Epic.',
+    github: 'https://github.com/stakwork/sphinx-tribes',
+    id: '67',
+    img: 'https://memes.sphinx.chat/public/UPWRvxiceSND60S9_7XwQGtj8MmPsQ1_ijX8aUR7kZ8=',
     name: "E's Fun Club",
-    owner_pubkey: "021ae436bcd40ca21396e59be8cdb5a707ceacdb35c1d2c5f23be7584cab29c40b",
+    owner_pubkey: '021ae436bcd40ca21396e59be8cdb5a707ceacdb35c1d2c5f23be7584cab29c40b',
     show: false,
-    updated: "2024-01-18T17:10:43.329567Z",
-    uuid: "cmkln4tm098m49vhlt80",
-    website: "https://ecurrencyhodler.com/",
+    updated: '2024-01-18T17:10:43.329567Z',
+    uuid: 'cmkln4tm098m49vhlt80',
+    website: 'https://ecurrencyhodler.com/'
   }
 };
 describe('OrgHeader Component', () => {
@@ -166,8 +166,10 @@ describe('OrgHeader Component', () => {
   });
 
   it('renders the component with organization logo and name', async () => {
-    render( <OrgHeader {...MockProps} />);
+    render(<OrgHeader {...MockProps} />);
     waitFor(() => expect(screen.findByText(MockProps.organizationData.name)).toBeInTheDocument());
-    waitFor(() => expect(screen.findByAltText(`${MockProps.organizationData.name} logo`)).toBeInTheDocument()); 
+    waitFor(() =>
+      expect(screen.findByAltText(`${MockProps.organizationData.name} logo`)).toBeInTheDocument()
+    );
   });
 });

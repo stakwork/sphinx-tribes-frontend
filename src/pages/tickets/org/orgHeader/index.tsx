@@ -59,21 +59,18 @@ const ButtonContainer = styled.div`
 
 const OrgDetailsLeft = styled.div`
   display: flex;
-  
 `;
 
 const OrgDetailsRight = styled.div`
   display: flex;
   justify-contents: flex-end;
   align-items: center;
-  
 `;
 
 const OrgLogo = styled.img`
   width: 72px;
   height: 72px;
   border-radius: 66px;
-  
 `;
 
 const OrgNameLinks = styled.div`
@@ -81,7 +78,6 @@ const OrgNameLinks = styled.div`
   flex-direction: column;
   justify-content: center;
   margin-left: 20px;
-  
 `;
 
 const OrgName = styled.p`
@@ -121,7 +117,7 @@ const SmallButton = styled.a`
   &:hover {
     text-decoration: none;
     color: var(--Main-bottom-icons, #5f6368);
-    border: 1px solid var(--Disabled-Icon-color, #B0B7BC);
+    border: 1px solid var(--Disabled-Icon-color, #b0b7bc);
   }
   &:focus {
     outline: none;
@@ -129,7 +125,7 @@ const SmallButton = styled.a`
 `;
 const OrgDetailsText = styled.div`
   overflow: hidden;
-  color: var(--Main-bottom-icons, #5F6368);
+  color: var(--Main-bottom-icons, #5f6368);
   text-align: right;
   leading-trim: both;
   text-edge: cap;
@@ -140,7 +136,6 @@ const OrgDetailsText = styled.div`
   font-weight: 400;
   line-height: 20px;
   width: 403px;
-
 `;
 
 const Filters = styled.div`
@@ -528,7 +523,6 @@ export const OrgHeader = ({
     setIsPostBountyModalOpen(false);
   };
 
-
   useEffect(() => {
     if (org_uuid) {
       main.getSpecificOrganizationBounties(org_uuid, {
@@ -539,7 +533,6 @@ export const OrgHeader = ({
       });
     }
   }, [org_uuid, checkboxIdToSelectedMap, main, languageString]);
-
 
   const handleClick = () => {
     setFilterClick(!filterClick);
@@ -566,44 +559,42 @@ export const OrgHeader = ({
       <FillContainer>
         <Header>
           <OrgDetails>
-              <OrgDetailsLeft>
-                <OrgLogo src={organizationData?.img || '/static/orgdefault.png'} alt={organizationData?.name + ' logo'}/>
-                <OrgNameLinks>
-                  <OrgName>{organizationData?.name || ''}</OrgName>
-                  <OrgLinks data-testid="url-button-container">
-                    {
-                      organizationData?.github &&
-                      <SmallButton href={organizationData?.website} target="_blank">
-                        <img src={websiteIcon} alt="globe-website icon" />
-                        <span>Website</span>
-                      </SmallButton>
-                    }
-                    {
-                      organizationData?.website &&
-                      <SmallButton href={organizationData?.github} target="_blank">
-                        {' '}
-                        <img src={githubIcon} alt="github icon" />
-                        <span>Github</span>
-                      </SmallButton>
-                    }
-                    
-                  </OrgLinks>
-                  
-                </OrgNameLinks>
-              </OrgDetailsLeft>
-              <OrgDetailsRight>
-                <OrgDetailsText>{organizationData?.description || ''}</OrgDetailsText>
-              </OrgDetailsRight>
-            </OrgDetails>
-            <ButtonContainer>
-               {canPostBounty && (
-                  <Button onClick={() => handlePostBountyClick()}>
-                    <img src={addBounty} alt="" />
-                    Post a Bounty
-                  </Button>
-                )}
-            </ButtonContainer>
-
+            <OrgDetailsLeft>
+              <OrgLogo
+                src={organizationData?.img || '/static/orgdefault.png'}
+                alt={organizationData?.name + ' logo'}
+              />
+              <OrgNameLinks>
+                <OrgName>{organizationData?.name || ''}</OrgName>
+                <OrgLinks data-testid="url-button-container">
+                  {organizationData?.github && (
+                    <SmallButton href={organizationData?.website} target="_blank">
+                      <img src={websiteIcon} alt="globe-website icon" />
+                      <span>Website</span>
+                    </SmallButton>
+                  )}
+                  {organizationData?.website && (
+                    <SmallButton href={organizationData?.github} target="_blank">
+                      {' '}
+                      <img src={githubIcon} alt="github icon" />
+                      <span>Github</span>
+                    </SmallButton>
+                  )}
+                </OrgLinks>
+              </OrgNameLinks>
+            </OrgDetailsLeft>
+            <OrgDetailsRight>
+              <OrgDetailsText>{organizationData?.description || ''}</OrgDetailsText>
+            </OrgDetailsRight>
+          </OrgDetails>
+          <ButtonContainer>
+            {canPostBounty && (
+              <Button onClick={() => handlePostBountyClick()}>
+                <img src={addBounty} alt="" />
+                Post a Bounty
+              </Button>
+            )}
+          </ButtonContainer>
         </Header>
       </FillContainer>
       <FillContainer>
