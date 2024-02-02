@@ -729,13 +729,13 @@ export const wantedCodingTaskSchema: FormField[] = [
     label: 'Estimate Session Length',
     type: 'select',
     options: estimated_time,
-    testId: "Estimate Session Length"
+    testId: 'Estimate Session Length'
   },
   {
     name: 'estimated_completion_date',
     label: 'Estimate Completion Date',
     type: 'date',
-    testId: "Estimate Completion Date"
+    testId: 'Estimate Completion Date'
   },
   {
     name: 'tribe',

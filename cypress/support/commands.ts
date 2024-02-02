@@ -114,7 +114,7 @@ Cypress.Commands.add('create_bounty', (bounty) => {
   }
 
   cy.contains('label', 'Bounty Title').type(bounty.title);
-  cy.wait(600)
+  cy.wait(600);
   if (bounty.github_issue_url) {
     cy.get('[data-testid="Github"]').type(bounty.github_issue_url);
   }
@@ -134,35 +134,37 @@ Cypress.Commands.add('create_bounty', (bounty) => {
 
   cy.contains('Next').click();
 
-    cy.get('.euiTextArea').type(bounty.description);
-    cy.contains('Next').click();
+  cy.get('.euiTextArea').type(bounty.description);
+  cy.contains('Next').click();
 
-    cy.contains('label', 'Price (Sats)').type(bounty.amount);
+  cy.contains('label', 'Price (Sats)').type(bounty.amount);
 
-    if(bounty.estimate_session_length){
-        cy.get('button[data-testid="Estimate Session Length"]').click({force: true});
-        cy.get('.euiSuperSelect__listbox').contains(bounty.estimate_session_length).click();
-    }
+  if (bounty.estimate_session_length) {
+    cy.get('button[data-testid="Estimate Session Length"]').click({ force: true });
+    cy.get('.euiSuperSelect__listbox').contains(bounty.estimate_session_length).click();
+  }
 
-    if(bounty.estimate_completion_date){
-        cy.get('.react-datepicker__input-container > .euiDatePicker').click();
-        cy.get('.react-datepicker__input-container > .euiDatePicker').type('{selectAll}')
-        cy.wait(100)
-        cy.get('.react-datepicker__input-container > .euiDatePicker').type(bounty.estimate_completion_date)
-    }
+  if (bounty.estimate_completion_date) {
+    cy.get('.react-datepicker__input-container > .euiDatePicker').click();
+    cy.get('.react-datepicker__input-container > .euiDatePicker').type('{selectAll}');
+    cy.wait(100);
+    cy.get('.react-datepicker__input-container > .euiDatePicker').type(
+      bounty.estimate_completion_date
+    );
+  }
 
-    if(bounty.deliverables){
-        cy.get("textarea.inputText").type(bounty.deliverables)
-    }
+  if (bounty.deliverables) {
+    cy.get('textarea.inputText').type(bounty.deliverables);
+  }
 
-    cy.contains('Next').click();
+  cy.contains('Next').click();
 
-    if (bounty.assign) {
-      cy.get('.SearchInput').type(bounty.assign);
-      cy.get('.People').contains('Assign').click();
-    } else {
-      cy.contains('Decide Later').click();
-    }
-    
-    cy.contains('Finish').click();
+  if (bounty.assign) {
+    cy.get('.SearchInput').type(bounty.assign);
+    cy.get('.People').contains('Assign').click();
+  } else {
+    cy.contains('Decide Later').click();
+  }
+
+  cy.contains('Finish').click();
 });
