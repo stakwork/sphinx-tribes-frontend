@@ -18,7 +18,12 @@ export const useUserInfo = () => {
 
   function goBack() {
     ui.setSelectingPerson(0);
-    history.goBack();
+    const path = localStorage.getItem('key');
+    if (path) {
+      history.replace(path);
+    } else {
+      history.replace('/');
+    }
   }
   const qrString = makeQR(owner_pubkey || '');
 

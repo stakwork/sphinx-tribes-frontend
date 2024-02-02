@@ -471,6 +471,7 @@ function Header() {
                       selected={selected}
                       onClick={() => {
                         history.push(t.path);
+                        localStorage.setItem('key', t.path);
                       }}
                     >
                       {label}
