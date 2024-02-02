@@ -5,11 +5,20 @@ declare namespace Cypress {
     create_bounty(bounty: Bounty): void;
   }
 
+  type Category =
+    | 'Web development'
+    | 'Mobile development'
+    | 'Design'
+    | 'Desktop app'
+    | 'Dev ops'
+    | 'Bitcoin / Lightning'
+    | 'Other';
+
   type Bounty = {
     organization?: string;
     title: string;
     github_issue_url?: string;
-    category: string;
+    category: Category;
     coding_language?: string[];
     description: string;
     amount: string;

@@ -675,7 +675,8 @@ export const wantedCodingTaskSchema: FormField[] = [
     label: 'Organization (optional)',
     type: 'select',
     options: [],
-    validator: strValidatorNotRequired
+    validator: strValidatorNotRequired,
+    testId: 'Organization'
   },
   {
     name: 'one_sentence_summary',
@@ -685,7 +686,8 @@ export const wantedCodingTaskSchema: FormField[] = [
   {
     name: 'ticket_url',
     label: 'Github Issue URL',
-    type: 'text'
+    type: 'text',
+    testId: 'Github'
   },
   {
     name: 'wanted_type',

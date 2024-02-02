@@ -48,7 +48,8 @@ export default function TextInputNew({
   isFocused,
   labelStyle,
   name,
-  setColor
+  setColor,
+  testId
 }: Props) {
   let labeltext = label;
   if (error) labeltext = `${labeltext}*`;
@@ -83,6 +84,7 @@ export default function TextInputNew({
             setIsError(true);
           }
         }}
+        data-testid={testId}
         onChange={(e: any) => {
           const newVal = e.target.value;
           if (name === 'name') {
