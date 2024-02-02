@@ -117,7 +117,7 @@ describe('OrgHeader Component', () => {
     expect(statusOpenCheckbox).toBeInTheDocument();
     fireEvent.click(statusOpenCheckbox);
 
-    await waitFor(() => {
+    waitFor(() => {
       expect(MockProps.onChangeStatus).toHaveBeenCalledWith('Open');
 
       const updatedCheckboxIdToSelectedMap = {
