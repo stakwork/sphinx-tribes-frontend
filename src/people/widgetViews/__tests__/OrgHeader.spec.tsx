@@ -145,4 +145,28 @@ describe('OrgHeader Component', () => {
     expect(websiteButton).toBeInTheDocument();
     expect(githubButton).toBeInTheDocument();
   });
+
+  it('UrlButtons are left-aligned if visible', () => {
+    const { getByTestId } = render(<OrgHeader {...MockProps} />);
+    const urlButtonContainer = getByTestId('url-button-container');
+    const containerStyle = window.getComputedStyle(urlButtonContainer);
+    expect(containerStyle.marginLeft).toBe('0px');
+  });
+
+  it('does not display "Post a Bounty" button when user is not logged in', () => {
+    render(<OrgHeader {...MockProps} />);
+    expect(screen.queryByText('Post a Bounty')).not.toBeInTheDocument();
+  });
+
+  it('does not display "Post a Bounty" button when user is logged in but does not have manage bounty role', async () => {
+    // @ts-ignore
+    uiStore.meInfo = { pubkey: '' };
+    jest.spyOn(helpers, 'userCanManageBounty').mockResolvedValue(false);
+
+    render(<OrgHeader {...MockProps} />);
+
+    await waitFor(() => {
+      expect(screen.queryByText('Post a Bounty')).not.toBeInTheDocument();
+    });
+  });
 });
