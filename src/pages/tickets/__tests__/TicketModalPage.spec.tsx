@@ -7,7 +7,6 @@ import React from 'react';
 import { MemoryRouter, Route } from 'react-router-dom';
 import { mainStore } from 'store/main';
 import { useIsMobile } from 'hooks';
-import { useStores } from 'store';
 import { TicketModalPage } from '../TicketModalPage';
 
 jest.mock('hooks', () => ({
@@ -35,25 +34,6 @@ jest.mock('react-router-dom', () => ({
 }));
 
 describe('TicketModalPage Component', () => {
-  it('should redirect to the appropriate page on close based on the route', async () => {
-    (useIsMobile as jest.Mock).mockReturnValue(false);
-
-    jest.spyOn(mainStore, 'getBountyById');
-    jest.spyOn(mainStore, 'getBountyIndexById');
-
-    render(<TicketModalPage setConnectPerson={jest.fn()} visible={true} />);
-
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    await waitFor(() => {});
-
-    const closeButton = screen.queryByTestId('close-btn');
-    if (closeButton) {
-      fireEvent.click(closeButton);
-
-      expect(mockPush).toHaveBeenCalledWith('/bounties');
-    }
-  });
-
   beforeEach(() => {
     const mockIntersectionObserver = jest.fn();
     mockIntersectionObserver.mockReturnValue({
@@ -137,7 +117,7 @@ describe('TicketModalPage Component', () => {
       );
     jest.spyOn(mainStore, 'getBountyIndexById').mockReturnValue(Promise.resolve(1234));
     await act(async () => {
-      const { getByText, getAllByText } = render(
+      const { getByText } = render(
         <MemoryRouter initialEntries={['/bounty/1234']}>
           <Route path="/bounty/:bountyId" component={TicketModalPage} />
         </MemoryRouter>
@@ -148,5 +128,23 @@ describe('TicketModalPage Component', () => {
       expect(getByText(mockBountiesMutated[1].body.description)).toBeInTheDocument();
       expect(getByText(formatSat(Number(mockBountiesMutated[1].body.price)))).toBeInTheDocument();
     });
+  });
+
+  it('should redirect to the appropriate page on close based on the route', async () => {
+    (useIsMobile as jest.Mock).mockReturnValue(false);
+
+    jest.spyOn(mainStore, 'getBountyById');
+    jest.spyOn(mainStore, 'getBountyIndexById');
+
+    render(<TicketModalPage setConnectPerson={jest.fn()} visible={true} />);
+
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    await waitFor(() => {});
+
+    const closeButton = screen.queryByTestId('close-btn');
+    if (closeButton) {
+      fireEvent.click(closeButton);
+      expect(mockPush).toHaveBeenCalledWith('/bounties');
+    }
   });
 });
