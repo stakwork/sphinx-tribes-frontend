@@ -7,15 +7,15 @@ describe('Alice tries to create a bounty', () => {
     cy.create_bounty({
       title: 'My new Bounty',
       category: 'Web development',
-      github_issue_url: 'https://github.com/stakwork/sphinx-relay/issues/799',
+      // github_issue_url: 'https://github.com/stakwork/sphinx-relay/issues/799',
       coding_language: ['Typescript', 'Javascript', 'Lightning'],
       description: 'This is available',
       amount: '123',
-      assign: '',
-      deliverables: '',
+      assign: 'carol',
+      deliverables: 'We are good to go man',
       tribe: '',
-      estimate_session_length: '',
-      estimate_completion_date: '02/01/2024',
+      estimate_session_length: "Less than 3 hour",
+      estimate_completion_date: '09/09/2024',
       organization: 'Testing Org'
     });
 
