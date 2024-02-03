@@ -307,6 +307,7 @@ export const OrgHeader = ({
             <SkillContainer>
               <FilterLabel>Skill</FilterLabel>
               <DropDownButton onClick={handleClick} data-testid="skillDropdown">
+                {' '}
                 <Img src={dropdown} alt="" />
               </DropDownButton>
               {filterClick ? (
