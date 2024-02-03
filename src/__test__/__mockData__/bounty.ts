@@ -1,0 +1,87 @@
+export const mockBountyRoles = [
+  { name: 'ADD BOUNTY' },
+  { name: 'UPDATE BOUNTY' },
+  { name: 'DELETE BOUNTY' },
+  { name: 'PAY BOUNTY' },
+  { name: 'VIEW REPORT' }
+];
+export const bountyResponse = [
+  {
+    bounty: {
+      id: 1384,
+      owner_id: 'dummy_owner_id',
+      paid: false,
+      show: true,
+      type: 'freelance_job_request',
+      award: '',
+      assigned_hours: 0,
+      bounty_expires: '',
+      commitment_fee: 0,
+      price: 250000,
+      title: 'Lambda Function: Extract files from a zip folder in an s3 bucket',
+      tribe: 'None',
+      assignee: 'dummy_assignee_id',
+      ticket_url: 'https://github.com/stakwork/stak-bounties/issues/9',
+      org_uuid: 'dummy_org_uuid',
+      description: 'dummy_description',
+      wanted_type: 'Web development',
+      deliverables: '',
+      github_description: true,
+      one_sentence_summary: '',
+      estimated_session_length: 'Less than 3 hours',
+      estimated_completion_date: '',
+      created: 1706907671,
+      updated: '2024-02-02T23:50:20.567929Z',
+      coding_languages: []
+    },
+    assignee: {
+      id: 258,
+      uuid: 'dummy_assignee_uuid',
+      owner_pubkey: 'dummy_owner_pubkey',
+      owner_alias: 'dummy_owner_alias',
+      unique_name: 'dummy_unique_name',
+      description: 'dummy_description',
+      tags: [],
+      img: 'https://dummy-image-url.com',
+      created: '2023-12-15T16:35:01.893063Z',
+      updated: '2024-01-31T14:32:16.852539Z',
+      unlisted: false,
+      deleted: false,
+      last_login: 1706562455,
+      owner_route_hint: 'dummy_owner_route_hint',
+      owner_contact_key: 'dummy_owner_contact_key',
+      price_to_meet: 0,
+      new_ticket_time: 0,
+      twitter_confirmed: false,
+      extras: null,
+      github_issues: null
+    },
+    owner: {
+      id: 190,
+      uuid: 'dummy_owner_uuid',
+      owner_pubkey: 'dummy_owner_pubkey',
+      owner_alias: 'dummy_owner_alias',
+      unique_name: 'dummy_unique_name',
+      description: 'dummy_description',
+      tags: [],
+      img: 'https://dummy-image-url.com',
+      created: '2023-09-21T22:56:59.255469Z',
+      updated: '2023-09-21T22:56:59.255469Z',
+      unlisted: false,
+      deleted: false,
+      last_login: 1706730967,
+      owner_route_hint: 'dummy_owner_route_hint',
+      owner_contact_key: 'dummy_owner_contact_key',
+      price_to_meet: 0,
+      new_ticket_time: 0,
+      twitter_confirmed: false,
+      extras: null,
+      github_issues: null
+    },
+    organization: {
+      uuid: 'dummy_org_uuid',
+      name: 'Dummy Organization',
+      img: 'https://dummy-image-url.com'
+    }
+  }
+];
