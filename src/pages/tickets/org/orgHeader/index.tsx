@@ -204,6 +204,30 @@ export const OrgHeader = ({
               </UrlButtonContainer>
             </CompanyNameAndLink>
           </Leftheader>
+          <Leftheader>
+            <ImageContainer src={img} width="72px" height="72px" alt="organization icon" />
+            <CompanyNameAndLink>
+              <CompanyLabel>{name}</CompanyLabel>
+              <UrlButtonContainer data-testid="url-button-container">
+                {website !== '' ? (
+                  <UrlButton onClick={() => handleWebsiteButton(website ?? '')}>
+                    <img src={websiteIcon} alt="" />
+                    Website
+                  </UrlButton>
+                ) : (
+                  ''
+                )}
+                {github !== '' ? (
+                  <UrlButton onClick={() => handleGithubButton(github ?? '')}>
+                    <img src={githubIcon} alt="" />
+                    Github
+                  </UrlButton>
+                ) : (
+                  ''
+                )}
+              </UrlButtonContainer>
+            </CompanyNameAndLink>
+          </Leftheader>
           {canPostBounty && (
             <RightHeader>
               <CompanyDescription>{description}</CompanyDescription>
