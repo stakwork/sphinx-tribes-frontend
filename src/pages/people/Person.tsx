@@ -134,6 +134,8 @@ export default function Person(props: PersonProps) {
       return (
         <a
           href={`/p/${owner_pubkey}`}
+          // the select props will jump to new person page, keep href for SEO
+          onClick={(e: React.MouseEvent<HTMLAnchorElement>) => { e.preventDefault(); }}
           style={{ textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}
         >
           <div
@@ -190,6 +192,8 @@ export default function Person(props: PersonProps) {
     return (
       <a
         href={`/p/${owner_pubkey}`}
+        // the select props will jump to new person page, keep href for SEO
+        onClick={(e: React.MouseEvent<HTMLAnchorElement>) => { e.preventDefault(); }}
         style={{ textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}
       >
         <DWrap squeeze={squeeze} onClick={() => select(id, unique_name, owner_pubkey)}>
