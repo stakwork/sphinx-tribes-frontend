@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import { Extras } from '../components/form/inputs/widgets/interfaces';
-import { Person, PersonBounty } from '../store/main';
+import { Organization, Person, PersonBounty } from '../store/main';
 import { MeData } from '../store/ui';
 import { Widget } from './main/types';
 
@@ -13,11 +13,6 @@ export interface BountyModalProps {
   basePath: string;
   bountyOwner?: Person;
   fromPage?: 'usertickets' | 'bounties' | 'organization';
-}
-
-export interface OrgBountyHeaderProps {
-  organizationUrls: any;
-  direction?: string;
 }
 
 export interface FocusViewProps {
@@ -431,6 +426,7 @@ export interface OrgBountyHeaderProps {
   checkboxIdToSelectedMapLanguage?: any;
   languageString?: string;
   org_uuid?: string;
+  organizationData: Organization;
 }
 export interface PeopleHeaderProps {
   onChangeLanguage: (number) => void;
