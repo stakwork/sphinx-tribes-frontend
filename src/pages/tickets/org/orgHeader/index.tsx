@@ -152,7 +152,7 @@ export const OrgHeader = ({
         direction: sortDirection
       });
     }
-  }, [org_uuid, checkboxIdToSelectedMap, sortDirection, main, languageString]);
+  }, [org_uuid, checkboxIdToSelectedMap, main, languageString]);
 
   const { name, img, description, website, github } = organizationData;
 
