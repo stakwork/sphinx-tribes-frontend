@@ -191,7 +191,7 @@ describe('TicketModalPage Component', () => {
     };
 
     jest.spyOn(mainStore, 'getBountyById').mockResolvedValue([mockBountyWithGitHubLink]);
-    jest.spyOn(mainStore, 'getBountyIndexById').mockResolvedValue(1234);
+    jest.spyOn(mainStore, 'getBountyIndexById').mockResolvedValue(1231);
 
     await act(async () => {
       const { getByText } = render(
