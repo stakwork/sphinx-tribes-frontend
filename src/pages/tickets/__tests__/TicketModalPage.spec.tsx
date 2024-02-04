@@ -162,7 +162,7 @@ describe('TicketModalPage Component', () => {
     const mockBountyDetails = {
       ...newBounty,
       body: {
-        ...mockBountiesMutated[1].body,
+        ...mockBountiesMutated[0].body,
         assignee: user
       }
     };
@@ -195,7 +195,7 @@ describe('TicketModalPage Component', () => {
 
     await act(async () => {
       const { getByText } = render(
-        <MemoryRouter initialEntries={['/bounty/1234']}>
+        <MemoryRouter initialEntries={['/bounty/1231']}>
           <Route path="/bounty/:bountyId" component={TicketModalPage} />
         </MemoryRouter>
       );
