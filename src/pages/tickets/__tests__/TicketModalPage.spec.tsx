@@ -243,7 +243,7 @@ describe('TicketModalPage Component', () => {
     jest.spyOn(mainStore, 'getBountyIndexById').mockReturnValue(Promise.resolve(1234));
     await act(async () => {
       const { getByText } = render(
-        <MemoryRouter initialEntries={['/bounty/1234']}>
+        <MemoryRouter initialEntries={['/bounty/1387']}>
           <Route path="/bounty/:bountyId" component={TicketModalPage} />
         </MemoryRouter>
       );
