@@ -540,6 +540,7 @@ function MobileView(props: CodingBountiesProps) {
                       {!bountyPaid && hasAccess && (
                         <div className="CreatorDescriptionExtraButton">
                           <ImageButton
+                            data-testid="Edit"
                             buttonText={'Edit'}
                             ButtonContainerStyle={{
                               width: '117px',
@@ -555,6 +556,7 @@ function MobileView(props: CodingBountiesProps) {
                             }}
                           />
                           <ImageButton
+                            data-testid="Delete"
                             buttonText={!props.deletingState ? 'Delete' : 'Deleting'}
                             ButtonContainerStyle={{
                               width: '117px',

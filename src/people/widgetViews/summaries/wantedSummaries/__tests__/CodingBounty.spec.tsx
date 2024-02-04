@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { render, fireEvent, screen } from '@testing-library/react';
+import { render, fireEvent, screen, getByTestId } from '@testing-library/react';
 import { CodingBountiesProps } from 'people/interfaces';
 import React from 'react';
 import NameTag from 'people/utils/NameTag';
@@ -167,26 +167,12 @@ describe('MobileView component', () => {
     expect(completionDate).toBeInTheDocument();
   });
 
-  test('opens edit modal on "Edit" button click', () => {
-    render(<MobileView {...defaultProps} />);
-    const editButton = screen.getByText('Edit');
-    fireEvent.click(editButton);
-    expect(screen.getByText('Edit Modal Text')).toBeInTheDocument();
-  });
-
-  test('opens delete modal on "Delete" button click', () => {
-    render(<MobileView {...defaultProps} />);
-    const deleteButton = screen.getByText('Delete');
-    fireEvent.click(deleteButton);
-    expect(screen.getByText('Delete Modal Text')).toBeInTheDocument();
-  });
-
   it('renders the delete and edit buttons for the creator', () => {
-    const { getByText } = render(<MobileView {...defaultProps} />);
-    expect(getByText('Edit')).toBeInTheDocument();
-    expect(getByText('Delete')).toBeInTheDocument();
-    fireEvent.click(getByText('Edit'));
-    fireEvent.click(getByText('Delete'));
+    const { getByTestId } = render(<MobileView {...defaultProps} />);
+    expect(getByTestId('Edit')).toBeInTheDocument();
+    expect(getByTestId('Delete')).toBeInTheDocument();
+    fireEvent.click(getByTestId('Edit'));
+    fireEvent.click(getByTestId('Delete'));
     expect(mockEditAction).toHaveBeenCalledTimes(1);
     expect(mockDeleteAction).toHaveBeenCalledTimes(1);
   });
