@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom'
+import '@testing-library/jest-dom';
 import Person from '../Person';
 
 const mockUser = {
@@ -19,10 +19,8 @@ const mockUser = {
   price_to_meet: 0,
   url: '',
   verification_signature: '',
-  extras: {
-
-  }
-}
+  extras: {}
+};
 
 describe('Person component', () => {
   beforeEach(() => {
@@ -33,20 +31,14 @@ describe('Person component', () => {
       disconnect: () => null
     });
     window.IntersectionObserver = mockIntersectionObserver;
-  })
+  });
 
   it('should call select method when user is clicked and the page will not triger window.onload', () => {
     const onloadSpy = jest.fn();
     const selectMock = jest.fn();
 
     const { getByTestId } = render(
-      <Person
-        {...mockUser}
-        hideActions={true}
-        small={true}
-        selected={false}
-        select={selectMock}
-      />
+      <Person {...mockUser} hideActions={true} small={true} selected={false} select={selectMock} />
     );
 
     const personCard = getByTestId('person-card-small');
@@ -54,7 +46,11 @@ describe('Person component', () => {
 
     window.onload = onloadSpy;
     expect(onloadSpy).not.toHaveBeenCalled();
-    expect(selectMock).toHaveBeenCalledWith(mockUser.id, mockUser.unique_name, mockUser.owner_pubkey);
+    expect(selectMock).toHaveBeenCalledWith(
+      mockUser.id,
+      mockUser.unique_name,
+      mockUser.owner_pubkey
+    );
   });
 
   it('should show user contect qrcode modal when contect is clicked', async () => {
@@ -75,6 +71,6 @@ describe('Person component', () => {
 
     expect(getByTestId('connect-modal')).toBeInTheDocument();
     expect(getByTestId('testid-qrcode')).toBeInTheDocument();
-    expect(selectMock).not.toHaveBeenCalled()
+    expect(selectMock).not.toHaveBeenCalled();
   });
 });

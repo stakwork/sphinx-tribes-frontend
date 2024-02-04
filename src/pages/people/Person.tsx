@@ -135,7 +135,10 @@ export default function Person(props: PersonProps) {
         <a
           href={`/p/${owner_pubkey}`}
           // The "select" method will navigate to a new person page while retaining the "href" attribute for SEO purposes.
-          onClick={(e: React.MouseEvent<HTMLAnchorElement>) => { e.preventDefault(); e.stopPropagation(); }}
+          onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
           style={{ textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}
         >
           <div
@@ -194,10 +197,15 @@ export default function Person(props: PersonProps) {
       <a
         href={`/p/${owner_pubkey}`}
         // The "select" method will navigate to a new person page while retaining the "href" attribute for SEO purposes.
-        onClick={(e: React.MouseEvent<HTMLAnchorElement>) => { e.preventDefault(); e.stopPropagation(); }}
+        onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
         style={{ textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}
       >
-        <DWrap squeeze={squeeze} onClick={() => select(id, unique_name, owner_pubkey)}
+        <DWrap
+          squeeze={squeeze}
+          onClick={() => select(id, unique_name, owner_pubkey)}
           data-testid="person-card-desktop"
         >
           <div>
