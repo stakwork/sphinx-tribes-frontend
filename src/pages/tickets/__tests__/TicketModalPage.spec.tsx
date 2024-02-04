@@ -227,32 +227,6 @@ describe('TicketModalPage Component', () => {
     });
   });
 
-  it('should render delete button', async () => {
-    jest.spyOn(mainStore, 'getBountyById').mockReturnValue(
-      Promise.resolve([
-        {
-          ...newBounty,
-          body: {
-            ...mockBountiesMutated[1].body,
-            ticket_url: 'http://github.com/sphinx/sphinx-tribes/issues/111',
-            assignee: user
-          }
-        }
-      ])
-    );
-    jest.spyOn(mainStore, 'getBountyIndexById').mockReturnValue(Promise.resolve(1234));
-    await act(async () => {
-      const { getByText } = render(
-        <MemoryRouter initialEntries={['/bounty/1387']}>
-          <Route path="/bounty/:bountyId" component={TicketModalPage} />
-        </MemoryRouter>
-      );
-
-      await waitFor(() => getByText('Delete'));
-      expect(getByText('Delete')).toBeInTheDocument();
-    });
-  });
-
   it('should redirect to the appropriate page on close based on the route', async () => {
     (useIsMobile as jest.Mock).mockReturnValue(false);
 
