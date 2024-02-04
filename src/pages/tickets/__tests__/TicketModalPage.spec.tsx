@@ -202,20 +202,18 @@ describe('TicketModalPage Component', () => {
   });
 
   it('should render github ticket link button', async () => {
-    jest
-      .spyOn(mainStore, 'getBountyById')
-      .mockReturnValue(
-        Promise.resolve([
-          {
-            ...newBounty,
-            body: {
-              ...mockBountiesMutated[1].body,
-              ticket_url: 'http://github.com/sphinx/sphinx-tribes/issues/111',
-              assignee: user
-            }
+    jest.spyOn(mainStore, 'getBountyById').mockReturnValue(
+      Promise.resolve([
+        {
+          ...newBounty,
+          body: {
+            ...mockBountiesMutated[1].body,
+            ticket_url: 'http://github.com/sphinx/sphinx-tribes/issues/111',
+            assignee: user
           }
-        ])
-      );
+        }
+      ])
+    );
     jest.spyOn(mainStore, 'getBountyIndexById').mockReturnValue(Promise.resolve(1234));
     await act(async () => {
       const { getByText } = render(
