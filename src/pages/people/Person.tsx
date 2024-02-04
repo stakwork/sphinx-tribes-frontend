@@ -134,7 +134,7 @@ export default function Person(props: PersonProps) {
       return (
         <a
           href={`/p/${owner_pubkey}`}
-          // the select props will jump to new person page, keep href for SEO
+          // The "select" method will navigate to a new person page while retaining the "href" attribute for SEO purposes.
           onClick={(e: React.MouseEvent<HTMLAnchorElement>) => { e.preventDefault(); e.stopPropagation(); }}
           style={{ textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}
         >
@@ -193,7 +193,7 @@ export default function Person(props: PersonProps) {
     return (
       <a
         href={`/p/${owner_pubkey}`}
-        // the select props will jump to new person page, keep href for SEO
+        // The "select" method will navigate to a new person page while retaining the "href" attribute for SEO purposes.
         onClick={(e: React.MouseEvent<HTMLAnchorElement>) => { e.preventDefault(); e.stopPropagation(); }}
         style={{ textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}
       >
@@ -225,7 +225,7 @@ export default function Person(props: PersonProps) {
                     iconSize={16}
                     onClick={(e: any) => {
                       setShowQR(true);
-                      e.preventDefault();
+                      e.preventDefault(); // Do not navigate to a new page when displaying the QR code modal
                       e.stopPropagation();
                     }}
                   />
