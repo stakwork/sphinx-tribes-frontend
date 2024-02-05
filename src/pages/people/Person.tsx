@@ -134,11 +134,17 @@ export default function Person(props: PersonProps) {
       return (
         <a
           href={`/p/${owner_pubkey}`}
+          // The "select" method will navigate to a new person page while retaining the "href" attribute for SEO purposes.
+          onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
           style={{ textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}
         >
           <div
             style={{ background: selected ? '#F2F3F5' : '#fff', cursor: 'pointer' }}
             onClick={() => select(id, unique_name, owner_pubkey)}
+            data-testid="person-card-small"
           >
             <Wrap style={{ padding: hideActions ? 10 : 25 }}>
               <div>
@@ -190,9 +196,18 @@ export default function Person(props: PersonProps) {
     return (
       <a
         href={`/p/${owner_pubkey}`}
+        // The "select" method will navigate to a new person page while retaining the "href" attribute for SEO purposes.
+        onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
         style={{ textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}
       >
-        <DWrap squeeze={squeeze} onClick={() => select(id, unique_name, owner_pubkey)}>
+        <DWrap
+          squeeze={squeeze}
+          onClick={() => select(id, unique_name, owner_pubkey)}
+          data-testid="person-card-desktop"
+        >
           <div>
             <div style={{ height: 210 }}>
               <Img style={{ height: '100%', width: '100%', borderRadius: 0 }} src={img} />
@@ -218,6 +233,7 @@ export default function Person(props: PersonProps) {
                     iconSize={16}
                     onClick={(e: any) => {
                       setShowQR(true);
+                      e.preventDefault(); // Do not navigate to a new page when displaying the QR code modal
                       e.stopPropagation();
                     }}
                   />
