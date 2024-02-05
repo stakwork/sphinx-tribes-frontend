@@ -106,6 +106,7 @@ const App = ({ filterStartDate, filterEndDate, setShowCalendar }: Props) => {
                 <FormInput
                   name={'start'}
                   placeholder="MM/DD/YY"
+                  alt="start"
                   type="text"
                   value={newDateFrom || (startDate && moment(startDate).format('MM/DD/YY'))}
                   onChange={handleChange}
@@ -122,6 +123,7 @@ const App = ({ filterStartDate, filterEndDate, setShowCalendar }: Props) => {
                 <FormInput
                   name={'end'}
                   placeholder="MM/DD/YY"
+                  alt="end"
                   type="text"
                   value={newDateTo || (endDate && moment(endDate).format('MM/DD/YY'))}
                   onChange={handleChange}
