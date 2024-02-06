@@ -74,6 +74,8 @@ const App = ({ filterStartDate, filterEndDate, setShowCalendar }: Props) => {
         const temp = startDt;
         startDt = endDt;
         endDt = temp;
+      } else if (startDt.getDay === endDt.getDay) {
+        endDt = set(endDate, { hours: 23, minutes: 59, seconds: 59 });
       }
       const start = moment(startDt);
       const unixStart = start.unix();
