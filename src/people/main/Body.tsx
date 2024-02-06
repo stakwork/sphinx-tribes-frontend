@@ -2,7 +2,7 @@ import { observer } from 'mobx-react-lite';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import styled from 'styled-components';
-import { EuiGlobalToastList } from '@elastic/eui';
+import { EuiGlobalToastList, EuiLoadingSpinner } from '@elastic/eui';
 import PeopleHeader from 'people/widgetViews/PeopleHeader';
 import type { Person } from 'store/main';
 import usePeopleFilters from 'hooks/usePeopleFilters';
@@ -85,6 +85,17 @@ function BodyComponent() {
     />
   );
 
+  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    async function initialPeopleFetch() {
+      setIsLoading(true);
+      await main.getPeople({ page: 1, resetPage: true, languages: languagesQueryParam });
+      setIsLoading(false);
+    }
+
+    initialPeopleFetch();
+  }, []);
+
   useEffect(() => {
     if (ui.meInfo) {
       main.getTribesByOwner(ui.meInfo.owner_pubkey || '');
@@ -123,28 +134,34 @@ function BodyComponent() {
             border: `1px solid ${color.grayish.G600}`,
             background: color.grayish.G600
           }}
-          onChange={(e: any) => {
-            // @TODO usePeopleSearchHandler
-            ui.setSearchText(e);
-            main.getPeople({ page: 1, resetPage: true, languages: languagesQueryParam });
+          onChange={async (searchText: string) => {
+            ui.setSearchText(searchText);
+
+            setIsLoading(true);
+            await main.getPeople({ page: 1, resetPage: true, languages: languagesQueryParam });
+            setIsLoading(false);
           }}
         />
       </div>
       <div className="content">
-        {main.people.map((p: Person) => (
-          <PersonCard
-            {...p}
-            key={p.id}
-            small={isMobile}
-            squeeze={screenWidth < 1420}
-            selected={ui.selectedPerson === p.id}
-            select={selectPerson}
-          />
-        ))}
+        {isLoading ? (
+          <EuiLoadingSpinner className="loader" size="xl" />
+        ) : (
+          main.people.map((p: Person) => (
+            <PersonCard
+              {...p}
+              key={p.id}
+              small={isMobile}
+              squeeze={screenWidth < 1420}
+              selected={ui.selectedPerson === p.id}
+              select={selectPerson}
+            />
+          ))
+        )}
+
         {!main.people.length && <NoResults />}
         <PageLoadSpinner noAnimate show={loadingBottom} />
       </div>
-
       {openStartUpModel && (
         <StartUpModal closeModal={closeModal} dataObject={'getWork'} buttonColor={'primary'} />
       )}
