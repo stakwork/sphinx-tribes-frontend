@@ -40,6 +40,7 @@ const B = styled.div`
 `;
 
 const D = styled.div<styledProps>`
+  cursor: pointer;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -537,45 +538,47 @@ const BountyHeader = ({
                 </FilterCount>
               )}
             </B>
-            <D color={color}>
-              <EuiText className="DText" color={color.grayish.G200}>
-                Developers
-              </EuiText>
-              <div className="ImageOuterContainer">
-                {peopleList &&
-                  peopleList?.slice(0, 3).map((val: any, index: number) => (
-                    <DevelopersImageContainer
-                      color={color}
-                      key={index}
-                      style={{
-                        zIndex: 3 - index,
-                        marginLeft: index > 0 ? '-14px' : '',
-                        objectFit: 'cover'
-                      }}
-                    >
-                      <img
-                        height={'23px'}
-                        width={'23px'}
-                        src={val?.img || '/static/person_placeholder.png'}
-                        alt={''}
+            <div onClick={() => history.replace('/p')}>
+              <D color={color}>
+                <EuiText className="DText" color={color.grayish.G200}>
+                  Developers
+                </EuiText>
+                <div className="ImageOuterContainer">
+                  {peopleList &&
+                    peopleList?.slice(0, 3).map((val: any, index: number) => (
+                      <DevelopersImageContainer
+                        color={color}
+                        key={index}
                         style={{
-                          borderRadius: '50%'
+                          zIndex: 3 - index,
+                          marginLeft: index > 0 ? '-14px' : '',
+                          objectFit: 'cover'
                         }}
-                      />
-                    </DevelopersImageContainer>
-                  ))}
-              </div>
-              <EuiText
-                style={{
-                  fontSize: '16px',
-                  fontWeight: 600,
-                  fontFamily: 'Barlow',
-                  color: color.black400
-                }}
-              >
-                {developerCount}
-              </EuiText>
-            </D>
+                      >
+                        <img
+                          height={'23px'}
+                          width={'23px'}
+                          src={val?.img || '/static/person_placeholder.png'}
+                          alt={''}
+                          style={{
+                            borderRadius: '50%'
+                          }}
+                        />
+                      </DevelopersImageContainer>
+                    ))}
+                </div>
+                <EuiText
+                  style={{
+                    fontSize: '16px',
+                    fontWeight: 600,
+                    fontFamily: 'Barlow',
+                    color: color.black400
+                  }}
+                >
+                  {developerCount}
+                </EuiText>
+              </D>
+            </div>
           </BountyHeaderDesk>
         </div>
       ) : (

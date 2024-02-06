@@ -10,8 +10,7 @@ import { colors } from '../../../config/colors';
 import { useIsMobile } from '../../../hooks';
 import { useStores } from '../../../store';
 import { OrgBody, Body, Backdrop } from '../style';
-import { defaultOrgBountyStatus } from '../../../store/main';
-import api from '../../../api';
+import { Organization, defaultOrgBountyStatus } from '../../../store/main';
 import { OrgHeader } from './orgHeader';
 
 function OrgBodyComponent() {
@@ -23,8 +22,9 @@ function OrgBodyComponent() {
   const [checkboxIdToSelectedMap, setCheckboxIdToSelectedMap] = useState(defaultOrgBountyStatus);
   const [checkboxIdToSelectedMapLanguage, setCheckboxIdToSelectedMapLanguage] = useState({});
   const { uuid } = useParams<{ uuid: string; bountyId: string }>();
+
+  const [organizationData, setOrganizationData] = useState<Organization>();
   const [languageString, setLanguageString] = useState('');
-  const [organizationUrls, setOrganizationUrls] = useState({});
 
   const color = colors['light'];
 
@@ -33,18 +33,12 @@ function OrgBodyComponent() {
 
   useEffect(() => {
     (async () => {
-      await main.getOpenGithubIssues();
-      await main.getBadgeList();
-      await main.getPeople();
-      if (uuid) {
-        await main.getSpecificOrganizationBounties(uuid, {
-          page: 1,
-          resetPage: true,
-          languages: languageString
-        });
-        const orgUrls = await api.get(`organizations/${uuid}`);
-        setOrganizationUrls(orgUrls);
-      }
+      if (!uuid) return;
+
+      const orgData = await main.getUserOrganizationByUuid(uuid);
+
+      if (!orgData) return;
+      setOrganizationData(orgData);
       setLoading(false);
     })();
   }, [main, uuid, checkboxIdToSelectedMap, languageString]);
@@ -167,12 +161,12 @@ function OrgBodyComponent() {
         }}
       >
         <OrgHeader
-          organizationUrls={organizationUrls}
           onChangeStatus={onChangeStatus}
           onChangeLanguage={onChangeLanguage}
           checkboxIdToSelectedMap={checkboxIdToSelectedMap}
           checkboxIdToSelectedMapLanguage={checkboxIdToSelectedMapLanguage}
           languageString={languageString}
+          organizationData={organizationData as Organization}
           org_uuid={uuid}
         />
         <>
