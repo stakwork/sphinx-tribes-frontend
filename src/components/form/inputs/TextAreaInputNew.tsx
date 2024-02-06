@@ -94,8 +94,6 @@ export default function TextAreaInputNew({
           setShowPlaceholder(false);
         }}
         onBlur={() => {
-          setCharacterError(false);
-          setColor && setColor(false, name);
           handleBlur();
           if (error) {
             setIsError(true);
@@ -150,7 +148,7 @@ export default function TextAreaInputNew({
       >
         {labeltext}
       </label>
-      {characterError ? <ErrorText>description is too long</ErrorText> : null}
+      {characterError ? <ErrorText>Description is too long</ErrorText> : null}
     </InputOuterBox>
   );
 }
