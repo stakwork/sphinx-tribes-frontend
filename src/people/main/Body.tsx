@@ -124,7 +124,11 @@ function BodyComponent() {
 
   if (loading) {
     return (
-      <Body data-testid="content" isMobile={isMobile}>
+      <Body
+        data-testid="content"
+        isMobile={isMobile}
+        style={{ justifyContent: 'center', alignItems: 'center' }}
+      >
         <EuiLoadingSpinner size="xl" />
       </Body>
     );
