@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 /* eslint-disable func-style */
 import '@material/react-material-icon/dist/material-icon.css';
 import { AppMode } from 'config';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, useLocation } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
+import { uiStore } from 'store/ui';
 import PeopleHeader from '../people/main/Header';
 import TokenRefresh from '../people/utils/TokenRefresh';
 import BotsBody from './bots/Body';
@@ -65,9 +66,17 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
   )
 };
 
-export const Pages = observer(({ mode }: { mode: AppMode }) => (
-  <>
-    {modeDispatchPages[mode]()}
-    <Modals />
-  </>
-));
+export const Pages = observer(({ mode }: { mode: AppMode }) => {
+  const location = useLocation();
+
+  useEffect(() => {
+    uiStore.setSearchText('');
+  }, [location]);
+
+  return (
+    <>
+      {modeDispatchPages[mode]()}
+      <Modals />
+    </>
+  );
+});
