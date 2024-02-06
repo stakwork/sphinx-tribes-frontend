@@ -364,6 +364,5 @@ const session = [
   }
 ];
 
-export const getSessionValue = (label: string): string => {
-  return session.find((s) => s.label === label)?.value || '';
-};
+export const getSessionValue = (label: string): string =>
+  session.find((s) => s.label === label)?.value || '';

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { EuiCheckboxGroup, EuiPopover, EuiText } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
 import { PostModal } from 'people/widgetViews/postBounty/PostModal';
@@ -67,6 +67,8 @@ export const OrgHeader = ({
   const [filterClick, setFilterClick] = useState(false);
   const [canPostBounty, setCanPostBounty] = useState(false);
   const [isStatusPopoverOpen, setIsStatusPopoverOpen] = useState<boolean>(false);
+  const [isSortByPopoverOpen, setIsSortByPopoverOpen] = useState<boolean>(false);
+  const [sortDirection, SetSortDirection] = useState('asc');
   const onButtonClick = async () => {
     setIsStatusPopoverOpen((isPopoverOpen: any) => !isPopoverOpen);
   };
