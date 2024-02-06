@@ -49,7 +49,7 @@ const InputOuterBox = styled.div<styledProps>`
 export default function NumberInputNew({
   error,
   label,
-    name,
+  name,
   value,
   handleChange,
   handleBlur,
