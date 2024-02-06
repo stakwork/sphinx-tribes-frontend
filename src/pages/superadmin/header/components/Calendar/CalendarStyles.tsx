@@ -35,7 +35,6 @@ export const HeaderDiv = styled.div`
   gap: 16px;
   width: 375px;
 `;
-// height: ${from || to ? '580px' : '180px'};
 
 export const FormDiv = styled.div`
   display: flex;
