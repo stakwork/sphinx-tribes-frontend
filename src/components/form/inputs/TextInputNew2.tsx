@@ -77,8 +77,6 @@ export default function TextInputNew({
         value={textValue}
         onFocus={handleFocus}
         onBlur={() => {
-          setCharacterError(false);
-          setColor && setColor(false, name);
           handleBlur();
           if (error) {
             setIsError(true);

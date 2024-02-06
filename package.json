@@ -17,7 +17,7 @@
     "lint:fix": "npm run lint -- --fix",
     "prettier": "npx prettier --config .prettierrc.json -w ./src ./cypress",
     "prettier:check": "npx prettier --config .prettierrc.json --check ./src",
-    "prepare": "cd ../.. && husky install .husky",
+    "prepare": "husky install .husky",
     "test": "yarn run test-jest",
     "test-jest": "REACT_APP_IS_TEST=true NODE_ENV=test yarn jest --coverage --maxWorkers 2 --no-cache --transformIgnorePatterns \"./svg/\"",
     "cypress:run": "npx cypress run"

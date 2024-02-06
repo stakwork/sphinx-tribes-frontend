@@ -21,6 +21,12 @@ const B = styled(EuiButton)`
   text-transform: none !important;
   text-decoration: none !important;
   transform: none !important;
+  :disabled {
+    border: 1px solid rgba(0, 0, 0, 0.07);
+    background: rgba(0, 0, 0, 0.04);
+    color: rgba(142, 150, 156, 0.85);
+    box-shadow: none;
+  }
   @media only screen and (max-width: 700px) {
     font-size: 12.5px;
   }
