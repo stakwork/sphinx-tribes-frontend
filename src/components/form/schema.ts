@@ -843,7 +843,7 @@ export const organizationSchema: FormField[] = [
     }
   },
   {
-    name: 'description',
+    name: 'org_description',
     label: 'Description',
     type: 'textarea',
     style: {

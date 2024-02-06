@@ -93,7 +93,7 @@ const Label = styled.span<labelProps>`
       return p.name === 'name' ? '#ff8f80' : '#5f6368';
     }
     if (p.descColor) {
-      return p.name === 'description' ? '#ff8f80' : '#5f6368';
+      return p.name === 'org_description' ? '#ff8f80' : '#5f6368';
     }
 
     return '#5f6368';
@@ -111,7 +111,7 @@ const SecondaryText = styled.span<labelProps>`
       return p.name === 'name' ? '#ff8f80' : '#5f6368';
     }
     if (p.descColor) {
-      return p.name === 'description' ? '#ff8f80' : '#5f6368';
+      return p.name === 'org_description' ? '#ff8f80' : '#5f6368';
     }
 
     return '#5f6368';
@@ -191,7 +191,7 @@ const EditOrgModal = (props: EditOrgModalProps) => {
     if (value === 'name') {
       setNameColor(data);
     }
-    if (value === 'description') {
+    if (value === 'org_description') {
       setDescColor(data);
     }
   };

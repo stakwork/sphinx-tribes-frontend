@@ -104,7 +104,7 @@ export default function TextAreaInputNew({
         }}
         onChange={(e: any) => {
           const newVal = e.target.value;
-          if (name === 'description') {
+          if (name === 'org_description') {
             if (newVal.length <= 120) {
               handleChange(newVal);
               setTextValue(newVal);
