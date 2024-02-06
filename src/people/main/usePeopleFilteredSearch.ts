@@ -1,6 +1,6 @@
-import { CodingLanguage } from "people/utils/languageLabelStyle";
-import { useCallback, useEffect, useState } from "react";
-import { useStores } from "store";
+import { CodingLanguage } from 'people/utils/languageLabelStyle';
+import { useCallback, useEffect, useState } from 'react';
+import { useStores } from 'store';
 
 type SkillsFilter = Record<CodingLanguage, boolean>;
 
@@ -35,16 +35,19 @@ export function usePeopleFilteredSearch() {
 
   return {
     isLoading,
-    handleFilterChange: useCallback((codingLanguage: CodingLanguage) => {
-      const newSkillsFilter = {
-        ...skillsFilter,
-        [codingLanguage]: !skillsFilter[codingLanguage]
-      } as SkillsFilter;
+    handleFilterChange: useCallback(
+      (codingLanguage: CodingLanguage) => {
+        const newSkillsFilter = {
+          ...skillsFilter,
+          [codingLanguage]: !skillsFilter[codingLanguage]
+        } as SkillsFilter;
 
-      setSkillsFilter(newSkillsFilter);
+        setSkillsFilter(newSkillsFilter);
 
-      fetchPeople(getLanguagesQueryString(newSkillsFilter));
-    }, [fetchPeople, skillsFilter]),
+        fetchPeople(getLanguagesQueryString(newSkillsFilter));
+      },
+      [fetchPeople, skillsFilter]
+    ),
     handleSearchChange: useCallback(
       (searchText: string) => {
         ui.setSearchText(searchText);
