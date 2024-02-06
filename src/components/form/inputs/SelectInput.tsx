@@ -79,15 +79,21 @@ export default function SelectInput({
   const color = colors['light'];
   if (error) labeltext = `${labeltext} (${error})`;
   const [active, setActive] = useState<boolean>(false);
+  const [isSelectOpen, setIsSelectOpen] = useState<boolean>(false);
+
   return (
     <OuterContainer color={color}>
       <FieldEnv
         color={color}
         label={labeltext}
         className={value ? 'euiFormRow_filed' : active ? 'euiFormRow_active' : ''}
+        onClick={() => {
+          setIsSelectOpen(!isSelectOpen);
+        }}
       >
         <R>
           <Select
+            isOpen={isSelectOpen}
             testId={testId}
             name={'first'}
             selectStyle={{

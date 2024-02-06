@@ -30,7 +30,7 @@ const S = styled(EuiSuperSelect as any)<styleProps>`
 `;
 export default function Select(props: SelProps) {
   const color = colors['light'];
-  const { options, onChange, value, style, selectStyle, handleActive, testId } = props;
+  const { options, onChange, value, style, selectStyle, handleActive, testId, isOpen } = props;
 
   const opts = options
     ? options.map((o: any) => ({
@@ -73,6 +73,7 @@ export default function Select(props: SelProps) {
   return (
     <div style={{ position: 'relative', ...style }}>
       <S
+        isOpen={isOpen}
         data-testid={testId}
         color={color}
         style={{
