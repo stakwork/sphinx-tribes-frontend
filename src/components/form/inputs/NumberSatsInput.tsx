@@ -49,6 +49,7 @@ const InputOuterBox = styled.div<styledProps>`
 export default function NumberInputNew({
   error,
   label,
+    name,
   value,
   handleChange,
   handleBlur,
@@ -79,7 +80,7 @@ export default function NumberInputNew({
     <InputOuterBox color={color} borderColor={isError ? color.red2 : color.grayish.G600}>
       <input
         className="inputText"
-        id={'text'}
+        id={name}
         type={'text'}
         value={textValue}
         placeholder={'0'}
@@ -99,7 +100,7 @@ export default function NumberInputNew({
         }}
       />
       <label
-        htmlFor={'text'}
+        htmlFor={name}
         className="text"
         onClick={handleFocus}
         style={{
