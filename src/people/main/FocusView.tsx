@@ -49,6 +49,7 @@ function FocusedView(props: FocusViewProps) {
 
   const [loading, setLoading] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [canDeleteBounty, setCanDeleteBounty] = useState(false);
   const [editMode, setEditMode] = useState(skipEditLayer);
   const [editable, setEditable] = useState<boolean>(!canEdit);
   const [toasts, setToasts]: any = useState([]);
@@ -105,9 +106,6 @@ function FocusedView(props: FocusViewProps) {
       },
     [main, isTorSave]
   );
-
-  const canDeleteBounty =
-    bounty && bounty.length ? !(bounty[0]?.body?.paid || bounty[0]?.body?.assignee.id) : false;
 
   const { openAfterDeleteNotification } = useAfterDeleteNotification();
 
@@ -432,7 +430,7 @@ function FocusedView(props: FocusViewProps) {
                     onClick={deleteHandler}
                     color={'white'}
                     loading={deleting}
-                    disabled={!canDeleteBounty}
+                    disabled={canDeleteBounty}
                     leadingIcon={'delete_outline'}
                     text={'Delete'}
                     style={{
@@ -464,6 +462,7 @@ function FocusedView(props: FocusViewProps) {
             editAction={handleEditAction}
             setIsModalSideButton={setIsModalSideButton}
             setIsExtraStyle={props?.setIsExtraStyle}
+            setCanDeleteBounty={setCanDeleteBounty}
           />
         </>
       )}
