@@ -14,7 +14,8 @@ assignees: ''
 ### Acceptance Criteria
 - [ ] I've tested on Chrome
 - [ ] I've submitted a screenshot or recording in my pr
-- [ ] I've created a unit test that 
+- [ ] I've created a test that 
+- [ ] I have rebased and tested locally before submitting my PR
 
 Here is an [example unit test](https://github.com/stakwork/sphinx-tribes/blob/master/frontend/app/src/helpers/__test__/helpers.spec.ts)
 
