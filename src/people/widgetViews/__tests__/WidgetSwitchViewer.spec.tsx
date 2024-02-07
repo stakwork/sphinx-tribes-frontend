@@ -1,33 +1,28 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { useStores } from 'store';
 import WidgetSwitchViewer from '../WidgetSwitchViewer';
+import * as storeModule from '../../../store';
 
-jest.mock('hooks', () => ({
-  useIsMobile: jest.fn()
-}));
-
-jest.mock('store', () => ({
+jest.mock('../../../store', () => ({
+  ...jest.requireActual('../../../store'),
   useStores: jest.fn()
 }));
 
 describe('WidgetSwitchViewer Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-  });
-
-  test('should display No results when there are no active list items with filter of languages', () => {
-    // Mock return value for the store hook
-    (useStores as jest.Mock).mockReturnValue({
+    (storeModule.useStores as jest.Mock).mockReturnValue({
       main: {
+        getSpecificOrganizationBounties: jest.fn(() => Promise.resolve()),
         peopleBounties: [],
         peopleOffers: [],
         peoplePosts: []
       }
     });
+  });
 
-    // Render the component with a selected widget and empty lists
+  test('should display No results when there are no active list items with filter of languages', () => {
     render(
       <WidgetSwitchViewer
         selectedWidget="wanted"
@@ -36,10 +31,29 @@ describe('WidgetSwitchViewer Component', () => {
         languageString="Typescript"
       />
     );
-
-    // Assert that <NoResults /> is present in the document
     expect(screen.getByText(/No results/i)).toBeInTheDocument();
   });
 
-  // Additional tests for different conditions can be added here
+  test('Load more functionality for organization bounties', async () => {
+    const org_uuid = 'clf6qmo4nncmf23du7ng';
+    render(
+      <WidgetSwitchViewer
+        uuid={org_uuid}
+        selectedWidget="wanted"
+        currentItems={10}
+        totalBounties={0}
+        OrgTotalBounties={20}
+        languageString="Typescript"
+        orgQueryLimit={0}
+      />
+    );
+
+    fireEvent.click(screen.getByText(/Load More/i));
+
+    await waitFor(() => {
+      expect(
+        (storeModule.useStores as jest.Mock)().main.getSpecificOrganizationBounties
+      ).toHaveBeenCalledWith(org_uuid, expect.any(Object));
+    });
+  });
 });
