@@ -686,7 +686,7 @@ export class MainStore {
       limit: String(limit),
       ...(queryParams?.resetPage ? { resetPage: String(queryParams.resetPage) } : {}),
       ...(queryParams?.page ? { page: String(queryParams.page) } : {}),
-      ...(queryParams?.languages ? { langauges: queryParams.languages } : {})
+      ...(queryParams?.languages ? { languages: queryParams.languages } : {})
     } as Record<string, string>;
 
     const searchParams = new URLSearchParams(adaptedParams);
