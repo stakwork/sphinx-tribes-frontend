@@ -72,7 +72,7 @@ export default function TextInputNew({
     >
       <input
         className="inputText"
-        id={'text'}
+        id={name}
         type={'text'}
         value={textValue}
         onFocus={handleFocus}
@@ -102,7 +102,7 @@ export default function TextInputNew({
         }}
       />
       <label
-        htmlFor={'text'}
+        htmlFor={name}
         className="text"
         onClick={handleFocus}
         style={{
