@@ -21,7 +21,8 @@ const Body = styled.div<{ isMobile: boolean }>`
   height: ${(p: any) => (p.isMobile ? 'calc(100% - 105px)' : 'calc(100% - 65px)')};
   background: ${(p: any) => (p.isMobile ? undefined : color.grayish.G950)};
   width: 100%;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   & > .header {
