@@ -12,6 +12,7 @@ import { getUserAvatarPlaceholder } from './lib';
 
 export const queryLimitTribes = 100;
 export const queryLimit = 10;
+export const orgQuerLimit = 500;
 export const paginationQueryLimit = 20;
 export const peopleQueryLimit = 500;
 
@@ -1222,6 +1223,79 @@ export class MainStore {
     } catch (e) {
       console.log('fetch failed getOrganizationBounties: ', e);
       return [];
+    }
+  }
+
+  getWantedsTotalOrgPrevParams?: QueryParams = {};
+  async getTotalOrgBounties(uuid: string, params?: any): Promise<number> {
+    const queryParams: QueryParams = {
+      limit: queryLimit,
+      sortBy: 'created',
+      search: '',
+      page: 1,
+      resetPage: false,
+      ...params
+    };
+
+    if (params) {
+      // save previous params
+      this.getWantedsTotalOrgPrevParams = queryParams;
+    }
+
+    // if we don't pass the params, we should use previous params for invalidate query
+    const query2 = this.appendQueryParams(
+      `organizations/bounties/${uuid}`,
+      orgQuerLimit,
+      params ? queryParams : this.getWantedsOrgPrevParams
+    );
+    try {
+      const ps2 = await api.get(query2);
+      const ps3: any[] = [];
+
+      if (ps2 && ps2.length) {
+        for (let i = 0; i < ps2.length; i++) {
+          const bounty = { ...ps2[i].bounty };
+          let assignee;
+          let organization;
+          const owner = { ...ps2[i].owner };
+
+          if (bounty.assignee) {
+            assignee = { ...ps2[i].assignee };
+          }
+
+          if (bounty.org_uuid) {
+            organization = { ...ps2[i].organization };
+          }
+          if (bounty.org_uuid === uuid) {
+            ps3.push({
+              body: { ...bounty, assignee: assignee || '' },
+              person: { ...owner, wanteds: [] } || { wanteds: [] },
+              organization: { ...organization }
+            });
+          }
+        }
+      }
+
+      // for search always reset page
+      if (queryParams && queryParams.resetPage) {
+        this.setPeopleBounties(ps3);
+        uiStore.setPeopleBountiesPageNumber(1);
+      } else {
+        // all other cases, merge
+        const wanteds = this.doPageListMerger(
+          this.peopleBounties,
+          ps3,
+          (n: any) => uiStore.setPeopleBountiesPageNumber(n),
+          queryParams,
+          'wanted'
+        );
+
+        this.setPeopleBounties(wanteds);
+      }
+      return ps3.length;
+    } catch (e) {
+      console.log('fetch failed getOrganizationBounties: ', e);
+      return 0;
     }
   }
 
