@@ -1,7 +1,7 @@
-import { CodingLanguageFilter } from 'hooks/usePeopleFilters';
+import { SkillsFilter } from 'people/main/usePeopleFilteredSearch';
 import { Person } from 'store/main';
 
-const filterByCodingLanguage = (users: Person[], codingLanguages: CodingLanguageFilter) => {
+const filterByCodingLanguage = (users: Person[], codingLanguages: SkillsFilter) => {
   const requiredLanguages = Object.keys(codingLanguages).filter(
     (key: string) => codingLanguages[key]
   );

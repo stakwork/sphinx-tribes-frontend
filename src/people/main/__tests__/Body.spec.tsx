@@ -11,7 +11,7 @@ beforeAll(() => {
 
 describe('BodyComponent', () => {
   nock(user.url)
-    .get(`/people?page=1&resetPage=true&search=&languages=&sortBy=last_login&limit=500`)
+    .get(`/people?page=1&resetPage=true&search=&sortBy=last_login&limit=500`)
     .reply(200, {});
 
   it('content element has equal left and right margins', () => {

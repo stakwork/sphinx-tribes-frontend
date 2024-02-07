@@ -2,7 +2,7 @@ import { CodingLanguage } from 'people/utils/languageLabelStyle';
 import { useCallback, useEffect, useState } from 'react';
 import { useStores } from 'store';
 
-type SkillsFilter = Record<CodingLanguage, boolean>;
+export type SkillsFilter = Record<CodingLanguage, boolean>;
 
 const emptySkillsFilter = {} as SkillsFilter;
 
@@ -16,25 +16,48 @@ function getLanguagesQueryString(skillsFilter: SkillsFilter): string {
     .join(',');
 }
 
+interface fetchPeopleParams {
+  skillsFilter?: SkillsFilter;
+  page?: number;
+  resetPage?: boolean;
+}
+
 export function usePeopleFilteredSearch() {
   const { main, ui } = useStores();
   const [isLoading, setIsLoading] = useState(true);
   const [skillsFilter, setSkillsFilter] = useState<SkillsFilter>(emptySkillsFilter);
   const fetchPeople = useCallback(
-    (languages: string) => {
-      setIsLoading(true);
-      main.getPeople({ page: 1, resetPage: true, languages });
-      setIsLoading(false);
+    async (params?: fetchPeopleParams) => {
+      const page = params?.page || 1;
+      const resetPage = params?.resetPage || true;
+      const languages = getLanguagesQueryString(params?.skillsFilter || skillsFilter);
+
+      const peopleParamsObject = {
+        page,
+        resetPage,
+        ...(languages ? { languages } : {})
+      };
+
+      await main.getPeople(peopleParamsObject);
     },
-    [main]
+    [main, skillsFilter]
   );
 
   useEffect(function initialPeopleFetch() {
-    fetchPeople(getLanguagesQueryString(skillsFilter));
+    let isMounted = true;
+
+    if (isMounted) setIsLoading(true);
+    fetchPeople();
+    if (isMounted) setIsLoading(false);
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return {
     isLoading,
+    skillsFilter,
     handleFilterChange: useCallback(
       (codingLanguage: CodingLanguage) => {
         const newSkillsFilter = {
@@ -44,7 +67,9 @@ export function usePeopleFilteredSearch() {
 
         setSkillsFilter(newSkillsFilter);
 
-        fetchPeople(getLanguagesQueryString(newSkillsFilter));
+        setIsLoading(true);
+        fetchPeople({ skillsFilter: newSkillsFilter });
+        setIsLoading(false);
       },
       [fetchPeople, skillsFilter]
     ),
@@ -52,9 +77,23 @@ export function usePeopleFilteredSearch() {
       (searchText: string) => {
         ui.setSearchText(searchText);
 
-        fetchPeople(getLanguagesQueryString(skillsFilter));
+        setIsLoading(true);
+        fetchPeople();
+        setIsLoading(false);
       },
-      [fetchPeople, skillsFilter, ui]
+      [fetchPeople, ui]
+    ),
+    uploadMore: useCallback(
+      (direction: 1 | -1) => {
+        let newPage = ui.peoplePageNumber + direction;
+
+        if (newPage < 1) newPage = 1;
+
+        setIsLoading(true);
+        fetchPeople({ page: newPage, resetPage: false });
+        setIsLoading(false);
+      },
+      [fetchPeople, ui.peoplePageNumber]
     )
   };
 }

@@ -5,7 +5,6 @@ import styled from 'styled-components';
 import { EuiGlobalToastList, EuiLoadingSpinner } from '@elastic/eui';
 import PeopleHeader from 'people/widgetViews/PeopleHeader';
 import type { Person } from 'store/main';
-import usePeopleFilters from 'hooks/usePeopleFilters';
 import { SearchTextInput } from '../../components/common';
 import { colors } from '../../config/colors';
 import { useIsMobile, usePageScroll, useScreenWidth } from '../../hooks';
@@ -14,6 +13,7 @@ import PersonCard from '../../pages/people/Person';
 import NoResults from '../utils/NoResults';
 import PageLoadSpinner from '../utils/PageLoadSpinner';
 import StartUpModal from '../utils/StartUpModal';
+import { usePeopleFilteredSearch } from './usePeopleFilteredSearch';
 
 const color = colors['light'];
 const Body = styled.div<{ isMobile: boolean }>`
@@ -55,26 +55,13 @@ function BodyComponent() {
   const { main, ui } = useStores();
   const screenWidth = useScreenWidth();
   const [openStartUpModel, setOpenStartUpModel] = useState<boolean>(false);
-  const { codingLanguageFilter, handleCodingLanguageFilterChange, languagesQueryParam } =
-    usePeopleFilters();
   const closeModal = () => setOpenStartUpModel(false);
-  const { peoplePageNumber } = ui;
   const history = useHistory();
   const isMobile = useIsMobile();
-  async function loadMore(direction: number) {
-    let currentPage = 1;
-    currentPage = peoplePageNumber;
-
-    let newPage = currentPage + direction;
-    if (newPage < 1) newPage = 1;
-    try {
-      await main.getPeople({ page: newPage });
-    } catch (e: any) {
-      console.log('load failed', e);
-    }
-  }
-  const loadForwardFunc = () => loadMore(1);
-  const loadBackwardFunc = () => loadMore(-1);
+  const { isLoading, skillsFilter, handleFilterChange, handleSearchChange, uploadMore } =
+    usePeopleFilteredSearch();
+  const loadForwardFunc = () => uploadMore(1);
+  const loadBackwardFunc = () => uploadMore(-1);
   const { loadingBottom, handleScroll } = usePageScroll(loadForwardFunc, loadBackwardFunc);
 
   const toastsEl = (
@@ -84,17 +71,6 @@ function BodyComponent() {
       toastLifeTimeMs={3000}
     />
   );
-
-  const [isLoading, setIsLoading] = useState(true);
-  useEffect(() => {
-    async function initialPeopleFetch() {
-      setIsLoading(true);
-      await main.getPeople({ page: 1, resetPage: true, languages: languagesQueryParam });
-      setIsLoading(false);
-    }
-
-    initialPeopleFetch();
-  }, []);
 
   useEffect(() => {
     if (ui.meInfo) {
@@ -119,8 +95,8 @@ function BodyComponent() {
     >
       <div className="header">
         <PeopleHeader
-          onChangeLanguage={handleCodingLanguageFilterChange}
-          checkboxIdToSelectedMapLanguage={codingLanguageFilter}
+          onChangeLanguage={handleFilterChange}
+          checkboxIdToSelectedMapLanguage={skillsFilter}
         />
 
         <SearchTextInput
@@ -134,33 +110,29 @@ function BodyComponent() {
             border: `1px solid ${color.grayish.G600}`,
             background: color.grayish.G600
           }}
-          onChange={async (searchText: string) => {
-            ui.setSearchText(searchText);
-
-            setIsLoading(true);
-            await main.getPeople({ page: 1, resetPage: true, languages: languagesQueryParam });
-            setIsLoading(false);
-          }}
+          onChange={handleSearchChange}
         />
       </div>
       <div className="content">
         {isLoading ? (
           <EuiLoadingSpinner className="loader" size="xl" />
         ) : (
-          main.people.map((p: Person) => (
-            <PersonCard
-              {...p}
-              key={p.id}
-              small={isMobile}
-              squeeze={screenWidth < 1420}
-              selected={ui.selectedPerson === p.id}
-              select={selectPerson}
-            />
-          ))
-        )}
+          <>
+            {main.people.map((p: Person) => (
+              <PersonCard
+                {...p}
+                key={p.id}
+                small={isMobile}
+                squeeze={screenWidth < 1420}
+                selected={ui.selectedPerson === p.id}
+                select={selectPerson}
+              />
+            ))}
 
-        {!main.people.length && <NoResults />}
-        <PageLoadSpinner noAnimate show={loadingBottom} />
+            {!main.people.length && <NoResults />}
+            <PageLoadSpinner noAnimate show={loadingBottom} />
+          </>
+        )}
       </div>
       {openStartUpModel && (
         <StartUpModal closeModal={closeModal} dataObject={'getWork'} buttonColor={'primary'} />
