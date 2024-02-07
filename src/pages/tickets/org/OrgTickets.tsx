@@ -65,7 +65,7 @@ function OrgBodyComponent() {
 
       setTotalBounties(OrgTotalBounties);
     },
-    [main, uuid]
+    [main]
   );
 
   useEffect(() => {
