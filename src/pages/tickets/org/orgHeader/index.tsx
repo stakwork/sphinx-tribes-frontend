@@ -28,7 +28,6 @@ import {
   FiltersLeft,
   FiltersRight,
   Header,
-  Icon,
   ImageContainer,
   Img,
   InternalContainer,
@@ -37,7 +36,6 @@ import {
   NumberOfBounties,
   PrimaryText,
   RightHeader,
-  SearchWrapper,
   SecondaryText,
   SkillContainer,
   SkillFilter,
@@ -48,9 +46,6 @@ import {
 } from './OrgHeaderStyles';
 
 const Coding_Languages = GetValue(coding_languages);
-interface styledProps {
-  color?: any;
-}
 const color = colors['light'];
 
 const Status = ['Open', 'Assigned', 'Completed', 'Paid'];
