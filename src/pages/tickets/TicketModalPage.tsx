@@ -20,19 +20,24 @@ type Props = {
 
 export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
   const location = useLocation();
-
   const { main, modals, ui } = useStores();
 
   const history = useHistory();
   const [connectPersonBody, setConnectPersonBody] = useState<any>();
   // eslint-disable-next-line no-unused-vars
-  const [activeListIndex, setActiveListIndex] = useState<number>(0);
   const [publicFocusIndex, setPublicFocusIndex] = useState(0);
   const [removeNextAndPrev, setRemoveNextAndPrev] = useState(false);
   const { bountyId } = useParams<{ bountyId: string }>();
   const [activeBounty, setActiveBounty] = useState<PersonBounty[]>([]);
   const [visible, setVisible] = useState(false);
   const [isDeleted, setisDeleted] = useState(false);
+
+  let orgUuid = '';
+  if (location.state) {
+    const locationState: any = location.state;
+    orgUuid = locationState?.activeOrg;
+    main.setActiveOrg(orgUuid);
+  }
 
   const isMobile = useIsMobile();
 
@@ -43,6 +48,8 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
       created: s.get('created')
     };
   }, [location.search]);
+
+  const { activeOrg } = main;
 
   const getBounty = useCallback(async () => {
     let bounty;
@@ -59,7 +66,6 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
     const connectPerson = bounty && bounty.length ? bounty[0].person : [];
 
     setPublicFocusIndex(bountyIndex);
-    setActiveListIndex(bountyIndex);
     setConnectPersonBody(connectPerson);
 
     const visible = bounty && bounty.length > 0;
@@ -74,48 +80,35 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
     getBounty();
   }, [getBounty, removeNextAndPrev]);
 
-  const isDirectAccess = useCallback(
-    () => !document.referrer && location.pathname.includes('/bounty/'),
-    [location.pathname]
-  );
-
-  function getUUIDFromURL(url: string) {
-    const regex = /\/bounty\/\d+\/([a-zA-Z0-9-]+)$/;
-    const match = url.match(regex);
-    if (match && match[1]) {
-      return match[1];
-    } else {
-      return null;
-    }
-  }
-  const OrgId = getUUIDFromURL(window.location.href);
+  const isDirectAccess = useCallback(() => !document.referrer, [location.pathname]);
 
   const goBack = () => {
     setVisible(false);
     setisDeleted(false);
 
-    if (isDirectAccess()) {
-      const homePageUrl = OrgId ? `/org/bounties/${OrgId}` : '/bounties';
-      history.push(homePageUrl);
+    if (isDirectAccess() && !activeOrg) {
+      history.push('/bounties');
     } else {
       history.goBack();
     }
+
+    // set the active org to an empty string before closing
+    main.setActiveOrg('');
   };
 
   const prevArrHandler = async () => {
-    if (OrgId) {
+    const { created } = activeBounty[0].body;
+    if (activeOrg) {
       try {
-        const res = await main.getOrganizationNextBountyById(OrgId, bountyId);
-        const bountyID = res[0].bounty.id;
-        history.replace(`/bounty/${bountyID}/${OrgId}`);
+        const bountyId = await main.getOrganizationNextBountyByCreated(activeOrg, created);
+        history.replace(`/bounty/${bountyId}`);
       } catch (e) {
         console.error(e);
       }
     } else {
       try {
-        const res = await main.getNextBountyById(bountyId);
-        const bountyID = res[0].bounty.id;
-        history.replace(`/bounty/${bountyID}`);
+        const bountyId = await main.getNextBountyByCreated(created);
+        history.replace(`/bounty/${bountyId}`);
       } catch (e) {
         console.error(e);
       }
@@ -123,19 +116,18 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
   };
 
   const nextArrHandler = async () => {
-    if (OrgId) {
+    const { created } = activeBounty[0].body;
+    if (activeOrg) {
       try {
-        const res = await main.getOrganizationPreviousBountyById(OrgId, bountyId);
-        const bountyID = res[0].bounty.id;
-        history.replace(`/bounty/${bountyID}/${OrgId}`);
+        const bountyId = await main.getOrganizationPreviousBountyByCreated(activeOrg, created);
+        history.replace(`/bounty/${bountyId}`);
       } catch (e) {
         console.error(e);
       }
     } else {
       try {
-        const res = await main.getPreviousBountyById(bountyId);
-        const bountyID = res[0].bounty.id;
-        history.replace(`/bounty/${bountyID}`);
+        const bountyId = await main.getPreviousBountyByCreated(created);
+        history.replace(`/bounty/${bountyId}`);
       } catch (e) {
         console.error(e);
       }
