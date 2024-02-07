@@ -675,7 +675,8 @@ export const wantedCodingTaskSchema: FormField[] = [
     label: 'Organization (optional)',
     type: 'select',
     options: [],
-    validator: strValidatorNotRequired
+    validator: strValidatorNotRequired,
+    testId: 'Organization'
   },
   {
     name: 'one_sentence_summary',
@@ -685,7 +686,8 @@ export const wantedCodingTaskSchema: FormField[] = [
   {
     name: 'ticket_url',
     label: 'Github Issue URL',
-    type: 'text'
+    type: 'text',
+    testId: 'Github'
   },
   {
     name: 'wanted_type',
@@ -726,12 +728,14 @@ export const wantedCodingTaskSchema: FormField[] = [
     name: 'estimated_session_length',
     label: 'Estimate Session Length',
     type: 'select',
-    options: estimated_time
+    options: estimated_time,
+    testId: 'Estimate Session Length'
   },
   {
     name: 'estimated_completion_date',
     label: 'Estimate Completion Date',
-    type: 'date'
+    type: 'date',
+    testId: 'Estimate Completion Date'
   },
   {
     name: 'tribe',
