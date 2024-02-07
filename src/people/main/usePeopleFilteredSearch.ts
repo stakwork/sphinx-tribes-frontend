@@ -29,7 +29,7 @@ export function usePeopleFilteredSearch() {
   const fetchPeople = useCallback(
     async (params?: fetchPeopleParams) => {
       const page = params?.page || 1;
-      const resetPage = params?.resetPage || true;
+      const resetPage = params && 'resetPage' in params ? params.resetPage : true;
       const languages = getLanguagesQueryString(params?.skillsFilter || skillsFilter);
 
       const peopleParamsObject = {
