@@ -45,7 +45,6 @@ export const BountyModal = ({ basePath, fromPage, bountyOwner }: BountyModalProp
       if ((wantedId && !bounty.length) || afterEdit) {
         try {
           const bountyData = await main.getBountyById(Number(wantedId));
-          console.log(bountyData, 'bd');
           setBounty(bountyData);
           if (personToDisplay === undefined) {
             setToDisplay(bountyData[0].person);

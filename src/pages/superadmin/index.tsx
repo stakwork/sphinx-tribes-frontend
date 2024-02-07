@@ -40,7 +40,7 @@ export interface MockHunterMetrics {
 export const SuperAdmin = () => {
   //Todo: Remove all comments when metrcis development is done
   const { main } = useStores();
-  const [isSuperAdmin] = useState(true);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [bounties, setBounties] = useState<any[]>([]);
   const [bountyMetrics, setBountyMetrics] = useState<BountyMetrics | undefined>(undefined);
@@ -62,7 +62,6 @@ export const SuperAdmin = () => {
    * Todo use the same date range,
    * and status for all child components
    * */
-
   const [endDate, setEndDate] = useState(moment().unix());
   const [startDate, setStartDate] = useState(moment().subtract(30, 'days').unix());
   const [inView, ref] = useInViewPort({
@@ -73,6 +72,15 @@ export const SuperAdmin = () => {
   const onDateFilterChange = useCallback((option: string) => setSortOrder(option), []);
 
   const paginationLimit = Math.floor(totalBounties / pageSize) + 1;
+
+  const getIsSuperAdmin = useCallback(async () => {
+    const isSuperAdmin = await main.getSuperAdmin();
+    setIsSuperAdmin(isSuperAdmin);
+  }, [main]);
+
+  useEffect(() => {
+    getIsSuperAdmin();
+  }, [getIsSuperAdmin]);
 
   const getBounties = useCallback(async () => {
     setLoading(true);

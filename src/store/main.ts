@@ -306,6 +306,7 @@ export const defaultOrgBountyStatus: OrgBountyStatus = {
   Paid: false,
   Completed: false
 };
+
 export class MainStore {
   [x: string]: any;
   tribes: Tribe[] = [];
@@ -832,6 +833,12 @@ export class MainStore {
     this.bountiesStatus = status;
   }
 
+  orgBountiesStatus: BountyStatus = defaultOrgBountyStatus;
+
+  @action setOrgBountiesStatus(status: OrgBountyStatus) {
+    this.orgBountiesStatus = status;
+  }
+
   @persist('object')
   bountyLanguages = '';
 
@@ -1160,7 +1167,7 @@ export class MainStore {
       }
       return ps3;
     } catch (e) {
-      console.log('fetch failed getOrganizationBounties: ', e);
+      console.log('fetch failed getSpecificOrganizationBounti: ', e);
       return [];
     }
   }
@@ -1779,40 +1786,116 @@ export class MainStore {
     }
   }
 
-  async getOrganizationNextBountyById(org_uuid: string, bountyId: string): Promise<number> {
+  @persist
+  activeOrg = '';
+  setActiveOrg(org: string) {
+    this.activeOrg = org;
+  }
+
+  async getOrganizationNextBountyByCreated(org_uuid: string, bountyId: string): Promise<number> {
     try {
-      const count = await api.get(`gobounties/org/next/${org_uuid}/${bountyId}`);
-      return count;
+      const params = { languages: this.bountyLanguages, ...this.orgBountiesStatus };
+
+      const queryParams: QueryParams = {
+        limit: queryLimit,
+        sortBy: 'created',
+        search: uiStore.searchText ?? '',
+        page: 1,
+        resetPage: false,
+        ...params
+      };
+
+      // if we don't pass the params, we should use previous params for invalidate query
+      const query = this.appendQueryParams(
+        `gobounties/org/next/${org_uuid}/${bountyId}`,
+        queryLimit,
+        queryParams
+      );
+
+      const bounty = await api.get(query);
+      return bounty;
+    } catch (e) {
+      console.log('fetch failed getOrganizationNextBountyById: ', e);
+      return 0;
+    }
+  }
+
+  async getOrganizationPreviousBountyByCreated(
+    org_uuid: string,
+    bountyId: string
+  ): Promise<number> {
+    try {
+      const params = { languages: this.bountyLanguages, ...this.orgBountiesStatus };
+
+      const queryParams: QueryParams = {
+        limit: queryLimit,
+        sortBy: 'created',
+        search: uiStore.searchText ?? '',
+        page: 1,
+        resetPage: false,
+        ...params
+      };
+
+      // if we don't pass the params, we should use previous params for invalidate query
+      const query = this.appendQueryParams(
+        `gobounties/org/previous/${org_uuid}/${bountyId}`,
+        queryLimit,
+        queryParams
+      );
+
+      const bounty = await api.get(query);
+      return bounty;
+    } catch (e) {
+      console.log('fetch failed getOrganizationPreviousBountyById: ', e);
+      return 0;
+    }
+  }
+
+  async getNextBountyByCreated(created: string): Promise<number> {
+    try {
+      const params = { languages: this.bountyLanguages, ...this.bountiesStatus };
+
+      const queryParams: QueryParams = {
+        limit: queryLimit,
+        sortBy: 'created',
+        search: uiStore.searchText ?? '',
+        page: 1,
+        resetPage: false,
+        ...params
+      };
+
+      // if we don't pass the params, we should use previous params for invalidate query
+      const query = this.appendQueryParams(`gobounties/next/${created}`, queryLimit, queryParams);
+
+      const bounty = await api.get(query);
+      return bounty;
     } catch (e) {
       console.log('fetch failed getBountyCount: ', e);
       return 0;
     }
   }
 
-  async getOrganizationPreviousBountyById(org_uuid: string, bountyId: string): Promise<number> {
+  async getPreviousBountyByCreated(created: string): Promise<number> {
     try {
-      const count = await api.get(`gobounties/org/previous/${org_uuid}/${bountyId}`);
-      return count;
-    } catch (e) {
-      console.log('fetch failed getBountyCount: ', e);
-      return 0;
-    }
-  }
+      const params = { languages: this.bountyLanguages, ...this.bountiesStatus };
 
-  async getNextBountyById(bountyId: string): Promise<number> {
-    try {
-      const count = await api.get(`gobounties/next/${bountyId}`);
-      return count;
-    } catch (e) {
-      console.log('fetch failed getBountyCount: ', e);
-      return 0;
-    }
-  }
+      const queryParams: QueryParams = {
+        limit: queryLimit,
+        sortBy: 'created',
+        search: uiStore.searchText ?? '',
+        page: 1,
+        resetPage: false,
+        ...params
+      };
 
-  async getPreviousBountyById(bountyId: string): Promise<number> {
-    try {
-      const count = await api.get(`gobounties/previous/${bountyId}`);
-      return count;
+      // if we don't pass the params, we should use previous params for invalidate query
+      const query = this.appendQueryParams(
+        `gobounties/previous/${created}`,
+        queryLimit,
+        queryParams
+      );
+      const bounty = await api.get(query);
+      return bounty;
     } catch (e) {
       console.log('fetch failed getBountyCount: ', e);
       return 0;
@@ -2051,9 +2134,6 @@ export class MainStore {
 
   async getUserOrganizationByUuid(uuid: string): Promise<Organization | undefined> {
     try {
-      const info = uiStore;
-      if (!info.selectedPerson && !uiStore.meInfo?.id) return undefined;
-
       const r: any = await fetch(`${TribesURL}/organizations/${uuid}`, {
         method: 'GET',
         mode: 'cors',
