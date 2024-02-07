@@ -43,7 +43,7 @@ export function usePeopleFilteredSearch() {
     [main, skillsFilter]
   );
 
-  useEffect(function initialPeopleFetch() {
+  useEffect(() => {
     let isMounted = true;
 
     if (isMounted) setIsLoading(true);
@@ -59,7 +59,7 @@ export function usePeopleFilteredSearch() {
     isLoading,
     skillsFilter,
     handleFilterChange: useCallback(
-      (codingLanguage: CodingLanguage) => {
+      async (codingLanguage: CodingLanguage) => {
         const newSkillsFilter = {
           ...skillsFilter,
           [codingLanguage]: !skillsFilter[codingLanguage]
@@ -68,17 +68,17 @@ export function usePeopleFilteredSearch() {
         setSkillsFilter(newSkillsFilter);
 
         setIsLoading(true);
-        fetchPeople({ skillsFilter: newSkillsFilter });
+        await fetchPeople({ skillsFilter: newSkillsFilter });
         setIsLoading(false);
       },
       [fetchPeople, skillsFilter]
     ),
     handleSearchChange: useCallback(
-      (searchText: string) => {
+      async (searchText: string) => {
         ui.setSearchText(searchText);
 
         setIsLoading(true);
-        fetchPeople();
+        await fetchPeople();
         setIsLoading(false);
       },
       [fetchPeople, ui]
@@ -89,9 +89,7 @@ export function usePeopleFilteredSearch() {
 
         if (newPage < 1) newPage = 1;
 
-        setIsLoading(true);
         fetchPeople({ page: newPage, resetPage: false });
-        setIsLoading(false);
       },
       [fetchPeople, ui.peoplePageNumber]
     )
