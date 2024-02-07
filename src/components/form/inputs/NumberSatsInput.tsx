@@ -14,7 +14,7 @@ const InputOuterBox = styled.div<styledProps>`
   margin-bottom: 16px;
   .inputText {
     height: 45px;
-    width: 292px;
+    width: 100%;
     font-size: 14px;
     color: ${(p: any) => p.color && p.color.pureBlack};
     border: 1px solid ${(p: any) => p.borderColor && p.borderColor};
