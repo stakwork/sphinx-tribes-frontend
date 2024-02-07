@@ -6,6 +6,7 @@ import { FocusViewProps } from 'people/interfaces';
 import { EuiGlobalToastList } from '@elastic/eui';
 import { Organization } from 'store/main';
 import { Box } from '@mui/system';
+import { uiStore } from 'store/ui';
 import { useStores } from '../../store';
 import Form from '../../components/form/bounty';
 import {
@@ -59,6 +60,26 @@ function FocusedView(props: FocusViewProps) {
   const isMobile = useIsMobile();
 
   const isTorSave = canEdit && main.isTorSave();
+
+  useEffect(() => {
+    async function fetchData() {
+      if (uiStore.meInfo?.id) {
+        await main.getUserDropdownOrganizations(uiStore.meInfo.id);
+      }
+    }
+    fetchData();
+  }, [main]);
+
+  function getUUIDFromURL(url: string) {
+    const regex = /.+\/org\/bounties\/([a-zA-Z0-9-]+)$/;
+    const match = url.match(regex);
+    if (match && match[1]) {
+      return match[1];
+    } else {
+      return null;
+    }
+  }
+  const uuid = getUUIDFromURL(window.location.href);
 
   const userOrganizations = main.dropDownOrganizations.length
     ? main.dropDownOrganizations.map((org: Organization) => ({
@@ -263,7 +284,19 @@ function FocusedView(props: FocusViewProps) {
       props?.ReCallBounties();
   }
 
-  let initialValues: any = {};
+  //this workflow now gets the org user is in and appends it
+  const searchKey = uuid;
+  let orgToAppend = '';
+
+  const DefaultOrgObject = userOrganizations.find((obj: any) => obj.value === searchKey);
+
+  if (DefaultOrgObject) {
+    orgToAppend = DefaultOrgObject.value;
+  }
+
+  let initialValues: any = {
+    org_uuid: orgToAppend
+  };
 
   const personInfo = canEdit ? ui.meInfo : person;
 

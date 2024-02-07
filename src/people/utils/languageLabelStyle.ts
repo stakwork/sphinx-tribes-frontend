@@ -103,9 +103,9 @@ export const LanguageObject = [
   },
   {
     label: 'Elastic search',
-    border: '1px solid rgba(251, 255, 18, 0.1)',
-    background: 'rgba(251, 255, 18, 0.1)',
-    color: '#FBFF12'
+    border: '1px solid rgba(255, 204, 0, 0.1)',
+    background: 'rgba(255, 204, 0, 0.1)',
+    color: '#FFCC00'
   },
   {
     label: 'No-code',
