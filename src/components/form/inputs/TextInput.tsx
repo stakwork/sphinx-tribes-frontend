@@ -74,7 +74,8 @@ export default function TextInput({
   readOnly,
   prepend,
   extraHTML,
-  borderType
+  borderType,
+  testId
 }: Props) {
   let labeltext = label;
   if (error) labeltext = `${labeltext} (${error})`;
@@ -113,6 +114,7 @@ export default function TextInput({
             prepend={active ? prepend : ''}
             style={padStyle}
             isTextField={true}
+            data-testid={testId}
           />
           {error && <E color={color} />}
         </R>
