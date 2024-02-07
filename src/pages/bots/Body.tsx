@@ -11,7 +11,7 @@ import { useFuse, useScroll } from '../../hooks';
 import { colors } from '../../config/colors';
 import FadeLeft from '../../components/animated/FadeLeft';
 import { useIsMobile } from '../../hooks';
-import Form from '../../components/form/bounty';
+import Form from '../../components/form/bots';
 import { botSchema } from '../../components/form/schema';
 import Bot from './Bot';
 import BotView from './BotView';
@@ -84,6 +84,7 @@ const Tab = styled.div<TagProps>`
   line-height: 19px;
   background: ${(p: any) => (p.selected ? '#DCEDFE' : '#3C3F4100')};
   border-radius: 25px;
+  min-width: 120px;
 `;
 const Link = styled.div`
   display: flex;
@@ -110,6 +111,15 @@ const Icon = styled.div<IconProps>`
   background-size: contain; /* Resize the background image to cover the entire container */
   // border-radius:5px;
   overflow: hidden;
+`;
+
+const ContentWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  gap: 20px;
+  padding: 0 20px;
 `;
 
 function BotBody() {
@@ -535,11 +545,7 @@ function BotBody() {
       }));
   }
 
-  const botEditHeader = editThisBot?.secret && (
-    <div style={{ marginBottom: -50 }}>
-      <BotSecret {...editThisBot} />
-    </div>
-  );
+  const botEditHeader = editThisBot?.secret && <BotSecret {...editThisBot} />;
 
   const botEditHeaderFull = editThisBot?.secret && (
     <div>
@@ -601,14 +607,13 @@ function BotBody() {
           }}
           style={{ height: '100%' }}
           envStyle={{
-            height: '100%',
-            borderRadius: 0,
-            width: '100%',
-            maxWidth: 450,
-            paddingTop: editThisBot?.secret && 60
+            marginTop: isMobile ? 64 : 0,
+            zIndex: 0,
+            minWidth: isMobile ? '100%' : '30rem',
+            minHeight: '100vh'
           }}
         >
-          <div style={{ height: '100%', overflowY: 'auto', padding: 20 }}>
+          <ContentWrapper>
             {botEditHeader}
             <Form
               loading={loading}
@@ -622,7 +627,7 @@ function BotBody() {
               schema={botSchema}
               initialValues={initialValues}
             />
-          </div>
+          </ContentWrapper>
         </Modal>
 
         <Modal
