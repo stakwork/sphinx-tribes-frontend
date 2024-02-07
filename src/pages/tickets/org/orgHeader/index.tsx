@@ -92,9 +92,7 @@ export const OrgHeader = ({
   const handlePostBountyClick = () => {
     setIsPostBountyModalOpen(true);
   };
-  // const handlePostBountyClose = () => {
-  //   setIsPostBountyModalOpen(false);
-  // };
+
   const handleWebsiteButton = (websiteUrl: string) => {
     window.open(websiteUrl, '_blank');
   };
