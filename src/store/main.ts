@@ -12,7 +12,7 @@ import { getUserAvatarPlaceholder } from './lib';
 
 export const queryLimitTribes = 100;
 export const queryLimit = 10;
-export const orgQuerLimit = 9000000000;
+export const orgQuerLimit = 500;
 export const paginationQueryLimit = 20;
 export const peopleQueryLimit = 500;
 
