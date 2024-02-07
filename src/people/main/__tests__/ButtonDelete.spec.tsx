@@ -18,9 +18,6 @@ describe('Test for FocusedView', () => {
         leadingIcon={'delete_outline'}
         text={'Delete'}
         onClick={OnClick}
-        style={{
-          marginLeft: 10
-        }}
       />
     );
 

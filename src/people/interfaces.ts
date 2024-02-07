@@ -307,7 +307,7 @@ export interface CodingBountiesProps extends WantedSummaryProps {
   editAction?: (any) => void;
   deletingState?: boolean;
   deleteAction?: (any) => void;
-  setCanDeleteBounty?: (any) => void;
+  setCanDeleteBounty: (any) => void;
   priceMin?: number;
   priceMax?: number;
   price?: number;

@@ -49,7 +49,7 @@ function FocusedView(props: FocusViewProps) {
 
   const [loading, setLoading] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [canDeleteBounty, setCanDeleteBounty] = useState(false);
+  const [canDeleteBounty, setCanDeleteBounty] = useState<boolean>();
   const [editMode, setEditMode] = useState(skipEditLayer);
   const [editable, setEditable] = useState<boolean>(!canEdit);
   const [toasts, setToasts]: any = useState([]);
