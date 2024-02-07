@@ -112,6 +112,18 @@ export const OrgHeader = ({
     }
   };
 
+  let timeoutId;
+  const onChangeSearch = (e: any) => {
+    ui.setSearchText(e);
+    clearTimeout(timeoutId);
+    // Set a new timeout to wait for user to pause typing
+    timeoutId = setTimeout(() => {
+      if (ui.searchText === '') {
+        handleSearch('');
+      }
+    }, 1000);
+  };
+
   useEffect(() => {
     if (org_uuid) {
       main.getSpecificOrganizationBounties(org_uuid, {
@@ -292,7 +304,7 @@ export const OrgHeader = ({
                 outline: 'none'
               }}
               onChange={(e: any) => {
-                ui.setSearchText(e);
+                onChangeSearch(e);
               }}
               onKeyUp={(e: any) => {
                 if (e.key === 'Enter' || e.keyCode === 13) {
