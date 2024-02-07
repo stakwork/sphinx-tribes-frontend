@@ -10,6 +10,7 @@ import { TribesURL } from '../config/host';
 import { uiStore } from './ui';
 import { getUserAvatarPlaceholder } from './lib';
 
+export const queryLimitTribes = 100;
 export const queryLimit = 10;
 export const paginationQueryLimit = 20;
 export const peopleQueryLimit = 500;
@@ -332,7 +333,7 @@ export class MainStore {
     }
     queryParams = { ...queryParams, search: uiStore.searchText, tags };
 
-    const query = this.appendQueryParams('tribes', queryLimit, {
+    const query = this.appendQueryParams('tribes', queryLimitTribes, {
       ...queryParams,
       sortBy: 'last_active=0, last_active',
       direction: 'desc'
