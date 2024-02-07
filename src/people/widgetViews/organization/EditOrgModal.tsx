@@ -79,6 +79,7 @@ interface labelProps {
   nameColor?: boolean;
   name?: string;
   labelName?: string;
+  descColor?: boolean;
 }
 const Label = styled.span<labelProps>`
   font-family: Barlow;
@@ -87,8 +88,16 @@ const Label = styled.span<labelProps>`
   line-height: 35px;
   letter-spacing: 0px;
   text-align: left;
-  color: ${(p: any) =>
-    p.name === p.labelName ? (p.nameColor ? '#ff8f80' : '#5f6368') : '#5f6368'};
+  color: ${(p: any) => {
+    if (p.nameColor) {
+      return p.name === 'name' ? '#ff8f80' : '#5f6368';
+    }
+    if (p.descColor) {
+      return p.name === 'description' ? '#ff8f80' : '#5f6368';
+    }
+
+    return '#5f6368';
+  }};
 `;
 const InputContainer = styled.div`
   display: flex;
@@ -97,8 +106,16 @@ const InputContainer = styled.div`
 `;
 
 const SecondaryText = styled.span<labelProps>`
-  color: ${(p: any) =>
-    p.name === p.labelName ? (p.nameColor ? '#ff8f80' : '#5f6368') : '#5f6368'};
+  color: ${(p: any) => {
+    if (p.nameColor) {
+      return p.name === 'name' ? '#ff8f80' : '#5f6368';
+    }
+    if (p.descColor) {
+      return p.name === 'description' ? '#ff8f80' : '#5f6368';
+    }
+
+    return '#5f6368';
+  }};
   font-family: Roboto;
   font-size: 13px;
   font-weight: 400;
@@ -150,7 +167,7 @@ const EditOrgModal = (props: EditOrgModalProps) => {
   const [loading, setLoading] = useState(false);
   const [nameCharacterCount, setNameCharacterCount] = useState(org?.name.length);
   const [nameColor, setNameColor] = useState();
-  const [labelName, setLabelName] = useState<string>();
+  const [descColor, setDescColor] = useState();
   const [descriptionCharacterCount, setDescriptionCharacterCount] = useState(
     org?.description?.length || 0
   );
@@ -171,8 +188,12 @@ const EditOrgModal = (props: EditOrgModalProps) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleColor = (data: any, value: string) => {
-    setNameColor(data);
-    setLabelName(value);
+    if (value === 'name') {
+      setNameColor(data);
+    }
+    if (value === 'description') {
+      setDescColor(data);
+    }
   };
   const onSubmitEditOrg = async (body: any) => {
     if (!org) {
@@ -197,9 +218,9 @@ const EditOrgModal = (props: EditOrgModalProps) => {
         name: body.name || org.name,
         owner_pubkey: org.owner_pubkey,
         img: img || org.img,
-        description: body.description || org?.description,
-        github: body.github || org?.github,
-        website: body.website || org?.website,
+        description: body.description !== undefined ? body.description : org?.description || null,
+        github: body.github !== undefined ? body.github : org?.github || null,
+        website: body.website !== undefined ? body.website : org?.website || null,
         created: org.created,
         updated: org.updated,
         show: body?.show !== undefined ? body.show : org.show,
@@ -358,14 +379,14 @@ const EditOrgModal = (props: EditOrgModalProps) => {
                   {schema.map((item: FormField) => (
                     <InputContainer key={item.name} style={item.style}>
                       <LabelWrapper>
-                        <Label nameColor={nameColor} name={item.name} labelName={labelName}>
+                        <Label nameColor={nameColor} descColor={descColor} name={item.name}>
                           {item.label}
                         </Label>
                         {item.maxCharacterLimit ? (
                           <SecondaryText
                             nameColor={nameColor}
+                            descColor={descColor}
                             name={item.name}
-                            labelName={labelName}
                           >
                             {item.name === 'name' ? nameCharacterCount : descriptionCharacterCount}/
                             {item.maxCharacterLimit}
@@ -406,11 +427,10 @@ const EditOrgModal = (props: EditOrgModalProps) => {
                         }}
                         newDesign
                       />
-                      {/* {item.name ==labelName?<ErrorText>Name is too long</ErrorText>:null}                                  */}
                     </InputContainer>
                   ))}
                   <Button
-                    disabled={false}
+                    disabled={nameColor || descColor ? true : false}
                     onClick={() => handleSubmit()}
                     loading={loading}
                     style={{
@@ -423,7 +443,7 @@ const EditOrgModal = (props: EditOrgModalProps) => {
                       top: '390px',
                       left: '527px'
                     }}
-                    color={'primary'}
+                    color={nameColor || descColor ? 'gray' : 'primary'}
                     text={'Save changes'}
                   />
                 </InputWrapper>

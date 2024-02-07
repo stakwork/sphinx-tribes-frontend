@@ -35,9 +35,11 @@ const Body = styled.div<{ isMobile: boolean }>`
     display: flex;
     flex-wrap: wrap;
     height: 100%;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: flex-start;
-    padding: 0px 20px 20px 20px;
+    margin-left: 20px;
+    margin-right: 20px;
+    padding-right: 13px;
   }
 `;
 
@@ -122,7 +124,11 @@ function BodyComponent() {
 
   if (loading) {
     return (
-      <Body isMobile={isMobile} style={{ justifyContent: 'center', alignItems: 'center' }}>
+      <Body
+        data-testid="content"
+        isMobile={isMobile}
+        style={{ justifyContent: 'center', alignItems: 'center' }}
+      >
         <EuiLoadingSpinner size="xl" />
       </Body>
     );

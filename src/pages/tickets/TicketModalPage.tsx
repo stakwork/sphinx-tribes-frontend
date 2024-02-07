@@ -1,14 +1,14 @@
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { Modal } from 'components/common';
 import { colors } from 'config';
 import { useIsMobile } from 'hooks';
 import { observer } from 'mobx-react-lite';
-import FocusedView from 'people/main/FocusView';
-import { widgetConfigs } from 'people/utils/Constants';
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
-import { useHistory, useLocation, useParams } from 'react-router-dom';
-import { AlreadyDeleted } from 'components/common/AfterDeleteNotification/AlreadyDeleted';
-import { useStores } from 'store';
-import { PersonBounty } from 'store/main';
+import FocusedView from '../../people/main/FocusView';
+import { widgetConfigs } from '../../people/utils/Constants';
+import { AlreadyDeleted } from '../../components/common/AfterDeleteNotification/AlreadyDeleted';
+import { useStores } from '../../store';
+import { PersonBounty } from '../../store/main';
 
 const color = colors['light'];
 const focusedDesktopModalStyles = widgetConfigs.wanted.modalStyle;
@@ -20,19 +20,24 @@ type Props = {
 
 export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
   const location = useLocation();
-
   const { main, modals, ui } = useStores();
 
   const history = useHistory();
   const [connectPersonBody, setConnectPersonBody] = useState<any>();
   // eslint-disable-next-line no-unused-vars
-  const [activeListIndex, setActiveListIndex] = useState<number>(0);
   const [publicFocusIndex, setPublicFocusIndex] = useState(0);
   const [removeNextAndPrev, setRemoveNextAndPrev] = useState(false);
-  const { uuid, bountyId } = useParams<{ uuid: string; bountyId: string }>();
+  const { bountyId } = useParams<{ bountyId: string }>();
   const [activeBounty, setActiveBounty] = useState<PersonBounty[]>([]);
   const [visible, setVisible] = useState(false);
   const [isDeleted, setisDeleted] = useState(false);
+
+  let orgUuid = '';
+  if (location.state) {
+    const locationState: any = location.state;
+    orgUuid = locationState?.activeOrg;
+    main.setActiveOrg(orgUuid);
+  }
 
   const isMobile = useIsMobile();
 
@@ -43,6 +48,8 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
       created: s.get('created')
     };
   }, [location.search]);
+
+  const { activeOrg } = main;
 
   const getBounty = useCallback(async () => {
     let bounty;
@@ -59,7 +66,6 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
     const connectPerson = bounty && bounty.length ? bounty[0].person : [];
 
     setPublicFocusIndex(bountyIndex);
-    setActiveListIndex(bountyIndex);
     setConnectPersonBody(connectPerson);
 
     const visible = bounty && bounty.length > 0;
@@ -74,49 +80,58 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
     getBounty();
   }, [getBounty, removeNextAndPrev]);
 
-  const isDirectAccess = useCallback(
-    () => !document.referrer && location.pathname.includes('/bounty/'),
-    [location.pathname]
-  );
+  const isDirectAccess = useCallback(() => !document.referrer, [location.pathname]);
 
   const goBack = () => {
     setVisible(false);
     setisDeleted(false);
 
-    if (isDirectAccess()) {
-      const homePageUrl = uuid ? `/org/bounties/${uuid}` : '/bounties';
-      history.push(homePageUrl);
+    if (isDirectAccess() && !activeOrg) {
+      history.push('/bounties');
     } else {
       history.goBack();
     }
+
+    // set the active org to an empty string before closing
+    main.setActiveOrg('');
   };
 
-  const directionHandler = (person: any, body: any) => {
-    if (person && body) {
-      if (bountyId) {
-        history.replace(`/bounty/${body.id}`);
+  const prevArrHandler = async () => {
+    const { created } = activeBounty[0].body;
+    if (activeOrg) {
+      try {
+        const bountyId = await main.getOrganizationNextBountyByCreated(activeOrg, created);
+        history.replace(`/bounty/${bountyId}`);
+      } catch (e) {
+        console.error(e);
+      }
+    } else {
+      try {
+        const bountyId = await main.getNextBountyByCreated(created);
+        history.replace(`/bounty/${bountyId}`);
+      } catch (e) {
+        console.error(e);
       }
     }
   };
 
-  const getBountyIndex = () => {
-    const id = parseInt(bountyId, 10);
-    const index = main.peopleBounties.findIndex((bounty: any) => id === bounty.body.id);
-    return index;
-  };
-
-  const prevArrHandler = () => {
-    const index = getBountyIndex();
-    if (index <= 0 || index >= main.peopleBounties.length) return;
-    const { person, body } = main.peopleBounties[index - 1];
-    directionHandler(person, body);
-  };
-
-  const nextArrHandler = () => {
-    const index = getBountyIndex();
-    if (index + 1 >= main.peopleBounties?.length) return;
-    const { person, body } = main.peopleBounties[index + 1];
-    directionHandler(person, body);
+  const nextArrHandler = async () => {
+    const { created } = activeBounty[0].body;
+    if (activeOrg) {
+      try {
+        const bountyId = await main.getOrganizationPreviousBountyByCreated(activeOrg, created);
+        history.replace(`/bounty/${bountyId}`);
+      } catch (e) {
+        console.error(e);
+      }
+    } else {
+      try {
+        const bountyId = await main.getPreviousBountyByCreated(created);
+        history.replace(`/bounty/${bountyId}`);
+      } catch (e) {
+        console.error(e);
+      }
+    }
   };
 
   if (isMobile) {

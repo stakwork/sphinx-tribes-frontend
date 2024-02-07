@@ -87,15 +87,13 @@ export default function TextAreaInputNew({
       <textarea
         className="inputText"
         placeholder={showPlaceholder ? placeholder : ''} //displays the placeholder only when the textValue is empty
-        id={'text'}
+        id={name}
         value={textValue}
         onFocus={() => {
           handleFocus();
           setShowPlaceholder(false);
         }}
         onBlur={() => {
-          setCharacterError(false);
-          setColor && setColor(false, name);
           handleBlur();
           if (error) {
             setIsError(true);
@@ -127,7 +125,7 @@ export default function TextAreaInputNew({
         }}
       />
       <label
-        htmlFor={'text'}
+        htmlFor={name}
         className="text"
         onClick={handleFocus}
         style={{
@@ -150,7 +148,7 @@ export default function TextAreaInputNew({
       >
         {labeltext}
       </label>
-      {characterError ? <ErrorText>description is too long</ErrorText> : null}
+      {characterError ? <ErrorText>Description is too long</ErrorText> : null}
     </InputOuterBox>
   );
 }

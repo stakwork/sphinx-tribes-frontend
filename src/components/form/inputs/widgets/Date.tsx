@@ -16,7 +16,7 @@ const DataPicker = styled(EuiDatePicker)<datePickerProps>`
     background-image: none;
   }
 `;
-function Date({ label, value, handleChange }: any) {
+function Date({ label, value, handleChange, testId }: any) {
   const color = colors['light'];
   const [startDate, setStartDate] = useState(moment(value) ?? moment());
   const [isBorder, setIsBorder] = useState<boolean>(false);
@@ -40,6 +40,7 @@ function Date({ label, value, handleChange }: any) {
         }}
         border={isBorder}
         color={color}
+        data-testid={testId}
       />
     </FieldEnv>
   );

@@ -3,15 +3,14 @@ import { observer } from 'mobx-react-lite';
 import FirstTimeScreen from 'people/main/FirstTimeScreen';
 import BountyHeader from 'people/widgetViews/BountyHeader';
 import WidgetSwitchViewer from 'people/widgetViews/WidgetSwitchViewer';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { useParams } from 'react-router-dom';
 import { colors } from '../../../config/colors';
 import { useIsMobile } from '../../../hooks';
 import { useStores } from '../../../store';
 import { OrgBody, Body, Backdrop } from '../style';
-import { defaultOrgBountyStatus } from '../../../store/main';
-import api from '../../../api';
+import { Organization, defaultOrgBountyStatus, queryLimit } from '../../../store/main';
 import { OrgHeader } from './orgHeader';
 
 function OrgBodyComponent() {
@@ -23,8 +22,12 @@ function OrgBodyComponent() {
   const [checkboxIdToSelectedMap, setCheckboxIdToSelectedMap] = useState(defaultOrgBountyStatus);
   const [checkboxIdToSelectedMapLanguage, setCheckboxIdToSelectedMapLanguage] = useState({});
   const { uuid } = useParams<{ uuid: string; bountyId: string }>();
+
+  const [organizationData, setOrganizationData] = useState<Organization>();
   const [languageString, setLanguageString] = useState('');
-  const [organizationUrls, setOrganizationUrls] = useState({});
+  const [page, setPage] = useState<number>(1);
+  const [currentItems, setCurrentItems] = useState<number>(queryLimit);
+  const [OrgTotalBounties, setTotalBounties] = useState(0);
 
   const color = colors['light'];
 
@@ -33,29 +36,17 @@ function OrgBodyComponent() {
 
   useEffect(() => {
     (async () => {
-      await main.getOpenGithubIssues();
-      await main.getBadgeList();
-      await main.getPeople();
-      if (uuid) {
-        await main.getSpecificOrganizationBounties(uuid, {
-          page: 1,
-          resetPage: true,
-          languages: languageString
-        });
-        const orgUrls = await api.get(`organizations/${uuid}`);
-        setOrganizationUrls(orgUrls);
-      }
+      if (!uuid) return;
+      const orgData = await main.getUserOrganizationByUuid(uuid);
+      if (!orgData) return;
+      setOrganizationData(orgData);
+
       setLoading(false);
     })();
   }, [main, uuid, checkboxIdToSelectedMap, languageString]);
 
   useEffect(() => {
-    setCheckboxIdToSelectedMap({
-      Open: false,
-      Assigned: false,
-      Paid: false,
-      Completed: false
-    });
+    setCheckboxIdToSelectedMap({ ...defaultOrgBountyStatus });
   }, [loading]);
 
   useEffect(() => {
@@ -63,6 +54,23 @@ function OrgBodyComponent() {
       main.getTribesByOwner(ui.meInfo.owner_pubkey || '');
     }
   }, [main, ui.meInfo]);
+
+  const getTotalBounties = useCallback(
+    async (uuid: any, statusData: any, page: any) => {
+      const OrgTotalBounties = await main.getTotalOrgBounties(uuid, {
+        page,
+        ...statusData,
+        resetPage: true
+      });
+
+      setTotalBounties(OrgTotalBounties);
+    },
+    [main]
+  );
+
+  useEffect(() => {
+    getTotalBounties(uuid, checkboxIdToSelectedMap, page);
+  }, [getTotalBounties]);
 
   const onChangeStatus = (optionId: any) => {
     const newCheckboxIdToSelectedMap = {
@@ -72,6 +80,12 @@ function OrgBodyComponent() {
       }
     };
     setCheckboxIdToSelectedMap(newCheckboxIdToSelectedMap);
+    // set the store status, to enable the accurate navigation modal call
+    main.setBountiesStatus(newCheckboxIdToSelectedMap);
+    getTotalBounties(uuid, newCheckboxIdToSelectedMap, page);
+    // set data to default
+    setCurrentItems(queryLimit);
+    setPage(1);
   };
 
   const onChangeLanguage = (optionId: number) => {
@@ -84,11 +98,15 @@ function OrgBodyComponent() {
       .filter((key: string) => newCheckboxIdToSelectedMapLanguage[key])
       .join(',');
     setLanguageString(languageString);
+
     main.setBountyLanguages(languageString);
   };
 
-  const onPanelClick = (person: any, item: any) => {
-    history.push(`/bounty/${item.id}`);
+  const onPanelClick = (activeOrg: string, item: any) => {
+    history.push({
+      pathname: `/bounty/${item.id}`,
+      state: { activeOrg }
+    });
   };
 
   if (loading) {
@@ -167,12 +185,12 @@ function OrgBodyComponent() {
         }}
       >
         <OrgHeader
-          organizationUrls={organizationUrls}
           onChangeStatus={onChangeStatus}
           onChangeLanguage={onChangeLanguage}
           checkboxIdToSelectedMap={checkboxIdToSelectedMap}
           checkboxIdToSelectedMapLanguage={checkboxIdToSelectedMapLanguage}
           languageString={languageString}
+          organizationData={organizationData as Organization}
           org_uuid={uuid}
         />
         <>
@@ -203,9 +221,16 @@ function OrgBodyComponent() {
                 fromBountyPage={true}
                 selectedWidget={selectedWidget}
                 loading={loading}
+                OrgTotalBounties={OrgTotalBounties}
+                currentItems={currentItems}
+                setCurrentItems={setCurrentItems}
+                page={page}
+                setPage={setPage}
                 uuid={uuid}
                 org_uuid={uuid}
                 languageString={languageString}
+                activeOrg={uuid}
+                orgQueryLimit={queryLimit}
               />
             </div>
           </div>

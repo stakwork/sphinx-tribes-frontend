@@ -1,10 +1,19 @@
 import React from 'react';
 import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
 import '@testing-library/jest-dom';
 import BountyHeader from '../BountyHeader';
 import { BountyHeaderProps } from '../../interfaces';
 import { mainStore } from '../../../store/main';
 import * as hooks from '../../../hooks';
+
+const mockHistoryPush = jest.fn();
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useHistory: () => ({
+    replace: mockHistoryPush
+  })
+}));
 
 const mockProps: BountyHeaderProps = {
   selectedWidget: 'wanted',
@@ -158,5 +167,17 @@ describe('BountyHeader Component', () => {
 
   afterAll(() => {
     jest.useRealTimers(); // Restore real timers after all tests are done
+  });
+  test('should navigate to the people page on click of the developers', () => {
+    render(
+      <BrowserRouter>
+        <BountyHeader {...mockProps} />
+      </BrowserRouter>
+    );
+
+    const developersSection = screen.getByText('Developers');
+    fireEvent.click(developersSection);
+
+    expect(mockHistoryPush).toHaveBeenCalledWith('/p');
   });
 });

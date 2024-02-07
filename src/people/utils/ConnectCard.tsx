@@ -101,7 +101,10 @@ export default function ConnectCard(props: ConnectCardProps) {
         }}
         visible={visible}
       >
-        <div style={{ textAlign: 'center', paddingTop: 59, width: 310 }}>
+        <div
+          style={{ textAlign: 'center', paddingTop: 59, width: 310 }}
+          data-testid="connect-modal"
+        >
           <ImgWrap>
             <W color={color}>
               <Icon src={person?.img || '/static/person_placeholder.png'} />

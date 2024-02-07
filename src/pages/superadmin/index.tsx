@@ -14,6 +14,7 @@ import { Header } from './header';
 import { Statistics } from './statistics';
 import AdminAccessDenied from './accessDenied';
 import { normalizeMetrics } from './utils/metrics';
+import { pageSize, visibleTabs } from './constants.ts';
 
 const Container = styled.body`
   height: 100vh; /* Set a fixed height for the container */
@@ -39,7 +40,8 @@ export interface MockHunterMetrics {
 export const SuperAdmin = () => {
   //Todo: Remove all comments when metrcis development is done
   const { main } = useStores();
-  const [isSuperAdmin] = useState(true);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   const [bounties, setBounties] = useState<any[]>([]);
   const [bountyMetrics, setBountyMetrics] = useState<BountyMetrics | undefined>(undefined);
   const mockHunterMetrics: MockHunterMetrics = {
@@ -53,20 +55,32 @@ export const SuperAdmin = () => {
   const [sortOrder, setSortOrder] = useState<string>('desc');
   const [dropdownValue, setDropdownValue] = useState('all');
   const [loading, setLoading] = useState(false);
+  const [activeTabs, setActiveTabs] = useState<number[]>([]);
+  const [totalBounties, setTotalBounties] = useState(0);
 
   /**
    * Todo use the same date range,
    * and status for all child components
    * */
-
   const [endDate, setEndDate] = useState(moment().unix());
-  const [startDate, setStartDate] = useState(moment().subtract(30, 'days').unix());
+  const [startDate, setStartDate] = useState(moment().subtract(7, 'days').unix());
   const [inView, ref] = useInViewPort({
     rootMargin: '0px',
     threshold: 0.25
   });
 
   const onDateFilterChange = useCallback((option: string) => setSortOrder(option), []);
+
+  const paginationLimit = Math.floor(totalBounties / pageSize) + 1;
+
+  const getIsSuperAdmin = useCallback(async () => {
+    const isSuperAdmin = await main.getSuperAdmin();
+    setIsSuperAdmin(isSuperAdmin);
+  }, [main]);
+
+  useEffect(() => {
+    getIsSuperAdmin();
+  }, [getIsSuperAdmin]);
 
   const getBounties = useCallback(async () => {
     setLoading(true);
@@ -78,7 +92,7 @@ export const SuperAdmin = () => {
             end_date: String(endDate)
           },
           {
-            resetPage: true,
+            page: currentPage,
             ...bountyStatus,
             direction: sortOrder
           }
@@ -92,7 +106,7 @@ export const SuperAdmin = () => {
         setLoading(false);
       }
     }
-  }, [main, startDate, endDate, bountyStatus, sortOrder]);
+  }, [main, startDate, endDate, bountyStatus, sortOrder, currentPage]);
 
   useEffect(() => {
     getBounties();
@@ -113,6 +127,31 @@ export const SuperAdmin = () => {
   useEffect(() => {
     getMetrics();
   }, [getMetrics]);
+
+  const getTotalBounties = useCallback(async () => {
+    if (startDate && endDate) {
+      const totalBounties = await main.getBountiesCountByRange(String(startDate), String(endDate));
+      setTotalBounties(totalBounties);
+    }
+  }, [main, startDate, endDate]);
+
+  useEffect(() => {
+    getTotalBounties();
+  }, [getTotalBounties]);
+
+  const getActiveTabs = useCallback(() => {
+    const dataNumber: number[] = [];
+    for (let i = 1; i <= Math.ceil(paginationLimit); i++) {
+      if (i > visibleTabs) break;
+      dataNumber.push(i);
+    }
+
+    setActiveTabs(dataNumber);
+  }, [paginationLimit]);
+
+  useEffect(() => {
+    getActiveTabs();
+  }, [getActiveTabs]);
 
   return (
     <>
@@ -147,6 +186,12 @@ export const SuperAdmin = () => {
               sortOrder={sortOrder}
               dropdownValue={dropdownValue}
               setDropdownValue={setDropdownValue}
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+              activeTabs={activeTabs}
+              setActiveTabs={setActiveTabs}
+              totalBounties={totalBounties}
+              paginationLimit={paginationLimit}
             />
           )}
         </Container>

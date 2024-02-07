@@ -48,7 +48,8 @@ export default function TextInputNew({
   isFocused,
   labelStyle,
   name,
-  setColor
+  setColor,
+  testId
 }: Props) {
   let labeltext = label;
   if (error) labeltext = `${labeltext}*`;
@@ -71,18 +72,17 @@ export default function TextInputNew({
     >
       <input
         className="inputText"
-        id={'text'}
+        id={name}
         type={'text'}
         value={textValue}
         onFocus={handleFocus}
         onBlur={() => {
-          setCharacterError(false);
-          setColor && setColor(false, name);
           handleBlur();
           if (error) {
             setIsError(true);
           }
         }}
+        data-testid={testId}
         onChange={(e: any) => {
           const newVal = e.target.value;
           if (name === 'name') {
@@ -102,7 +102,7 @@ export default function TextInputNew({
         }}
       />
       <label
-        htmlFor={'text'}
+        htmlFor={name}
         className="text"
         onClick={handleFocus}
         style={{

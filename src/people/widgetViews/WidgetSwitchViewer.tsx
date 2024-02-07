@@ -79,13 +79,18 @@ function WidgetSwitchViewer(props: any) {
     currentItems,
     setCurrentItems,
     totalBounties,
+    OrgTotalBounties,
     page: propsPage,
     setPage,
-    languageString
+    languageString,
+    activeOrg,
+    uuid,
+    orgQueryLimit
   } = props;
 
   const items = currentItems ?? 0;
   const bountiesTotal = totalBounties ?? 0;
+  const OrgBountiesTotal = OrgTotalBounties ?? 0;
   const page = propsPage ?? 0;
 
   const panelStyles = isMobile
@@ -179,6 +184,21 @@ function WidgetSwitchViewer(props: any) {
       ...props.checkboxIdToSelectedMap
     });
   };
+  const nextOrgBounties = async () => {
+    const currentPage = page + 1;
+    if (setPage) {
+      setPage(currentPage);
+    }
+
+    if (setCurrentItems) {
+      setCurrentItems(currentItems + queryLimit);
+    }
+    await main.getSpecificOrganizationBounties(uuid, {
+      limit: queryLimit,
+      page: currentPage,
+      ...props.checkboxIdToSelectedMap
+    });
+  };
 
   const listItems =
     activeList && activeList.length ? (
@@ -229,12 +249,13 @@ function WidgetSwitchViewer(props: any) {
               <WantedView
                 showName
                 onPanelClick={() => {
-                  if (onPanelClick) onPanelClick(person, body);
+                  if (onPanelClick) onPanelClick(activeOrg, body);
                 }}
                 person={person}
                 showModal={showModal}
                 setDeletePayload={setDeletePayload}
                 fromBountyPage={props.fromBountyPage}
+                activeOrg={activeOrg}
                 {...body}
                 {...organization}
               />
@@ -246,6 +267,7 @@ function WidgetSwitchViewer(props: any) {
       <NoResults loaded={!!languageString} />
     );
   const showLoadMore = bountiesTotal > items && activeList.length >= queryLimit;
+  const OrgLoadMore = OrgBountiesTotal > items && activeList.length >= orgQueryLimit;
   return (
     <>
       {listItems}
@@ -264,6 +286,21 @@ function WidgetSwitchViewer(props: any) {
           }}
         >
           <div className="LoadMoreButton" onClick={() => nextBounties()}>
+            Load More
+          </div>
+        </LoadMoreContainer>
+      )}
+      {uuid && OrgLoadMore && (
+        <LoadMoreContainer
+          color={color}
+          style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
+          <div className="LoadMoreButton" onClick={() => nextOrgBounties()}>
             Load More
           </div>
         </LoadMoreContainer>
