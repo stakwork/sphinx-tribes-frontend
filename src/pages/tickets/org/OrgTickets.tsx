@@ -34,22 +34,16 @@ function OrgBodyComponent() {
   useEffect(() => {
     (async () => {
       if (!uuid) return;
-
       const orgData = await main.getUserOrganizationByUuid(uuid);
-
       if (!orgData) return;
       setOrganizationData(orgData);
+
       setLoading(false);
     })();
   }, [main, uuid, checkboxIdToSelectedMap, languageString]);
 
   useEffect(() => {
-    setCheckboxIdToSelectedMap({
-      Open: false,
-      Assigned: false,
-      Paid: false,
-      Completed: false
-    });
+    setCheckboxIdToSelectedMap({ ...defaultOrgBountyStatus });
   }, [loading]);
 
   useEffect(() => {
@@ -66,6 +60,8 @@ function OrgBodyComponent() {
       }
     };
     setCheckboxIdToSelectedMap(newCheckboxIdToSelectedMap);
+    // set the store status, to enable the accurate navigation modal call
+    main.setOrgBountiesStatus({ ...newCheckboxIdToSelectedMap });
   };
 
   const onChangeLanguage = (optionId: number) => {
@@ -78,11 +74,15 @@ function OrgBodyComponent() {
       .filter((key: string) => newCheckboxIdToSelectedMapLanguage[key])
       .join(',');
     setLanguageString(languageString);
+
     main.setBountyLanguages(languageString);
   };
 
-  const onPanelClick = (person: any, item: any) => {
-    history.push(`/bounty/${item.id}`);
+  const onPanelClick = (activeOrg: string, item: any) => {
+    history.push({
+      pathname: `/bounty/${item.id}`,
+      state: { activeOrg }
+    });
   };
 
   if (loading) {
@@ -200,6 +200,7 @@ function OrgBodyComponent() {
                 uuid={uuid}
                 org_uuid={uuid}
                 languageString={languageString}
+                activeOrg={uuid}
               />
             </div>
           </div>

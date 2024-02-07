@@ -81,7 +81,8 @@ function WidgetSwitchViewer(props: any) {
     totalBounties,
     page: propsPage,
     setPage,
-    languageString
+    languageString,
+    activeOrg
   } = props;
 
   const items = currentItems ?? 0;
@@ -229,12 +230,13 @@ function WidgetSwitchViewer(props: any) {
               <WantedView
                 showName
                 onPanelClick={() => {
-                  if (onPanelClick) onPanelClick(person, body);
+                  if (onPanelClick) onPanelClick(activeOrg, body);
                 }}
                 person={person}
                 showModal={showModal}
                 setDeletePayload={setDeletePayload}
                 fromBountyPage={props.fromBountyPage}
+                activeOrg={activeOrg}
                 {...body}
                 {...organization}
               />

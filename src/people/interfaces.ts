@@ -76,6 +76,7 @@ export interface BountiesProps {
   uuid?: string;
   img?: string;
   id?: number;
+  activeOrg?: string;
 }
 
 export interface BadgesProps {
@@ -168,6 +169,7 @@ export interface PaidBountiesProps {
   created: number;
   name?: string;
   org_img?: string;
+  activeOrg?: string;
 }
 
 export interface QRProps {
@@ -391,6 +393,7 @@ export interface WantedViews2Props extends WantedViewsProps {
   type?: string;
   coding_languages?: any;
   fromBountyPage?: boolean;
+  activeOrg?: string;
 }
 
 export interface AboutViewProps {
