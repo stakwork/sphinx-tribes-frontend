@@ -1,4 +1,3 @@
-import { colors } from 'config';
 import styled from 'styled-components';
 import checkboxImage from './Icons/checkboxImage.svg';
 
