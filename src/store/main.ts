@@ -10,7 +10,9 @@ import { TribesURL } from '../config/host';
 import { uiStore } from './ui';
 import { getUserAvatarPlaceholder } from './lib';
 
+export const queryLimitTribes = 100;
 export const queryLimit = 10;
+export const orgQuerLimit = 500;
 export const paginationQueryLimit = 20;
 export const peopleQueryLimit = 500;
 
@@ -306,6 +308,7 @@ export const defaultOrgBountyStatus: OrgBountyStatus = {
   Paid: false,
   Completed: false
 };
+
 export class MainStore {
   [x: string]: any;
   tribes: Tribe[] = [];
@@ -331,7 +334,7 @@ export class MainStore {
     }
     queryParams = { ...queryParams, search: uiStore.searchText, tags };
 
-    const query = this.appendQueryParams('tribes', queryLimit, {
+    const query = this.appendQueryParams('tribes', queryLimitTribes, {
       ...queryParams,
       sortBy: 'last_active=0, last_active',
       direction: 'desc'
@@ -684,7 +687,7 @@ export class MainStore {
       limit: String(limit),
       ...(queryParams?.resetPage ? { resetPage: String(queryParams.resetPage) } : {}),
       ...(queryParams?.page ? { page: String(queryParams.page) } : {}),
-      ...(queryParams?.languages ? { langauges: queryParams.languages } : {})
+      ...(queryParams?.languages ? { languages: queryParams.languages } : {})
     } as Record<string, string>;
 
     const searchParams = new URLSearchParams(adaptedParams);
@@ -830,6 +833,12 @@ export class MainStore {
 
   @action setBountiesStatus(status: BountyStatus) {
     this.bountiesStatus = status;
+  }
+
+  orgBountiesStatus: BountyStatus = defaultOrgBountyStatus;
+
+  @action setOrgBountiesStatus(status: OrgBountyStatus) {
+    this.orgBountiesStatus = status;
   }
 
   @persist('object')
@@ -1160,7 +1169,7 @@ export class MainStore {
       }
       return ps3;
     } catch (e) {
-      console.log('fetch failed getOrganizationBounties: ', e);
+      console.log('fetch failed getSpecificOrganizationBounti: ', e);
       return [];
     }
   }
@@ -1214,6 +1223,79 @@ export class MainStore {
     } catch (e) {
       console.log('fetch failed getOrganizationBounties: ', e);
       return [];
+    }
+  }
+
+  getWantedsTotalOrgPrevParams?: QueryParams = {};
+  async getTotalOrgBounties(uuid: string, params?: any): Promise<number> {
+    const queryParams: QueryParams = {
+      limit: queryLimit,
+      sortBy: 'created',
+      search: '',
+      page: 1,
+      resetPage: false,
+      ...params
+    };
+
+    if (params) {
+      // save previous params
+      this.getWantedsTotalOrgPrevParams = queryParams;
+    }
+
+    // if we don't pass the params, we should use previous params for invalidate query
+    const query2 = this.appendQueryParams(
+      `organizations/bounties/${uuid}`,
+      orgQuerLimit,
+      params ? queryParams : this.getWantedsOrgPrevParams
+    );
+    try {
+      const ps2 = await api.get(query2);
+      const ps3: any[] = [];
+
+      if (ps2 && ps2.length) {
+        for (let i = 0; i < ps2.length; i++) {
+          const bounty = { ...ps2[i].bounty };
+          let assignee;
+          let organization;
+          const owner = { ...ps2[i].owner };
+
+          if (bounty.assignee) {
+            assignee = { ...ps2[i].assignee };
+          }
+
+          if (bounty.org_uuid) {
+            organization = { ...ps2[i].organization };
+          }
+          if (bounty.org_uuid === uuid) {
+            ps3.push({
+              body: { ...bounty, assignee: assignee || '' },
+              person: { ...owner, wanteds: [] } || { wanteds: [] },
+              organization: { ...organization }
+            });
+          }
+        }
+      }
+
+      // for search always reset page
+      if (queryParams && queryParams.resetPage) {
+        this.setPeopleBounties(ps3);
+        uiStore.setPeopleBountiesPageNumber(1);
+      } else {
+        // all other cases, merge
+        const wanteds = this.doPageListMerger(
+          this.peopleBounties,
+          ps3,
+          (n: any) => uiStore.setPeopleBountiesPageNumber(n),
+          queryParams,
+          'wanted'
+        );
+
+        this.setPeopleBounties(wanteds);
+      }
+      return ps3.length;
+    } catch (e) {
+      console.log('fetch failed getOrganizationBounties: ', e);
+      return 0;
     }
   }
 
@@ -1779,40 +1861,116 @@ export class MainStore {
     }
   }
 
-  async getOrganizationNextBountyById(org_uuid: string, bountyId: string): Promise<number> {
+  @persist
+  activeOrg = '';
+  setActiveOrg(org: string) {
+    this.activeOrg = org;
+  }
+
+  async getOrganizationNextBountyByCreated(org_uuid: string, bountyId: string): Promise<number> {
     try {
-      const count = await api.get(`gobounties/org/next/${org_uuid}/${bountyId}`);
-      return count;
+      const params = { languages: this.bountyLanguages, ...this.orgBountiesStatus };
+
+      const queryParams: QueryParams = {
+        limit: queryLimit,
+        sortBy: 'created',
+        search: uiStore.searchText ?? '',
+        page: 1,
+        resetPage: false,
+        ...params
+      };
+
+      // if we don't pass the params, we should use previous params for invalidate query
+      const query = this.appendQueryParams(
+        `gobounties/org/next/${org_uuid}/${bountyId}`,
+        queryLimit,
+        queryParams
+      );
+
+      const bounty = await api.get(query);
+      return bounty;
+    } catch (e) {
+      console.log('fetch failed getOrganizationNextBountyById: ', e);
+      return 0;
+    }
+  }
+
+  async getOrganizationPreviousBountyByCreated(
+    org_uuid: string,
+    bountyId: string
+  ): Promise<number> {
+    try {
+      const params = { languages: this.bountyLanguages, ...this.orgBountiesStatus };
+
+      const queryParams: QueryParams = {
+        limit: queryLimit,
+        sortBy: 'created',
+        search: uiStore.searchText ?? '',
+        page: 1,
+        resetPage: false,
+        ...params
+      };
+
+      // if we don't pass the params, we should use previous params for invalidate query
+      const query = this.appendQueryParams(
+        `gobounties/org/previous/${org_uuid}/${bountyId}`,
+        queryLimit,
+        queryParams
+      );
+
+      const bounty = await api.get(query);
+      return bounty;
+    } catch (e) {
+      console.log('fetch failed getOrganizationPreviousBountyById: ', e);
+      return 0;
+    }
+  }
+
+  async getNextBountyByCreated(created: string): Promise<number> {
+    try {
+      const params = { languages: this.bountyLanguages, ...this.bountiesStatus };
+
+      const queryParams: QueryParams = {
+        limit: queryLimit,
+        sortBy: 'created',
+        search: uiStore.searchText ?? '',
+        page: 1,
+        resetPage: false,
+        ...params
+      };
+
+      // if we don't pass the params, we should use previous params for invalidate query
+      const query = this.appendQueryParams(`gobounties/next/${created}`, queryLimit, queryParams);
+
+      const bounty = await api.get(query);
+      return bounty;
     } catch (e) {
       console.log('fetch failed getBountyCount: ', e);
       return 0;
     }
   }
 
-  async getOrganizationPreviousBountyById(org_uuid: string, bountyId: string): Promise<number> {
+  async getPreviousBountyByCreated(created: string): Promise<number> {
     try {
-      const count = await api.get(`gobounties/org/previous/${org_uuid}/${bountyId}`);
-      return count;
-    } catch (e) {
-      console.log('fetch failed getBountyCount: ', e);
-      return 0;
-    }
-  }
+      const params = { languages: this.bountyLanguages, ...this.bountiesStatus };
 
-  async getNextBountyById(bountyId: string): Promise<number> {
-    try {
-      const count = await api.get(`gobounties/next/${bountyId}`);
-      return count;
-    } catch (e) {
-      console.log('fetch failed getBountyCount: ', e);
-      return 0;
-    }
-  }
+      const queryParams: QueryParams = {
+        limit: queryLimit,
+        sortBy: 'created',
+        search: uiStore.searchText ?? '',
+        page: 1,
+        resetPage: false,
+        ...params
+      };
 
-  async getPreviousBountyById(bountyId: string): Promise<number> {
-    try {
-      const count = await api.get(`gobounties/previous/${bountyId}`);
-      return count;
+      // if we don't pass the params, we should use previous params for invalidate query
+      const query = this.appendQueryParams(
+        `gobounties/previous/${created}`,
+        queryLimit,
+        queryParams
+      );
+      const bounty = await api.get(query);
+      return bounty;
     } catch (e) {
       console.log('fetch failed getBountyCount: ', e);
       return 0;
@@ -2051,9 +2209,6 @@ export class MainStore {
 
   async getUserOrganizationByUuid(uuid: string): Promise<Organization | undefined> {
     try {
-      const info = uiStore;
-      if (!info.selectedPerson && !uiStore.meInfo?.id) return undefined;
-
       const r: any = await fetch(`${TribesURL}/organizations/${uuid}`, {
         method: 'GET',
         mode: 'cors',

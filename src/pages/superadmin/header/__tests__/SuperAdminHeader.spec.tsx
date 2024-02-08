@@ -154,4 +154,39 @@ describe('Header Component', () => {
 
     // You can add additional assertions or test scenarios as needed
   });
+
+  test('displays header with a 7-day difference by default', async () => {
+    const setStartDateMock = jest.fn();
+    const setEndDateMock = jest.fn();
+    const exportCSVText = 'Export CSV';
+
+    // Adjusted to ensure a 7-day difference by default
+    const startDate = moment().subtract(7, 'days').startOf('day').unix();
+    const endDate = moment().startOf('day').unix();
+
+    render(
+      <Header
+        startDate={startDate}
+        endDate={endDate}
+        setStartDate={setStartDateMock}
+        setEndDate={setEndDateMock}
+      />
+    );
+
+    const today = moment().startOf('day');
+    const expectedStartDate = today.clone().subtract(7, 'days');
+    const expectedEndDate = today;
+
+    const leftWrapperElement = screen.getByTestId('leftWrapper');
+    const monthElement = within(leftWrapperElement).getByTestId('month');
+
+    expect(monthElement).toBeInTheDocument();
+
+    const expectedTextContent = `${expectedStartDate.format('DD MMM')} - ${expectedEndDate.format(
+      'DD MMM YYYY'
+    )}`;
+    expect(monthElement).toHaveTextContent(expectedTextContent);
+
+    expect(screen.getByText(exportCSVText)).toBeInTheDocument();
+  });
 });

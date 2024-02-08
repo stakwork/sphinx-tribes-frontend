@@ -36,6 +36,7 @@ const MockProps: OrgBountyHeaderProps = {
     Completed: false
   },
   languageString: '',
+  direction: 'desc',
   org_uuid: 'clf6qmo4nncmf23du7ng',
   onChangeStatus: jest.fn(),
   onChangeLanguage: jest.fn(),
@@ -117,12 +118,43 @@ describe('OrgHeader Component', () => {
     expect(statusOpenCheckbox).toBeInTheDocument();
     fireEvent.click(statusOpenCheckbox);
 
-    waitFor(() => {
+    waitFor(async () => {
       expect(MockProps.onChangeStatus).toHaveBeenCalledWith('Open');
+
+      await waitFor(() => {
+        fireEvent.click(screen.getByText(/Sort By:/i));
+      });
+
+      const newestFirstOption = screen.getByText('Newest First');
+      fireEvent.click(newestFirstOption);
+
+      await waitFor(() => {
+        expect(mainStore.getSpecificOrganizationBounties).toHaveBeenCalledWith(
+          expect.anything(),
+          expect.objectContaining({
+            direction: 'desc'
+          })
+        );
+
+        jest.clearAllMocks();
+
+        const oldestFirstOption = screen.getByText('Oldest First');
+        fireEvent.click(oldestFirstOption);
+      });
+
+      await waitFor(() => {
+        expect(mainStore.getSpecificOrganizationBounties).toHaveBeenCalledWith(
+          expect.anything(),
+          expect.objectContaining({
+            direction: 'asc'
+          })
+        );
+      });
 
       const updatedCheckboxIdToSelectedMap = {
         ...MockProps.checkboxIdToSelectedMap,
-        Open: true
+        Open: true,
+        direction: 'desc'
       };
 
       rerender(
