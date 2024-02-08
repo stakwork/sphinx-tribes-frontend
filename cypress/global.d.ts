@@ -3,6 +3,7 @@ declare namespace Cypress {
     login(userAlias: string): void;
     logout(userAlias: string): void;
     create_bounty(bounty: Bounty): void;
+    lnurl_login(): void;
   }
 
   type Category =

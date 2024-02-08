@@ -7,7 +7,6 @@ describe('Alice tries to create a bounty', () => {
     cy.create_bounty({
       title: 'My new Bounty',
       category: 'Web development',
-      // github_issue_url: 'https://github.com/stakwork/sphinx-relay/issues/799',
       coding_language: ['Typescript', 'Javascript', 'Lightning'],
       description: 'This is available',
       amount: '123',
@@ -16,7 +15,6 @@ describe('Alice tries to create a bounty', () => {
       tribe: '',
       estimate_session_length: 'Less than 3 hour',
       estimate_completion_date: '09/09/2024'
-      // organization: 'Testing Org'
     });
 
     cy.wait(1000);
