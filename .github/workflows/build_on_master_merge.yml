@@ -1,7 +1,7 @@
 name: Docker build on push to master
 env:
   DOCKER_CLI_EXPERIMENTAL: enabled
-  REGISTRY_IMAGE: sphinxlightning/sphinx-tribes-frontend:master
+  REGISTRY_IMAGE: sphinxlightning/sphinx-tribes-frontend
 
 on:
   push:
