@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import React from 'react';
 import { Button } from 'components/common';
 
-describe('Test for FocusedView', () => {
+describe('Test for FocusedView Button', () => {
   const OnClick = jest.fn();
 
   it('enable delete button if there is no a hunter assigned or bounty is paid', () => {
@@ -18,6 +18,9 @@ describe('Test for FocusedView', () => {
         leadingIcon={'delete_outline'}
         text={'Delete'}
         onClick={OnClick}
+        style={{
+          marginLeft: 10
+        }}
       />
     );
 
