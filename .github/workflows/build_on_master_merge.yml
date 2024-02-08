@@ -19,10 +19,6 @@ jobs:
           - linux/arm/v6
           - linux/arm/v7
           - linux/arm64
-          - darwin/amd64
-          - darwin/arm/v6
-          - darwin/arm/v7
-          - darwin/arm64
     steps:
       -
         name: Prepare
@@ -58,6 +54,7 @@ jobs:
           context: .
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
+          tags: master 
           outputs: type=image,name=${{ env.REGISTRY_IMAGE }},push-by-digest=true,name-canonical=true,push=true
       -
         name: Export digest
