@@ -285,7 +285,7 @@ function MobileView(props: CodingBountiesProps) {
     recallBounties();
   };
 
-  props.setCanDeleteBounty(!(isAssigned || paid));
+  props.setCanDeleteBounty && props.setCanDeleteBounty(!(isAssigned || paid));
 
   const handleSetAsPaid = async (e: any) => {
     e.stopPropagation();
