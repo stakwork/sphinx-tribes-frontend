@@ -169,7 +169,7 @@ const EditOrgModal = (props: EditOrgModalProps) => {
   const [nameColor, setNameColor] = useState();
   const [descColor, setDescColor] = useState();
   const [descriptionCharacterCount, setDescriptionCharacterCount] = useState(
-    org?.description?.length || 0
+    org?.org_description?.length || 0
   );
 
   const config = widgetConfigs.organizations;
@@ -178,7 +178,7 @@ const EditOrgModal = (props: EditOrgModalProps) => {
   const initValues = {
     name: org?.name,
     image: org?.img,
-    description: org?.description,
+    description: org?.org_description,
     github: org?.github,
     website: org?.website,
     show: org?.show
@@ -218,7 +218,8 @@ const EditOrgModal = (props: EditOrgModalProps) => {
         name: body.name || org.name,
         owner_pubkey: org.owner_pubkey,
         img: img || org.img,
-        description: body.description !== undefined ? body.description : org?.description || null,
+        description:
+          body.org_description !== undefined ? body.org_description : org?.org_description || null,
         github: body.github !== undefined ? body.github : org?.github || null,
         website: body.website !== undefined ? body.website : org?.website || null,
         created: org.created,

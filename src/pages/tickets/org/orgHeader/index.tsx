@@ -135,7 +135,7 @@ export const OrgHeader = ({
     }
   }, [org_uuid, checkboxIdToSelectedMap, main, languageString, sortDirection]);
 
-  const { name, img, description, website, github } = organizationData;
+  const { name, img, org_description, website, github } = organizationData;
 
   const handleClick = () => {
     setFilterClick(!filterClick);
@@ -187,7 +187,7 @@ export const OrgHeader = ({
           </Leftheader>
           {canPostBounty && (
             <RightHeader>
-              <CompanyDescription>{description}</CompanyDescription>
+              <CompanyDescription>{org_description}</CompanyDescription>
               <Button onClick={handlePostBountyClick}>
                 <img src={addBounty} alt="" />
                 Post a Bounty

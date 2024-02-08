@@ -213,7 +213,7 @@ export interface Organization {
   id: string;
   uuid: string;
   name: string;
-  description?: string;
+  org_description?: string;
   github?: string;
   website?: string;
   owner_pubkey: string;

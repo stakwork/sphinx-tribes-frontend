@@ -136,7 +136,7 @@ const AddOrganization = (props: {
   const [orgName, setOrgName] = useState('');
   const [websiteName, setWebsiteName] = useState('');
   const [githubRepo, setGithubRepo] = useState('');
-  const [description, setDescription] = useState('');
+  const [org_description, setDescription] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { main } = useStores();
@@ -238,7 +238,7 @@ const AddOrganization = (props: {
       const body = {
         owner_pubkey: props.owner_pubkey || '',
         name: orgName,
-        description: description,
+        description: org_description,
         img: img_url,
         github: githubRepo,
         website: websiteName
@@ -326,14 +326,14 @@ const AddOrganization = (props: {
           <TextAreaInput
             placeholder="Description Text..."
             rows={7}
-            value={description}
+            value={org_description}
             onChange={handleDescriptionChange}
             style={{ borderColor: descriptionError ? errcolor : '' }}
           />
           <LabelRowContainer>
             {descriptionError && <InputError>Description is too long.</InputError>}
             <SecondaryText style={{ color: descriptionError ? errcolor : '', marginLeft: 'auto' }}>
-              {description.length}/{MAX_DESCRIPTION_LENGTH}
+              {org_description.length}/{MAX_DESCRIPTION_LENGTH}
             </SecondaryText>
           </LabelRowContainer>
         </OrgInputContainer>
