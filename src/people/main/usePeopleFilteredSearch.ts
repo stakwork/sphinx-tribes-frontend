@@ -47,8 +47,9 @@ export function usePeopleFilteredSearch() {
     let isMounted = true;
 
     if (isMounted) setIsLoading(true);
-    fetchPeople();
-    if (isMounted) setIsLoading(false);
+    fetchPeople().then(() => {
+      if (isMounted) setIsLoading(false);
+    });
 
     return () => {
       isMounted = false;

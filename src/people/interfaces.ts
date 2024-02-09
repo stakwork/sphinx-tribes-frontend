@@ -436,7 +436,7 @@ export interface OrgBountyHeaderProps {
   direction?: string;
 }
 export interface PeopleHeaderProps {
-  onChangeLanguage: (number) => void;
+  onChangeLanguage: (lang: CodingLanguage) => void;
   checkboxIdToSelectedMapLanguage: any;
 }
 
