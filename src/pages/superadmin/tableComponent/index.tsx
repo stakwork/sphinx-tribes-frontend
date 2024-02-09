@@ -462,57 +462,58 @@ export const MyTable = ({
             <TableHeaderDataRight>Status</TableHeaderDataRight>
           </TableRow>
           <tbody>
-            {bounties.map((bounty: any) => {
-              const bounty_status =
-                bounty?.paid && bounty.assignee
-                  ? 'paid'
-                  : bounty.assignee && !bounty.paid
-                  ? 'assigned'
-                  : 'open';
+            {bounties &&
+              bounties.map((bounty: any) => {
+                const bounty_status =
+                  bounty?.paid && bounty.assignee
+                    ? 'paid'
+                    : bounty.assignee && !bounty.paid
+                    ? 'assigned'
+                    : 'open';
 
-              const created = moment.unix(bounty.bounty_created).format('YYYY-MM-DD');
-              const time_to_pay = bounty.paid_date
-                ? moment(bounty.paid_date).diff(created, 'days')
-                : 0;
+                const created = moment.unix(bounty.bounty_created).format('YYYY-MM-DD');
+                const time_to_pay = bounty.paid_date
+                  ? moment(bounty.paid_date).diff(created, 'days')
+                  : 0;
 
-              return (
-                <TableDataRow key={bounty?.id}>
-                  <BountyData className="avg">
-                    <a
-                      style={{ textDecoration: 'inherit', color: 'inherit' }}
-                      href={`/bounty/${bounty.bounty_id}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {bounty?.title}
-                    </a>
-                  </BountyData>
-                  <TableData>{created}</TableData>
-                  <TableDataCenter>{time_to_pay}</TableDataCenter>
-                  <TableDataAlternative>
-                    <ImageWithText
-                      text={bounty?.assignee}
-                      image={bounty?.assignee_img || defaultPic}
-                    />
-                  </TableDataAlternative>
-                  <TableDataAlternative className="address">
-                    <ImageWithText
-                      text={bounty?.owner_pubkey}
-                      image={bounty?.providerImage || defaultPic}
-                    />
-                  </TableDataAlternative>
-                  <TableData className="organization">
-                    <ImageWithText
-                      text={bounty?.organization}
-                      image={bounty?.organization_img || defaultPic}
-                    />
-                  </TableData>
-                  <TableData3>
-                    <TextInColorBox status={bounty_status} />
-                  </TableData3>
-                </TableDataRow>
-              );
-            })}
+                return (
+                  <TableDataRow key={bounty?.id}>
+                    <BountyData className="avg">
+                      <a
+                        style={{ textDecoration: 'inherit', color: 'inherit' }}
+                        href={`/bounty/${bounty.bounty_id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {bounty?.title}
+                      </a>
+                    </BountyData>
+                    <TableData>{created}</TableData>
+                    <TableDataCenter>{time_to_pay}</TableDataCenter>
+                    <TableDataAlternative>
+                      <ImageWithText
+                        text={bounty?.assignee}
+                        image={bounty?.assignee_img || defaultPic}
+                      />
+                    </TableDataAlternative>
+                    <TableDataAlternative className="address">
+                      <ImageWithText
+                        text={bounty?.owner_pubkey}
+                        image={bounty?.providerImage || defaultPic}
+                      />
+                    </TableDataAlternative>
+                    <TableData className="organization">
+                      <ImageWithText
+                        text={bounty?.organization}
+                        image={bounty?.organization_img || defaultPic}
+                      />
+                    </TableData>
+                    <TableData3>
+                      <TextInColorBox status={bounty_status} />
+                    </TableData3>
+                  </TableDataRow>
+                );
+              })}
           </tbody>
         </Table>
       </TableContainer>
