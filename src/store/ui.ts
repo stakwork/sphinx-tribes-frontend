@@ -57,7 +57,6 @@ export class UiStore {
     this.tags = t;
   }
 
-  @persist
   searchText = '';
   setSearchText(s: string) {
     this.searchText = s.toLowerCase();
