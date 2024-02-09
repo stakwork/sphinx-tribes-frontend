@@ -1,6 +1,6 @@
 import React from 'react';
 import { BountyMetrics } from 'store/main';
-import { convertToLocaleString } from 'helpers/helpers-extended';
+import { convertToLocaleString, formatPercentage } from 'helpers/helpers-extended';
 import copy from '../header/icons/copy.svg';
 import hunter from '../header/icons/hunter.svg';
 import coin from '../header/icons/coin.svg';
@@ -35,16 +35,6 @@ interface StatisticsProps {
   freezeHeaderRef?: React.MutableRefObject<HTMLElement | null>;
   mockHunter?: MockHunterMetrics;
 }
-
-const formatPercentage = (value?: number): string => {
-  if (typeof value === 'number' && !isNaN(value)) {
-    if (value > 0 && value < 0.01) {
-      return '0';
-    }
-    return value.toFixed(2);
-  }
-  return '0';
-};
 
 export const Statistics = ({ freezeHeaderRef, metrics }: StatisticsProps) => (
   <>

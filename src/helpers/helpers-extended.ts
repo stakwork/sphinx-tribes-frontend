@@ -366,3 +366,15 @@ const session = [
 
 export const getSessionValue = (label: string): string =>
   session.find((s) => s.label === label)?.value || '';
+
+export const formatPercentage = (value?: number): string => {
+  if (typeof value === 'number' && !isNaN(value)) {
+    if (value === 0) {
+      return '0';
+    } else if (value > 0 && value < 0.01) {
+      return '0';
+    }
+    return value.toFixed(2);
+  }
+  return '0';
+};
