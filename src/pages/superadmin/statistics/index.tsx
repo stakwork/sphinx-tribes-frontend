@@ -36,6 +36,16 @@ interface StatisticsProps {
   mockHunter?: MockHunterMetrics;
 }
 
+const formatPercentage = (value?: number): string => {
+  if (typeof value === 'number' && !isNaN(value)) {
+    if (value > 0 && value < 0.01) {
+      return '0';
+    }
+    return value.toFixed(2);
+  }
+  return '0';
+};
+
 export const Statistics = ({ freezeHeaderRef, metrics }: StatisticsProps) => (
   <>
     <Wrapper ref={freezeHeaderRef}>
@@ -55,7 +65,7 @@ export const Statistics = ({ freezeHeaderRef, metrics }: StatisticsProps) => (
             <Subheading marginTop="5px" marginLeft="0px">
               Completed
             </Subheading>
-            <TitleBlue>{metrics?.bounties_paid_average}%</TitleBlue>
+            <TitleBlue>{formatPercentage(metrics?.bounties_paid_average)}%</TitleBlue>
           </StatusWrapper>
         </UpperCardWrapper>
         <HorizontalGrayLine />
@@ -100,7 +110,7 @@ export const Statistics = ({ freezeHeaderRef, metrics }: StatisticsProps) => (
             <Subheading marginTop="5px" marginLeft="0px" data-testid="total_satoshis_paid">
               Paid
             </Subheading>
-            <TitleGreen>{metrics?.sats_paid_percentage}%</TitleGreen>
+            <TitleGreen>{formatPercentage(metrics?.sats_paid_percentage)}%</TitleGreen>
           </StatusWrapper>
         </UpperCardWrapper>
         <HorizontalGrayLine />
