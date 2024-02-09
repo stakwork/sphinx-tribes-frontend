@@ -1,6 +1,6 @@
 import React from 'react';
 import { BountyMetrics } from 'store/main';
-import { convertToLocaleString } from 'helpers/helpers-extended';
+import { convertToLocaleString, formatPercentage } from 'helpers/helpers-extended';
 import copy from '../header/icons/copy.svg';
 import hunter from '../header/icons/hunter.svg';
 import coin from '../header/icons/coin.svg';
@@ -55,7 +55,7 @@ export const Statistics = ({ freezeHeaderRef, metrics }: StatisticsProps) => (
             <Subheading marginTop="5px" marginLeft="0px">
               Completed
             </Subheading>
-            <TitleBlue>{metrics?.bounties_paid_average}%</TitleBlue>
+            <TitleBlue>{formatPercentage(metrics?.bounties_paid_average)}%</TitleBlue>
           </StatusWrapper>
         </UpperCardWrapper>
         <HorizontalGrayLine />
@@ -100,7 +100,7 @@ export const Statistics = ({ freezeHeaderRef, metrics }: StatisticsProps) => (
             <Subheading marginTop="5px" marginLeft="0px" data-testid="total_satoshis_paid">
               Paid
             </Subheading>
-            <TitleGreen>{metrics?.sats_paid_percentage}%</TitleGreen>
+            <TitleGreen>{formatPercentage(metrics?.sats_paid_percentage)}%</TitleGreen>
           </StatusWrapper>
         </UpperCardWrapper>
         <HorizontalGrayLine />
