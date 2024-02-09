@@ -141,7 +141,7 @@ export const coding_languages = [
   'Postgres',
   'Elastic search',
   'Other'
-];
+] as const;
 
 export const status = ['Open', 'Assigned', 'Paid'];
 
