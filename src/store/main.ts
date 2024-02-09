@@ -2779,9 +2779,7 @@ export class MainStore {
   async getBountiesCountByRange(
     start_date: string,
     end_date: string,
-    open?: boolean,
-    assigned?: boolean,
-    paid?: boolean
+    queryParams?: QueryParams
   ): Promise<number> {
     try {
       if (!uiStore.meInfo) return 0;
@@ -2792,13 +2790,11 @@ export class MainStore {
         end_date
       };
 
-      let url = `${TribesURL}/metrics/bounties/count`;
+      const query = this.appendQueryParams(`${TribesURL}/metrics/bounties/count`, 0, {
+        ...queryParams
+      });
 
-      if (open || assigned || paid) {
-        url = `${TribesURL}/metrics/bounties/count?Open=${open}&Assigned=${assigned}&Paid=${paid}`;
-      }
-
-      const r: any = await fetch(url, {
+      const r: any = await fetch(query, {
         method: 'POST',
         mode: 'cors',
         body: JSON.stringify(body),

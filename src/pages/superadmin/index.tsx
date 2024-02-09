@@ -134,9 +134,10 @@ export const SuperAdmin = () => {
         const totalBounties = await main.getBountiesCountByRange(
           String(startDate),
           String(endDate),
-          Open,
-          Assigned,
-          Paid
+          {
+            ...checkboxIdToSelectedMap,
+            direction: sortOrder
+          }
         );
         setTotalBounties(totalBounties);
       } else {
