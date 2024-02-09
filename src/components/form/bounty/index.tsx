@@ -697,12 +697,15 @@ function Form(props: FormProps) {
                         <h4 style={{ marginTop: '20px' }}>
                           <b>{section.heading}</b>
                         </h4>
-                        <div style={{ width: '100%', marginBottom: '20px' }}>
-                          {GetFormFields(section, {
+                        <div
+                          style={{
+                            width: '100%',
+                            marginBottom: '20px',
                             display: 'flex',
-                            justifyContent: 'center',
-                            width: '100%'
-                          })}
+                            justifyContent: 'center'
+                          }}
+                        >
+                          {GetFormFields(section)}
                         </div>
                       </div>
                     ))}
