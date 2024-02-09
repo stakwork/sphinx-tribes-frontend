@@ -86,7 +86,6 @@ export const SuperAdmin = () => {
           }
         );
         setBounties(bounties);
-        setTotalBounties(bounties?.length);
       } catch (error) {
         // Handle errors if any
         console.error('Error fetching total bounties:', error);
@@ -129,10 +128,26 @@ export const SuperAdmin = () => {
 
   const getTotalBounties = useCallback(async () => {
     if (startDate && endDate) {
-      const totalBounties = await main.getBountiesCountByRange(String(startDate), String(endDate));
-      setTotalBounties(totalBounties);
+      const { Open, Assigned, Paid } = checkboxIdToSelectedMap;
+
+      if (Open || Assigned || Paid) {
+        const totalBounties = await main.getBountiesCountByRange(
+          String(startDate),
+          String(endDate),
+          Open,
+          Assigned,
+          Paid
+        );
+        setTotalBounties(totalBounties);
+      } else {
+        const totalBounties = await main.getBountiesCountByRange(
+          String(startDate),
+          String(endDate)
+        );
+        setTotalBounties(totalBounties);
+      }
     }
-  }, [main, startDate, endDate]);
+  }, [main, startDate, endDate, checkboxIdToSelectedMap]);
 
   useEffect(() => {
     getTotalBounties();
