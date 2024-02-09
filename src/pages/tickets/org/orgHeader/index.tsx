@@ -5,11 +5,11 @@ import { PostModal } from 'people/widgetViews/postBounty/PostModal';
 import { GetValue, coding_languages } from 'people/utils/languageLabelStyle';
 import { colors } from 'config';
 import { OrgBountyHeaderProps } from '../../../../people/interfaces';
+import { SearchBar } from '../../../../components/common/index.tsx';
 import { useStores } from '../../../../store';
 import { userCanManageBounty } from '../../../../helpers';
 import addBounty from './Icons/addBounty.svg';
 import dropdown from './Icons/dropDownIcon.svg';
-import searchIcon from './Icons/searchIcon.svg';
 import file from './Icons/file.svg';
 import githubIcon from './Icons/githubIcon.svg';
 import websiteIcon from './Icons/websiteIcon.svg';
@@ -27,7 +27,6 @@ import {
   Filters,
   FiltersRight,
   Header,
-  Icon,
   ImageContainer,
   Img,
   InternalContainer,
@@ -36,8 +35,6 @@ import {
   NumberOfBounties,
   PrimaryText,
   RightHeader,
-  SearchBar,
-  SearchWrapper,
   SecondaryText,
   SkillContainer,
   SkillFilter,
@@ -121,6 +118,31 @@ export const OrgHeader = ({
 
   const handleGithubButton = (githubUrl: string) => {
     window.open(githubUrl, '_blank');
+  };
+
+  const handleSearch = (searchText: string) => {
+    if (org_uuid) {
+      main.getSpecificOrganizationBounties(org_uuid, {
+        page: 1,
+        resetPage: true,
+        ...checkboxIdToSelectedMap,
+        search: searchText
+      });
+    } else {
+      console.log('Organization UUID is missing in params');
+    }
+  };
+
+  let timeoutId;
+  const onChangeSearch = (e: any) => {
+    ui.setSearchText(e);
+    clearTimeout(timeoutId);
+    // Set a new timeout to wait for user to pause typing
+    timeoutId = setTimeout(() => {
+      if (ui.searchText === '') {
+        handleSearch('');
+      }
+    }, 1000);
   };
 
   useEffect(() => {
@@ -282,10 +304,32 @@ export const OrgHeader = ({
                 </SkillFilter>
               ) : null}
             </SkillContainer>
-            <SearchWrapper>
-              <SearchBar placeholder="Search" disabled />
-              <Icon src={searchIcon} alt="Search" />
-            </SearchWrapper>
+            <SearchBar
+              name="search"
+              type="search"
+              placeholder="Search"
+              value={ui.searchText}
+              onChange={(e: any) => {
+                onChangeSearch(e);
+              }}
+              onKeyUp={(e: any) => {
+                if (e.key === 'Enter' || e.keyCode === 13) {
+                  handleSearch(e.target.value);
+                }
+              }}
+              TextColor={color.grayish.G100}
+              TextColorHover={color.grayish.G50}
+              iconColor={color.grayish.G300}
+              iconColorHover={color.grayish.G50}
+              border={'none'}
+              borderHover={'none'}
+              borderActive={'none'}
+              borderRadius={'6px'}
+              width={'384px'}
+              height={'40px'}
+              marginLeft={'20px'}
+              color={color.grayish.G950}
+            />
           </FiltersRight>
           <EuiPopover
             button={
