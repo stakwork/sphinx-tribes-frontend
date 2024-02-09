@@ -309,22 +309,6 @@ export const OrgHeader = ({
               type="search"
               placeholder="Search"
               value={ui.searchText}
-              style={{
-                width: '384px',
-                height: '40px',
-                background: color.grayish.G950,
-                fontFamily: 'Barlow',
-                color: color.text2,
-                gap: '10px',
-                flex: '1 0 0',
-                display: 'flex',
-                position: 'relative',
-                marginLeft: '20px',
-                alignItems: 'center',
-                borderRadius: '6px',
-                border: 'none',
-                outline: 'none'
-              }}
               onChange={(e: any) => {
                 onChangeSearch(e);
               }}
@@ -337,6 +321,14 @@ export const OrgHeader = ({
               TextColorHover={color.grayish.G50}
               iconColor={color.grayish.G300}
               iconColorHover={color.grayish.G50}
+              border={'none'}
+              borderHover={'none'}
+              borderActive={'none'}
+              borderRadius={'6px'}
+              width={'384px'}
+              height={'40px'}
+              marginLeft={'20px'}
+              color={color.grayish.G950}
             />
           </FiltersRight>
           <EuiPopover
