@@ -201,7 +201,7 @@ export interface SvgMaskProps {
 }
 
 export interface PersonProps extends Person {
-  hideActions: boolean;
+  hideActions?: boolean;
   small: boolean;
   id: number;
   img: string;
