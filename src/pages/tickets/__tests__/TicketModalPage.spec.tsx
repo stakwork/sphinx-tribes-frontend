@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { act, render, waitFor, fireEvent, screen } from '@testing-library/react';
+import { act, render, waitFor, fireEvent, screen, within } from '@testing-library/react';
 import { user } from '__test__/__mockData__/user';
 import { mockBountiesMutated, newBounty } from 'bounties/__mock__/mockBounties.data';
 import { formatSat } from 'helpers';
@@ -7,9 +7,9 @@ import React from 'react';
 import { MemoryRouter, Route } from 'react-router-dom';
 import { mainStore } from 'store/main';
 import { useIsMobile } from 'hooks';
-import { TicketModalPage } from '../TicketModalPage';
-import { setupStore } from '__test__/__mockData__/setupStore';
 import { uiStore } from 'store/ui';
+import { TicketModalPage } from '../TicketModalPage';
+import { withCreateModal } from '../../../components/common/withCreateModal';
 
 jest.mock('hooks', () => ({
   useIsMobile: jest.fn()
@@ -44,6 +44,10 @@ describe('TicketModalPage Component', () => {
       disconnect: () => null
     });
     window.IntersectionObserver = mockIntersectionObserver;
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   it('reder ticket modal', async () => {
@@ -236,7 +240,7 @@ describe('TicketModalPage Component', () => {
     render(<TicketModalPage setConnectPerson={jest.fn()} visible={true} />);
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    await waitFor(() => {});
+    await waitFor(() => { });
 
     const closeButton = screen.queryByTestId('close-btn');
     if (closeButton) {
@@ -244,5 +248,133 @@ describe('TicketModalPage Component', () => {
 
       expect(mockPush).toHaveBeenCalledWith('/bounties');
     }
+  });
+
+  it('test the ticket modal is rendered when the URL `{host}/bounty/{bountyId}` is hit', async () => {
+    jest
+      .spyOn(mainStore, 'getBountyById')
+      .mockReturnValue(Promise.resolve([{ ...newBounty, body: { assignee: user } }]));
+    jest.spyOn(mainStore, 'getBountyIndexById').mockReturnValue(Promise.resolve(1234));
+
+    await act(async () => {
+      const { getByTestId } = render(
+        <MemoryRouter initialEntries={['/bounty/1234']}>
+          <Route path="/bounty/:bountyId" component={TicketModalPage} />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => getByTestId('testid-modal'));
+
+      expect(getByTestId('testid-modal')).toBeInTheDocument();
+    });
+  });
+
+  it('the bounty description displays the database description', async () => {
+    (useIsMobile as jest.Mock).mockReturnValue(false);
+
+    jest.spyOn(mainStore, 'getBountyById')
+      .mockReturnValue(
+        Promise.resolve([
+          { ...newBounty, body: { ...mockBountiesMutated[1].body, description: 'test description' } }
+        ])
+      );
+    jest.spyOn(mainStore, 'getBountyIndexById');
+
+    await act(async () => {
+      const { getByTestId } = render(
+        <MemoryRouter initialEntries={['/bounty/1234']}>
+          <Route path="/bounty/:bountyId" component={TicketModalPage} />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => getByTestId('testid-modal'));
+
+      render(<TicketModalPage setConnectPerson={jest.fn()} visible={true} />);
+
+      expect(screen.getByTestId('DescriptionBox').firstChild).toHaveTextContent('test description');
+    });
+  });
+
+  it('when the Delete Button is clicked, a bounty delete action is performed and the bounty gets deleted', async () => {
+    (useIsMobile as jest.Mock).mockReturnValue(false);
+    uiStore.setMeInfo(user);
+
+    jest.spyOn(mainStore, 'getBountyById').mockReturnValue(
+      Promise.resolve([
+        {
+          ...newBounty,
+          person: { ...newBounty.person, owner_alias: user.alias },
+          body: {
+            ...mockBountiesMutated[1].body,
+            owner: user
+          }
+        }
+      ])
+    );
+    jest.spyOn(mainStore, 'getBountyIndexById').mockReturnValue(Promise.resolve(1234));
+
+    jest.spyOn(mainStore, 'deleteBounty').mockResolvedValue();
+
+    const App = withCreateModal(() => (
+      <div>
+        <div id="modal-root" />
+        <MemoryRouter initialEntries={['/bounty/1234']}>
+          <Route path="/bounty/:bountyId" component={TicketModalPage} />
+        </MemoryRouter>
+      </div>
+    ))
+
+    await act(async () => {
+      const { getByText } = render(
+        <App />
+      );
+
+      await waitFor(() => getByText('Delete'));
+      fireEvent.click(getByText('Delete'));
+
+      const modalWrapper = document.querySelector('.base-Modal-root')
+
+      expect(within(modalWrapper as HTMLElement).getByText('Delete')).toBeInTheDocument()
+
+      fireEvent.click(within(modalWrapper as HTMLElement).getByText('Delete'));
+      fireEvent.click(within(modalWrapper as HTMLElement).getByText('Delete this Bounty?'));
+
+      await waitFor(() => {
+        expect(mainStore.deleteBounty).toHaveBeenCalled()
+      })
+
+    });
+  });
+
+  it('when I click on edit, it takes me to the edit modal', async () => {
+    (useIsMobile as jest.Mock).mockReturnValue(false);
+    uiStore.setMeInfo(user);
+
+    jest.spyOn(mainStore, 'getBountyById').mockReturnValue(
+      Promise.resolve([
+        {
+          ...newBounty,
+          person: { ...newBounty.person, owner_alias: user.alias },
+          body: {
+            ...mockBountiesMutated[1].body,
+            owner: user
+          }
+        }
+      ])
+    );
+    jest.spyOn(mainStore, 'getBountyIndexById').mockReturnValue(Promise.resolve(1234));
+
+    await act(async () => {
+      const { getByText } = render(
+        <MemoryRouter initialEntries={['/bounty/1234']}>
+          <Route path="/bounty/:bountyId" component={TicketModalPage} />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => getByText('Edit'));
+      fireEvent.click(getByText('Edit'));
+      await waitFor(() => getByText('Edit Bounty'));
+      expect(getByText('Edit Bounty')).toBeInTheDocument();
+    });
   });
 });
