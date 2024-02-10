@@ -272,16 +272,14 @@ describe('TicketModalPage Component', () => {
   it('the bounty description displays the database description', async () => {
     (useIsMobile as jest.Mock).mockReturnValue(false);
 
-    jest
-      .spyOn(mainStore, 'getBountyById')
-      .mockReturnValue(
-        Promise.resolve([
-          {
-            ...newBounty,
-            body: { ...mockBountiesMutated[1].body, description: 'test description' }
-          }
-        ])
-      );
+    jest.spyOn(mainStore, 'getBountyById').mockReturnValue(
+      Promise.resolve([
+        {
+          ...newBounty,
+          body: { ...mockBountiesMutated[1].body, description: 'test description' }
+        }
+      ])
+    );
     jest.spyOn(mainStore, 'getBountyIndexById');
 
     await act(async () => {
