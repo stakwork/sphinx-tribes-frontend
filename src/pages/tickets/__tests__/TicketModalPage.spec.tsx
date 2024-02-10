@@ -240,7 +240,7 @@ describe('TicketModalPage Component', () => {
     render(<TicketModalPage setConnectPerson={jest.fn()} visible={true} />);
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    await waitFor(() => { });
+    await waitFor(() => {});
 
     const closeButton = screen.queryByTestId('close-btn');
     if (closeButton) {
@@ -272,10 +272,14 @@ describe('TicketModalPage Component', () => {
   it('the bounty description displays the database description', async () => {
     (useIsMobile as jest.Mock).mockReturnValue(false);
 
-    jest.spyOn(mainStore, 'getBountyById')
+    jest
+      .spyOn(mainStore, 'getBountyById')
       .mockReturnValue(
         Promise.resolve([
-          { ...newBounty, body: { ...mockBountiesMutated[1].body, description: 'test description' } }
+          {
+            ...newBounty,
+            body: { ...mockBountiesMutated[1].body, description: 'test description' }
+          }
         ])
       );
     jest.spyOn(mainStore, 'getBountyIndexById');
@@ -322,27 +326,24 @@ describe('TicketModalPage Component', () => {
           <Route path="/bounty/:bountyId" component={TicketModalPage} />
         </MemoryRouter>
       </div>
-    ))
+    ));
 
     await act(async () => {
-      const { getByText } = render(
-        <App />
-      );
+      const { getByText } = render(<App />);
 
       await waitFor(() => getByText('Delete'));
       fireEvent.click(getByText('Delete'));
 
-      const modalWrapper = document.querySelector('.base-Modal-root')
+      const modalWrapper = document.querySelector('.base-Modal-root');
 
-      expect(within(modalWrapper as HTMLElement).getByText('Delete')).toBeInTheDocument()
+      expect(within(modalWrapper as HTMLElement).getByText('Delete')).toBeInTheDocument();
 
       fireEvent.click(within(modalWrapper as HTMLElement).getByText('Delete'));
       fireEvent.click(within(modalWrapper as HTMLElement).getByText('Delete this Bounty?'));
 
       await waitFor(() => {
-        expect(mainStore.deleteBounty).toHaveBeenCalled()
-      })
-
+        expect(mainStore.deleteBounty).toHaveBeenCalled();
+      });
     });
   });
 
