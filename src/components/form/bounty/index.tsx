@@ -224,7 +224,7 @@ function Form(props: FormProps) {
                   <Input
                     {...item}
                     key={item.name}
-                    newDesign={true}
+                    newDesign={item.name === 'description' ? false : true}
                     values={values}
                     setAssigneefunction={item.name === 'assignee' && setAssigneeName}
                     peopleList={peopleList}
