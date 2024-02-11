@@ -564,7 +564,7 @@ function Form(props: FormProps) {
                         )}
                         {!isBtnDisabled && (
                           <div
-                            className="nextButton"
+                            className={props.submiting ? 'nextButtonDisable' : 'nextButton'}
                             onClick={() => {
                               if (schemaData.step === 5 && valid) {
                                 if (dynamicSchemaName) {
@@ -595,7 +595,9 @@ function Form(props: FormProps) {
                                 {schemaData.step === 5 ? 'Decide Later' : 'Next'}
                               </EuiText>
                             ) : (
-                              <EuiText className="nextText">Finish</EuiText>
+                              <EuiText className={props.submiting ? 'disableText' : 'nextText'}>
+                                Finish
+                              </EuiText>
                             )}
                           </div>
                         )}
