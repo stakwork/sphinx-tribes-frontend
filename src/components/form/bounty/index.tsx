@@ -240,7 +240,7 @@ function Form(props: FormProps) {
             if (assigneeName !== '') {
               try {
                 const response = await handleSubmit();
-        
+
                 if (response && response.status === 406) {
                   toast.error('Bounty creation failed, Please try again.', {
                     closeOnClick: true,
