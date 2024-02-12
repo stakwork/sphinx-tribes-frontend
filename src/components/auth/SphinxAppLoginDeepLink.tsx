@@ -57,7 +57,9 @@ export default function SphinxAppLoginDeeplink(props: AuthProps) {
         if (i > 100) {
           if (interval) clearInterval(interval);
         }
-      } catch (e) {}
+      } catch (e) {
+        console.log('Auth interval error', e)
+      }
     }, 3000);
   }
 

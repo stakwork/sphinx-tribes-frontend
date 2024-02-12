@@ -9,5 +9,5 @@ export type Widget =
   | 'supportme'
   | 'blog'
   | 'badges'
-  | 'usertickets';
+  | 'assigned';
 export type PeopleBodyProps = { selectedWidget: Widget };

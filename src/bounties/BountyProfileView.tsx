@@ -163,11 +163,10 @@ const BountyProfileView = (props: BountiesProfileProps) => {
               if (props.isNameClickable && { ...props.assignee }.owner_alias) {
                 e.stopPropagation();
                 window.open(
-                  `/p/${
-                    {
-                      ...props.assignee
-                    }.owner_pubkey
-                  }?widget=wanted`,
+                  `/p/${{
+                    ...props.assignee
+                  }.uuid
+                  }?widget=bounties`,
                   '_blank'
                 );
               }
@@ -185,11 +184,10 @@ const BountyProfileView = (props: BountiesProfileProps) => {
                 if ({ ...props.assignee }.owner_alias) {
                   e.stopPropagation();
                   window.open(
-                    `/p/${
-                      {
-                        ...props.assignee
-                      }.owner_pubkey
-                    }?widget=wanted`,
+                    `/p/${{
+                      ...props.assignee
+                    }.uuid
+                    }?widget=bounties`,
                     '_blank'
                   );
                 }

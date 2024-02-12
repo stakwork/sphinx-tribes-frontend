@@ -78,9 +78,9 @@ const widgetConfigs = {
     }
   },
   // TODO: REMOVE
-  wanted: {
+  bounties: {
     label: 'Bounties',
-    name: 'wanted',
+    name: 'bounties',
     submitText: 'Save',
     modalStyle: {
       width: 'auto',
@@ -91,7 +91,7 @@ const widgetConfigs = {
     },
     schema: wantedSchema,
     action: {
-      text: 'Add New Ticket',
+      text: 'Add New Bounty',
       icon: 'local_offer'
     },
     noneSpace: {
@@ -108,9 +108,9 @@ const widgetConfigs = {
       }
     }
   },
-  usertickets: {
+  assigned: {
     label: 'Assigned Bounties',
-    name: 'userwanted',
+    name: 'assigned',
     submitText: 'Save',
     modalStyle: {
       width: 'auto',

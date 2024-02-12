@@ -87,11 +87,11 @@ function BodyComponent() {
     }
   }, [main, ui.meInfo]);
 
-  function selectPerson(id: number, unique_name: string, pubkey: string) {
+  function selectPerson(id: number, unique_name: string, uuid: string) {
     ui.setSelectedPerson(id);
     ui.setSelectingPerson(id);
 
-    history.push(`/p/${pubkey}`);
+    history.push(`/p/${uuid}`);
   }
 
   return (

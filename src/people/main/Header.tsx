@@ -95,7 +95,7 @@ const MTabs = styled.div`
 interface TagProps {
   selected: boolean;
 }
-const Tab = styled(Link)<TagProps>`
+const Tab = styled(Link) <TagProps>`
   display: flex;
   margin-right: 50px;
   padding: 0 8px;
@@ -119,7 +119,7 @@ const Tab = styled(Link)<TagProps>`
   }
 `;
 
-const MTab = styled(Link)<TagProps>`
+const MTab = styled(Link) <TagProps>`
   display: flex;
   margin: 25px 5px 0;
   color: ${(p: any) => (p.selected ? '#fff' : '#ffffff99')};
@@ -341,8 +341,8 @@ function Header() {
   }, []);
 
   function goToEditSelf() {
-    if (ui.meInfo?.id && !location.pathname.includes(`/p/${ui.meInfo.owner_pubkey}`)) {
-      history.push(`/p/${ui.meInfo.owner_pubkey}/organizations`);
+    if (ui.meInfo?.id && !location.pathname.includes(`/p/${ui.meInfo.uuid}`)) {
+      history.push(`/p/${ui.meInfo.uuid}/organizations`);
       ui.setSelectedPerson(ui.meInfo.id);
       ui.setSelectingPerson(ui.meInfo.id);
     }

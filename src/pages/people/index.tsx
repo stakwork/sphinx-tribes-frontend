@@ -8,7 +8,7 @@ export const People = () => {
 
   return (
     <Switch>
-      <Route path={`${path}:personPubkey/`}>
+      <Route path={`${path}:uuid/`}>
         <PersonPage />
       </Route>
       <Route path={`${path}`}>

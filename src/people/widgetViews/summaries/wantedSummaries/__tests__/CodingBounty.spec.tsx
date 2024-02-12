@@ -151,7 +151,7 @@ describe('MobileView component', () => {
       id: 180,
       owner: 'Test-Owner',
       owner_pubkey: 'abc100',
-      widget: 'wanted'
+      widget: 'bounties'
     };
     render(<MobileView {...defaultProps} nametag={<NameTag {...nameTagProps} />} />);
 

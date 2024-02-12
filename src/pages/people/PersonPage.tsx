@@ -52,16 +52,16 @@ const Panel = styled.div<PanelProps>`
 export const PersonPage = observer(() => {
   const { main, ui } = useStores();
   const isMobile = useIsMobile();
-  const { personPubkey } = useParams<{ personPubkey: string }>();
+  const { uuid } = useParams<{ uuid: string }>();
   const [showSupport, setShowSupport] = useState(false);
 
   useEffect(() => {
     (async () => {
-      const p = await main.getPersonByPubkey(personPubkey);
+      const p = await main.getPersonByUuid(uuid);
       ui.setSelectedPerson(p?.id);
       ui.setSelectingPerson(p?.id);
     })();
-  }, [main, personPubkey, ui]);
+  }, [main, uuid, ui]);
 
   const personId = ui.selectedPerson;
   const { person, canEdit } = usePerson(personId);
