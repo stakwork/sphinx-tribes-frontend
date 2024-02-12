@@ -23,6 +23,7 @@ export const users: Person[] = [
     },
     owner_alias: 'test 1',
     owner_pubkey: 'test_pub_key',
+    uuid: '23334eee',
     img: '/static/avatarPlaceholders/placeholder_34.jpg'
   },
   {
@@ -47,6 +48,7 @@ export const users: Person[] = [
     },
     owner_alias: 'test 2',
     owner_pubkey: 'test_pub_key',
+    uuid: '233344333',
     img: '/static/avatarPlaceholders/placeholder_34.jpg'
   },
   {
@@ -70,6 +72,7 @@ export const users: Person[] = [
     },
     owner_alias: 'test 3',
     owner_pubkey: 'test_pub_key',
+    uuid: '2333eeee',
     img: '/static/avatarPlaceholders/placeholder_34.jpg'
   }
 ];

@@ -209,6 +209,7 @@ export interface PersonProps extends Person {
   select: (id: number, unique_name: string, owner_pubkey: string) => void;
   owner_alias: string;
   owner_pubkey: string;
+  uuid: string;
   unique_name: string;
   squeeze: boolean;
   description: string;

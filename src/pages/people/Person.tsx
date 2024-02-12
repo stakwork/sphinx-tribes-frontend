@@ -120,6 +120,7 @@ export default function Person(props: PersonProps) {
     select,
     owner_alias,
     owner_pubkey,
+    uuid,
     unique_name,
     squeeze,
     description
@@ -133,7 +134,7 @@ export default function Person(props: PersonProps) {
     if (small) {
       return (
         <a
-          href={`/p/${owner_pubkey}`}
+          href={`/p/${uuid}`}
           // The "select" method will navigate to a new person page while retaining the "href" attribute for SEO purposes.
           onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
             e.preventDefault();
@@ -143,7 +144,7 @@ export default function Person(props: PersonProps) {
         >
           <div
             style={{ background: selected ? '#F2F3F5' : '#fff', cursor: 'pointer' }}
-            onClick={() => select(id, unique_name, owner_pubkey)}
+            onClick={() => select(id, unique_name, uuid)}
             data-testid="person-card-small"
           >
             <Wrap style={{ padding: hideActions ? 10 : 25 }}>
@@ -195,7 +196,7 @@ export default function Person(props: PersonProps) {
     // desktop mode
     return (
       <a
-        href={`/p/${owner_pubkey}`}
+        href={`/p/${uuid}`}
         // The "select" method will navigate to a new person page while retaining the "href" attribute for SEO purposes.
         onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
           e.preventDefault();
@@ -205,7 +206,7 @@ export default function Person(props: PersonProps) {
       >
         <DWrap
           squeeze={squeeze}
-          onClick={() => select(id, unique_name, owner_pubkey)}
+          onClick={() => select(id, unique_name, uuid)}
           data-testid="person-card-desktop"
         >
           <div>

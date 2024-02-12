@@ -114,7 +114,7 @@ export const TabsPages = observer(() => {
   const getBountiesCount = async (personKey: string, name: string) => {
     if (personKey) {
       const count = await main.getBountyCount(personKey, name);
-      if (name === 'wanted') {
+      if (name === 'bounties') {
         setBountyCount(count);
       } else {
         setAssignedCount(count);
@@ -127,8 +127,8 @@ export const TabsPages = observer(() => {
     if (!tabSelected) {
       changeTabHandler(tabsNames[0]);
     } else {
-      getBountiesCount(person?.owner_pubkey || '', 'wanted');
-      getBountiesCount(person?.owner_pubkey || '', 'usertickets');
+      getBountiesCount(person?.owner_pubkey || '', 'bounties');
+      getBountiesCount(person?.owner_pubkey || '', 'assigned');
     }
   }, [changeTabHandler, location.pathname, tabsNames, person]);
 
@@ -145,20 +145,20 @@ export const TabsPages = observer(() => {
             const selected = location.pathname.includes(name);
             const hasExtras = !!person?.extras?.[name]?.length;
             let count: any = 0;
-            if (name === 'wanted') {
+            if (name === 'bounties') {
               count = bountyCount;
-            } else if (name === 'usertickets') {
+            } else if (name === 'assigned') {
               count = assignedCount;
             } else {
               count = hasExtras
                 ? person.extras[name].filter((f: any) => {
-                    if ('show' in f) {
-                      // show has a value
-                      if (!f.show) return false;
-                    }
-                    // if no value default to true
-                    return true;
-                  }).length
+                  if ('show' in f) {
+                    // show has a value
+                    if (!f.show) return false;
+                  }
+                  // if no value default to true
+                  return true;
+                }).length
                 : null;
             }
 
@@ -182,7 +182,7 @@ export const TabsPages = observer(() => {
           <Route key={name} path={`${path}${name}`}>
             <RouteWrap>
               <RouteData fullSelectedWidget={fullSelectedWidget}>
-                {name === 'wanted' && <Wanted />}
+                {name === 'bounties' && <Wanted />}
                 <RenderWidgets widget={name} />
               </RouteData>
             </RouteWrap>

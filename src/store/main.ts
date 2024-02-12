@@ -61,6 +61,7 @@ export interface Person {
   id: number;
   unique_name: string;
   owner_pubkey: string;
+  uuid: string;
   owner_alias: string;
   description: string;
   img: string;
@@ -910,7 +911,7 @@ export class MainStore {
           ps3,
           (n: any) => uiStore.setPeopleBountiesPageNumber(n),
           queryParams,
-          'wanted'
+          'bounties'
         );
         this.setPeopleBounties(wanteds);
       }
@@ -927,11 +928,11 @@ export class MainStore {
     this.personAssignedBounties = bounties;
   }
 
-  async getPersonAssignedBounties(queryParams?: any, pubkey?: string): Promise<PersonBounty[]> {
+  async getPersonAssignedBounties(queryParams?: any, uuid?: string): Promise<PersonBounty[]> {
     queryParams = { ...queryParams, search: uiStore.searchText };
 
     const query = this.appendQueryParams(
-      `people/wanteds/assigned/${pubkey}`,
+      `people/wanteds/assigned/${uuid}`,
       paginationQueryLimit,
       {
         sortBy: 'paid',
@@ -1162,7 +1163,7 @@ export class MainStore {
           ps3,
           (n: any) => uiStore.setPeopleBountiesPageNumber(n),
           queryParams,
-          'wanted'
+          'bounties'
         );
 
         this.setPeopleBounties(wanteds);
@@ -1214,7 +1215,7 @@ export class MainStore {
           ps3,
           (n: any) => uiStore.setPeopleBountiesPageNumber(n),
           queryParams,
-          'wanted'
+          'bounties'
         );
 
         this.setPeopleBounties(wanteds);
@@ -1287,7 +1288,7 @@ export class MainStore {
           ps3,
           (n: any) => uiStore.setPeopleBountiesPageNumber(n),
           queryParams,
-          'wanted'
+          'bounties'
         );
 
         this.setPeopleBounties(wanteds);
@@ -1381,7 +1382,7 @@ export class MainStore {
     const l = [...currentList, ...newList];
 
     const set = new Set();
-    if (type === 'wanted') {
+    if (type === 'bounties') {
       const uniqueArray = l.filter((item: any) => {
         if (item.body && item.body.id && !set.has(item.body.id)) {
           set.add(item.body.id);
@@ -1410,12 +1411,18 @@ export class MainStore {
   }
 
   setActivePerson(p: Person) {
-    this.activePerson = [p];
+    this._activePerson = [p];
   }
 
   @memo()
   async getPersonByPubkey(pubkey: string): Promise<Person> {
     const p = await api.get(`person/${pubkey}`);
+    return p;
+  }
+
+  @memo()
+  async getPersonByUuid(uuid: string): Promise<Person> {
+    const p = await api.get(`person/uuid/${uuid}`);
     return p;
   }
 

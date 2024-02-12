@@ -77,7 +77,7 @@ function MobileView(props: any) {
             <NameTag
               {...person}
               created={created}
-              widget={'wanted'}
+              widget={'bounties'}
               ticketUrl={ticket_url}
               loomEmbedUrl={loomEmbedUrl}
               style={{
@@ -133,11 +133,10 @@ function MobileView(props: any) {
                   onClick={(e: any) => {
                     e.stopPropagation();
                     window.open(
-                      `/p/${
-                        {
-                          ...assignee
-                        }.owner_pubkey
-                      }?widget=wanted`,
+                      `/p/${{
+                        ...assignee
+                      }.owner_pubkey
+                      }?widget=bounties`,
                       '_blank'
                     );
                   }}
