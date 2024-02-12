@@ -130,7 +130,7 @@ export const CompanyLabel = styled.p`
   font-size: 28px;
   font-style: normal;
   font-weight: 700;
-  margin-top: 10px;
+  margin: 2px;
   display: flex;
   align-items: center;
 `;
