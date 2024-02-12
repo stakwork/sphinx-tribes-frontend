@@ -241,3 +241,23 @@ Cypress.Commands.add('lnurl_login', () => {
       }
     });
 });
+
+Cypress.Commands.add('create_org', (organization) => {
+  cy.contains(organization.loggedInAs).click();
+
+  cy.contains('Add Organization').click();
+
+  cy.get('[placeholder="My Organization..."]').type(organization.name);
+
+  cy.get('[placeholder="Description Text..."]').type(organization.description);
+
+  if (organization.website) {
+    cy.get('[placeholder="Website URL..."]').type(organization.website);
+  }
+
+  if (organization.github) {
+    cy.get('[placeholder="Github link..."]').type(organization.github);
+  }
+
+  cy.contains('* Required fields').next().click();
+});
