@@ -269,7 +269,10 @@ function FocusedView(props: FocusViewProps) {
       }
 
       await main.saveBounty(newBody);
-      if (newBody.assignee === '' && getBounty) await getBounty();
+      if (newBody.assignee === '' && getBounty) {
+        setAfterEdit && setAfterEdit(true);
+        await getBounty();
+      }
 
       // Refresh the tickets page if a user eidts from the tickets tab
       if (window.location.href.includes('wanted')) {
