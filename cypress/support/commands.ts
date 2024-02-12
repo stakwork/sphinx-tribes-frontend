@@ -263,7 +263,7 @@ Cypress.Commands.add('create_org', (organization) => {
 });
 
 Cypress.Commands.add('pay_invoice', (details) => {
-  let user
+  let user;
 
   cy.fixture('nodes.json').then((json) => {
     for (let i = 0; i < json.length; i++) {
@@ -278,10 +278,10 @@ Cypress.Commands.add('pay_invoice', (details) => {
         'x-user-token': `${user.authToken}`
       },
       body: {
-        "payment_request": details.invoice
+        payment_request: details.invoice
       }
     }).then((response) => {
-      console.log(response)
+      console.log(response);
     });
-  })
-})
+  });
+});
