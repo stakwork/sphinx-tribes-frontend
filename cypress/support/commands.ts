@@ -261,3 +261,27 @@ Cypress.Commands.add('create_org', (organization) => {
 
   cy.contains('* Required fields').next().click();
 });
+
+Cypress.Commands.add('pay_invoice', (details) => {
+  let user
+
+  cy.fixture('nodes.json').then((json) => {
+    for (let i = 0; i < json.length; i++) {
+      if (json[i].alias === details.payersName) {
+        user = json[i];
+      }
+    }
+    cy.request({
+      method: 'PUT',
+      url: `${user.external_ip}/invoices`,
+      headers: {
+        'x-user-token': `${user.authToken}`
+      },
+      body: {
+        "payment_request": details.invoice
+      }
+    }).then((response) => {
+      console.log(response)
+    });
+  })
+})

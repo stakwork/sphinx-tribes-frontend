@@ -45,7 +45,7 @@ const ManageButton = (props: { user_pubkey: string; org: any; action: () => void
     getUserRoles();
   }, [getUserRoles]);
 
-  return <>{hasAccess && <Button onClick={action}>Manage</Button>}</>;
+  return <>{hasAccess && <Button onClick={action} data-org-name={org.name}>Manage</Button>}</>;
 };
 
 export default ManageButton;

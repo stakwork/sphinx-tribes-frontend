@@ -5,6 +5,7 @@ declare namespace Cypress {
     create_bounty(bounty: Bounty): void;
     lnurl_login(): void;
     create_org(Organization: Organization): void;
+    pay_invoice(details: InvoiceDetail): void
   }
 
   type Category =
@@ -44,4 +45,9 @@ declare namespace Cypress {
     website?: string;
     github?: string;
   };
+
+  type InvoiceDetail = {
+    payersName: string;
+    invoice: string
+  }
 }
