@@ -121,6 +121,7 @@ export const Leftheader = styled.div`
 export const CompanyNameAndLink = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: center;
 `;
 
 export const CompanyLabel = styled.p`
@@ -129,6 +130,9 @@ export const CompanyLabel = styled.p`
   font-size: 28px;
   font-style: normal;
   font-weight: 700;
+  margin: 2px;
+  display: flex;
+  align-items: center;
 `;
 export const ImageContainer = styled.img`
   width: 72px;

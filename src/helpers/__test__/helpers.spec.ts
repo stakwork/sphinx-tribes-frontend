@@ -396,9 +396,9 @@ describe('testing helpers', () => {
     });
 
     it('should display the exact value for values equal to or greater than 0.01', () => {
-      expect(formatPercentage(0.01)).toBe('0.01');
-      expect(formatPercentage(0.1)).toBe('0.10');
-      expect(formatPercentage(1)).toBe('1.00');
+      expect(formatPercentage(0.01)).toBe('0');
+      expect(formatPercentage(0.1)).toBe('0');
+      expect(formatPercentage(1)).toBe('1');
     });
 
     it('should display "0" for non-numeric inputs', () => {

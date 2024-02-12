@@ -1072,7 +1072,7 @@ function MobileView(props: CodingBountiesProps) {
                   ))}
               </LanguageContainer>
             </div>
-            <DescriptionBox color={color}>
+            <DescriptionBox color={color} data-testid="DescriptionBox">
               {renderMarkdown(description)}
               {deliverables ? (
                 <div className="deliverablesContainer">
