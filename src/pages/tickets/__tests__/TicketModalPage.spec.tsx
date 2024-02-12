@@ -245,4 +245,42 @@ describe('TicketModalPage Component', () => {
       expect(mockPush).toHaveBeenCalledWith('/bounties');
     }
   });
+
+  it('when the user is unassigned, saveBounty method is called', async () => {
+    uiStore.setMeInfo(user);
+
+    jest.spyOn(mainStore, 'getBountyById').mockReturnValue(
+        Promise.resolve([
+          {
+            ...newBounty,
+            person: { ...newBounty.person, owner_alias: user.alias },
+            body: {
+              ...mockBountiesMutated[1].body,
+              owner: user,
+              assignee: user
+            }
+          }
+        ])
+    );
+    jest.spyOn(mainStore, 'getBountyIndexById').mockReturnValue(Promise.resolve(1234));
+    jest.spyOn(mainStore, 'saveBounty').mockResolvedValue();
+
+    await act(async () => {
+      const { getByTestId } = render(
+          <MemoryRouter initialEntries={['/bounty/1234']}>
+            <Route path="/bounty/:bountyId" component={TicketModalPage} />
+          </MemoryRouter>
+      );
+
+      const editButton= await waitFor(() => getByTestId('edit-btn'));
+
+      expect(editButton).toBeInTheDocument();
+
+      fireEvent.click(editButton);
+
+      await waitFor(() => {
+        expect(mainStore.saveBounty).toHaveBeenCalled();
+      });
+    });
+  });
 });

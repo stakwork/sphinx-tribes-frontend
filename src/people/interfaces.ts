@@ -38,6 +38,7 @@ export interface FocusViewProps {
   bounty?: PersonBounty[];
   setRemoveNextAndPrev?: (boolean) => void;
   setAfterEdit?: (boolean) => void;
+  getBounty?: () => Promise<void>;
 }
 
 export interface PeopleMobileeHeaderProps {
@@ -251,6 +252,7 @@ export interface WantedSummaryProps {
   id?: number;
   owner_id?: string;
   markPaidOrUnpaid?: ReactNode;
+  isEditButtonDisable?: boolean;
 }
 
 export type LocalPaymeentState = 'UNKNOWN' | 'PAID' | 'UNPAID';
