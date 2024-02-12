@@ -224,7 +224,7 @@ function Form(props: FormProps) {
                   <Input
                     {...item}
                     key={item.name}
-                    newDesign={true}
+                    newDesign={item.name === 'description' ? false : true}
                     values={values}
                     setAssigneefunction={item.name === 'assignee' && setAssigneeName}
                     peopleList={peopleList}
@@ -669,11 +669,11 @@ function Form(props: FormProps) {
                 ) : (
                   <div
                     style={{
-                      padding: '0px 40px 0px 40px',
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'center',
-                      color: '#3C3D3F'
+                      color: '#3C3D3F',
+                      minWidth: '650px'
                     }}
                   >
                     {/* mapping each bounty creation step to the appropriate
@@ -681,15 +681,31 @@ function Form(props: FormProps) {
                     {[
                       BountyDetailsCreationData.step_2,
                       BountyDetailsCreationData.step_3,
-                      BountyDetailsCreationData.step_4,
-                      BountyDetailsCreationData.step_5
+                      BountyDetailsCreationData.step_4
                     ].map((section: any, index: number) => (
                       <div style={{ width: '100%' }} key={index}>
                         <h4 style={{ marginTop: '20px' }}>
                           <b>{section.heading}</b>
                         </h4>
-                        <div style={{ display: 'flex', justifyContent: 'center' }}>
-                          {GetFormFields(section, { marginRight: '5px', marginLeft: '5px' })}
+                        <div style={{ display: 'flex', justifyContent: 'center', gap: '30px' }}>
+                          {GetFormFields(section, { width: '100%' })}
+                        </div>
+                      </div>
+                    ))}
+                    {[BountyDetailsCreationData.step_5].map((section: any, index: number) => (
+                      <div style={{ width: '100%' }} key={index}>
+                        <h4 style={{ marginTop: '20px' }}>
+                          <b>{section.heading}</b>
+                        </h4>
+                        <div
+                          style={{
+                            width: '100%',
+                            marginBottom: '20px',
+                            display: 'flex',
+                            justifyContent: 'center'
+                          }}
+                        >
+                          {GetFormFields(section)}
                         </div>
                       </div>
                     ))}

@@ -35,6 +35,7 @@ const FieldWrap = styled.div<styledProps>`
   color: ${(p: any) => p?.color && p.color.pureBlack} !important;
   background-color: ${(p: any) => p?.color && p.color.pureWhite} !important;
   background: ${(p: any) => p?.color && p.color.pureWhite} !important;
+  width: 100%;
 `;
 
 export const Note = styled.div<styledProps>`

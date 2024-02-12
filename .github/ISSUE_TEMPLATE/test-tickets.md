@@ -17,7 +17,7 @@ assignees: ''
 
 
 ### Acceptance Criteria
-- [ ]
+- [ ] I have rebased and tested locally before submitting my PR
 
 ### References
 - Watch this [Jest Youtube playlist](https://www.youtube.com/watch?v=T2sv8jXoP4s&list=PLC3y8-rFHvwirqe1KHFCHJ0RqNuN61SJd) if you are new to testing

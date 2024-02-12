@@ -3,6 +3,8 @@ import moment from 'moment';
 import { setupStore } from '__test__/__mockData__/setupStore';
 import { user } from '__test__/__mockData__/user';
 import { mainStore } from 'store/main';
+import { waitFor } from '@testing-library/react';
+import nock from 'nock';
 import {
   extractGithubIssueFromUrl,
   extractRepoAndIssueFromIssueUrl,
@@ -16,10 +18,9 @@ import {
   handleDisplayRole,
   formatSat,
   filterCount,
-  userCanManageBounty
+  userCanManageBounty,
+  formatPercentage
 } from '../helpers-extended';
-import { waitFor } from '@testing-library/react';
-import nock from 'nock';
 
 beforeAll(() => {
   // for test randomString
@@ -380,6 +381,29 @@ describe('testing helpers', () => {
       await waitFor(async () => {
         expect(canManage).toBeFalsy();
       });
+    });
+  });
+
+  describe('formatPercentage', () => {
+    it('should display "0" when value is below 0.01 and above 0', () => {
+      expect(formatPercentage(0.009)).toBe('0');
+      expect(formatPercentage(0.0001)).toBe('0');
+      expect(formatPercentage(0.005)).toBe('0');
+    });
+
+    it('should display "0" when value is 0', () => {
+      expect(formatPercentage(0)).toBe('0');
+    });
+
+    it('should display the exact value for values equal to or greater than 0.01', () => {
+      expect(formatPercentage(0.01)).toBe('0');
+      expect(formatPercentage(0.1)).toBe('0');
+      expect(formatPercentage(1)).toBe('1');
+    });
+
+    it('should display "0" for non-numeric inputs', () => {
+      expect(formatPercentage(undefined)).toBe('0');
+      expect(formatPercentage(null as any)).toBe('0');
     });
   });
 });

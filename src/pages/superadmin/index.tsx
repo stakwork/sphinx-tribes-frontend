@@ -5,7 +5,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { EuiLoadingSpinner } from '@elastic/eui';
 import styled from 'styled-components';
-import { BountyMetrics, BountyStatus, defaultBountyStatus } from 'store/main';
+import { BountyMetrics, defaultBountyStatus } from 'store/main';
 import { useStores } from 'store';
 import moment from 'moment';
 import { useInViewPort } from 'hooks';
@@ -32,28 +32,15 @@ const LoaderContainer = styled.div`
   align-items: center;
 `;
 
-export interface MockHunterMetrics {
-  hunters_total_paid: number;
-  hunters_first_bounty_paid: number;
-}
-
 export const SuperAdmin = () => {
   //Todo: Remove all comments when metrcis development is done
   const { main } = useStores();
-  const [isSuperAdmin] = useState(true);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [bounties, setBounties] = useState<any[]>([]);
   const [bountyMetrics, setBountyMetrics] = useState<BountyMetrics | undefined>(undefined);
-  const mockHunterMetrics: MockHunterMetrics = {
-    hunters_total_paid: 145,
-    hunters_first_bounty_paid: 12
-  };
-  const [bountyStatus, setBountyStatus] = useState<BountyStatus>({
-    ...defaultBountyStatus,
-    Open: false
-  });
   const [sortOrder, setSortOrder] = useState<string>('desc');
-  const [dropdownValue, setDropdownValue] = useState('all');
+  const [checkboxIdToSelectedMap, setCheckboxIdToSelectedMap] = useState(defaultBountyStatus);
   const [loading, setLoading] = useState(false);
   const [activeTabs, setActiveTabs] = useState<number[]>([]);
   const [totalBounties, setTotalBounties] = useState(0);
@@ -62,9 +49,8 @@ export const SuperAdmin = () => {
    * Todo use the same date range,
    * and status for all child components
    * */
-
   const [endDate, setEndDate] = useState(moment().unix());
-  const [startDate, setStartDate] = useState(moment().subtract(30, 'days').unix());
+  const [startDate, setStartDate] = useState(moment().subtract(7, 'days').unix());
   const [inView, ref] = useInViewPort({
     rootMargin: '0px',
     threshold: 0.25
@@ -73,6 +59,15 @@ export const SuperAdmin = () => {
   const onDateFilterChange = useCallback((option: string) => setSortOrder(option), []);
 
   const paginationLimit = Math.floor(totalBounties / pageSize) + 1;
+
+  const getIsSuperAdmin = useCallback(async () => {
+    const isSuperAdmin = await main.getSuperAdmin();
+    setIsSuperAdmin(isSuperAdmin);
+  }, [main]);
+
+  useEffect(() => {
+    getIsSuperAdmin();
+  }, [getIsSuperAdmin]);
 
   const getBounties = useCallback(async () => {
     setLoading(true);
@@ -85,7 +80,8 @@ export const SuperAdmin = () => {
           },
           {
             page: currentPage,
-            ...bountyStatus,
+            resetPage: true,
+            ...checkboxIdToSelectedMap,
             direction: sortOrder
           }
         );
@@ -98,11 +94,21 @@ export const SuperAdmin = () => {
         setLoading(false);
       }
     }
-  }, [main, startDate, endDate, bountyStatus, sortOrder, currentPage]);
+  }, [main, startDate, endDate, checkboxIdToSelectedMap, sortOrder, currentPage]);
 
   useEffect(() => {
     getBounties();
-  }, [getBounties]);
+  }, [getBounties, currentPage]);
+
+  const onChangeStatus = (optionId: any) => {
+    const newCheckboxIdToSelectedMap = {
+      ...checkboxIdToSelectedMap,
+      ...{
+        [optionId]: !checkboxIdToSelectedMap[optionId]
+      }
+    };
+    setCheckboxIdToSelectedMap(newCheckboxIdToSelectedMap);
+  };
 
   const getMetrics = useCallback(async () => {
     if (startDate && endDate) {
@@ -122,10 +128,27 @@ export const SuperAdmin = () => {
 
   const getTotalBounties = useCallback(async () => {
     if (startDate && endDate) {
-      const totalBounties = await main.getBountiesCountByRange(String(startDate), String(endDate));
-      setTotalBounties(totalBounties);
+      const { Open, Assigned, Paid } = checkboxIdToSelectedMap;
+
+      if (Open || Assigned || Paid) {
+        const totalBounties = await main.getBountiesCountByRange(
+          String(startDate),
+          String(endDate),
+          {
+            ...checkboxIdToSelectedMap,
+            direction: sortOrder
+          }
+        );
+        setTotalBounties(totalBounties);
+      } else {
+        const totalBounties = await main.getBountiesCountByRange(
+          String(startDate),
+          String(endDate)
+        );
+        setTotalBounties(totalBounties);
+      }
     }
-  }, [main, startDate, endDate]);
+  }, [main, startDate, endDate, checkboxIdToSelectedMap]);
 
   useEffect(() => {
     getTotalBounties();
@@ -157,11 +180,7 @@ export const SuperAdmin = () => {
             setStartDate={setStartDate}
             setEndDate={setEndDate}
           />
-          <Statistics
-            freezeHeaderRef={ref}
-            metrics={bountyMetrics}
-            mockHunter={mockHunterMetrics}
-          />
+          <Statistics freezeHeaderRef={ref} metrics={bountyMetrics} />
           {loading ? (
             <LoaderContainer>
               <EuiLoadingSpinner size="l" />
@@ -172,18 +191,16 @@ export const SuperAdmin = () => {
               startDate={startDate}
               endDate={endDate}
               headerIsFrozen={inView}
-              bountyStatus={bountyStatus}
-              setBountyStatus={setBountyStatus}
-              onChangeFilterByDate={onDateFilterChange}
               sortOrder={sortOrder}
-              dropdownValue={dropdownValue}
-              setDropdownValue={setDropdownValue}
+              onChangeFilterByDate={onDateFilterChange}
+              onChangeStatus={onChangeStatus}
+              checkboxIdToSelectedMap={checkboxIdToSelectedMap}
               currentPage={currentPage}
+              totalBounties={totalBounties}
+              paginationLimit={paginationLimit}
               setCurrentPage={setCurrentPage}
               activeTabs={activeTabs}
               setActiveTabs={setActiveTabs}
-              totalBounties={totalBounties}
-              paginationLimit={paginationLimit}
             />
           )}
         </Container>

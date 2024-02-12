@@ -126,7 +126,8 @@ const Bounties = (props: BountiesProps) => {
     onPanelClick,
     widget,
     created,
-    org_uuid
+    org_uuid,
+    activeOrg
   } = props;
 
   const color = colors['light'];
@@ -154,7 +155,10 @@ const Bounties = (props: BountiesProps) => {
     <>
       {!!assignee?.owner_pubkey && !!assignee?.owner_alias ? (
         <BountyLink
-          to={props.org_uuid ? `/bounty/${props.id}/${props.org_uuid}` : `/bounty/${props.id}`}
+          to={{
+            pathname: `/bounty/${props.id}`,
+            state: { activeOrg }
+          }}
         >
           <BountyContainer
             assignedBackgroundImage={'url("/static/assigned_bounty_bg.svg")'}
@@ -206,7 +210,10 @@ const Bounties = (props: BountiesProps) => {
             unAssignedBackgroundImage={'url("/static/unassigned_bounty_bg.svg")'}
           >
             <BountyLink
-              to={props.org_uuid ? `/bounty/${props.id}/${props.org_uuid}` : `/bounty/${props.id}`}
+              to={{
+                pathname: `/bounty/${props.id}`,
+                state: { activeOrg }
+              }}
             >
               <div style={{ display: 'flex', flexDirection: 'row' }}>
                 <BountyDescription

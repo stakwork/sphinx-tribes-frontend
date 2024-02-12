@@ -68,4 +68,40 @@ describe('Statistics Component', () => {
     expect(getByText('7')).toBeInTheDocument();
     expect(getByText('2')).toBeInTheDocument();
   });
+
+  it('displays 0 for very low non-zero bounties paid average percentage', () => {
+    const lowPercentageMetrics = {
+      bounties_posted: 100,
+      bounties_paid: 50,
+      sats_posted: 5000,
+      sats_paid: 2500,
+      bounties_paid_average: 0.005, // Very low percentage, should result in "0" being displayed
+      sats_paid_percentage: 50,
+      average_paid: 10,
+      average_completed: 1,
+      unique_hunters_paid: 7,
+      new_hunters_paid: 2
+    };
+
+    const { getByText } = render(<Statistics metrics={lowPercentageMetrics} />);
+    expect(getByText('0%')).toBeInTheDocument(); // Check if "0%" is correctly displayed for bounties paid average
+  });
+
+  it('displays 0 for very low non-zero satoshis paid percentage', () => {
+    const lowPercentageMetrics = {
+      bounties_posted: 100,
+      bounties_paid: 50,
+      sats_posted: 5000,
+      sats_paid: 2500,
+      bounties_paid_average: 78,
+      sats_paid_percentage: 0.009, // Very low percentage, should result in "0" being displayed
+      average_paid: 10,
+      average_completed: 1,
+      unique_hunters_paid: 7,
+      new_hunters_paid: 2
+    };
+
+    const { getByText } = render(<Statistics metrics={lowPercentageMetrics} />);
+    expect(getByText('0%')).toBeInTheDocument(); // Check if "0%" is correctly displayed for satoshis paid percentage
+  });
 });

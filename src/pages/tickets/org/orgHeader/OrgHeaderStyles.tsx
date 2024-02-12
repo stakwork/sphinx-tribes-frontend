@@ -1,4 +1,3 @@
-import { colors } from 'config';
 import styled from 'styled-components';
 import checkboxImage from './Icons/checkboxImage.svg';
 
@@ -122,6 +121,7 @@ export const Leftheader = styled.div`
 export const CompanyNameAndLink = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: center;
 `;
 
 export const CompanyLabel = styled.p`
@@ -130,6 +130,9 @@ export const CompanyLabel = styled.p`
   font-size: 28px;
   font-style: normal;
   font-weight: 700;
+  margin: 2px;
+  display: flex;
+  align-items: center;
 `;
 export const ImageContainer = styled.img`
   width: 72px;
@@ -154,35 +157,6 @@ export const RightHeader = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-`;
-
-export const SearchWrapper = styled.div`
-  height: 40px;
-  padding: 0px 16px;
-  align-items: center;
-  gap: 10px;
-  flex: 1 0 0;
-  display: flex;
-  position: relative;
-`;
-
-export const Icon = styled.img`
-  position: absolute;
-  right: 30px;
-`;
-
-export const SearchBar = styled.input`
-  display: flex;
-  height: 40px;
-  padding: 0px 16px;
-  padding-left: 30px;
-  align-items: center;
-  gap: 10px;
-  flex: 1 0 0;
-  border-radius: 6px;
-  background: var(--Input-BG-1, #f2f3f5);
-  outline: none;
-  border: none;
 `;
 
 export const SoryByContainer = styled.span`
