@@ -105,6 +105,35 @@ With the above commands executed properly you should be able to start writing yo
     cy.logout("alice")
     ```
 
+3. To create a bounty, you can use the command below and pass in the bounty details as parameter:
+
+    ```bash
+     cy.create_bounty({
+      title: 'My new Bounty',
+      category: 'Web development',
+      coding_language: ['Typescript', 'Javascript', 'Lightning'],
+      description: 'This is available',
+      amount: '123',
+      assign: 'carol',
+      deliverables: 'We are good to go man',
+      tribe: '',
+      estimate_session_length: 'Less than 3 hour',
+      estimate_completion_date: '09/09/2024'
+    });
+    ```
+
+4. To create an organizaztion, you can use the command below and pass in the org details as Parameter:
+
+    ```bash
+    cy.create_org({
+      loggedInAs: 'carol',
+      name: 'New Organization',
+      description: 'We are testing out our oeganization',
+      website: 'https://community.sphinx.chat',
+      github: 'https://github.com/stakwork/sphinx-tribes-frontend'
+    });
+    ```
+
  You can also checkout the `cypress/support/commands.ts` file to get other custom made commands.
 
 ## Stoping Sphinx Stack
