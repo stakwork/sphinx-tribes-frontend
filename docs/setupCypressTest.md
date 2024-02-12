@@ -134,6 +134,12 @@ With the above commands executed properly you should be able to start writing yo
     });
     ```
 
+5. To make payment you can use the command below and pass in details about the invoice:
+
+    ```bash
+    cy.pay_invoice({payersName: "carol", invoice: invoice})
+    ```
+
  You can also checkout the `cypress/support/commands.ts` file to get other custom made commands.
 
 ## Stoping Sphinx Stack
