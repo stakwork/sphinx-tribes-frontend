@@ -13,7 +13,7 @@
     "start:cypress": "PORT=3007 craco start",
     "build": "craco build",
     "eject": "craco eject",
-    "lint": "eslint src --max-warnings 67 --ext .ts --ext .tsx --ignore-pattern *.spec.tsx --ignore-pattern *.spec.ts",
+    "lint": "eslint src --max-warnings 66 --ext .ts --ext .tsx --ignore-pattern *.spec.tsx --ignore-pattern *.spec.ts",
     "lint:fix": "npm run lint -- --fix",
     "prettier": "npx prettier --config .prettierrc.json -w ./src ./cypress",
     "prettier:check": "npx prettier --config .prettierrc.json --check ./src",
