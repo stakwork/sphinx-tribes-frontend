@@ -98,7 +98,8 @@ function MobileView(props: CodingBountiesProps) {
     setLocalPaid,
     isMobile,
     actionButtons,
-    assigneeLabel
+    assigneeLabel,
+    isEditButtonDisable
   } = props;
   const color = colors['light'];
 
@@ -553,6 +554,7 @@ function MobileView(props: CodingBountiesProps) {
                             buttonTextStyle={{
                               paddingRight: '50px'
                             }}
+                            disabled={isEditButtonDisable}
                           />
                           <ImageButton
                             buttonText={!props.deletingState ? 'Delete' : 'Deleting'}
@@ -655,6 +657,7 @@ function MobileView(props: CodingBountiesProps) {
                         />
                         {!bountyPaid && (
                           <div
+                            data-testid="edit-btn"
                             className="AssigneeCloseButtonContainer"
                             onClick={() => {
                               changeAssignedPerson();
