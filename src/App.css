@@ -239,7 +239,7 @@ input.input {
 }
 
 .qr-wrap {
-  width: 219px;
+  width: 231px;
   margin-bottom: 20px;
 }
 
@@ -372,6 +372,7 @@ textarea.qr-string {
   min-width: 62px;
   height: 25px;
   font-size: 10px;
+  border: none;
   border-radius: 5px;
   color: #fff;
   text-transform: uppercase;
@@ -626,7 +627,7 @@ fieldset.container {
 }
 
 .qr-wrap {
-  width: 219px;
+  width: 231px;
   margin-bottom: 20px;
 }
 
@@ -759,6 +760,7 @@ textarea.qr-string {
   width: 62px;
   height: 25px;
   font-size: 10px;
+  border: none;
   border-radius: 5px;
   color: #fff;
   text-transform: uppercase;
