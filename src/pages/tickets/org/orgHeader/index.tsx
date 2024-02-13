@@ -250,6 +250,13 @@ export const OrgHeader = ({
                       >
                         Status
                       </EuiText>
+                      <Formatter>
+                        {statusCountNumber > 0 && (
+                          <FilterCount color={color}>
+                            <EuiText className="filterCountText">{statusCountNumber}</EuiText>
+                          </FilterCount>
+                        )}
+                      </Formatter>
                       <div className="filterStatusIconContainer">
                         <MaterialIcon
                           className="materialStatusIcon"
@@ -261,13 +268,6 @@ export const OrgHeader = ({
                           }}
                         />
                       </div>
-                      <Formatter>
-                        {statusCountNumber > 0 && (
-                          <FilterCount color={color}>
-                            <EuiText className="filterCountText">{statusCountNumber}</EuiText>
-                          </FilterCount>
-                        )}
-                      </Formatter>
                     </InnerContainer>
                   </StatusContainer>
                 }
@@ -310,14 +310,14 @@ export const OrgHeader = ({
             </NewStatusContainer>
             <SkillContainer>
               <FilterLabel>Skill</FilterLabel>
-              <DropDownButton onClick={handleClick} data-testid="skillDropdown">
-                <Img src={dropdown} alt="" />
-              </DropDownButton>
               {skillCountNumber > 0 && (
                 <FilterCount color={color}>
                   <EuiText className="filterCountText">{skillCountNumber}</EuiText>
                 </FilterCount>
               )}
+              <DropDownButton onClick={handleClick} data-testid="skillDropdown">
+                <Img src={dropdown} alt="" />
+              </DropDownButton>
               {filterClick ? (
                 <SkillFilter ref={filterRef} data-testid="skill-filter">
                   <InternalContainer>
