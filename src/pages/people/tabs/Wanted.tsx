@@ -47,7 +47,7 @@ export const Wanted = observer(() => {
   const { person, canEdit } = usePerson(ui.selectedPerson);
   const { path, url } = useRouteMatch();
   const history = useHistory();
-  // const { uuid } = useParams<{ uuid: string }>();
+  const { uuid } = useParams<{ uuid: string }>();
   const [displayedBounties, setDisplayedBounties] = useState<BountyType[]>([]);
   const [loading, setIsLoading] = useState<boolean>(false);
   const [page, setPage] = useState(1);
@@ -56,10 +56,11 @@ export const Wanted = observer(() => {
   // Function to fetch user tickets with pagination
   const getUserTickets = async () => {
     setIsLoading(true);
+
     // Fetch bounties for the specified page and limit
     const response = await main.getPersonCreatedBounties(
       { page: page, limit: paginationQueryLimit },
-      person?.owner_pubkey
+      uuid
     );
 
     // Check if the response has fewer bounties than the limit, indicating no more bounties to load
@@ -71,17 +72,13 @@ export const Wanted = observer(() => {
     setIsLoading(false);
   };
 
-  useEffect(() => {
-    getUserTickets();
-  }, []);
-
   const nextBounties = async () => {
     const nextPage = page + 1;
     setPage(nextPage);
     // Fetch bounties for the next page
     const response = await main.getPersonCreatedBounties(
       { page: nextPage, limit: paginationQueryLimit },
-      person?.owner_pubkey
+      uuid
     );
     // Check if the response has fewer bounties than the limit, indicating no more bounties to load
     if (response.length < paginationQueryLimit) {
@@ -90,6 +87,10 @@ export const Wanted = observer(() => {
     // Update the displayed bounties by appending the new bounties
     setDisplayedBounties((prevBounties: BountyType[]) => [...prevBounties, ...response]);
   };
+
+  useEffect(() => {
+    getUserTickets();
+  }, [main]);
 
   if (!main.createdBounties?.length) {
     return (

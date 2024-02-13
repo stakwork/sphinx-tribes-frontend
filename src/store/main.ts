@@ -979,10 +979,10 @@ export class MainStore {
     this.createdBounties = bounties;
   }
 
-  async getPersonCreatedBounties(queryParams?: any, pubkey?: string): Promise<PersonBounty[]> {
+  async getPersonCreatedBounties(queryParams?: any, uuid?: string): Promise<PersonBounty[]> {
     queryParams = { ...queryParams, search: uiStore.searchText };
 
-    const query = this.appendQueryParams(`people/wanteds/created/${pubkey}`, paginationQueryLimit, {
+    const query = this.appendQueryParams(`people/wanteds/created/${uuid}`, paginationQueryLimit, {
       ...queryParams,
       sortBy: 'paid'
     });

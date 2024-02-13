@@ -29,7 +29,7 @@ describe('UserTickets', () => {
     await act(async () => {
       const { getByText } = render(
         <MemoryRouter initialEntries={['/p/1234/assigned']}>
-          <Route path="/p/:personPubkey/assigned" component={UserTickets} />
+          <Route path="/p/:uuid/assigned" component={UserTickets} />
         </MemoryRouter>
       );
 
@@ -52,7 +52,7 @@ describe('UserTickets', () => {
     await act(async () => {
       const { getByText } = render(
         <MemoryRouter initialEntries={['/p/1234/assigned']}>
-          <Route path="/p/:personPubkey/assigned" component={UserTickets} />
+          <Route path="/p/:uuid/assigned" component={UserTickets} />
         </MemoryRouter>
       );
 
@@ -76,7 +76,7 @@ describe('UserTickets', () => {
     await act(async () => {
       const { getByText } = render(
         <MemoryRouter initialEntries={['/p/1234/assigned']}>
-          <Route path="/p/:personPubkey/assigned" component={UserTickets} />
+          <Route path="/p/:uuid/assigned" component={UserTickets} />
         </MemoryRouter>
       );
 
@@ -101,7 +101,7 @@ describe('UserTickets', () => {
     await act(async () => {
       const { getByText } = render(
         <MemoryRouter initialEntries={['/p/1234/assigned']}>
-          <Route path="/p/:personPubkey/assigned" component={UserTickets} />
+          <Route path="/p/:uuid/assigned" component={UserTickets} />
         </MemoryRouter>
       );
 
@@ -124,7 +124,7 @@ describe('UserTickets', () => {
     await act(async () => {
       const { getByText } = render(
         <MemoryRouter initialEntries={['/p/1234/assigned']}>
-          <Route path="/p/:personPubkey/assigned" component={UserTickets} />
+          <Route path="/p/:uuid/assigned" component={UserTickets} />
         </MemoryRouter>
       );
 

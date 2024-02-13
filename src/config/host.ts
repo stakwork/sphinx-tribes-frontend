@@ -7,8 +7,7 @@ export function getHost(): string {
       ? 'localhost:13000'
       : 'localhost:5002'
     : window.location.host;
-  // return host;
-  return "localhost:5005";
+  return host;
 }
 
 export function getHostIncludingDockerHosts() {
