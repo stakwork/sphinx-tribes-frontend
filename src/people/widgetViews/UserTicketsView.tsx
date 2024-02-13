@@ -100,7 +100,7 @@ const UserTickets = () => {
     setIsLoading(true);
     const response = await main.getPersonAssignedBounties(
       { page: page, limit: paginationLimit },
-      person?.owner_pubkey
+      uuid
     );
     if (response.length < paginationLimit) {
       setHasMoreBounties(false);
@@ -114,7 +114,7 @@ const UserTickets = () => {
     setPage(nextPage);
     const response = await main.getPersonAssignedBounties(
       { page: nextPage, limit: paginationLimit },
-      person?.owner_pubkey
+      uuid
     );
     if (response.length < paginationLimit) {
       setHasMoreBounties(false);
@@ -124,7 +124,7 @@ const UserTickets = () => {
 
   useEffect(() => {
     getUserTickets();
-  }, [main, uuid]);
+  }, [main]);
 
   const listItems =
     displayedBounties && displayedBounties.length ? (
