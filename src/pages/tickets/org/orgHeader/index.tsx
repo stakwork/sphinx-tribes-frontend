@@ -7,12 +7,14 @@ import { colors } from 'config';
 import { OrgBountyHeaderProps } from '../../../../people/interfaces';
 import { SearchBar } from '../../../../components/common/index.tsx';
 import { useStores } from '../../../../store';
-import { userCanManageBounty } from '../../../../helpers';
+import { userCanManageBounty, filterCount } from '../../../../helpers';
 import addBounty from './Icons/addBounty.svg';
 import dropdown from './Icons/dropDownIcon.svg';
 import file from './Icons/file.svg';
 import githubIcon from './Icons/githubIcon.svg';
+
 import websiteIcon from './Icons/websiteIcon.svg';
+
 import {
   BountyNumber,
   Button,
@@ -40,7 +42,10 @@ import {
   SkillFilter,
   StatusContainer,
   UrlButton,
-  UrlButtonContainer
+  UrlButtonContainer,
+  FilterCount,
+  InnerContainer,
+  Formatter
 } from './OrgHeaderStyles';
 
 const color = colors['light'];
@@ -75,6 +80,9 @@ export const OrgHeader = ({
   const [isStatusPopoverOpen, setIsStatusPopoverOpen] = useState<boolean>(false);
   const [isSortByPopoverOpen, setIsSortByPopoverOpen] = useState(false);
   const [sortDirection, setSortDirection] = useState<string>('desc');
+  const [skillCountNumber, setSkillCountNumber] = useState<number>(0);
+  const [statusCountNumber, setStatusCountNumber] = useState<number>(0);
+
   const onButtonClick = async () => {
     setIsStatusPopoverOpen((isPopoverOpen: any) => !isPopoverOpen);
   };
@@ -179,6 +187,14 @@ export const OrgHeader = ({
     };
   }, [org_uuid, checkboxIdToSelectedMap, languageString, main, filterClick]);
 
+  useEffect(() => {
+    setStatusCountNumber(filterCount(checkboxIdToSelectedMap));
+  }, [checkboxIdToSelectedMap]);
+
+  useEffect(() => {
+    setSkillCountNumber(filterCount(checkboxIdToSelectedMapLanguage));
+  }, [checkboxIdToSelectedMapLanguage]);
+
   return (
     <>
       <FillContainer>
@@ -225,25 +241,34 @@ export const OrgHeader = ({
               <EuiPopover
                 button={
                   <StatusContainer onClick={onButtonClick} color={color}>
-                    <EuiText
-                      className="statusText"
-                      style={{
-                        color: isStatusPopoverOpen ? color.grayish.G10 : ''
-                      }}
-                    >
-                      Status
-                    </EuiText>
-                    <div className="filterStatusIconContainer">
-                      <MaterialIcon
-                        className="materialStatusIcon"
-                        icon={`${
-                          isStatusPopoverOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down'
-                        }`}
+                    <InnerContainer>
+                      <EuiText
+                        className="statusText"
                         style={{
                           color: isStatusPopoverOpen ? color.grayish.G10 : ''
                         }}
-                      />
-                    </div>
+                      >
+                        Status
+                      </EuiText>
+                      <div className="filterStatusIconContainer">
+                        <MaterialIcon
+                          className="materialStatusIcon"
+                          icon={`${
+                            isStatusPopoverOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down'
+                          }`}
+                          style={{
+                            color: isStatusPopoverOpen ? color.grayish.G10 : ''
+                          }}
+                        />
+                      </div>
+                      <Formatter>
+                        {statusCountNumber > 0 && (
+                          <FilterCount color={color}>
+                            <EuiText className="filterCountText">{statusCountNumber}</EuiText>
+                          </FilterCount>
+                        )}
+                      </Formatter>
+                    </InnerContainer>
                   </StatusContainer>
                 }
                 panelStyle={{
@@ -288,6 +313,11 @@ export const OrgHeader = ({
               <DropDownButton onClick={handleClick} data-testid="skillDropdown">
                 <Img src={dropdown} alt="" />
               </DropDownButton>
+              {skillCountNumber > 0 && (
+                <FilterCount color={color}>
+                  <EuiText className="filterCountText">{skillCountNumber}</EuiText>
+                </FilterCount>
+              )}
               {filterClick ? (
                 <SkillFilter ref={filterRef} data-testid="skill-filter">
                   <InternalContainer>

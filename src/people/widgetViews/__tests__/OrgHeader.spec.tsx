@@ -231,4 +231,58 @@ describe('OrgHeader Component', () => {
       expect(screen.queryByText('Post a Bounty')).not.toBeInTheDocument();
     });
   });
+
+  it('correct number is displayed next to the button as the number of items selected in the status filter', async () => {
+    const { rerender } = render(<OrgHeader {...MockProps} />);
+
+    const statusFilterButton = screen.getByText('Status');
+    fireEvent.click(statusFilterButton);
+
+    const newCheckboxIdToSelectedMap = {
+      Open: true,
+      Assigned: true,
+      Completed: false,
+      Paid: false
+    };
+
+    const newProps = {
+      ...MockProps,
+      checkboxIdToSelectedMap: newCheckboxIdToSelectedMap
+    };
+
+    rerender(<OrgHeader {...newProps} />);
+
+    const selectedCount = Object.values(newCheckboxIdToSelectedMap).filter(Boolean).length;
+
+    await waitFor(() => {
+      expect(screen.getByText(`${selectedCount}`)).toBeInTheDocument();
+    });
+  });
+
+  it('correct number is displayed next to the button as the number of items selected in the skill filter', async () => {
+    const { rerender } = render(<OrgHeader {...MockProps} />);
+
+    const skillFilterButton = screen.getByText('Skill');
+    fireEvent.click(skillFilterButton);
+
+    const newCheckboxIdToSelectedMapLanguage = {
+      javascript: true,
+      lightning: true,
+      typescript: false,
+      golang: false
+    };
+
+    const newProps = {
+      ...MockProps,
+      checkboxIdToSelectedMap: newCheckboxIdToSelectedMapLanguage
+    };
+
+    rerender(<OrgHeader {...newProps} />);
+
+    const selectedCount = Object.values(newCheckboxIdToSelectedMapLanguage).filter(Boolean).length;
+
+    await waitFor(() => {
+      expect(screen.getByText(`${selectedCount}`)).toBeInTheDocument();
+    });
+  });
 });
