@@ -269,7 +269,8 @@ export const EuiPopOverCheckboxRight = styled.div<styledProps>`
       .euiCheckbox__input:checked + .euiCheckbox__square {
         border: 1px solid ${(p: any) => p?.color && p?.color?.blue1};
         background: ${(p: any) => p?.color && p?.color?.blue1} no-repeat center;
-        background-image: url('static/checkboxImage.svg');
+        background-size: contain;
+        background-image: url(${checkboxImage});
       }
       .euiCheckbox__label {
         font-family: 'Barlow';
