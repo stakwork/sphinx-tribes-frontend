@@ -423,4 +423,58 @@ describe('MyTable Component', () => {
     const paidBounties = getAllByText('paid');
     expect(paidBounties.length).toBe(1);
   });
+
+  it('filters bounties by status selected: open, assigned, paid', async () => {
+    render(<MyTable {...MockTableProps} />);
+
+    fireEvent.click(screen.getByText('Status:'));
+    userEvent.click(screen.getByText('Open'));
+    expect(screen.getByText('Bounty 1')).toBeInTheDocument(); // 'Bounty 1' is an "Open" bounty
+
+    fireEvent.click(screen.getByText('Status:'));
+    userEvent.click(screen.getByText('Assigned'));
+    expect(screen.getByText('Bounty 2')).toBeInTheDocument(); // 'Bounty 2' is an "Assigned" bounty
+
+    fireEvent.click(screen.getByText('Status:'));
+    userEvent.click(screen.getByText('Paid'));
+    expect(screen.getByText('Bounty 3')).toBeInTheDocument(); // 'Bounty 3' is a "Paid" bounty
+  });
+
+  it('sorts the bounties according to admin select Newest', async () => {
+    const sortedBounties = [...mockBounties].reverse();
+    render(<MyTable {...MockTableProps} bounties={sortedBounties} />);
+
+    fireEvent.click(screen.getByText('Sort By:'));
+    fireEvent.click(screen.getByText('Newest'));
+
+    await waitFor(() => {
+      const displayedBounties = screen
+        .getAllByTestId('bounty-date')
+        .map((node: any) => node.textContent);
+      const sortedDatesDesc = [...mockBounties]
+        .sort((a: any, b: any) => b.date.localeCompare(a.date))
+        .map((bounty: any) => bounty.date);
+      expect(displayedBounties).toEqual(sortedDatesDesc);
+    });
+  });
+
+  it('sorts the bounties according to admin select Oldest', async () => {
+    const sortedBounties = [...mockBounties].reverse();
+    render(<MyTable {...MockTableProps} bounties={sortedBounties} />);
+
+    fireEvent.click(screen.getByText('Sort By:'));
+
+    const oldestButtons = screen.getAllByText('Oldest');
+    fireEvent.click(oldestButtons[1]);
+
+    await waitFor(() => {
+      const displayedBounties = screen
+        .getAllByTestId('bounty-date')
+        .map((node: any) => node.textContent);
+      const sortedDatesAsc = [...mockBounties]
+        .sort((a: any, b: any) => b.date.localeCompare(a.date))
+        .map((bounty: any) => bounty.date);
+      expect(displayedBounties).toEqual(sortedDatesAsc);
+    });
+  });
 });
