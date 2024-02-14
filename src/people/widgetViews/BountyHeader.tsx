@@ -446,7 +446,11 @@ const BountyHeader = ({
                 onChange={onChangeSearch}
                 onKeyUp={(e: any) => {
                   if (e.key === 'Enter' || e.keyCode === 13) {
-                    main.getPeopleBounties({ page: 1, resetPage: true });
+                    main.getPeopleBounties({
+                      page: 1,
+                      resetPage: true,
+                      ...checkboxIdToSelectedMap
+                    });
                   }
                 }}
                 iconStyle={{
