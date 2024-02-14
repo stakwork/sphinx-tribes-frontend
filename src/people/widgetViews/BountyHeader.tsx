@@ -390,7 +390,12 @@ const BountyHeader = ({
     // Set a new timeout to wait for user to pause typing
     timeoutId = setTimeout(() => {
       if (ui.searchText === '') {
-        main.getPeopleBounties({ page: 1, resetPage: true, ...checkboxIdToSelectedMap });
+        main.getPeopleBounties({
+          page: 1,
+          resetPage: true,
+          ...checkboxIdToSelectedMap,
+          ...checkboxIdToSelectedMapLanguage
+        });
       }
     }, 1000);
   };
@@ -449,7 +454,8 @@ const BountyHeader = ({
                     main.getPeopleBounties({
                       page: 1,
                       resetPage: true,
-                      ...checkboxIdToSelectedMap
+                      ...checkboxIdToSelectedMap,
+                      ...checkboxIdToSelectedMapLanguage
                     });
                   }
                 }}
