@@ -221,7 +221,7 @@ export default function Tribe({
                       bgColor={selected ? '#FFFFFF' : '#666'}
                       fgColor="#000000"
                       level="Q"
-                      style={{ width: 209 }}
+                      style={{ width: 221 }}
                       value={qrString}
                     />
                   </QRWrap>
@@ -237,7 +237,7 @@ export default function Tribe({
                     Preview
                   </a>
                   <button className="copy-btn" onClick={(e: any) => copyString(e, qrString)}>
-                    {copied ? 'Copied!' : 'Copy Link'}
+                    {copied ? 'Copied!' : 'Copy'}
                   </button>
                 </div>
               </div>

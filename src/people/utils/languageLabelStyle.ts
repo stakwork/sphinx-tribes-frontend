@@ -141,12 +141,12 @@ export const coding_languages = [
   'Postgres',
   'Elastic search',
   'Other'
-];
+] as const;
 
 export const status = ['Open', 'Assigned', 'Paid'];
 
-export const GetValue = (arr: string[]) =>
-  arr.map((val: any) => ({
+export const GetValue = <Item = string>(arr: any): Array<{ id: Item; label: Item; value: Item }> =>
+  arr.map((val: Item) => ({
     id: val,
     label: val,
     value: val
