@@ -27,4 +27,18 @@ describe('BodyComponent', () => {
 
     expect(marginLeft).toEqual(marginRight);
   });
+
+  it('filter is in viewport when device is mobile', () => {
+    Object.assign(window, { innerWidth: 375 });
+
+    render(<BodyComponent />);
+    const filterNode = screen.getByTestId('PeopleHeader');
+
+    const { left, right, bottom, top, width, height } = filterNode.getBoundingClientRect();
+
+    expect(left).toBeGreaterThanOrEqual(0);
+    expect(top).toBeGreaterThanOrEqual(0);
+    expect(right - width).toBeGreaterThanOrEqual(0);
+    expect(bottom - height).toBeGreaterThanOrEqual(0);
+  });
 });
