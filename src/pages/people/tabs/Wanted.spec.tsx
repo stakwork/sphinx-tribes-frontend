@@ -29,7 +29,7 @@ jest.mock('store', () => ({
   useStores: jest.fn()
 }));
 
-describe('User Tickets View', () => {
+describe('Wanted Component', () => {
   nock(user.url).get('/person/id/1').reply(200, { user });
   nock(user.url).get('/ask').reply(200, {});
 
