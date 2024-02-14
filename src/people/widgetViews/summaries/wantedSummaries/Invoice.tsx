@@ -108,7 +108,7 @@ export default function Invoice(props: {
             </CountDownTimer>
           </CountDownTimerWrap>
 
-          <QrWrap>
+          <QrWrap data-testid="qr-code">
             <QR size={props.qrSize || 200} value={props.lnInvoice} />
             <QrBar value={props.lnInvoice} simple style={{ marginTop: '0.94rem' }} />
           </QrWrap>

@@ -241,6 +241,7 @@ const AddBudgetModal = (props: AddBudgetModalProps) => {
                 <InvoiceLabel>Amount (in sats)</InvoiceLabel>
                 <InvoiceInputWrapper>
                   <Input
+                    data-testid="input-amount"
                     placeholder="0"
                     type="text"
                     value={amount}
@@ -248,9 +249,13 @@ const AddBudgetModal = (props: AddBudgetModalProps) => {
                   />
                   <CurrencyUnit>sats</CurrencyUnit>
                 </InvoiceInputWrapper>
-                <UsdValue>{satToUsd(Number(amount))} USD</UsdValue>
+                <UsdValue data-testid="usd-amount">{satToUsd(Number(amount))} USD</UsdValue>
               </InvoiceWrapper>
-              <BudgetButton disabled={!Number(amount) || isLoading} onClick={generateInvoice}>
+              <BudgetButton
+                data-testid="generate-button"
+                disabled={!Number(amount) || isLoading}
+                onClick={generateInvoice}
+              >
                 {isLoading ? <EuiLoadingSpinner size="m" /> : 'Generate Invoice'}
               </BudgetButton>
             </InvoiceForm>
