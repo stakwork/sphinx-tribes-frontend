@@ -107,11 +107,7 @@ export const Wanted = observer(() => {
               }}
               widget={'wanted'}
               onSucces={() => {
-                history.goBack();
                 window.location.reload();
-              }}
-              onGoBack={() => {
-                history.goBack();
               }}
             />
           )

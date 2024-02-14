@@ -45,7 +45,6 @@ export const BountyModal = ({ basePath, fromPage, bountyOwner }: BountyModalProp
       if ((wantedId && !bounty.length) || afterEdit) {
         try {
           const bountyData = await main.getBountyById(Number(wantedId));
-          console.log(bountyData, 'bd');
           setBounty(bountyData);
           if (personToDisplay === undefined) {
             setToDisplay(bountyData[0].person);
@@ -89,6 +88,7 @@ export const BountyModal = ({ basePath, fromPage, bountyOwner }: BountyModalProp
           selectedIndex={Number(wantedIndex)}
           config={config}
           goBack={onGoBack}
+          getBounty={getBounty}
           setAfterEdit={setAfterEdit}
           bounty={bounty}
           fromBountyPage={true}
@@ -131,6 +131,7 @@ export const BountyModal = ({ basePath, fromPage, bountyOwner }: BountyModalProp
         goBack={() => {
           onGoBack();
         }}
+        getBounty={getBounty}
         fromBountyPage={true}
         setAfterEdit={setAfterEdit}
       />

@@ -59,6 +59,7 @@ const Description = styled.div<bounty_description_props>`
     font-weight: 500;
     display: flex;
     align-items: center;
+    word-break: break-word;
   }
   .DescriptionImage {
     height: 77px;

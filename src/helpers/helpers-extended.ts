@@ -42,9 +42,16 @@ export const convertToLocaleString = (value: number): string => {
 };
 
 export const convertLocaleToNumber = (localeString: string): number => {
+  const isNegative = localeString.startsWith('-');
+
   const numString = localeString.replace(/\D/g, '');
 
-  const num = parseInt(numString);
+  let num = parseInt(numString);
+
+  if (isNegative) {
+    num = -num;
+  }
+
   return num;
 };
 
@@ -364,6 +371,15 @@ const session = [
   }
 ];
 
-export const getSessionValue = (label: string): string => {
-  return session.find((s) => s.label === label)?.value || '';
+export const getSessionValue = (label: string): string =>
+  session.find((s) => s.label === label)?.value || '';
+
+export const formatPercentage = (value?: number): string => {
+  if (typeof value === 'number' && !isNaN(value)) {
+    if (value === 0 || (value > 0 && value < 0.01)) {
+      return '0';
+    }
+    return `${Math.round(value)}`;
+  }
+  return '0';
 };

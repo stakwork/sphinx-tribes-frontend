@@ -3,6 +3,9 @@ import { Extras } from '../components/form/inputs/widgets/interfaces';
 import { Organization, Person, PersonBounty } from '../store/main';
 import { MeData } from '../store/ui';
 import { Widget } from './main/types';
+import { coding_languages } from './utils/languageLabelStyle';
+
+export type CodingLanguage = (typeof coding_languages)[number];
 
 export interface AuthProps {
   style?: React.CSSProperties;
@@ -38,6 +41,7 @@ export interface FocusViewProps {
   bounty?: PersonBounty[];
   setRemoveNextAndPrev?: (boolean) => void;
   setAfterEdit?: (boolean) => void;
+  getBounty?: () => Promise<void>;
 }
 
 export interface PeopleMobileeHeaderProps {
@@ -76,6 +80,7 @@ export interface BountiesProps {
   uuid?: string;
   img?: string;
   id?: number;
+  activeOrg?: string;
 }
 
 export interface BadgesProps {
@@ -168,6 +173,7 @@ export interface PaidBountiesProps {
   created: number;
   name?: string;
   org_img?: string;
+  activeOrg?: string;
 }
 
 export interface QRProps {
@@ -199,7 +205,7 @@ export interface SvgMaskProps {
 }
 
 export interface PersonProps extends Person {
-  hideActions: boolean;
+  hideActions?: boolean;
   small: boolean;
   id: number;
   img: string;
@@ -249,6 +255,7 @@ export interface WantedSummaryProps {
   id?: number;
   owner_id?: string;
   markPaidOrUnpaid?: ReactNode;
+  isEditButtonDisable?: boolean;
 }
 
 export type LocalPaymeentState = 'UNKNOWN' | 'PAID' | 'UNPAID';
@@ -391,6 +398,7 @@ export interface WantedViews2Props extends WantedViewsProps {
   type?: string;
   coding_languages?: any;
   fromBountyPage?: boolean;
+  activeOrg?: string;
 }
 
 export interface AboutViewProps {
@@ -427,9 +435,10 @@ export interface OrgBountyHeaderProps {
   languageString?: string;
   org_uuid?: string;
   organizationData: Organization;
+  direction?: string;
 }
 export interface PeopleHeaderProps {
-  onChangeLanguage: (number) => void;
+  onChangeLanguage: (lang: CodingLanguage) => void;
   checkboxIdToSelectedMapLanguage: any;
 }
 

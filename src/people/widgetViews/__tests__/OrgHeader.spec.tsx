@@ -19,7 +19,8 @@ jest.mock('../../../store/main.ts', () => ({
 jest.mock('../../../store/ui.ts', () => ({
   uiStore: {
     meInfo: null,
-    setReady: jest.fn()
+    setReady: jest.fn(),
+    setSearchText: jest.fn()
   }
 }));
 
@@ -36,6 +37,7 @@ const MockProps: OrgBountyHeaderProps = {
     Completed: false
   },
   languageString: '',
+  direction: 'desc',
   org_uuid: 'clf6qmo4nncmf23du7ng',
   onChangeStatus: jest.fn(),
   onChangeLanguage: jest.fn(),
@@ -106,6 +108,35 @@ describe('OrgHeader Component', () => {
     expect(screen.getByText('Bounties')).toBeInTheDocument();
   });
 
+  it('should call getSpecificOrganizationBounties with correct parameters', () => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        pathname: `/org/bounties/${MockProps.org_uuid}`
+      },
+      writable: true
+    });
+
+    render(<OrgHeader {...MockProps} />);
+
+    jest.clearAllMocks();
+
+    // Simulate entering search text
+    const searchText = 'sample search';
+    const searchInput = screen.getByPlaceholderText('Search') as HTMLInputElement;
+    fireEvent.change(searchInput, { target: { value: searchText } });
+
+    // Simulate pressing Enter key
+    fireEvent.keyUp(searchInput, { key: 'Enter', code: 'Enter' });
+
+    // Check if getSpecificOrganizationBounties is called with correct parameters
+    expect(mainStore.getSpecificOrganizationBounties).toHaveBeenCalledWith(MockProps.org_uuid, {
+      page: 1,
+      resetPage: true,
+      search: searchText,
+      ...MockProps.checkboxIdToSelectedMap
+    });
+  });
+
   it('should trigger API call in response to click on status from OrgHeader', async () => {
     const { getByText, getByRole, rerender } = render(<OrgHeader {...MockProps} />);
 
@@ -117,12 +148,43 @@ describe('OrgHeader Component', () => {
     expect(statusOpenCheckbox).toBeInTheDocument();
     fireEvent.click(statusOpenCheckbox);
 
-    waitFor(() => {
+    waitFor(async () => {
       expect(MockProps.onChangeStatus).toHaveBeenCalledWith('Open');
+
+      await waitFor(() => {
+        fireEvent.click(screen.getByText(/Sort By:/i));
+      });
+
+      const newestFirstOption = screen.getByText('Newest First');
+      fireEvent.click(newestFirstOption);
+
+      await waitFor(() => {
+        expect(mainStore.getSpecificOrganizationBounties).toHaveBeenCalledWith(
+          expect.anything(),
+          expect.objectContaining({
+            direction: 'desc'
+          })
+        );
+
+        jest.clearAllMocks();
+
+        const oldestFirstOption = screen.getByText('Oldest First');
+        fireEvent.click(oldestFirstOption);
+      });
+
+      await waitFor(() => {
+        expect(mainStore.getSpecificOrganizationBounties).toHaveBeenCalledWith(
+          expect.anything(),
+          expect.objectContaining({
+            direction: 'asc'
+          })
+        );
+      });
 
       const updatedCheckboxIdToSelectedMap = {
         ...MockProps.checkboxIdToSelectedMap,
-        Open: true
+        Open: true,
+        direction: 'desc'
       };
 
       rerender(
@@ -144,5 +206,83 @@ describe('OrgHeader Component', () => {
     const githubButton = getByText(/Github/i);
     expect(websiteButton).toBeInTheDocument();
     expect(githubButton).toBeInTheDocument();
+  });
+
+  it('UrlButtons are left-aligned if visible', () => {
+    const { getByTestId } = render(<OrgHeader {...MockProps} />);
+    const urlButtonContainer = getByTestId('url-button-container');
+    const containerStyle = window.getComputedStyle(urlButtonContainer);
+    expect(containerStyle.marginLeft).toBe('0px');
+  });
+
+  it('does not display "Post a Bounty" button when user is not logged in', () => {
+    render(<OrgHeader {...MockProps} />);
+    expect(screen.queryByText('Post a Bounty')).not.toBeInTheDocument();
+  });
+
+  it('does not display "Post a Bounty" button when user is logged in but does not have manage bounty role', async () => {
+    // @ts-ignore
+    uiStore.meInfo = { pubkey: '' };
+    jest.spyOn(helpers, 'userCanManageBounty').mockResolvedValue(false);
+
+    render(<OrgHeader {...MockProps} />);
+
+    await waitFor(() => {
+      expect(screen.queryByText('Post a Bounty')).not.toBeInTheDocument();
+    });
+  });
+
+  it('correct number is displayed next to the button as the number of items selected in the status filter', async () => {
+    const { rerender } = render(<OrgHeader {...MockProps} />);
+
+    const statusFilterButton = screen.getByText('Status');
+    fireEvent.click(statusFilterButton);
+
+    const newCheckboxIdToSelectedMap = {
+      Open: true,
+      Assigned: true,
+      Completed: false,
+      Paid: false
+    };
+
+    const newProps = {
+      ...MockProps,
+      checkboxIdToSelectedMap: newCheckboxIdToSelectedMap
+    };
+
+    rerender(<OrgHeader {...newProps} />);
+
+    const selectedCount = Object.values(newCheckboxIdToSelectedMap).filter(Boolean).length;
+
+    await waitFor(() => {
+      expect(screen.getByText(`${selectedCount}`)).toBeInTheDocument();
+    });
+  });
+
+  it('correct number is displayed next to the button as the number of items selected in the skill filter', async () => {
+    const { rerender } = render(<OrgHeader {...MockProps} />);
+
+    const skillFilterButton = screen.getByText('Skill');
+    fireEvent.click(skillFilterButton);
+
+    const newCheckboxIdToSelectedMapLanguage = {
+      javascript: true,
+      lightning: true,
+      typescript: false,
+      golang: false
+    };
+
+    const newProps = {
+      ...MockProps,
+      checkboxIdToSelectedMap: newCheckboxIdToSelectedMapLanguage
+    };
+
+    rerender(<OrgHeader {...newProps} />);
+
+    const selectedCount = Object.values(newCheckboxIdToSelectedMapLanguage).filter(Boolean).length;
+
+    await waitFor(() => {
+      expect(screen.getByText(`${selectedCount}`)).toBeInTheDocument();
+    });
   });
 });

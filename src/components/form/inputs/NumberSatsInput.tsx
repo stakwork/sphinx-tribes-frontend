@@ -14,7 +14,7 @@ const InputOuterBox = styled.div<styledProps>`
   margin-bottom: 16px;
   .inputText {
     height: 45px;
-    width: 292px;
+    width: 100%;
     font-size: 14px;
     color: ${(p: any) => p.color && p.color.pureBlack};
     border: 1px solid ${(p: any) => p.borderColor && p.borderColor};
@@ -49,6 +49,7 @@ const InputOuterBox = styled.div<styledProps>`
 export default function NumberInputNew({
   error,
   label,
+  name,
   value,
   handleChange,
   handleBlur,
@@ -79,10 +80,10 @@ export default function NumberInputNew({
     <InputOuterBox color={color} borderColor={isError ? color.red2 : color.grayish.G600}>
       <input
         className="inputText"
-        id={'text'}
+        id={name}
         type={'text'}
         value={textValue}
-        placeholder={'0'}
+        placeholder={'1'}
         onFocus={handleFocus}
         onBlur={() => {
           handleBlur();
@@ -91,15 +92,21 @@ export default function NumberInputNew({
           }
         }}
         onChange={(e: any) => {
-          const realNumber = convertLocaleToNumber(e.target.value) ?? 0;
-          e.target.value = convertToLocaleString(realNumber);
-          handleChange(e.target.value);
-          setTextValue(e.target.value);
-          setNumberValue(convertLocaleToNumber(e.target.value));
+          const realNumber = convertLocaleToNumber(e.target.value);
+          if (realNumber > 0) {
+            const formattedValue = convertToLocaleString(realNumber);
+            handleChange(formattedValue);
+            setTextValue(formattedValue);
+            setNumberValue(realNumber);
+          } else {
+            handleChange('');
+            setTextValue('');
+            setNumberValue(0);
+          }
         }}
       />
       <label
-        htmlFor={'text'}
+        htmlFor={name}
         className="text"
         onClick={handleFocus}
         style={{

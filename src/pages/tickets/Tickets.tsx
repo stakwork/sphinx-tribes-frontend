@@ -46,11 +46,8 @@ function BodyComponent() {
   }, [main, checkboxIdToSelectedMap, languageString]);
 
   useEffect(() => {
-    setCheckboxIdToSelectedMap({
-      Open: true,
-      Assigned: false,
-      Paid: false
-    });
+    setCheckboxIdToSelectedMap({ ...defaultBountyStatus });
+    main.setBountiesStatus({ ...defaultBountyStatus });
   }, [loading]);
 
   useEffect(() => {
@@ -83,7 +80,7 @@ function BodyComponent() {
       }
     };
     setCheckboxIdToSelectedMap(newCheckboxIdToSelectedMap);
-    // set to store
+    // set the store status, to enable the accurate navigation modal call
     main.setBountiesStatus(newCheckboxIdToSelectedMap);
     getTotalBounties(newCheckboxIdToSelectedMap);
     // set data to default

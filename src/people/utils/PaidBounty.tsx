@@ -35,6 +35,7 @@ const PriceUserContainer = styled.div<PaidBountyProps>`
   width: 579px;
   margin: -0.5px -1.1px;
 `;
+
 const PaidBounty = (props: PaidBountiesProps) => {
   const color = colors['light'];
 

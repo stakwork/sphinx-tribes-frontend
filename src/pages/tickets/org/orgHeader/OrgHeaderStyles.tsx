@@ -1,4 +1,3 @@
-import { colors } from 'config';
 import styled from 'styled-components';
 import checkboxImage from './Icons/checkboxImage.svg';
 
@@ -19,6 +18,7 @@ export const UrlButtonContainer = styled.div`
   width: 180px;
   display: flex;
   gap: 8px;
+  margin-left: 0px;
 `;
 
 export const FillContainer = styled.div`
@@ -53,10 +53,25 @@ export const FiltersRight = styled.span`
 `;
 
 export const SkillContainer = styled.span`
-  padding: 10px 0px;
+  padding: 7px 0px;
   align-items: center;
   display: flex;
   position: relative;
+  width: 85px;
+  gap: 2px;
+`;
+
+export const InnerContainer = styled.span`
+  padding: 7px 0px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  width: 80px;
+  gap: 2px;
+`;
+
+export const Formatter = styled.span`
+  padding-top: 10px;
 `;
 
 export const Button = styled.button`
@@ -121,6 +136,7 @@ export const Leftheader = styled.div`
 export const CompanyNameAndLink = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: center;
 `;
 
 export const CompanyLabel = styled.p`
@@ -129,6 +145,9 @@ export const CompanyLabel = styled.p`
   font-size: 28px;
   font-style: normal;
   font-weight: 700;
+  margin: 2px;
+  display: flex;
+  align-items: center;
 `;
 export const ImageContainer = styled.img`
   width: 72px;
@@ -153,35 +172,6 @@ export const RightHeader = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-`;
-
-export const SearchWrapper = styled.div`
-  height: 40px;
-  padding: 0px 16px;
-  align-items: center;
-  gap: 10px;
-  flex: 1 0 0;
-  display: flex;
-  position: relative;
-`;
-
-export const Icon = styled.img`
-  position: absolute;
-  right: 30px;
-`;
-
-export const SearchBar = styled.input`
-  display: flex;
-  height: 40px;
-  padding: 0px 16px;
-  padding-left: 30px;
-  align-items: center;
-  gap: 10px;
-  flex: 1 0 0;
-  border-radius: 6px;
-  background: var(--Input-BG-1, #f2f3f5);
-  outline: none;
-  border: none;
 `;
 
 export const SoryByContainer = styled.span`
@@ -284,7 +274,8 @@ export const EuiPopOverCheckboxRight = styled.div<styledProps>`
       .euiCheckbox__input:checked + .euiCheckbox__square {
         border: 1px solid ${(p: any) => p?.color && p?.color?.blue1};
         background: ${(p: any) => p?.color && p?.color?.blue1} no-repeat center;
-        background-image: url('static/checkboxImage.svg');
+        background-size: contain;
+        background-image: url(${checkboxImage});
       }
       .euiCheckbox__label {
         font-family: 'Barlow';
@@ -381,7 +372,6 @@ export const StatusContainer = styled.div<styledProps>`
   justify-content: center;
   align-items: center;
   margin-left: 19px;
-  margin-top: 4px;
   cursor: pointer;
   user-select: none;
   .filterStatusIconContainer {
@@ -433,5 +423,27 @@ export const StatusContainer = styled.div<styledProps>`
     .statusText {
       color: ${(p: any) => p.color && p.color.grayish.G10};
     }
+  }
+`;
+
+export const FilterCount = styled.div<styledProps>`
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  margin-left: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: -5px;
+  background: ${(p: any) => p?.color && p.color.blue1};
+  .filterCountText {
+    font-family: 'Barlow';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: ${(p: any) => p.color && p.color.pureWhite};
   }
 `;
