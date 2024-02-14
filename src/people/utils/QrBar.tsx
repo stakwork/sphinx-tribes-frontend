@@ -95,7 +95,7 @@ export default function QrBar(props: QRBarProps) {
       </QRWrap>
 
       <Copy
-      data-testid="copy-button"
+        data-testid="copy-button"
         style={{
           display: 'flex',
           fontSize: 11,
