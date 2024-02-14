@@ -89,8 +89,8 @@ export const TableDataRow = styled.tr`
 export const TableData = styled.td`
   text-align: left;
   white-space: wrap;
-  width: 350.588px;
   font-size: 14px;
+  width: 350.588px;
   padding-left: 50px;
   color: var(--Primary-Text-1, var(--Press-Icon-Color, #292c33));
   font-family: Barlow;
@@ -102,9 +102,9 @@ export const TableData = styled.td`
 export const BountyData = styled.td`
   text-align: left;
   white-space: wrap;
-  width: 350.588px;
   font-size: 14px;
   padding-left: 50px;
+  width: 350.588px;
   color: var(--Primary-Text-1, var(--Press-Icon-Color, #292c33));
   font-family: Barlow;
   font-style: normal;
