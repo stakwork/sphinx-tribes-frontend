@@ -57,7 +57,8 @@ export const SkillContainer = styled.span`
   align-items: center;
   display: flex;
   position: relative;
-  width: 80px;
+  width: 85px;
+  gap: 2px;
 `;
 
 export const InnerContainer = styled.span`
@@ -66,7 +67,7 @@ export const InnerContainer = styled.span`
   align-items: center;
   display: flex;
   width: 80px;
-  gap: 5px;
+  gap: 2px;
 `;
 
 export const Formatter = styled.span`
