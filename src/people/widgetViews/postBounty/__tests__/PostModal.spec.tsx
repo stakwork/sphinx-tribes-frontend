@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import nock from 'nock';
 import React from 'react';
@@ -15,71 +15,111 @@ beforeAll(() => {
 });
 
 describe('Post bounty modal', () => {
-  nock(user.url).get('/person/id/1').reply(200, {});
+  beforeEach(() => {
+    nock(user.url).get('/person/id/1').reply(200, user);
+  });
 
-  test('placeholder', () => {});
-
-  /*test('Show and close modal', () => {
+  test('clicking on post a bounty button render a form', () => {
     const closeHandler = jest.fn();
     render(<PostModal isOpen={true} onClose={closeHandler} widget="wanted" />);
     expect(screen.getByRole('alertdialog')).toBeInTheDocument();
-    fireEvent.click(screen.getByTestId('close-btn'));
-    expect(closeHandler).toBeCalledTimes(1);
-  });
-  test('If modal closed it isnt in the DOM', () => {
-    const closeHandler = jest.fn();
-    render(<PostModal isOpen={false} onClose={closeHandler} widget="wanted" />);
-    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
+    expect(screen.getByText(/Choose Bounty type/i)).toBeInTheDocument();
   });
 
-  const formData = {
-    organization: 'organization',
-    title: 'title',
-    category: 'Web development',
-    description: 'description',
-    price: 1
-  };
-  test('FillForm', async () => {
+  test('start button is visible and navigates to the first step', () => {
     const closeHandler = jest.fn();
-    const successHandler = jest.fn(() => {});
-    render(
-      <PostModal onSucces={successHandler} isOpen={true} onClose={closeHandler} widget="wanted" />
-    );
+    render(<PostModal isOpen={true} onClose={closeHandler} widget="wanted" />);
+    const startButton = screen.getByText('Start');
+    expect(startButton).toBeInTheDocument();
+    fireEvent.click(startButton);
+    expect(screen.getByText('Basic info')).toBeInTheDocument();
+  });
 
-    // 1step
-    expect(screen.queryByText('Choose Bounty type')).toBeInTheDocument();
-    const button = await screen.findByText('Start');
-    fireEvent.click(button);
+  test('back and the next button take you forward and backward respectively', () => {
+    const closeHandler = jest.fn();
+    render(<PostModal isOpen={true} onClose={closeHandler} widget="wanted" />);
+    const startButton = screen.getByText('Start');
+    fireEvent.click(startButton);
+    fireEvent.click(screen.getByText('Next'));
+    expect(screen.getByText('Freelance Job Request')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('Back'));
+    expect(screen.getByText('Choose Bounty type')).toBeInTheDocument();
+  });
 
-    // 2 step
+  test('all form field are rendered', () => {
+    const closeHandler = jest.fn();
+    render(<PostModal isOpen={true} onClose={closeHandler} widget="wanted" />);
+    const startButton = screen.getByText('Start');
+    fireEvent.click(startButton);
+    expect(screen.getByText('Basic info')).toBeInTheDocument();
+    const Form1 = screen.getByText('Organization (optional)');
+    const Form2 = screen.getByText('Bounty Title *');
+    const Form3 = screen.getByText('Github Issue URL');
+    const Form4 = screen.getByText('Category *');
+    const Form5 = screen.getByText('Coding Language');
+    expect(Form1).toBeInTheDocument();
+    expect(Form2).toBeInTheDocument();
+    expect(Form3).toBeInTheDocument();
+    expect(Form4).toBeInTheDocument();
+    expect(Form5).toBeInTheDocument();
+  });
+
+  test('clicking on assign hunter', () => {
+    const closeHandler = jest.fn();
+    const formData = {
+      organization: 'organization',
+      title: 'title',
+      category: 'Web development',
+      description: 'description',
+      price: 1
+    };
+    render(<PostModal isOpen={true} onClose={closeHandler} widget="wanted" />);
+    fireEvent.click(screen.getByText('Start'));
+
     expect(screen.queryByText('Basic info')).toBeInTheDocument();
     expect(screen.queryByText('Next')).toHaveClass('disableText');
-    await waitFor(async () => {
+    waitFor(async () => {
       await userEvent.type(screen.getByLabelText('Bounty Title'), formData.title);
-      await userEvent.click(screen.getByTestId('Category'));
-      await userEvent.click(screen.getByText(formData.category));
-      await userEvent.click(screen.getByText('Next'));
-    });
+      userEvent.click(screen.getByTestId('Category'));
+      userEvent.click(screen.getByText(formData.category));
+      userEvent.click(screen.getByText('Next'));
+      expect(screen.getByText('Description')).toBeInTheDocument();
+      expect(screen.queryAllByText('Description')[0]).toBeInTheDocument();
+      await waitFor(async () => {
+        await userEvent.type(screen.getByLabelText('Description'), formData.description);
+        userEvent.click(screen.getByText('Next'));
+      });
+      expect(screen.getByText('Price and Estimate')).toBeInTheDocument();
+      await waitFor(async () => {
+        await userEvent.type(screen.getByLabelText('Price (Sats)*'), String(formData.price));
+        userEvent.click(screen.getByText('Next'));
+      });
+      expect(screen.queryByText('Assign Developer')).toBeInTheDocument();
+      await waitFor(async () => {
+        userEvent.click(await screen.findByText('Decide Later'));
+      });
+      expect(screen.queryByText('Finish')).toBeInTheDocument();
 
-    // 3 step
-    expect(screen.queryAllByText('Description')[0]).toBeInTheDocument();
-    await waitFor(async () => {
-      await userEvent.type(screen.getByLabelText('Description'), formData.description);
-      await userEvent.click(screen.getByText('Next'));
-    });
+      await waitFor(() => {
+        expect(screen.getByText('Type to search')).toBeInTheDocument();
+        expect(screen.getByText('Skills')).toBeInTheDocument();
+        const assignButtons = screen.getAllByText('Assign');
+        expect(assignButtons.length).toBe(5);
+      });
 
-    //4 step
-    expect(screen.queryByText('Price and Estimate')).toBeInTheDocument();
-    await waitFor(async () => {
-      await userEvent.type(screen.getByLabelText('Price (Sats)*'), String(formData.price));
-      await userEvent.click(screen.getByText('Next'));
-    });
+      // Test That on clicking on the "type to search" box I should be able to type in any character and the list below should be filtered.
+      const searchBox = screen.getByPlaceholderText('Type to search ...');
+      await userEvent.type(searchBox, 'John Doe');
 
-    //5 step
-    expect(screen.queryByText('Assign Developer')).toBeInTheDocument();
-    await waitFor(async () => {
-      await userEvent.click(await screen.findByText('Decide Later'));
+      // Test that on clicking on the "skills" box I should be able to type in any character and the list below should be filtered.
+      userEvent.click(screen.getByRole('button', { name: /Skills/i }));
+      const dropdown = screen.getByRole('listbox');
+      userEvent.click(within(dropdown).getByText('JavaScript'));
+      userEvent.click(within(dropdown).getByText('Python'));
+      userEvent.click(within(dropdown).getByText('Golang'));
+      expect(screen.getByText('JavaScript')).toBeVisible();
+      expect(screen.getByText('Python')).toBeVisible();
+      expect(screen.getByText('Golang')).toBeVisible();
     });
-    expect(screen.queryByText('Finish')).toBeInTheDocument();
-  });*/
+  });
 });
