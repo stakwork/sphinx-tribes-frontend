@@ -144,6 +144,7 @@ export const Wanted = observer(() => {
           <Panel
             href={`${url}/${w.body.id}/${i}`}
             key={w.body.id}
+            data-testid={'user-created-bounty'}
             isMobile={false}
             onClick={(e: any) => {
               e.preventDefault();
