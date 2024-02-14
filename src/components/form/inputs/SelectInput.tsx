@@ -94,7 +94,7 @@ export default function SelectInput({
         label={labeltext}
         className={value ? 'euiFormRow_filed' : active ? 'euiFormRow_active' : ''}
         onClick={() => {
-          setActive(true);
+          setActive(!active);
           setIsSelectOpen(!isSelectOpen);
         }}
       >
