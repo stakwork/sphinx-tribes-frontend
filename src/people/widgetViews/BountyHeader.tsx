@@ -383,6 +383,15 @@ const BountyHeader = ({
     );
   }, [checkboxIdToSelectedMapLanguage, checkboxIdToSelectedMap]);
 
+  const handleSearch = () => {
+    main.getPeopleBounties({
+      page: 1,
+      resetPage: true,
+      ...checkboxIdToSelectedMap,
+      ...checkboxIdToSelectedMapLanguage
+    });
+  };
+
   let timeoutId;
   const onChangeSearch = (e: any) => {
     ui.setSearchText(e);
@@ -390,12 +399,7 @@ const BountyHeader = ({
     // Set a new timeout to wait for user to pause typing
     timeoutId = setTimeout(() => {
       if (ui.searchText === '') {
-        main.getPeopleBounties({
-          page: 1,
-          resetPage: true,
-          ...checkboxIdToSelectedMap,
-          ...checkboxIdToSelectedMapLanguage
-        });
+        handleSearch();
       }
     }, 1000);
   };
@@ -451,12 +455,7 @@ const BountyHeader = ({
                 onChange={onChangeSearch}
                 onKeyUp={(e: any) => {
                   if (e.key === 'Enter' || e.keyCode === 13) {
-                    main.getPeopleBounties({
-                      page: 1,
-                      resetPage: true,
-                      ...checkboxIdToSelectedMap,
-                      ...checkboxIdToSelectedMapLanguage
-                    });
+                    handleSearch();
                   }
                 }}
                 iconStyle={{
