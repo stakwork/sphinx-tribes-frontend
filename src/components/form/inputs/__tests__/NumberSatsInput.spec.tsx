@@ -24,7 +24,7 @@ describe('NumberInputNew Component', () => {
         readOnly
       />
     );
-    const inputElement = screen.getByPlaceholderText('1') as HTMLInputElement;
+    const inputElement = screen.getByPlaceholderText('0') as HTMLInputElement;
     fireEvent.change(inputElement, { target: { value: '123' } });
     expect(convertLocaleToNumber(inputElement.value)).toBeGreaterThanOrEqual(1);
   });
@@ -48,7 +48,7 @@ describe('NumberInputNew Component', () => {
         readOnly
       />
     );
-    const inputElement = screen.getByPlaceholderText('1') as HTMLInputElement;
+    const inputElement = screen.getByPlaceholderText('0') as HTMLInputElement;
     fireEvent.change(inputElement, { target: { value: '@#$' } });
     expect(inputElement.value).toBe(''); //component clears the input for invalid values
   });
@@ -72,7 +72,7 @@ describe('NumberInputNew Component', () => {
         readOnly
       />
     );
-    const inputElement = screen.getByPlaceholderText('1') as HTMLInputElement;
+    const inputElement = screen.getByPlaceholderText('0') as HTMLInputElement;
     fireEvent.change(inputElement, { target: { value: 'text' } });
     expect(inputElement.value).toBe('');
   });
@@ -96,7 +96,7 @@ describe('NumberInputNew Component', () => {
         readOnly
       />
     );
-    const inputElement = screen.getByPlaceholderText('1') as HTMLInputElement;
+    const inputElement = screen.getByPlaceholderText('0') as HTMLInputElement;
     fireEvent.change(inputElement, { target: { value: '-123' } });
     expect(inputElement.value).toBe('');
   });
@@ -120,7 +120,7 @@ describe('NumberInputNew Component', () => {
         readOnly
       />
     );
-    const inputElement = screen.getByPlaceholderText('1') as HTMLInputElement;
+    const inputElement = screen.getByPlaceholderText('0') as HTMLInputElement;
     fireEvent.change(inputElement, { target: { value: '0' } });
     expect(inputElement.value).toBe('');
   });
