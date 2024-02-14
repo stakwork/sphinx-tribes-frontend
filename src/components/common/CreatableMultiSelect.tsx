@@ -20,7 +20,7 @@ const S = styled(CreatableSelect)<styledProps>`
   user-select: none;
   font-size: 12px;
   border-width: 0px !important;
-
+  z-index: 900;
   #react-select-10-listbox {
     z-index: 1000;
   }
@@ -65,7 +65,6 @@ const S = styled(CreatableSelect)<styledProps>`
 export default function Sel(props: SelProps) {
   const { onChange, value, style, setIsTop } = props;
   const color = colors['light'];
-
   const opts =
     colourOptions.map((o: any) => ({
       value: o.value,
@@ -97,6 +96,7 @@ export default function Sel(props: SelProps) {
           option: (styles: any) => ({
             ...styles,
             backgroundColor: '#fff',
+
             color: color.text2,
             fontFamily: 'Barlow',
             fontSize: '14px',

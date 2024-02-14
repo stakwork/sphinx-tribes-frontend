@@ -58,7 +58,7 @@ export default function CreatableMultiSelectInput({
       >
         <R>
           <CreatableMultiSelect
-            selectStyle={{ border: 'none' }}
+            selectStyle={{ border: 'none', zIndex: '999' }}
             options={options}
             writeMode={type === 'multiselectwrite'}
             value={value}
