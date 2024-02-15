@@ -30,6 +30,14 @@ const Body = styled.div<{ isMobile: boolean }>`
     justify-content: flex-end;
     gap: 8px;
     padding: 10px 0;
+
+    .searchTextInput {
+      // 125px = Filter width + margin
+      width: ${(p: any) => (p.isMobile ? 'calc(100vw - 125px)' : '240px')};
+      height: 40px;
+      border: 1px solid ${color.grayish.G600};
+      background: ${color.grayish.G600};
+    }
   }
   & > .content {
     width: 100%;
@@ -38,9 +46,9 @@ const Body = styled.div<{ isMobile: boolean }>`
     height: 100%;
     justify-content: center;
     align-items: flex-start;
-    margin-left: 20px;
-    margin-right: 20px;
-    padding-right: 13px;
+    margin-left: ${(p: any) => (p.isMobile ? 'unset' : '20px')};
+    margin-right: ${(p: any) => (p.isMobile ? 'unset' : '20px')};
+    padding-right: ${(p: any) => (p.isMobile ? 'unset' : '13px')};
   }
 `;
 
@@ -105,13 +113,8 @@ function BodyComponent() {
           name="search"
           type="search"
           placeholder="Search"
-          style={{
-            width: isMobile ? '95vw' : 240,
-            height: 40,
-            border: `1px solid ${color.grayish.G600}`,
-            background: color.grayish.G600
-          }}
           onChange={handleSearchChange}
+          className="searchTextInput"
         />
       </div>
       <div className="content">
