@@ -136,7 +136,7 @@ const OrganizationDetails = (props: {
     async (user: any) => {
       const pubkey = user.owner_pubkey;
       if (uuid && pubkey) {
-        const userRoles = await await main.getUserRoles(uuid, pubkey);
+        const userRoles = await main.getUserRoles(uuid, pubkey);
         setUserRoles(userRoles);
       }
     },
@@ -392,6 +392,7 @@ const OrganizationDetails = (props: {
           <Button
             disabled={viewReportDisabled}
             text="History"
+            dataTestId="organization-view-transaction-history-button"
             color="white"
             style={{ borderRadius: '5px' }}
             onClick={() => setIsOpenHistory(true)}
@@ -399,6 +400,7 @@ const OrganizationDetails = (props: {
           <Button
             disabled={addWithdrawDisabled}
             text="Withdraw"
+            dataTestId="organization-withdraw-budget-button"
             color="withdraw"
             style={{ borderRadius: '5px' }}
             onClick={() => setIsOpenWithdrawBudget(true)}
@@ -407,6 +409,7 @@ const OrganizationDetails = (props: {
             data-testid="deposit-button"
             disabled={addBudgetDisabled}
             text="Deposit"
+            dataTestId="organization-deposit-budget-button"
             color="success"
             style={{ borderRadius: '5px' }}
             onClick={() => setIsOpenBudget(true)}
