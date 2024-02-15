@@ -276,7 +276,7 @@ describe('MobileView component', () => {
     mockSearch.mockRestore();
   });
 
-  it('Test that on clicking on "invite" on a hunter, the pop up should clear and the hunter should be assigned to the bounty', async () => {
+  it('Test that on clicking on "Assign" on a hunter, the pop up should clear and the hunter should be assigned to the bounty', async () => {
     const props: CodingBountiesProps = {
       ...defaultProps,
       creatorStep: 0,
