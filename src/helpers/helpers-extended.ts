@@ -42,9 +42,16 @@ export const convertToLocaleString = (value: number): string => {
 };
 
 export const convertLocaleToNumber = (localeString: string): number => {
+  const isNegative = localeString.startsWith('-');
+
   const numString = localeString.replace(/\D/g, '');
 
-  const num = parseInt(numString);
+  let num = parseInt(numString);
+
+  if (isNegative) {
+    num = -num;
+  }
+
   return num;
 };
 

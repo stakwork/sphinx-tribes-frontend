@@ -404,6 +404,7 @@ const OrganizationDetails = (props: {
             onClick={() => setIsOpenWithdrawBudget(true)}
           />
           <Button
+            data-testid="deposit-button"
             disabled={addBudgetDisabled}
             text="Deposit"
             color="success"

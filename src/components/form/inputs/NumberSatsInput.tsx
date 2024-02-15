@@ -83,7 +83,7 @@ export default function NumberInputNew({
         id={name}
         type={'text'}
         value={textValue}
-        placeholder={'0'}
+        placeholder={'1'}
         onFocus={handleFocus}
         onBlur={() => {
           handleBlur();
@@ -92,11 +92,17 @@ export default function NumberInputNew({
           }
         }}
         onChange={(e: any) => {
-          const realNumber = convertLocaleToNumber(e.target.value) ?? 0;
-          e.target.value = convertToLocaleString(realNumber);
-          handleChange(e.target.value);
-          setTextValue(e.target.value);
-          setNumberValue(convertLocaleToNumber(e.target.value));
+          const realNumber = convertLocaleToNumber(e.target.value);
+          if (realNumber > 0) {
+            const formattedValue = convertToLocaleString(realNumber);
+            handleChange(formattedValue);
+            setTextValue(formattedValue);
+            setNumberValue(realNumber);
+          } else {
+            handleChange('');
+            setTextValue('');
+            setNumberValue(0);
+          }
         }}
       />
       <label
