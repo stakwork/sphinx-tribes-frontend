@@ -136,7 +136,7 @@ const OrganizationDetails = (props: {
     async (user: any) => {
       const pubkey = user.owner_pubkey;
       if (uuid && pubkey) {
-        const userRoles = await await main.getUserRoles(uuid, pubkey);
+        const userRoles = await main.getUserRoles(uuid, pubkey);
         setUserRoles(userRoles);
       }
     },

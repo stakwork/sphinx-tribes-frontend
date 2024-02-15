@@ -322,8 +322,14 @@ const HistoryModal = (props: PaymentHistoryModalProps) => {
             </THead>
             <tbody>
               {currentPaymentsHistory.map((pay: PaymentHistory, i: number) => (
-                <TR type={pay.payment_type || 'payment'} key={i} data-testid={`payment-history-transaction-${i}`}>
-                  <TdLeft type={pay.payment_type} data-testid={`payment-history-transaction-type`}>{pay.payment_type || 'Payment'}</TdLeft>
+                <TR
+                  type={pay.payment_type || 'payment'}
+                  key={i}
+                  data-testid={`payment-history-transaction-${i}`}
+                >
+                  <TdLeft type={pay.payment_type} data-testid={`payment-history-transaction-type`}>
+                    {pay.payment_type || 'Payment'}
+                  </TdLeft>
                   <TD>{moment(pay.created).format('MM/DD/YY')}</TD>
                   <TD data-testid={`payment-history-transaction-amount`}>
                     <AmountSpan>{formatSat(pay.amount)}</AmountSpan> sats
@@ -345,10 +351,13 @@ const HistoryModal = (props: PaymentHistoryModalProps) => {
                       />
                     ) : null}
                   </TD>
-                  <TD >
+                  <TD>
                     {pay.payment_type === 'payment' ? (
                       <ViewBountyContainer>
-                        <ViewBounty onClick={() => viewBounty(pay.bounty_id)} data-testid={`payment-history-transaction-link`}>
+                        <ViewBounty
+                          onClick={() => viewBounty(pay.bounty_id)}
+                          data-testid={`payment-history-transaction-link`}
+                        >
                           View bounty
                         </ViewBounty>
                         <LinkImage src={LinkIcon} />
