@@ -7,16 +7,19 @@ import { setupStore } from '../../../../__test__/__mockData__/setupStore';
 import { user } from '../../../../__test__/__mockData__/user';
 import { mockUsehistory } from '../../../../__test__/__mockFn__/useHistory';
 import { PostModal } from '../PostModal';
+import { localStorageMock } from '../../../../__test__/__mockData__/localStorage';
 
 beforeAll(() => {
   nock.disableNetConnect();
   setupStore();
   mockUsehistory();
+  Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 });
 
 describe('Post bounty modal', () => {
   nock(user.url).get('/person/id/1').reply(200, {});
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   test('placeholder', () => {});
 
   /*test('Show and close modal', () => {
@@ -82,4 +85,67 @@ describe('Post bounty modal', () => {
     });
     expect(screen.queryByText('Finish')).toBeInTheDocument();
   });*/
+
+  test('test the finish button is disabled when submiting /gobounties', async () => {
+    const formData = {
+      organization: 'organization',
+      title: 'title',
+      category: 'Web development',
+      description: 'description',
+      price: 1
+    };
+    const closeHandler = jest.fn();
+    const successHandler = jest.fn();
+
+    render(
+      <PostModal onSucces={successHandler} isOpen={true} onClose={closeHandler} widget="wanted" />
+    );
+
+    // 1 step
+    expect(screen.queryByText('Choose Bounty type')).toBeInTheDocument();
+    const button = await screen.findByText('Start');
+    fireEvent.click(button);
+
+    // 2 step
+    await waitFor(() => {
+      expect(screen.queryByText('Basic info')).toBeInTheDocument();
+      userEvent.type(screen.getByLabelText('Bounty Title *'), formData.title);
+      userEvent.click(screen.getByTestId('Category *'));
+      userEvent.click(screen.getByText(formData.category));
+      userEvent.click(screen.getByText('Next'));
+    });
+
+    // 3 step
+    await waitFor(() => {
+      expect(screen.queryAllByText('Description')[0]).toBeInTheDocument();
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      userEvent.type(document.querySelector('.euiTextArea'), formData.description);
+      expect(screen.getByText('Next')).not.toHaveClass('disableText');
+      userEvent.click(screen.getByText('Next'));
+    });
+
+    // 4 step
+    await waitFor(() => {
+      expect(screen.queryByText('Price and Estimate')).toBeInTheDocument();
+      userEvent.type(screen.getByLabelText('Price (Sats)*'), String(formData.price));
+      expect(screen.getByText('Next')).not.toHaveClass('disableText');
+      userEvent.click(screen.getByText('Next'));
+    });
+
+    // 5 step
+    await waitFor(() => {
+      expect(screen.queryByText('Assign Developer')).toBeInTheDocument();
+      userEvent.click(screen.getByText('Decide Later'));
+    });
+
+    expect(screen.getByText('Finish')).toBeInTheDocument();
+    expect(screen.getByText('Finish')).not.toHaveClass('disableText');
+    userEvent.click(screen.getByText('Finish'));
+
+    // finish button is disabled after submiting
+    await waitFor(() => {
+      expect(screen.getByText('Finish')).toHaveClass('disableText');
+    });
+  });
 });
