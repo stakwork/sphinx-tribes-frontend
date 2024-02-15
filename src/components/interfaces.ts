@@ -41,7 +41,6 @@ export interface ButtonProps {
   activecolor?: string;
   shadowcolor?: string;
   textStyle?: React.CSSProperties;
-  dataTestId?: string;
 }
 
 export interface SelProps {
