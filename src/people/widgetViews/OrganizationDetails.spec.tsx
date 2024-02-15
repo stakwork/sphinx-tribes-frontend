@@ -32,9 +32,9 @@ const organization: Organization = {
 
 const roles = [
   {
-      "name": "VIEW REPORT"
+    name: 'VIEW REPORT'
   }
-]
+];
 
 const invoiceDetails = [
   {
@@ -118,12 +118,11 @@ beforeEach(() => {
   jest
     .spyOn(mainStore, 'getOrganizationBudget')
     .mockReturnValue(Promise.resolve({ total_budget: 10000 }));
-    jest.spyOn(mainStore, 'getPaymentHistories').mockReturnValue(Promise.resolve(invoiceDetails));
+  jest.spyOn(mainStore, 'getPaymentHistories').mockReturnValue(Promise.resolve(invoiceDetails));
   resetOrgFn = jest.fn();
   closeFn = jest.fn();
   getOrgFn = jest.fn();
-})
-
+});
 
 describe('OrganizationDetails', () => {
   jest.setTimeout(20000);
@@ -132,7 +131,6 @@ describe('OrganizationDetails', () => {
   nock(user.url).get('/ask').reply(200, {});
 
   it('Should render history button on organization page', async () => {
-
     await act(async () => {
       const { getByTestId } = render(
         <OrganizationDetails
@@ -188,13 +186,12 @@ describe('OrganizationDetails', () => {
           org={organization}
           resetOrg={resetOrgFn}
         />
-        );
-        getByTestId('organization-view-transaction-history-button').click();
+      );
+      getByTestId('organization-view-transaction-history-button').click();
       await waitFor(async () => getByTestId('payment-history-modal'));
       await waitFor(async () => getByTestId(`payment-history-transaction-0`));
       expect(
-      within(getByTestId('payment-history-transaction-0')
-        ).getByTestId(
+        within(getByTestId('payment-history-transaction-0')).getByTestId(
           'payment-history-transaction-type'
         ).innerHTML
       ).toBe('withdraw');
@@ -209,7 +206,6 @@ describe('OrganizationDetails', () => {
           'payment-history-transaction-type'
         ).innerHTML
       ).toBe('payment');
-
     });
   });
 
@@ -225,7 +221,7 @@ describe('OrganizationDetails', () => {
       );
       getByTestId('organization-view-transaction-history-button').click();
       await waitFor(() => getByTestId('payment-history-modal'));
-      await waitFor(()=>getByTestId(`payment-history-transaction-0`))
+      await waitFor(() => getByTestId(`payment-history-transaction-0`));
 
       expect(
         within(getByTestId('payment-history-transaction-0')).getByTestId(
@@ -299,7 +295,7 @@ describe('OrganizationDetails', () => {
       within(getByTestId('payment-history-transaction-3'))
         .getByTestId('payment-history-transaction-link')
         .click();
-      expect(opeWindowFn).toBeCalledWith(`/bounty/${invoiceDetails[3].bounty_id}`, "_blank");
+      expect(opeWindowFn).toBeCalledWith(`/bounty/${invoiceDetails[3].bounty_id}`, '_blank');
     });
   });
   it('Should render all types of filter in history modal ', async () => {
@@ -338,5 +334,4 @@ describe('OrganizationDetails', () => {
       getByTestId('payment-history-filter-type-withdraw');
     });
   });
-
 });
