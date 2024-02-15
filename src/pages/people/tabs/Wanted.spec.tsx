@@ -64,8 +64,13 @@ describe('Wanted Component', () => {
       .mockReturnValue(Promise.resolve([userBounty]));
     act(async () => {
       const { getAllByTestId } = render(
+<<<<<<< HEAD
         <MemoryRouter initialEntries={['/p/1234/wanted']}>
           <Route path="/p/:personPubkey/wanted" component={Wanted} />
+=======
+        <MemoryRouter initialEntries={['/p/1234/bounties']}>
+          <Route path="/p/:uuid/bounties" component={Wanted} />
+>>>>>>> efe5911 (fixed merge conflicts and test)
         </MemoryRouter>
       );
       await waitFor(() => getAllByTestId('user-created-bounty'));
@@ -113,8 +118,13 @@ describe('Wanted Component', () => {
       .mockReturnValue(Promise.resolve(userBounties));
     act(async () => {
       const { getAllByTestId } = render(
+<<<<<<< HEAD
         <MemoryRouter initialEntries={['/p/1234/wanted']}>
           <Route path="/p/:personPubkey/wanted" component={Wanted} />
+=======
+        <MemoryRouter initialEntries={['/p/1234/bounties']}>
+          <Route path="/p/:uuid/bounties" component={Wanted} />
+>>>>>>> efe5911 (fixed merge conflicts and test)
         </MemoryRouter>
       );
 
@@ -164,8 +174,13 @@ describe('Wanted Component', () => {
       .mockReturnValue(Promise.resolve(userBounties));
     act(async () => {
       const { getByText } = render(
+<<<<<<< HEAD
         <MemoryRouter initialEntries={['/p/1234/wanted']}>
           <Route path="/p/:personPubkey/wanted" component={Wanted} />
+=======
+        <MemoryRouter initialEntries={['/p/1234/bounties']}>
+          <Route path="/p/:uuid/bounties" component={Wanted} />
+>>>>>>> efe5911 (fixed merge conflicts and test)
         </MemoryRouter>
       );
 
@@ -218,8 +233,13 @@ describe('Wanted Component', () => {
       .mockReturnValue(Promise.resolve([userBounty]));
     act(async () => {
       const { getAllByTestId } = render(
+<<<<<<< HEAD
         <MemoryRouter initialEntries={['/p/1234/wanted']}>
           <Route path="/p/:personPubkey/wanted" component={Wanted} />
+=======
+        <MemoryRouter initialEntries={['/p/1234/bounties']}>
+          <Route path="/p/:uuid/bounties" component={Wanted} />
+>>>>>>> efe5911 (fixed merge conflicts and test)
         </MemoryRouter>
       );
 
@@ -263,8 +283,13 @@ describe('Wanted Component', () => {
       .mockReturnValue(Promise.resolve([userBounty]));
     act(async () => {
       const { getAllByTestId } = render(
+<<<<<<< HEAD
         <MemoryRouter initialEntries={['/p/1234/wanted']}>
           <Route path="/p/:personPubkey/wanted" component={Wanted} />
+=======
+        <MemoryRouter initialEntries={['/p/1234/bounties']}>
+          <Route path="/p/:uuid/bounties" component={Wanted} />
+>>>>>>> efe5911 (fixed merge conflicts and test)
         </MemoryRouter>
       );
 
@@ -317,8 +342,13 @@ describe('Wanted Component', () => {
       .mockReturnValue(Promise.resolve(userBounties));
     act(async () => {
       const { getByText, getAllByTestId } = render(
+<<<<<<< HEAD
         <MemoryRouter initialEntries={['/p/1234/wanted']}>
           <Route path="/p/:personPubkey/wanted" component={Wanted} />
+=======
+        <MemoryRouter initialEntries={['/p/1234/bounties']}>
+          <Route path="/p/:uuid/bounties" component={Wanted} />
+>>>>>>> efe5911 (fixed merge conflicts and test)
         </MemoryRouter>
       );
       await waitFor(() => getAllByTestId('user-created-bounty'));
@@ -349,8 +379,13 @@ describe('Wanted Component', () => {
     jest.spyOn(mainStore, 'getPersonCreatedBounties').mockReturnValue(Promise.resolve([]));
 
     const { getByText } = render(
+<<<<<<< HEAD
       <MemoryRouter initialEntries={['/p/1234/wanted']}>
         <Route path="/p/:personPubkey/wanted" component={Wanted} />
+=======
+      <MemoryRouter initialEntries={['/p/1234/bounties']}>
+        <Route path="/p/:uuid/bounties" component={Wanted} />
+>>>>>>> efe5911 (fixed merge conflicts and test)
       </MemoryRouter>
     );
     expect(getByText('No Tickets Yet')).toBeInTheDocument();
@@ -387,8 +422,13 @@ describe('Wanted Component', () => {
       .mockReturnValue(Promise.resolve([userBounty]));
     act(async () => {
       const { getByText } = render(
+<<<<<<< HEAD
         <MemoryRouter initialEntries={['/p/1234/wanted']}>
           <Route path="/p/:personPubkey/wanted" component={Wanted} />
+=======
+        <MemoryRouter initialEntries={['/p/1234/bounties']}>
+          <Route path="/p/:uuid/bounties" component={Wanted} />
+>>>>>>> efe5911 (fixed merge conflicts and test)
         </MemoryRouter>
       );
       const PostBountyButton = await screen.findByRole('button', { name: /Post a Bounty/i });
