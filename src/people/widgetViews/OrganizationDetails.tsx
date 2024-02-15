@@ -392,6 +392,7 @@ const OrganizationDetails = (props: {
           <Button
             disabled={viewReportDisabled}
             text="History"
+            dataTestId="organization-view-transaction-history-button"
             color="white"
             style={{ borderRadius: '5px' }}
             onClick={() => setIsOpenHistory(true)}
@@ -399,6 +400,7 @@ const OrganizationDetails = (props: {
           <Button
             disabled={addWithdrawDisabled}
             text="Withdraw"
+            dataTestId="organization-withdraw-budget-button"
             color="withdraw"
             style={{ borderRadius: '5px' }}
             onClick={() => setIsOpenWithdrawBudget(true)}
@@ -406,6 +408,7 @@ const OrganizationDetails = (props: {
           <Button
             disabled={addBudgetDisabled}
             text="Deposit"
+            dataTestId="organization-deposit-budget-button"
             color="success"
             style={{ borderRadius: '5px' }}
             onClick={() => setIsOpenBudget(true)}
