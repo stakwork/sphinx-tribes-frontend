@@ -65,7 +65,6 @@ export default function Button(props: ButtonProps) {
         paddingRight: props.leadingIcon && 10,
         ...props.style
       }}
-      {...(props?.dataTestId ? { 'data-testid': props?.dataTestId } : {})}
       disabled={props.disabled}
       onClick={props.onClick}
     >

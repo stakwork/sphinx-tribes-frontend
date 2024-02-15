@@ -274,11 +274,11 @@ const HistoryModal = (props: PaymentHistoryModalProps) => {
         borderRadius: '50%'
       }}
     >
-      <HistoryWrapper data-testid="payment-history-modal">
+      <HistoryWrapper>
         <ModalHeaderWrapper>
           <ModalTitle>Payment History</ModalTitle>
           <PaymentFilterWrapper>
-            <PaymentType data-testid="payment-history-filter-type-payment">
+            <PaymentType>
               <input
                 id="payment"
                 type={'checkbox'}
@@ -287,7 +287,7 @@ const HistoryModal = (props: PaymentHistoryModalProps) => {
               />
               <Label htmlFor="payment">Payments</Label>
             </PaymentType>
-            <PaymentType data-testid="payment-history-filter-type-deposit">
+            <PaymentType>
               <input
                 id="deposit"
                 type={'checkbox'}
@@ -296,7 +296,7 @@ const HistoryModal = (props: PaymentHistoryModalProps) => {
               />
               <Label htmlFor="deposit">Deposit</Label>
             </PaymentType>
-            <PaymentType data-testid="payment-history-filter-type-withdraw">
+            <PaymentType>
               <input
                 id="withdraw"
                 type={'checkbox'}
@@ -322,19 +322,13 @@ const HistoryModal = (props: PaymentHistoryModalProps) => {
             </THead>
             <tbody>
               {currentPaymentsHistory.map((pay: PaymentHistory, i: number) => (
-                <TR
-                  type={pay.payment_type || 'payment'}
-                  key={i}
-                  data-testid={`payment-history-transaction-${i}`}
-                >
-                  <TdLeft type={pay.payment_type} data-testid={`payment-history-transaction-type`}>
-                    {pay.payment_type || 'Payment'}
-                  </TdLeft>
+                <TR type={pay.payment_type || 'payment'} key={i}>
+                  <TdLeft type={pay.payment_type}>{pay.payment_type || 'Payment'}</TdLeft>
                   <TD>{moment(pay.created).format('MM/DD/YY')}</TD>
-                  <TD data-testid={`payment-history-transaction-amount`}>
+                  <TD>
                     <AmountSpan>{formatSat(pay.amount)}</AmountSpan> sats
                   </TD>
-                  <TD data-testid={`payment-history-transaction-sender`}>
+                  <TD>
                     <UserInfo
                       image={pay.sender_img}
                       pubkey={pay.sender_pubkey}
@@ -342,7 +336,7 @@ const HistoryModal = (props: PaymentHistoryModalProps) => {
                     />
                   </TD>
                   <TD>{pay.payment_type === 'payment' ? <ArrowImage src={ArrowRight} /> : null}</TD>
-                  <TD data-testid={`payment-history-transaction-receiver`}>
+                  <TD>
                     {pay.payment_type === 'payment' ? (
                       <UserInfo
                         image={pay.receiver_img}
@@ -354,10 +348,7 @@ const HistoryModal = (props: PaymentHistoryModalProps) => {
                   <TD>
                     {pay.payment_type === 'payment' ? (
                       <ViewBountyContainer>
-                        <ViewBounty
-                          onClick={() => viewBounty(pay.bounty_id)}
-                          data-testid={`payment-history-transaction-link`}
-                        >
+                        <ViewBounty onClick={() => viewBounty(pay.bounty_id)}>
                           View bounty
                         </ViewBounty>
                         <LinkImage src={LinkIcon} />
