@@ -9,7 +9,6 @@ import { mockUsehistory } from '../../../../__test__/__mockFn__/useHistory';
 import { PostModal } from '../PostModal';
 
 beforeAll(() => {
-  nock.disableNetConnect();
   setupStore();
   mockUsehistory();
 });
