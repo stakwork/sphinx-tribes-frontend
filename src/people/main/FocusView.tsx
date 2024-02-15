@@ -42,16 +42,19 @@ function FocusedView(props: FocusViewProps) {
     setIsModalSideButton,
     bounty,
     setRemoveNextAndPrev,
-    setAfterEdit
+    setAfterEdit,
+    getBounty
   } = props;
   const { ui, main } = useStores();
 
   const skipEditLayer = selectedIndex < 0 || config.skipEditLayer ? true : false;
 
+  const [submiting, setSubmiting] = useState(false);
   const [loading, setLoading] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [editMode, setEditMode] = useState(skipEditLayer);
   const [editable, setEditable] = useState<boolean>(!canEdit);
+  const [isEditButtonDisable, setIsEditButtonDisable] = useState(false);
   const [toasts, setToasts]: any = useState([]);
 
   const scrollDiv: any = useRef(null);
@@ -223,6 +226,8 @@ function FocusedView(props: FocusViewProps) {
 
   // eslint-disable-next-line @typescript-eslint/no-inferrable-types
   async function submitForm(body: any, notEdit?: boolean) {
+    if (submiting) return;
+
     let newBody = cloneDeep(body);
 
     try {
@@ -241,6 +246,8 @@ function FocusedView(props: FocusViewProps) {
     const info = ui.meInfo as any;
     if (!info) return console.log('no meInfo');
     setLoading(true);
+    setIsEditButtonDisable(true);
+    setSubmiting(true);
 
     try {
       if (typeof newBody?.assignee !== 'string' || !newBody?.assignee) {
@@ -266,6 +273,10 @@ function FocusedView(props: FocusViewProps) {
       }
 
       await main.saveBounty(newBody);
+      if (newBody.assignee === '' && getBounty) {
+        setAfterEdit && setAfterEdit(true);
+        await getBounty();
+      }
 
       // Refresh the tickets page if a user eidts from the tickets tab
       if (window.location.href.includes('wanted')) {
@@ -275,6 +286,8 @@ function FocusedView(props: FocusViewProps) {
       console.log('e', e);
     }
 
+    setIsEditButtonDisable(false);
+    setSubmiting(false);
     if (props?.onSuccess) props.onSuccess();
 
     if (notEdit === true) {
@@ -407,6 +420,7 @@ function FocusedView(props: FocusViewProps) {
               loading={loading}
               close={handleFormClose}
               onSubmit={submitForm}
+              submiting={submiting}
               scrollDiv={scrollDiv}
               schema={config && config.schema}
               initialValues={initialValues}
@@ -460,6 +474,7 @@ function FocusedView(props: FocusViewProps) {
                     iconSize={18}
                     width={100}
                     text={'Edit'}
+                    disabled={isEditButtonDisable}
                   />
                   <Button
                     onClick={deleteHandler}
@@ -497,6 +512,7 @@ function FocusedView(props: FocusViewProps) {
             editAction={handleEditAction}
             setIsModalSideButton={setIsModalSideButton}
             setIsExtraStyle={props?.setIsExtraStyle}
+            isEditButtonDisable={isEditButtonDisable}
           />
         </>
       )}

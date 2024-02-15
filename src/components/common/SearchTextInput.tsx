@@ -1,5 +1,5 @@
 import MaterialIcon from '@material/react-material-icon';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { observer } from 'mobx-react-lite';
 import { SearchTextInputProps } from 'components/interfaces';
@@ -35,6 +35,10 @@ function SearchTextInput(props: SearchTextInputProps) {
   const [expand, setExpand] = useState(ui.searchText ? true : false);
 
   const collapseStyles = props.small && !expand ? {} : {};
+
+  useEffect(() => {
+    setSearchValue(ui.searchText);
+  }, [ui.searchText]);
 
   function doDelayedValueUpdate() {
     props.onChange(debounceValue);

@@ -414,6 +414,7 @@ function Header() {
                       to={t.path}
                       selected={selected}
                       onClick={() => {
+                        ui.searchText && ui.setSearchText('');
                         history.push(t.path);
                       }}
                     >
@@ -471,6 +472,7 @@ function Header() {
                       selected={selected}
                       onClick={() => {
                         history.push(t.path);
+                        ui.searchText && ui.setSearchText('');
                         localStorage.setItem('key', t.path);
                       }}
                     >

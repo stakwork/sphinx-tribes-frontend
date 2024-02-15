@@ -132,7 +132,12 @@ const UserTickets = () => {
         const person = main.people.find((p: any) => p.owner_pubkey === item.body.owner_id);
         const body = { ...item.body };
         return (
-          <Panel href={`${url}/${body.id}/${i}`} isMobile={isMobile} key={i + body?.created}>
+          <Panel
+            href={`${url}/${body.id}/${i}`}
+            isMobile={isMobile}
+            key={i + body?.created}
+            data-testid={'user-personal-bounty-card'}
+          >
             <WantedView
               colors={color}
               showName

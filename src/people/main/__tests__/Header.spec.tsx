@@ -20,7 +20,7 @@ beforeAll(() => {
 
 describe('AboutView Component', () => {
   nock(user.url).get('/person/id/1').reply(200, {});
-  nock(user.url).get(`/person/${user.pubkey}`).reply(200, {});
+  nock(user.url).get(`/person/${user.uuid}`).reply(200, {});
 
   it('should not navigate to profile page if clicked on profile', async () => {
     jest.spyOn(mainStore, 'getIsAdmin').mockReturnValue(Promise.resolve(false));
@@ -36,7 +36,7 @@ describe('AboutView Component', () => {
       );
       const me = getByText(user.alias);
       fireEvent.click(me);
-      expect(history.location.pathname).toEqual(`/p/${user.owner_pubkey}/organizations`);
+      expect(history.location.pathname).toEqual(`/p/${user.uuid}/organizations`);
       expect(history.length).toEqual(3);
     });
   });
@@ -46,7 +46,7 @@ describe('AboutView Component', () => {
     jest.spyOn(mainStore, 'getPersonById').mockReturnValue(Promise.resolve(person));
     jest.spyOn(mainStore, 'getSelf').mockReturnValue(Promise.resolve());
     const history = createMemoryHistory();
-    history.push(`/p/${user.owner_pubkey}/organizations`);
+    history.push(`/p/${user.uuid}/organizations`);
     await act(async () => {
       const { getByText } = render(
         <Router history={history}>
@@ -55,7 +55,7 @@ describe('AboutView Component', () => {
       );
       const me = getByText(user.alias);
       fireEvent.click(me);
-      expect(history.location.pathname).toEqual(`/p/${user.owner_pubkey}/organizations`);
+      expect(history.location.pathname).toEqual(`/p/${user.uuid}/organizations`);
       expect(history.length).toEqual(2);
     });
   });

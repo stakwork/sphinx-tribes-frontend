@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { PeopleHeaderProps } from 'people/interfaces';
+import { CodingLanguage, PeopleHeaderProps } from 'people/interfaces';
 import { observer } from 'mobx-react-lite';
 import React, { useState, useEffect } from 'react';
 import { EuiCheckboxGroup, EuiPopover, EuiText } from '@elastic/eui';
@@ -159,7 +159,7 @@ const EuiPopOverCheckboxWrapper = styled.div<styledProps>`
   }
 `;
 
-const Coding_Languages = GetValue(coding_languages);
+const Coding_Languages = GetValue<CodingLanguage>(coding_languages);
 
 const PeopleHeader = ({ onChangeLanguage, checkboxIdToSelectedMapLanguage }: PeopleHeaderProps) => {
   const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
@@ -184,7 +184,7 @@ const PeopleHeader = ({ onChangeLanguage, checkboxIdToSelectedMapLanguage }: Peo
   };
 
   return (
-    <FilterWrapper>
+    <FilterWrapper data-testid="PeopleHeader">
       <EuiPopover
         button={
           <FilterTrigger onClick={onToggleButton} color={color}>
@@ -226,8 +226,8 @@ const PeopleHeader = ({ onChangeLanguage, checkboxIdToSelectedMapLanguage }: Peo
               <EuiCheckboxGroup
                 options={Coding_Languages}
                 idToSelectedMap={checkboxIdToSelectedMapLanguage}
-                onChange={(id: any) => {
-                  onChangeLanguage(id);
+                onChange={(id: string) => {
+                  onChangeLanguage(id as CodingLanguage);
                 }}
               />
             </EuiPopOverCheckboxWrapper>

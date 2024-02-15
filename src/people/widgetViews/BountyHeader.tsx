@@ -383,6 +383,25 @@ const BountyHeader = ({
     );
   }, [checkboxIdToSelectedMapLanguage, checkboxIdToSelectedMap]);
 
+  const getBounties = () => {
+    main.getPeopleBounties({
+      page: 1,
+      resetPage: true,
+      ...checkboxIdToSelectedMap,
+      ...checkboxIdToSelectedMapLanguage
+    });
+  };
+
+  const handleSearch = (e: any) => {
+    if (e.key === 'Enter' || e.keyCode === 13) {
+      getBounties();
+    }
+  };
+
+  const clearSearch = () => {
+    getBounties();
+  };
+
   let timeoutId;
   const onChangeSearch = (e: any) => {
     ui.setSearchText(e);
@@ -390,7 +409,7 @@ const BountyHeader = ({
     // Set a new timeout to wait for user to pause typing
     timeoutId = setTimeout(() => {
       if (ui.searchText === '') {
-        main.getPeopleBounties({ page: 1, resetPage: true, ...checkboxIdToSelectedMap });
+        clearSearch();
       }
     }, 1000);
   };
@@ -444,11 +463,7 @@ const BountyHeader = ({
                   color: color.text2
                 }}
                 onChange={onChangeSearch}
-                onKeyUp={(e: any) => {
-                  if (e.key === 'Enter' || e.keyCode === 13) {
-                    main.getPeopleBounties({ page: 1, resetPage: true });
-                  }
-                }}
+                onKeyUp={handleSearch}
                 iconStyle={{
                   top: '13px'
                 }}

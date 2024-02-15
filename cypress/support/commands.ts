@@ -241,3 +241,47 @@ Cypress.Commands.add('lnurl_login', () => {
       }
     });
 });
+
+Cypress.Commands.add('create_org', (organization) => {
+  cy.contains(organization.loggedInAs).click();
+
+  cy.contains('Add Organization').click();
+
+  cy.get('[placeholder="My Organization..."]').type(organization.name);
+
+  cy.get('[placeholder="Description Text..."]').type(organization.description);
+
+  if (organization.website) {
+    cy.get('[placeholder="Website URL..."]').type(organization.website);
+  }
+
+  if (organization.github) {
+    cy.get('[placeholder="Github link..."]').type(organization.github);
+  }
+
+  cy.contains('* Required fields').next().click();
+});
+
+Cypress.Commands.add('pay_invoice', (details) => {
+  let user;
+
+  cy.fixture('nodes.json').then((json) => {
+    for (let i = 0; i < json.length; i++) {
+      if (json[i].alias === details.payersName) {
+        user = json[i];
+      }
+    }
+    cy.request({
+      method: 'PUT',
+      url: `${user.external_ip}/invoices`,
+      headers: {
+        'x-user-token': `${user.authToken}`
+      },
+      body: {
+        payment_request: details.invoice
+      }
+    }).then((response) => {
+      console.log(response);
+    });
+  });
+});

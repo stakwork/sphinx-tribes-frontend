@@ -16,6 +16,13 @@ const Wrap = styled.div`
   overflow: hidden;
 `;
 
+const A = styled.a<{ small: boolean }>`
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  flex: ${(p: any) => (p.small ? '1 0 min(100%, 340px)' : undefined)};
+`;
+
 interface DWarpProps {
   squeeze: boolean;
 }
@@ -52,6 +59,11 @@ const Title = styled.h3`
   /* Text 2 */
 
   color: #3c3f41;
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
 `;
 
 const DTitle = styled.h3`
@@ -133,14 +145,14 @@ export default function Person(props: PersonProps) {
   function renderPersonCard() {
     if (small) {
       return (
-        <a
+        <A
           href={`/p/${uuid}`}
           // The "select" method will navigate to a new person page while retaining the "href" attribute for SEO purposes.
           onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
             e.preventDefault();
             e.stopPropagation();
           }}
-          style={{ textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}
+          small={small}
         >
           <div
             style={{ background: selected ? '#F2F3F5' : '#fff', cursor: 'pointer' }}
@@ -152,7 +164,13 @@ export default function Person(props: PersonProps) {
                 <Img style={addedStyles} src={img || defaultPic} />
               </div>
               <R style={{ width: hideActions ? 'calc(100% - 80px)' : 'calc(100% - 116px)' }}>
-                <Title style={{ fontSize: hideActions ? 17 : 20, margin: 0 }}>{owner_alias}</Title>
+                <Title
+                  style={{
+                    fontSize: hideActions ? 17 : 20
+                  }}
+                >
+                  {owner_alias}
+                </Title>
                 {description && description !== 'description' && (
                   <Description
                     lineRows={hideActions ? 1 : 2}
@@ -190,19 +208,19 @@ export default function Person(props: PersonProps) {
             </Wrap>
             <Divider />
           </div>
-        </a>
+        </A>
       );
     }
     // desktop mode
     return (
-      <a
+      <A
         href={`/p/${uuid}`}
         // The "select" method will navigate to a new person page while retaining the "href" attribute for SEO purposes.
         onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
           e.preventDefault();
           e.stopPropagation();
         }}
-        style={{ textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}
+        small={small}
       >
         <DWrap
           squeeze={squeeze}
@@ -245,7 +263,7 @@ export default function Person(props: PersonProps) {
             </Row>
           </div>
         </DWrap>
-      </a>
+      </A>
     );
   }
 

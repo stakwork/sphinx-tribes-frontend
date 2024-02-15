@@ -1,8 +1,12 @@
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { CodingBountiesProps } from 'people/interfaces';
-import React from 'react';
+import React, { useState } from 'react';
 import NameTag from 'people/utils/NameTag';
+import { uiStore } from 'store/ui';
+import { user } from '__test__/__mockData__/user';
+import userEvent from '@testing-library/user-event';
+import { mainStore } from 'store/main';
 import MobileView from '../CodingBounty';
 
 describe('MobileView component', () => {
@@ -14,6 +18,10 @@ describe('MobileView component', () => {
       disconnect: () => null
     });
     window.IntersectionObserver = mockIntersectionObserver;
+  });
+
+  afterAll(() => {
+    jest.clearAllMocks();
   });
 
   const defaultProps: CodingBountiesProps = {
@@ -162,5 +170,159 @@ describe('MobileView component', () => {
 
     const completionDate = screen.getByText('Jan 26, 2024');
     expect(completionDate).toBeInTheDocument();
+  });
+
+  it('Test that on clicking on "not assigned", a pop up should appear to invite a developer including "type to search" box, a "skills" box, and a recommendation of 5 hunters.', async () => {
+    const props: CodingBountiesProps = {
+      ...defaultProps,
+      assigneeValue: true,
+      creatorStep: 0,
+      peopleList: [
+        { id: 1, owner_alias: '111' },
+        { id: 2, owner_alias: '222' },
+        { id: 3, owner_alias: '333' },
+        { id: 4, owner_alias: '444' },
+        { id: 5, owner_alias: '555' }
+      ] as any
+    };
+
+    uiStore.setMeInfo({
+      ...user,
+      owner_alias: props.person.owner_alias
+    });
+
+    render(<MobileView {...props} />);
+
+    fireEvent.click(screen.getByText('Not Assigned'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Assign Developer')).toBeInTheDocument();
+      expect(screen.getByPlaceholderText('Type to search ...')).toBeInTheDocument();
+      expect(screen.getByText('Skills')).toBeInTheDocument();
+      expect(document.querySelectorAll('.PeopleList .People')).toHaveLength(5);
+    });
+  });
+
+  it('Test filter peopleList by "type to search" or "skills"', async () => {
+    const props: CodingBountiesProps = {
+      ...defaultProps,
+      assigneeValue: true,
+      creatorStep: 0,
+      peopleList: [
+        { id: 1, owner_alias: '111' },
+        { id: 2, owner_alias: '222' },
+        { id: 3, owner_alias: '333' },
+        { id: 4, owner_alias: '444' },
+        { id: 5, owner_alias: '555' }
+      ] as any
+    };
+
+    uiStore.setMeInfo({
+      ...user,
+      owner_alias: props.person.owner_alias
+    });
+
+    const mockPeopleList: any = [
+      {
+        id: 1,
+        owner_alias: 'TEST_NAME_1',
+        extras: {
+          coding_languages: [
+            { value: 'R', label: 'R' },
+            { value: 'C++', label: 'C++' }
+          ]
+        }
+      },
+      {
+        id: 2,
+        owner_alias: 'TEST_NAME_2',
+        extras: { coding_languages: [{ value: 'C', label: 'C' }] }
+      },
+      { id: 3, owner_alias: 'TEST_NAME_3', extras: { coding_languages: [] } }
+    ];
+    const mockSearch = jest
+      .spyOn(mainStore, 'getPeopleByNameAliasPubkey')
+      .mockResolvedValue(mockPeopleList);
+
+    render(<MobileView {...props} />);
+
+    fireEvent.click(screen.getByText('Not Assigned'));
+
+    // filter by "type to search"
+    await waitFor(async () => {
+      expect(screen.getByText('Assign Developer')).toBeInTheDocument();
+      fireEvent.click(screen.getByPlaceholderText('Type to search ...'));
+      await userEvent.type(screen.getByPlaceholderText('Type to search ...'), 'TEST_NAME');
+      expect(document.querySelectorAll('.PeopleList .People')).toHaveLength(mockPeopleList.length);
+
+      mockPeopleList.forEach((person: any) => {
+        expect(screen.getByText(person.owner_alias)).toBeInTheDocument();
+      });
+    });
+
+    // filter by "skills"
+    await waitFor(() => {
+      fireEvent.click(screen.getByText('Skills'));
+      fireEvent.click(screen.getByText('R'));
+
+      fireEvent.keyDown(document, { key: 'Escape', keyCode: 27 });
+    });
+
+    expect(document.querySelectorAll('.PeopleList .People')).toHaveLength(1);
+    expect(screen.getByText('TEST_NAME_1')).toBeInTheDocument();
+    expect(screen.queryByText('TEST_NAME_2')).not.toBeInTheDocument();
+    expect(screen.queryByText('TEST_NAME_3')).not.toBeInTheDocument();
+
+    mockSearch.mockRestore();
+  });
+
+  it('Test that on clicking on "Assign" on a hunter, the pop up should clear and the hunter should be assigned to the bounty', async () => {
+    const props: CodingBountiesProps = {
+      ...defaultProps,
+      creatorStep: 0,
+      peopleList: [
+        { id: 1, owner_alias: 'NAME_1' },
+        { id: 2, owner_alias: 'NAME_2' },
+        { id: 3, owner_alias: 'NAME_3' },
+        { id: 4, owner_alias: 'NAME_4' },
+        { id: 5, owner_alias: 'NAME_5' }
+      ] as any
+    };
+    const mockHandleAssigneeDetails = jest.fn();
+
+    uiStore.setMeInfo({
+      ...user,
+      owner_alias: props.person.owner_alias
+    });
+
+    const App = () => {
+      const [assigneeValue, setAssigneeValue] = useState(false);
+
+      return (
+        <MobileView
+          {...props}
+          assigneeValue={assigneeValue}
+          assigneeHandlerOpen={() => setAssigneeValue((v: boolean) => !v)}
+          handleAssigneeDetails={() => {
+            setAssigneeValue((v: boolean) => !v);
+            mockHandleAssigneeDetails();
+          }}
+        />
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByText('Not Assigned'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Assign Developer')).toBeInTheDocument();
+      fireEvent.click(screen.getAllByText('Assign')[0]);
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByText('Assign Developer')).toBe(null);
+      expect(mockHandleAssigneeDetails).toBeCalledTimes(1);
+    });
   });
 });

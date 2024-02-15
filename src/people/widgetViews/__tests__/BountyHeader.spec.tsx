@@ -165,6 +165,72 @@ describe('BountyHeader Component', () => {
     expect(await getPeopleBountiesSpy).toHaveBeenCalled();
   });
 
+  it('should selected filters applied when search text is empty', async () => {
+    // Mock selected filters
+    mockProps.checkboxIdToSelectedMap = { open: true };
+    mockProps.checkboxIdToSelectedMapLanguage = { javascript: true };
+
+    render(<BountyHeader {...mockProps} />);
+
+    // Simulate search
+    fireEvent.change(screen.getByTestId('search-bar'), { target: { value: 'Test' } });
+
+    // Check if the search text is updated
+    expect(screen.getByTestId('search-bar')).toHaveValue('Test');
+
+    fireEvent.change(screen.getByTestId('search-bar'), { target: { value: '' } });
+
+    expect(screen.getByTestId('search-bar')).toHaveValue('');
+
+    const getPeopleBountiesSpy = jest.spyOn(mainStore, 'getPeopleBounties');
+
+    act(() => {
+      jest.advanceTimersByTime(2001);
+    });
+
+    // Expect that getPeopleBounties has been called
+    expect(getPeopleBountiesSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        page: 1,
+        resetPage: true,
+        open: true,
+        javascript: true
+      })
+    );
+  });
+
+  it('should selected filters applied when search text is not empty', async () => {
+    const getPeopleBountiesSpy = jest.spyOn(mainStore, 'getPeopleBounties');
+
+    // Mock selected filters
+    mockProps.checkboxIdToSelectedMap = { open: true };
+    mockProps.checkboxIdToSelectedMapLanguage = { javascript: true };
+
+    render(<BountyHeader {...mockProps} />);
+
+    // Simulate search
+    fireEvent.change(screen.getByTestId('search-bar'), { target: { value: 'Test' } });
+
+    // Check if the search text is updated
+    expect(screen.getByTestId('search-bar')).toHaveValue('Test');
+
+    fireEvent.keyUp(screen.getByTestId('search-bar'), { key: 'Enter', code: 'Enter' });
+
+    act(() => {
+      jest.advanceTimersByTime(2001);
+    });
+
+    // Expect that getPeopleBounties has been called
+    expect(getPeopleBountiesSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        page: 1,
+        resetPage: true,
+        open: true,
+        javascript: true
+      })
+    );
+  });
+
   afterAll(() => {
     jest.useRealTimers(); // Restore real timers after all tests are done
   });

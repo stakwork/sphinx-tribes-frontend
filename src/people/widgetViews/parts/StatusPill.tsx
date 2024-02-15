@@ -69,7 +69,7 @@ export default function StatusPill(props: StatusPillProps) {
   }, [assignee]);
 
   return (
-    <div style={{ display: 'flex', ...style }}>
+    <div style={{ display: 'flex', ...style }} data-testid="status-pill">
       <Pill isOpen={isOpen} isClosed={isClosed}>
         <div>{isOpen ? 'Open' : isClosed ? 'Complete' : 'Assigned'}</div>
       </Pill>

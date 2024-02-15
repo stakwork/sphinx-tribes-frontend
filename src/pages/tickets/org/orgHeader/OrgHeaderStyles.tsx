@@ -53,10 +53,25 @@ export const FiltersRight = styled.span`
 `;
 
 export const SkillContainer = styled.span`
-  padding: 10px 0px;
+  padding: 7px 0px;
   align-items: center;
   display: flex;
   position: relative;
+  width: 85px;
+  gap: 2px;
+`;
+
+export const InnerContainer = styled.span`
+  padding: 7px 0px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  width: 80px;
+  gap: 2px;
+`;
+
+export const Formatter = styled.span`
+  padding-top: 10px;
 `;
 
 export const Button = styled.button`
@@ -259,7 +274,8 @@ export const EuiPopOverCheckboxRight = styled.div<styledProps>`
       .euiCheckbox__input:checked + .euiCheckbox__square {
         border: 1px solid ${(p: any) => p?.color && p?.color?.blue1};
         background: ${(p: any) => p?.color && p?.color?.blue1} no-repeat center;
-        background-image: url('static/checkboxImage.svg');
+        background-size: contain;
+        background-image: url(${checkboxImage});
       }
       .euiCheckbox__label {
         font-family: 'Barlow';
@@ -356,7 +372,6 @@ export const StatusContainer = styled.div<styledProps>`
   justify-content: center;
   align-items: center;
   margin-left: 19px;
-  margin-top: 4px;
   cursor: pointer;
   user-select: none;
   .filterStatusIconContainer {
@@ -408,5 +423,27 @@ export const StatusContainer = styled.div<styledProps>`
     .statusText {
       color: ${(p: any) => p.color && p.color.grayish.G10};
     }
+  }
+`;
+
+export const FilterCount = styled.div<styledProps>`
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  margin-left: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: -5px;
+  background: ${(p: any) => p?.color && p.color.blue1};
+  .filterCountText {
+    font-family: 'Barlow';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: ${(p: any) => p.color && p.color.pureWhite};
   }
 `;

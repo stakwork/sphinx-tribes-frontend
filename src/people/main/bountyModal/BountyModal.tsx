@@ -88,6 +88,7 @@ export const BountyModal = ({ basePath, fromPage, bountyOwner }: BountyModalProp
           selectedIndex={Number(wantedIndex)}
           config={config}
           goBack={onGoBack}
+          getBounty={getBounty}
           setAfterEdit={setAfterEdit}
           bounty={bounty}
           fromBountyPage={true}
@@ -130,6 +131,7 @@ export const BountyModal = ({ basePath, fromPage, bountyOwner }: BountyModalProp
         goBack={() => {
           onGoBack();
         }}
+        getBounty={getBounty}
         fromBountyPage={true}
         setAfterEdit={setAfterEdit}
       />

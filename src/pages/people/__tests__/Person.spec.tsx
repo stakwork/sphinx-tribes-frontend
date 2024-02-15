@@ -8,6 +8,7 @@ const mockUser = {
   img: 'https://community.sphinx.chat/static/avatarPlaceholders/placeholder_35.jpg',
   owner_alias: 'user1',
   owner_pubkey: 'xxxxx',
+  uuid: 'test_uuid',
   unique_name: 'user1',
   squeeze: false,
   description: 'hello, I am user1',
@@ -49,7 +50,7 @@ describe('Person component', () => {
     expect(selectMock).toHaveBeenCalledWith(
       mockUser.id,
       mockUser.unique_name,
-      mockUser.owner_pubkey
+      mockUser.uuid
     );
   });
 
