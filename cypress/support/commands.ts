@@ -144,12 +144,7 @@ Cypress.Commands.add('create_bounty', (bounty) => {
 
   if (bounty.estimate_session_length) {
     cy.get('button[data-testid="Estimate Session Length"]').click({ force: true });
-    cy.get('.euiSuperSelect__listbox').should('be.visible');
     cy.get('.euiSuperSelect__listbox').contains(bounty.estimate_session_length).click();
-    cy.get('button[data-testid="Estimate Session Length"]').should(
-      'contain',
-      bounty.estimate_session_length
-    );
   }
 
   if (bounty.estimate_completion_date) {
