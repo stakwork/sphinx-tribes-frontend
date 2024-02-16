@@ -137,7 +137,7 @@ const BountyProfileView = (props: BountiesProfileProps) => {
             width={'100%'}
             height={'100%'}
             style={{ objectFit: 'cover' }}
-            src={props.assignee.img || main.getUserAvatarPlaceholder(props.assignee.owner_pubkey)}
+            src={props.assignee?.img || main.getUserAvatarPlaceholder(props.assignee?.owner_pubkey)}
             alt={'assigned_person'}
           />
         </UserImage>

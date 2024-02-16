@@ -408,6 +408,7 @@ function MobileView(props: CodingBountiesProps) {
                 background: paidStatus ? color.green1 : color.pureWhite,
                 color: paidStatus ? color.white100 : color.borderGreen1
               }}
+              data-testid="paid_btn"
               text={paidStatus ? unpaidString : paidString}
               loading={saving === 'paid' || updatingPayment}
               endingImg={'/static/mark_unpaid.svg'}
@@ -885,6 +886,7 @@ function MobileView(props: CodingBountiesProps) {
                   <EuiText className="InputContainerLeadingText">$@</EuiText>
                   <EuiFieldText
                     className="InputContainerTextField"
+                    data-testid="input_sats"
                     type={'number'}
                     value={bountyPrice}
                     onChange={(e: any) => {
@@ -893,11 +895,12 @@ function MobileView(props: CodingBountiesProps) {
                   />
                   <EuiText className="InputContainerEndingText">SAT</EuiText>
                 </div>
-                <EuiText className="USDText">{satToUsd(bountyPrice)} USD</EuiText>
+                <EuiText data-testid="USDText" className="USDText">{satToUsd(bountyPrice)} USD</EuiText>
               </div>
               <div className="BottomButton">
                 <IconButton
                   color={'primary'}
+                  data-testid="next_btn"
                   width={120}
                   height={42}
                   text={'Next'}
@@ -956,6 +959,7 @@ function MobileView(props: CodingBountiesProps) {
                     }}
                   >
                     <input
+                      data-testid="check_box"
                       type="radio"
                       id={award.id}
                       name={'award'}
