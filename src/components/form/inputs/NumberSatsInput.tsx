@@ -83,7 +83,7 @@ export default function NumberInputNew({
         id={name}
         type={'text'}
         value={textValue}
-        placeholder={'1'}
+        placeholder={'0'}
         onFocus={handleFocus}
         onBlur={() => {
           handleBlur();

@@ -184,7 +184,7 @@ const PeopleHeader = ({ onChangeLanguage, checkboxIdToSelectedMapLanguage }: Peo
   };
 
   return (
-    <FilterWrapper>
+    <FilterWrapper data-testid="PeopleHeader">
       <EuiPopover
         button={
           <FilterTrigger onClick={onToggleButton} color={color}>
