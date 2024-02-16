@@ -895,7 +895,9 @@ function MobileView(props: CodingBountiesProps) {
                   />
                   <EuiText className="InputContainerEndingText">SAT</EuiText>
                 </div>
-                <EuiText data-testid="USDText" className="USDText">{satToUsd(bountyPrice)} USD</EuiText>
+                <EuiText data-testid="USDText" className="USDText">
+                  {satToUsd(bountyPrice)} USD
+                </EuiText>
               </div>
               <div className="BottomButton">
                 <IconButton

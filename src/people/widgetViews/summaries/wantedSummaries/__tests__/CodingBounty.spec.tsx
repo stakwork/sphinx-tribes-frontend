@@ -9,9 +9,9 @@ import userEvent from '@testing-library/user-event';
 import { mainStore } from 'store/main';
 import MobileView from '../CodingBounty';
 
-jest.mock('remark-gfm', () => ({}))
+jest.mock('remark-gfm', () => ({}));
 
-jest.mock('rehype-raw', () => ({}))
+jest.mock('rehype-raw', () => ({}));
 
 describe('MobileView component', () => {
   beforeEach(() => {
@@ -330,7 +330,7 @@ describe('MobileView component', () => {
     });
   });
 
-  it("Test that mark as paid button, renders: adjust amount , assignee name, amount set in Sats and next button", async () => {
+  it('Test that mark as paid button, renders: adjust amount , assignee name, amount set in Sats and next button', async () => {
     const props: CodingBountiesProps = {
       ...defaultProps,
       paid: false
@@ -343,16 +343,16 @@ describe('MobileView component', () => {
 
     render(<MobileView {...props} />);
 
-    const inputSAT = screen.findByTestId("input_sats")
-    const nextBTN = screen.findByTestId("next_btn")
+    const inputSAT = screen.findByTestId('input_sats');
+    const nextBTN = screen.findByTestId('next_btn');
 
-      expect(screen.queryByText('Adjust the amount')).toBeInTheDocument();
-      expect(screen.queryByText('Guest Developer')).toBeInTheDocument();
-      expect(screen.queryByTestId('USDText')).toBeInTheDocument()
-      expect(screen.queryByText("SAT")).toBeInTheDocument()
-  })
+    expect(screen.queryByText('Adjust the amount')).toBeInTheDocument();
+    expect(screen.queryByText('Guest Developer')).toBeInTheDocument();
+    expect(screen.queryByTestId('USDText')).toBeInTheDocument();
+    expect(screen.queryByText('SAT')).toBeInTheDocument();
+  });
 
-  it("Test that increment and decrement button on input field for amount works correctly", async () => {
+  it('Test that increment and decrement button on input field for amount works correctly', async () => {
     const props: CodingBountiesProps = {
       ...defaultProps,
       paid: false
@@ -365,16 +365,16 @@ describe('MobileView component', () => {
 
     render(<MobileView {...props} />);
 
-    const inputSAT = screen.getByTestId("input_sats")
+    const inputSAT = screen.getByTestId('input_sats');
 
-    expect(inputSAT).toBeInTheDocument()
+    expect(inputSAT).toBeInTheDocument();
 
-    fireEvent.change(inputSAT, { target: { value: 100 }});
+    fireEvent.change(inputSAT, { target: { value: 100 } });
 
-    await waitFor(() => expect(inputSAT).toHaveValue(100), { timeout: 3000})
-  })
+    await waitFor(() => expect(inputSAT).toHaveValue(100), { timeout: 3000 });
+  });
 
-  it("Test that clicking on next button takes you to Award Badge section assert all the necessary ui elements", async () => {
+  it('Test that clicking on next button takes you to Award Badge section assert all the necessary ui elements', async () => {
     const props: CodingBountiesProps = {
       ...defaultProps,
       creatorStep: 2,
@@ -387,10 +387,10 @@ describe('MobileView component', () => {
     });
 
     render(<MobileView {...props} />);
-      expect(screen.getByText("Mark as Paid")).toBeInTheDocument()
-      expect(screen.queryByText("Award Badge")).toBeInTheDocument()
-      expect(screen.getAllByTestId("check_box").length).toBe(2)
-  })
+    expect(screen.getByText('Mark as Paid')).toBeInTheDocument();
+    expect(screen.queryByText('Award Badge')).toBeInTheDocument();
+    expect(screen.getAllByTestId('check_box').length).toBe(2);
+  });
 
   it('Test that button state and text changes according to selection in Award Badge Section', () => {
     const props: CodingBountiesProps = {
@@ -404,20 +404,20 @@ describe('MobileView component', () => {
       owner_alias: props.person.owner_alias
     });
 
-    render(<MobileView {...props}/>)
+    render(<MobileView {...props} />);
 
-    const checkBox = screen.getAllByTestId("check_box")
+    const checkBox = screen.getAllByTestId('check_box');
 
     fireEvent.click(checkBox[0]);
 
     (async () => {
       await waitFor(() => {
-       expect(screen.getByText("Mark as Paid"))
-      })
-    })()
-  })
+        expect(screen.getByText('Mark as Paid'));
+      });
+    })();
+  });
 
-  it("Test that if sufficient funds are available, bounty is paid", async () => {
+  it('Test that if sufficient funds are available, bounty is paid', async () => {
     const props: CodingBountiesProps = {
       ...defaultProps,
       creatorStep: 2,
@@ -430,11 +430,9 @@ describe('MobileView component', () => {
     });
 
     jest
-    .spyOn(mainStore, 'getOrganizationBudget')
-    .mockReturnValue(Promise.resolve({ total_budget: 10000 }));
+      .spyOn(mainStore, 'getOrganizationBudget')
+      .mockReturnValue(Promise.resolve({ total_budget: 10000 }));
 
-    render(<MobileView {...props}/>)
-
-  })
-
+    render(<MobileView {...props} />);
+  });
 });
