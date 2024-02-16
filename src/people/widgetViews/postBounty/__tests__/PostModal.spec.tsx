@@ -16,5 +16,5 @@ describe('Post bounty modal', () => {
   nock(user.url).get('/person/id/1').reply(200, {});
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  test('placeholder', () => { });
+  test('placeholder', () => {});
 });

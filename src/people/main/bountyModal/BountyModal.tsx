@@ -32,7 +32,7 @@ export const BountyModal = ({ basePath, fromPage, bountyOwner }: BountyModalProp
 
     ui.setBountyPerson(0);
     history.push({
-      pathname: basePath,
+      pathname: basePath
     });
   };
 

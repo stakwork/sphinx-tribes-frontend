@@ -931,14 +931,10 @@ export class MainStore {
   async getPersonAssignedBounties(queryParams?: any, uuid?: string): Promise<PersonBounty[]> {
     queryParams = { ...queryParams, search: uiStore.searchText };
 
-    const query = this.appendQueryParams(
-      `people/wanteds/assigned/${uuid}`,
-      paginationQueryLimit,
-      {
-        sortBy: 'paid',
-        ...queryParams
-      }
-    );
+    const query = this.appendQueryParams(`people/wanteds/assigned/${uuid}`, paginationQueryLimit, {
+      sortBy: 'paid',
+      ...queryParams
+    });
 
     try {
       const ps2 = await api.get(query);

@@ -47,11 +47,7 @@ describe('Person component', () => {
 
     window.onload = onloadSpy;
     expect(onloadSpy).not.toHaveBeenCalled();
-    expect(selectMock).toHaveBeenCalledWith(
-      mockUser.id,
-      mockUser.unique_name,
-      mockUser.uuid
-    );
+    expect(selectMock).toHaveBeenCalledWith(mockUser.id, mockUser.unique_name, mockUser.uuid);
   });
 
   it('should show user contect qrcode modal when contect is clicked', async () => {

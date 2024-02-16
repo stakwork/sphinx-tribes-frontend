@@ -163,9 +163,10 @@ const BountyProfileView = (props: BountiesProfileProps) => {
               if (props.isNameClickable && { ...props.assignee }.owner_alias) {
                 e.stopPropagation();
                 window.open(
-                  `/p/${{
-                    ...props.assignee
-                  }.uuid
+                  `/p/${
+                    {
+                      ...props.assignee
+                    }.uuid
                   }?widget=bounties`,
                   '_blank'
                 );
@@ -184,9 +185,10 @@ const BountyProfileView = (props: BountiesProfileProps) => {
                 if ({ ...props.assignee }.owner_alias) {
                   e.stopPropagation();
                   window.open(
-                    `/p/${{
-                      ...props.assignee
-                    }.uuid
+                    `/p/${
+                      {
+                        ...props.assignee
+                      }.uuid
                     }?widget=bounties`,
                     '_blank'
                   );
