@@ -25,7 +25,7 @@ describe('WidgetSwitchViewer Component', () => {
   test('should display No results when there are no active list items with filter of languages', () => {
     render(
       <WidgetSwitchViewer
-        selectedWidget="wanted"
+        selectedWidget="bounties"
         currentItems={0}
         totalBounties={0}
         languageString="Typescript"
@@ -39,7 +39,7 @@ describe('WidgetSwitchViewer Component', () => {
     render(
       <WidgetSwitchViewer
         uuid={org_uuid}
-        selectedWidget="wanted"
+        selectedWidget="bounties"
         currentItems={10}
         totalBounties={0}
         OrgTotalBounties={20}

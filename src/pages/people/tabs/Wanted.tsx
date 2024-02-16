@@ -107,7 +107,7 @@ export const Wanted = observer(() => {
                 leadingIcon: config.noneSpace.me.buttonIcon,
                 color: 'secondary'
               }}
-              widget={'wanted'}
+              widget={'bounties'}
               onSucces={() => {
                 window.location.reload();
               }}
@@ -134,7 +134,7 @@ export const Wanted = observer(() => {
           paddingBottom: '16px'
         }}
       >
-        {canEdit && <PostBounty widget="wanted" />}
+        {canEdit && <PostBounty widget="bounties" />}
       </div>
       {displayedBounties
         .filter((w: BountyType) => w.body.owner_id === person?.owner_pubkey)

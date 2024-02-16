@@ -112,7 +112,7 @@ export const OrgHeader = ({
     }
   }, [ui.meInfo, org_uuid, main]);
 
-  const selectedWidget = 'wanted';
+  const selectedWidget = 'bounties';
 
   const filterRef = useRef<HTMLDivElement | null>(null);
 
@@ -260,9 +260,8 @@ export const OrgHeader = ({
                       <div className="filterStatusIconContainer">
                         <MaterialIcon
                           className="materialStatusIcon"
-                          icon={`${
-                            isStatusPopoverOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down'
-                          }`}
+                          icon={`${isStatusPopoverOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down'
+                            }`}
                           style={{
                             color: isStatusPopoverOpen ? color.grayish.G10 : ''
                           }}

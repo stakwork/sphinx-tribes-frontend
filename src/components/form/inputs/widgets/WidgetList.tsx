@@ -77,7 +77,7 @@ export default function WidgetList(props: WidgetListProps) {
         return wrap(<Blog {...v} />);
       case 'offer':
         return wrap(<Offer {...v} />);
-      case 'wanted':
+      case 'bounties':
         return wrap(<Wanted {...v} />);
       default:
         return <></>;

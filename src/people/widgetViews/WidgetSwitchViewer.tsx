@@ -28,7 +28,7 @@ const Panel = styled.a<PanelProps>`
   border-bottom: ${(p: any) => (p.isMobile ? `2px solid ${p.color.grayish.G700}` : 'none')};
   :hover {
     box-shadow: ${(p: any) =>
-      p.isAssignee ? `0px 1px 6px ${p.color.black100}` : 'none'} !important;
+    p.isAssignee ? `0px 1px 6px ${p.color.black100}` : 'none'} !important;
     text-decoration: none !important;
   }
   :active {
@@ -95,16 +95,16 @@ function WidgetSwitchViewer(props: any) {
 
   const panelStyles = isMobile
     ? {
-        minHeight: 132
-      }
+      minHeight: 132
+    }
     : {
-        minWidth: '1100px',
-        maxWidth: '1100px',
-        marginBottom: 16,
-        borderRadius: '10px',
-        display: 'flex',
-        justifyContent: 'center'
-      };
+      minWidth: '1100px',
+      maxWidth: '1100px',
+      marginBottom: 16,
+      borderRadius: '10px',
+      display: 'flex',
+      justifyContent: 'center'
+    };
 
   const { peoplePosts, peopleBounties, peopleOffers } = main;
 
@@ -116,7 +116,7 @@ function WidgetSwitchViewer(props: any) {
 
   const listSource = {
     post: peoplePosts,
-    wanted: peopleBounties,
+    bounties: peopleBounties,
     offer: peopleOffers
   };
 
@@ -207,9 +207,9 @@ function WidgetSwitchViewer(props: any) {
         person.img = person.img || main.getUserAvatarPlaceholder(person.owner_pubkey);
         const conditionalStyles = body?.paid
           ? {
-              border: isMobile ? `2px 0 0 0 solid ${color.grayish.G600}` : '',
-              boxShadow: 'none'
-            }
+            border: isMobile ? `2px 0 0 0 solid ${color.grayish.G600}` : '',
+            boxShadow: 'none'
+          }
           : {};
 
         // if this person has entries for this widget
@@ -245,7 +245,7 @@ function WidgetSwitchViewer(props: any) {
                 person={person}
                 {...body}
               />
-            ) : selectedWidget === 'wanted' ? (
+            ) : selectedWidget === 'bounties' ? (
               <WantedView
                 showName
                 onPanelClick={() => {

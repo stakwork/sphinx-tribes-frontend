@@ -90,7 +90,7 @@ Cypress.Commands.add('login', (userAlias: string) => {
         method: 'POST',
         url: `http://localhost:13000/verify/${challenge}?token=${token}`,
         body: info
-      }).then((response) => {});
+      }).then((response) => { });
     });
 
     cy.contains(userAlias).eq(0);

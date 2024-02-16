@@ -1,6 +1,6 @@
 export type Widget =
   | 'people'
-  | 'wanted'
+  | 'bounties'
   | 'post'
   | 'offer'
   | 'badges'
