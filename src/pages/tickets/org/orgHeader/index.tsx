@@ -260,8 +260,9 @@ export const OrgHeader = ({
                       <div className="filterStatusIconContainer">
                         <MaterialIcon
                           className="materialStatusIcon"
-                          icon={`${isStatusPopoverOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down'
-                            }`}
+                          icon={`${
+                            isStatusPopoverOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down'
+                          }`}
                           style={{
                             color: isStatusPopoverOpen ? color.grayish.G10 : ''
                           }}
