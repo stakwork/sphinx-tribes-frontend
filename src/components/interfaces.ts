@@ -112,11 +112,12 @@ export interface SearchTextInputProps {
   small?: boolean;
   onChange: (any) => void;
   iconStyle?: React.CSSProperties;
-  style: React.CSSProperties;
+  style?: React.CSSProperties;
   name?: string;
   type?: string;
   placeholder?: string;
   value?: string;
+  className?: string;
 }
 
 export interface TextInputProps {

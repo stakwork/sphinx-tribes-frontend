@@ -17,19 +17,26 @@ interface InputProps {
   border?: string;
   borderHover?: string;
   borderActive?: string;
+  borderRadius?: string;
   TextColor?: string;
   TextColorHover?: string;
   iconColor?: string;
   iconColorHover?: string;
   color?: any;
+  width?: string;
+  height?: string;
+  marginLeft?: string;
 }
 
 const Container = styled.div<InputProps>`
   .SearchText {
+    width: ${(p: any) => (p.width ? p.width : 'auto')};
+    height: ${(p: any) => (p.height ? p.height : '35px')};
     background: ${(p: any) => p.color && p.color.grayish.G600} !important;
     border: ${(p: any) => (p.border ? p.border : `1px solid ${p.color.pureBlack}`)};
     box-sizing: border-box;
-    border-radius: 200px;
+    border-radius: ${(p: any) => (p.borderRadius ? p.borderRadius : '200px')};
+    margin-left: ${(p: any) => (p.marginLeft ? p.marginLeft : '0px')};
     padding-left: 20px;
     padding-right: 30px;
     font-style: normal;
@@ -37,7 +44,6 @@ const Container = styled.div<InputProps>`
     font-family: 'Barlow';
     font-size: 16px;
     line-height: 14px;
-    height: 35px;
     transition: all 0.4s;
     &::placeholder {
       color: ${(p: any) => (p.TextColor ? p.TextColor : `${p.color.grayish.G65}`)};
@@ -99,12 +105,16 @@ function SearchBar({
   border,
   borderActive,
   borderHover,
+  borderRadius,
   TextColor,
   TextColorHover,
   iconColorHover,
   iconColor,
   onChange,
   iconStyle = {},
+  width,
+  height,
+  marginLeft,
   ...props
 }: SearchTextInputProps & InputProps) {
   const color = colors['light'];
@@ -127,11 +137,15 @@ function SearchBar({
       border={border}
       borderActive={borderActive}
       borderHover={borderHover}
+      borderRadius={borderRadius}
       TextColor={TextColor}
       TextColorHover={TextColorHover}
       iconColorHover={iconColorHover}
       iconColor={iconColor}
       color={color}
+      width={width}
+      height={height}
+      marginLeft={marginLeft}
     >
       <input
         className="SearchText"

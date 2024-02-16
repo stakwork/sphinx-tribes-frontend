@@ -98,7 +98,8 @@ function MobileView(props: CodingBountiesProps) {
     setLocalPaid,
     isMobile,
     actionButtons,
-    assigneeLabel
+    assigneeLabel,
+    isEditButtonDisable
   } = props;
   const color = colors['light'];
 
@@ -555,6 +556,7 @@ function MobileView(props: CodingBountiesProps) {
                             buttonTextStyle={{
                               paddingRight: '50px'
                             }}
+                            disabled={isEditButtonDisable}
                           />
                           <ImageButton
                             buttonText={!props.deletingState ? 'Delete' : 'Deleting'}
@@ -657,6 +659,7 @@ function MobileView(props: CodingBountiesProps) {
                         />
                         {!bountyPaid && (
                           <div
+                            data-testid="edit-btn"
                             className="AssigneeCloseButtonContainer"
                             onClick={() => {
                               changeAssignedPerson();
@@ -778,7 +781,7 @@ function MobileView(props: CodingBountiesProps) {
                           background: color.pureWhite,
                           color: color.borderGreen1
                         }}
-                        text={paid ? unpaidString : paidString}
+                        text={paidStatus ? unpaidString : paidString}
                         loading={saving === 'paid' || updatingPayment}
                         endingImg={'/static/mark_unpaid.svg'}
                         textStyle={{
@@ -1071,7 +1074,7 @@ function MobileView(props: CodingBountiesProps) {
                   ))}
               </LanguageContainer>
             </div>
-            <DescriptionBox color={color}>
+            <DescriptionBox color={color} data-testid="DescriptionBox">
               {renderMarkdown(description)}
               {deliverables ? (
                 <div className="deliverablesContainer">

@@ -19,7 +19,8 @@ jest.mock('../../../store/main.ts', () => ({
 jest.mock('../../../store/ui.ts', () => ({
   uiStore: {
     meInfo: null,
-    setReady: jest.fn()
+    setReady: jest.fn(),
+    setSearchText: jest.fn()
   }
 }));
 
@@ -105,6 +106,35 @@ describe('OrgHeader Component', () => {
     render(<OrgHeader {...MockProps} />);
     expect(screen.getByText('284')).toBeInTheDocument();
     expect(screen.getByText('Bounties')).toBeInTheDocument();
+  });
+
+  it('should call getSpecificOrganizationBounties with correct parameters', () => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        pathname: `/org/bounties/${MockProps.org_uuid}`
+      },
+      writable: true
+    });
+
+    render(<OrgHeader {...MockProps} />);
+
+    jest.clearAllMocks();
+
+    // Simulate entering search text
+    const searchText = 'sample search';
+    const searchInput = screen.getByPlaceholderText('Search') as HTMLInputElement;
+    fireEvent.change(searchInput, { target: { value: searchText } });
+
+    // Simulate pressing Enter key
+    fireEvent.keyUp(searchInput, { key: 'Enter', code: 'Enter' });
+
+    // Check if getSpecificOrganizationBounties is called with correct parameters
+    expect(mainStore.getSpecificOrganizationBounties).toHaveBeenCalledWith(MockProps.org_uuid, {
+      page: 1,
+      resetPage: true,
+      search: searchText,
+      ...MockProps.checkboxIdToSelectedMap
+    });
   });
 
   it('should trigger API call in response to click on status from OrgHeader', async () => {
@@ -199,6 +229,60 @@ describe('OrgHeader Component', () => {
 
     await waitFor(() => {
       expect(screen.queryByText('Post a Bounty')).not.toBeInTheDocument();
+    });
+  });
+
+  it('correct number is displayed next to the button as the number of items selected in the status filter', async () => {
+    const { rerender } = render(<OrgHeader {...MockProps} />);
+
+    const statusFilterButton = screen.getByText('Status');
+    fireEvent.click(statusFilterButton);
+
+    const newCheckboxIdToSelectedMap = {
+      Open: true,
+      Assigned: true,
+      Completed: false,
+      Paid: false
+    };
+
+    const newProps = {
+      ...MockProps,
+      checkboxIdToSelectedMap: newCheckboxIdToSelectedMap
+    };
+
+    rerender(<OrgHeader {...newProps} />);
+
+    const selectedCount = Object.values(newCheckboxIdToSelectedMap).filter(Boolean).length;
+
+    await waitFor(() => {
+      expect(screen.getByText(`${selectedCount}`)).toBeInTheDocument();
+    });
+  });
+
+  it('correct number is displayed next to the button as the number of items selected in the skill filter', async () => {
+    const { rerender } = render(<OrgHeader {...MockProps} />);
+
+    const skillFilterButton = screen.getByText('Skill');
+    fireEvent.click(skillFilterButton);
+
+    const newCheckboxIdToSelectedMapLanguage = {
+      javascript: true,
+      lightning: true,
+      typescript: false,
+      golang: false
+    };
+
+    const newProps = {
+      ...MockProps,
+      checkboxIdToSelectedMap: newCheckboxIdToSelectedMapLanguage
+    };
+
+    rerender(<OrgHeader {...newProps} />);
+
+    const selectedCount = Object.values(newCheckboxIdToSelectedMapLanguage).filter(Boolean).length;
+
+    await waitFor(() => {
+      expect(screen.getByText(`${selectedCount}`)).toBeInTheDocument();
     });
   });
 });

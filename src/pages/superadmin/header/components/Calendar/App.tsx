@@ -1,7 +1,17 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import moment from 'moment';
 import { set } from 'date-fns';
+import {
+  Section,
+  MainContainer,
+  HeaderDiv,
+  FormDiv,
+  Button,
+  FormInput,
+  Para,
+  FlexDiv,
+  Formator
+} from './CalendarStyles';
 import Calendar from './Calender';
 
 interface Props {
@@ -15,123 +25,10 @@ const App = ({ filterStartDate, filterEndDate, setShowCalendar }: Props) => {
   const [to, setTo] = useState(false);
   const [startDate, setStartDate] = useState<Date>();
   const [endDate, setEndDate] = useState<Date>();
+  const [newDateFrom, setNewDateFrom] = useState('');
+  const [newDateTo, setNewDateTo] = useState('');
   const [formInputFocused, setFormInputFocused] = useState(false);
   const [formInput2Focused, setFormInput2Focused] = useState(false);
-
-  const Section = styled.div`
-    display: flex;
-    justify-content: flex-end;
-    align-items: flex-end;
-    gap: 8px;
-    align-self: stretch;
-    margin-right: 35px;
-    z-index: 999;
-    margin-bottom: 8px;
-  `;
-
-  const MainContainer = styled.div`
-    position: absolute;
-    z-index: 999;
-    right: -51px;
-    top: 40px;
-    display: flex;
-    width: 375px;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
-    border-radius: 6px;
-    background: #fff;
-    margin: 100px;
-    box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.25);
-  `;
-
-  const HeaderDiv = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    align-self: stretch;
-    // height: ${from || to ? '580px' : '180px'};
-    gap: 16px;
-    width: 375px;
-  `;
-
-  const FormDiv = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-self: stretch;
-    align-items: center;
-    gap: 25px;
-  `;
-  type FormProps = {
-    focused: boolean;
-  };
-  const FormInput = styled.input<FormProps>`
-    display: flex;
-    width: 113px;
-    height: 40px;
-    padding: 8px 16px;
-    justify-content: center;
-    align-items: center;
-    gap: 6px;
-    border-radius: 6px;
-    outline: none;
-    background: var(--White, #fff);
-    color: var(--Placeholder-Text, var(--Disabled-Icon-color, #b0b7bc));
-    text-align: center;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 0px;
-    color: ${(props: any) =>
-      props.focused
-        ? 'var(--Placeholder-Text, var(--Disabled-Icon-color, #5078f2))'
-        : 'var(--Placeholder-Text, var(--Disabled-Icon-color, #b0b7bc))'};
-
-    border: ${(props: any) => (props.focused ? '1px solid #5078f2' : '1px solid #b0b7bc')};
-    &::placeholder {
-      color: ${(props: any) =>
-        props.focused
-          ? 'var(--Placeholder-Text, var(--Disabled-Icon-color, #5078f2))'
-          : 'var(--Placeholder-Text, var(--Disabled-Icon-color, #b0b7bc))'};
-    }
-  `;
-  type BtnProps = {
-    color: string;
-  };
-  const Button = styled.button<BtnProps>`
-    background-color: transparent;
-    width: 54px;
-    height: 40px;
-    color: ${(props: any) => props.color};
-    text-align: center;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 20px;
-    letter-spacing: 0.1px;
-    outline: none;
-    border: none;
-    font-family: Barlow;
-  `;
-
-  const Para = styled.p`
-    color: var(--Text-2, var(--Hover-Icon-Color, #3c3f41));
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 18px;
-  `;
-
-  const FlexDiv = styled.div`
-    padding: 28px 0px 0px 28px;
-  `;
-
-  const Formator = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: baseline;
-    gap: 8px;
-  `;
 
   const handleInputFocus = (parameter: string) => {
     if (parameter === 'From') {
@@ -144,6 +41,30 @@ const App = ({ filterStartDate, filterEndDate, setShowCalendar }: Props) => {
     }
   };
 
+  const isValidDate = (value: string) => (value.match(/\d{1,2}\/\d{1,2}\/\d{2,4}/) ? true : false);
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.name === 'start') {
+      setNewDateFrom(e.target.value);
+    } else {
+      setNewDateTo(e.target.value);
+    }
+  };
+
+  useEffect(() => {
+    if (newDateFrom && isValidDate(newDateFrom)) {
+      const date = new Date(newDateFrom);
+      setStartDate(date);
+    }
+  }, [newDateFrom]);
+
+  useEffect(() => {
+    if (newDateTo && isValidDate(newDateTo)) {
+      const date = new Date(newDateTo);
+      setEndDate(date);
+    }
+  }, [newDateTo]);
+
   const handleClick = () => {
     if (startDate && endDate) {
       let startDt = startDate;
@@ -153,6 +74,8 @@ const App = ({ filterStartDate, filterEndDate, setShowCalendar }: Props) => {
         const temp = startDt;
         startDt = endDt;
         endDt = temp;
+      } else if (startDt.getDay === endDt.getDay) {
+        endDt = set(endDate, { hours: 23, minutes: 59, seconds: 59 });
       }
       const start = moment(startDt);
       const unixStart = start.unix();
@@ -183,9 +106,12 @@ const App = ({ filterStartDate, filterEndDate, setShowCalendar }: Props) => {
               <Formator>
                 <Para>From</Para>
                 <FormInput
-                  value={startDate ? moment(startDate).format('MM/DD/YY') : ''}
+                  name={'start'}
                   placeholder="MM/DD/YY"
+                  alt="start"
                   type="text"
+                  value={newDateFrom || (startDate && moment(startDate).format('MM/DD/YY'))}
+                  onChange={handleChange}
                   onFocus={() => {
                     handleInputFocus('From');
                     setFormInputFocused(true);
@@ -197,15 +123,17 @@ const App = ({ filterStartDate, filterEndDate, setShowCalendar }: Props) => {
               <Formator>
                 <Para>To</Para>
                 <FormInput
-                  value={endDate ? moment(endDate).format('MM/DD/YY') : ''}
+                  name={'end'}
                   placeholder="MM/DD/YY"
+                  alt="end"
                   type="text"
+                  value={newDateTo || (endDate && moment(endDate).format('MM/DD/YY'))}
+                  onChange={handleChange}
                   onFocus={() => {
                     handleInputFocus('To');
                     setFormInput2Focused(true);
                     setFormInputFocused(false);
                   }}
-                  onChange={(e: any) => setEndDate(e.target.value)}
                   focused={formInput2Focused}
                 />
               </Formator>

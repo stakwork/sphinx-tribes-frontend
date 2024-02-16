@@ -398,3 +398,7 @@ export const Paragraph = styled.div`
   text-overflow: ellipsis;
   max-width: 200px;
 `;
+
+export const PaginationImg = styled.img`
+  cursor: pointer;
+`;

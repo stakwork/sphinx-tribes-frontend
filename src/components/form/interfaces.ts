@@ -14,6 +14,7 @@ export interface FormProps {
   extraHTML?: JSX.Element | JSX.Element[] | any;
   close?: () => void;
   loading?: boolean;
+  submiting?: boolean;
   delete?: () => void;
   submitText?: string;
   onEditSuccess?: () => void;

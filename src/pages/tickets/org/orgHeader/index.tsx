@@ -5,14 +5,16 @@ import { PostModal } from 'people/widgetViews/postBounty/PostModal';
 import { GetValue, coding_languages } from 'people/utils/languageLabelStyle';
 import { colors } from 'config';
 import { OrgBountyHeaderProps } from '../../../../people/interfaces';
+import { SearchBar } from '../../../../components/common/index.tsx';
 import { useStores } from '../../../../store';
-import { userCanManageBounty } from '../../../../helpers';
+import { userCanManageBounty, filterCount } from '../../../../helpers';
 import addBounty from './Icons/addBounty.svg';
 import dropdown from './Icons/dropDownIcon.svg';
-import searchIcon from './Icons/searchIcon.svg';
 import file from './Icons/file.svg';
 import githubIcon from './Icons/githubIcon.svg';
+
 import websiteIcon from './Icons/websiteIcon.svg';
+
 import {
   BountyNumber,
   Button,
@@ -27,7 +29,6 @@ import {
   Filters,
   FiltersRight,
   Header,
-  Icon,
   ImageContainer,
   Img,
   InternalContainer,
@@ -36,14 +37,15 @@ import {
   NumberOfBounties,
   PrimaryText,
   RightHeader,
-  SearchBar,
-  SearchWrapper,
   SecondaryText,
   SkillContainer,
   SkillFilter,
   StatusContainer,
   UrlButton,
-  UrlButtonContainer
+  UrlButtonContainer,
+  FilterCount,
+  InnerContainer,
+  Formatter
 } from './OrgHeaderStyles';
 
 const color = colors['light'];
@@ -78,6 +80,9 @@ export const OrgHeader = ({
   const [isStatusPopoverOpen, setIsStatusPopoverOpen] = useState<boolean>(false);
   const [isSortByPopoverOpen, setIsSortByPopoverOpen] = useState(false);
   const [sortDirection, setSortDirection] = useState<string>('desc');
+  const [skillCountNumber, setSkillCountNumber] = useState<number>(0);
+  const [statusCountNumber, setStatusCountNumber] = useState<number>(0);
+
   const onButtonClick = async () => {
     setIsStatusPopoverOpen((isPopoverOpen: any) => !isPopoverOpen);
   };
@@ -123,6 +128,31 @@ export const OrgHeader = ({
     window.open(githubUrl, '_blank');
   };
 
+  const handleSearch = (searchText: string) => {
+    if (org_uuid) {
+      main.getSpecificOrganizationBounties(org_uuid, {
+        page: 1,
+        resetPage: true,
+        ...checkboxIdToSelectedMap,
+        search: searchText
+      });
+    } else {
+      console.log('Organization UUID is missing in params');
+    }
+  };
+
+  let timeoutId;
+  const onChangeSearch = (e: any) => {
+    ui.setSearchText(e);
+    clearTimeout(timeoutId);
+    // Set a new timeout to wait for user to pause typing
+    timeoutId = setTimeout(() => {
+      if (ui.searchText === '') {
+        handleSearch('');
+      }
+    }, 1000);
+  };
+
   useEffect(() => {
     if (org_uuid) {
       main.getSpecificOrganizationBounties(org_uuid, {
@@ -156,6 +186,14 @@ export const OrgHeader = ({
       window.removeEventListener('click', handleWindowClick);
     };
   }, [org_uuid, checkboxIdToSelectedMap, languageString, main, filterClick]);
+
+  useEffect(() => {
+    setStatusCountNumber(filterCount(checkboxIdToSelectedMap));
+  }, [checkboxIdToSelectedMap]);
+
+  useEffect(() => {
+    setSkillCountNumber(filterCount(checkboxIdToSelectedMapLanguage));
+  }, [checkboxIdToSelectedMapLanguage]);
 
   return (
     <>
@@ -203,25 +241,34 @@ export const OrgHeader = ({
               <EuiPopover
                 button={
                   <StatusContainer onClick={onButtonClick} color={color}>
-                    <EuiText
-                      className="statusText"
-                      style={{
-                        color: isStatusPopoverOpen ? color.grayish.G10 : ''
-                      }}
-                    >
-                      Status
-                    </EuiText>
-                    <div className="filterStatusIconContainer">
-                      <MaterialIcon
-                        className="materialStatusIcon"
-                        icon={`${
-                          isStatusPopoverOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down'
-                        }`}
+                    <InnerContainer>
+                      <EuiText
+                        className="statusText"
                         style={{
                           color: isStatusPopoverOpen ? color.grayish.G10 : ''
                         }}
-                      />
-                    </div>
+                      >
+                        Status
+                      </EuiText>
+                      <Formatter>
+                        {statusCountNumber > 0 && (
+                          <FilterCount color={color}>
+                            <EuiText className="filterCountText">{statusCountNumber}</EuiText>
+                          </FilterCount>
+                        )}
+                      </Formatter>
+                      <div className="filterStatusIconContainer">
+                        <MaterialIcon
+                          className="materialStatusIcon"
+                          icon={`${
+                            isStatusPopoverOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down'
+                          }`}
+                          style={{
+                            color: isStatusPopoverOpen ? color.grayish.G10 : ''
+                          }}
+                        />
+                      </div>
+                    </InnerContainer>
                   </StatusContainer>
                 }
                 panelStyle={{
@@ -263,6 +310,11 @@ export const OrgHeader = ({
             </NewStatusContainer>
             <SkillContainer>
               <FilterLabel>Skill</FilterLabel>
+              {skillCountNumber > 0 && (
+                <FilterCount color={color}>
+                  <EuiText className="filterCountText">{skillCountNumber}</EuiText>
+                </FilterCount>
+              )}
               <DropDownButton onClick={handleClick} data-testid="skillDropdown">
                 <Img src={dropdown} alt="" />
               </DropDownButton>
@@ -282,10 +334,32 @@ export const OrgHeader = ({
                 </SkillFilter>
               ) : null}
             </SkillContainer>
-            <SearchWrapper>
-              <SearchBar placeholder="Search" disabled />
-              <Icon src={searchIcon} alt="Search" />
-            </SearchWrapper>
+            <SearchBar
+              name="search"
+              type="search"
+              placeholder="Search"
+              value={ui.searchText}
+              onChange={(e: any) => {
+                onChangeSearch(e);
+              }}
+              onKeyUp={(e: any) => {
+                if (e.key === 'Enter' || e.keyCode === 13) {
+                  handleSearch(e.target.value);
+                }
+              }}
+              TextColor={color.grayish.G100}
+              TextColorHover={color.grayish.G50}
+              iconColor={color.grayish.G300}
+              iconColorHover={color.grayish.G50}
+              border={'none'}
+              borderHover={'none'}
+              borderActive={'none'}
+              borderRadius={'6px'}
+              width={'384px'}
+              height={'40px'}
+              marginLeft={'20px'}
+              color={color.grayish.G950}
+            />
           </FiltersRight>
           <EuiPopover
             button={

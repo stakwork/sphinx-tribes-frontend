@@ -3,6 +3,9 @@ declare namespace Cypress {
     login(userAlias: string): void;
     logout(userAlias: string): void;
     create_bounty(bounty: Bounty): void;
+    lnurl_login(): void;
+    create_org(Organization: Organization): void;
+    pay_invoice(details: InvoiceDetail): void;
   }
 
   type Category =
@@ -19,6 +22,7 @@ declare namespace Cypress {
     | 'Less than 3 hour'
     | 'More than 3 hour'
     | 'Not sure yet';
+
   type Bounty = {
     organization?: string;
     title: string;
@@ -32,5 +36,18 @@ declare namespace Cypress {
     estimate_completion_date?: string; // MM/DD/YYYY
     deliverables?: string;
     assign?: string;
+  };
+
+  type Organization = {
+    loggedInAs: string;
+    name: string;
+    description: string;
+    website?: string;
+    github?: string;
+  };
+
+  type InvoiceDetail = {
+    payersName: string;
+    invoice: string;
   };
 }

@@ -224,7 +224,7 @@ function Form(props: FormProps) {
                   <Input
                     {...item}
                     key={item.name}
-                    newDesign={true}
+                    newDesign={item.name === 'description' ? false : true}
                     values={values}
                     setAssigneefunction={item.name === 'assignee' && setAssigneeName}
                     peopleList={peopleList}
@@ -564,7 +564,7 @@ function Form(props: FormProps) {
                         )}
                         {!isBtnDisabled && (
                           <div
-                            className="nextButton"
+                            className={props.submiting ? 'nextButtonDisable' : 'nextButton'}
                             onClick={() => {
                               if (schemaData.step === 5 && valid) {
                                 if (dynamicSchemaName) {
@@ -595,7 +595,9 @@ function Form(props: FormProps) {
                                 {schemaData.step === 5 ? 'Decide Later' : 'Next'}
                               </EuiText>
                             ) : (
-                              <EuiText className="nextText">Finish</EuiText>
+                              <EuiText className={props.submiting ? 'disableText' : 'nextText'}>
+                                Finish
+                              </EuiText>
                             )}
                           </div>
                         )}
@@ -697,12 +699,15 @@ function Form(props: FormProps) {
                         <h4 style={{ marginTop: '20px' }}>
                           <b>{section.heading}</b>
                         </h4>
-                        <div style={{ width: '100%', marginBottom: '20px' }}>
-                          {GetFormFields(section, {
+                        <div
+                          style={{
+                            width: '100%',
+                            marginBottom: '20px',
                             display: 'flex',
-                            justifyContent: 'center',
-                            width: '100%'
-                          })}
+                            justifyContent: 'center'
+                          }}
+                        >
+                          {GetFormFields(section)}
                         </div>
                       </div>
                     ))}

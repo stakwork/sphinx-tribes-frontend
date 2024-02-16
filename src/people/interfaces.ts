@@ -3,6 +3,9 @@ import { Extras } from '../components/form/inputs/widgets/interfaces';
 import { Organization, Person, PersonBounty } from '../store/main';
 import { MeData } from '../store/ui';
 import { Widget } from './main/types';
+import { coding_languages } from './utils/languageLabelStyle';
+
+export type CodingLanguage = (typeof coding_languages)[number];
 
 export interface AuthProps {
   style?: React.CSSProperties;
@@ -38,6 +41,7 @@ export interface FocusViewProps {
   bounty?: PersonBounty[];
   setRemoveNextAndPrev?: (boolean) => void;
   setAfterEdit?: (boolean) => void;
+  getBounty?: () => Promise<void>;
 }
 
 export interface PeopleMobileeHeaderProps {
@@ -201,7 +205,7 @@ export interface SvgMaskProps {
 }
 
 export interface PersonProps extends Person {
-  hideActions: boolean;
+  hideActions?: boolean;
   small: boolean;
   id: number;
   img: string;
@@ -251,6 +255,7 @@ export interface WantedSummaryProps {
   id?: number;
   owner_id?: string;
   markPaidOrUnpaid?: ReactNode;
+  isEditButtonDisable?: boolean;
 }
 
 export type LocalPaymeentState = 'UNKNOWN' | 'PAID' | 'UNPAID';
@@ -434,7 +439,7 @@ export interface OrgBountyHeaderProps {
   direction?: string;
 }
 export interface PeopleHeaderProps {
-  onChangeLanguage: (number) => void;
+  onChangeLanguage: (lang: CodingLanguage) => void;
   checkboxIdToSelectedMapLanguage: any;
 }
 

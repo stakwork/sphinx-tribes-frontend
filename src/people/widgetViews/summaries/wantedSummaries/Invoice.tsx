@@ -65,6 +65,7 @@ export default function Invoice(props: {
   const decoded = lighningDecoder.decode(props.lnInvoice);
   const expiry = decoded.sections[8].value;
   const timeCreated = decoded.sections[4].value;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const endTime = new Date((timeCreated + expiry) * 1000);
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(endTime, 'hours'));
 
@@ -80,7 +81,7 @@ export default function Invoice(props: {
     return () => {
       if (invoiceTimeout) clearTimeout(invoiceTimeout);
     };
-  }, [timeLeft, props.invoiceStatus, props]);
+  }, [timeLeft, props.invoiceStatus, props, endTime]);
 
   useEffect(() => {
     if ((!timeLeft.hours || timeLeft.hours < 1) && timeLeft.minutes < 1 && timeLeft.seconds < 1) {
@@ -107,7 +108,7 @@ export default function Invoice(props: {
             </CountDownTimer>
           </CountDownTimerWrap>
 
-          <QrWrap>
+          <QrWrap data-testid="qr-code">
             <QR size={props.qrSize || 200} value={props.lnInvoice} />
             <QrBar value={props.lnInvoice} simple style={{ marginTop: '0.94rem' }} />
           </QrWrap>
