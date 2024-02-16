@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { render, screen, within, act } from '@testing-library/react';
+import { render, screen, within, act, fireEvent } from '@testing-library/react';
 import moment from 'moment';
 import nock from 'nock';
 import React from 'react';
@@ -188,5 +188,26 @@ describe('Header Component', () => {
     expect(monthElement).toHaveTextContent(expectedTextContent);
 
     expect(screen.getByText(exportCSVText)).toBeInTheDocument();
+  });
+  test('displays "Custom" when dates are selected', async () => {
+    const setStartDateMock = jest.fn();
+    const setEndDateMock = jest.fn();
+
+    render(
+      <Header
+        startDate={moment().subtract(7, 'days').startOf('day').unix()}
+        endDate={moment().startOf('day').unix()}
+        setStartDate={setStartDateMock}
+        setEndDate={setEndDateMock}
+      />
+    );
+
+    const dropDownButton = screen.getByTestId('DropDown');
+    fireEvent.click(dropDownButton);
+
+    const customOption = screen.getByText('Custom');
+    fireEvent.click(customOption);
+
+    expect(dropDownButton).toHaveTextContent('Custom');
   });
 });
