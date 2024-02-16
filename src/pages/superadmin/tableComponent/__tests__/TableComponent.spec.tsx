@@ -21,6 +21,7 @@ const paginationLimit = Math.floor(totalBounties / 20) + 1;
 const defaultTabs: number[] = [1, 2, 3, 4, 5, 6, 7];
 const activeTabs = defaultTabs;
 const setActiveTabs = jest.fn();
+const onChangeFilterByDateMock = jest.fn();
 
 const mockBounties: Bounty[] = [
   {
@@ -79,6 +80,63 @@ const mockBounties: Bounty[] = [
   }
 ];
 
+const unSortedMockBounties: Bounty[] = [
+  {
+    id: 1,
+    bounty_id: 2,
+    title: 'Bounty 1',
+    date: '2023-01-02',
+    bounty_created: '1672639200',
+    paid_date: '2023-01-02',
+    dtgp: 200,
+    assignee: 'Assignee 2',
+    assigneeImage: 'assignee-image-2.jpg',
+    provider: 'Provider 2',
+    providerImage: 'provider-image-2.jpg',
+    organization: 'Org 2',
+    organizationImage: 'org-image-2.jpg',
+    status: 'paid',
+    paid: false,
+    assignee_alias: 'Ednum'
+  },
+  {
+    id: 2,
+    bounty_id: 1,
+    title: 'Bounty 2',
+    date: '2023-01-01',
+    bounty_created: '1672552800',
+    paid_date: '2023-01-01',
+    dtgp: 100,
+    assignee: '',
+    assigneeImage: '',
+    provider: 'Provider 1',
+    providerImage: 'provider-image-1.jpg',
+    organization: 'Org 1',
+    organizationImage: 'org-image-1.jpg',
+    paid: false,
+    assignee_alias: 'Ednum',
+    status: 'open'
+  },
+  {
+    id: 3,
+    bounty_id: 3,
+    title: 'Bounty 3',
+    date: '2023-01-03',
+    bounty_created: '1672725600',
+    paid_date: '2023-01-03',
+    dtgp: 300,
+    assignee: 'Assignee 3',
+    assigneeImage: 'assignee-image-3.jpg',
+    provider: 'Provider 3',
+    providerImage: 'provider-image-3.jpg',
+    organization: 'Org 3',
+    organizationImage: 'org-image-3.jpg',
+    status: 'assigned',
+    paid: true,
+    assignee_alias: 'Ednum'
+  }
+];
+
 const MockStatusProps = {
   checkboxIdToSelectedMap: {
     Open: false,
@@ -96,7 +154,8 @@ const MockTableProps: TableProps = {
   totalBounties: totalBounties,
   paginationLimit: paginationLimit,
   activeTabs: activeTabs,
-  setActiveTabs: setActiveTabs
+  setActiveTabs: setActiveTabs,
+  onChangeFilterByDate: jest.fn()
 };
 
 describe('MyTable Component', () => {
@@ -425,56 +484,77 @@ describe('MyTable Component', () => {
   });
 
   it('simulates filtering bounties by status: open, assigned, paid', async () => {
-    let filteredBounties = mockBounties.filter((bounty: any) => bounty.status === 'open');
+    let filteredBounties = unSortedMockBounties.filter((bounty: any) => bounty.status === 'open');
     const { rerender } = render(<MyTable {...MockTableProps} bounties={filteredBounties} />);
-    expect(screen.getByText('Bounty 1')).toBeInTheDocument();
-    expect(screen.queryByText('Bounty 2')).not.toBeInTheDocument();
-    expect(screen.queryByText('Bounty 3')).not.toBeInTheDocument();
 
-    filteredBounties = mockBounties.filter((bounty: any) => bounty.status === 'assigned');
-    rerender(<MyTable {...MockTableProps} bounties={filteredBounties} />);
-    expect(screen.getByText('Bounty 2')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('Status:'));
+    userEvent.click(screen.getByText('Open'));
+    expect(MockStatusProps.onChangeStatus).toHaveBeenCalledWith('Open');
+    expect(screen.getByText('Bounty 2')).toBeInTheDocument(); // 'Bounty 2' is an "Open" bounty
     expect(screen.queryByText('Bounty 1')).not.toBeInTheDocument();
     expect(screen.queryByText('Bounty 3')).not.toBeInTheDocument();
 
-    filteredBounties = mockBounties.filter((bounty: any) => bounty.status === 'paid');
+    filteredBounties = unSortedMockBounties.filter((bounty: any) => bounty.status === 'assigned');
     rerender(<MyTable {...MockTableProps} bounties={filteredBounties} />);
-    expect(screen.getByText('Bounty 3')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('Status:'));
+    userEvent.click(screen.getByText('Assigned'));
+    expect(MockStatusProps.onChangeStatus).toHaveBeenCalledWith('Assigned');
+    expect(screen.getByText('Bounty 3')).toBeInTheDocument(); // 'Bounty 3' is an "Assigned" bounty
     expect(screen.queryByText('Bounty 1')).not.toBeInTheDocument();
     expect(screen.queryByText('Bounty 2')).not.toBeInTheDocument();
+
+    filteredBounties = unSortedMockBounties.filter((bounty: any) => bounty.status === 'paid');
+    rerender(<MyTable {...MockTableProps} bounties={filteredBounties} />);
+    fireEvent.click(screen.getByText('Status:'));
+    userEvent.click(screen.getByText('Paid'));
+    expect(MockStatusProps.onChangeStatus).toHaveBeenCalledWith('Paid');
+    expect(screen.getByText('Bounty 1')).toBeInTheDocument(); // 'Bounty 1' is a "Paid" bounty
+    expect(screen.queryByText('Bounty 2')).not.toBeInTheDocument();
+    expect(screen.queryByText('Bounty 3')).not.toBeInTheDocument();
   });
 
   it('sorts the bounties according to admin select Newest', async () => {
-    const sortedBounties = [...mockBounties].reverse();
-    render(<MyTable {...MockTableProps} bounties={sortedBounties} />);
+    const unsortedBounties = [...unSortedMockBounties].reverse();
+    render(
+      <MyTable
+        {...MockTableProps}
+        bounties={unsortedBounties}
+        onChangeFilterByDate={onChangeFilterByDateMock}
+      />
+    );
 
     fireEvent.click(screen.getByText('Sort By:'));
     fireEvent.click(screen.getByText('Newest'));
+    await waitFor(() => {
+      expect(onChangeFilterByDateMock).toHaveBeenCalledWith('desc');
+    });
 
     await waitFor(() => {
       const displayedBounties = screen
         .getAllByTestId('bounty-date')
         .map((node: any) => node.textContent);
-      const sortedDatesDesc = [...mockBounties]
-        .sort((a: any, b: any) => b.date.localeCompare(a.date))
-        .map((bounty: any) => bounty.date);
+
+      const sortedDatesDesc = unsortedBounties.map((bounty: any) => bounty.date);
       expect(displayedBounties).toEqual(sortedDatesDesc);
     });
   });
 
   it('sorts the bounties according to admin select Oldest', async () => {
-    render(<MyTable {...MockTableProps} />);
+    render(<MyTable {...MockTableProps} onChangeFilterByDate={onChangeFilterByDateMock} />);
 
     fireEvent.click(screen.getByText('Sort By:'));
     const oldestButtons = screen.getAllByText('Oldest');
     fireEvent.click(oldestButtons[1]);
+    await waitFor(() => {
+      expect(onChangeFilterByDateMock).toHaveBeenCalledWith('asc');
+    });
 
     await waitFor(() => {
       const displayedBounties = screen
         .getAllByTestId('bounty-date')
         .map((node: any) => node.textContent);
 
-      const sortedDatesAsc = [...mockBounties]
+      const sortedDatesAsc = [...unSortedMockBounties]
         .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
         .map((bounty: any) => bounty.date);
 
