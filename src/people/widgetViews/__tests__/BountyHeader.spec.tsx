@@ -16,7 +16,7 @@ jest.mock('react-router-dom', () => ({
 }));
 
 const mockProps: BountyHeaderProps = {
-  selectedWidget: 'wanted',
+  selectedWidget: 'bounties',
   scrollValue: false,
   onChangeStatus: jest.fn(),
   onChangeLanguage: jest.fn(),

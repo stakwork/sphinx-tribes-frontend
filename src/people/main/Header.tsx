@@ -341,8 +341,8 @@ function Header() {
   }, []);
 
   function goToEditSelf() {
-    if (ui.meInfo?.id && !location.pathname.includes(`/p/${ui.meInfo.owner_pubkey}`)) {
-      history.push(`/p/${ui.meInfo.owner_pubkey}/organizations`);
+    if (ui.meInfo?.id && !location.pathname.includes(`/p/${ui.meInfo.uuid}`)) {
+      history.push(`/p/${ui.meInfo.uuid}/organizations`);
       ui.setSelectedPerson(ui.meInfo.id);
       ui.setSelectingPerson(ui.meInfo.id);
     }
@@ -495,7 +495,7 @@ function Header() {
             <PostModal
               isOpen={isOpenPostModal}
               onClose={() => setIsOpenPostModal(false)}
-              widget={'wanted'}
+              widget={'bounties'}
               onSucces={() => {
                 history.goBack();
                 window.location.reload();

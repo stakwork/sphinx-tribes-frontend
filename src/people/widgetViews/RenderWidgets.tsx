@@ -195,7 +195,7 @@ function RenderWidgets({ widget }: RenderWidgetsProps) {
             <AboutView {...person} />
           </Panel>
         );
-      case 'usertickets':
+      case 'assigned':
         return <UserTickets />;
       case 'offer':
         return wrapIt(<OfferView {...fullSelectedWidget} person={person} />);

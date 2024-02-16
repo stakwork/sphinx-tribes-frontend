@@ -337,7 +337,7 @@ const BountyHeader = ({
   useEffect(() => {
     // eslint-disable-next-line func-style
     async function getPeopleList() {
-      if (selectedWidget === 'wanted') {
+      if (selectedWidget === 'bounties') {
         try {
           const responseNew = await main.getBountyHeaderData();
           setPeopleList(responseNew.people);

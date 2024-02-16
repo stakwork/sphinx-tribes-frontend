@@ -13,7 +13,7 @@ function NoResults() {
         margin: 'auto',
         marginTop: '10%'
       }}
-      {...tabs['usertickets']?.noneSpace['noResult']}
+      {...tabs['assigned']?.noneSpace['noResult']}
     />
   );
 }

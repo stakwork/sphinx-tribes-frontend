@@ -8,6 +8,7 @@ const mockUser = {
   img: 'https://community.sphinx.chat/static/avatarPlaceholders/placeholder_35.jpg',
   owner_alias: 'user1',
   owner_pubkey: 'xxxxx',
+  uuid: 'test_uuid',
   unique_name: 'user1',
   squeeze: false,
   description: 'hello, I am user1',
@@ -46,11 +47,7 @@ describe('Person component', () => {
 
     window.onload = onloadSpy;
     expect(onloadSpy).not.toHaveBeenCalled();
-    expect(selectMock).toHaveBeenCalledWith(
-      mockUser.id,
-      mockUser.unique_name,
-      mockUser.owner_pubkey
-    );
+    expect(selectMock).toHaveBeenCalledWith(mockUser.id, mockUser.unique_name, mockUser.uuid);
   });
 
   it('should show user contect qrcode modal when contect is clicked', async () => {
