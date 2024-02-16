@@ -488,7 +488,7 @@ export const MyTable = ({
                         {bounty?.title}
                       </a>
                     </BountyData>
-                    <TableData>{created}</TableData>
+                    <TableData data-testId={'bounty-date'}>{created}</TableData>
                     <TableDataCenter>{time_to_pay}</TableDataCenter>
                     <TableDataAlternative>
                       <ImageWithText
