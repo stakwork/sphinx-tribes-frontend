@@ -11,7 +11,7 @@ import { useStores } from '../../store';
 import { PersonBounty } from '../../store/main';
 
 const color = colors['light'];
-const focusedDesktopModalStyles = widgetConfigs.bounties.modalStyle;
+const focusedDesktopModalStyles = widgetConfigs.wanted.modalStyle;
 
 type Props = {
   setConnectPerson: (p: any) => void;
@@ -154,7 +154,7 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
                 personBody={connectPersonBody}
                 canEdit={false}
                 selectedIndex={publicFocusIndex}
-                config={widgetConfigs.bounties}
+                config={widgetConfigs.wanted}
                 bounty={activeBounty}
                 fromBountyPage={true}
                 goBack={goBack}
@@ -211,13 +211,13 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
               personBody={connectPersonBody}
               canEdit={false}
               selectedIndex={publicFocusIndex}
-              config={widgetConfigs.bounties}
+              config={widgetConfigs.wanted}
               goBack={goBack}
               getBounty={getBounty}
               bounty={activeBounty}
               fromBountyPage={true}
               extraModalFunction={() => {
-                goBack();
+                // goBack();
                 if (ui.meInfo) {
                   setConnectPerson(connectPersonBody);
                 } else {
