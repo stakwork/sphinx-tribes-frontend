@@ -1,4 +1,5 @@
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { ConnectCardProps } from 'people/interfaces';
 import { Button, Modal, QR } from '../../components/common';
@@ -92,12 +93,14 @@ export default function ConnectCard(props: ConnectCardProps) {
   const ownerPubkey = person && person?.owner_pubkey ? `${person.owner_pubkey}` : '';
   const routeHint = person && person?.owner_route_hint ? `:${person.owner_route_hint}` : '';
 
+  const history = useHistory();
   return (
     <div onClick={(e: any) => e.stopPropagation()}>
       <Modal
         style={props.modalStyle}
         overlayClick={() => {
           props.dismiss();
+          history.goBack();
         }}
         visible={visible}
       >
