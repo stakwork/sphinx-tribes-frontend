@@ -57,6 +57,7 @@ export interface SelProps {
   testId?: string;
   writeMode?: boolean;
   name?: string;
+  isOpen?: boolean;
 }
 
 export interface AutoCompleteProps {
