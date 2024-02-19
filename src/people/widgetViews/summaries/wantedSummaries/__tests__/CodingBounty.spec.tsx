@@ -1,5 +1,12 @@
 import '@testing-library/jest-dom';
-import { fireEvent, queryByTestId, render, screen, waitFor } from '@testing-library/react';
+import {
+  fireEvent,
+  getByTestId,
+  queryByTestId,
+  render,
+  screen,
+  waitFor
+} from '@testing-library/react';
 import { CodingBountiesProps } from 'people/interfaces';
 import React, { useState } from 'react';
 import NameTag from 'people/utils/NameTag';
@@ -417,11 +424,12 @@ describe('MobileView component', () => {
     })();
   });
 
-  it('Test that if sufficient funds are available, bounty is paid', async () => {
+  it('test that the mark as paid button updates the bounty paid state', async () => {
     const props: CodingBountiesProps = {
       ...defaultProps,
-      creatorStep: 2,
-      paid: false
+      creatorStep: 0,
+      paid: false,
+      isAssigned: true
     };
 
     uiStore.setMeInfo({
@@ -429,10 +437,13 @@ describe('MobileView component', () => {
       owner_alias: props.person.owner_alias
     });
 
-    jest
-      .spyOn(mainStore, 'getOrganizationBudget')
-      .mockReturnValue(Promise.resolve({ total_budget: 10000 }));
+    const { container } = render(<MobileView {...props} />);
 
-    render(<MobileView {...props} />);
+    const markAsPaid = screen.getByText('Mark as Paid');
+    fireEvent.click(markAsPaid);
+
+    (async () => {
+      await waitFor(() => expect(screen.getByText('complete')));
+    })();
   });
 });
