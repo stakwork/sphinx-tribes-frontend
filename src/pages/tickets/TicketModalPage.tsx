@@ -217,10 +217,10 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
               bounty={activeBounty}
               fromBountyPage={true}
               extraModalFunction={() => {
-                goBack();
                 if (ui.meInfo) {
                   setConnectPerson(connectPersonBody);
                 } else {
+                  goBack();
                   modals.setStartupModal(true);
                 }
               }}
