@@ -30,6 +30,7 @@ export const Header = ({ startDate, setStartDate, endDate, setEndDate }: HeaderP
   const [dateDiff, setDateDiff] = useState(7);
   const [exportLoading, setExportLoading] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
+  const [dropdownText, setDropdownText] = useState<string>('Last 7 Days');
   const formatUnixDate = (unixDate: number) => {
     const formatString = 'DD MMM YYYY';
     if (startDate !== undefined && endDate !== undefined) {
@@ -77,27 +78,34 @@ export const Header = ({ startDate, setStartDate, endDate, setEndDate }: HeaderP
     setExportLoading(false);
   };
 
-  const handleDropDownChange = (option: number) => {
-    const selectedValue = Number(option);
-    setDateDiff(selectedValue);
-
-    if (startDate && endDate) {
-      const currentEndDate = moment.unix(endDate);
-      let newStartDate;
-
-      if (selectedValue === 7) {
-        newStartDate = currentEndDate.clone().subtract(option, 'days').unix();
-      } else if (selectedValue === 30) {
-        newStartDate = currentEndDate.clone().subtract(option, 'days').unix();
-      } else if (selectedValue === 90) {
-        newStartDate = currentEndDate.clone().subtract(option, 'days').unix();
+  const handleDropDownChange = (option: number | string) => {
+    if (typeof option === 'number') {
+      const selectedValue = Number(option);
+      setDateDiff(selectedValue);
+      let text = `${selectedValue} Days`;
+      switch (selectedValue) {
+        case 7:
+          text = 'Last 7 Days';
+          break;
+        case 30:
+          text = 'Last 30 Days';
+          break;
+        case 90:
+          text = 'Last 90 Days';
+          break;
+        default:
+          break;
       }
-      newStartDate = Math.max(
-        newStartDate,
-        currentEndDate.clone().subtract(selectedValue, 'days').unix()
-      );
+      setDropdownText(text);
 
-      setStartDate(newStartDate);
+      if (startDate && endDate) {
+        const currentEndDate = moment.unix(endDate);
+        const newStartDate = currentEndDate.clone().subtract(selectedValue, 'days').unix();
+        setStartDate(newStartDate);
+      }
+    } else if (option === 'Custom') {
+      setDropdownText('Custom');
+      setShowCalendar(!showCalendar);
     }
   };
 
@@ -154,7 +162,7 @@ export const Header = ({ startDate, setStartDate, endDate, setEndDate }: HeaderP
               setShowSelector(!showSelector);
             }}
           >
-            Last {dateDiff} Days
+            <div style={{ flex: 2, textAlign: 'center' }}>{dropdownText}</div>
             <div>
               <img src={expand_more} alt="a" />
             </div>
@@ -165,7 +173,7 @@ export const Header = ({ startDate, setStartDate, endDate, setEndDate }: HeaderP
                   <li onClick={() => handleDropDownChange(30)}>30 Days</li>
                   <li onClick={() => handleDropDownChange(90)}>90 Days</li>
                   <li>
-                    <CustomButton onClick={() => setShowCalendar(!showCalendar)}>
+                    <CustomButton onClick={() => handleDropDownChange('Custom')}>
                       Custom
                     </CustomButton>
                   </li>

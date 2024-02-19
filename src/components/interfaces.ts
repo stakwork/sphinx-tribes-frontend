@@ -41,6 +41,7 @@ export interface ButtonProps {
   activecolor?: string;
   shadowcolor?: string;
   textStyle?: React.CSSProperties;
+  dataTestId?: string;
 }
 
 export interface SelProps {
@@ -56,6 +57,7 @@ export interface SelProps {
   testId?: string;
   writeMode?: boolean;
   name?: string;
+  isOpen?: boolean;
 }
 
 export interface AutoCompleteProps {

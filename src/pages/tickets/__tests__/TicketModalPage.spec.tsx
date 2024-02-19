@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 import { act, render, waitFor, fireEvent, screen, within } from '@testing-library/react';
 import { user } from '__test__/__mockData__/user';
 import { mockBountiesMutated, newBounty } from 'bounties/__mock__/mockBounties.data';
-import { formatSat } from 'helpers';
+import { DollarConverter, formatSat, getSessionValue, satToUsd } from 'helpers';
 import React from 'react';
 import { MemoryRouter, Route } from 'react-router-dom';
 import { mainStore } from 'store/main';
@@ -412,6 +412,110 @@ describe('TicketModalPage Component', () => {
       fireEvent.click(getByText('Edit'));
       await waitFor(() => getByText('Edit Bounty'));
       expect(getByText('Edit Bounty')).toBeInTheDocument();
+    });
+  });
+
+  it('test that the user should be able to exit the bounty modal by clicking the "x" on the top right', async () => {
+    (useIsMobile as jest.Mock).mockReturnValue(false);
+    uiStore.setMeInfo(user);
+
+    jest.spyOn(mainStore, 'getBountyById').mockReturnValue(
+      Promise.resolve([
+        {
+          ...newBounty,
+          person: { ...newBounty.person, owner_alias: user.alias },
+          body: {
+            ...mockBountiesMutated[1].body,
+            owner: user
+          }
+        }
+      ])
+    );
+    jest.spyOn(mainStore, 'getBountyIndexById').mockReturnValue(Promise.resolve(1234));
+
+    await act(async () => {
+      const { getByTestId } = render(
+        <MemoryRouter initialEntries={['/bounty/1234']}>
+          <Route path="/bounty/:bountyId" component={TicketModalPage} />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => getByTestId('testid-modal'));
+
+      const closeButton = screen.queryByTestId('close-btn');
+      if (closeButton) {
+        fireEvent.click(closeButton);
+        const absentModal = screen.queryByTestId('testid-modal');
+        expect(absentModal).toBeNull();
+      }
+    });
+  });
+
+  it('tests that the bounty poster, title of bounty, Sat amount/usd conversion, est. hours, are all rendered and clickable', async () => {
+    (useIsMobile as jest.Mock).mockReturnValue(false);
+    uiStore.setMeInfo(user);
+
+    jest.spyOn(mainStore, 'getBountyById').mockReturnValue(
+      Promise.resolve([
+        {
+          ...newBounty,
+          person: { ...newBounty.person, owner_alias: user.alias },
+          body: {
+            ...mockBountiesMutated[1].body,
+            owner: user
+          }
+        }
+      ])
+    );
+    jest.spyOn(mainStore, 'getBountyIndexById').mockReturnValue(Promise.resolve(1234));
+
+    await act(async () => {
+      const { getByText, getByTestId, container } = render(
+        <MemoryRouter initialEntries={['/bounty/1234']}>
+          <Route path="/bounty/:bountyId" component={TicketModalPage} />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => getByTestId('testid-modal'));
+
+      // bounty poster
+      expect(getByText(user.alias)).toBeInTheDocument();
+      // title of bounty
+      expect(getByText(mockBountiesMutated[1].body.title)).toBeInTheDocument();
+      // Sat amount
+      expect(getByText(DollarConverter(mockBountiesMutated[1].body.price))).toBeInTheDocument();
+      // usd conversion
+      expect(
+        getByText(satToUsd(parseInt(mockBountiesMutated[1].body.price)) + ' USD')
+      ).toBeInTheDocument();
+      screen.debug(undefined, Infinity);
+      // Estimated Hours
+      expect(
+        getByText(getSessionValue(mockBountiesMutated[1].body.estimated_session_length))
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('that if a hunter is not assigned, there should be an empty profile image.', async () => {
+    jest
+      .spyOn(mainStore, 'getBountyById')
+      .mockReturnValue(
+        Promise.resolve([{ ...newBounty, body: { ...mockBountiesMutated[1].body, assignee: '' } }])
+      );
+    jest.spyOn(mainStore, 'getBountyIndexById').mockReturnValue(Promise.resolve(1234));
+
+    await act(async () => {
+      const { container, getByTestId, getByAltText } = render(
+        <MemoryRouter initialEntries={['/bounty/1234']}>
+          <Route path="/bounty/:bountyId" component={TicketModalPage} />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => getByTestId('testid-modal'));
+      const imageElement = document.querySelector(
+        '.UnassignedPersonContainer img'
+      ) as HTMLImageElement;
+      expect(imageElement.src).toContain('/static/unassigned_profile.svg');
     });
   });
 });

@@ -1,12 +1,12 @@
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import userEvent from '@testing-library/user-event'
 import nock from 'nock';
-import React from 'react';
 import { setupStore } from '../../../../__test__/__mockData__/setupStore';
 import { user } from '../../../../__test__/__mockData__/user';
-import { mockUsehistory } from '../../../../__test__/__mockFn__/useHistory';
+import { mockUsehistory } from '../../../../__test__/__mockFn__/useHistory;
 import { PostModal } from '../PostModal';
+import { localStorageMock } from '../../../../__test__/__mockData__/localStorage';
 
 beforeAll(() => {
   nock.disableNetConnect();
@@ -17,7 +17,7 @@ beforeAll(() => {
 describe('Post bounty modal', () => {
   nock(user.url).get('/person/id/1').reply(200, { user });
   nock(user.url).get('/ask').reply(200, {});
-
+  
   test('clicking on post a bounty button render a form', () => {
     const closeHandler = jest.fn();
     render(<PostModal isOpen={true} onClose={closeHandler} widget="wanted" />);

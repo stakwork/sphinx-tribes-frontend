@@ -28,7 +28,7 @@ describe('BountyHeader', () => {
   it('displays the filter button and shows status count on click', async () => {
     render(
       <BountyHeader
-        selectedWidget={'wanted'}
+        selectedWidget={'bounties'}
         scrollValue={false}
         onChangeStatus={function (number: any): void {
           throw new Error('Function not implemented.');
@@ -66,7 +66,7 @@ describe('BountyHeader', () => {
 
     render(
       <BountyHeader
-        selectedWidget={'wanted'}
+        selectedWidget={'bounties'}
         scrollValue={false}
         onChangeStatus={function (number: any): void {
           throw new Error('Function not implemented.');

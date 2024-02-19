@@ -83,7 +83,7 @@ export const meSchema: FormField[] = [
       supportme: Yup.object({
         url: strValidator
       }).default(undefined),
-      wanted: Yup.array().of(
+      bounties: Yup.array().of(
         Yup.object()
           .shape({
             title: strValidator,
@@ -196,8 +196,8 @@ export const meSchema: FormField[] = [
         ]
       },
       {
-        name: 'wanted',
-        label: 'Wanted',
+        name: 'bounties',
+        label: 'Bounties',
         type: 'widget',
         class: 'wanted',
         fields: [

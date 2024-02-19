@@ -8,13 +8,13 @@ import { BountyModalProps } from 'people/interfaces';
 import { PersonBounty } from 'store/main';
 import FocusedView from '../FocusView';
 
-const config = widgetConfigs.wanted;
+const config = widgetConfigs.bounties;
 export const BountyModal = ({ basePath, fromPage, bountyOwner }: BountyModalProps) => {
   const history = useHistory();
-  const { wantedId, wantedIndex, personPubkey } = useParams<{
+  const { wantedId, wantedIndex, uuid } = useParams<{
     wantedId: string;
     wantedIndex: string;
-    personPubkey: string;
+    uuid: string;
   }>();
 
   const { ui, main } = useStores();
@@ -27,8 +27,8 @@ export const BountyModal = ({ basePath, fromPage, bountyOwner }: BountyModalProp
   const personToDisplay = fromPage === 'usertickets' ? bountyOwner : person;
 
   const onGoBack = async () => {
-    await main.getPersonCreatedBounties({}, personPubkey);
-    await main.getPersonAssignedBounties({}, personPubkey);
+    await main.getPersonCreatedBounties({}, uuid);
+    await main.getPersonAssignedBounties({}, uuid);
 
     ui.setBountyPerson(0);
     history.push({

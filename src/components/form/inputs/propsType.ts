@@ -25,4 +25,5 @@ export interface Props {
   testId?: string;
   maxLength?: number;
   setColor?: (data: boolean, value: string) => void;
+  isOpen?: boolean;
 }

@@ -1,6 +1,6 @@
 export type Widget =
   | 'people'
-  | 'wanted'
+  | 'bounties'
   | 'post'
   | 'offer'
   | 'badges'
@@ -9,5 +9,5 @@ export type Widget =
   | 'supportme'
   | 'blog'
   | 'badges'
-  | 'usertickets';
+  | 'assigned';
 export type PeopleBodyProps = { selectedWidget: Widget };

@@ -70,7 +70,7 @@ function DesktopView(props: WantedViewsProps) {
             <NameTag
               {...person}
               created={created}
-              widget={'wanted'}
+              widget={'bounties'}
               ticketUrl={ticketUrl}
               loomEmbedUrl={loomEmbedUrl}
             />

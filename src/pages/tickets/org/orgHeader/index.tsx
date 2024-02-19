@@ -112,7 +112,7 @@ export const OrgHeader = ({
     }
   }, [ui.meInfo, org_uuid, main]);
 
-  const selectedWidget = 'wanted';
+  const selectedWidget = 'bounties';
 
   const filterRef = useRef<HTMLDivElement | null>(null);
 

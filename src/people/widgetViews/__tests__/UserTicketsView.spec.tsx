@@ -28,8 +28,8 @@ describe('UserTickets', () => {
     jest.spyOn(mainStore, 'getPersonAssignedBounties').mockReturnValue(Promise.resolve([]));
     await act(async () => {
       const { getByText } = render(
-        <MemoryRouter initialEntries={['/p/1234/usertickets']}>
-          <Route path="/p/:personPubkey/usertickets" component={UserTickets} />
+        <MemoryRouter initialEntries={['/p/1234/assigned']}>
+          <Route path="/p/:uuid/assigned" component={UserTickets} />
         </MemoryRouter>
       );
 
@@ -51,8 +51,8 @@ describe('UserTickets', () => {
       .mockReturnValue(Promise.resolve([userBounty]));
     await act(async () => {
       const { getByText } = render(
-        <MemoryRouter initialEntries={['/p/1234/usertickets']}>
-          <Route path="/p/:personPubkey/usertickets" component={UserTickets} />
+        <MemoryRouter initialEntries={['/p/1234/assigned']}>
+          <Route path="/p/:uuid/assigned" component={UserTickets} />
         </MemoryRouter>
       );
 
@@ -75,8 +75,8 @@ describe('UserTickets', () => {
       .mockReturnValue(Promise.resolve([userBounty]));
     await act(async () => {
       const { getByText } = render(
-        <MemoryRouter initialEntries={['/p/1234/usertickets']}>
-          <Route path="/p/:personPubkey/usertickets" component={UserTickets} />
+        <MemoryRouter initialEntries={['/p/1234/assigned']}>
+          <Route path="/p/:uuid/assigned" component={UserTickets} />
         </MemoryRouter>
       );
 
@@ -100,8 +100,8 @@ describe('UserTickets', () => {
       .mockReturnValue(Promise.resolve([userBounty]));
     await act(async () => {
       const { getByText } = render(
-        <MemoryRouter initialEntries={['/p/1234/usertickets']}>
-          <Route path="/p/:personPubkey/usertickets" component={UserTickets} />
+        <MemoryRouter initialEntries={['/p/1234/assigned']}>
+          <Route path="/p/:uuid/assigned" component={UserTickets} />
         </MemoryRouter>
       );
 
@@ -123,8 +123,8 @@ describe('UserTickets', () => {
       .mockReturnValue(Promise.resolve([userBounty]));
     await act(async () => {
       const { getByText } = render(
-        <MemoryRouter initialEntries={['/p/1234/usertickets']}>
-          <Route path="/p/:personPubkey/usertickets" component={UserTickets} />
+        <MemoryRouter initialEntries={['/p/1234/assigned']}>
+          <Route path="/p/:uuid/assigned" component={UserTickets} />
         </MemoryRouter>
       );
 

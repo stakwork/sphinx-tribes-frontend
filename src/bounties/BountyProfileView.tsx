@@ -166,8 +166,8 @@ const BountyProfileView = (props: BountiesProfileProps) => {
                   `/p/${
                     {
                       ...props.assignee
-                    }.owner_pubkey
-                  }?widget=wanted`,
+                    }.uuid
+                  }?widget=bounties`,
                   '_blank'
                 );
               }
@@ -188,8 +188,8 @@ const BountyProfileView = (props: BountiesProfileProps) => {
                     `/p/${
                       {
                         ...props.assignee
-                      }.owner_pubkey
-                    }?widget=wanted`,
+                      }.uuid
+                    }?widget=bounties`,
                     '_blank'
                   );
                 }

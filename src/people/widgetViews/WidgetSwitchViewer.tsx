@@ -116,7 +116,7 @@ function WidgetSwitchViewer(props: any) {
 
   const listSource = {
     post: peoplePosts,
-    wanted: peopleBounties,
+    bounties: peopleBounties,
     offer: peopleOffers
   };
 
@@ -245,7 +245,7 @@ function WidgetSwitchViewer(props: any) {
                 person={person}
                 {...body}
               />
-            ) : selectedWidget === 'wanted' ? (
+            ) : selectedWidget === 'bounties' ? (
               <WantedView
                 showName
                 onPanelClick={() => {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { EuiIcon } from '@elastic/eui';
 import { Select } from '../../common';
@@ -79,15 +79,28 @@ export default function SelectInput({
   const color = colors['light'];
   if (error) labeltext = `${labeltext} (${error})`;
   const [active, setActive] = useState<boolean>(false);
+  const [isSelectOpen, setIsSelectOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (active === false) {
+      setIsSelectOpen(false);
+    }
+  }, [isSelectOpen, active]);
+
   return (
     <OuterContainer color={color}>
       <FieldEnv
         color={color}
         label={labeltext}
         className={value ? 'euiFormRow_filed' : active ? 'euiFormRow_active' : ''}
+        onClick={() => {
+          setActive(!active);
+          setIsSelectOpen(!isSelectOpen);
+        }}
       >
         <R>
           <Select
+            isOpen={isSelectOpen}
             testId={testId}
             name={'first'}
             selectStyle={{
