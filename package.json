@@ -20,8 +20,7 @@
     "prepare": "husky install .husky",
     "test": "yarn run test-jest",
     "test-jest": "REACT_APP_IS_TEST=true NODE_ENV=test yarn jest --coverage --maxWorkers 2 --no-cache --transformIgnorePatterns \"./svg/\"",
-    "cypress:run": "npx cypress run",
-    "test1": "yarn jest TicketModalPage.spec.tsx --transformIgnorePatterns \"node_modules/(?!@ngrx|(?!d3-force-3d)|(?!remark-gfm)|ng-dynamic)/\" "
+    "cypress:run": "npx cypress run"
   },
   "resolutions": {
     "react-error-overlay": "6.0.9",
