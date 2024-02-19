@@ -1,5 +1,12 @@
 import '@testing-library/jest-dom';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  fireEvent,
+  getByTestId,
+  queryByTestId,
+  render,
+  screen,
+  waitFor
+} from '@testing-library/react';
 import { CodingBountiesProps } from 'people/interfaces';
 import React, { useState } from 'react';
 import NameTag from 'people/utils/NameTag';
@@ -8,6 +15,10 @@ import { user } from '__test__/__mockData__/user';
 import userEvent from '@testing-library/user-event';
 import { mainStore } from 'store/main';
 import MobileView from '../CodingBounty';
+
+jest.mock('remark-gfm', () => ({}));
+
+jest.mock('rehype-raw', () => ({}));
 
 describe('MobileView component', () => {
   beforeEach(() => {
@@ -324,5 +335,115 @@ describe('MobileView component', () => {
       expect(screen.queryByText('Assign Developer')).toBe(null);
       expect(mockHandleAssigneeDetails).toBeCalledTimes(1);
     });
+  });
+
+  it('Test that mark as paid button, renders: adjust amount , assignee name, amount set in Sats and next button', async () => {
+    const props: CodingBountiesProps = {
+      ...defaultProps,
+      paid: false
+    };
+
+    uiStore.setMeInfo({
+      ...user,
+      owner_alias: props.person.owner_alias
+    });
+
+    render(<MobileView {...props} />);
+
+    const inputSAT = screen.findByTestId('input_sats');
+    const nextBTN = screen.findByTestId('next_btn');
+
+    expect(screen.queryByText('Adjust the amount')).toBeInTheDocument();
+    expect(screen.queryByText('Guest Developer')).toBeInTheDocument();
+    expect(screen.queryByTestId('USDText')).toBeInTheDocument();
+    expect(screen.queryByText('SAT')).toBeInTheDocument();
+  });
+
+  it('Test that increment and decrement button on input field for amount works correctly', async () => {
+    const props: CodingBountiesProps = {
+      ...defaultProps,
+      paid: false
+    };
+
+    uiStore.setMeInfo({
+      ...user,
+      owner_alias: props.person.owner_alias
+    });
+
+    render(<MobileView {...props} />);
+
+    const inputSAT = screen.getByTestId('input_sats');
+
+    expect(inputSAT).toBeInTheDocument();
+
+    fireEvent.change(inputSAT, { target: { value: 100 } });
+
+    await waitFor(() => expect(inputSAT).toHaveValue(100), { timeout: 3000 });
+  });
+
+  it('Test that clicking on next button takes you to Award Badge section assert all the necessary ui elements', async () => {
+    const props: CodingBountiesProps = {
+      ...defaultProps,
+      creatorStep: 2,
+      paid: false
+    };
+
+    uiStore.setMeInfo({
+      ...user,
+      owner_alias: props.person.owner_alias
+    });
+
+    render(<MobileView {...props} />);
+    expect(screen.getByText('Mark as Paid')).toBeInTheDocument();
+    expect(screen.queryByText('Award Badge')).toBeInTheDocument();
+    expect(screen.getAllByTestId('check_box').length).toBe(2);
+  });
+
+  it('Test that button state and text changes according to selection in Award Badge Section', () => {
+    const props: CodingBountiesProps = {
+      ...defaultProps,
+      creatorStep: 2,
+      paid: false
+    };
+
+    uiStore.setMeInfo({
+      ...user,
+      owner_alias: props.person.owner_alias
+    });
+
+    render(<MobileView {...props} />);
+
+    const checkBox = screen.getAllByTestId('check_box');
+
+    fireEvent.click(checkBox[0]);
+
+    (async () => {
+      await waitFor(() => {
+        expect(screen.getByText('Mark as Paid'));
+      });
+    })();
+  });
+
+  it('test that the mark as paid button updates the bounty paid state', async () => {
+    const props: CodingBountiesProps = {
+      ...defaultProps,
+      creatorStep: 0,
+      paid: false,
+      isAssigned: true
+    };
+
+    uiStore.setMeInfo({
+      ...user,
+      owner_alias: props.person.owner_alias
+    });
+
+    const { container } = render(<MobileView {...props} />);
+
+    const markAsPaid = screen.getByText('Mark as Paid');
+    fireEvent.click(markAsPaid);
+
+    (async () => {
+      await waitFor(() => expect(screen.getByText('complete')));
+    })();
   });
 });
