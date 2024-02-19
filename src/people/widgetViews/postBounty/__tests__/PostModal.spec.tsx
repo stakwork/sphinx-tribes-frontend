@@ -1,12 +1,12 @@
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event'
+import userEvent from '@testing-library/user-event';
 import nock from 'nock';
+import React from 'react';
 import { setupStore } from '../../../../__test__/__mockData__/setupStore';
 import { user } from '../../../../__test__/__mockData__/user';
-import { mockUsehistory } from '../../../../__test__/__mockFn__/useHistory;
+import { mockUsehistory } from '../../../../__test__/__mockFn__/useHistory';
 import { PostModal } from '../PostModal';
-import { localStorageMock } from '../../../../__test__/__mockData__/localStorage';
 
 beforeAll(() => {
   nock.disableNetConnect();
@@ -17,17 +17,17 @@ beforeAll(() => {
 describe('Post bounty modal', () => {
   nock(user.url).get('/person/id/1').reply(200, { user });
   nock(user.url).get('/ask').reply(200, {});
-  
+
   test('clicking on post a bounty button render a form', () => {
     const closeHandler = jest.fn();
-    render(<PostModal isOpen={true} onClose={closeHandler} widget="wanted" />);
+    render(<PostModal isOpen={true} onClose={closeHandler} widget="bounties" />);
     expect(screen.getByRole('alertdialog')).toBeInTheDocument();
     expect(screen.getByText(/Choose Bounty type/i)).toBeInTheDocument();
   });
 
   test('start button is visible and navigates to the first step', () => {
     const closeHandler = jest.fn();
-    render(<PostModal isOpen={true} onClose={closeHandler} widget="wanted" />);
+    render(<PostModal isOpen={true} onClose={closeHandler} widget="bounties" />);
     const startButton = screen.getByText('Start');
     expect(startButton).toBeInTheDocument();
     fireEvent.click(startButton);
@@ -36,7 +36,7 @@ describe('Post bounty modal', () => {
 
   test('back and the next button take you forward and backward respectively', () => {
     const closeHandler = jest.fn();
-    render(<PostModal isOpen={true} onClose={closeHandler} widget="wanted" />);
+    render(<PostModal isOpen={true} onClose={closeHandler} widget="bounties" />);
     const startButton = screen.getByText('Start');
     fireEvent.click(startButton);
     fireEvent.click(screen.getByText('Next'));
@@ -47,7 +47,7 @@ describe('Post bounty modal', () => {
 
   test('all form field are rendered', () => {
     const closeHandler = jest.fn();
-    render(<PostModal isOpen={true} onClose={closeHandler} widget="wanted" />);
+    render(<PostModal isOpen={true} onClose={closeHandler} widget="bounties" />);
     const startButton = screen.getByText('Start');
     fireEvent.click(startButton);
     expect(screen.getByText('Basic info')).toBeInTheDocument();
@@ -72,7 +72,7 @@ describe('Post bounty modal', () => {
       description: 'description',
       price: 1
     };
-    render(<PostModal isOpen={true} onClose={closeHandler} widget="wanted" />);
+    render(<PostModal isOpen={true} onClose={closeHandler} widget="bounties" />);
     fireEvent.click(screen.getByText('Start'));
 
     expect(screen.queryByText('Basic info')).toBeInTheDocument();
