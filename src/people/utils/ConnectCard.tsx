@@ -1,5 +1,5 @@
 import React from 'react';
-import { useHistory} from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { ConnectCardProps } from 'people/interfaces';
 import { Button, Modal, QR } from '../../components/common';
