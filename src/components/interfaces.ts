@@ -58,6 +58,7 @@ export interface SelProps {
   writeMode?: boolean;
   name?: string;
   isOpen?: boolean;
+  placeholder?: any;
 }
 
 export interface AutoCompleteProps {
