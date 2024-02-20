@@ -113,7 +113,10 @@ Cypress.Commands.add('create_bounty', (bounty) => {
 
   if (bounty.organization) {
     cy.get('button[data-testid="Organization"]').click({ force: true });
-    cy.get('button[data-testid="Organization"]').select(bounty.category);
+    cy.get('button[data-testid="Organization"]').should(($select: any) => {
+      const val = $select.val();
+      expect(val).to.eq(bounty.organization);
+    });
   }
 
   cy.contains('label', 'Bounty Title').type(bounty.title);
@@ -133,7 +136,10 @@ Cypress.Commands.add('create_bounty', (bounty) => {
   }
 
   cy.get('[data-testid="Category *"]').click();
-  cy.get('[data-testid="Category *"]').select(bounty.category);
+  cy.get('[data-testid="Category *"]').should(($select: any) => {
+    const val = $select.val();
+    expect(val).to.eq(bounty.category);
+  });
 
   cy.contains('Next').click();
 
