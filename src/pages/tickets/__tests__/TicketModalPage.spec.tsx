@@ -10,6 +10,7 @@ import { useIsMobile } from 'hooks';
 import { uiStore } from 'store/ui';
 import { TicketModalPage } from '../TicketModalPage';
 import { withCreateModal } from '../../../components/common/withCreateModal';
+import { unpaidString } from 'people/widgetViews/summaries/constants';
 
 jest.mock('hooks', () => ({
   useIsMobile: jest.fn()
@@ -516,6 +517,83 @@ describe('TicketModalPage Component', () => {
         '.UnassignedPersonContainer img'
       ) as HTMLImageElement;
       expect(imageElement.src).toContain('/static/unassigned_profile.svg');
+    });
+  });
+
+  it('should disable delete button for paid bounties', async () => {
+    (useIsMobile as jest.Mock).mockReturnValue(true);
+    uiStore.setMeInfo(user);
+
+    jest.spyOn(mainStore, 'getBountyById').mockReturnValue(
+      Promise.resolve([
+        {
+          ...newBounty,
+          person: { ...newBounty.person, owner_alias: user.alias },
+          body: {
+            ...mockBountiesMutated[1].body,
+            owner: user,
+            paid: true
+          }
+        }
+      ])
+    );
+    jest.spyOn(mainStore, 'getBountyIndexById').mockReturnValue(Promise.resolve(1234));
+
+    const App = withCreateModal(() => (
+      <div>
+        <div id="modal-root" />
+        <MemoryRouter initialEntries={['/bounty/1234']}>
+          <Route path="/bounty/:bountyId" component={TicketModalPage} />
+        </MemoryRouter>
+      </div>
+    ));
+
+    await act(async () => {
+      const { queryAllByText } = render(<App />);
+      expect(queryAllByText('Delete').length).toBe(0);
+    });
+  });
+
+  it('should allow owner to mark the bounty as unpaid', async () => {
+    (useIsMobile as jest.Mock).mockReturnValue(true);
+    uiStore.setMeInfo(user);
+
+    jest.spyOn(mainStore, 'getBountyById').mockReturnValue(
+      Promise.resolve([
+        {
+          ...newBounty,
+          person: { ...user },
+          body: {
+            ...mockBountiesMutated[1].body,
+            owner: user,
+            paid: true,
+            assignee: user
+          }
+        }
+      ])
+    );
+    jest.spyOn(mainStore, 'getBountyIndexById').mockReturnValue(Promise.resolve(1234));
+    jest.spyOn(mainStore, 'updateBountyPaymentStatus').mockReturnValue(Promise.resolve(1234));
+
+    const App = withCreateModal(() => (
+      <div>
+        <div id="modal-root" />
+        <MemoryRouter initialEntries={['/bounty/1234']}>
+          <Route path="/bounty/:bountyId" component={TicketModalPage} />
+        </MemoryRouter>
+      </div>
+    ));
+
+    await act(async () => {
+      const { getByText } = render(<App />);
+
+      await waitFor(() => getByText(unpaidString));
+
+      fireEvent.click(getByText(unpaidString));
+
+      await waitFor(() => {
+        expect(mainStore.updateBountyPaymentStatus).toHaveBeenCalled();
+      });
     });
   });
 });
