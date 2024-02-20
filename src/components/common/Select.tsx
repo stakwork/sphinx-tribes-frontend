@@ -7,7 +7,7 @@ interface styleProps {
   color?: any;
   isFocused?: any;
   hasContent?: any;
-  isOpen?: boolean; 
+  isOpen?: boolean;
 }
 interface dropDownOption {
   value: string;
