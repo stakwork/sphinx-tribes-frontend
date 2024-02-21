@@ -139,7 +139,7 @@ Cypress.Commands.add('create_bounty', (bounty) => {
   for (let i = 0; i < bounty.category.length; i++) {
     cy.get('[data-testid="Category *"]').contains(bounty.category[i]).scrollIntoView().click();
   }
-  cy.contains('[data-testid="Category *"]').click();
+  cy.contains('[data-testid="Category *"]').click({ force: true });
 
   cy.contains('Next').click();
 
