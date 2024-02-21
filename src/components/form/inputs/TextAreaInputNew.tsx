@@ -100,10 +100,17 @@ export default function TextAreaInputNew({
           }
           if (!textValue) {
             setShowPlaceholder(true);
+          } else {
+            const trimmedAndSingleSpacedValue = textValue
+              .split('\n')
+              .map((line: any) => line.replace(/\s+/g, ' ').trim())
+              .join('\n');
+            setTextValue(trimmedAndSingleSpacedValue);
+            handleChange(trimmedAndSingleSpacedValue);
           }
         }}
         onChange={(e: any) => {
-          const newVal = e.target.value;
+          const newVal = e.target.value.trimStart();
           if (name === 'description') {
             if (newVal.length <= 120) {
               handleChange(newVal);

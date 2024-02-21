@@ -91,6 +91,22 @@ export default function TextAreaInput({
   const color = colors['light'];
   if (error) labeltext = `${labeltext} (${error})`;
   const [active, setActive] = useState<boolean>(false);
+  const normalizeAndTrimText = (text: string) => {
+    return text.split('\n').join('\n');
+  };
+
+  const handleTextChange = (e: any) => {
+    const newText = normalizeAndTrimText(e.target.value.trimStart());
+    handleChange(newText);
+  };
+
+  const handleTextBlur = (e: any) => {
+    const normalizedText = normalizeAndTrimText(e.target.value);
+    handleChange(normalizedText); // Update the text with normalized spaces on blur
+    handleBlur(e);
+    setActive(false);
+  };
+
   return (
     <OuterContainer color={color}>
       <FieldEnv
@@ -112,11 +128,8 @@ export default function TextAreaInput({
             name="first"
             value={value || ''}
             readOnly={readOnly || false}
-            onChange={(e: any) => handleChange(e.target.value)}
-            onBlur={(e: any) => {
-              handleBlur(e);
-              setActive(false);
-            }}
+            onChange={handleTextChange}
+            onBlur={handleTextBlur}
             onFocus={(e: any) => {
               handleFocus(e);
               setActive(true);

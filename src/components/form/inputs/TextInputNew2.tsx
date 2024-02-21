@@ -64,6 +64,10 @@ export default function TextInputNew({
     }
   }, [textValue]);
 
+  const normalizeInput = (input: string) => {
+    return input.replace(/\s+/g, ' ').trim();
+  };
+
   return (
     <InputOuterBox
       color={color}
@@ -84,11 +88,11 @@ export default function TextInputNew({
         }}
         data-testid={testId}
         onChange={(e: any) => {
-          const newVal = e.target.value;
+          const newVal = e.target.value.trimStart();
           if (name === 'name') {
             if (newVal.length <= 20) {
-              handleChange(newVal);
-              setTextValue(newVal);
+              handleChange(normalizeInput(newVal));
+              setTextValue(normalizeInput(newVal));
               setCharacterError(false);
               setColor && setColor(false, name);
             } else {
@@ -96,7 +100,7 @@ export default function TextInputNew({
               setColor && setColor(true, name);
             }
           } else {
-            handleChange(newVal);
+            handleChange(normalizeInput(newVal));
             setTextValue(newVal);
           }
         }}
