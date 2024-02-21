@@ -12,6 +12,66 @@ describe('Bounty index', () => {
       fireEvent.click(PostBountyButton);
       const StartButton = await screen.findByRole('button', { name: /Start/i });
       expect(StartButton).toBeInTheDocument();
+      const bountyTitleInput = await screen.findByRole('input', { name: /Bounty Title /i });
+      expect(bountyTitleInput).toBeInTheDocument();
+      fireEvent.change(bountyTitleInput, { target: { value: 'new text' } });
+      const dropdown = screen.getByText(/Category /i);
+      fireEvent.click(dropdown);
+      const desiredOption = screen.getByText(/Web Development/i);
+      fireEvent.click(desiredOption);
+      const NextButton = await screen.findByRole('button', { name: /Next/i });
+      expect(NextButton).toBeInTheDocument();
+      fireEvent.click(NextButton);
+      const DescriptionInput = await screen.findByRole('input', { name: /Description /i });
+      expect(DescriptionInput).toBeInTheDocument();
+      fireEvent.change(DescriptionInput, { target: { value: 'new text' } });
+      const NextButton2 = await screen.findByRole('button', { name: /Next/i });
+      expect(NextButton2).toBeInTheDocument();
+      fireEvent.click(NextButton2);
+      const SatInput = await screen.findByRole('input', { name: /Price(Sats)/i });
+      expect(SatInput).toBeInTheDocument();
+    });
+  });
+
+  test('Placeholder text for 0 Sats is visible for amount input box', async () => {
+    act(async () => {
+      const SatInput = await screen.findByRole('input', { name: /Price(Sats)/i });
+      expect(SatInput).toBeInTheDocument();
+      const amountInput = await screen.findByText('0');
+      expect(amountInput).toBeInTheDocument();
+    });
+  });
+
+  test('Next button is disabled if amount is set to zero', async () => {
+    act(async () => {
+      const amountInput = await screen.findByText('0');
+      fireEvent.change(amountInput, { target: { value: '0' } });
+      const nextButton = screen.findByRole('button', { name: /Next/i });
+      expect(nextButton).toBeDisabled();
+    });
+  });
+
+  test('Next button is enabled for amount > 0 and Disabled again when reverting to 0', async () => {
+    act(async () => {
+      const amountInput = await screen.findByText('0');
+      fireEvent.change(amountInput, { target: { value: '50' } });
+      const nextButton = screen.findByRole('button', { name: /Next/i });
+      expect(nextButton).toBeEnabled();
+      fireEvent.change(amountInput, { target: { value: '0' } });
+      expect(nextButton).toBeDisabled();
+    });
+  });
+
+  test('Proceeding to next page of form only if value for amount is greater than 0', async () => {
+    act(async () => {
+      const amountInput = await screen.findByText('0');
+      fireEvent.change(amountInput, { target: { value: '13' } });
+      const nextButton = screen.findByRole('button', { name: /Next/i });
+      fireEvent.click(await nextButton);
+      const nextPage = await screen.findByText('Assign Developer');
+      expect(nextPage).toBeInTheDocument();
+      const DecideLaterButton = await screen.findByRole('button', { name: /Decide Later/i });
+      expect(DecideLaterButton).toBeInTheDocument();
     });
   });
 
