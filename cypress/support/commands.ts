@@ -135,11 +135,11 @@ Cypress.Commands.add('create_bounty', (bounty) => {
     cy.contains('Coding Language').click();
   }
 
-  cy.get('[data-testid="Category *"]').click();
-  cy.get('[data-testid="Category *"]').should(($select: any) => {
-    const val = $select.val();
-    expect(val).to.eq(bounty.category);
-  });
+  cy.get('[data-testid="Category *"]').click({ force: true });
+  for (let i = 0; i < bounty.category.length; i++) {
+    cy.get('[data-testid="Category *"]').contains(bounty.category[i]).scrollIntoView().click();
+  }
+  cy.contains('[data-testid="Category *"]').click();
 
   cy.contains('Next').click();
 
