@@ -19,7 +19,9 @@ import {
   formatSat,
   filterCount,
   userCanManageBounty,
-  formatPercentage
+  formatPercentage,
+  normalizeInput,
+  normalizeTextValue
 } from '../helpers-extended';
 
 beforeAll(() => {
@@ -404,6 +406,46 @@ describe('testing helpers', () => {
     it('should display "0" for non-numeric inputs', () => {
       expect(formatPercentage(undefined)).toBe('0');
       expect(formatPercentage(null as any)).toBe('0');
+    });
+  });
+
+  describe('normalizeInput function', () => {
+    test('should trim spaces only without removing inner spaces', () => {
+      const input = '  Hello World  ';
+      const expected = 'Hello World';
+      expect(normalizeInput(input)).toBe(expected);
+    });
+
+    test('should replace multiple spaces with a single space', () => {
+      const input = 'Hello    World';
+      const expected = 'Hello World';
+      expect(normalizeInput(input)).toBe(expected);
+    });
+
+    test('should return empty string if input is only spaces', () => {
+      const input = '     ';
+      const expected = '';
+      expect(normalizeInput(input)).toBe(expected);
+    });
+  });
+
+  describe('normalizeTextValue function', () => {
+    test('should trim spaces and maintain line breaks', () => {
+      const textValue = '  Hello \n World  \n\n Test  ';
+      const expected = 'Hello\nWorld\n\nTest';
+      expect(normalizeTextValue(textValue)).toBe(expected);
+    });
+
+    test('should replace multiple spaces with a single space and maintain line breaks', () => {
+      const textValue = 'Hello       World\nThis         is          a         test';
+      const expected = 'Hello World\nThis is a test';
+      expect(normalizeTextValue(textValue)).toBe(expected);
+    });
+
+    test('should return empty string if input is only spaces or line breaks', () => {
+      const textValue = '   \n  \n ';
+      const expected = '';
+      expect(normalizeTextValue(textValue)).toBe(expected);
     });
   });
 });

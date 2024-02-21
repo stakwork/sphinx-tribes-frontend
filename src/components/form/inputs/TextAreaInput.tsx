@@ -102,7 +102,7 @@ export default function TextAreaInput({
 
   const handleTextBlur = (e: any) => {
     const normalizedText = normalizeAndTrimText(e.target.value);
-    handleChange(normalizedText); // Update the text with normalized spaces on blur
+    handleChange(normalizedText);
     handleBlur(e);
     setActive(false);
   };

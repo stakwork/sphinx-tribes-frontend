@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { colors } from '../../../config/colors';
+import { normalizeTextValue } from '../../../helpers';
 import type { Props } from './propsType';
 
 interface styledProps {
@@ -101,10 +102,7 @@ export default function TextAreaInputNew({
           if (!textValue) {
             setShowPlaceholder(true);
           } else {
-            const trimmedAndSingleSpacedValue = textValue
-              .split('\n')
-              .map((line: any) => line.replace(/\s+/g, ' ').trim())
-              .join('\n');
+            const trimmedAndSingleSpacedValue = normalizeTextValue(textValue);
             setTextValue(trimmedAndSingleSpacedValue);
             handleChange(trimmedAndSingleSpacedValue);
           }

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { colors } from '../../../config/colors';
+import { normalizeInput } from '../../../helpers';
 import type { Props } from './propsType';
 
 interface styledProps {
@@ -63,10 +64,6 @@ export default function TextInputNew({
       setIsError(false);
     }
   }, [textValue]);
-
-  const normalizeInput = (input: string) => {
-    return input.replace(/\s+/g, ' ').trim();
-  };
 
   return (
     <InputOuterBox
