@@ -383,3 +383,18 @@ export const formatPercentage = (value?: number): string => {
   }
   return '0';
 };
+
+export const normalizeInput = (input: string) => {
+  return input.replace(/\s+/g, ' ').trim();
+};
+
+export const normalizeTextValue = (textValue: string): string => {
+  const processedLines = textValue.split('\n').map((line) => line.replace(/\s+/g, ' ').trim());
+
+  // Check if all processed lines are empty
+  if (processedLines.every((line) => line === '')) {
+    return '';
+  }
+
+  return processedLines.join('\n');
+};
