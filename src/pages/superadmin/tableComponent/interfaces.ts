@@ -10,7 +10,7 @@ export type Bounty = {
   assigneeImage: string;
   provider: string;
   providerImage: string;
-  organization: string;
+  organization_name: string;
   organizationImage: string;
   status: string;
   assignee_alias: string;

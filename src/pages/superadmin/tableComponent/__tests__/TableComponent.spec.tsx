@@ -36,7 +36,7 @@ const mockBounties: Bounty[] = [
     assigneeImage: '',
     provider: 'Provider 1',
     providerImage: 'provider-image-1.jpg',
-    organization: 'Org 1',
+    organization_name: 'Org 1',
     organizationImage: 'org-image-1.jpg',
     paid: false,
     assignee_alias: 'Ednum',
@@ -54,7 +54,7 @@ const mockBounties: Bounty[] = [
     assigneeImage: 'assignee-image-2.jpg',
     provider: 'Provider 2',
     providerImage: 'provider-image-2.jpg',
-    organization: 'Org 2',
+    organization_name: 'Org 2',
     organizationImage: 'org-image-2.jpg',
     status: 'assigned',
     paid: false,
@@ -72,7 +72,7 @@ const mockBounties: Bounty[] = [
     assigneeImage: 'assignee-image-3.jpg',
     provider: 'Provider 3',
     providerImage: 'provider-image-3.jpg',
-    organization: 'Org 3',
+    organization_name: 'Org 3',
     organizationImage: 'org-image-3.jpg',
     status: 'paid',
     paid: true,
@@ -93,7 +93,7 @@ const unSortedMockBounties: Bounty[] = [
     assigneeImage: 'assignee-image-2.jpg',
     provider: 'Provider 2',
     providerImage: 'provider-image-2.jpg',
-    organization: 'Org 2',
+    organization_name: 'Org 2',
     organizationImage: 'org-image-2.jpg',
     status: 'paid',
     paid: false,
@@ -111,7 +111,7 @@ const unSortedMockBounties: Bounty[] = [
     assigneeImage: '',
     provider: 'Provider 1',
     providerImage: 'provider-image-1.jpg',
-    organization: 'Org 1',
+    organization_name: 'Org 1',
     organizationImage: 'org-image-1.jpg',
     paid: false,
     assignee_alias: 'Ednum',
@@ -129,7 +129,7 @@ const unSortedMockBounties: Bounty[] = [
     assigneeImage: 'assignee-image-3.jpg',
     provider: 'Provider 3',
     providerImage: 'provider-image-3.jpg',
-    organization: 'Org 3',
+    organization_name: 'Org 3',
     organizationImage: 'org-image-3.jpg',
     status: 'assigned',
     paid: true,
@@ -251,7 +251,7 @@ describe('MyTable Component', () => {
       expect(getByText(dates[index])).toBeInTheDocument();
       // expect(getByText(String(bounty.dtgp))).toBeInTheDocument();
       // expect(getByText(bounty.provider)).toBeInTheDocument();
-      expect(getByText(bounty.organization)).toBeInTheDocument();
+      expect(getByText(bounty.organization_name)).toBeInTheDocument();
     });
   });
 
@@ -305,7 +305,7 @@ describe('MyTable Component', () => {
         '035f22835fbf55cf4e6823447c63df74012d1d587ed60ef7cbfa3e430278c44cce:03a6ea2d9ead2120b12bd66292bb4a302c756983dc45dcb2b364b461c66fd53bcb:1099517001729',
       providerImage:
         'https://avatars.githubusercontent.com/u/10001?s=460&u=8c61f1cda5e9e2c2d1d5b8d2a5a8a5b8d2a5a8a5&v=4',
-      organization: 'OrganizationName',
+      organization_name: 'OrganizationName',
       organizationImage:
         'https://avatars.githubusercontent.com/u/10001?s=460&u=8c61f1cda5e9e2c2d1d5b8d2a5a8a5b8d2a5a8a5&v=4',
       status: 'open',
@@ -359,7 +359,7 @@ describe('MyTable Component', () => {
         '035f22835fbf55cf4e6823447c63df74012d1d587ed60ef7cbfa3e430278c44cce:03a6ea2d9ead2120b12bd66292bb4a302c756983dc45dcb2b364b461c66fd53bcb:1099517001729',
       providerImage:
         'https://avatars.githubusercontent.com/u/10001?s=460&u=8c61f1cda5e9e2c2d1d5b8d2a5a8a5b8d2a5a8a5&v=4',
-      organization: 'OrganizationName',
+      organization_name: 'OrganizationName',
       organizationImage:
         'https://avatars.githubusercontent.com/u/10001?s=460&u=8c61f1cda5e9e2c2d1d5b8d2a5a8a5b8d2a5a8a5&v=4',
       status: 'open',
