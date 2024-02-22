@@ -347,14 +347,15 @@ describe('Wanted Component', () => {
       }
     });
     jest.spyOn(mainStore, 'getPersonCreatedBounties').mockReturnValue(Promise.resolve([]));
-
-    const { getByText } = render(
-      <MemoryRouter initialEntries={['/p/1234/bounties']}>
-        <Route path="/p/:uuid/bounties" component={Wanted} />
-      </MemoryRouter>
-    );
-    await waitFor(() => {
-      expect(getByText('No Tickets Yet')).toBeInTheDocument();
+    act(async () => {
+      const { getByText } = render(
+        <MemoryRouter initialEntries={['/p/1234/bounties']}>
+          <Route path="/p/:uuid/bounties" component={Wanted} />
+        </MemoryRouter>
+      );
+      await waitFor(() => {
+        expect(getByText('No Tickets Yet')).toBeInTheDocument();
+      });
     });
   });
 
@@ -378,12 +379,12 @@ describe('Wanted Component', () => {
     });
     jest.spyOn(mainStore, 'getPersonCreatedBounties').mockReturnValue(Promise.resolve([]));
 
-    const { getByText, getByTestId } = render(
-      <MemoryRouter initialEntries={['/p/1234/bounties']}>
-        <Route path="/p/:uuid/bounties" component={Wanted} />
-      </MemoryRouter>
-    );
     act(async () => {
+      const { getByText, getByTestId } = render(
+        <MemoryRouter initialEntries={['/p/1234/bounties']}>
+          <Route path="/p/:uuid/bounties" component={Wanted} />
+        </MemoryRouter>
+      );
       await waitFor(() => {
         expect(getByTestId('loading-spinner')).toBeInTheDocument();
         expect(getByText('No Tickets Yet')).toBeInTheDocument();
