@@ -69,7 +69,7 @@ export const LeaderboardPage = observer(() => {
     );
   }
   return (
-    <Container>
+    <Container data-testId={'main'}>
       <div className="inner">
         {leaderboard.total && (
           <Summary
