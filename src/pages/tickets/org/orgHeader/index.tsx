@@ -223,15 +223,17 @@ export const OrgHeader = ({
               </UrlButtonContainer>
             </CompanyNameAndLink>
           </Leftheader>
-          {canPostBounty && (
+
             <RightHeader>
               <CompanyDescription>{description}</CompanyDescription>
+              {canPostBounty && (
               <Button onClick={handlePostBountyClick}>
                 <img src={addBounty} alt="" />
                 Post a Bounty
               </Button>
+                        )}
             </RightHeader>
-          )}
+
         </Header>
       </FillContainer>
       <FillContainer>
