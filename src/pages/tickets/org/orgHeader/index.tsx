@@ -223,7 +223,6 @@ export const OrgHeader = ({
               </UrlButtonContainer>
             </CompanyNameAndLink>
           </Leftheader>
-
           <RightHeader>
             <CompanyDescription>{description}</CompanyDescription>
             {canPostBounty && (
