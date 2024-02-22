@@ -5,7 +5,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { EuiLoadingSpinner } from '@elastic/eui';
 import styled from 'styled-components';
-import { BountyMetrics, defaultBountyStatus } from 'store/main';
+import { BountyMetrics, defaultSuperAdminBountyStatus } from 'store/main';
 import { useStores } from 'store';
 import moment from 'moment';
 import { useInViewPort } from 'hooks';
@@ -40,7 +40,9 @@ export const SuperAdmin = () => {
   const [bounties, setBounties] = useState<any[]>([]);
   const [bountyMetrics, setBountyMetrics] = useState<BountyMetrics | undefined>(undefined);
   const [sortOrder, setSortOrder] = useState<string>('desc');
-  const [checkboxIdToSelectedMap, setCheckboxIdToSelectedMap] = useState(defaultBountyStatus);
+  const [checkboxIdToSelectedMap, setCheckboxIdToSelectedMap] = useState(
+    defaultSuperAdminBountyStatus
+  );
   const [loading, setLoading] = useState(false);
   const [activeTabs, setActiveTabs] = useState<number[]>([]);
   const [totalBounties, setTotalBounties] = useState(0);

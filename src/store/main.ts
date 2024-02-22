@@ -291,7 +291,7 @@ export interface BountyStatus {
 }
 
 export const defaultBountyStatus: BountyStatus = {
-  Open: false,
+  Open: true,
   Assigned: false,
   Paid: false
 };
@@ -308,6 +308,12 @@ export const defaultOrgBountyStatus: OrgBountyStatus = {
   Assigned: false,
   Paid: false,
   Completed: false
+};
+
+export const defaultSuperAdminBountyStatus: BountyStatus = {
+  Open: false,
+  Assigned: false,
+  Paid: false
 };
 
 export class MainStore {
