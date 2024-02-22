@@ -49,7 +49,7 @@ export const Wanted = observer(() => {
   const history = useHistory();
   const { uuid } = useParams<{ uuid: string }>();
   const [displayedBounties, setDisplayedBounties] = useState<BountyType[]>([]);
-  const [loading, setIsLoading] = useState<boolean>(false);
+  const [loading, setIsLoading] = useState<boolean>(true);
   const [page, setPage] = useState(1);
   const [hasMoreBounties, setHasMoreBounties] = useState(true);
 
@@ -92,7 +92,7 @@ export const Wanted = observer(() => {
     getUserTickets();
   }, [main]);
 
-  if (!main.createdBounties?.length) {
+  if (!main.createdBounties?.length && !loading) {
     return (
       <NoneSpace
         style={{
@@ -120,7 +120,7 @@ export const Wanted = observer(() => {
   }
   return (
     <Container>
-      <PageLoadSpinner show={loading} />
+      {loading && <PageLoadSpinner show={loading} />}
       <Switch>
         <Route path={`${path}/:wantedId/:wantedIndex`}>
           <BountyModal basePath={url} />

@@ -133,4 +133,47 @@ describe('UserTickets', () => {
       expect(getByText(userBounty.body.estimated_session_length)).toBeInTheDocument();
     });
   });
+
+  it('Should show loading image first and then show correct message if no bounties are assigned', async () => {
+    jest.spyOn(mainStore, 'getPersonAssignedBounties').mockReturnValue(Promise.resolve([]));
+    act(async () => {
+      const { getByText, getByTestId } = render(
+        <MemoryRouter initialEntries={['/p/1234/assigned']}>
+          <Route path="/p/:uuid/assigned" component={UserTickets} />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        expect(getByTestId('loading-spinner')).toBeInTheDocument();
+        expect(getByText('No Assigned Tickets Yet')).toBeInTheDocument();
+        expect(getByTestId('loading-spinner')).toBeInTheDocument();
+      });
+    });
+  });
+
+  it('bounties are displayed if there are bounties instead of defualt image', async () => {
+    const userBounty = { ...mockBounties[0], body: {} } as any;
+    userBounty.body = {
+      ...mockBounties[0].bounty,
+      owner_id: person.owner_pubkey,
+      title: 'test bounty here'
+    } as any;
+    jest
+      .spyOn(mainStore, 'getPersonAssignedBounties')
+      .mockReturnValue(Promise.resolve([userBounty]));
+    act(async () => {
+      const { getByText, getByTestId } = render(
+        <MemoryRouter initialEntries={['/p/1234/assigned']}>
+          <Route path="/p/:uuid/assigned" component={UserTickets} />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        expect(getByTestId('loading-spinner')).toBeInTheDocument();
+        expect(getByText('No Assigned Tickets Yet')).not.toBeInTheDocument();
+        expect(getByText(userBounty.body.title)).toBeInTheDocument();
+        expect(getByTestId('loading-spinner')).not.toBeInTheDocument();
+      });
+    });
+  });
 });

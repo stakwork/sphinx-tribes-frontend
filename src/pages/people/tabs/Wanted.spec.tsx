@@ -353,7 +353,99 @@ describe('Wanted Component', () => {
         <Route path="/p/:uuid/bounties" component={Wanted} />
       </MemoryRouter>
     );
-    expect(getByText('No Tickets Yet')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(getByText('No Tickets Yet')).toBeInTheDocument();
+    });
+  });
+
+  test('Should show loading image first and then show correct message if no bounties are assigned', async () => {
+    (usePerson as jest.Mock).mockImplementation(() => ({
+      person: {},
+      canEdit: false
+    }));
+
+    (useStores as jest.Mock).mockReturnValue({
+      main: {
+        getPersonCreatedBounties: jest.fn(() => []),
+        dropDownOrganizations: []
+      },
+      ui: {
+        selectedPerson: '123',
+        meInfo: {
+          owner_alias: 'test'
+        }
+      }
+    });
+    jest.spyOn(mainStore, 'getPersonCreatedBounties').mockReturnValue(Promise.resolve([]));
+
+    const { getByText, getByTestId } = render(
+      <MemoryRouter initialEntries={['/p/1234/bounties']}>
+        <Route path="/p/:uuid/bounties" component={Wanted} />
+      </MemoryRouter>
+    );
+    act(async () => {
+      await waitFor(() => {
+        expect(getByTestId('loading-spinner')).toBeInTheDocument();
+        expect(getByText('No Tickets Yet')).toBeInTheDocument();
+        expect(getByTestId('loading-spinner')).not.toBeInTheDocument();
+      });
+    });
+  });
+
+  test('bounties are displayed if there are bounties instead of defualt image', async () => {
+    const createdMockBounties = Array.from({ length: 15 }, (_: any, index: number) => ({
+      ...(mockBounties[0] || {}),
+      bounty: {
+        ...(mockBounties[0]?.bounty || {}),
+        id: mockBounties[0]?.bounty?.id + index + 1
+      }
+    })) as any;
+
+    const userBounties = createdMockBounties.map((bounty: any, index: number) => ({
+      ...bounty,
+      body: {
+        ...bounty.bounty,
+        owner_id: person.owner_pubkey,
+        title: `test bounty here ${index}`
+      }
+    }));
+
+    (usePerson as jest.Mock).mockImplementation(() => ({
+      person: {},
+      canEdit: false
+    }));
+
+    (useStores as jest.Mock).mockReturnValue({
+      main: {
+        getPersonCreatedBounties: jest.fn(() => [userBounties])
+      },
+      ui: {
+        selectedPerson: '123',
+        meInfo: {
+          owner_alias: 'test'
+        }
+      }
+    });
+
+    jest
+      .spyOn(mainStore, 'getPersonCreatedBounties')
+      .mockReturnValue(Promise.resolve(userBounties));
+    act(async () => {
+      const { getByText, getByTestId } = render(
+        <MemoryRouter initialEntries={['/p/1234/bounties']}>
+          <Route path="/p/:uuid/bounties" component={Wanted} />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => getByText(userBounties[0].body.title));
+
+      for (const bounty of userBounties) {
+        expect(getByTestId('loading-spinner')).toBeInTheDocument();
+        expect(getByText('No Tickets Yet')).not.toBeInTheDocument();
+        expect(getByText(bounty.body.title)).toBeInTheDocument();
+        expect(getByTestId('loading-spinner')).not.toBeInTheDocument();
+      }
+    });
   });
 
   test('when click on post a bounty button should flow through the process', async () => {
