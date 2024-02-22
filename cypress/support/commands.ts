@@ -135,10 +135,8 @@ Cypress.Commands.add('create_bounty', (bounty) => {
     });
   }
 
-  if (bounty.category) {
-    cy.contains('[data-testid="Category *"]').click();
-    cy.contains('[data-testid="Category *"]').should('contain', bounty.category);
-  }
+  cy.contains('[data-testid="Category *"]').click();
+  cy.contains('[data-testid="Category *"]').should('contain', bounty.category);
 
   cy.contains('Next').click();
 
