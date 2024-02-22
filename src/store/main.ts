@@ -291,7 +291,7 @@ export interface BountyStatus {
 }
 
 export const defaultBountyStatus: BountyStatus = {
-  Open: true,
+  Open: false,
   Assigned: false,
   Paid: false
 };
