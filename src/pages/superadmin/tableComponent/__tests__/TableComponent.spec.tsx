@@ -563,4 +563,34 @@ describe('MyTable Component', () => {
       );
     });
   });
+
+  it('renders bounties in the order: open, assigned, paid', async () => {
+    let filteredBounties = unSortedMockBounties.filter((bounty: any) => bounty.status === 'open');
+    const { rerender } = render(<MyTable {...MockTableProps} bounties={filteredBounties} />);
+
+    fireEvent.click(screen.getByText('Status:'));
+    userEvent.click(screen.getByText('Open'));
+    expect(MockStatusProps.onChangeStatus).toHaveBeenCalledWith('Open');
+    expect(screen.getByText('Bounty 2')).toBeInTheDocument(); // 'Bounty 2' is an "Open" bounty
+    expect(screen.queryByText('Bounty 1')).not.toBeInTheDocument();
+    expect(screen.queryByText('Bounty 3')).not.toBeInTheDocument();
+
+    filteredBounties = unSortedMockBounties.filter((bounty: any) => bounty.status === 'assigned');
+    rerender(<MyTable {...MockTableProps} bounties={filteredBounties} />);
+    fireEvent.click(screen.getByText('Status:'));
+    userEvent.click(screen.getByText('Assigned'));
+    expect(MockStatusProps.onChangeStatus).toHaveBeenCalledWith('Assigned');
+    expect(screen.getByText('Bounty 3')).toBeInTheDocument(); // 'Bounty 3' is an "Assigned" bounty
+    expect(screen.queryByText('Bounty 1')).not.toBeInTheDocument();
+    expect(screen.queryByText('Bounty 2')).not.toBeInTheDocument();
+
+    filteredBounties = unSortedMockBounties.filter((bounty: any) => bounty.status === 'paid');
+    rerender(<MyTable {...MockTableProps} bounties={filteredBounties} />);
+    fireEvent.click(screen.getByText('Status:'));
+    userEvent.click(screen.getByText('Paid'));
+    expect(MockStatusProps.onChangeStatus).toHaveBeenCalledWith('Paid');
+    expect(screen.getByText('Bounty 1')).toBeInTheDocument(); // 'Bounty 1' is a "Paid" bounty
+    expect(screen.queryByText('Bounty 2')).not.toBeInTheDocument();
+    expect(screen.queryByText('Bounty 3')).not.toBeInTheDocument();
+  });
 });
