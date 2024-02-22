@@ -128,10 +128,10 @@ Cypress.Commands.add('create_bounty', (bounty) => {
   cy.wait(1000);
 
   if (bounty.coding_language && bounty.coding_language.length > 0) {
-    cy.get('Coding Language').click();
+    cy.contains('Coding Language').click();
     bounty.coding_language.forEach((language: string) => {
       cy.get('div').contains(language).click();
-      cy.get('Coding Language').should('contain', language);
+      cy.contains('Coding Language').should('contain', language);
     });
   }
 
