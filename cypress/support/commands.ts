@@ -149,8 +149,8 @@ Cypress.Commands.add('create_bounty', (bounty) => {
   cy.contains('label', 'Price (Sats)').type(bounty.amount);
 
   if (bounty.estimate_session_length) {
-    cy.get('select[data-testid="Estimate Session Length"]').select(bounty.estimate_session_length);
-    cy.get('select[data-testid="Estimate Session Length"]').should(($select: any) => {
+    cy.get('[data-testid="Estimate Session Length"]').select(bounty.estimate_session_length);
+    cy.get('[data-testid="Estimate Session Length"]').should(($select: any) => {
       const val = $select.val();
       expect(val).to.eq(bounty.estimate_session_length);
     });
