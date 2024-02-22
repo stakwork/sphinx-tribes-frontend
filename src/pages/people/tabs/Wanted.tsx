@@ -49,7 +49,7 @@ export const Wanted = observer(() => {
   const history = useHistory();
   const { uuid } = useParams<{ uuid: string }>();
   const [displayedBounties, setDisplayedBounties] = useState<BountyType[]>([]);
-  const [loading, setIsLoading] = useState<boolean>(true);
+  const [loading, setIsLoading] = useState<boolean>(false);
   const [page, setPage] = useState(1);
   const [hasMoreBounties, setHasMoreBounties] = useState(true);
 
