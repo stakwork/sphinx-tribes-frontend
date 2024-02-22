@@ -136,9 +136,8 @@ Cypress.Commands.add('create_bounty', (bounty) => {
   }
 
   if (bounty.category) {
-    cy.get('[data-testid="Category *"]').click();
-    cy.get('div').contains(bounty.category).click();
-    cy.get('[data-testid="Category *"]').should('contain', bounty.category);
+    cy.contains('[data-testid="Category *"]').click();
+    cy.contains('[data-testid="Category *"]').should('contain', bounty.category);
   }
 
   cy.contains('Next').click();
@@ -149,8 +148,8 @@ Cypress.Commands.add('create_bounty', (bounty) => {
   cy.contains('label', 'Price (Sats)').type(bounty.amount);
 
   if (bounty.estimate_session_length) {
-    cy.get('[data-testid="Estimate Session Length"]').select(bounty.estimate_session_length);
-    cy.get('[data-testid="Estimate Session Length"]').should(($select: any) => {
+    cy.get('select[data-testid="Estimate Session Length"]').select(bounty.estimate_session_length);
+    cy.get('select[data-testid="Estimate Session Length"]').should(($select: any) => {
       const val = $select.val();
       expect(val).to.eq(bounty.estimate_session_length);
     });
