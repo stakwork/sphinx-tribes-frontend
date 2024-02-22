@@ -1,19 +1,10 @@
 import '@testing-library/jest-dom';
-import { act, fireEvent, getByTestId, render, screen, waitFor } from '@testing-library/react';
-import nock from 'nock';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
-import { setupStore } from '../../__test__/__mockData__/setupStore';
-import { mockUsehistory } from '../../__test__/__mockFn__/useHistory';
 import { useStores } from '../../store';
 import { mainStore, Person } from '../../store/main.ts';
 import { leaderboardStore } from './store.ts';
 import { LeaderboardPage } from './index';
-
-beforeAll(() => {
-  nock.disableNetConnect();
-  setupStore();
-  mockUsehistory();
-});
 
 jest.mock('store', () => ({
   ...jest.requireActual('store'),
