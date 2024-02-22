@@ -148,6 +148,7 @@ const RolesModal = (props: UserRolesModalProps) => {
     if (uuid && user?.owner_pubkey) {
       const res = await main.addUserRoles(roleData, uuid, user.owner_pubkey);
       if (res.status === 200) {
+        addToast('Roles Updated Successfully', 'success');
         await main.getUserRoles(uuid, user.owner_pubkey);
       } else {
         addToast('Error: could not add user roles', 'danger');
