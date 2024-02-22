@@ -128,18 +128,18 @@ Cypress.Commands.add('create_bounty', (bounty) => {
   cy.wait(1000);
 
   if (bounty.coding_language && bounty.coding_language.length > 0) {
-    cy.contains('Coding Language').click();
-    for (let i = 0; i < bounty.coding_language.length; i++) {
-      cy.get('.CheckboxOuter').contains(bounty.coding_language[i]).scrollIntoView().click();
-    }
-    cy.contains('Coding Language').click();
+    cy.get('[data-testid="Coding Language"]').click();
+    bounty.coding_language.forEach((language: string) => {
+      cy.get('div').contains(language).click();
+      cy.get('[data-testid="Coding Language"]').should('contain', language);
+    });
   }
 
-  cy.get('[data-testid="Category *"]').click({ force: true });
-  for (let i = 0; i < bounty.category.length; i++) {
-    cy.get('[data-testid="Category *"]').contains(bounty.category[i]).scrollIntoView().click({ force: true });
+  if (bounty.category) {
+    cy.get('[data-testid="Category *"]').click();
+    cy.get('div').contains(bounty.category).click();
+    cy.get('[data-testid="Category *"]').should('contain', bounty.category);
   }
-  cy.contains('[data-testid="Category *"]').click({ force: true });
 
   cy.contains('Next').click();
 
