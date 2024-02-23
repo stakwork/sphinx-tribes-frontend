@@ -304,10 +304,6 @@ function FocusedView(props: FocusViewProps) {
           title: 'Something went wrong! Unable to create bounty'
         }
       ]);
-
-      setTimeout(() => {
-        handleFormClose();
-      }, 6000);
       return;
     }
   }

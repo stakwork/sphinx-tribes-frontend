@@ -23,7 +23,6 @@ export const PostModal: FC<PostModalProps> = observer(
     const isMobile = useIsMobile();
     const [focusIndex, setFocusIndex] = useState(-1);
     const history = useHistory();
-    const [recallBouties] = useState(false);
 
     const person: any = (main.people ?? []).find((f: any) => f.id === ui.selectedPerson);
     const { id } = person || {};
@@ -31,8 +30,9 @@ export const PostModal: FC<PostModalProps> = observer(
     const config = widgetConfigs[widget];
 
     const getBountyData = useCallback(async () => {
-      const response = await main.getPeopleBounties();
-      try {
+   
+      try {   
+        const response = await main.getPeopleBounties();
         return response[0].body?.id;
       } catch (err) {
         console.log('e', err);
@@ -43,8 +43,9 @@ export const PostModal: FC<PostModalProps> = observer(
       /*
       TODO : after getting the better way to reload the bounty, this code will be removed.
       */
-      if (recallBouties) {
-        const number = await getBountyData();
+      const number = await getBountyData();
+
+      if (number) {
         history.push(`/bounty/${number}`);
       }
     };
