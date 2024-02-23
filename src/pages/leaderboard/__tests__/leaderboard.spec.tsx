@@ -1,10 +1,10 @@
 import '@testing-library/jest-dom';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
-import { useStores } from '../../store';
-import { mainStore, Person } from '../../store/main.ts';
-import { leaderboardStore } from './store.ts';
-import { LeaderboardPage } from './index';
+import { useStores } from '../../../store';
+import { mainStore, Person } from '../../../store/main.ts';
+import { leaderboardStore } from '../store.ts';
+import { LeaderboardPage } from '../index.tsx';
 
 jest.mock('store', () => ({
   ...jest.requireActual('store'),
