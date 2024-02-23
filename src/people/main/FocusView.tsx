@@ -224,32 +224,33 @@ function FocusedView(props: FocusViewProps) {
     return newBody;
   }
 
+  function handleFormClose() {
+    if (skipEditLayer && goBack) goBack();
+    else {
+      setEditMode(false);
+      setRemoveNextAndPrev && setRemoveNextAndPrev(false);
+    }
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-inferrable-types
   async function submitForm(body: any, notEdit?: boolean) {
     if (submiting) return;
 
-    let newBody = cloneDeep(body);
-
     try {
+      let newBody = cloneDeep(body);
       newBody = await preSubmitFunctions(newBody);
-    } catch (e) {
-      console.log('e', e);
-      alert(e);
-      return;
-    }
 
-    if (!newBody) return; // avoid saving bad state
-    if (!newBody.description) {
-      addToast();
-    }
+      if (!newBody) return; // avoid saving bad state
+      if (!newBody.description) {
+        addToast();
+      }
 
-    const info = ui.meInfo as any;
-    if (!info) return console.log('no meInfo');
-    setLoading(true);
-    setIsEditButtonDisable(true);
-    setSubmiting(true);
+      const info = ui.meInfo as any;
+      if (!info) return console.log('no meInfo');
+      setLoading(true);
+      setIsEditButtonDisable(true);
+      setSubmiting(true);
 
-    try {
       if (typeof newBody?.assignee !== 'string' || !newBody?.assignee) {
         newBody.assignee = newBody.assignee?.owner_pubkey ?? '';
       }
@@ -282,19 +283,33 @@ function FocusedView(props: FocusViewProps) {
       if (window.location.href.includes('wanted')) {
         await main.getPersonCreatedBounties({}, info.pubkey);
       }
-    } catch (e) {
-      console.log('e', e);
-    }
 
-    setIsEditButtonDisable(false);
-    setSubmiting(false);
-    if (props?.onSuccess) props.onSuccess();
+      setIsEditButtonDisable(false);
+      setSubmiting(false);
+      if (props?.onSuccess) props.onSuccess();
 
-    if (notEdit === true) {
-      setLoading(false);
+      if (notEdit === true) {
+        setLoading(false);
+      }
+      if (
+        ui?.meInfo?.hasOwnProperty('url') &&
+        !isNotHttps(ui?.meInfo?.url) &&
+        props?.ReCallBounties
+      )
+        props?.ReCallBounties();
+    } catch {
+      setToasts([
+        {
+          id: '1',
+          title: 'Something went wrong! Unable to create bounty'
+        }
+      ]);
+
+      setTimeout(() => {
+        handleFormClose();
+      }, 6000);
+      return;
     }
-    if (ui?.meInfo?.hasOwnProperty('url') && !isNotHttps(ui?.meInfo?.url) && props?.ReCallBounties)
-      props?.ReCallBounties();
   }
 
   //this workflow now gets the org user is in and appends it
@@ -383,14 +398,6 @@ function FocusedView(props: FocusViewProps) {
     setEditMode(false);
     setRemoveNextAndPrev && setRemoveNextAndPrev(false);
     setAfterEdit && setAfterEdit(true);
-  }
-
-  function handleFormClose() {
-    if (skipEditLayer && goBack) goBack();
-    else {
-      setEditMode(false);
-      setRemoveNextAndPrev && setRemoveNextAndPrev(false);
-    }
   }
 
   // set user organizations
