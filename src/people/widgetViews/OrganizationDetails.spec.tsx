@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { act, render, waitFor, within } from '@testing-library/react';
+import { act, render, waitFor, within, screen, fireEvent } from '@testing-library/react';
 import { people } from '__test__/__mockData__/persons';
 import { user } from '__test__/__mockData__/user';
 import nock from 'nock';
@@ -23,6 +23,23 @@ const organization: Organization = {
   uuid: 'c360e930-f94d-4c07-9980-69fc428a994e',
   bounty_count: 1,
   budget: 100000,
+  owner_pubkey: user.pubkey!,
+  img: 'https://memes.sphinx.chat/public/3bt5n-7mGLgC6jGBBwKwLyZdJY6IUVZke8p2nLUsPhU=',
+  created: '2023-12-12T00:44:25.83042Z',
+  updated: '2023-12-12T01:12:39.970648Z',
+  deleted: false
+};
+
+const orgUser: Organization = {
+  id: 'clrqpq84nncuuf32kh2g',
+  name: 'test organization',
+  description: 'test',
+  github: 'https://github.com/stakwork',
+  website: 'https://community.sphinx.chat',
+  show: true,
+  uuid: 'clu80datu2rjujsmim40',
+  bounty_count: 1,
+  budget: 10000,
   owner_pubkey: user.pubkey!,
   img: 'https://memes.sphinx.chat/public/3bt5n-7mGLgC6jGBBwKwLyZdJY6IUVZke8p2nLUsPhU=',
   created: '2023-12-12T00:44:25.83042Z',
@@ -298,6 +315,7 @@ describe('OrganizationDetails', () => {
       expect(opeWindowFn).toBeCalledWith(`/bounty/${invoiceDetails[3].bounty_id}`, '_blank');
     });
   });
+
   it('Should render all types of filter in history modal ', async () => {
     await act(async () => {
       const { getByTestId } = render(
@@ -315,6 +333,7 @@ describe('OrganizationDetails', () => {
       getByTestId('payment-history-filter-type-withdraw');
     });
   });
+
   it('Should render transaction according to the selected filter', async () => {
     await act(async () => {
       const { getByTestId } = render(
@@ -332,6 +351,170 @@ describe('OrganizationDetails', () => {
 
       getByTestId('payment-history-filter-type-deposit');
       getByTestId('payment-history-filter-type-withdraw');
+    });
+  });
+
+  it('Should renders settings and delete buttons', async () => {
+    act(async () => {
+      render(
+        <OrganizationDetails
+          close={closeFn}
+          getOrganizations={getOrgFn}
+          org={orgUser}
+          resetOrg={resetOrgFn}
+        />
+      );
+      await waitFor(async () => {
+        const settingButton = await screen.findByTestId('settings-icon');
+        expect(settingButton).toBeInTheDocument();
+
+        const deleteButton = await screen.findByTestId('delete-icon');
+        expect(deleteButton).toBeInTheDocument();
+      });
+    });
+  });
+
+  it('Should renders manage org, manage bounties, fund org, withdraw from org, view txn history, update members, user profile of member, close modal "X" button, and update roles button', async () => {
+    act(async () => {
+      render(
+        <OrganizationDetails
+          close={closeFn}
+          getOrganizations={getOrgFn}
+          org={orgUser}
+          resetOrg={resetOrgFn}
+        />
+      );
+      await waitFor(async () => {
+        // Test for Edit View Button
+        const editButton = await screen.findByTestId('edit-button');
+        expect(editButton).toBeInTheDocument();
+
+        // Test for Manage Bounties View Button
+        const viewBounty = await screen.findByTestId('view-bounties');
+        expect(viewBounty).toBeInTheDocument();
+
+        // Test for Transaction History View Button
+        const HistoryButton = await screen.findByTestId('history-button');
+        expect(HistoryButton).toBeInTheDocument();
+
+        // Test for Withdrawal Button
+        const withdrawButton = await screen.findByTestId('withdrawal-button');
+        expect(withdrawButton).toBeInTheDocument();
+
+        // Test for Deposit Button
+        const depositButton = await screen.findByTestId('deposit-button');
+        expect(depositButton).toBeInTheDocument();
+
+        // Verify Transaction History Text is Present
+        const txnHistory = await screen.getByText(/YOUR BALANCE/i);
+        expect(txnHistory).toBeInTheDocument();
+
+        // Verify Budget Display
+        const Budget = await screen.getByText(/10,000/i);
+        expect(Budget).toBeInTheDocument();
+
+        // Test for Adding a User Button
+        const addUserButton = await screen.findByTestId('add-user');
+        expect(addUserButton).toBeInTheDocument();
+
+        // Verify User Profile Display
+        const imageIcon = await screen.findByTestId('avatarIcon');
+        expect(imageIcon).toBeInTheDocument();
+
+        const name = await screen.findByTestId('user_alias');
+        expect(name).toBeInTheDocument();
+
+        const userPubkey = await screen.findByTestId('user_pubkey');
+        expect(userPubkey).toBeInTheDocument();
+
+        // Test for Opening Settings
+        const settingButton = await screen.findByTestId('settings-icon');
+        fireEvent.click(settingButton);
+
+        // Test for Updating Roles Button
+        const updateRoleButton = await screen.findByRole('button', { name: /Updates roles/i });
+        expect(updateRoleButton).toBeInTheDocument();
+
+        // Test for Closing Modal
+        const closeButton = await screen.findByTestId('close-btn');
+        expect(closeButton).toBeInTheDocument();
+      });
+    });
+  });
+
+  it('Allows selecting and deselecting user roles', async () => {
+    act(async () => {
+      render(
+        <OrganizationDetails
+          close={closeFn}
+          getOrganizations={getOrgFn}
+          org={orgUser}
+          resetOrg={resetOrgFn}
+        />
+      );
+
+      await waitFor(async () => {
+        const settingButton = await screen.findByTestId('settings-icon');
+        fireEvent.click(settingButton);
+
+        // Verify the roles section is present
+        const rolePresent = await screen.getByText(/User Roles/i);
+        expect(rolePresent).toBeInTheDocument();
+
+        // Find and interact with a specific role checkbox
+        const roleCheckbox = await screen.findByLabelText('Manage bounties');
+        expect(roleCheckbox).not.toBeChecked();
+
+        // Select the role
+        fireEvent.click(roleCheckbox);
+        expect(roleCheckbox).toBeChecked();
+
+        // Deselect the role
+        fireEvent.click(roleCheckbox);
+        expect(roleCheckbox).not.toBeChecked();
+      });
+    });
+  });
+
+  it('Saves roles and shows a success notification upon clicking "update roles"', async () => {
+    act(async () => {
+      const addToast = jest.fn();
+      render(
+        <OrganizationDetails
+          close={closeFn}
+          getOrganizations={getOrgFn}
+          org={orgUser}
+          resetOrg={resetOrgFn}
+        />
+      );
+
+      await waitFor(async () => {
+        const updateRoleButton = await screen.findByRole('button', { name: /Updates roles/i });
+        fireEvent.click(updateRoleButton);
+
+        expect(addToast).toHaveBeenCalledWith('Roles Updated Successfully', 'success');
+      });
+    });
+  });
+
+  it('Delete user and shows a success notification upon clicking "Delete Button"', async () => {
+    act(async () => {
+      const addToast = jest.fn();
+      render(
+        <OrganizationDetails
+          close={closeFn}
+          getOrganizations={getOrgFn}
+          org={orgUser}
+          resetOrg={resetOrgFn}
+        />
+      );
+
+      await waitFor(async () => {
+        const updateRoleButton = await screen.findByRole('button', { name: /Delete/i });
+        fireEvent.click(updateRoleButton);
+
+        expect(addToast).toHaveBeenCalledWith('User Delete Successfully', 'success');
+      });
     });
   });
 });
