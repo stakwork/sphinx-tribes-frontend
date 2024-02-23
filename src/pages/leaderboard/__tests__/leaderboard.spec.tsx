@@ -177,7 +177,24 @@ describe('Leaderboard Component', () => {
         const userClipIcon = getByTestId('user-id');
         fireEvent.click(userClipIcon);
 
-        expect(userClipIcon.getAttribute('href')).toEqual(`/p/${person[0].owner_pubkey}`);
+        expect(userClipIcon.getAttribute('href')).toEqual(`/p/${person[0].uuid}`);
+      });
+    });
+  });
+
+  test('clicking on the right profile is mapped to the right name displayed', () => {
+    act(async () => {
+      const { getByTestId } = render(<LeaderboardPage />);
+      await waitFor(async () => {
+        const userClipIcon = getByTestId('user-id');
+        fireEvent.click(userClipIcon);
+
+        await waitFor(() => {
+          expect(screen.getByText('owner_alias1').closest('a')).toHaveAttribute(
+            'href',
+            `/p/${person[0].uuid}`
+          );
+        });
       });
     });
   });
