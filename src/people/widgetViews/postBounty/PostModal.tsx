@@ -30,8 +30,7 @@ export const PostModal: FC<PostModalProps> = observer(
     const config = widgetConfigs[widget];
 
     const getBountyData = useCallback(async () => {
-   
-      try {   
+      try {
         const response = await main.getPeopleBounties();
         return response[0].body?.id;
       } catch (err) {
