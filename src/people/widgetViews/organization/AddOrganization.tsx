@@ -2,6 +2,7 @@ import React, { useState, DragEvent, ChangeEvent } from 'react';
 import styled from 'styled-components';
 import { useStores } from 'store';
 import { EuiGlobalToastList, EuiLoadingSpinner } from '@elastic/eui';
+import { normalizeInput, normalizeTextValue } from '../../../helpers';
 import { Toast } from './interface';
 import {
   ImgDashContainer,
@@ -145,7 +146,7 @@ const AddOrganization = (props: {
   const [descriptionError, setDescriptionError] = useState<boolean>(false);
 
   const handleOrgNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
+    const newValue = e.target.value.trimStart();
     if (newValue.length <= MAX_ORG_NAME_LENGTH) {
       setOrgName(newValue);
       setOrgNameError(false);
@@ -155,15 +156,15 @@ const AddOrganization = (props: {
   };
 
   const handleWebsiteNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setWebsiteName(e.target.value);
+    setWebsiteName(e.target.value.trimStart());
   };
 
   const handleGithubRepoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setGithubRepo(e.target.value);
+    setGithubRepo(e.target.value.trimStart());
   };
 
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newValue = e.target.value;
+    const newValue = e.target.value.trimStart();
     if (newValue.length <= MAX_DESCRIPTION_LENGTH) {
       setDescription(newValue);
       setDescriptionError(false);
@@ -237,11 +238,11 @@ const AddOrganization = (props: {
       }
       const body = {
         owner_pubkey: props.owner_pubkey || '',
-        name: orgName,
-        description: description,
+        name: normalizeInput(orgName),
+        description: normalizeTextValue(description),
         img: img_url,
-        github: githubRepo,
-        website: websiteName
+        github: normalizeInput(githubRepo),
+        website: normalizeInput(websiteName)
       };
 
       const res = await main.addOrganization(body);

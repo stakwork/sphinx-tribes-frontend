@@ -9,6 +9,7 @@ import { useStores } from 'store';
 import Input from '../../../components/form/inputs';
 import { Button, Modal } from '../../../components/common';
 import { colors } from '../../../config/colors';
+import { normalizeInput, normalizeTextValue } from '../../../helpers';
 import {
   ImgContainer,
   ImgDashContainer,
@@ -176,11 +177,11 @@ const EditOrgModal = (props: EditOrgModalProps) => {
   const schema = [...config.schema];
   const formRef = useRef(null);
   const initValues = {
-    name: org?.name,
+    name: org?.name.trim(),
     image: org?.img,
-    description: org?.description,
-    github: org?.github,
-    website: org?.website,
+    description: org?.description?.trim(),
+    github: org?.github?.trim(),
+    website: org?.website?.trim(),
     show: org?.show
   };
   const [selectedImage, setSelectedImage] = useState<string>(org?.img || '');
@@ -215,12 +216,15 @@ const EditOrgModal = (props: EditOrgModalProps) => {
       const newOrg = {
         id: org.id,
         uuid: org.uuid,
-        name: body.name || org.name,
+        name: normalizeInput(body.name) || org.name,
         owner_pubkey: org.owner_pubkey,
         img: img || org.img,
-        description: body.description !== undefined ? body.description : org?.description || null,
-        github: body.github !== undefined ? body.github : org?.github || null,
-        website: body.website !== undefined ? body.website : org?.website || null,
+        description:
+          normalizeTextValue(body.description) !== undefined
+            ? body.description
+            : org?.description || null,
+        github: normalizeInput(body.github) !== undefined ? body.github : org?.github || null,
+        website: normalizeInput(body.website) !== undefined ? body.website : org?.website || null,
         created: org.created,
         updated: org.updated,
         show: body?.show !== undefined ? body.show : org.show,
@@ -408,9 +412,11 @@ const EditOrgModal = (props: EditOrgModalProps) => {
                         }}
                         handleChange={(e: any) => {
                           setFieldValue(item.name, e);
-                          item.name === 'name'
-                            ? setNameCharacterCount(e.length)
-                            : setDescriptionCharacterCount(e.length);
+                          if (item.name === 'name') {
+                            setNameCharacterCount(e.length);
+                          } else if (item.name === 'description') {
+                            setDescriptionCharacterCount(e.length);
+                          }
                         }}
                         setFieldValue={(e: any, f: any) => {
                           setFieldValue(e, f);
