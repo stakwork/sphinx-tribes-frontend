@@ -290,15 +290,13 @@ describe('OrgHeader Component', () => {
 
   it('displays the correct number of bounties based on the status filter', async () => {
     act(async () => {
-      // eslint-disable-next-line @typescript-eslint/typedef
-      // @ts-ignore
       jest
         .spyOn(mainStore, 'getSpecificOrganizationBounties')
         .mockImplementation((filters: any) => {
-          if (filters.Open) {
-            return Promise.resolve({ data: { total: 3, bounties: [] } });
+          if (filters && filters.Open) {
+            return Promise.resolve(Array(3).fill({}));
           }
-          return Promise.resolve({ data: { total: 8, bounties: [] } });
+          return Promise.resolve(Array(8).fill({}));
         });
 
       render(<OrgHeader {...MockProps} />);
