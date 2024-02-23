@@ -92,6 +92,7 @@ describe('OrgHeader Component', () => {
       expect(screen.getByText('Skill')).toBeInTheDocument();
       expect(screen.getByPlaceholderText('Search')).toBeInTheDocument();
       expect(screen.getByText(/Bounties/i)).toBeInTheDocument();
+      expect(screen.queryByText('Post a Bounty')).not.toBeInTheDocument();
     });
   });
 
