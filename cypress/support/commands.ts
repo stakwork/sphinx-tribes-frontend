@@ -129,15 +129,16 @@ Cypress.Commands.add('create_bounty', (bounty) => {
 
   if (bounty.coding_language && bounty.coding_language.length > 0) {
     cy.contains('Coding Language').click();
-    bounty.coding_language.forEach((language: string) => {
-      cy.get('div').contains(language).click();
-      cy.contains('Coding Language').should('contain', language);
-    });
+    
+    for (let i = 0; i < bounty.coding_language.length; i++) {
+      cy.get('.CheckboxOuter').contains(bounty.coding_language[i]).scrollIntoView().click();
+    }
+    cy.contains('Coding Language').click();
   }
 
-  cy.contains('[data-testid="Category *"]').click();
-  cy.contains('[data-testid="Category *"]').should('contain', bounty.category);
-
+  cy.get('[data-testid="Category *"]').click();
+  cy.get('[data-testid="Category *"]').contains(bounty.category).click();
+  
   cy.contains('Next').click();
 
   cy.get('.euiTextArea').type(bounty.description);
@@ -146,11 +147,11 @@ Cypress.Commands.add('create_bounty', (bounty) => {
   cy.contains('label', 'Price (Sats)').type(bounty.amount);
 
   if (bounty.estimate_session_length) {
-    cy.get('select[data-testid="Estimate Session Length"]').select(bounty.estimate_session_length);
-    cy.get('select[data-testid="Estimate Session Length"]').should(($select: any) => {
-      const val = $select.val();
-      expect(val).to.eq(bounty.estimate_session_length);
-    });
+
+    cy.get('[data-testid="Estimate Session Length"]').find('button').click();
+
+    cy.get('[data-testid="Estimate Session Length"]').contains(bounty.estimate_session_length).click();
+
   }
 
   if (bounty.estimate_completion_date) {
