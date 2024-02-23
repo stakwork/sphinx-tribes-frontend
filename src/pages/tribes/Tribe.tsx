@@ -223,6 +223,7 @@ export default function Tribe({
                       level="Q"
                       style={{ width: 221 }}
                       value={qrString}
+                      role="qrcode"
                     />
                   </QRWrap>
                 )}
