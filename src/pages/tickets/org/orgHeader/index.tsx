@@ -71,7 +71,8 @@ export const OrgHeader = ({
   checkboxIdToSelectedMap,
   org_uuid,
   languageString,
-  organizationData
+  organizationData,
+  totalBountyCount
 }: OrgBountyHeaderProps) => {
   const { main, ui } = useStores();
   const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
@@ -421,7 +422,7 @@ export const OrgHeader = ({
       <NumberOfBounties>
         <BountyNumber>
           <Img src={file} alt="" />
-          <PrimaryText>284</PrimaryText>
+          <PrimaryText>{totalBountyCount}</PrimaryText>
           <SecondaryText>Bounties</SecondaryText>
         </BountyNumber>
       </NumberOfBounties>
