@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import { SelProps } from 'components/interfaces';
 import { colors } from '../../config/colors';
 
