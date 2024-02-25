@@ -21,7 +21,8 @@ import {
   userCanManageBounty,
   formatPercentage,
   normalizeInput,
-  normalizeTextValue
+  normalizeTextValue,
+  normalizeUrl
 } from '../helpers-extended';
 
 beforeAll(() => {
@@ -446,6 +447,48 @@ describe('testing helpers', () => {
       const textValue = '   \n  \n ';
       const expected = '';
       expect(normalizeTextValue(textValue)).toBe(expected);
+    });
+  });
+
+  describe('normalizeUrl', () => {
+    it('removes all spaces from a URL and reconstructs it correctly', () => {
+      const inputsAndExpected: { input: string; expected: string }[] = [
+        {
+          input: 'https ://github.com/stakwork/sphinx-tribes-frontend/ issues/267',
+          expected: 'https://github.com/stakwork/sphinx-tribes-frontend/issues/267'
+        },
+        {
+          input: 'http s:// git hub.com /stak work/sphinx- tribes- frontend/issues / 267',
+          expected: 'https://github.com/stakwork/sphinx-tribes-frontend/issues/267'
+        },
+        {
+          input:
+            '          https  :/    /git              hub. com/ st                  akw  ork/sphinx-tri bes-fron tend/  issues     /2 67',
+          expected: 'https://github.com/stakwork/sphinx-tribes-frontend/issues/267'
+        },
+        {
+          input: 'https :// someotherurl.com /path/to /resource',
+          expected: 'https://someotherurl.com/path/to/resource'
+        },
+        {
+          input: 'https :// community.sphinx   .chat     /bounties',
+          expected: 'https://community.sphinx.chat/bounties'
+        },
+        {
+          input:
+            '      https:/   /community.    sphinx.c    hat/   org/boun     ties/ck95pe04nncj      naefo08g',
+          expected: 'https://community.sphinx.chat/org/bounties/ck95pe04nncjnaefo08g'
+        },
+        {
+          input:
+            'h          ttp         s:  //com      munity.sphinx.ch            at/p     /cd9dm5ua5fdts       j2c2mh0/organi   zations',
+          expected: 'https://community.sphinx.chat/p/cd9dm5ua5fdtsj2c2mh0/organizations'
+        }
+      ];
+
+      inputsAndExpected.forEach(({ input, expected }: { input: string; expected: string }) => {
+        expect(normalizeUrl(input)).toEqual(expected);
+      });
     });
   });
 });

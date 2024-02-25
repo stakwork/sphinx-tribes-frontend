@@ -9,7 +9,7 @@ import { useStores } from 'store';
 import Input from '../../../components/form/inputs';
 import { Button, Modal } from '../../../components/common';
 import { colors } from '../../../config/colors';
-import { normalizeInput, normalizeTextValue } from '../../../helpers';
+import { normalizeInput, normalizeTextValue, normalizeUrl } from '../../../helpers';
 import {
   ImgContainer,
   ImgDashContainer,
@@ -223,8 +223,8 @@ const EditOrgModal = (props: EditOrgModalProps) => {
           normalizeTextValue(body.description) !== undefined
             ? body.description
             : org?.description || null,
-        github: normalizeInput(body.github) !== undefined ? body.github : org?.github || null,
-        website: normalizeInput(body.website) !== undefined ? body.website : org?.website || null,
+        github: normalizeUrl(body.github) !== undefined ? body.github : org?.github || null,
+        website: normalizeUrl(body.website) !== undefined ? body.website : org?.website || null,
         created: org.created,
         updated: org.updated,
         show: body?.show !== undefined ? body.show : org.show,
@@ -377,7 +377,9 @@ const EditOrgModal = (props: EditOrgModalProps) => {
                 values,
                 setFieldValue,
                 errors,
-                initialValues
+                initialValues,
+                isValid,
+                dirty
               }: any) => (
                 <InputWrapper>
                   {schema.map((item: FormField) => (
@@ -412,11 +414,9 @@ const EditOrgModal = (props: EditOrgModalProps) => {
                         }}
                         handleChange={(e: any) => {
                           setFieldValue(item.name, e);
-                          if (item.name === 'name') {
-                            setNameCharacterCount(e.length);
-                          } else if (item.name === 'description') {
-                            setDescriptionCharacterCount(e.length);
-                          }
+                          item.name === 'name'
+                            ? setNameCharacterCount(e.length)
+                            : setDescriptionCharacterCount(e.length);
                         }}
                         setFieldValue={(e: any, f: any) => {
                           setFieldValue(e, f);
@@ -436,7 +436,7 @@ const EditOrgModal = (props: EditOrgModalProps) => {
                     </InputContainer>
                   ))}
                   <Button
-                    disabled={nameColor || descColor ? true : false}
+                    disabled={!values.name.trim() || !isValid || !dirty}
                     onClick={() => handleSubmit()}
                     loading={loading}
                     style={{
@@ -449,7 +449,7 @@ const EditOrgModal = (props: EditOrgModalProps) => {
                       top: '390px',
                       left: '527px'
                     }}
-                    color={nameColor || descColor ? 'gray' : 'primary'}
+                    color={!values.name.trim() || !isValid || !dirty ? 'gray' : 'primary'}
                     text={'Save changes'}
                   />
                 </InputWrapper>

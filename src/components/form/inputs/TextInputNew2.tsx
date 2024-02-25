@@ -88,8 +88,8 @@ export default function TextInputNew({
           const newVal = e.target.value.trimStart();
           if (name === 'name') {
             if (newVal.length <= 20) {
-              handleChange(newVal);
-              setTextValue(newVal);
+              handleChange(normalizeInput(newVal));
+              setTextValue(normalizeInput(newVal));
               setCharacterError(false);
               setColor && setColor(false, name);
             } else {

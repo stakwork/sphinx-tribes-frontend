@@ -2,7 +2,7 @@ import React, { useState, DragEvent, ChangeEvent } from 'react';
 import styled from 'styled-components';
 import { useStores } from 'store';
 import { EuiGlobalToastList, EuiLoadingSpinner } from '@elastic/eui';
-import { normalizeInput, normalizeTextValue } from '../../../helpers';
+import { normalizeInput, normalizeTextValue, normalizeUrl } from '../../../helpers';
 import { Toast } from './interface';
 import {
   ImgDashContainer,
@@ -146,7 +146,7 @@ const AddOrganization = (props: {
   const [descriptionError, setDescriptionError] = useState<boolean>(false);
 
   const handleOrgNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value.trimStart();
+    const newValue = e.target.value;
     if (newValue.length <= MAX_ORG_NAME_LENGTH) {
       setOrgName(newValue);
       setOrgNameError(false);
@@ -156,15 +156,15 @@ const AddOrganization = (props: {
   };
 
   const handleWebsiteNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setWebsiteName(e.target.value.trimStart());
+    setWebsiteName(e.target.value);
   };
 
   const handleGithubRepoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setGithubRepo(e.target.value.trimStart());
+    setGithubRepo(e.target.value);
   };
 
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newValue = e.target.value.trimStart();
+    const newValue = e.target.value;
     if (newValue.length <= MAX_DESCRIPTION_LENGTH) {
       setDescription(newValue);
       setDescriptionError(false);
@@ -236,13 +236,19 @@ const AddOrganization = (props: {
           img_url = await file.json();
         }
       }
+      if (!orgName.trim()) {
+        addErrorToast('Organization name is required');
+        setIsLoading(false);
+        return;
+      }
+
       const body = {
         owner_pubkey: props.owner_pubkey || '',
         name: normalizeInput(orgName),
         description: normalizeTextValue(description),
         img: img_url,
-        github: normalizeInput(githubRepo),
-        website: normalizeInput(websiteName)
+        github: normalizeUrl(githubRepo),
+        website: normalizeUrl(websiteName)
       };
 
       const res = await main.addOrganization(body);
