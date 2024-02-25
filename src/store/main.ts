@@ -310,6 +310,12 @@ export const defaultOrgBountyStatus: OrgBountyStatus = {
   Completed: false
 };
 
+export const defaultSuperAdminBountyStatus: BountyStatus = {
+  Open: false,
+  Assigned: false,
+  Paid: false
+};
+
 export class MainStore {
   [x: string]: any;
   tribes: Tribe[] = [];

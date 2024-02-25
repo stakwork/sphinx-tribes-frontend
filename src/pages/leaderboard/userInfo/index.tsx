@@ -61,7 +61,7 @@ export const UserInfo = observer(({ id }: { id: string }) => {
       />
       <div className="info">
         <EuiText className="name">
-          <Link className="name" to={`/p/${person.owner_pubkey}`}>
+          <Link data-testId={'user-id'} className="name" to={`/p/${person.uuid}`}>
             {person.owner_alias}
             <MaterialIcon className="icon" icon="link" />
           </Link>

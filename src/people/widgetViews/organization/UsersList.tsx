@@ -36,10 +36,10 @@ const Users = (props: UserListProps) => {
         const settingsDisabled = isUser || addRolesDisabled;
         return (
           <User key={i}>
-            <UserImage src={user.img || avatarIcon} />
+            <UserImage src={user.img || avatarIcon} data-testid={'avatarIcon'} />
             <UserDetails>
-              <UserName>{user.owner_alias}</UserName>
-              <UserPubkey>{user.owner_pubkey}</UserPubkey>
+              <UserName data-testid={'user_alias'}>{user.owner_alias}</UserName>
+              <UserPubkey data-testid={'user_pubkey'}>{user.owner_pubkey}</UserPubkey>
             </UserDetails>
             <UserAction>
               <IconWrap>

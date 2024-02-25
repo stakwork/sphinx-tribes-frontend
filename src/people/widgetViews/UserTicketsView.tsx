@@ -56,7 +56,7 @@ const UserTickets = () => {
   const closeModal = () => setShowDeleteModal(false);
   const showModal = () => setShowDeleteModal(true);
   const [displayedBounties, setDisplayedBounties] = useState<BountyType[]>([]);
-  const [loading, setIsLoading] = useState<boolean>(false);
+  const [loading, setIsLoading] = useState<boolean>(true);
   const [hasMoreBounties, setHasMoreBounties] = useState(true);
   const [bountyOwner, setBountyOwner] = useState<Person>();
   const [page, setPage] = useState(1);
@@ -163,7 +163,7 @@ const UserTickets = () => {
 
   return (
     <Container data-testid="test">
-      <PageLoadSpinner show={loading} />
+      {loading && <PageLoadSpinner show={loading} />}
       <Router history={history}>
         <Switch>
           <Route path={`${path}/:wantedId/:wantedIndex`}>
@@ -171,7 +171,7 @@ const UserTickets = () => {
           </Route>
         </Switch>
       </Router>
-      {listItems}
+      {!loading ? listItems : ''}
       {hasMoreBounties && !loading && (
         <LoadMoreContainer
           color={color}

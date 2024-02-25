@@ -480,7 +480,15 @@ export const MyTable = ({
                   <TableDataRow key={bounty?.id}>
                     <BountyData className="avg">
                       <a
-                        style={{ textDecoration: 'inherit', color: 'inherit' }}
+                        style={{
+                          textDecoration: 'inherit',
+                          color: 'inherit',
+                          display: 'block',
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          width: '200px'
+                        }}
                         href={`/bounty/${bounty.bounty_id}`}
                         target="_blank"
                         rel="noopener noreferrer"
@@ -492,19 +500,19 @@ export const MyTable = ({
                     <TableDataCenter>{time_to_pay}</TableDataCenter>
                     <TableDataAlternative>
                       <ImageWithText
-                        text={bounty?.assignee}
+                        text={bounty?.assignee_alias}
                         image={bounty?.assignee_img || defaultPic}
                       />
                     </TableDataAlternative>
                     <TableDataAlternative className="address">
                       <ImageWithText
-                        text={bounty?.owner_pubkey}
-                        image={bounty?.providerImage || defaultPic}
+                        text={bounty?.owner_unique_name}
+                        image={bounty?.owner_img || defaultPic}
                       />
                     </TableDataAlternative>
                     <TableData className="organization">
                       <ImageWithText
-                        text={bounty?.organization}
+                        text={bounty?.organization_name}
                         image={bounty?.organization_img || defaultPic}
                       />
                     </TableData>
