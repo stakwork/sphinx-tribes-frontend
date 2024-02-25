@@ -436,7 +436,7 @@ const EditOrgModal = (props: EditOrgModalProps) => {
                     </InputContainer>
                   ))}
                   <Button
-                    disabled={!values.name.trim() || !isValid || !dirty}
+                    disabled={!values.name || !isValid || !dirty}
                     onClick={() => handleSubmit()}
                     loading={loading}
                     style={{
@@ -449,7 +449,7 @@ const EditOrgModal = (props: EditOrgModalProps) => {
                       top: '390px',
                       left: '527px'
                     }}
-                    color={!values.name.trim() || !isValid || !dirty ? 'gray' : 'primary'}
+                    color={!values.name || !isValid || !dirty ? 'gray' : 'primary'}
                     text={'Save changes'}
                   />
                 </InputWrapper>

@@ -399,7 +399,8 @@ export const normalizeTextValue = (textValue: string): string => {
 
 export const normalizeUrl = (input: string): string => {
   const noSpaces = input.replace(/\s+/g, '');
-  const match = noSpaces.match(/(https?):\/\/([^\/]+)\/([^\/]+)\/([^\/]+)\/([^\/]+)\/(\d+)/);
+  // Removed unnecessary escape characters before forward slashes
+  const match = noSpaces.match(/(https?):\/\/([^/]+)\/([^/]+)\/([^/]+)\/([^/]+)\/(\d+)/);
   if (match) {
     return `${match[1]}://${match[2]}/${match[3]}/${match[4]}/${match[5]}/${match[6]}`;
   } else {
