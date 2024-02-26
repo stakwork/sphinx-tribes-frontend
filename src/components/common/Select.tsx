@@ -34,11 +34,11 @@ const StyledLabel = styled.label<styleProps>`
 
 const DropdownContainer = styled.div`
   margin-top: 1px;
+  margin-bottom: 14px;
   position: relative;
 `;
 
 const DropdownTrigger = styled.button<styleProps>`
-  margin-bottom: 10px;
   background: ${colors.light.pureWhite};
   border: 1.5px solid ${colors.light.grayish.G750};
   color: ${colors.light.pureBlack};
@@ -58,9 +58,11 @@ const DropdownTrigger = styled.button<styleProps>`
 
 const DropdownOptions = styled.div<styleProps>`
   position: absolute;
-  width: 290px;
+  width: 100%;
   background: ${colors.light.pureWhite};
-  border: 1px solid ${colors.light.blue2};
+  border-left: 1px solid ${colors.light.blue2};
+  border-right: 1px solid ${colors.light.blue2};
+  border-bottom: 1px solid ${colors.light.blue2};
   box-sizing: border-box;
   z-index: 1000;
   transition:
@@ -69,7 +71,8 @@ const DropdownOptions = styled.div<styleProps>`
   max-height: ${(props: styleProps) => (props.isOpen ? '300px' : '0')};
   opacity: ${(props: styleProps) => (props.isOpen ? '1' : '0')};
   overflow: hidden;
-  border-radius: 3px;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
 `;
 
 const Option = styled.div`
