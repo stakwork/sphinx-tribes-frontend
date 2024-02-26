@@ -92,6 +92,7 @@ describe('OrgHeader Component', () => {
       expect(screen.getByText('Skill')).toBeInTheDocument();
       expect(screen.getByPlaceholderText('Search')).toBeInTheDocument();
       expect(screen.getByText(/Bounties/i)).toBeInTheDocument();
+      expect(screen.queryByText('Post a Bounty')).not.toBeInTheDocument();
     });
   });
 
@@ -218,6 +219,18 @@ describe('OrgHeader Component', () => {
   it('does not display "Post a Bounty" button when user is not logged in', () => {
     render(<OrgHeader {...MockProps} />);
     expect(screen.queryByText('Post a Bounty')).not.toBeInTheDocument();
+  });
+
+  it('does not display "Post a Bounty" button when user is logged in but does not have manage bounty role', async () => {
+    // @ts-ignore
+    uiStore.meInfo = { pubkey: '' };
+    jest.spyOn(helpers, 'userCanManageBounty').mockResolvedValue(false);
+
+    render(<OrgHeader {...MockProps} />);
+
+    await waitFor(() => {
+      expect(screen.queryByText('Post a Bounty')).not.toBeInTheDocument();
+    });
   });
 
   it('does not display "Post a Bounty" button when user is logged in but does not have manage bounty role', async () => {
