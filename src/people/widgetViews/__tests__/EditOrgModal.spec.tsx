@@ -109,6 +109,38 @@ describe('EditOrgModal Component', () => {
     });
   });
 
+  test('Entering text in GitHub field does not increase character count in description field', async () => {
+    render(<EditOrgModal {...props} />);
+
+    const initialDescriptionElement = screen.getByLabelText(/Description/i) as HTMLInputElement;
+    const initialDescriptionLength = initialDescriptionElement.value.length;
+
+    fireEvent.change(screen.getByLabelText(/Github repo/i) as HTMLInputElement, {
+      target: { value: 'https://github.com/newRepo_testing_of_the_bounty' }
+    });
+
+    const updatedDescriptionElement = screen.getByLabelText(/Description/i) as HTMLInputElement;
+    const updatedDescriptionLength = updatedDescriptionElement.value.length;
+
+    expect(updatedDescriptionLength).toBe(initialDescriptionLength);
+  });
+
+  test('Entering text in Website field does not increase character count in description field', async () => {
+    render(<EditOrgModal {...props} />);
+
+    const initialDescriptionElement = screen.getByLabelText(/Description/i) as HTMLInputElement;
+    const initialDescriptionLength = initialDescriptionElement.value.length;
+
+    fireEvent.change(screen.getByLabelText(/Website/i) as HTMLInputElement, {
+      target: { value: 'https://test.org_the_sphinx_second_brain' }
+    });
+
+    const updatedDescriptionElement = screen.getByLabelText(/Description/i) as HTMLInputElement;
+    const updatedDescriptionLength = updatedDescriptionElement.value.length;
+
+    expect(updatedDescriptionLength).toBe(initialDescriptionLength);
+  });
+
   test('Nothing happens if only spaces are entered in the Org Name', async () => {
     render(<EditOrgModal {...props} />);
 
