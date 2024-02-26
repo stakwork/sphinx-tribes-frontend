@@ -112,7 +112,7 @@ const OrganizationDetails = (props: {
       const res = await main.deleteOrganizationUser(user, uuid);
 
       if (res.status === 200) {
-        addToast('User Delete Successfully', 'success');
+        addToast('User deleted successfully', 'success');
         await getOrganizationUsers();
       } else {
         addToast('Error: could not delete user', 'danger');
