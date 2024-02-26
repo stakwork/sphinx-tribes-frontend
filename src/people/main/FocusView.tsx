@@ -130,8 +130,17 @@ function FocusedView(props: FocusViewProps) {
     [main, isTorSave]
   );
 
-  const canDeleteBounty =
-    bounty && bounty.length ? !(bounty[0]?.body?.paid || bounty[0]?.body?.assignee.id) : false;
+  const [canDeleteBounty, setCanDeleteBounty] = useState(false);
+
+  useEffect(() => {
+    if (bounty && bounty.length) {
+      if (!(bounty[0].body.paid || (bounty[0].body.assignee && bounty[0].body.assignee.id))) {
+        setCanDeleteBounty(true);
+      } else {
+        setCanDeleteBounty(false);
+      }
+    }
+  }, [bounty]);
 
   const { openAfterDeleteNotification } = useAfterDeleteNotification();
 
