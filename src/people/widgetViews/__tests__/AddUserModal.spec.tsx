@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom';
-import '@testing-library/jest-dom/extend-expect';
 import nock from 'nock';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
+import { act } from 'react-dom/test-utils';
 import AddUserModal from '../organization/AddUserModal';
 
 describe('AddUserModal Component', () => {
@@ -28,20 +28,21 @@ describe('AddUserModal Component', () => {
       .reply(200, [{ owner_pubkey: '...', owner_alias: 'Anish Yadav', img: '...' }]);
 
     const { getByPlaceholderText, getByText } = render(<AddUserModal {...mockProps} />);
-
-    (async () => {
-      const searchInput = getByPlaceholderText('Type to search ...');
-      fireEvent.change(searchInput, { target: { value: 'Anish' } });
-      await waitFor(() => expect(getByText('Anish Yadav')).toBeInTheDocument());
-      await waitFor(() => {
-        const addUserButton = getByText('Add User');
-        expect(addUserButton).toBeEnabled();
-        fireEvent.click(addUserButton);
-        expect(mockProps.onSubmit).toHaveBeenCalledTimes(1);
-        expect(mockProps.onSubmit).toHaveBeenCalledWith({
-          owner_pubkey: mockUser.owner_pubkey
+    act(() => {
+      (async () => {
+        const searchInput = getByPlaceholderText('Type to search ...');
+        fireEvent.change(searchInput, { target: { value: 'Anish' } });
+        await waitFor(() => expect(getByText('Anish Yadav')).toBeInTheDocument());
+        await waitFor(() => {
+          const addUserButton = getByText('Add User');
+          expect(addUserButton).toBeEnabled();
+          fireEvent.click(addUserButton);
+          expect(mockProps.onSubmit).toHaveBeenCalledTimes(1);
+          expect(mockProps.onSubmit).toHaveBeenCalledWith({
+            owner_pubkey: mockUser.owner_pubkey
+          });
         });
-      });
-    })();
+      })();
+    });
   });
 });
