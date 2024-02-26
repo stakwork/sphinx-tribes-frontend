@@ -225,7 +225,6 @@ function BodyComponent() {
               width: 204,
               height: 40,
               background: '#fff',
-              color: '#fff',
               border: 'none',
               marginLeft: 20
             }}
