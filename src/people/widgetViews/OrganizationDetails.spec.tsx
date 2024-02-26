@@ -513,7 +513,7 @@ describe('OrganizationDetails', () => {
         const updateRoleButton = await screen.findByRole('button', { name: /Delete/i });
         fireEvent.click(updateRoleButton);
 
-        expect(addToast).toHaveBeenCalledWith('User Delete Successfully', 'success');
+        expect(addToast).toHaveBeenCalledWith('User deleted successfully', 'success');
       });
     });
   });
