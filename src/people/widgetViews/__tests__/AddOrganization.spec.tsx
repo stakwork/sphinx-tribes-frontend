@@ -5,9 +5,16 @@ import { mainStore } from 'store/main';
 import AddOrganization from '../organization/AddOrganization';
 const mockCloseHandler = jest.fn();
 const mockGetUserOrganizations = jest.fn();
+const mockAddToast = jest.fn();
 const mockOwnerPubKey = 'somePublicKey';
 
 describe('AddOrganization Component Tests', () => {
+  beforeEach(() => {
+    mockCloseHandler.mockReset();
+    mockGetUserOrganizations.mockReset();
+    mockAddToast.mockReset();
+    jest.clearAllMocks();
+  });
   test('Organization Name text field appears', () => {
     render(
       <AddOrganization
@@ -189,6 +196,33 @@ describe('AddOrganization Component Tests', () => {
         website: 'https://john.doe'
       });
       expect(mockGetUserOrganizations).toHaveBeenCalled();
+    });
+  });
+
+  test('Nothing happens if only spaces are entered in the Org Name', async () => {
+    jest
+      .spyOn(mainStore, 'addOrganization')
+      .mockImplementation(() => Promise.resolve({ status: 200 }));
+
+    render(
+      <AddOrganization
+        closeHandler={mockCloseHandler}
+        getUserOrganizations={mockGetUserOrganizations}
+        owner_pubkey={mockOwnerPubKey}
+      />
+    );
+
+    const orgNameInput = screen.getByPlaceholderText('My Organization...');
+    fireEvent.change(orgNameInput, { target: { value: '   ' } });
+
+    const addButton = screen.getByText('Add Organization');
+    fireEvent.click(addButton);
+
+    await waitFor(() => {
+      expect(mainStore.addOrganization).not.toHaveBeenCalled();
+      expect(mockCloseHandler).not.toHaveBeenCalled();
+      expect(mockGetUserOrganizations).not.toHaveBeenCalled();
+      expect(mockAddToast).not.toHaveBeenCalledWith('Organization created successfully', 'success');
     });
   });
 });

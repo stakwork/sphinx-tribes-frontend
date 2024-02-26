@@ -2,6 +2,7 @@ import React, { useState, DragEvent, ChangeEvent } from 'react';
 import styled from 'styled-components';
 import { useStores } from 'store';
 import { EuiGlobalToastList, EuiLoadingSpinner } from '@elastic/eui';
+import { normalizeInput, normalizeTextValue, normalizeUrl } from '../../../helpers';
 import { Toast } from './interface';
 import {
   ImgDashContainer,
@@ -235,13 +236,20 @@ const AddOrganization = (props: {
           img_url = await file.json();
         }
       }
+
+      if (!orgName.trim()) {
+        addErrorToast('Organization name is required');
+        setIsLoading(false);
+        return;
+      }
+
       const body = {
         owner_pubkey: props.owner_pubkey || '',
-        name: orgName,
-        description: description,
+        name: normalizeInput(orgName),
+        description: normalizeTextValue(description),
         img: img_url,
-        github: githubRepo,
-        website: websiteName
+        github: normalizeUrl(githubRepo),
+        website: normalizeUrl(websiteName)
       };
 
       const res = await main.addOrganization(body);
