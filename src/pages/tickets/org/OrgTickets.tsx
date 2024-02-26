@@ -192,6 +192,7 @@ function OrgBodyComponent() {
           languageString={languageString}
           organizationData={organizationData as Organization}
           org_uuid={uuid}
+          totalBountyCount={OrgTotalBounties}
         />
         <>
           <div
