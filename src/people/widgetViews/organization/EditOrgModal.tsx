@@ -408,9 +408,11 @@ const EditOrgModal = (props: EditOrgModalProps) => {
                         }}
                         handleChange={(e: any) => {
                           setFieldValue(item.name, e);
-                          item.name === 'name'
-                            ? setNameCharacterCount(e.length)
-                            : setDescriptionCharacterCount(e.length);
+                          if (item.name === 'name') {
+                            setNameCharacterCount(e.length);
+                          } else if (item.name === 'description') {
+                            setDescriptionCharacterCount(e.length);
+                          }
                         }}
                         setFieldValue={(e: any, f: any) => {
                           setFieldValue(e, f);
