@@ -231,6 +231,7 @@ function Form(props: FormProps) {
                     isFocused={isFocused}
                     errors={errors}
                     scrollToTop={scrollToTop}
+                    github_state={values.github_description ? true : false}
                     value={values[item.name]}
                     error={errors[item.name]}
                     initialValues={initialValues}
@@ -285,6 +286,7 @@ function Form(props: FormProps) {
                         values={values}
                         testId={item.label}
                         errors={errors}
+                        github_state={values.github_description ? true : false}
                         scrollToTop={scrollToTop}
                         value={values[item.name]}
                         error={errors[item.name]}
@@ -454,6 +456,7 @@ function Form(props: FormProps) {
                               scrollToTop={scrollToTop}
                               value={values[item.name]}
                               error={errors[item.name]}
+                              github_state={values.github_description ? true : false}
                               initialValues={initialValues}
                               deleteErrors={() => {
                                 if (errors[item.name]) delete errors[item.name];
@@ -513,6 +516,7 @@ function Form(props: FormProps) {
                               value={values[item.name]}
                               error={errors[item.name]}
                               initialValues={initialValues}
+                              github_state={values.github_description ? true : false}
                               deleteErrors={() => {
                                 if (errors[item.name]) delete errors[item.name];
                               }}
@@ -634,6 +638,7 @@ function Form(props: FormProps) {
                         scrollToTop={scrollToTop}
                         value={values[item.name]}
                         error={errors[item.name]}
+                        github_state={values.github_description ? true : false}
                         initialValues={initialValues}
                         deleteErrors={() => {
                           if (errors[item.name]) delete errors[item.name];

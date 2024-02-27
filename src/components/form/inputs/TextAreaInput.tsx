@@ -85,7 +85,8 @@ export default function TextAreaInput({
   handleFocus,
   readOnly,
   extraHTML,
-  borderType
+  borderType,
+  github_state
 }: Props) {
   let labeltext = label;
   const color = colors['light'];
@@ -127,7 +128,7 @@ export default function TextAreaInput({
             width={StyleOnText[label]?.width ?? defaultWidth}
             name="first"
             value={value || ''}
-            readOnly={readOnly || false}
+            readOnly={readOnly || github_state || false}
             onChange={handleTextChange}
             onBlur={handleTextBlur}
             onFocus={(e: any) => {
@@ -135,6 +136,7 @@ export default function TextAreaInput({
               setActive(true);
             }}
             rows={label === 'Description' ? 8 : 6}
+            data-testid={`checktextarea`}
           />
           {error && (
             <E color={color}>
