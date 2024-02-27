@@ -17,7 +17,7 @@ const ErrorText = styled.p`
 `;
 const InputOuterBox = styled.div<styledProps>`
   position: relative;
-  margin-bottom: 32px;
+  margin-bottom: 17px;
   .inputText {
     height: 40px;
     width: 100%;
