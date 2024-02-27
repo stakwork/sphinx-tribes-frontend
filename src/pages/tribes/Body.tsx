@@ -22,7 +22,6 @@ import Tribe from './Tribe';
 const Body = styled.div`
   flex: 1;
   height: calc(100vh - 60px);
-  // padding-bottom:80px;
   width: 100%;
   overflow: auto;
   background: ${colors.dark.tribesBackground};
@@ -120,7 +119,7 @@ function BodyComponent() {
 
   if (loading) {
     return (
-      <Body style={{ justifyContent: 'center', alignItems: 'center' }}>
+      <Body data-testid="content" style={{ justifyContent: 'center', alignItems: 'center' }}>
         <EuiLoadingSpinner size="xl" />
       </Body>
     );

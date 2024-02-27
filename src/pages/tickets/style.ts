@@ -2,11 +2,12 @@ import styled from 'styled-components';
 
 export const Body = styled.div`
   flex: 1;
-  height: calc(100% - 105px);
+  height: calc(100vh - 60px);
   width: 100%;
   overflow: auto;
   display: flex;
   flex-direction: column;
+  align-items: center;
 `;
 
 export const OrgBody = styled.div`
