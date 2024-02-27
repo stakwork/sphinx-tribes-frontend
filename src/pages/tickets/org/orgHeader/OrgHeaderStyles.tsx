@@ -53,7 +53,7 @@ export const FiltersRight = styled.span`
 `;
 
 export const SkillContainer = styled.span`
-  padding: 7px 0px;
+  padding: 6px 0px;
   align-items: center;
   display: flex;
   position: relative;
@@ -445,5 +445,35 @@ export const FilterCount = styled.div<styledProps>`
     align-items: center;
     text-align: center;
     color: ${(p: any) => p.color && p.color.pureWhite};
+  }
+`;
+
+export const SkillTextContainer = styled.div<styledProps>`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  .skillText {
+    font-family: 'Barlow';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 17px;
+    letter-spacing: 0.15px;
+    display: flex;
+    align-items: center;
+    color: ${(p: any) => p.color && p.color.grayish.G200};
+  }
+  &:hover {
+    .skillText {
+      color: ${(p: any) => p.color && p.color.grayish.G50};
+    }
+  }
+  &:active {
+    .skillText {
+      color: ${(p: any) => p.color && p.color.grayish.G10};
+    }
   }
 `;

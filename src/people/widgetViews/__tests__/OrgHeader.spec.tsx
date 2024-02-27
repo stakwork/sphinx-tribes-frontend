@@ -333,4 +333,18 @@ describe('OrgHeader Component', () => {
       });
     });
   });
+
+  test('shows hand icon on hover over the Skill text and toggles dropdown', () => {
+    render(<OrgHeader {...MockProps} />);
+    const skillText = screen.getByText('Skill');
+
+    expect(skillText).toBeInTheDocument();
+    expect(skillText).toHaveClass('skillText');
+
+    const dropdownButton = screen.getByTestId('skillDropdown');
+    fireEvent.click(dropdownButton);
+
+    const skillFilter = screen.getByTestId('skill-filter');
+    expect(skillFilter).toBeVisible();
+  });
 });
