@@ -25,7 +25,6 @@ import {
   EuiPopOverCheckbox,
   EuiPopOverCheckboxRight,
   FillContainer,
-  FilterLabel,
   Filters,
   FiltersRight,
   Header,
@@ -45,7 +44,8 @@ import {
   UrlButtonContainer,
   FilterCount,
   InnerContainer,
-  Formatter
+  Formatter,
+  SkillTextContainer
 } from './OrgHeaderStyles';
 
 const color = colors['light'];
@@ -310,7 +310,13 @@ export const OrgHeader = ({
               </EuiPopover>
             </NewStatusContainer>
             <SkillContainer>
-              <FilterLabel>Skill</FilterLabel>
+              <EuiPopover
+                button={
+                  <SkillTextContainer color={color}>
+                    <EuiText className="skillText">Skill</EuiText>
+                  </SkillTextContainer>
+                }
+              />
               {skillCountNumber > 0 && (
                 <FilterCount color={color}>
                   <EuiText className="filterCountText">{skillCountNumber}</EuiText>
