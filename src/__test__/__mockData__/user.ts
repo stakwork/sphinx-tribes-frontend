@@ -20,7 +20,9 @@ export const user: MeInfo = {
   extras: {
     email: [{ value: 'testEmail@sphinx.com' }],
     liquid: [{ value: 'none' }],
-    wanted: []
+    wanted: [],
+    coding_languages: [{ label: 'Typescript', value: 'Typescript' }],
+    github: [{ label: 'https://github.com/Vladimir', value: 'https://github.com/Vladimir' }]
   },
   owner_alias: 'Vladimir',
   owner_pubkey: 'test_pub_key',

@@ -93,6 +93,7 @@ export const PersonPage = observer(() => {
       )}
       <Modal
         visible={showSupport}
+        data-testid="modal_support"
         close={() => setShowSupport(false)}
         style={{
           height: '100%'

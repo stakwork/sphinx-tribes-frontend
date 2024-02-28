@@ -228,7 +228,6 @@ export const AboutView = observer((props: AboutViewProps) => {
   let emailAddress = '';
 
   let { description } = props;
-
   // backend is adding 'description' to empty descriptions, short term fix
   if (description === 'description') description = '';
 
@@ -248,7 +247,7 @@ export const AboutView = observer((props: AboutViewProps) => {
         {expand ? (
           <DExpand>{renderMarkdown(description)}</DExpand>
         ) : (
-          <DCollapsed>{renderMarkdown(description)}</DCollapsed>
+          <DCollapsed data-testid="user-description">{renderMarkdown(description)}</DCollapsed>
         )}
         {descriptionIsLong && (
           <SM onClick={() => setExpand(!expand)}>SHOW {expand ? 'LESS' : 'MORE'}</SM>
@@ -263,7 +262,9 @@ export const AboutView = observer((props: AboutViewProps) => {
 
       <Divider />
 
-      {owner_pubkey && <QrBar value={`${owner_pubkey}:${owner_route_hint}`} />}
+      {owner_pubkey && (
+        <QrBar data-testid="user-pubkey" value={`${owner_pubkey}:${owner_route_hint}`} />
+      )}
 
       {tag && (
         <>
@@ -287,7 +288,7 @@ export const AboutView = observer((props: AboutViewProps) => {
         <>
           <Divider />
           <Row>
-            <I>
+            <I data-testid="email-address">
               <div style={{ width: 4 }} />
               <Icon source={`/static/email.png`} />
               <Tag>{emailAddress}</Tag>
@@ -300,7 +301,7 @@ export const AboutView = observer((props: AboutViewProps) => {
         <>
           <Divider />
 
-          <Row style={{ justifyContent: 'flex-start', fontSize: 14 }}>
+          <Row data-testid="github-tag" style={{ justifyContent: 'flex-start', fontSize: 14 }}>
             <Img src={'/static/github_logo.png'} />
             <a href={`https://github.com/${githubTag}`} target="_blank" rel="noreferrer">
               {githubTag}
@@ -312,7 +313,7 @@ export const AboutView = observer((props: AboutViewProps) => {
       {coding_languages && coding_languages.length > 0 && (
         <>
           <Divider />
-          <GrowRow style={{ paddingBottom: 0 }}>
+          <GrowRow data-testid="user-skills" style={{ paddingBottom: 0 }}>
             {coding_languages.map((c: any, i: number) => (
               <CodeBadge key={i}>{c.label}</CodeBadge>
             ))}
