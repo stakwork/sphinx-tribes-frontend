@@ -1665,16 +1665,15 @@ export class MainStore {
         }
       });
 
-      if (response.status) {
+      if (response?.status) {
         this.getPeopleBounties({
           resetPage: true,
           ...this.bountiesStatus,
           languages: this.bountyLanguages
         });
       }
-      return;
     } catch (e) {
-      console.log(e);
+      throw e;
     }
   }
 
