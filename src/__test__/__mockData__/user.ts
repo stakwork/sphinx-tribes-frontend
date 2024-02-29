@@ -15,7 +15,7 @@ export const user: MeInfo = {
   jwt: 'test_jwt',
   tribe_jwt: 'test_jwt',
   url: 'http://localhost:5002',
-  description: 'description',
+  description: 'description for user',
   verification_signature: 'test_verification_signature',
   extras: {
     email: [{ value: 'testEmail@sphinx.com' }],

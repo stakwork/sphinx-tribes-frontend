@@ -245,7 +245,7 @@ export const AboutView = observer((props: AboutViewProps) => {
     <Wrap>
       <D>
         {expand ? (
-          <DExpand>{renderMarkdown(description)}</DExpand>
+          <DExpand data-testid="user-description">{renderMarkdown(description)}</DExpand>
         ) : (
           <DCollapsed data-testid="user-description">{renderMarkdown(description)}</DCollapsed>
         )}
@@ -257,7 +257,9 @@ export const AboutView = observer((props: AboutViewProps) => {
       <Divider />
       <Row>
         <div>Price to Connect:</div>
-        <div style={{ fontWeight: 'bold', color: '#000' }}>{price_to_meet}</div>
+        <div data-testid="price-to-meet" style={{ fontWeight: 'bold', color: '#000' }}>
+          {price_to_meet}
+        </div>
       </Row>
 
       <Divider />
