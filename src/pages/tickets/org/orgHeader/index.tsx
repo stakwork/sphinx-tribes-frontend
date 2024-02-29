@@ -9,7 +9,6 @@ import { SearchBar } from '../../../../components/common/index.tsx';
 import { useStores } from '../../../../store';
 import { userCanManageBounty, filterCount } from '../../../../helpers';
 import addBounty from './Icons/addBounty.svg';
-import dropdown from './Icons/dropDownIcon.svg';
 import file from './Icons/file.svg';
 import githubIcon from './Icons/githubIcon.svg';
 
@@ -21,7 +20,6 @@ import {
   CompanyDescription,
   CompanyLabel,
   CompanyNameAndLink,
-  DropDownButton,
   EuiPopOverCheckbox,
   EuiPopOverCheckboxRight,
   FillContainer,
@@ -45,7 +43,8 @@ import {
   FilterCount,
   InnerContainer,
   Formatter,
-  SkillTextContainer
+  SkillTextContainer,
+  SkillInnerContainer
 } from './OrgHeaderStyles';
 
 const color = colors['light'];
@@ -313,18 +312,30 @@ export const OrgHeader = ({
               <EuiPopover
                 button={
                   <SkillTextContainer color={color}>
-                    <EuiText className="skillText">Skill</EuiText>
+                    <SkillInnerContainer>
+                      <EuiText className="skillText">Skill</EuiText>
+                      <Formatter>
+                        {skillCountNumber > 0 && (
+                          <FilterCount color={color}>
+                            <EuiText className="filterCountText">{skillCountNumber}</EuiText>
+                          </FilterCount>
+                        )}
+                      </Formatter>
+                      <div className="filterStatusIconContainer">
+                        <MaterialIcon
+                          data-testid="skillDropdown"
+                          onClick={handleClick}
+                          className="materialStatusIcon"
+                          icon={'keyboard_arrow_down'}
+                          style={{
+                            color: isStatusPopoverOpen ? color.grayish.G10 : ''
+                          }}
+                        />
+                      </div>
+                    </SkillInnerContainer>
                   </SkillTextContainer>
                 }
               />
-              {skillCountNumber > 0 && (
-                <FilterCount color={color}>
-                  <EuiText className="filterCountText">{skillCountNumber}</EuiText>
-                </FilterCount>
-              )}
-              <DropDownButton onClick={handleClick} data-testid="skillDropdown">
-                <Img src={dropdown} alt="" />
-              </DropDownButton>
               {filterClick ? (
                 <SkillFilter ref={filterRef} data-testid="skill-filter">
                   <InternalContainer>
