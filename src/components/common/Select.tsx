@@ -68,9 +68,9 @@ const DropdownOptions = styled.div<styleProps>`
   transition:
     max-height 0.15s ease-in-out,
     opacity 0.15s ease-in-out;
-  max-height: ${(props: styleProps) => (props.isOpen ? '300px' : '0')};
+  max-height: ${(props: styleProps) => (props.isOpen ? '150px' : '0')};
   opacity: ${(props: styleProps) => (props.isOpen ? '1' : '0')};
-  overflow: hidden;
+  overflow-y: auto;
   border-bottom-left-radius: 3px;
   border-bottom-right-radius: 3px;
 `;
@@ -98,18 +98,18 @@ export default function CustomSelect(props: SelProps) {
       }
     };
 
-    const handleScroll = () => {
-      if (isOpen) {
+    const handleScrollOutside = (event: any) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsOpen(false);
       }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
-    window.addEventListener('scroll', handleScroll, true); // true for capturing phase
+    document.addEventListener('scroll', handleScrollOutside, true);
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
-      window.removeEventListener('scroll', handleScroll, true);
+      document.removeEventListener('scroll', handleScrollOutside, true);
     };
   }, [isOpen, dropdownRef]);
 
