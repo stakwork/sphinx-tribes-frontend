@@ -140,4 +140,19 @@ describe('EditOrgModal Component', () => {
 
     expect(updatedDescriptionLength).toBe(initialDescriptionLength);
   });
+
+  test('Nothing happens if only spaces are entered in the Org Name', async () => {
+    render(<EditOrgModal {...props} />);
+
+    const orgNameInput = screen.getByLabelText(/Organization Name/i) as HTMLInputElement;
+    fireEvent.change(orgNameInput, { target: { value: '   ' } });
+
+    const saveChangesButton = screen.getByText('Save changes');
+    fireEvent.click(saveChangesButton);
+
+    await waitFor(() => {
+      expect(mockUpdateOrganization).not.toHaveBeenCalled();
+      expect(mockAddToast).not.toHaveBeenCalledWith('Successfully updated organization', 'success');
+    });
+  });
 });
