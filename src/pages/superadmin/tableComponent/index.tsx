@@ -347,7 +347,12 @@ export const MyTable = ({
                       Sort By:
                     </EuiText>
                     <div className="image">
-                      <EuiText className="filterText">
+                      <EuiText
+                        className="filterText"
+                        style={{
+                          color: isPopoverOpen ? color.grayish.G10 : ''
+                        }}
+                      >
                         {sortOrder === 'desc' ? 'Newest' : 'Oldest'}
                       </EuiText>
                       <MaterialIcon
