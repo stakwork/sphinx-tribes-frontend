@@ -65,6 +65,15 @@ const H = styled.div`
   color: rgb(60, 63, 65);
 `;
 
+const NoResult = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 20px;
+`;
+
 function BodyComponent() {
   const { main, ui } = useStores();
   const [selected, setSelected] = useState('');
@@ -263,20 +272,9 @@ function BodyComponent() {
                 <Tribe {...t} key={t.uuid} selected={selected === t.uuid} select={selectTribe} />
               ))
             ) : (
-              <>
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    width: '100%',
-                    marginTop: 20
-                  }}
-                >
-                  <H>No results</H>
-                </div>
-              </>
+              <NoResult>
+                <H>No results</H>
+              </NoResult>
             )}
           </div>
         </EuiFormFieldset>
