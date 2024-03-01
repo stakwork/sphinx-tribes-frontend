@@ -44,6 +44,29 @@ const StyledTagPopupWrapper = styled.div`
   }
 `;
 
+const H = styled.div`
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 37px;
+  letter-spacing: 0.1em;
+  text-align: center;
+
+  font-family: Roboto;
+  font-style: normal;
+  line-height: 26px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+
+  /* Primary Text 1 */
+
+  color: #292c33;
+  letter-spacing: 0px;
+  color: rgb(60, 63, 65);
+`;
+
+
 function BodyComponent() {
   const { main, ui } = useStores();
   const [selected, setSelected] = useState('');
@@ -242,7 +265,20 @@ function BodyComponent() {
                 <Tribe {...t} key={t.uuid} selected={selected === t.uuid} select={selectTribe} />
               ))
             ) : (
-              <NoResults />
+                <>
+                    <div
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            width: '100%',
+                            marginTop: 20
+                        }}
+                    >
+                        <H>No results</H>
+                    </div>
+                </>
             )}
           </div>
         </EuiFormFieldset>
