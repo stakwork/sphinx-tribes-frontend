@@ -312,7 +312,7 @@ export const OrgHeader = ({
               <EuiPopover
                 button={
                   <SkillTextContainer color={color}>
-                    <SkillInnerContainer>
+                    <SkillInnerContainer onClick={handleClick}>
                       <EuiText className="skillText">Skill</EuiText>
                       <Formatter>
                         {skillCountNumber > 0 && (
@@ -324,7 +324,6 @@ export const OrgHeader = ({
                       <div className="filterStatusIconContainer">
                         <MaterialIcon
                           data-testid="skillDropdown"
-                          onClick={handleClick}
                           className="materialStatusIcon"
                           icon={'keyboard_arrow_down'}
                           style={{
