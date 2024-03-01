@@ -12,7 +12,6 @@ import { observer } from 'mobx-react-lite';
 import { useStores } from '../../store';
 import { useIsMobile, usePageScroll } from '../../hooks';
 import { SearchTextInput } from '../../components/common';
-import NoResults from '../../people/utils/NoResults';
 import PageLoadSpinner from '../../people/utils/PageLoadSpinner';
 import { colors } from '../../config/colors';
 import tags from './tags';
