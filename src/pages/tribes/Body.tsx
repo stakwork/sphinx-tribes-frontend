@@ -58,8 +58,6 @@ const H = styled.div`
   align-items: center;
   text-align: center;
 
-  /* Primary Text 1 */
-
   color: #292c33;
   letter-spacing: 0px;
   color: rgb(60, 63, 65);
