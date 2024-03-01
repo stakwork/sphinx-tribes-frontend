@@ -446,4 +446,46 @@ describe('MobileView component', () => {
       await waitFor(() => expect(screen.getByText('complete')));
     })();
   });
+
+  it('displays the confirmation screen when the "Pay Bounty" button is clicked', () => {
+    const props: CodingBountiesProps = {
+      ...defaultProps,
+      creatorStep: 0,
+      paid: false,
+      isAssigned: true
+    };
+
+    const { getByText, queryByText } = render(<MobileView {...props} />);
+
+    const payBountyButton = getByText('Pay Bounty');
+    fireEvent.click(payBountyButton);
+
+    expect(getByText('Are you sure you want to')).toBeInTheDocument();
+    expect(queryByText('Pay this Bounty?')).toBeInTheDocument();
+  });
+
+  it('marks the bounty as paid when the confirmation screen "Yes" button is clicked', async () => {
+    const mockSetPaid = jest.fn();
+    const props: CodingBountiesProps = {
+      ...defaultProps,
+      creatorStep: 0,
+      paid: false,
+      isAssigned: true
+    };
+
+    uiStore.setMeInfo({
+      ...user,
+      owner_alias: props.person.owner_alias
+    });
+
+    const { getByText } = render(<MobileView {...props} />);
+
+    const payBountyButton = getByText('Pay Bounty');
+    fireEvent.click(payBountyButton);
+
+    const yesButton = getByText('Yes');
+    fireEvent.click(yesButton);
+
+    expect(mockSetPaid).toHaveBeenCalledWith(true);
+  });
 });

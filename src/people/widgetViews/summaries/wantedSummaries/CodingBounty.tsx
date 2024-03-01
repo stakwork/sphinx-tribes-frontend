@@ -5,7 +5,8 @@ import { observer } from 'mobx-react-lite';
 import moment from 'moment';
 import { isInvoiceExpired, userCanManageBounty } from 'helpers';
 import { SOCKET_MSG, createSocketInstance } from 'config/socket';
-import { Button, Divider, Modal } from '../../../../components/common';
+import { Box } from '@mui/system';
+import { Button, Divider, Modal, usePaymentConfirmationModal } from '../../../../components/common';
 import { colors } from '../../../../config/colors';
 import { renderMarkdown } from '../../../utils/RenderMarkdown';
 import { satToUsd } from '../../../../helpers';
@@ -379,6 +380,23 @@ function MobileView(props: CodingBountiesProps) {
   const hasAccess = isOwner || userBountyRole;
   const payBountyDisable = !isOwner && !userBountyRole;
 
+  const { openPaymentConfirmation } = usePaymentConfirmationModal();
+
+  const confirmPaymentHandler = () => {
+    console.log('here');
+    openPaymentConfirmation({
+      onConfirmPayment: makePayment,
+      children: (
+        <Box fontSize={20} textAlign="center">
+          Are you sure you want to <br />
+          <Box component="span" fontWeight="500">
+            Pay this Bounty?
+          </Box>
+        </Box>
+      )
+    });
+  };
+
   useEffect(() => {
     setPaidStatus(paid);
   }, [paid]);
@@ -444,7 +462,7 @@ function MobileView(props: CodingBountiesProps) {
               }}
               hovercolor={color.button_secondary.hover}
               shadowcolor={color.button_secondary.shadow}
-              onClick={makePayment}
+              onClick={confirmPaymentHandler}
             />
           )
         }
@@ -736,7 +754,7 @@ function MobileView(props: CodingBountiesProps) {
                           iconSize={14}
                           width={220}
                           height={48}
-                          onClick={makePayment}
+                          onClick={confirmPaymentHandler}
                           style={{ marginTop: '30px', marginBottom: '-20px', textAlign: 'left' }}
                           text="Pay Bounty"
                           ButtonTextStyle={{ padding: 0 }}

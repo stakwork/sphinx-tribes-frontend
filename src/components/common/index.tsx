@@ -22,6 +22,7 @@ export * from './BaseModal';
 export * from './DeleteConfirmationModal';
 export * from './AfterDeleteNotification';
 export * from './ButtonContainer';
+export * from './PaymentConfirmationModal';
 
 export {
   SearchableSelect,
