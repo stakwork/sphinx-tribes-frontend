@@ -189,6 +189,7 @@ export interface QueryParams {
   resetPage?: boolean;
   languages?: string;
   org_uuid?: string;
+  provider?: string;
 }
 
 export interface ClaimOnLiquid {

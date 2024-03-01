@@ -402,3 +402,115 @@ export const Paragraph = styled.div`
 export const PaginationImg = styled.img`
   cursor: pointer;
 `;
+
+export const ProviderContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+`;
+
+export const ProvidersListContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 1.875rem;
+  max-height: 16rem;
+  overflow-y: auto;
+`;
+
+export const ProviderContianer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+`;
+
+export const ProviderInfo = styled.div`
+  display: flex;
+  align-items: center;
+  opacity: 1;
+`;
+
+export const ProviderImg = styled.img`
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  margin-right: 0.63rem;
+  object-fit: cover;
+`;
+
+export const Providername = styled.p`
+  color: #3c3f41;
+  font-family: 'Barlow';
+  font-size: 0.8125rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1rem;
+  margin-bottom: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+`;
+
+export const Checkbox = styled.input.attrs({ type: 'checkbox' })`
+  width: 1rem;
+  height: 1rem;
+`;
+
+export const HorizontalGrayLine = styled.div`
+  width: 100%;
+  height: 2px;
+  background-color: #edecec;
+  content: '';
+  margin: auto;
+`;
+
+export const FooterContainer = styled.div`
+  display: flex;
+  padding: 1.125rem 1.875rem;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const ClearButton = styled.button`
+  width: 112px;
+  padding: 8px 16px;
+  height: 40px;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  border-radius: 6px;
+  border: 1px solid var(--Input-Outline-1, #d0d5d8);
+  background: var(--White, #fff);
+  box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.06);
+  margin-right: 10px;
+`;
+
+export const ClearText = styled.p`
+  color: var(--Main-bottom-icons, #5f6368);
+  text-align: center;
+  font-family: 'Barlow', sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 0px; /* 0% */
+  letter-spacing: 0.14px;
+  margin-top: 10px;
+`;
+
+export const ApplyButton = styled.button`
+  display: flex;
+  width: 112px;
+  height: 40px;
+  padding: 8px 16px;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  outline: none;
+  border-radius: 6px;
+  background: var(--Primary-blue, #618aff);
+  box-shadow: 0px 2px 10px 0px rgba(97, 138, 255, 0.5);
+  color: white;
+`;

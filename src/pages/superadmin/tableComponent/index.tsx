@@ -41,7 +41,19 @@ import {
   BoxImage,
   DateFilterWrapper,
   DateFilterContent,
-  PaginationImg
+  PaginationImg,
+  ProviderContainer,
+  ProvidersListContainer,
+  ProviderContianer,
+  ProviderInfo,
+  ProviderImg,
+  Providername,
+  Checkbox,
+  HorizontalGrayLine,
+  FooterContainer,
+  ClearButton,
+  ClearText,
+  ApplyButton
 } from './TableStyle';
 
 interface styledProps {
@@ -65,6 +77,11 @@ export interface TableProps {
   setCurrentPage?: React.Dispatch<React.SetStateAction<number>>;
   activeTabs: number[];
   setActiveTabs: React.Dispatch<React.SetStateAction<number[]>>;
+  providers?: any[];
+  providersCheckboxSelected?: Bounty[];
+  handleProviderSelection?: (provider: Bounty) => void;
+  handleClearButtonClick?: () => void;
+  handleApplyButtonClick?: () => void;
 }
 
 interface ImageWithTextProps {
@@ -261,9 +278,15 @@ export const MyTable = ({
   activeTabs,
   setActiveTabs,
   totalBounties,
-  paginationLimit
+  paginationLimit,
+  providers,
+  providersCheckboxSelected,
+  handleProviderSelection,
+  handleClearButtonClick,
+  handleApplyButtonClick
 }: TableProps) => {
   const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
+  const [isProviderPopoverOpen, setIsProviderPopoverOpen] = useState<boolean>(false);
   const onButtonClick = () => setIsPopoverOpen((isPopoverOpen: any) => !isPopoverOpen);
   const closePopover = () => setIsPopoverOpen(false);
 
@@ -272,6 +295,23 @@ export const MyTable = ({
     setIsStatusPopoverOpen((isPopoverOpen: any) => !isPopoverOpen);
   };
   const closeStatusPopover = () => setIsStatusPopoverOpen(false);
+
+  const onProviderButtonClick = async () => {
+    setIsProviderPopoverOpen((isProviderPopoverOpen: any) => !isProviderPopoverOpen);
+  };
+  const closeProviderPopover = () => setIsProviderPopoverOpen(false);
+
+  const handleClearClick = () => {
+    if (handleClearButtonClick) {
+      handleClearButtonClick();
+    }
+  };
+
+  const handleApplyClick = () => {
+    if (handleApplyButtonClick) {
+      handleApplyButtonClick();
+    }
+  };
 
   const paginateNext = () => {
     const activeTab = paginationLimit > visibleTabs;
@@ -335,6 +375,92 @@ export const MyTable = ({
           </BountyHeader>
           <Options>
             <FlexDiv>
+              <EuiPopover
+                button={
+                  <StatusContainer onClick={onProviderButtonClick} color={color}>
+                    <EuiText
+                      className="statusText"
+                      style={{
+                        color: isProviderPopoverOpen ? color.grayish.G10 : ''
+                      }}
+                    >
+                      Provider:
+                    </EuiText>
+                    <div className="filterStatusIconContainer">
+                      <MaterialIcon
+                        className="materialStatusIcon"
+                        icon={`${
+                          isProviderPopoverOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down'
+                        }`}
+                        style={{
+                          color: isProviderPopoverOpen ? color.grayish.G10 : ''
+                        }}
+                      />
+                    </div>
+                  </StatusContainer>
+                }
+                panelStyle={{
+                  border: 'none',
+                  boxShadow: `0px 1px 20px ${color.black90}`,
+                  background: `${color.pureWhite}`,
+                  borderRadius: '0px 0px 6px 6px',
+                  marginTop: '0px',
+                  marginLeft: '20px'
+                }}
+                isOpen={isProviderPopoverOpen}
+                closePopover={closeProviderPopover}
+                panelPaddingSize="none"
+                anchorPosition="downLeft"
+              >
+                <ProviderContainer>
+                  <ProvidersListContainer>
+                    {providers && providers.length > 0 ? (
+                      providers.map((provider: Bounty) => (
+                        <ProviderContianer key={provider.owner_id}>
+                          <ProviderInfo>
+                            <ProviderImg
+                              src={provider.owner_img || `/static/person_placeholder.png`}
+                              alt="provider"
+                            />
+                            <Providername>
+                              {provider.owner_alias || provider.owner_pubkey}
+                            </Providername>
+                          </ProviderInfo>
+                          <Checkbox
+                            type="checkbox"
+                            name={provider.owner_alias}
+                            checked={
+                              providersCheckboxSelected &&
+                              providersCheckboxSelected.some(
+                                (p: Bounty) => p.owner_id === provider.owner_id
+                              )
+                            }
+                            onChange={() =>
+                              handleProviderSelection && handleProviderSelection(provider)
+                            }
+                          />
+                        </ProviderContianer>
+                      ))
+                    ) : (
+                      <p>No provider with such alias</p>
+                    )}
+                  </ProvidersListContainer>
+                  <HorizontalGrayLine />
+                  <FooterContainer>
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'row'
+                      }}
+                    >
+                      <ClearButton onClick={handleClearClick}>
+                        <ClearText>Clear</ClearText>
+                      </ClearButton>
+                      <ApplyButton onClick={handleApplyClick}>Apply</ApplyButton>
+                    </div>
+                  </FooterContainer>
+                </ProviderContainer>
+              </EuiPopover>
               <EuiPopover
                 button={
                   <DateFilterWrapper onClick={onButtonClick} color={color}>

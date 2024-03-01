@@ -15,4 +15,9 @@ export type Bounty = {
   status: string;
   assignee_alias: string;
   paid: boolean;
+  owner_id?: string;
+  owner_img?: string;
+  owner_unique_name?: string;
+  owner_alias?: string;
+  owner_pubkey?: string;
 };

@@ -15,6 +15,7 @@ import { Statistics } from './statistics';
 import AdminAccessDenied from './accessDenied';
 import { normalizeMetrics } from './utils/metrics';
 import { pageSize, visibleTabs } from './constants.ts';
+import { Bounty } from './tableComponent/interfaces.ts';
 
 const Container = styled.body`
   height: 100vh; /* Set a fixed height for the container */
@@ -46,6 +47,9 @@ export const SuperAdmin = () => {
   const [loading, setLoading] = useState(false);
   const [activeTabs, setActiveTabs] = useState<number[]>([]);
   const [totalBounties, setTotalBounties] = useState(0);
+  const [providers, setProviders] = useState<any[]>([]);
+  const [providersCheckboxSelected, setProvidersCheckboxSelected] = useState<Bounty[]>([]);
+  const [selectedProviders, setSelectedProviders] = useState<string>('');
 
   /**
    * Todo use the same date range,
@@ -84,10 +88,21 @@ export const SuperAdmin = () => {
             page: currentPage,
             resetPage: true,
             ...checkboxIdToSelectedMap,
-            direction: sortOrder
+            direction: sortOrder,
+            provider: selectedProviders
           }
         );
         setBounties(bounties);
+
+        const providersMap: Record<string, Bounty> = {};
+        bounties.forEach((bounty: Bounty) => {
+          if (bounty.owner_id && !providersMap[bounty.owner_id]) {
+            providersMap[bounty.owner_id] = bounty;
+          }
+        });
+
+        const providers = Object.values(providersMap);
+        setProviders(providers);
       } catch (error) {
         // Handle errors if any
         console.error('Error fetching total bounties:', error);
@@ -96,7 +111,15 @@ export const SuperAdmin = () => {
         setLoading(false);
       }
     }
-  }, [main, startDate, endDate, checkboxIdToSelectedMap, sortOrder, currentPage]);
+  }, [
+    main,
+    startDate,
+    endDate,
+    checkboxIdToSelectedMap,
+    sortOrder,
+    currentPage,
+    selectedProviders
+  ]);
 
   useEffect(() => {
     getBounties();
@@ -110,6 +133,35 @@ export const SuperAdmin = () => {
       }
     };
     setCheckboxIdToSelectedMap(newCheckboxIdToSelectedMap);
+  };
+
+  const handleProviderSelection = (provider: Bounty) => {
+    if (providersCheckboxSelected.some((p: Bounty) => p.owner_id === provider.owner_id)) {
+      setProvidersCheckboxSelected(
+        providersCheckboxSelected.filter((p: Bounty) => p.owner_id !== provider.owner_id)
+      );
+    } else {
+      setProvidersCheckboxSelected([...providersCheckboxSelected, provider]);
+    }
+  };
+
+  const handleClearButtonClick = () => {
+    setSelectedProviders('');
+    setProvidersCheckboxSelected([]);
+  };
+
+  const handleApplyButtonClick = () => {
+    const selectedProviders: string = providers
+      .filter((provider: Bounty) => {
+        return providersCheckboxSelected.find(
+          (providersCheckboxSelected: Bounty) =>
+            providersCheckboxSelected.owner_id === provider.owner_id
+        );
+      })
+      .map((provider: Bounty) => provider.owner_id)
+      .join(',');
+
+    setSelectedProviders(selectedProviders);
   };
 
   const getMetrics = useCallback(async () => {
@@ -138,19 +190,23 @@ export const SuperAdmin = () => {
           String(endDate),
           {
             ...checkboxIdToSelectedMap,
-            direction: sortOrder
+            direction: sortOrder,
+            provider: selectedProviders
           }
         );
         setTotalBounties(totalBounties);
       } else {
         const totalBounties = await main.getBountiesCountByRange(
           String(startDate),
-          String(endDate)
+          String(endDate),
+          {
+            provider: selectedProviders
+          }
         );
         setTotalBounties(totalBounties);
       }
     }
-  }, [main, startDate, endDate, checkboxIdToSelectedMap]);
+  }, [main, startDate, endDate, checkboxIdToSelectedMap, selectedProviders]);
 
   useEffect(() => {
     getTotalBounties();
@@ -203,6 +259,11 @@ export const SuperAdmin = () => {
               setCurrentPage={setCurrentPage}
               activeTabs={activeTabs}
               setActiveTabs={setActiveTabs}
+              providers={providers}
+              providersCheckboxSelected={providersCheckboxSelected}
+              handleProviderSelection={handleProviderSelection}
+              handleClearButtonClick={handleClearButtonClick}
+              handleApplyButtonClick={handleApplyButtonClick}
             />
           )}
         </Container>
