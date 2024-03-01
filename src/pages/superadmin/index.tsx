@@ -101,8 +101,14 @@ export const SuperAdmin = () => {
           }
         });
 
-        const providers = Object.values(providersMap);
-        setProviders(providers);
+        const providersData = Object.values(providersMap);
+
+        const newProviders = providersData.filter(
+          (bounty: Bounty) =>
+            !providers.some((provider: Bounty) => provider.owner_id === bounty.owner_id)
+        );
+
+        setProviders((prevProviders: Bounty[]) => [...prevProviders, ...newProviders]);
       } catch (error) {
         // Handle errors if any
         console.error('Error fetching total bounties:', error);
@@ -152,12 +158,12 @@ export const SuperAdmin = () => {
 
   const handleApplyButtonClick = () => {
     const selectedProviders: string = providers
-      .filter((provider: Bounty) => {
-        return providersCheckboxSelected.find(
+      .filter((provider: Bounty) =>
+         providersCheckboxSelected.find(
           (providersCheckboxSelected: Bounty) =>
             providersCheckboxSelected.owner_id === provider.owner_id
-        );
-      })
+        )
+      )
       .map((provider: Bounty) => provider.owner_id)
       .join(',');
 
