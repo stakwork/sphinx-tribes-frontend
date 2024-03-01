@@ -159,7 +159,7 @@ export const SuperAdmin = () => {
   const handleApplyButtonClick = () => {
     const selectedProviders: string = providers
       .filter((provider: Bounty) =>
-         providersCheckboxSelected.find(
+        providersCheckboxSelected.find(
           (providersCheckboxSelected: Bounty) =>
             providersCheckboxSelected.owner_id === provider.owner_id
         )
