@@ -465,7 +465,15 @@ describe('MobileView component', () => {
   });
 
   it('marks the bounty as paid when the confirmation screen "Yes" button is clicked', async () => {
-    const mockSetPaid = jest.fn();
+    const mockOpenPaymentConfirmation = jest.fn();
+    const mockMakePayment = jest.fn();
+
+    jest.mock('../../../../components/common', () => ({
+      usePaymentConfirmationModal: () => ({
+        openPaymentConfirmation: mockOpenPaymentConfirmation
+      })
+    }));
+
     const props: CodingBountiesProps = {
       ...defaultProps,
       creatorStep: 0,
@@ -483,9 +491,12 @@ describe('MobileView component', () => {
     const payBountyButton = getByText('Pay Bounty');
     fireEvent.click(payBountyButton);
 
-    const yesButton = getByText('Yes');
-    fireEvent.click(yesButton);
+    expect(mockOpenPaymentConfirmation).toHaveBeenCalled();
+    const confirmPaymentHandler = mockOpenPaymentConfirmation.mock.calls[0][0].onConfirmPayment;
+    confirmPaymentHandler();
 
-    expect(mockSetPaid).toHaveBeenCalledWith(true);
+    await waitFor(() => {
+      expect(mockMakePayment).toHaveBeenCalled();
+    });
   });
 });
