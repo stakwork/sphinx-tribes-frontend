@@ -91,9 +91,7 @@ export default function TextAreaInput({
   const color = colors['light'];
   if (error) labeltext = `${labeltext} (${error})`;
   const [active, setActive] = useState<boolean>(false);
-  const normalizeAndTrimText = (text: string) => {
-    return text.split('\n').join('\n');
-  };
+  const normalizeAndTrimText = (text: string) => text.split('\n').join('\n');
 
   const handleTextChange = (e: any) => {
     const newText = normalizeAndTrimText(e.target.value.trimStart());

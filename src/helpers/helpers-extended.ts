@@ -384,9 +384,7 @@ export const formatPercentage = (value?: number): string => {
   return '0';
 };
 
-export const normalizeInput = (input: string) => {
-  return input.replace(/\s+/g, ' ').trim();
-};
+export const normalizeInput = (input: string) => input.replace(/\s+/g, ' ').trim();
 
 export const normalizeTextValue = (textValue: string): string => {
   const processedLines = textValue.split('\n').map((line) => line.replace(/\s+/g, ' ').trim());
