@@ -1586,8 +1586,8 @@ export class MainStore {
               title: 'Failed to update profile'
             }
           ]);
-					throw new Error("Update failed. Please try again.");
-				}
+          throw new Error('Update failed. Please try again.');
+        }
 
         // first time profile makers will need this on first login
         if (!body.id) {
