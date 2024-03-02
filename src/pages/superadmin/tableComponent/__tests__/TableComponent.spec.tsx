@@ -22,7 +22,7 @@ const defaultTabs: number[] = [1, 2, 3, 4, 5, 6, 7];
 const activeTabs = defaultTabs;
 const setActiveTabs = jest.fn();
 const onChangeFilterByDateMock = jest.fn();
-const clickApply = jest.fn()
+const clickApply = jest.fn();
 
 const mockBounties: Bounty[] = [
   {
@@ -433,8 +433,8 @@ describe('MyTable Component', () => {
       });
     })();
   });
- 
-  //Leaved in comments for futures tests 
+
+  //Leaved in comments for futures tests
 
   /* it('renders bounties with Open status when "Open" filter is selected', async () => {
     const Wrapper = () => {
@@ -602,59 +602,44 @@ describe('MyTable Component', () => {
   });
 
   it('filter by Open bounties after click apply', async () => {
-    render (
-      <MyTable 
-        {...MockTableProps}
-      />
-    )
+    render(<MyTable {...MockTableProps} />);
 
-    fireEvent.click(screen.getByText('Status:'))
+    fireEvent.click(screen.getByText('Status:'));
 
     userEvent.click(screen.getByText('Open'));
 
-    fireEvent.click(screen.getByText('Apply'))
+    fireEvent.click(screen.getByText('Apply'));
 
     waitFor(() => {
       expect(screen.getByText('Bounty 2')).toBeInTheDocument();
-    }) 
-
-  })
+    });
+  });
 
   it('filter by Paid bounties after click apply', async () => {
-    render (
-      <MyTable 
-        {...MockTableProps}
-      />
-    )
+    render(<MyTable {...MockTableProps} />);
 
-    fireEvent.click(screen.getByText('Status:'))
+    fireEvent.click(screen.getByText('Status:'));
 
     userEvent.click(screen.getByText('Paid'));
 
-    fireEvent.click(screen.getByText('Apply'))
+    fireEvent.click(screen.getByText('Apply'));
 
     waitFor(() => {
       expect(screen.getByText('Bounty 1')).toBeInTheDocument();
-    }) 
-
-  })
+    });
+  });
 
   it('filter by Assigned bounties after click apply', async () => {
-    render (
-      <MyTable 
-        {...MockTableProps}
-      />
-    )
+    render(<MyTable {...MockTableProps} />);
 
-    fireEvent.click(screen.getByText('Status:'))
+    fireEvent.click(screen.getByText('Status:'));
 
     userEvent.click(screen.getByText('Assigned'));
 
-    fireEvent.click(screen.getByText('Apply'))
+    fireEvent.click(screen.getByText('Apply'));
 
     waitFor(() => {
       expect(screen.getByText('Bounty 3')).toBeInTheDocument();
-    }) 
-
-  })
+    });
+  });
 });
