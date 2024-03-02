@@ -1,14 +1,14 @@
-import { makeAutoObservable, observable, action } from 'mobx';
-import memo from 'memo-decorator';
-import { persist } from 'mobx-persist';
 import { uniqBy } from 'lodash';
+import memo from 'memo-decorator';
+import { action, makeAutoObservable, observable } from 'mobx';
+import { persist } from 'mobx-persist';
 import api from '../api';
 import { Extras } from '../components/form/inputs/widgets/interfaces';
 import { getHostIncludingDockerHosts } from '../config/host';
-import { randomString } from '../helpers';
 import { TribesURL } from '../config/host';
-import { uiStore } from './ui';
+import { randomString } from '../helpers';
 import { getUserAvatarPlaceholder } from './lib';
+import { uiStore } from './ui';
 
 export const queryLimitTribes = 100;
 export const queryLimit = 10;
@@ -362,7 +362,7 @@ export class MainStore {
     const info = uiStore.meInfo;
 
     if (uniqueName) {
-      b.forEach(function (t: Bot, i: number) {
+      b.forEach((t: Bot, i: number) => {
         if (t.unique_name === uniqueName) {
           b.splice(i, 1);
           b.unshift(t);
@@ -1565,7 +1565,6 @@ export class MainStore {
     if (!body) return; // avoid saving bad state
 
     if (body.price_to_meet) body.price_to_meet = parseInt(body.price_to_meet); // must be an int
-
     try {
       if (this.lnToken) {
         const r = await this.saveBountyPerson(body);
@@ -1580,6 +1579,15 @@ export class MainStore {
         const [r, error] = await this.doCallToRelay('POST', 'profile', body);
         if (error) throw error;
         if (!r) return;
+        if (!r.ok) {
+          uiStore.setToasts([
+            {
+              id: '1',
+              title: 'Failed to update profile'
+            }
+          ]);
+					throw new Error("Update failed. Please try again.");
+				}
 
         // first time profile makers will need this on first login
         if (!body.id) {
