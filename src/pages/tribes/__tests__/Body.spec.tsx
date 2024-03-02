@@ -143,4 +143,32 @@ describe('Tribes Body Component', () => {
       });
     });
   });
+
+  test('content element has justifyContent and alignItems centered', async () => {
+    (useStores as jest.Mock).mockReturnValue({
+      main: {
+        tribes: [],
+        getTribes: jest.fn()
+      },
+      ui: {
+        peoplePageNumber: 1,
+        searchText: 'abc',
+        tags: []
+      }
+    });
+
+    (useFuse as jest.Mock).mockReturnValue([]);
+
+    const { getByTestId } = render(<Body />);
+
+    const contentElement = getByTestId('content');
+
+    expect(contentElement).toBeInTheDocument();
+
+    const styles = window.getComputedStyle(contentElement);
+    const { justifyContent, alignItems } = styles;
+
+    expect(justifyContent).toEqual('center');
+    expect(alignItems).toEqual('center');
+  });
 });
