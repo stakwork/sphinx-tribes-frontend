@@ -255,7 +255,7 @@ export const DateFilterWrapper = styled.div<styledProps>`
     }
   }
   .filterText {
-    color: var(--Main-bottom-icons, var(--Hover-Icon-Color, #5f6368));
+    color: ${(p: any) => p.color && p.color.grayish.G200};
     font-family: Barlow;
     font-size: 15px;
     font-style: normal;
