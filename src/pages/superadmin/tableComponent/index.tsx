@@ -132,6 +132,24 @@ export const TextInColorBox = ({ status }: TextInColorBoxProps) => (
   </>
 );
 
+const ApplyButton = styled.button`
+  display: flex;
+  width: 112px;
+  height: 25px;
+  margin: 10px;
+  margin-left: 0px;
+  padding: 10px 16px;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  outline: none;
+  border-radius: 6px;
+  background: var(--Primary-blue, #618aff);
+  box-shadow: 0px 2px 10px 0px rgba(97, 138, 255, 0.5);
+  color: white;
+`;
+
 const EuiPopOverCheckbox = styled.div<styledProps>`
   width: 147px;
   height: auto;
@@ -183,23 +201,6 @@ const EuiPopOverCheckbox = styled.div<styledProps>`
       }
     }
   }
-`;
-
-const ApplyButton = styled.button`
-  display: flex;
-  width: 112px;
-  height: 40px;
-  padding: 8px 16px;
-  margin: 15px, 10px;
-  justify-content: center;
-  align-items: center;
-  gap: 6px;
-  border: none;
-  outline: none;
-  border-radius: 6px;
-  background: var(--Primary-blue, #618aff);
-  box-shadow: 0px 2px 10px 0px rgba(97, 138, 255, 0.5);
-  color: white;
 `;
 
 const StatusContainer = styled.div<styledProps>`
