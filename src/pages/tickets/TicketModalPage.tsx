@@ -101,7 +101,11 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
     if (activeOrg) {
       try {
         const bountyId = await main.getOrganizationNextBountyByCreated(activeOrg, created);
-        history.replace(`/bounty/${bountyId}`);
+        if (bountyId === 0) {
+          console.log('end of the list');
+        } else {
+          history.replace(`/bounty/${bountyId}`);
+        }
       } catch (e) {
         console.error(e);
       }
@@ -120,7 +124,11 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
     if (activeOrg) {
       try {
         const bountyId = await main.getOrganizationPreviousBountyByCreated(activeOrg, created);
-        history.replace(`/bounty/${bountyId}`);
+        if (bountyId === 0) {
+          console.log('end of the list');
+        } else {
+          history.replace(`/bounty/${bountyId}`);
+        }
       } catch (e) {
         console.error(e);
       }

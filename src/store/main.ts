@@ -1877,27 +1877,9 @@ export class MainStore {
     this.activeOrg = org;
   }
 
-  async getOrganizationNextBountyByCreated(org_uuid: string, bountyId: string): Promise<number> {
+  async getOrganizationNextBountyByCreated(org_uuid: string, created: number): Promise<number> {
     try {
-      const params = { languages: this.bountyLanguages, ...this.orgBountiesStatus };
-
-      const queryParams: QueryParams = {
-        limit: queryLimit,
-        sortBy: 'created',
-        search: uiStore.searchText ?? '',
-        page: 1,
-        resetPage: false,
-        ...params
-      };
-
-      // if we don't pass the params, we should use previous params for invalidate query
-      const query = this.appendQueryParams(
-        `gobounties/org/next/${org_uuid}/${bountyId}`,
-        queryLimit,
-        queryParams
-      );
-
-      const bounty = await api.get(query);
+      const bounty = await api.get(`gobounties/org/next/${org_uuid}/${created}`);
       return bounty;
     } catch (e) {
       console.log('fetch failed getOrganizationNextBountyById: ', e);
@@ -1905,30 +1887,9 @@ export class MainStore {
     }
   }
 
-  async getOrganizationPreviousBountyByCreated(
-    org_uuid: string,
-    bountyId: string
-  ): Promise<number> {
+  async getOrganizationPreviousBountyByCreated(org_uuid: string, created: number): Promise<number> {
     try {
-      const params = { languages: this.bountyLanguages, ...this.orgBountiesStatus };
-
-      const queryParams: QueryParams = {
-        limit: queryLimit,
-        sortBy: 'created',
-        search: uiStore.searchText ?? '',
-        page: 1,
-        resetPage: false,
-        ...params
-      };
-
-      // if we don't pass the params, we should use previous params for invalidate query
-      const query = this.appendQueryParams(
-        `gobounties/org/previous/${org_uuid}/${bountyId}`,
-        queryLimit,
-        queryParams
-      );
-
-      const bounty = await api.get(query);
+      const bounty = await api.get(`gobounties/org/previous/${org_uuid}/${created}`);
       return bounty;
     } catch (e) {
       console.log('fetch failed getOrganizationPreviousBountyById: ', e);
