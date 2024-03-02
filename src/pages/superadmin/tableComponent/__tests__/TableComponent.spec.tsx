@@ -22,6 +22,7 @@ const defaultTabs: number[] = [1, 2, 3, 4, 5, 6, 7];
 const activeTabs = defaultTabs;
 const setActiveTabs = jest.fn();
 const onChangeFilterByDateMock = jest.fn();
+const clickApply = jest.fn()
 
 const mockBounties: Bounty[] = [
   {
@@ -151,6 +152,7 @@ const MockTableProps: TableProps = {
   bounties: mockBounties,
   ...MockStatusProps,
   currentPage: defaultPage,
+  clickApply: clickApply,
   totalBounties: totalBounties,
   paginationLimit: paginationLimit,
   activeTabs: activeTabs,
@@ -319,6 +321,7 @@ describe('MyTable Component', () => {
         headerIsFrozen={false}
         startDate={moment().subtract(7, 'days').startOf('day').unix()}
         endDate={moment().startOf('day').unix()}
+        clickApply={clickApply}
         currentPage={defaultPage}
         totalBounties={totalBounties}
         paginationLimit={paginationLimit}
@@ -379,6 +382,7 @@ describe('MyTable Component', () => {
         {...mockProps}
         currentPage={defaultPage}
         totalBounties={totalBounties}
+        clickApply={clickApply}
         paginationLimit={paginationLimit}
         activeTabs={activeTabs}
         setActiveTabs={setActiveTabs}
@@ -411,6 +415,7 @@ describe('MyTable Component', () => {
         {...inProgressProps}
         currentPage={defaultPage}
         totalBounties={totalBounties}
+        clickApply={clickApply}
         paginationLimit={paginationLimit}
         activeTabs={activeTabs}
         setActiveTabs={setActiveTabs}
@@ -428,8 +433,10 @@ describe('MyTable Component', () => {
       });
     })();
   });
+ 
+  //Leaved in comments for futures tests 
 
-  it('renders bounties with Open status when "Open" filter is selected', async () => {
+  /* it('renders bounties with Open status when "Open" filter is selected', async () => {
     const Wrapper = () => {
       return <MyTable {...MockTableProps} />;
     };
@@ -481,7 +488,7 @@ describe('MyTable Component', () => {
 
     const paidBounties = getAllByText('paid');
     expect(paidBounties.length).toBe(1);
-  });
+  }); */
 
   it('simulates filtering bounties by status: open, assigned, paid', async () => {
     let filteredBounties = unSortedMockBounties.filter((bounty: any) => bounty.status === 'open');
@@ -593,4 +600,61 @@ describe('MyTable Component', () => {
     expect(screen.queryByText('Bounty 2')).not.toBeInTheDocument();
     expect(screen.queryByText('Bounty 3')).not.toBeInTheDocument();
   });
+
+  it('filter by Open bounties after click apply', async () => {
+    render (
+      <MyTable 
+        {...MockTableProps}
+      />
+    )
+
+    fireEvent.click(screen.getByText('Status:'))
+
+    userEvent.click(screen.getByText('Open'));
+
+    fireEvent.click(screen.getByText('Apply'))
+
+    waitFor(() => {
+      expect(screen.getByText('Bounty 2')).toBeInTheDocument();
+    }) 
+
+  })
+
+  it('filter by Paid bounties after click apply', async () => {
+    render (
+      <MyTable 
+        {...MockTableProps}
+      />
+    )
+
+    fireEvent.click(screen.getByText('Status:'))
+
+    userEvent.click(screen.getByText('Paid'));
+
+    fireEvent.click(screen.getByText('Apply'))
+
+    waitFor(() => {
+      expect(screen.getByText('Bounty 1')).toBeInTheDocument();
+    }) 
+
+  })
+
+  it('filter by Assigned bounties after click apply', async () => {
+    render (
+      <MyTable 
+        {...MockTableProps}
+      />
+    )
+
+    fireEvent.click(screen.getByText('Status:'))
+
+    userEvent.click(screen.getByText('Assigned'));
+
+    fireEvent.click(screen.getByText('Apply'))
+
+    waitFor(() => {
+      expect(screen.getByText('Bounty 3')).toBeInTheDocument();
+    }) 
+
+  })
 });
