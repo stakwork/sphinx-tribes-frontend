@@ -9,7 +9,6 @@ import { SearchBar } from '../../../../components/common/index.tsx';
 import { useStores } from '../../../../store';
 import { userCanManageBounty, filterCount } from '../../../../helpers';
 import addBounty from './Icons/addBounty.svg';
-import dropdown from './Icons/dropDownIcon.svg';
 import file from './Icons/file.svg';
 import githubIcon from './Icons/githubIcon.svg';
 
@@ -21,11 +20,9 @@ import {
   CompanyDescription,
   CompanyLabel,
   CompanyNameAndLink,
-  DropDownButton,
   EuiPopOverCheckbox,
   EuiPopOverCheckboxRight,
   FillContainer,
-  FilterLabel,
   Filters,
   FiltersRight,
   Header,
@@ -45,7 +42,9 @@ import {
   UrlButtonContainer,
   FilterCount,
   InnerContainer,
-  Formatter
+  Formatter,
+  SkillTextContainer,
+  SkillInnerContainer
 } from './OrgHeaderStyles';
 
 const color = colors['light'];
@@ -310,15 +309,32 @@ export const OrgHeader = ({
               </EuiPopover>
             </NewStatusContainer>
             <SkillContainer>
-              <FilterLabel>Skill</FilterLabel>
-              {skillCountNumber > 0 && (
-                <FilterCount color={color}>
-                  <EuiText className="filterCountText">{skillCountNumber}</EuiText>
-                </FilterCount>
-              )}
-              <DropDownButton onClick={handleClick} data-testid="skillDropdown">
-                <Img src={dropdown} alt="" />
-              </DropDownButton>
+              <EuiPopover
+                button={
+                  <SkillTextContainer color={color}>
+                    <SkillInnerContainer onClick={handleClick}>
+                      <EuiText className="skillText">Skill</EuiText>
+                      <Formatter>
+                        {skillCountNumber > 0 && (
+                          <FilterCount color={color}>
+                            <EuiText className="filterCountText">{skillCountNumber}</EuiText>
+                          </FilterCount>
+                        )}
+                      </Formatter>
+                      <div className="filterStatusIconContainer">
+                        <MaterialIcon
+                          data-testid="skillDropdown"
+                          className="materialStatusIcon"
+                          icon={'keyboard_arrow_down'}
+                          style={{
+                            color: isStatusPopoverOpen ? color.grayish.G10 : ''
+                          }}
+                        />
+                      </div>
+                    </SkillInnerContainer>
+                  </SkillTextContainer>
+                }
+              />
               {filterClick ? (
                 <SkillFilter ref={filterRef} data-testid="skill-filter">
                   <InternalContainer>

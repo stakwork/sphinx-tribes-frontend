@@ -8,10 +8,12 @@ import { mainStore } from '../../../store/main';
 import * as hooks from '../../../hooks';
 
 const mockHistoryPush = jest.fn();
+const mockHistory = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useHistory: () => ({
-    replace: mockHistoryPush
+    replace: mockHistoryPush,
+    push: mockHistory
   })
 }));
 
@@ -245,5 +247,30 @@ describe('BountyHeader Component', () => {
     fireEvent.click(developersSection);
 
     expect(mockHistoryPush).toHaveBeenCalledWith('/p');
+  });
+
+  test('Test that Leaderboard button takes you to the leaderboard', () => {
+    render(
+      <BrowserRouter>
+        <BountyHeader {...mockProps} />
+      </BrowserRouter>
+    );
+    expect(screen.getByRole('button', { name: /Leaderboard/i })).toBeInTheDocument();
+
+    const leaderBoardButton = screen.getByText('Leaderboard');
+    fireEvent.click(leaderBoardButton);
+
+    expect(mockHistory).toHaveBeenCalledWith('/leaderboard');
+  });
+
+  test('Test that Post a bounty button takes you to "Get Sphinx" modal as a signed out user', async () => {
+    render(<BountyHeader {...mockProps} />);
+    expect(await screen.findByRole('button', { name: /Post a Bounty/i })).toBeInTheDocument();
+
+    const postBountyButton = screen.getByText('Post a Bounty');
+    fireEvent.click(postBountyButton);
+
+    const modalButton = screen.getByText('Get Sphinx');
+    expect(modalButton).toBeInTheDocument();
   });
 });

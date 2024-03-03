@@ -694,7 +694,7 @@ function Form(props: FormProps) {
                         <h4 style={{ marginTop: '20px' }}>
                           <b>{section.heading}</b>
                         </h4>
-                        <div style={{ display: 'flex', justifyContent: 'center', gap: '30px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'center', gap: '12px' }}>
                           {GetFormFields(section, { width: '100%' })}
                         </div>
                       </div>

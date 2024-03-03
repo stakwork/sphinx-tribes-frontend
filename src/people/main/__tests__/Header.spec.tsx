@@ -1,16 +1,16 @@
 import '@testing-library/jest-dom';
-import { act, fireEvent, render } from '@testing-library/react';
+import { act, fireEvent, render, waitFor, screen } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import nock from 'nock';
 import React from 'react';
 import { Router } from 'react-router-dom';
 import { mainStore } from 'store/main';
 import { person } from '__test__/__mockData__/persons';
+import { uiStore } from 'store/ui';
 import { setupStore } from '../../../__test__/__mockData__/setupStore';
 import { user } from '../../../__test__/__mockData__/user';
 import { mockUsehistory } from '../../../__test__/__mockFn__/useHistory';
 import Header from '../Header';
-import { uiStore } from 'store/ui';
 
 beforeAll(() => {
   nock.disableNetConnect();
@@ -83,7 +83,7 @@ describe('AboutView Component', () => {
 
     uiStore.setMeInfo(null);
     const history = createMemoryHistory();
-    await act(async () => {
+    act(async () => {
       const { getByText } = render(
         <Router history={history}>
           <Header />
@@ -127,6 +127,63 @@ describe('AboutView Component', () => {
       );
       const signInBtn = queryByText('Sign in');
       expect(signInBtn).not.toBeInTheDocument();
+    });
+  });
+
+  it('Test that clicking on "Get Sphinx" button is visible and renders the startup modal on clicking', async () => {
+    jest.spyOn(mainStore, 'getIsAdmin').mockReturnValue(Promise.resolve(false));
+    jest.spyOn(mainStore, 'getPersonById').mockReturnValue(Promise.resolve(person));
+    jest.spyOn(mainStore, 'getSelf').mockReturnValue(Promise.resolve());
+
+    uiStore.setMeInfo(null);
+    const history = createMemoryHistory();
+    await act(async () => {
+      const { getByText } = render(
+        <Router history={history}>
+          <Header />
+        </Router>
+      );
+      fireEvent.click(getByText('Get Sphinx'));
+      await waitFor(() => {
+        const iHaveSphinxButton = screen.getByText('I have Sphinx');
+        expect(iHaveSphinxButton).toBeInTheDocument();
+      });
+    });
+  });
+
+  it('redirects to https://buy.sphinx.chat/ when clicking Get Sphinx on the modal', async () => {
+    jest.spyOn(mainStore, 'getIsAdmin').mockReturnValue(Promise.resolve(false));
+    jest.spyOn(mainStore, 'getPersonById').mockReturnValue(Promise.resolve(person));
+    jest.spyOn(mainStore, 'getSelf').mockReturnValue(Promise.resolve());
+
+    const history = createMemoryHistory();
+    history.push('/buy.sphinx.chat');
+    const { findByRole } = render(
+      <Router history={history}>
+        <Header />
+      </Router>
+    );
+
+    const getSphinxButton = await findByRole('button', { name: /Get Sphinx/i });
+    fireEvent.click(getSphinxButton);
+    expect(history.location.pathname).toEqual('/buy.sphinx.chat');
+  });
+
+  it(' Test that clicking on "sign-in button", the sign-in component is rendered', async () => {
+    jest.spyOn(mainStore, 'getIsAdmin').mockReturnValue(Promise.resolve(false));
+    jest.spyOn(mainStore, 'getPersonById').mockReturnValue(Promise.resolve(person));
+    jest.spyOn(mainStore, 'getSelf').mockReturnValue(Promise.resolve());
+
+    uiStore.setMeInfo(null);
+    const history = createMemoryHistory();
+    act(async () => {
+      const { getByText } = render(
+        <Router history={history}>
+          <Header />
+        </Router>
+      );
+      fireEvent.click(getByText('Sign in'));
+      expect(await screen.findByRole('button', { name: /Login with Sphinx/i })).toBeInTheDocument();
     });
   });
 });
