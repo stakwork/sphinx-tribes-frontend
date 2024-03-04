@@ -870,16 +870,12 @@ describe('TicketModalPage Component', () => {
         </MemoryRouter>
       );
 
-      await waitFor(() => getByTestId('testid-modal'));
       expect(getByTestId('delete-btn')).toBeEnabled();
       rerender(
         <MemoryRouter initialEntries={['/bounty/1235']}>
           <Route path="/bounty/:bountyId" component={TicketModalPage} />
         </MemoryRouter>
       );
-
-      await waitFor(() => getByTestId('testid-modal'));
-
       expect(getByTestId('delete-btn')).toBeDisabled();
     });
   });
