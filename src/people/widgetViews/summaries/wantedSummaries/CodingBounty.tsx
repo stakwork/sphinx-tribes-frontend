@@ -559,7 +559,7 @@ function MobileView(props: CodingBountiesProps) {
                             disabled={isEditButtonDisable}
                           />
                           <ImageButton
-                            dataTestId="delete-btn"
+                            data-testid="delete-btn"
                             buttonText={!props.deletingState ? 'Delete' : 'Deleting'}
                             ButtonContainerStyle={{
                               width: '117px',
