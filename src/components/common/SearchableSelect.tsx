@@ -4,57 +4,25 @@ import Select from 'react-select';
 import { SelProps } from 'components/interfaces';
 
 const S = styled(Select)`
-background:#ffffff00;
-border: 1px solid #E0E0E0;
-color:#000;
-box-sizing: border-box;
-box-shadow:none;
-border: none !important;
-user-select:none;
-font-size:12px;
-border-width:0px !important;
+  background: #ffffff00;
+  border: 1px solid #e0e0e0;
+  color: #000;
+  box-sizing: border-box;
+  box-shadow: none;
+  border: none !important;
+  user-select: none;
+  font-size: 12px;
+  border-width: 0px !important;
 
-#react-select-10-listbox{
-    z-index:1000;
-}
-#react-select-9-listbox{
-    z-index:1000;
-}
-#react-select-8-listbox{
-    z-index:1000;
-}
-#react-select-7-listbox{
-    z-index:1000;
-}
-#react-select-6-listbox{
-    z-index:1000;
-}
-#react-select-5-listbox{
-    z-index:1000;
-}
-#react-select-4-listbox{
-    z-index:1000;
-}
-#react-select-3-listbox{
-    z-index:1000;
-}
-#react-select-2-listbox{
-    z-index:1000;
-}
-#react-select-1-listbox{
-    z-index:1000;
-}
-
-div {
-    border-width:0px !important;
+  div {
+    border-width: 0px !important;
     border: none !important;
-}
+  }
 
-button {
-    background:#ffffff !important;
-    background-color:#ffffff !important;
-}
-}
+  button {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+  }
 `;
 export default function SearchableSelect(props: SelProps) {
   const { options, onChange, onInputChange, value, style, loading } = props;
@@ -68,7 +36,7 @@ export default function SearchableSelect(props: SelProps) {
     : [];
 
   return (
-    <div style={{ position: 'relative', ...style }}>
+    <div id="dropdown-wrapper" style={{ position: 'relative', ...style }}>
       <S
         options={opts}
         isLoading={loading}
@@ -79,6 +47,11 @@ export default function SearchableSelect(props: SelProps) {
         onChange={onChange}
         onInputChange={onInputChange}
         className={'searchable-select-input'}
+        menuPortalTarget={document.getElementById('dropdown-wrapper')}
+        menuPosition={'fixed'}
+        styles={{
+          menuPortal: (styles: any) => ({ ...styles, zIndex: '100' })
+        }}
       />
     </div>
   );

@@ -938,9 +938,9 @@ export class MainStore {
     queryParams = { ...queryParams, search: uiStore.searchText };
 
     const query = this.appendQueryParams(`people/wanteds/assigned/${uuid}`, paginationQueryLimit, {
-      sortBy: 'paid',
+      sortBy: 'created',
       ...queryParams,
-      direction: 'ASC'
+      direction: 'DESC'
     });
 
     try {
@@ -987,8 +987,8 @@ export class MainStore {
 
     const query = this.appendQueryParams(`people/wanteds/created/${uuid}`, paginationQueryLimit, {
       ...queryParams,
-      sortBy: 'paid',
-      direction: 'ASC'
+      sortBy: 'created',
+      direction: 'DESC'
     });
 
     try {

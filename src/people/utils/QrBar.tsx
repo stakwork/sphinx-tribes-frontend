@@ -91,7 +91,7 @@ export default function QrBar(props: QRBarProps) {
             style={{ fontSize: 20, color: '#B0B7BC', marginRight: 10 }}
           />
         )}
-        <Value>{formatRequest(value)}</Value>
+        <Value data-testid="pubkey_user">{formatRequest(value)}</Value>
       </QRWrap>
 
       <Copy
