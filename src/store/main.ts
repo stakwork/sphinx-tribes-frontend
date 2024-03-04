@@ -1580,12 +1580,6 @@ export class MainStore {
         if (error) throw error;
         if (!r) return;
         if (!r.ok) {
-          uiStore.setToasts([
-            {
-              id: '1',
-              title: 'Failed to update profile'
-            }
-          ]);
           throw new Error('Update failed. Please try again.');
         }
 
@@ -1610,6 +1604,12 @@ export class MainStore {
         ]);
       }
     } catch (e) {
+      uiStore.setToasts([
+        {
+          id: '1',
+          title: 'Failed to update profile'
+        }
+      ]);
       console.log('Error saveProfile: ', e);
     }
   }
