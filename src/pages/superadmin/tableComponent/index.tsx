@@ -439,7 +439,7 @@ export const MyTable = ({
                 maxWidth: '140px',
                 minHeight: '160px',
                 marginTop: '0px',
-                marginLeft: '20px'
+                marginLeft: '7px'
               }}
               isOpen={isStatusPopoverOpen}
               closePopover={closeStatusPopover}
