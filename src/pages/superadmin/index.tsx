@@ -100,11 +100,9 @@ export const SuperAdmin = () => {
   }, [main, startDate, endDate, checkboxIdToSelectedMap, sortOrder, currentPage]);
 
   useEffect(() => {
-    if (search) {
-      getBounties();
-      setSearch(false);
-    }
-  }, [search, currentPage]);
+    getBounties();
+    setSearch(false);
+  }, [search]);
 
   useEffect(() => {
     getBounties();
