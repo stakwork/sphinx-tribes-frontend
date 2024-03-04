@@ -1,9 +1,10 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import WidgetSwitchViewer from 'people/widgetViews/WidgetSwitchViewer';
-import { BrowserRouter as Router } from 'react-router-dom';
+import sinon from 'sinon';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { mainStore } from 'store/main';
 import Tickets from '../Tickets';
+
+let fetchStub: sinon.SinonStub;
 
 const mockBounties = [
   {
@@ -27,6 +28,11 @@ const mockBounties = [
   }
 ];
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+jest.mock('remark-gfm', () => {});
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+jest.mock('rehype-raw', () => {});
+
 jest.mock('../../../store', () => ({
   useStores: jest.fn(() => ({
     main: {
@@ -46,6 +52,11 @@ jest.mock('../../../store', () => ({
     }
   }))
 }));
+
+beforeAll(() => {
+  fetchStub = sinon.stub(global, 'fetch');
+  fetchStub.returns(Promise.resolve({ status: 200, json: () => Promise.resolve({}) }));
+});
 
 jest.mock('people/widgetViews/WidgetSwitchViewer', () => ({
   __esModule: true,
@@ -140,6 +151,105 @@ describe('Tickets Component', () => {
       mockBounties.forEach(({ organization }) => {
         expect(screen.getByText(`Organization name: ${organization.name}`)).toBeInTheDocument();
       });
+    })();
+  });
+
+  it('displays load more button when there are 10 or more bounties', async () => {
+    // simulate many bounties
+    const bountiesArr = new Array(40).fill(mockBounties).flat();
+    jest.spyOn(mainStore, 'getPeopleBounties').mockReturnValue(Promise.resolve(bountiesArr));
+
+    render(<Tickets />);
+
+    (async () => {
+      await waitFor(() => {
+        expect(screen.getByText('Load More')).toBeInTheDocument();
+      });
+    })();
+  });
+
+  it('triggers "get bounties" API call when load more button is clicked', async () => {
+    const bountiesArr = new Array(40).fill(mockBounties).flat();
+    jest.spyOn(mainStore, 'getPeopleBounties').mockReturnValue(Promise.resolve(bountiesArr));
+
+    render(<Tickets />);
+
+    const expectedHeaders = {
+      'Content-Type': 'application/json',
+      'x-jwt': 'test_jwt'
+    };
+
+    (async () => {
+      await waitFor(() => {
+        expect(screen.getByText('Load More')).toBeInTheDocument();
+
+        const loadMore = screen.getByText('Load More');
+        fireEvent.click(loadMore);
+
+        sinon.assert.calledWith(
+          fetchStub,
+          'gobounties/all',
+          sinon.match({
+            method: 'POST',
+            headers: expectedHeaders,
+            mode: 'cors'
+          })
+        );
+      });
+    })();
+  });
+
+  it('should open bounty modal on clicking bounty', () => {
+    render(<Tickets />);
+
+    (async () => {
+      await waitFor(() => {
+        const ticket = screen.getByTestId('tickets-component');
+        fireEvent.click(ticket);
+      });
+
+      expect(screen.queryByTestId('testid-modal')).toBeInTheDocument();
+      expect(screen.getByText('chevron_right')).toBeInTheDocument();
+    })();
+  });
+
+  it('calls prevArrowNew function when previous arrow is clicked', () => {
+    render(<Tickets />);
+
+    (async () => {
+      await waitFor(() => {
+        const ticket = screen.getByTestId('tickets-component');
+        fireEvent.click(ticket);
+      });
+
+      const prevArrowFunction = jest.fn();
+
+      const prevArrow = screen.getByText('chevron_right');
+
+      expect(screen.queryByTestId('testid-modal')).toBeInTheDocument();
+      expect(screen.getByText('chevron_left')).toBeInTheDocument();
+      fireEvent.click(prevArrow);
+      expect(prevArrowFunction).toHaveBeenCalled();
+    })();
+  });
+
+  it('calls nextArrowNew function when next arrow is clicked', () => {
+    render(<Tickets />);
+
+    (async () => {
+      await waitFor(() => {
+        const ticket = screen.getByTestId('tickets-component');
+        fireEvent.click(ticket);
+      });
+
+      const nextArrowFunction = jest.fn();
+
+      const nextArrow = screen.getByText('chevron_right');
+
+      expect(screen.queryByTestId('testid-modal')).toBeInTheDocument();
+      expect(screen.getByText('chevron_left')).toBeInTheDocument();
+      fireEvent.click(nextArrow);
+      expect(nextArrowFunction).toHaveBeenCalled();
     })();
   });
 });

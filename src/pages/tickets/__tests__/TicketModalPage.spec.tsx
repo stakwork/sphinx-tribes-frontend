@@ -833,6 +833,27 @@ describe('TicketModalPage Component', () => {
     });
   });
 
+  it('should display left and right arrows in bounty modal', async () => {
+    jest
+      .spyOn(mainStore, 'getBountyById')
+      .mockReturnValue(Promise.resolve([{ ...newBounty, body: { assignee: user } }]));
+    jest.spyOn(mainStore, 'getBountyIndexById').mockReturnValue(Promise.resolve(1239));
+
+    await act(async () => {
+      render(
+        <MemoryRouter initialEntries={['/bounty/1234']}>
+          <Route path="/bounty/:bountyId" component={TicketModalPage} />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => screen.getByText('chevron_right'));
+      await waitFor(() => screen.getByText('chevron_left'));
+
+      expect(screen.getByText('chevron_right')).toBeInTheDocument();
+      expect(screen.getByText('chevron_left')).toBeInTheDocument();
+    });
+  });
+
   it('Delete button is present and enabled when no one is assigned', () => {
     <MemoryRouter initialEntries={['/bounty/1234']}>
       <Route path="/bounty/:bountyId" component={TicketModalPage} />

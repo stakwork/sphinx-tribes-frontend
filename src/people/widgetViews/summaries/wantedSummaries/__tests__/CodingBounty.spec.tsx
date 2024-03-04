@@ -446,4 +446,28 @@ describe('MobileView component', () => {
       await waitFor(() => expect(screen.getByText('complete')));
     })();
   });
+
+  it('Delete button is present and enabled when no one is assigned', () => {
+    render(<MobileView {...defaultProps} isAssigned={false} />);
+    const deleteButton = screen.getByTestId('delete-btn');
+    expect(deleteButton).toBeInTheDocument();
+    expect(deleteButton).not.toBeDisabled();
+  });
+
+  it('Delete button is disabled when someone is assigned', () => {
+    render(<MobileView {...defaultProps} isAssigned={true} />);
+
+    const deleteButton = screen.getByTestId('delete-btn');
+    expect(deleteButton).toBeInTheDocument();
+    expect(deleteButton).toBeDisabled();
+  });
+
+  it('Clicking delete button triggers delete action when no one is assigned', () => {
+    render(<MobileView {...defaultProps} isAssigned={false} />);
+
+    const deleteButton = screen.getByTestId('delete-btn');
+    userEvent.click(deleteButton);
+
+    expect(defaultProps.deleteAction).toHaveBeenCalled();
+  });
 });

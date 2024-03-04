@@ -16,6 +16,7 @@ export interface Props {
   options?: any[];
   name: string;
   error: string;
+  github_state?: boolean;
   borderType?: 'bottom' | 'outline';
   imageIcon?: boolean;
   isFocused?: any;
