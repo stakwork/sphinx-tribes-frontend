@@ -864,19 +864,19 @@ describe('TicketModalPage Component', () => {
     jest.spyOn(mainStore, 'getBountyIndexById').mockReturnValue(Promise.resolve(1234));
 
     await act(async () => {
-      const { getByTestId, rerender } = render(
+      const { getByText, rerender } = render(
         <MemoryRouter initialEntries={['/bounty/1234']}>
           <Route path="/bounty/:bountyId" component={TicketModalPage} />
         </MemoryRouter>
       );
 
-      expect(getByTestId('delete-btn')).toBeEnabled();
+      expect(getByText('Delete')).toBeEnabled();
       rerender(
         <MemoryRouter initialEntries={['/bounty/1235']}>
           <Route path="/bounty/:bountyId" component={TicketModalPage} />
         </MemoryRouter>
       );
-      expect(getByTestId('delete-btn')).toBeDisabled();
+      expect(getByText('Delete')).toBeDisabled();
     });
   });
 });
