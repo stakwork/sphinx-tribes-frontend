@@ -853,4 +853,34 @@ describe('TicketModalPage Component', () => {
       expect(screen.getByText('chevron_left')).toBeInTheDocument();
     });
   });
+
+  it('checks for enabled/disabled state of the delete button based on the assignment status', async () => {
+    jest.spyOn(mainStore, 'getBountyById').mockReturnValue(
+      Promise.resolve([
+        { ...newBounty, body: { ...mockBountiesMutated[1].body, assignee: null } },
+        { ...newBounty, body: { ...mockBountiesMutated[1].body, assignee: user } }
+      ])
+    );
+    jest.spyOn(mainStore, 'getBountyIndexById').mockReturnValue(Promise.resolve(1234));
+
+    await act(async () => {
+      const { getByTestId, rerender } = render(
+        <MemoryRouter initialEntries={['/bounty/1234']}>
+          <Route path="/bounty/:bountyId" component={TicketModalPage} />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => getByTestId('testid-modal'));
+      expect(getByTestId('delete-btn')).toBeEnabled();
+      rerender(
+        <MemoryRouter initialEntries={['/bounty/1235']}>
+          <Route path="/bounty/:bountyId" component={TicketModalPage} />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => getByTestId('testid-modal'));
+
+      expect(getByTestId('delete-btn')).toBeDisabled();
+    });
+  });
 });
