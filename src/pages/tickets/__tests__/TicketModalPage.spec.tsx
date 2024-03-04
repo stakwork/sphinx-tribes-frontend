@@ -832,4 +832,34 @@ describe('TicketModalPage Component', () => {
       expect(queryByText('Edit')).toBeInTheDocument();
     });
   });
+
+  it('Delete button is present and enabled when no one is assigned', () => {
+    <MemoryRouter initialEntries={['/bounty/1234']}>
+      <Route path="/bounty/:bountyId" component={TicketModalPage} />
+    </MemoryRouter>;
+    const deleteButton = screen.getByTestId('delete-btn');
+    expect(deleteButton).toBeInTheDocument();
+    expect(deleteButton).not.toBeDisabled();
+  });
+
+  it('Delete button is disabled when someone is assigned', () => {
+    <MemoryRouter initialEntries={['/bounty/1234']}>
+      <Route path="/bounty/:bountyId" component={TicketModalPage} />
+    </MemoryRouter>;
+
+    const deleteButton = screen.getByTestId('delete-btn');
+    expect(deleteButton).toBeInTheDocument();
+    expect(deleteButton).toBeDisabled();
+  });
+
+  it('Clicking delete button triggers delete action when no one is assigned', () => {
+    <MemoryRouter initialEntries={['/bounty/1234']}>
+      <Route path="/bounty/:bountyId" component={TicketModalPage} />
+    </MemoryRouter>;
+
+    const deleteButton = screen.getByTestId('delete-btn');
+    userEvent.click(deleteButton);
+
+    expect(deleteButton).toHaveBeenCalled();
+  });
 });
