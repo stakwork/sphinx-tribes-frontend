@@ -6,11 +6,17 @@ import nock from 'nock';
 import React from 'react';
 import { Organization, PaymentHistory, mainStore } from 'store/main';
 import { uiStore } from 'store/ui';
+import * as LighningDecoder from 'light-bolt11-decoder';
 import OrganizationDetails from './OrganizationDetails';
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useRouteMatch: () => ({ url: '', path: '' })
+}));
+
+jest.mock('light-bolt11-decoder', () => ({
+  ...jest.requireActual('light-bolt11-decoder'),
+  decode: jest.fn()
 }));
 
 const organization: Organization = {
@@ -514,6 +520,166 @@ describe('OrganizationDetails', () => {
         fireEvent.click(updateRoleButton);
 
         expect(addToast).toHaveBeenCalledWith('User deleted successfully', 'success');
+      });
+    });
+  });
+
+  it('Test that withdraw modal is rendered', async () => {
+    await act(async () => {
+      const { getByTestId } = render(
+        <OrganizationDetails
+          close={closeFn}
+          getOrganizations={getOrgFn}
+          org={organization}
+          resetOrg={resetOrgFn}
+        />
+      );
+
+      const withdrawBtn = getByTestId('organization-withdraw-budget-button');
+      expect(withdrawBtn).toBeInTheDocument();
+
+      fireEvent.click(withdrawBtn);
+
+      await waitFor(() => {
+        const modal = getByTestId('testid-modal');
+        expect(modal).toBeInTheDocument();
+
+        expect(within(modal).getByText('Withdraw')).toBeInTheDocument();
+        expect(within(modal).getByText('Paste your invoice')).toBeInTheDocument();
+        expect(within(modal).getByTestId('withdrawInvoiceInput')).toBeInTheDocument();
+      });
+    });
+  });
+
+  it('Test that user is able to post an invoice and can pays the invoice correctly', async () => {
+    const mockedDecode = LighningDecoder.decode as jest.MockedFunction<
+      typeof LighningDecoder.decode
+    >;
+    mockedDecode.mockReturnValue({
+      sections: [{ value: 1 }, { value: 2 }, { value: 1000000 }]
+    });
+
+    jest.spyOn(mainStore, 'withdrawBountyBudget').mockResolvedValue({
+      success: true,
+      response: {
+        success: true,
+        response: {
+          payment_request: ''
+        }
+      }
+    });
+
+    await act(async () => {
+      const { getByTestId } = render(
+        <OrganizationDetails
+          close={closeFn}
+          getOrganizations={getOrgFn}
+          org={organization}
+          resetOrg={resetOrgFn}
+        />
+      );
+
+      const withdrawBtn = getByTestId('organization-withdraw-budget-button');
+      expect(withdrawBtn).toBeInTheDocument();
+
+      fireEvent.click(withdrawBtn);
+
+      const modal = await waitFor(() => getByTestId('testid-modal'));
+
+      await waitFor(() => {
+        const invoice =
+          'lnbc20u1p3y0x3hpp5743k2g0fsqqxj7n8qzuhns5gmkk4djeejk3wkp64ppevgekvc0jsdqcve5kzar2v9nr5gpqd4hkuetesp5ez2g297jduwc20t6lmqlsg3man0vf2jfd8ar9fh8fhn2g8yttfkqxqy9gcqcqzys9qrsgqrzjqtx3k77yrrav9hye7zar2rtqlfkytl094dsp0ms5majzth6gt7ca6uhdkxl983uywgqqqqlgqqqvx5qqjqrzjqd98kxkpyw0l9tyy8r8q57k7zpy9zjmh6sez752wj6gcumqnj3yxzhdsmg6qq56utgqqqqqqqqqqqeqqjq7jd56882gtxhrjm03c93aacyfy306m4fq0tskf83c0nmet8zc2lxyyg3saz8x6vwcp26xnrlagf9semau3qm2glysp7sv95693fphvsp54l567';
+
+        expect(modal).toBeInTheDocument();
+
+        //  Test that user is able to post an invoice
+        fireEvent.change(within(modal).getByTestId('withdrawInvoiceInput'), {
+          target: { value: invoice }
+        });
+      });
+
+      await waitFor(() => {
+        const confirmBtn = within(modal).getByText('Confirm');
+
+        // Test invoice is correct
+        expect(confirmBtn).not.toBeDisabled();
+        fireEvent.click(confirmBtn);
+      });
+
+      await waitFor(() => {
+        expect(within(modal).getByText('You are about to withdraw')).toBeInTheDocument();
+        expect(within(modal).getByTestId('WithdrawAmount')).toHaveTextContent('1,000 SATS');
+      });
+
+      //  Test that confirm pays the invoice
+      const confirmPayBtn = within(modal).getByText('Withdraw');
+      expect(confirmPayBtn).not.toBeDisabled();
+      fireEvent.click(confirmPayBtn);
+
+      await waitFor(() => {
+        expect(within(modal).getByText('Successfully Withdraw')).toBeInTheDocument();
+      });
+    });
+  });
+
+  it('Test that error message appears if insufficient funds to withdraw', async () => {
+    const mockedDecode = LighningDecoder.decode as jest.MockedFunction<
+      typeof LighningDecoder.decode
+    >;
+    mockedDecode.mockReturnValue({
+      sections: [{ value: 1 }, { value: 2 }, { value: 1000000 }]
+    });
+
+    jest.spyOn(mainStore, 'withdrawBountyBudget').mockResolvedValue({
+      success: false,
+      error: 'Organization budget is not enough to withdraw the amount'
+    });
+
+    await act(async () => {
+      const { getByTestId } = render(
+        <OrganizationDetails
+          close={closeFn}
+          getOrganizations={getOrgFn}
+          org={organization}
+          resetOrg={resetOrgFn}
+        />
+      );
+
+      const withdrawBtn = getByTestId('organization-withdraw-budget-button');
+      expect(withdrawBtn).toBeInTheDocument();
+
+      fireEvent.click(withdrawBtn);
+
+      const modal = await waitFor(() => getByTestId('testid-modal'));
+
+      const invoice =
+        'lnbc20u1p3y0x3hpp5743k2g0fsqqxj7n8qzuhns5gmkk4djeejk3wkp64ppevgekvc0jsdqcve5kzar2v9nr5gpqd4hkuetesp5ez2g297jduwc20t6lmqlsg3man0vf2jfd8ar9fh8fhn2g8yttfkqxqy9gcqcqzys9qrsgqrzjqtx3k77yrrav9hye7zar2rtqlfkytl094dsp0ms5majzth6gt7ca6uhdkxl983uywgqqqqlgqqqvx5qqjqrzjqd98kxkpyw0l9tyy8r8q57k7zpy9zjmh6sez752wj6gcumqnj3yxzhdsmg6qq56utgqqqqqqqqqqqeqqjq7jd56882gtxhrjm03c93aacyfy306m4fq0tskf83c0nmet8zc2lxyyg3saz8x6vwcp26xnrlagf9semau3qm2glysp7sv95693fphvsp54l567';
+
+      expect(modal).toBeInTheDocument();
+
+      //  Test that user is able to post an invoice
+      fireEvent.change(within(modal).getByTestId('withdrawInvoiceInput'), {
+        target: { value: invoice }
+      });
+
+      await waitFor(() => {
+        const confirmBtn = within(modal).getByText('Confirm');
+        fireEvent.click(confirmBtn);
+      });
+
+      await waitFor(() => {
+        expect(within(modal).getByText('You are about to withdraw')).toBeInTheDocument();
+        expect(within(modal).getByTestId('WithdrawAmount')).toHaveTextContent('1,000 SATS');
+      });
+
+      const confirmPayBtn = within(modal).getByText('Withdraw');
+      expect(confirmPayBtn).not.toBeDisabled();
+      fireEvent.click(confirmPayBtn);
+
+      await waitFor(() => {
+        expect(
+          within(modal).getByText('Organization budget is not enough to withdraw the amount')
+        ).toBeInTheDocument();
       });
     });
   });
