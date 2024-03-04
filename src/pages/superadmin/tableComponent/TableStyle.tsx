@@ -239,7 +239,6 @@ export const DateFilterWrapper = styled.div<styledProps>`
   flex-direction: row;
   justify-content: center;
   align-items: center !important;
-  margin-left: 19px;
   user-select: none;
   .image {
     display: flex;

@@ -283,6 +283,10 @@ const StatusContainer = styled.div<styledProps>`
   }
 `;
 
+const ProviderStatusContainer = styled(StatusContainer)<styledProps>`
+  margin-top: 0px !important;
+`;
+
 const Status = ['Open', 'Assigned', 'Completed', 'Paid'];
 
 export const MyTable = ({
@@ -397,7 +401,7 @@ export const MyTable = ({
             <FlexDiv>
               <EuiPopover
                 button={
-                  <StatusContainer onClick={onProviderButtonClick} color={color}>
+                  <ProviderStatusContainer onClick={onProviderButtonClick} color={color}>
                     <EuiText
                       className="statusText"
                       style={{
@@ -416,7 +420,7 @@ export const MyTable = ({
                         }}
                       />
                     </div>
-                  </StatusContainer>
+                  </ProviderStatusContainer>
                 }
                 panelStyle={{
                   border: 'none',
@@ -461,7 +465,7 @@ export const MyTable = ({
                         </ProviderContianer>
                       ))
                     ) : (
-                      <p>No provider with such alias</p>
+                      <p>No provider available</p>
                     )}
                   </ProvidersListContainer>
                   <HorizontalGrayLine />
