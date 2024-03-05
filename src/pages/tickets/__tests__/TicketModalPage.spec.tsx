@@ -1,12 +1,5 @@
 import '@testing-library/jest-dom';
-import {
-  act,
-  render,
-  waitFor,
-  fireEvent,
-  screen,
-  within,
-} from '@testing-library/react';
+import { act, render, waitFor, fireEvent, screen, within } from '@testing-library/react';
 import { user } from '__test__/__mockData__/user';
 import { mockBountiesMutated, newBounty } from 'bounties/__mock__/mockBounties.data';
 import { DollarConverter, formatSat, getSessionValue, satToUsd } from 'helpers';
@@ -256,7 +249,7 @@ describe('TicketModalPage Component', () => {
     render(<TicketModalPage setConnectPerson={jest.fn()} visible={true} />);
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    await waitFor(() => { });
+    await waitFor(() => {});
 
     const closeButton = screen.queryByTestId('close-btn');
     if (closeButton) {
