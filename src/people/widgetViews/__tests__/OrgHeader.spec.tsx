@@ -2,6 +2,7 @@ import React from 'react';
 import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { OrgHeader } from 'pages/tickets/org/orgHeader';
+import { act } from 'react-dom/test-utils';
 import { OrgBountyHeaderProps } from '../../interfaces.ts';
 import { mainStore } from '../../../store/main.ts';
 import { uiStore } from '../../../store/ui.ts';
@@ -30,6 +31,7 @@ jest.mock('../../../helpers/helpers-extended.ts', () => ({
 }));
 
 const MockProps: OrgBountyHeaderProps = {
+  totalBountyCount: 284,
   checkboxIdToSelectedMap: {
     Open: false,
     Assigned: false,
@@ -297,5 +299,52 @@ describe('OrgHeader Component', () => {
     await waitFor(() => {
       expect(screen.getByText(`${selectedCount}`)).toBeInTheDocument();
     });
+  });
+
+  it('displays the correct number of bounties based on the status filter', async () => {
+    act(async () => {
+      jest
+        .spyOn(mainStore, 'getSpecificOrganizationBounties')
+        .mockImplementation((filters: any) => {
+          if (filters && filters.Open) {
+            return Promise.resolve(Array(3).fill({}));
+          }
+          return Promise.resolve(Array(8).fill({}));
+        });
+
+      render(<OrgHeader {...MockProps} />);
+
+      await waitFor(() => {
+        expect(screen.getByText('8 Bounties')).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByText('Status'));
+      const openCheckbox = screen.getByLabelText('Open');
+      fireEvent.click(openCheckbox);
+
+      const newProps = {
+        ...MockProps,
+        checkboxIdToSelectedMap: { ...MockProps.checkboxIdToSelectedMap, Open: true }
+      };
+      render(<OrgHeader {...newProps} />);
+
+      await waitFor(() => {
+        expect(screen.getByText('3 Bounties')).toBeInTheDocument();
+      });
+    });
+  });
+
+  test('shows hand icon on hover over the Skill text and toggles dropdown', () => {
+    render(<OrgHeader {...MockProps} />);
+    const skillText = screen.getByText('Skill');
+
+    expect(skillText).toBeInTheDocument();
+    expect(skillText).toHaveClass('skillText');
+
+    const dropdownButton = screen.getByTestId('skillDropdown');
+    fireEvent.click(dropdownButton);
+
+    const skillFilter = screen.getByTestId('skill-filter');
+    expect(skillFilter).toBeVisible();
   });
 });

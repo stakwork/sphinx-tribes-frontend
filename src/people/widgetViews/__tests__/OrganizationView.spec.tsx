@@ -6,6 +6,7 @@ import {
   queryByText,
   render,
   screen,
+  act,
   waitFor
 } from '@testing-library/react';
 import { setupStore } from '__test__/__mockData__/setupStore';
@@ -17,6 +18,7 @@ import { Organization } from 'store/main';
 import { uiStore } from 'store/ui';
 import { mainStore } from '../../../store/main';
 import OrganizationView from '../OrganizationView';
+import { awards } from '../../utils/languageLabelStyle.ts';
 
 beforeAll(() => {
   nock.disableNetConnect();
@@ -64,11 +66,14 @@ describe('OrganizationView Component', () => {
     mainStore.setOrganizations(organizations);
 
     render(<OrganizationView person={person} />);
-
-    const organizationName = screen.getByText(organizations[0].name);
-    const secondOrganization = screen.getByText(organizations[1].name);
-    expect(organizationName).toBeInTheDocument();
-    expect(secondOrganization).toBeInTheDocument();
+    act(async () => {
+      await waitFor(() => {
+        const organizationName = screen.getByText(organizations[0].name);
+        const secondOrganization = screen.getByText(organizations[1].name);
+        expect(organizationName).toBeInTheDocument();
+        expect(secondOrganization).toBeInTheDocument();
+      });
+    });
   });
 
   it('renders view bounties button correctly', async () => {
@@ -77,11 +82,14 @@ describe('OrganizationView Component', () => {
     mainStore.setOrganizations([organizations[0]]);
 
     render(<OrganizationView person={person} />);
-
-    const viewBountiesBtn = screen.getByRole('button', {
-      name: 'View Bounties open_in_new_tab'
+    act(async () => {
+      await waitFor(() => {
+        const viewBountiesBtn = screen.getByRole('button', {
+          name: 'View Bounties open_in_new_tab'
+        });
+        expect(viewBountiesBtn).toBeInTheDocument();
+      });
     });
-    expect(viewBountiesBtn).toBeInTheDocument();
   });
 
   it('should not render manage bounties button if user does not have access', async () => {
@@ -105,9 +113,12 @@ describe('OrganizationView Component', () => {
     mainStore.setOrganizations([userOrg]);
 
     render(<OrganizationView person={person} />);
-
-    const manageButton = screen.getByRole('button', { name: 'Manage' });
-    expect(manageButton).toBeInTheDocument();
+    act(async () => {
+      await waitFor(() => {
+        const manageButton = screen.getByRole('button', { name: 'Manage' });
+        expect(manageButton).toBeInTheDocument();
+      });
+    });
   });
 
   it('test owner can view all the organizations which is a part of', async () => {
@@ -116,10 +127,13 @@ describe('OrganizationView Component', () => {
     mainStore.setOrganizations(organizations);
 
     render(<OrganizationView person={person} />);
-
-    organizations.forEach((org: Organization) => {
-      const organizationName = screen.getByText(org.name);
-      expect(organizationName).toBeInTheDocument();
+    act(async () => {
+      await waitFor(() => {
+        organizations.forEach((org: Organization) => {
+          const organizationName = screen.getByText(org.name);
+          expect(organizationName).toBeInTheDocument();
+        });
+      });
     });
   });
 
@@ -146,14 +160,13 @@ describe('OrganizationView Component', () => {
     });
 
     const { getByText, queryAllByText, queryByText } = render(<OrganizationView person={person} />);
+    act(async () => {
+      await waitFor(() => {
+        fireEvent.click(queryAllByText('Manage')[0]);
 
-    await waitFor(() => queryAllByText('Manage'));
-
-    fireEvent.click(queryAllByText('Manage')[0]);
-
-    await waitFor(() => queryByText(organizations[0].name));
-
-    expect(getByText(organizations[0].name)).toBeInTheDocument();
+        expect(getByText(organizations[0].name)).toBeInTheDocument();
+      });
+    });
   });
 
   it('test clicking on "View bounties" takes me to the organization overview page if there are bounties', async () => {
@@ -166,15 +179,19 @@ describe('OrganizationView Component', () => {
 
     render(<OrganizationView person={person} />);
 
-    const firstBtn = screen.getAllByText('View Bounties')[0];
-    fireEvent.click(firstBtn);
+    act(async () => {
+      await waitFor(() => {
+        const firstBtn = screen.getAllByText('View Bounties')[0];
+        fireEvent.click(firstBtn);
 
-    expect(firstBtn).not.toBeDisabled();
-    expect(mockWindowOpen).toHaveBeenCalledWith(
-      `/org/bounties/${_organizations[0].uuid}`,
-      '_target'
-    );
-    mockWindowOpen.mockRestore();
+        expect(firstBtn).not.toBeDisabled();
+        expect(mockWindowOpen).toHaveBeenCalledWith(
+          `/org/bounties/${_organizations[0].uuid}`,
+          '_target'
+        );
+        mockWindowOpen.mockRestore();
+      });
+    });
   });
 
   it('test if there are no bounties, the "View bounties" button should be greyed and unclickable', async () => {
@@ -186,9 +203,12 @@ describe('OrganizationView Component', () => {
     mainStore.setOrganizations(_organizations);
 
     render(<OrganizationView person={person} />);
-
-    const firstBtn = screen.getAllByText('View Bounties')[0];
-    expect(firstBtn).toBeDisabled();
+    act(async () => {
+      await waitFor(() => {
+        const firstBtn = screen.getAllByText('View Bounties')[0];
+        expect(firstBtn).toBeDisabled();
+      });
+    });
   });
 
   it('test owner can click on "add organization" and a pop-up appears to guide through the add organization flow', async () => {
@@ -197,9 +217,12 @@ describe('OrganizationView Component', () => {
     mainStore.setOrganizations(organizations);
 
     render(<OrganizationView person={person} />);
-
-    fireEvent.click(screen.getByText('Add Organization'));
-    expect(screen.getByText('Add New Organization')).toBeInTheDocument();
+    act(async () => {
+      await waitFor(() => {
+        fireEvent.click(screen.getByText('Add Organization'));
+        expect(screen.getByText('Add New Organization')).toBeInTheDocument();
+      });
+    });
   });
 
   it('test if there are no organizations, the "No organization yet" image is displayed', async () => {
@@ -207,9 +230,14 @@ describe('OrganizationView Component', () => {
     jest.spyOn(mainStore, 'getOrganizationUser').mockReturnValue(Promise.resolve(person as any));
     mainStore.setOrganizations([]);
 
-    const { container } = render(<OrganizationView person={person} />);
-
-    const emptyResult = container.querySelector('div[src="/static/no_org.png"]');
-    expect(emptyResult).toBeInTheDocument();
+    const { container, getByTestId } = render(<OrganizationView person={person} />);
+    act(async () => {
+      await waitFor(() => {
+        expect(getByTestId('loading-spinner')).toBeInTheDocument();
+        const emptyResult = container.querySelector('div[src="/static/no_org.png"]');
+        expect(emptyResult).toBeInTheDocument();
+        expect(getByTestId('loading-spinner')).not.toBeInTheDocument();
+      });
+    });
   });
 });

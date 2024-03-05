@@ -111,6 +111,7 @@ function MobileView(props: CodingBountiesProps) {
   const [toasts, setToasts]: any = useState([]);
   const [updatingPayment, setUpdatingPayment] = useState<boolean>(false);
   const [userBountyRole, setUserBountyRole] = useState(false);
+  const [enableDelete, setEnableDelete] = useState(false);
 
   const [paidStatus, setPaidStatus] = useState(paid);
 
@@ -575,6 +576,7 @@ function MobileView(props: CodingBountiesProps) {
                             disabled={isEditButtonDisable}
                           />
                           <ImageButton
+                            data-testid="delete-btn"
                             buttonText={!props.deletingState ? 'Delete' : 'Deleting'}
                             ButtonContainerStyle={{
                               width: '117px',
@@ -584,7 +586,7 @@ function MobileView(props: CodingBountiesProps) {
                             leadingImageContainerStyle={{
                               left: 450
                             }}
-                            disabled={!props?.deleteAction}
+                            disabled={enableDelete}
                             buttonAction={props?.deleteAction}
                             buttonTextStyle={{
                               paddingRight: '45px'
@@ -679,6 +681,7 @@ function MobileView(props: CodingBountiesProps) {
                             className="AssigneeCloseButtonContainer"
                             onClick={() => {
                               changeAssignedPerson();
+                              setEnableDelete(false);
                             }}
                           >
                             <img
@@ -712,6 +715,7 @@ function MobileView(props: CodingBountiesProps) {
                           }}
                           buttonAction={() => {
                             assigneeHandlerOpen();
+                            setEnableDelete(true);
                           }}
                         />
                       </div>

@@ -437,6 +437,7 @@ export interface OrgBountyHeaderProps {
   org_uuid?: string;
   organizationData: Organization;
   direction?: string;
+  totalBountyCount: number;
 }
 export interface PeopleHeaderProps {
   onChangeLanguage: (lang: CodingLanguage) => void;

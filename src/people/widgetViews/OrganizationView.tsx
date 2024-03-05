@@ -160,7 +160,7 @@ const OrganizationActionWrap = styled.div`
 `;
 
 const Organizations = (props: { person: Person }) => {
-  const [loading, setIsLoading] = useState<boolean>(false);
+  const [loading, setIsLoading] = useState<boolean>(true);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [detailsOpen, setDetailsOpen] = useState<boolean>(false);
   const [organization, setOrganization] = useState<Organization>();
@@ -256,7 +256,7 @@ const Organizations = (props: { person: Person }) => {
 
   return (
     <Container>
-      <PageLoadSpinner show={loading} />
+      {loading && <PageLoadSpinner show={loading} />}
       {detailsOpen && (
         <OrganizationDetails
           close={closeDetails}
@@ -265,7 +265,7 @@ const Organizations = (props: { person: Person }) => {
           getOrganizations={getUserOrganizations}
         />
       )}
-      {!detailsOpen && (
+      {!detailsOpen && !loading && (
         <>
           {renderOrganizations()}
           {isOpen && (

@@ -1,14 +1,14 @@
-import { makeAutoObservable, observable, action } from 'mobx';
-import memo from 'memo-decorator';
-import { persist } from 'mobx-persist';
 import { uniqBy } from 'lodash';
+import memo from 'memo-decorator';
+import { action, makeAutoObservable, observable } from 'mobx';
+import { persist } from 'mobx-persist';
 import api from '../api';
 import { Extras } from '../components/form/inputs/widgets/interfaces';
 import { getHostIncludingDockerHosts } from '../config/host';
-import { randomString } from '../helpers';
 import { TribesURL } from '../config/host';
-import { uiStore } from './ui';
+import { randomString } from '../helpers';
 import { getUserAvatarPlaceholder } from './lib';
+import { uiStore } from './ui';
 
 export const queryLimitTribes = 100;
 export const queryLimit = 10;
@@ -310,6 +310,12 @@ export const defaultOrgBountyStatus: OrgBountyStatus = {
   Completed: false
 };
 
+export const defaultSuperAdminBountyStatus: BountyStatus = {
+  Open: false,
+  Assigned: false,
+  Paid: false
+};
+
 export class MainStore {
   [x: string]: any;
   tribes: Tribe[] = [];
@@ -362,7 +368,7 @@ export class MainStore {
     const info = uiStore.meInfo;
 
     if (uniqueName) {
-      b.forEach(function (t: Bot, i: number) {
+      b.forEach((t: Bot, i: number) => {
         if (t.unique_name === uniqueName) {
           b.splice(i, 1);
           b.unshift(t);
@@ -932,8 +938,9 @@ export class MainStore {
     queryParams = { ...queryParams, search: uiStore.searchText };
 
     const query = this.appendQueryParams(`people/wanteds/assigned/${uuid}`, paginationQueryLimit, {
-      sortBy: 'paid',
-      ...queryParams
+      sortBy: 'created',
+      ...queryParams,
+      direction: 'DESC'
     });
 
     try {
@@ -980,7 +987,8 @@ export class MainStore {
 
     const query = this.appendQueryParams(`people/wanteds/created/${uuid}`, paginationQueryLimit, {
       ...queryParams,
-      sortBy: 'paid'
+      sortBy: 'created',
+      direction: 'DESC'
     });
 
     try {
@@ -1565,7 +1573,6 @@ export class MainStore {
     if (!body) return; // avoid saving bad state
 
     if (body.price_to_meet) body.price_to_meet = parseInt(body.price_to_meet); // must be an int
-
     try {
       if (this.lnToken) {
         const r = await this.saveBountyPerson(body);
@@ -1580,6 +1587,9 @@ export class MainStore {
         const [r, error] = await this.doCallToRelay('POST', 'profile', body);
         if (error) throw error;
         if (!r) return;
+        if (!r.ok) {
+          throw new Error('Update failed. Please try again.');
+        }
 
         // first time profile makers will need this on first login
         if (!body.id) {
@@ -1602,6 +1612,12 @@ export class MainStore {
         ]);
       }
     } catch (e) {
+      uiStore.setToasts([
+        {
+          id: '1',
+          title: 'Failed to update profile'
+        }
+      ]);
       console.log('Error saveProfile: ', e);
     }
   }
@@ -1659,16 +1675,15 @@ export class MainStore {
         }
       });
 
-      if (response.status) {
+      if (response?.status) {
         this.getPeopleBounties({
           resetPage: true,
           ...this.bountiesStatus,
           languages: this.bountyLanguages
         });
       }
-      return;
     } catch (e) {
-      console.log(e);
+      throw e;
     }
   }
 

@@ -15,12 +15,14 @@ export const user: MeInfo = {
   jwt: 'test_jwt',
   tribe_jwt: 'test_jwt',
   url: 'http://localhost:5002',
-  description: 'description',
+  description: 'description for user',
   verification_signature: 'test_verification_signature',
   extras: {
     email: [{ value: 'testEmail@sphinx.com' }],
     liquid: [{ value: 'none' }],
-    wanted: []
+    wanted: [],
+    coding_languages: [{ label: 'Typescript', value: 'Typescript' }],
+    github: [{ label: 'https://github.com/Vladimir', value: 'https://github.com/Vladimir' }]
   },
   owner_alias: 'Vladimir',
   owner_pubkey: 'test_pub_key',

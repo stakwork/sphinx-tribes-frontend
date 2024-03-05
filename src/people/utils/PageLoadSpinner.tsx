@@ -40,7 +40,7 @@ export default function PageLoadSpinner(props: PageLoadProps) {
   }
 
   return (
-    <LoadmoreWrap show={props.show} style={props.style}>
+    <LoadmoreWrap data-testid={'loading-spinner'} show={props.show} style={props.style}>
       <EuiLoadingSpinner size="l" style={{ marginLeft: 0, padding: 10 }} />
     </LoadmoreWrap>
   );

@@ -56,6 +56,7 @@ export interface TableProps {
   sortOrder?: string;
   onChangeFilterByDate?: (option: string) => void;
   onChangeStatus: (number) => void;
+  clickApply: () => void;
   checkboxIdToSelectedMap?: any;
   paginatePrev?: () => void;
   paginateNext?: () => void;
@@ -130,6 +131,24 @@ export const TextInColorBox = ({ status }: TextInColorBoxProps) => (
     </div>
   </>
 );
+
+const ApplyButton = styled.button`
+  display: flex;
+  width: 112px;
+  height: 25px;
+  margin: 10px;
+  margin-left: 0px;
+  padding: 18px 23px;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  outline: none;
+  border-radius: 6px;
+  background: var(--Primary-blue, #618aff);
+  box-shadow: 0px 2px 10px 0px rgba(97, 138, 255, 0.5);
+  color: white;
+`;
 
 const EuiPopOverCheckbox = styled.div<styledProps>`
   width: 147px;
@@ -256,6 +275,7 @@ export const MyTable = ({
   onChangeFilterByDate,
   onChangeStatus,
   checkboxIdToSelectedMap,
+  clickApply,
   currentPage,
   setCurrentPage,
   activeTabs,
@@ -347,7 +367,12 @@ export const MyTable = ({
                       Sort By:
                     </EuiText>
                     <div className="image">
-                      <EuiText className="filterText">
+                      <EuiText
+                        className="filterText"
+                        style={{
+                          color: isPopoverOpen ? color.grayish.G10 : ''
+                        }}
+                      >
                         {sortOrder === 'desc' ? 'Newest' : 'Oldest'}
                       </EuiText>
                       <MaterialIcon
@@ -419,7 +444,7 @@ export const MyTable = ({
                 maxWidth: '140px',
                 minHeight: '160px',
                 marginTop: '0px',
-                marginLeft: '20px'
+                marginLeft: '7px'
               }}
               isOpen={isStatusPopoverOpen}
               closePopover={closeStatusPopover}
@@ -444,6 +469,7 @@ export const MyTable = ({
                       onChangeStatus(id);
                     }}
                   />
+                  <ApplyButton onClick={clickApply}>Apply</ApplyButton>
                 </EuiPopOverCheckbox>
               </div>
             </EuiPopover>
@@ -480,7 +506,15 @@ export const MyTable = ({
                   <TableDataRow key={bounty?.id}>
                     <BountyData className="avg">
                       <a
-                        style={{ textDecoration: 'inherit', color: 'inherit' }}
+                        style={{
+                          textDecoration: 'inherit',
+                          color: 'inherit',
+                          display: 'block',
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          width: '200px'
+                        }}
                         href={`/bounty/${bounty.bounty_id}`}
                         target="_blank"
                         rel="noopener noreferrer"
@@ -492,19 +526,19 @@ export const MyTable = ({
                     <TableDataCenter>{time_to_pay}</TableDataCenter>
                     <TableDataAlternative>
                       <ImageWithText
-                        text={bounty?.assignee}
+                        text={bounty?.assignee_alias}
                         image={bounty?.assignee_img || defaultPic}
                       />
                     </TableDataAlternative>
                     <TableDataAlternative className="address">
                       <ImageWithText
-                        text={bounty?.owner_pubkey}
-                        image={bounty?.providerImage || defaultPic}
+                        text={bounty?.owner_unique_name}
+                        image={bounty?.owner_img || defaultPic}
                       />
                     </TableDataAlternative>
                     <TableData className="organization">
                       <ImageWithText
-                        text={bounty?.organization}
+                        text={bounty?.organization_name}
                         image={bounty?.organization_img || defaultPic}
                       />
                     </TableData>

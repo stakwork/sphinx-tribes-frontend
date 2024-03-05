@@ -54,7 +54,7 @@ export const UserInfoDesktopView = observer(({ setShowSupport }: UserInfoProps) 
       <Head>
         <div style={{ height: 35 }} />
 
-        <Img src={userImg}>
+        <Img data-testid="profile-img" src={userImg}>
           <IconButton
             iconStyle={{ color: '#5F6368' }}
             style={{
