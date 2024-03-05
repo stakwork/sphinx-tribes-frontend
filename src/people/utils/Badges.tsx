@@ -467,8 +467,8 @@ function Badges(props: BadgesProps) {
 
   return (
     <Wrap>
-      <PageLoadSpinner show={loading} />
-      {selectedBadge ? (
+      {loading && <PageLoadSpinner show={loading} />}
+      {selectedBadge && !loading ? (
         <div style={{ width: '100%' }}>
           <Button
             color="noColor"

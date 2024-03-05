@@ -92,7 +92,7 @@ export const Wanted = observer(() => {
     getUserTickets();
   }, [main]);
 
-  if (!main.createdBounties?.length) {
+  if (!main.createdBounties?.length && !loading) {
     return (
       <NoneSpace
         style={{
@@ -120,7 +120,7 @@ export const Wanted = observer(() => {
   }
   return (
     <Container>
-      <PageLoadSpinner show={loading} />
+      {loading && <PageLoadSpinner show={loading} />}
       <Switch>
         <Route path={`${path}/:wantedId/:wantedIndex`}>
           <BountyModal basePath={url} />

@@ -18,7 +18,7 @@ import { usePeopleFilteredSearch } from './usePeopleFilteredSearch';
 const color = colors['light'];
 const Body = styled.div<{ isMobile: boolean }>`
   flex: 1;
-  height: ${(p: any) => (p.isMobile ? 'calc(100% - 105px)' : 'calc(100% - 65px)')};
+  height: ${(p: any) => (p.isMobile ? 'calc(100% - 105px)' : 'calc(100vh - 60px)')};
   background: ${(p: any) => (p.isMobile ? undefined : color.grayish.G950)};
   width: 100%;
   overflow-x: hidden;
@@ -94,9 +94,20 @@ function BodyComponent() {
     history.push(`/p/${uuid}`);
   }
 
+  if (isLoading) {
+    return (
+      <Body
+        data-testid="content"
+        isMobile={isMobile}
+        style={{ justifyContent: 'center', alignItems: 'center' }}
+      >
+        <EuiLoadingSpinner size="xl" />
+      </Body>
+    );
+  }
+
   return (
     <Body
-      data-testid="content"
       isMobile={isMobile}
       onScroll={(e: any) => {
         handleScroll(e);
@@ -118,25 +129,21 @@ function BodyComponent() {
         />
       </div>
       <div className="content">
-        {isLoading ? (
-          <EuiLoadingSpinner className="loader" size="xl" />
-        ) : (
-          <>
-            {main.people.map((p: Person) => (
-              <PersonCard
-                {...p}
-                key={p.id}
-                small={isMobile}
-                squeeze={screenWidth < 1420}
-                selected={ui.selectedPerson === p.id}
-                select={selectPerson}
-              />
-            ))}
+        <>
+          {main.people.map((p: Person) => (
+            <PersonCard
+              {...p}
+              key={p.id}
+              small={isMobile}
+              squeeze={screenWidth < 1420}
+              selected={ui.selectedPerson === p.id}
+              select={selectPerson}
+            />
+          ))}
 
-            {!main.people.length && <NoResults />}
-            <PageLoadSpinner noAnimate show={loadingBottom} />
-          </>
-        )}
+          {!main.people.length && <NoResults />}
+          <PageLoadSpinner noAnimate show={loadingBottom} />
+        </>
       </div>
       {openStartUpModel && (
         <StartUpModal closeModal={closeModal} dataObject={'getWork'} buttonColor={'primary'} />
