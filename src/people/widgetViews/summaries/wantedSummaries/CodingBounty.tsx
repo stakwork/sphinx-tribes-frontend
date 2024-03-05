@@ -383,7 +383,6 @@ function MobileView(props: CodingBountiesProps) {
   const { openPaymentConfirmation } = usePaymentConfirmationModal();
 
   const confirmPaymentHandler = () => {
-    console.log('here');
     openPaymentConfirmation({
       onConfirmPayment: makePayment,
       children: (
