@@ -74,12 +74,14 @@ const Wrap = styled.div<WrapProps>`
 function NameTag(props: NameTagProps) {
   const { owner_alias, owner_pubkey, img, created, id, style, widget, iconSize, textSize, isPaid } =
     props;
-  const { ui } = useStores();
+  const { ui, main } = useStores();
   const color = colors['light'];
 
   const history = useHistory();
 
   const isMobile = useIsMobile();
+
+  const userImg = img || main.getUserAvatarPlaceholder(owner_pubkey);
 
   const isSelected = ui.selectedPerson === id ? true : false;
 
@@ -113,7 +115,7 @@ function NameTag(props: NameTagProps) {
       >
         {!isSelected && (
           <>
-            <Img src={img || `/static/person_placeholder.png`} iconSize={iconSize} />
+            <Img src={userImg} iconSize={iconSize} data-testid="user-avatar" />
             <Name
               textSize={textSize}
               color={color.grayish.G250}
@@ -147,7 +149,7 @@ function NameTag(props: NameTagProps) {
           flexDirection: 'row'
         }}
       >
-        <Img src={img || `/static/person_placeholder.png`} iconSize={32} isPaid={isPaid} />
+        <Img src={userImg} iconSize={32} isPaid={isPaid} data-testid="user-avatar" />
         <div
           style={{
             display: 'flex',

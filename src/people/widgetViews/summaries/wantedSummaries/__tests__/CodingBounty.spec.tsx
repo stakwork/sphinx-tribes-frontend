@@ -446,4 +446,69 @@ describe('MobileView component', () => {
       await waitFor(() => expect(screen.getByText('complete')));
     })();
   });
+
+  it('Test that clicking on "Share to Twitter" button navigates user to templated Twitter post', async () => {
+    const props: CodingBountiesProps = {
+      ...defaultProps,
+      titleString: 'Test Title',
+      repo: 'TestRepo',
+      issue: '123'
+    };
+
+    const sendToRedirectMock = jest.fn();
+    props.sendToRedirect = sendToRedirectMock;
+
+    render(<MobileView {...props} />);
+
+    (async () => {
+      await waitFor(() => {
+        const twitterButton = screen.getByText('Share to Twitter');
+        fireEvent.click(twitterButton);
+
+        const expectedUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+          'Check out this bounty: "Test Title"'
+        )}%0A&url=${encodeURIComponent(`https://github.com/TestRepo/issues/123`)}`;
+        expect(sendToRedirectMock).toHaveBeenCalledWith(expectedUrl);
+      });
+    })();
+  });
+
+  it('Test that clicking on GitHub button takes user to GitHub link', () => {
+    const props: CodingBountiesProps = {
+      ...defaultProps,
+      ticket_url: 'https://github.com/TestRepo/issues/123'
+    };
+
+    const sendToRedirectMock = jest.fn();
+    props.sendToRedirect = sendToRedirectMock;
+
+    render(<MobileView {...props} />);
+
+    (async () => {
+      await waitFor(() => {
+        const githubButton = screen.getByText('GitHub');
+        fireEvent.click(githubButton);
+
+        expect(sendToRedirectMock).toHaveBeenCalledWith('https://github.com/TestRepo/issues/123');
+      });
+    })();
+  });
+
+  it('Test that clicking on "I can help" does not navigate away from the bounty page', async () => {
+    const props: CodingBountiesProps = {
+      ...defaultProps,
+      extraModalFunction: jest.fn()
+    };
+
+    render(<MobileView {...props} />);
+
+    (async () => {
+      await waitFor(() => {
+        const iCanHelpButton = screen.getByText('I can help');
+        fireEvent.click(iCanHelpButton);
+        expect(props.extraModalFunction).toHaveBeenCalled();
+        expect(screen.getByText(defaultProps.titleString)).toBeInTheDocument();
+      });
+    })();
+  });
 });

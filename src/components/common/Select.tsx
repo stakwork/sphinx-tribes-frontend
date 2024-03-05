@@ -39,15 +39,21 @@ const DropdownContainer = styled.div`
 `;
 
 const DropdownTrigger = styled.button<styleProps>`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   background: ${colors.light.pureWhite};
-  border: 1.5px solid ${colors.light.grayish.G750};
+  border: 1.5px solid
+    ${(props: styleProps) => (props.isOpen ? colors.light.blue2 : colors.light.grayish.G750)};
   color: ${colors.light.pureBlack};
   padding: 8px 16px;
   width: 100%;
-  text-align: left;
   cursor: pointer;
   &:focus {
     outline: none;
+  }
+  &:hover svg {
+    stroke: ${colors.light.pureBlack}; // Change icon color on hover
   }
   height: 40px;
   border-radius: 3px;
@@ -84,6 +90,18 @@ const Option = styled.div`
     background-color: #e0ecff;
   }
 `;
+
+const DropdownIcon = ({ color = '#b0b7bb' }: any) => (
+  <svg width="12" height="8" viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M1 1L7 7L13 1"
+      stroke={color}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
 
 export default function CustomSelect(props: SelProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -129,9 +147,12 @@ export default function CustomSelect(props: SelProps) {
       <StyledLabel isFocused={isFocused} hasContent={props.value}>
         {props.placeholder}
       </StyledLabel>
-      <DropdownTrigger onClick={toggleDropdown}>
-        {props.options.find((o: dropDownOption) => o.value === selectedValue)?.label}
+
+      <DropdownTrigger isOpen={isOpen} onClick={toggleDropdown}>
+        <span>{props.options.find((o: dropDownOption) => o.value === selectedValue)?.label}</span>
+        {!selectedValue && <DropdownIcon color={isFocused ? colors.light.pureBlack : '#b0b7bb'} />}
       </DropdownTrigger>
+
       <DropdownOptions isOpen={isOpen}>
         {props.options.map((option: dropDownOption) => (
           <Option key={option.value} onClick={() => handleSelect(option.value)}>
