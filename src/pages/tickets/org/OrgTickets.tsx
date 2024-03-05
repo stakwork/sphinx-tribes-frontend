@@ -20,6 +20,14 @@ function OrgBodyComponent() {
   const selectedWidget = 'bounties';
   const [scrollValue, setScrollValue] = useState<boolean>(false);
   const [checkboxIdToSelectedMap, setCheckboxIdToSelectedMap] = useState(defaultOrgBountyStatus);
+
+  useEffect(() => {
+    const savedStatus = localStorage.getItem('orgBountyStatus');
+    if (savedStatus) {
+      setCheckboxIdToSelectedMap(JSON.parse(savedStatus));
+    }
+  }, []);
+
   const [checkboxIdToSelectedMapLanguage, setCheckboxIdToSelectedMapLanguage] = useState({});
   const { uuid } = useParams<{ uuid: string; bountyId: string }>();
 
@@ -80,6 +88,7 @@ function OrgBodyComponent() {
       }
     };
     setCheckboxIdToSelectedMap(newCheckboxIdToSelectedMap);
+    localStorage.setItem('orgBountyStatus', JSON.stringify(newCheckboxIdToSelectedMap));
     // set the store status, to enable the accurate navigation modal call
     main.setBountiesStatus(newCheckboxIdToSelectedMap);
     getTotalBounties(uuid, newCheckboxIdToSelectedMap, page);
