@@ -447,7 +447,6 @@ describe('MobileView component', () => {
     })();
   });
 
-
   it('Test that clicking on "Share to Twitter" button navigates user to templated Twitter post', async () => {
     const props: CodingBountiesProps = {
       ...defaultProps,
@@ -512,5 +511,4 @@ describe('MobileView component', () => {
       });
     })();
   });
-
 });
