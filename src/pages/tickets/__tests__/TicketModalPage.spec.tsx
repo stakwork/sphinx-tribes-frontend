@@ -1,15 +1,5 @@
 import '@testing-library/jest-dom';
-import {
-  act,
-  render,
-  waitFor,
-  fireEvent,
-  screen,
-  within,
-  getByTestId,
-  getAllByText,
-  queryByText
-} from '@testing-library/react';
+import { act, render, waitFor, fireEvent, screen, within } from '@testing-library/react';
 import { user } from '__test__/__mockData__/user';
 import { mockBountiesMutated, newBounty } from 'bounties/__mock__/mockBounties.data';
 import { DollarConverter, formatSat, getSessionValue, satToUsd } from 'helpers';
@@ -20,6 +10,8 @@ import { useIsMobile } from 'hooks';
 import { uiStore } from 'store/ui';
 import { unpaidString } from 'people/widgetViews/summaries/constants';
 import userEvent from '@testing-library/user-event';
+import * as helpers from 'helpers';
+import { people } from '__test__/__mockData__/persons';
 import { TicketModalPage } from '../TicketModalPage';
 import { withCreateModal } from '../../../components/common/withCreateModal';
 
@@ -45,6 +37,11 @@ jest.mock('react-router-dom', () => ({
     uuid: 'ck95pe04nncjnaefo08g',
     bountyId: '1239'
   })
+}));
+
+jest.mock('helpers', () => ({
+  ...jest.requireActual('helpers'),
+  userCanManageBounty: jest.fn()
 }));
 
 describe('TicketModalPage Component', () => {
@@ -851,6 +848,35 @@ describe('TicketModalPage Component', () => {
 
       expect(screen.getByText('chevron_right')).toBeInTheDocument();
       expect(screen.getByText('chevron_left')).toBeInTheDocument();
+    });
+  });
+
+  it('checks for enabled state of the delete button based on no assignment status', async () => {
+    uiStore.setMeInfo(user);
+    jest.spyOn(mainStore, 'getBountyById').mockReturnValue(
+      Promise.resolve([
+        {
+          ...newBounty,
+          person: { ...newBounty.person, owner_alias: user.alias },
+          body: {
+            ...mockBountiesMutated[1].body,
+            owner: user
+          }
+        }
+      ])
+    );
+    jest.spyOn(mainStore, 'getBountyIndexById').mockReturnValue(Promise.resolve(1445));
+    jest.spyOn(helpers, 'userCanManageBounty').mockResolvedValue(true);
+
+    await act(async () => {
+      const { getByText, getByTestId } = render(
+        <MemoryRouter initialEntries={['/bounty/1445']}>
+          <Route path="/bounty/:bountyId" component={TicketModalPage} />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => expect(getByTestId('testid-modal')).toBeInTheDocument());
+      expect(getByText('Delete')).toBeEnabled();
     });
   });
 });
