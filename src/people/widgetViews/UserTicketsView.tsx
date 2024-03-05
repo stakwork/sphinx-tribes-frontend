@@ -129,7 +129,7 @@ const UserTickets = () => {
   const listItems =
     displayedBounties && displayedBounties.length ? (
       displayedBounties.map((item: any, i: number) => {
-        const person = main.people.find((p: any) => p.owner_pubkey === item.body.owner_id);
+        const { person } = item;
         const body = { ...item.body };
         return (
           <Panel

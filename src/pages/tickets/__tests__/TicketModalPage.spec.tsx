@@ -851,7 +851,7 @@ describe('TicketModalPage Component', () => {
     });
   });
 
-  it('checks for enabled/ state of the delete button based on no assignment status', async () => {
+   it('checks for enabled state of the delete button based on no assignment status', async () => {
     uiStore.setMeInfo(user);
     jest.spyOn(mainStore, 'getBountyById').mockReturnValue(
       Promise.resolve([
