@@ -851,43 +851,32 @@ describe('TicketModalPage Component', () => {
     });
   });
 
-  it('checks for enabled/disabled state of the delete button based on the assignment status', async () => {
+  it('checks for enabled/ state of the delete button based on no assignment status', async () => {
     uiStore.setMeInfo(user);
     jest.spyOn(mainStore, 'getBountyById').mockReturnValue(
       Promise.resolve([
-        // { ...newBounty, body: { ...mockBountiesMutated[1].body, assignee: null } },
-        // { ...newBounty, body: { ...mockBountiesMutated[1].body, assignee: user } },
         {
           ...newBounty,
           person: { ...newBounty.person, owner_alias: user.alias },
           body: {
             ...mockBountiesMutated[1].body,
-            owner: user,
-            assignee: people[1]
+            owner: user
           }
         }
       ])
     );
-    jest.spyOn(mainStore, 'getBountyIndexById').mockReturnValue(Promise.resolve(1234));
+    jest.spyOn(mainStore, 'getBountyIndexById').mockReturnValue(Promise.resolve(1445));
     jest.spyOn(helpers, 'userCanManageBounty').mockResolvedValue(true);
 
     await act(async () => {
-      const { getByText, rerender, getByTestId } = render(
-        <MemoryRouter initialEntries={['/bounty/1234']}>
+      const { getByText, getByTestId } = render(
+        <MemoryRouter initialEntries={['/bounty/1445']}>
           <Route path="/bounty/:bountyId" component={TicketModalPage} />
         </MemoryRouter>
       );
 
       await waitFor(() => expect(getByTestId('testid-modal')).toBeInTheDocument());
-
       expect(getByText('Delete')).toBeEnabled();
-
-      // rerender(
-      //   <MemoryRouter initialEntries={['/bounty/1235']}>
-      //     <Route path="/bounty/:bountyId" component={TicketModalPage} />
-      //   </MemoryRouter>
-      // );
-      // expect(getByText('Delete')).toBeDisabled();
     });
   });
 });
