@@ -446,5 +446,4 @@ describe('MobileView component', () => {
       await waitFor(() => expect(screen.getByText('complete')));
     })();
   });
-
 });
