@@ -1,5 +1,6 @@
 import { usePerson } from 'hooks';
 import { observer } from 'mobx-react-lite';
+import { EuiCheckboxGroup } from '@elastic/eui';
 import { BountyModal } from 'people/main/bountyModal';
 import { widgetConfigs } from 'people/utils/Constants';
 import NoneSpace from 'people/utils/NoneSpace';
@@ -13,6 +14,7 @@ import { paginationQueryLimit } from 'store/main';
 import styled from 'styled-components';
 import { LoadMoreContainer } from '../../../people/widgetViews/WidgetSwitchViewer';
 import { colors } from '../../../config/colors';
+
 const config = widgetConfigs.bounties;
 type BountyType = any;
 const Container = styled.div`
@@ -52,6 +54,9 @@ export const Wanted = observer(() => {
   const [loading, setIsLoading] = useState<boolean>(false);
   const [page, setPage] = useState(1);
   const [hasMoreBounties, setHasMoreBounties] = useState(true);
+  const [sort, setSort] = useState('paid');
+
+  const Status = ['open', 'assingned', 'paid'];
 
   // Function to fetch user tickets with pagination
   const getUserTickets = async () => {
@@ -59,7 +64,7 @@ export const Wanted = observer(() => {
 
     // Fetch bounties for the specified page and limit
     const response = await main.getPersonCreatedBounties(
-      { page: page, limit: paginationQueryLimit },
+      { page: page, limit: paginationQueryLimit, sortBy: sort },
       uuid
     );
 
@@ -77,7 +82,7 @@ export const Wanted = observer(() => {
     setPage(nextPage);
     // Fetch bounties for the next page
     const response = await main.getPersonCreatedBounties(
-      { page: nextPage, limit: paginationQueryLimit },
+      { page: nextPage, limit: paginationQueryLimit, sortBy: sort },
       uuid
     );
     // Check if the response has fewer bounties than the limit, indicating no more bounties to load
@@ -90,7 +95,7 @@ export const Wanted = observer(() => {
 
   useEffect(() => {
     getUserTickets();
-  }, [main]);
+  }, [main, sort]);
 
   if (!main.createdBounties?.length && !loading) {
     return (
@@ -130,11 +135,26 @@ export const Wanted = observer(() => {
         style={{
           width: '100%',
           display: 'flex',
-          justifyContent: 'flex-end',
-          paddingBottom: '16px'
+          justifyContent: 'space-between',
+          paddingBottom: '16px',
+          alignItems: 'center'
         }}
       >
-        {canEdit && <PostBounty widget="bounties" />}
+        <h4>Bounties {sort}</h4>
+        <div style={{ display: 'flex' }}>
+          <EuiCheckboxGroup
+            style={{ display: 'flex', alignItems: 'center', gap: 10, marginRight: 20 }}
+            options={Status.map((status: any) => ({
+              label: `${status}`,
+              id: status
+            }))}
+            idToSelectedMap={{ [sort]: true }}
+            onChange={(id: any) => {
+              setSort(id);
+            }}
+          />
+          {canEdit && <PostBounty widget="bounties" />}
+        </div>
       </div>
       {displayedBounties
         .filter((w: BountyType) => w.body.owner_id === person?.owner_pubkey)

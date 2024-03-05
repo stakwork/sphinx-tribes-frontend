@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Route, Switch, useParams, useRouteMatch, Router } from 'react-router-dom';
 import { useStores } from 'store';
+import { EuiCheckboxGroup } from '@elastic/eui';
 import NoResults from 'people/utils/UserNoResults';
-import { useIsMobile, usePerson } from 'hooks';
+import { useIsMobile } from 'hooks';
 import { Spacer } from 'people/main/Body';
 import styled from 'styled-components';
 import { BountyModal } from 'people/main/bountyModal/BountyModal';
@@ -13,6 +14,7 @@ import { colors } from '../../config/colors';
 import WantedView from './WantedView';
 import DeleteTicketModal from './DeleteModal';
 import { LoadMoreContainer } from './WidgetSwitchViewer';
+
 type BountyType = any;
 
 const Container = styled.div`
@@ -49,7 +51,7 @@ const UserTickets = () => {
   const isMobile = useIsMobile();
   const { path, url } = useRouteMatch();
 
-  const { person } = usePerson(ui.selectedPerson);
+  const Status = ['Assigned', 'Paid'];
 
   const [deletePayload, setDeletePayload] = useState<object>({});
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
@@ -59,6 +61,7 @@ const UserTickets = () => {
   const [loading, setIsLoading] = useState<boolean>(true);
   const [hasMoreBounties, setHasMoreBounties] = useState(true);
   const [bountyOwner, setBountyOwner] = useState<Person>();
+  const [sort, setSort] = useState('');
   const [page, setPage] = useState(1);
   const paginationLimit = 20;
 
@@ -113,7 +116,7 @@ const UserTickets = () => {
     const nextPage = page + 1;
     setPage(nextPage);
     const response = await main.getPersonAssignedBounties(
-      { page: nextPage, limit: paginationLimit },
+      { page: nextPage, limit: paginationLimit, sortBy: sort },
       uuid
     );
     if (response.length < paginationLimit) {
@@ -124,7 +127,7 @@ const UserTickets = () => {
 
   useEffect(() => {
     getUserTickets();
-  }, [main]);
+  }, [main, sort]);
 
   const listItems =
     displayedBounties && displayedBounties.length ? (
@@ -171,6 +174,30 @@ const UserTickets = () => {
           </Route>
         </Switch>
       </Router>
+      <div
+        style={{
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'space-between',
+          paddingBottom: '16px',
+          alignItems: 'center'
+        }}
+      >
+        <h4>Assigned Bounties {sort}</h4>
+        <div style={{ display: 'flex' }}>
+          <EuiCheckboxGroup
+            style={{ display: 'flex', gap: 20, alignItems: 'center', alignContent: 'center' }}
+            options={Status.map((status: any) => ({
+              label: `${status}`,
+              id: status
+            }))}
+            idToSelectedMap={{ [sort]: true }}
+            onChange={(id: any) => {
+              setSort(id);
+            }}
+          />
+        </div>
+      </div>
       {!loading ? listItems : ''}
       {hasMoreBounties && !loading && (
         <LoadMoreContainer

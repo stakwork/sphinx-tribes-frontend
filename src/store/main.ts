@@ -939,8 +939,7 @@ export class MainStore {
 
     const query = this.appendQueryParams(`people/wanteds/assigned/${uuid}`, paginationQueryLimit, {
       sortBy: 'paid',
-      ...queryParams,
-      direction: 'ASC'
+      ...queryParams
     });
 
     try {
@@ -986,9 +985,7 @@ export class MainStore {
     queryParams = { ...queryParams, search: uiStore.searchText };
 
     const query = this.appendQueryParams(`people/wanteds/created/${uuid}`, paginationQueryLimit, {
-      ...queryParams,
-      sortBy: 'paid',
-      direction: 'ASC'
+      ...queryParams
     });
 
     try {
@@ -1652,6 +1649,7 @@ export class MainStore {
       body.coding_languages = languages;
     }
 
+    // eslint-disable-next-line no-useless-catch
     try {
       const request = `gobounties?token=${info?.tribe_jwt}`;
       //TODO: add some sort of authentication
