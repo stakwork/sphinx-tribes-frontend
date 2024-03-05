@@ -133,12 +133,12 @@ export const TextInColorBox = ({ status }: TextInColorBoxProps) => (
             status === 'open'
               ? '#618AFF'
               : status === 'paid'
-                ? '#5F6368'
-                : status === 'assigned'
-                  ? '#49C998'
-                  : status === 'completed'
-                    ? '#9157F6'
-                    : 'transparent',
+              ? '#5F6368'
+              : status === 'assigned'
+              ? '#49C998'
+              : status === 'completed'
+              ? '#9157F6'
+              : 'transparent',
           borderRadius: '2px',
           marginBottom: '0'
         }}
@@ -413,8 +413,9 @@ export const MyTable = ({
                     <div className="filterStatusIconContainer">
                       <MaterialIcon
                         className="materialStatusIcon"
-                        icon={`${isProviderPopoverOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down'
-                          }`}
+                        icon={`${
+                          isProviderPopoverOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down'
+                        }`}
                         style={{
                           color: isProviderPopoverOpen ? color.grayish.G10 : ''
                         }}
@@ -623,8 +624,8 @@ export const MyTable = ({
                   bounty?.paid && bounty.assignee
                     ? 'paid'
                     : bounty.assignee && !bounty.paid
-                      ? 'assigned'
-                      : 'open';
+                    ? 'assigned'
+                    : 'open';
 
                 const created = moment.unix(bounty.bounty_created).format('YYYY-MM-DD');
                 const time_to_pay = bounty.paid_date
