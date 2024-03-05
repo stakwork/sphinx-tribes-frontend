@@ -138,7 +138,7 @@ const ApplyButton = styled.button`
   height: 25px;
   margin: 10px;
   margin-left: 0px;
-  padding: 10px 16px;
+  padding: 18px 23px;
   justify-content: center;
   align-items: center;
   gap: 6px;
