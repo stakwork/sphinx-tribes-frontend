@@ -102,7 +102,7 @@ export const SuperAdmin = () => {
   useEffect(() => {
     getBounties();
     setSearch(false);
-  }, [search]);
+  }, [search, currentPage, sortOrder]);
 
   useEffect(() => {
     getBounties();
