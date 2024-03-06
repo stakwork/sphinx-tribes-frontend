@@ -47,6 +47,7 @@ export const SuperAdmin = () => {
   const [loading, setLoading] = useState(false);
   const [activeTabs, setActiveTabs] = useState<number[]>([]);
   const [totalBounties, setTotalBounties] = useState(0);
+  const [search, setSearch] = useState(false);
   const [providers, setProviders] = useState<any[]>([]);
   const [providersCheckboxSelected, setProvidersCheckboxSelected] = useState<Bounty[]>([]);
   const [selectedProviders, setSelectedProviders] = useState<string>('');
@@ -129,7 +130,16 @@ export const SuperAdmin = () => {
 
   useEffect(() => {
     getBounties();
-  }, [getBounties, currentPage]);
+    setSearch(false);
+  }, [search, currentPage, sortOrder]);
+
+  useEffect(() => {
+    getBounties();
+  }, []);
+
+  const onClickApply = () => {
+    setSearch(true);
+  };
 
   const onChangeStatus = (optionId: any) => {
     const newCheckboxIdToSelectedMap = {
@@ -138,6 +148,7 @@ export const SuperAdmin = () => {
         [optionId]: !checkboxIdToSelectedMap[optionId]
       }
     };
+
     setCheckboxIdToSelectedMap(newCheckboxIdToSelectedMap);
   };
 
@@ -257,6 +268,7 @@ export const SuperAdmin = () => {
               headerIsFrozen={inView}
               sortOrder={sortOrder}
               onChangeFilterByDate={onDateFilterChange}
+              clickApply={onClickApply}
               onChangeStatus={onChangeStatus}
               checkboxIdToSelectedMap={checkboxIdToSelectedMap}
               currentPage={currentPage}

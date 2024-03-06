@@ -68,6 +68,7 @@ export interface TableProps {
   sortOrder?: string;
   onChangeFilterByDate?: (option: string) => void;
   onChangeStatus: (number) => void;
+  clickApply: () => void;
   checkboxIdToSelectedMap?: any;
   paginatePrev?: () => void;
   paginateNext?: () => void;
@@ -147,6 +148,24 @@ export const TextInColorBox = ({ status }: TextInColorBoxProps) => (
     </div>
   </>
 );
+
+const StatusApplyButton = styled.button`
+  display: flex;
+  width: 112px;
+  height: 25px;
+  margin: 10px;
+  margin-left: 0px;
+  padding: 18px 23px;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  outline: none;
+  border-radius: 6px;
+  background: var(--Primary-blue, #618aff);
+  box-shadow: 0px 2px 10px 0px rgba(97, 138, 255, 0.5);
+  color: white;
+`;
 
 const EuiPopOverCheckbox = styled.div<styledProps>`
   width: 147px;
@@ -277,6 +296,7 @@ export const MyTable = ({
   onChangeFilterByDate,
   onChangeStatus,
   checkboxIdToSelectedMap,
+  clickApply,
   currentPage,
   setCurrentPage,
   activeTabs,
@@ -554,7 +574,7 @@ export const MyTable = ({
                 maxWidth: '140px',
                 minHeight: '160px',
                 marginTop: '0px',
-                marginLeft: '20px'
+                marginLeft: '7px'
               }}
               isOpen={isStatusPopoverOpen}
               closePopover={closeStatusPopover}
@@ -579,6 +599,7 @@ export const MyTable = ({
                       onChangeStatus(id);
                     }}
                   />
+                  <StatusApplyButton onClick={clickApply}>Apply</StatusApplyButton>
                 </EuiPopOverCheckbox>
               </div>
             </EuiPopover>

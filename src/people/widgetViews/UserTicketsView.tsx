@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Route, Switch, useParams, useRouteMatch, Router } from 'react-router-dom';
 import { useStores } from 'store';
 import NoResults from 'people/utils/UserNoResults';
-import { useIsMobile, usePerson } from 'hooks';
+import { useIsMobile } from 'hooks';
 import { Spacer } from 'people/main/Body';
 import styled from 'styled-components';
 import { BountyModal } from 'people/main/bountyModal/BountyModal';
@@ -48,8 +48,6 @@ const UserTickets = () => {
   const { main, ui } = useStores();
   const isMobile = useIsMobile();
   const { path, url } = useRouteMatch();
-
-  const { person } = usePerson(ui.selectedPerson);
 
   const [deletePayload, setDeletePayload] = useState<object>({});
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
@@ -129,7 +127,7 @@ const UserTickets = () => {
   const listItems =
     displayedBounties && displayedBounties.length ? (
       displayedBounties.map((item: any, i: number) => {
-        const person = main.people.find((p: any) => p.owner_pubkey === item.body.owner_id);
+        const { person } = item;
         const body = { ...item.body };
         return (
           <Panel
