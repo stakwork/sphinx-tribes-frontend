@@ -7,7 +7,7 @@ import { MeInfo, emptyMeInfo, uiStore } from '../ui';
 import { MainStore } from '../main';
 import { localStorageMock } from '../../__test__/__mockData__/localStorage';
 import { TribesURL, getHost } from '../../config';
-import mockBounties, { expectedBountyResponses } from '../../bounties/__mock__/mockBounties.data';
+import mockBounties, { assignedBounty, expectedBountyResponses } from '../../bounties/__mock__/mockBounties.data';
 
 let fetchStub: sinon.SinonStub;
 let mockApiResponseData: any[];
@@ -1110,6 +1110,49 @@ describe('Main store', () => {
     );
     expect(res).toBeTruthy();
   });
+
+   it('should accept search query and return results based on query ', async () => {
+    uiStore.searchText = 'test';
+    const mockApiResponse = {
+      status: 200,
+      ok: true,
+      json: (): Promise<any> => Promise.resolve([mockBounties[0]])
+    };
+    fetchStub.resolves(Promise.resolve(mockApiResponse));
+    const store = new MainStore();
+    await store.setPersonBounties([mockBounties[0].bounty]);
+    const bounties = await store.getPeopleBounties({
+      resetPage: false,
+      search: uiStore.searchText,
+      limit: 10,
+      page: 1,
+      sortBy: 'created'
+     });
+     expect(bounties).toHaveLength(1);
+     expect(bounties[0].body.title).toEqual(uiStore.searchText);
+   });
+
+  it('should return filter by languages, status response', async () => {
+    const main = new MainStore();
+    const mockApiResponse = {
+      status: 200,
+      ok: true,
+      json: (): Promise<any> => Promise.resolve([{...assignedBounty}])
+    };
+    fetchStub.resolves(Promise.resolve(mockApiResponse));
+    const store = new MainStore();
+    const bounties = await store.getPeopleBounties({
+      resetPage: false,
+      limit: 10,
+      page: 1,
+      sortBy: 'created',
+      languages: 'JavaScript'
+    });
+
+    main.setBountiesStatus({ Open: false, Assigned: true, Paid: false });
+    main.setBountyLanguages("JavaScript")
+    expect(bounties).toHaveLength(1);
+   });
 
   it('I should be able to test that when a user is signed out, a user will get a 401 error if they make an API call', async () => {
     uiStore.setMeInfo(emptyMeInfo);

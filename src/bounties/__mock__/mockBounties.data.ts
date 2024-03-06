@@ -26,7 +26,7 @@ const mockBounties = [
       estimated_completion_date: '',
       updated: '2023-12-12T16:24:14.585187Z',
       paid_date: null,
-      coding_languages: ['Lightning', 'Typescript']
+      codingLanguage: 'Lightning, Typescript'
     },
     assignee: {
       id: 0,
@@ -106,7 +106,7 @@ const mockBounties = [
       estimated_completion_date: '2023-12-14T00:46:11.979Z',
       updated: '2023-12-12T00:47:12.671921Z',
       paid_date: null,
-      coding_languages: ['Node', 'Javacript']
+      codingLanguage: 'Node, Javacript'
     },
     assignee: {
       id: 0,
@@ -402,7 +402,7 @@ export const assignedBounty = {
     estimated_completion_date: '2024-02-12T22:55:12.301Z',
     created: 1707432920,
     updated: '2024-02-09T00:09:02.297044Z',
-    coding_languages: []
+    codingLanguages: 'JavaScript'
   },
   assignee: {
     id: 123, // Randomized
