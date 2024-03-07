@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
 import { EuiCheckboxGroup, EuiPopover, EuiText } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
+import { Person } from 'store/main';
 import paginationarrow1 from '../header/icons/paginationarrow1.svg';
 import paginationarrow2 from '../header/icons/paginationarrow2.svg';
 import defaultPic from '../../../public/static/profile_avatar.svg';
@@ -41,7 +42,19 @@ import {
   BoxImage,
   DateFilterWrapper,
   DateFilterContent,
-  PaginationImg
+  PaginationImg,
+  ProviderContainer,
+  ProvidersListContainer,
+  ProviderContianer,
+  ProviderInfo,
+  ProviderImg,
+  Providername,
+  Checkbox,
+  HorizontalGrayLine,
+  FooterContainer,
+  ClearButton,
+  ClearText,
+  ApplyButton
 } from './TableStyle';
 
 interface styledProps {
@@ -66,6 +79,13 @@ export interface TableProps {
   setCurrentPage?: React.Dispatch<React.SetStateAction<number>>;
   activeTabs: number[];
   setActiveTabs: React.Dispatch<React.SetStateAction<number[]>>;
+  providers?: any[];
+  providersCheckboxSelected?: Person[];
+  handleProviderSelection?: (provider: Person) => void;
+  handleClearButtonClick?: () => void;
+  handleApplyButtonClick?: () => void;
+  getProviders?: (number) => void;
+  providersCurrentPage?: number;
 }
 
 interface ImageWithTextProps {
@@ -132,7 +152,7 @@ export const TextInColorBox = ({ status }: TextInColorBoxProps) => (
   </>
 );
 
-const ApplyButton = styled.button`
+const StatusApplyButton = styled.button`
   display: flex;
   width: 112px;
   height: 25px;
@@ -266,6 +286,10 @@ const StatusContainer = styled.div<styledProps>`
   }
 `;
 
+const ProviderStatusContainer = styled(StatusContainer)<styledProps>`
+  margin-top: -3px !important;
+`;
+
 const Status = ['Open', 'Assigned', 'Completed', 'Paid'];
 
 export const MyTable = ({
@@ -281,9 +305,17 @@ export const MyTable = ({
   activeTabs,
   setActiveTabs,
   totalBounties,
-  paginationLimit
+  paginationLimit,
+  providers,
+  providersCheckboxSelected,
+  handleProviderSelection,
+  handleClearButtonClick,
+  handleApplyButtonClick,
+  getProviders,
+  providersCurrentPage
 }: TableProps) => {
   const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
+  const [isProviderPopoverOpen, setIsProviderPopoverOpen] = useState<boolean>(false);
   const onButtonClick = () => setIsPopoverOpen((isPopoverOpen: any) => !isPopoverOpen);
   const closePopover = () => setIsPopoverOpen(false);
 
@@ -292,6 +324,23 @@ export const MyTable = ({
     setIsStatusPopoverOpen((isPopoverOpen: any) => !isPopoverOpen);
   };
   const closeStatusPopover = () => setIsStatusPopoverOpen(false);
+
+  const onProviderButtonClick = async () => {
+    setIsProviderPopoverOpen((isProviderPopoverOpen: any) => !isProviderPopoverOpen);
+  };
+  const closeProviderPopover = () => setIsProviderPopoverOpen(false);
+
+  const handleClearClick = () => {
+    if (handleClearButtonClick) {
+      handleClearButtonClick();
+    }
+  };
+
+  const handleApplyClick = () => {
+    if (handleApplyButtonClick) {
+      handleApplyButtonClick();
+    }
+  };
 
   const paginateNext = () => {
     const activeTab = paginationLimit > visibleTabs;
@@ -339,6 +388,33 @@ export const MyTable = ({
   };
 
   const color = colors['light'];
+  const loaderRef = useRef(null);
+
+  useEffect(() => {
+    if (!isProviderPopoverOpen) return;
+
+    const observer = new IntersectionObserver(
+      (entries: IntersectionObserverEntry[]) => {
+        const firstEntry = entries[0];
+        if (firstEntry.isIntersecting) {
+          const currPage = providersCurrentPage ? providersCurrentPage + 1 : 1;
+          if (getProviders) getProviders(currPage);
+        }
+      },
+      { threshold: 0.3 }
+    );
+
+    const currentLoaderRef = loaderRef.current;
+    if (currentLoaderRef) {
+      observer.observe(currentLoaderRef);
+    }
+
+    return () => {
+      if (currentLoaderRef) {
+        observer.unobserve(currentLoaderRef);
+      }
+    };
+  }, [isProviderPopoverOpen]);
 
   return (
     <>
@@ -355,6 +431,93 @@ export const MyTable = ({
           </BountyHeader>
           <Options>
             <FlexDiv>
+              <EuiPopover
+                button={
+                  <ProviderStatusContainer onClick={onProviderButtonClick} color={color}>
+                    <EuiText
+                      className="statusText"
+                      style={{
+                        color: isProviderPopoverOpen ? color.grayish.G10 : ''
+                      }}
+                    >
+                      Provider:
+                    </EuiText>
+                    <div className="filterStatusIconContainer">
+                      <MaterialIcon
+                        className="materialStatusIcon"
+                        icon={`${
+                          isProviderPopoverOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down'
+                        }`}
+                        style={{
+                          color: isProviderPopoverOpen ? color.grayish.G10 : ''
+                        }}
+                      />
+                    </div>
+                  </ProviderStatusContainer>
+                }
+                panelStyle={{
+                  border: 'none',
+                  boxShadow: `0px 1px 20px ${color.black90}`,
+                  background: `${color.pureWhite}`,
+                  borderRadius: '0px 0px 6px 6px',
+                  marginTop: '0px',
+                  marginLeft: '20px'
+                }}
+                isOpen={isProviderPopoverOpen}
+                closePopover={closeProviderPopover}
+                panelPaddingSize="none"
+                anchorPosition="downLeft"
+              >
+                <ProviderContainer>
+                  <ProvidersListContainer>
+                    {providers && providers.length > 0 ? (
+                      providers.map((provider: Person) => (
+                        <ProviderContianer key={provider.owner_pubkey}>
+                          <ProviderInfo>
+                            <ProviderImg
+                              src={provider.img || `/static/person_placeholder.png`}
+                              alt="provider"
+                            />
+                            <Providername>
+                              {provider.owner_alias || provider.owner_pubkey}
+                            </Providername>
+                          </ProviderInfo>
+                          <Checkbox
+                            type="checkbox"
+                            name={provider.owner_alias}
+                            checked={
+                              providersCheckboxSelected &&
+                              providersCheckboxSelected.some(
+                                (p: Person) => p.owner_pubkey === provider.owner_pubkey
+                              )
+                            }
+                            onChange={() =>
+                              handleProviderSelection && handleProviderSelection(provider)
+                            }
+                          />
+                        </ProviderContianer>
+                      ))
+                    ) : (
+                      <p>No provider available</p>
+                    )}
+                    <div ref={loaderRef}></div>
+                  </ProvidersListContainer>
+                  <HorizontalGrayLine />
+                  <FooterContainer>
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'row'
+                      }}
+                    >
+                      <ClearButton onClick={handleClearClick}>
+                        <ClearText>Clear</ClearText>
+                      </ClearButton>
+                      <ApplyButton onClick={handleApplyClick}>Apply</ApplyButton>
+                    </div>
+                  </FooterContainer>
+                </ProviderContainer>
+              </EuiPopover>
               <EuiPopover
                 button={
                   <DateFilterWrapper onClick={onButtonClick} color={color}>
@@ -469,7 +632,7 @@ export const MyTable = ({
                       onChangeStatus(id);
                     }}
                   />
-                  <ApplyButton onClick={clickApply}>Apply</ApplyButton>
+                  <StatusApplyButton onClick={clickApply}>Apply</StatusApplyButton>
                 </EuiPopOverCheckbox>
               </div>
             </EuiPopover>

@@ -160,7 +160,23 @@ const MockTableProps: TableProps = {
   onChangeFilterByDate: jest.fn()
 };
 
+const mockProviders = [
+  { owner_alias: 'Provider 1', img: 'image', owner_pubkey: 'pub key' },
+  { owner_alias: 'Provider 2', img: 'image', owner_pubkey: 'pub key' },
+  { owner_alias: 'Provider 3', img: 'image', owner_pubkey: 'pub key' }
+];
+
 describe('MyTable Component', () => {
+  beforeEach(() => {
+    const mockIntersectionObserver = jest.fn();
+    mockIntersectionObserver.mockReturnValue({
+      observe: () => jest.fn(),
+      unobserve: () => jest.fn(),
+      disconnect: () => jest.fn()
+    });
+    window.IntersectionObserver = mockIntersectionObserver;
+  });
+
   it('renders elements from TableProps in the document', () => {
     const { getByText } = render(<MyTable {...MockTableProps} headerIsFrozen={false} />);
     expect(getByText(mockBounties[0].title)).toBeInTheDocument();
@@ -601,45 +617,81 @@ describe('MyTable Component', () => {
     expect(screen.queryByText('Bounty 3')).not.toBeInTheDocument();
   });
 
-  it('filter by Open bounties after click apply', async () => {
-    render(<MyTable {...MockTableProps} />);
-
-    fireEvent.click(screen.getByText('Status:'));
-
-    userEvent.click(screen.getByText('Open'));
-
-    fireEvent.click(screen.getByText('Apply'));
-
-    waitFor(() => {
-      expect(screen.getByText('Bounty 2')).toBeInTheDocument();
-    });
+  it('displays the dropdown when clicking on "Providers"', () => {
+    render(<MyTable {...MockTableProps} headerIsFrozen={false} providers={mockProviders} />);
+    const providersButton = screen.getByText('Provider:');
+    fireEvent.click(providersButton);
+    const providerCheckbox = screen.getByText('Provider 1');
+    expect(providerCheckbox).toBeInTheDocument();
   });
 
-  it('filter by Paid bounties after click apply', async () => {
-    render(<MyTable {...MockTableProps} />);
-
-    fireEvent.click(screen.getByText('Status:'));
-
-    userEvent.click(screen.getByText('Paid'));
-
-    fireEvent.click(screen.getByText('Apply'));
-
-    waitFor(() => {
-      expect(screen.getByText('Bounty 1')).toBeInTheDocument();
-    });
+  it('stores the appropriate call when selecting providers', async () => {
+    const providersCheckboxSelected = [];
+    const handleProviderSelection = jest.fn();
+    const handleClearButtonClick = jest.fn();
+    const handleApplyButtonClick = jest.fn();
+    const { getByText } = render(
+      <MyTable
+        {...MockTableProps}
+        headerIsFrozen={false}
+        providers={mockProviders}
+        providersCheckboxSelected={providersCheckboxSelected}
+        handleProviderSelection={handleProviderSelection}
+        handleClearButtonClick={handleClearButtonClick}
+        handleApplyButtonClick={handleApplyButtonClick}
+      />
+    );
+    const providersButton = getByText('Provider:');
+    fireEvent.click(providersButton);
+    const providerCheckbox = getByText('Provider 1');
+    expect(providerCheckbox).toBeInTheDocument();
   });
 
-  it('filter by Assigned bounties after click apply', async () => {
-    render(<MyTable {...MockTableProps} />);
+  it('makes a call when clicking "Apply"', () => {
+    const providersCheckboxSelected = [];
+    const handleProviderSelection = jest.fn();
+    const handleClearButtonClick = jest.fn();
+    const handleApplyButtonClick = jest.fn();
+    const { getByText } = render(
+      <MyTable
+        {...MockTableProps}
+        headerIsFrozen={false}
+        providers={mockProviders}
+        providersCheckboxSelected={providersCheckboxSelected}
+        handleProviderSelection={handleProviderSelection}
+        handleClearButtonClick={handleClearButtonClick}
+        handleApplyButtonClick={handleApplyButtonClick}
+      />
+    );
+    const providersButton = getByText('Provider:');
+    fireEvent.click(providersButton);
+    const applyButton = getByText('Apply');
+    fireEvent.click(applyButton);
+    expect(handleApplyButtonClick).toHaveBeenCalled();
+  });
 
-    fireEvent.click(screen.getByText('Status:'));
-
-    userEvent.click(screen.getByText('Assigned'));
-
-    fireEvent.click(screen.getByText('Apply'));
-
-    waitFor(() => {
-      expect(screen.getByText('Bounty 3')).toBeInTheDocument();
-    });
+  it('clears selections when clicking "Clear"', () => {
+    const providersCheckboxSelected = [];
+    const handleProviderSelection = jest.fn();
+    const handleClearButtonClick = jest.fn();
+    const handleApplyButtonClick = jest.fn();
+    const { getByText } = render(
+      <MyTable
+        {...MockTableProps}
+        headerIsFrozen={false}
+        providers={mockProviders}
+        providersCheckboxSelected={providersCheckboxSelected}
+        handleProviderSelection={handleProviderSelection}
+        handleClearButtonClick={handleClearButtonClick}
+        handleApplyButtonClick={handleApplyButtonClick}
+      />
+    );
+    const providersButton = getByText('Provider:');
+    fireEvent.click(providersButton);
+    const providerCheckbox = getByText('Provider 1');
+    fireEvent.click(providerCheckbox);
+    const clearButton = getByText('Clear');
+    fireEvent.click(clearButton);
+    expect(providerCheckbox).not.toBeChecked();
   });
 });

@@ -189,6 +189,7 @@ export interface QueryParams {
   resetPage?: boolean;
   languages?: string;
   org_uuid?: string;
+  provider?: string;
 }
 
 export interface ClaimOnLiquid {
@@ -2750,6 +2751,45 @@ export class MainStore {
       return r.json();
     } catch (e) {
       console.error('getBountyMetrics', e);
+      return undefined;
+    }
+  }
+
+  async getProviderList(
+    date_range: {
+      start_date: string;
+      end_date: string;
+    },
+    params?: QueryParams
+  ): Promise<any | undefined> {
+    try {
+      if (!uiStore.meInfo) return undefined;
+      const info = uiStore.meInfo;
+
+      const queryParams: QueryParams = {
+        ...params
+      };
+
+      const query = this.appendQueryParams('metrics/bounties/providers', 5, queryParams);
+
+      const body = {
+        start_date: date_range.start_date,
+        end_date: date_range.end_date
+      };
+
+      const r: any = await fetch(`${TribesURL}/${query}`, {
+        method: 'POST',
+        mode: 'cors',
+        body: JSON.stringify(body),
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      return r.json();
+    } catch (e) {
+      console.error('getProviderList', e);
       return undefined;
     }
   }
