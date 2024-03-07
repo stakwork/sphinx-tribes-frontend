@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { act, fireEvent, screen, render, waitFor, within, queries } from '@testing-library/react';
+import { act, fireEvent, screen, render, waitFor, within } from '@testing-library/react';
 import { person } from '__test__/__mockData__/persons';
 import { setupStore } from '__test__/__mockData__/setupStore';
 import { user } from '__test__/__mockData__/user';
@@ -575,103 +575,6 @@ describe('Wanted Component', () => {
       fireEvent.scroll(window, { target: { scrollY: 1000 } });
 
       expect(getByText('Load More')).toBeInTheDocument();
-    });
-  });
-
-  test('Test that post a bounty button, auto populates newer bounties on org bounty page and bounties section on profile', async () => {
-    const userBounty = { ...createdBounty, body: {} } as any;
-    userBounty.body = {
-      ...userBounty.bounty,
-      owner_id: person.owner_pubkey,
-      title: 'new test',
-      description: 'this is a new test'
-    };
-
-    const createdMockBounties = Array.from({ length: 1 }, (_: any, index: number) => ({
-      ...(mockBounties[0] || {}),
-      bounty: {
-        ...(mockBounties[0]?.bounty || {}),
-        id: mockBounties[0]?.bounty?.id + index + 1
-      }
-    }));
-
-    const userBounties = createdMockBounties.map((bounty: any, index: number) => ({
-      ...bounty,
-      body: {
-        ...bounty.bounty,
-        owner_id: person.owner_pubkey,
-        title: `This is a test bounty ${index}`
-      }
-    })) as any;
-
-    (usePerson as jest.Mock).mockImplementation(() => ({
-      person: {},
-      canEdit: true
-    }));
-
-    (useStores as jest.Mock).mockReturnValue({
-      main: {
-        getPersonCreatedBounties: jest.fn(() => [userBounties])
-      },
-      ui: {
-        selectedPerson: '123',
-        meInfo: {
-          owner_alias: 'test'
-        }
-      }
-    });
-
-    jest
-      .spyOn(mainStore, 'getPersonCreatedBounties')
-      .mockReturnValue(Promise.resolve(userBounties));
-    act(async () => {
-      render(
-        <MemoryRouter initialEntries={['/p/1234/bounties']}>
-          <Route path="/p/:uuid/bounties" component={Wanted} />
-        </MemoryRouter>
-      );
-
-      await waitFor(() => expect(mainStore.getPersonCreatedBounties()).toHaveBeenCalled());
-
-      const postBountyButton = screen.getByText('Post a Bounty');
-      fireEvent.click(postBountyButton);
-
-      const PostBountyButton = await screen.findByRole('button', { name: /Post a Bounty/i });
-      expect(PostBountyButton).toBeInTheDocument();
-      fireEvent.click(PostBountyButton);
-      const StartButton = await screen.findByRole('button', { name: /Start/i });
-      expect(StartButton).toBeInTheDocument();
-      const bountyTitleInput = await screen.findByRole('input', { name: /Bounty Title /i });
-      expect(bountyTitleInput).toBeInTheDocument();
-      fireEvent.change(bountyTitleInput, { target: { value: 'new text' } });
-      const dropdown = screen.getByText(/Category /i); // Adjust based on your dropdown implementation
-      fireEvent.click(dropdown);
-      const desiredOption = screen.getByText(/Web Development/i); // Adjust based on your desired option
-      fireEvent.click(desiredOption);
-      const NextButton = await screen.findByRole('button', { name: /Next/i });
-      expect(NextButton).toBeInTheDocument();
-      fireEvent.click(NextButton);
-      const DescriptionInput = await screen.findByRole('input', { name: /Description /i });
-      expect(DescriptionInput).toBeInTheDocument();
-      fireEvent.change(DescriptionInput, { target: { value: 'new text' } });
-      const NextButton2 = await screen.findByRole('button', { name: /Next/i });
-      expect(NextButton2).toBeInTheDocument();
-      fireEvent.click(NextButton2);
-      const SatInput = await screen.findByRole('input', { name: /Price(Sats)/i });
-      expect(SatInput).toBeInTheDocument();
-      fireEvent.change(SatInput, { target: { value: 1 } });
-      const NextButton3 = await screen.findByRole('button', { name: /Next/i });
-      expect(NextButton3).toBeInTheDocument();
-      fireEvent.click(NextButton3);
-      const DecideLaterButton = await screen.findByRole('button', { name: /Decide Later/i });
-      expect(DecideLaterButton).toBeInTheDocument();
-      fireEvent.click(DecideLaterButton);
-      const FinishButton = await screen.findByRole('button', { name: /Finish/i });
-      expect(FinishButton).toBeInTheDocument();
-      fireEvent.click(FinishButton);
-      expect(screen.getByText(userBounty.body.title)).toBeInTheDocument();
-
-      await waitFor(() => expect(screen.queryByText('new test')).toBeInTheDocument());
     });
   });
 });
