@@ -1887,8 +1887,8 @@ export class MainStore {
 
   async getOrganizationNextBountyByCreated(org_uuid: string, created: number): Promise<number> {
     try {
-      const orgBountiesStatus = JSON.parse(localStorage.getItem('orgBountyStatus') || '{}');
-
+      const orgBountiesStatus =
+        JSON.parse(localStorage.getItem('orgBountyStatus') || `{}`) || this.defaultOrgBountyStatus;
       const params = { languages: this.bountyLanguages, ...orgBountiesStatus };
 
       const queryParams: QueryParams = {
@@ -1917,8 +1917,8 @@ export class MainStore {
 
   async getOrganizationPreviousBountyByCreated(org_uuid: string, created: number): Promise<number> {
     try {
-      const orgBountiesStatus = JSON.parse(localStorage.getItem('orgBountyStatus') || '{}');
-
+      const orgBountiesStatus =
+        JSON.parse(localStorage.getItem('orgBountyStatus') || `{}`) || this.defaultOrgBountyStatus;
       const params = { languages: this.bountyLanguages, ...orgBountiesStatus };
 
       const queryParams: QueryParams = {
