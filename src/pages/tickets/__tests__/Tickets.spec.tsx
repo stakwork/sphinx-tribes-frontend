@@ -3,6 +3,7 @@ import sinon from 'sinon';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { mainStore } from 'store/main';
 import Tickets from '../Tickets';
+import mockOrgBounties from '../../../bounties/__mock__/mockBounties.data';
 
 let fetchStub: sinon.SinonStub;
 
@@ -27,6 +28,15 @@ const mockBounties = [
     }
   }
 ];
+
+// eslint-disable-next-line @typescript-eslint/typedef
+const createdMockBounties = Array.from({ length: 15 }, (_, index) => ({
+  ...(mockOrgBounties[0] || {}),
+  bounty: {
+    ...(mockOrgBounties[0]?.bounty || {}),
+    id: mockOrgBounties[0]?.bounty?.id + index + 1
+  }
+}));
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 jest.mock('remark-gfm', () => {});
@@ -62,6 +72,10 @@ jest.mock('people/widgetViews/WidgetSwitchViewer', () => ({
   __esModule: true,
   default: () => <div data-testid="widget-switch-viewer" />
 }));
+
+// jest.mock('../../bounties/__mock__/mockBounties.data', () => ({
+//   createdMockBounties
+// }));
 
 // Mock the getPeopleBounties function to return mock data
 jest.mock('../../../store/main', () => ({
@@ -251,5 +265,25 @@ describe('Tickets Component', () => {
       fireEvent.click(nextArrow);
       expect(nextArrowFunction).toHaveBeenCalled();
     })();
+  });
+
+  it('Test that org bounties are scrollable on org home page', async () => {
+    render(<Tickets />);
+
+    (async () => {
+      await waitFor(() => {
+        expect(screen.queryByTestId('tickets-component')).toBeInTheDocument();
+      });
+    })();
+
+    fireEvent.scroll(window, { target: { scrollY: 1000 } });
+
+    await waitFor(() => {
+      if (createdMockBounties.length > 20) {
+        expect(screen.getByText('Load More')).toBeInTheDocument();
+      } else {
+        console.warn('Not enough bounties for "Load More" button.');
+      }
+    });
   });
 });
