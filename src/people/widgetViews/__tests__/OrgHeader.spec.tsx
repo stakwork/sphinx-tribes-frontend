@@ -10,10 +10,10 @@ import { uiStore } from '../../../store/ui.ts';
 import * as helpers from '../../../helpers/helpers-extended.ts';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
-jest.mock('remark-gfm', () => {})
+jest.mock('remark-gfm', () => {});
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
-jest.mock('rehype-raw', () => {})
+jest.mock('rehype-raw', () => {});
 
 jest.mock('../../../store/main.ts', () => ({
   mainStore: {
@@ -107,7 +107,7 @@ describe('OrgHeader Component', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Post a Bounty')).toBeInTheDocument();
-      fireEvent.click(screen.getByText("Post a Bounty"))
+      fireEvent.click(screen.getByText('Post a Bounty'));
     });
 
     fireEvent.click(screen.getByText('Start'));
@@ -135,7 +135,7 @@ describe('OrgHeader Component', () => {
         userEvent.click(await screen.findByText('Decide Later'));
       });
       expect(screen.queryByText('Finish')).toBeInTheDocument();
-      expect(screen.getByText("title")).toBeInTheDocument();
+      expect(screen.getByText('title')).toBeInTheDocument();
     });
   });
 
