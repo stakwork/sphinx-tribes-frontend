@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import moment from 'moment';
 import { EuiCheckboxGroup, EuiPopover, EuiText } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
+import { Person } from 'store/main';
 import paginationarrow1 from '../header/icons/paginationarrow1.svg';
 import paginationarrow2 from '../header/icons/paginationarrow2.svg';
 import defaultPic from '../../../public/static/profile_avatar.svg';
@@ -11,7 +12,7 @@ import { dateFilterOptions } from '../utils';
 import { pageSize, visibleTabs } from '../constants.ts';
 import checkboxImage from './Icons/checkboxImage.svg';
 import { colors } from './../../../config/colors';
-import { Bounty, Person } from './interfaces.ts';
+import { Bounty } from './interfaces.ts';
 
 import {
   TableContainer,

@@ -5,7 +5,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { EuiLoadingSpinner } from '@elastic/eui';
 import styled from 'styled-components';
-import { BountyMetrics, defaultSuperAdminBountyStatus } from 'store/main';
+import { BountyMetrics, defaultSuperAdminBountyStatus, Person } from 'store/main';
 import { useStores } from 'store';
 import moment from 'moment';
 import { useInViewPort } from 'hooks';
@@ -15,7 +15,6 @@ import { Statistics } from './statistics';
 import AdminAccessDenied from './accessDenied';
 import { normalizeMetrics } from './utils/metrics';
 import { pageSize, visibleTabs } from './constants.ts';
-import { Person } from './tableComponent/interfaces.ts';
 
 const Container = styled.body`
   height: 100vh; /* Set a fixed height for the container */
