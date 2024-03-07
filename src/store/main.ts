@@ -1660,26 +1660,30 @@ export class MainStore {
       body.coding_languages = languages;
     }
 
-    const request = `gobounties?token=${info?.tribe_jwt}`;
-    //TODO: add some sort of authentication
-    const response = await fetch(`${TribesURL}/${request}`, {
-      method: 'POST',
-      body: JSON.stringify({
-        ...body
-      }),
-      mode: 'cors',
-      headers: {
-        'x-jwt': info?.tribe_jwt,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (response?.status) {
-      this.getPeopleBounties({
-        resetPage: true,
-        ...this.bountiesStatus,
-        languages: this.bountyLanguages
+    try {
+      const request = `gobounties?token=${info?.tribe_jwt}`;
+      //TODO: add some sort of authentication
+      const response = await fetch(`${TribesURL}/${request}`, {
+        method: 'POST',
+        body: JSON.stringify({
+          ...body
+        }),
+        mode: 'cors',
+        headers: {
+          'x-jwt': info?.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
       });
+
+      if (response?.status) {
+        this.getPeopleBounties({
+          resetPage: true,
+          ...this.bountiesStatus,
+          languages: this.bountyLanguages
+        });
+      }
+    } catch (e) {
+      throw e;
     }
   }
 
