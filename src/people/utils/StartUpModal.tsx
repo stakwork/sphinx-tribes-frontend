@@ -73,7 +73,7 @@ const StartUpModal = ({ closeModal, dataObject, buttonColor }: StartUpModalProps
 
   const DisplayQRCode = () => (
     <>
-      <ModalContainer>
+      <ModalContainer data-testid="qrcode">
         {!connection_string ? (
           <QRText>We are out of codes to sign up! Please check again later.</QRText>
         ) : (
@@ -110,7 +110,7 @@ const StartUpModal = ({ closeModal, dataObject, buttonColor }: StartUpModalProps
 
   const StepOne = () => (
     <>
-      <ModalContainer>
+      <ModalContainer data-testid="step-one">
         <img
           src={
             dataObject === 'getWork'
@@ -168,7 +168,7 @@ const StartUpModal = ({ closeModal, dataObject, buttonColor }: StartUpModalProps
 
   const StepTwo = () => (
     <>
-      <ModalContainer>
+      <ModalContainer data-testid="step-two">
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <p style={{ textAlign: 'center', fontWeight: 600 }}>Step 1</p>
           <p style={{ textAlign: 'center' }}>Download App</p>
@@ -319,7 +319,7 @@ const StartUpModal = ({ closeModal, dataObject, buttonColor }: StartUpModalProps
   );
 
   return (
-    <BaseModal open onClose={closeModal}>
+    <BaseModal data-testid="startup-modal" open onClose={closeModal}>
       <Box p={4} bgcolor={palette.grayish.G950} borderRadius={2} maxWidth={400} minWidth={350}>
         {step === 1 ? (
           <StepOne />
