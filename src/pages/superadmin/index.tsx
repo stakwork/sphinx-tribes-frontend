@@ -15,7 +15,7 @@ import { Statistics } from './statistics';
 import AdminAccessDenied from './accessDenied';
 import { normalizeMetrics } from './utils/metrics';
 import { pageSize, visibleTabs } from './constants.ts';
-import { Bounty } from './tableComponent/interfaces.ts';
+import { Person } from './tableComponent/interfaces.ts';
 
 const Container = styled.body`
   height: 100vh; /* Set a fixed height for the container */
@@ -49,7 +49,8 @@ export const SuperAdmin = () => {
   const [totalBounties, setTotalBounties] = useState(0);
   const [search, setSearch] = useState(false);
   const [providers, setProviders] = useState<any[]>([]);
-  const [providersCheckboxSelected, setProvidersCheckboxSelected] = useState<Bounty[]>([]);
+  const [providersCurrentPage, setProvidersCurrentPage] = useState(1);
+  const [providersCheckboxSelected, setProvidersCheckboxSelected] = useState<Person[]>([]);
   const [selectedProviders, setSelectedProviders] = useState<string>('');
 
   /**
@@ -94,22 +95,6 @@ export const SuperAdmin = () => {
           }
         );
         setBounties(bounties);
-
-        const providersMap: Record<string, Bounty> = {};
-        bounties.forEach((bounty: Bounty) => {
-          if (bounty.owner_id && !providersMap[bounty.owner_id]) {
-            providersMap[bounty.owner_id] = bounty;
-          }
-        });
-
-        const providersData = Object.values(providersMap);
-
-        const newProviders = providersData.filter(
-          (bounty: Bounty) =>
-            !providers.some((provider: Bounty) => provider.owner_id === bounty.owner_id)
-        );
-
-        setProviders((prevProviders: Bounty[]) => [...prevProviders, ...newProviders]);
       } catch (error) {
         // Handle errors if any
         console.error('Error fetching total bounties:', error);
@@ -128,14 +113,60 @@ export const SuperAdmin = () => {
     selectedProviders
   ]);
 
+  const getProviders = useCallback(
+    async (curPage?: number) => {
+      try {
+        const providersData = await main.getProviderList(
+          {
+            start_date: String(startDate),
+            end_date: String(endDate)
+          },
+          {
+            page: curPage ? curPage : 1,
+            ...checkboxIdToSelectedMap,
+            direction: sortOrder
+          }
+        );
+
+        if (curPage && curPage > 1) {
+          setProvidersCurrentPage(curPage);
+          setProviders((prev: Person[]) => {
+            // Create a new array combining previous and new providers
+            const combinedProviders = [...prev, ...providersData];
+            // Filter out duplicates based on 'owner_pubkey'
+            const uniqueProviders = combinedProviders.reduce((acc: Person[], current: Person) => {
+              const x = acc.find((item: Person) => item.owner_pubkey === current.owner_pubkey);
+              if (!x) {
+                return acc.concat([current]);
+              } else {
+                return acc;
+              }
+            }, []);
+            return uniqueProviders;
+          });
+        } else {
+          setProviders(providersData);
+        }
+      } catch (error) {
+        // Handle errors if any
+        console.error('Error fetching providers:', error);
+      }
+    },
+    [main, startDate, endDate, checkboxIdToSelectedMap, sortOrder]
+  );
+
   useEffect(() => {
     getBounties();
     setSearch(false);
-  }, [search, currentPage, sortOrder]);
+  }, [search, currentPage, sortOrder, selectedProviders, startDate, endDate]);
 
   useEffect(() => {
     getBounties();
   }, []);
+
+  useEffect(() => {
+    getProviders();
+  }, [getProviders]);
 
   const onClickApply = () => {
     setSearch(true);
@@ -152,10 +183,10 @@ export const SuperAdmin = () => {
     setCheckboxIdToSelectedMap(newCheckboxIdToSelectedMap);
   };
 
-  const handleProviderSelection = (provider: Bounty) => {
-    if (providersCheckboxSelected.some((p: Bounty) => p.owner_id === provider.owner_id)) {
+  const handleProviderSelection = (provider: Person) => {
+    if (providersCheckboxSelected.some((p: Person) => p.owner_pubkey === provider.owner_pubkey)) {
       setProvidersCheckboxSelected(
-        providersCheckboxSelected.filter((p: Bounty) => p.owner_id !== provider.owner_id)
+        providersCheckboxSelected.filter((p: Person) => p.owner_pubkey !== provider.owner_pubkey)
       );
     } else {
       setProvidersCheckboxSelected([...providersCheckboxSelected, provider]);
@@ -169,13 +200,13 @@ export const SuperAdmin = () => {
 
   const handleApplyButtonClick = () => {
     const selectedProviders: string = providers
-      .filter((provider: Bounty) =>
+      .filter((provider: Person) =>
         providersCheckboxSelected.find(
-          (providersCheckboxSelected: Bounty) =>
-            providersCheckboxSelected.owner_id === provider.owner_id
+          (providersCheckboxSelected: Person) =>
+            providersCheckboxSelected.owner_pubkey === provider.owner_pubkey
         )
       )
-      .map((provider: Bounty) => provider.owner_id)
+      .map((provider: Person) => provider.owner_pubkey)
       .join(',');
 
     setSelectedProviders(selectedProviders);
@@ -282,6 +313,8 @@ export const SuperAdmin = () => {
               handleProviderSelection={handleProviderSelection}
               handleClearButtonClick={handleClearButtonClick}
               handleApplyButtonClick={handleApplyButtonClick}
+              getProviders={getProviders}
+              providersCurrentPage={providersCurrentPage}
             />
           )}
         </Container>

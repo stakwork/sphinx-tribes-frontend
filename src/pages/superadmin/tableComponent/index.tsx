@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
 import { EuiCheckboxGroup, EuiPopover, EuiText } from '@elastic/eui';
@@ -11,7 +11,7 @@ import { dateFilterOptions } from '../utils';
 import { pageSize, visibleTabs } from '../constants.ts';
 import checkboxImage from './Icons/checkboxImage.svg';
 import { colors } from './../../../config/colors';
-import { Bounty } from './interfaces.ts';
+import { Bounty, Person } from './interfaces.ts';
 
 import {
   TableContainer,
@@ -79,10 +79,12 @@ export interface TableProps {
   activeTabs: number[];
   setActiveTabs: React.Dispatch<React.SetStateAction<number[]>>;
   providers?: any[];
-  providersCheckboxSelected?: Bounty[];
-  handleProviderSelection?: (provider: Bounty) => void;
+  providersCheckboxSelected?: Person[];
+  handleProviderSelection?: (provider: Person) => void;
   handleClearButtonClick?: () => void;
   handleApplyButtonClick?: () => void;
+  getProviders?: (number) => void;
+  providersCurrentPage?: number;
 }
 
 interface ImageWithTextProps {
@@ -284,7 +286,7 @@ const StatusContainer = styled.div<styledProps>`
 `;
 
 const ProviderStatusContainer = styled(StatusContainer)<styledProps>`
-  margin-top: 0px !important;
+  margin-top: -3px !important;
 `;
 
 const Status = ['Open', 'Assigned', 'Completed', 'Paid'];
@@ -307,7 +309,9 @@ export const MyTable = ({
   providersCheckboxSelected,
   handleProviderSelection,
   handleClearButtonClick,
-  handleApplyButtonClick
+  handleApplyButtonClick,
+  getProviders,
+  providersCurrentPage
 }: TableProps) => {
   const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
   const [isProviderPopoverOpen, setIsProviderPopoverOpen] = useState<boolean>(false);
@@ -383,6 +387,33 @@ export const MyTable = ({
   };
 
   const color = colors['light'];
+  const loaderRef = useRef(null);
+
+  useEffect(() => {
+    if (!isProviderPopoverOpen) return;
+
+    const observer = new IntersectionObserver(
+      (entries: IntersectionObserverEntry[]) => {
+        const firstEntry = entries[0];
+        if (firstEntry.isIntersecting) {
+          const currPage = providersCurrentPage ? providersCurrentPage + 1 : 1;
+          if (getProviders) getProviders(currPage);
+        }
+      },
+      { threshold: 0.3 }
+    );
+
+    const currentLoaderRef = loaderRef.current;
+    if (currentLoaderRef) {
+      observer.observe(currentLoaderRef);
+    }
+
+    return () => {
+      if (currentLoaderRef) {
+        observer.unobserve(currentLoaderRef);
+      }
+    };
+  }, [isProviderPopoverOpen]);
 
   return (
     <>
@@ -439,11 +470,11 @@ export const MyTable = ({
                 <ProviderContainer>
                   <ProvidersListContainer>
                     {providers && providers.length > 0 ? (
-                      providers.map((provider: Bounty) => (
-                        <ProviderContianer key={provider.owner_id}>
+                      providers.map((provider: Person) => (
+                        <ProviderContianer key={provider.owner_pubkey}>
                           <ProviderInfo>
                             <ProviderImg
-                              src={provider.owner_img || `/static/person_placeholder.png`}
+                              src={provider.img || `/static/person_placeholder.png`}
                               alt="provider"
                             />
                             <Providername>
@@ -456,7 +487,7 @@ export const MyTable = ({
                             checked={
                               providersCheckboxSelected &&
                               providersCheckboxSelected.some(
-                                (p: Bounty) => p.owner_id === provider.owner_id
+                                (p: Person) => p.owner_pubkey === provider.owner_pubkey
                               )
                             }
                             onChange={() =>
@@ -468,6 +499,7 @@ export const MyTable = ({
                     ) : (
                       <p>No provider available</p>
                     )}
+                    <div ref={loaderRef}></div>
                   </ProvidersListContainer>
                   <HorizontalGrayLine />
                   <FooterContainer>

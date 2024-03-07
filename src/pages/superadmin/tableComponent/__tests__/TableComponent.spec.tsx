@@ -161,12 +161,22 @@ const MockTableProps: TableProps = {
 };
 
 const mockProviders = [
-  { owner_id: 1, owner_alias: 'Provider 1', owner_img: 'image', owner_pubkey: 'pub key' },
-  { owner_id: 2, owner_alias: 'Provider 2', owner_img: 'image', owner_pubkey: 'pub key' },
-  { owner_id: 3, owner_alias: 'Provider 3', owner_img: 'image', owner_pubkey: 'pub key' }
+  { owner_alias: 'Provider 1', img: 'image', owner_pubkey: 'pub key' },
+  { owner_alias: 'Provider 2', img: 'image', owner_pubkey: 'pub key' },
+  { owner_alias: 'Provider 3', img: 'image', owner_pubkey: 'pub key' }
 ];
 
 describe('MyTable Component', () => {
+  beforeEach(() => {
+    const mockIntersectionObserver = jest.fn();
+    mockIntersectionObserver.mockReturnValue({
+      observe: () => jest.fn(),
+      unobserve: () => jest.fn(),
+      disconnect: () => jest.fn()
+    });
+    window.IntersectionObserver = mockIntersectionObserver;
+  });
+
   it('renders elements from TableProps in the document', () => {
     const { getByText } = render(<MyTable {...MockTableProps} headerIsFrozen={false} />);
     expect(getByText(mockBounties[0].title)).toBeInTheDocument();
