@@ -297,7 +297,7 @@ describe('Tickets Component', () => {
     })();
   });
 
-   it('Test that a newly created bounty is visible.', async () => {
+  it('Test that a newly created bounty is visible.', async () => {
     render(<Tickets />);
 
     (async () => {
