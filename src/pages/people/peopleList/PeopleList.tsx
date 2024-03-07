@@ -80,6 +80,7 @@ export const PeopleList = observer(() => {
 
   function goBack() {
     ui.setSelectingPerson(0);
+    ui.setSearchText('');
     history.replace('/p');
   }
 

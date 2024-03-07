@@ -2,6 +2,8 @@ import React from 'react';
 import sinon from 'sinon';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { mainStore } from 'store/main';
+import { uiStore } from 'store/ui';
+import { user } from '__test__/__mockData__/user';
 import Tickets from '../Tickets';
 import mockOrgBounties from '../../../bounties/__mock__/mockBounties.data';
 
@@ -285,5 +287,86 @@ describe('Tickets Component', () => {
         console.warn('Not enough bounties for "Load More" button.');
       }
     });
+  });
+
+  it('tests that user is signed out clicking on "I can help" loads get sphinx modal', () => {
+    uiStore.setMeInfo(null);
+
+    const { getByRole } = render(<Tickets />);
+
+    (async () => {
+      await waitFor(() => {
+        const ticket = screen.getByTestId('tickets-component');
+        fireEvent.click(ticket);
+      });
+
+      const button = getByRole('button', { name: /I can help/i });
+
+      expect(button).toBeInTheDocument();
+
+      fireEvent.click(button);
+
+      expect(screen.queryByTestId('startup-modal')).toBeInTheDocument();
+    })();
+  });
+
+  it('should display Connection code QR is displayed when "I can help" is clicked', async () => {
+    uiStore.setMeInfo(user);
+
+    const { getByRole, getByTestId } = render(<Tickets />);
+
+    (async () => {
+      await waitFor(() => {
+        const ticket = screen.getByTestId('tickets-component');
+        fireEvent.click(ticket);
+      });
+
+      const button = getByRole('button', { name: /I can help/i });
+
+      expect(button).toBeInTheDocument();
+
+      fireEvent.click(button);
+
+      expect(getByTestId('qrcode')).toBeInTheDocument();
+    })();
+  });
+
+  it('tests that out of connection code is displayed when there are no codes', () => {
+    uiStore.setMeInfo(null);
+
+    const { getByRole, getByText } = render(<Tickets />);
+
+    (async () => {
+      await waitFor(() => {
+        const ticket = screen.getByTestId('tickets-component');
+        fireEvent.click(ticket);
+      });
+
+      const button = getByRole('button', { name: /I can help/i });
+
+      expect(button).toBeInTheDocument();
+
+      fireEvent.click(button);
+
+      await waitFor(() => {
+        expect(screen.queryByTestId('startup-modal')).toBeInTheDocument();
+      });
+
+      fireEvent.click(getByText(/Get Sphinx/i));
+
+      await waitFor(() => {
+        expect(screen.queryByTestId('step-one')).toBeInTheDocument();
+      });
+
+      fireEvent.click(getByText(/Reveal Connection Code/i));
+
+      await waitFor(() => {
+        expect(screen.queryByTestId('qrcode')).toBeInTheDocument();
+      });
+
+      expect(
+        getByText(/We are out of codes to sign up! Please check again later/i)
+      ).toBeInTheDocument();
+    })();
   });
 });
