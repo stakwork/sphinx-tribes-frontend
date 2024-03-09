@@ -70,6 +70,7 @@ function OrgBodyComponent() {
 
   useEffect(() => {
     getTotalBounties(uuid, checkboxIdToSelectedMap, page);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getTotalBounties]);
 
   const onChangeStatus = (optionId: any) => {
