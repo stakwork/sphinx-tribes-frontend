@@ -309,4 +309,4 @@ function WidgetSwitchViewer(props: any) {
     </>
   );
 }
-export default WidgetSwitchViewer;
+export default observer(WidgetSwitchViewer);
