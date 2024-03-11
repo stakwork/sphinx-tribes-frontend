@@ -100,5 +100,5 @@ Feel free to explore the potential of **sphinx-tribes** and contribute to its vi
 
 ## Cypress Testing 
 
-To write cypress test read the cypress guide for setting up your environment for cypress testing [cypress guide](docs/setupCypressTest.md).
+To write cypress test, read the cypress guide for setting up your environment for cypress testing [cypress guide](docs/setupCypressTest.md).
 
