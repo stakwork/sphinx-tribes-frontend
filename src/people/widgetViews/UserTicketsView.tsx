@@ -9,6 +9,7 @@ import styled from 'styled-components';
 import { BountyModal } from 'people/main/bountyModal/BountyModal';
 import PageLoadSpinner from 'people/utils/PageLoadSpinner';
 import { Person } from 'store/main';
+import PopoverCheckbox from 'pages/people/tabs/popoverCheckboxStyles';
 import history from '../../config/history';
 import { colors } from '../../config/colors';
 import WantedView from './WantedView';
@@ -42,47 +43,6 @@ const Panel = styled.a<PanelProps>`
   border-bottom: ${(p: any) => (p.isMobile ? '2px solid #EBEDEF' : 'none')};
   &:hover {
     text-decoration: none !important;
-  }
-`;
-
-const EuiPopOverCheckbox = styled.div<{ color?: any }>`
-  overflow-y: scroll;
-  display: flex;
-  align-items: center;
-  &.CheckboxOuter > div {
-    height: 100%;
-    display: flex;
-    .euiCheckboxGroup__item {
-      margin-top: 0px;
-      display: flex;
-      align-items: center;
-      .euiCheckbox__square {
-        top: 5px;
-        border: 1px solid ${(p: any) => p?.color && p?.color?.grayish.G500};
-        border-radius: 2px;
-      }
-      .euiCheckbox__input + .euiCheckbox__square {
-        background: ${(p: any) => p?.color && p?.color?.pureWhite} no-repeat center;
-      }
-      .euiCheckbox__input:checked + .euiCheckbox__square {
-        border: 1px solid ${(p: any) => p?.color && p?.color?.blue1};
-        background: ${(p: any) => p?.color && p?.color?.blue1} no-repeat center;
-        background-image: url(${checkboxImage});
-      }
-      .euiCheckbox__label {
-        font-family: 'Barlow';
-        font-style: normal;
-        font-weight: 500;
-        font-size: 13px;
-        line-height: 16px;
-        color: ${(p: any) => p?.color && p?.color?.grayish.G50};
-        margin-top: 4px;
-      }
-      input.euiCheckbox__input:checked ~ label {
-        color: black;
-        font-weight: 600;
-      }
-    }
   }
 `;
 
@@ -229,7 +189,7 @@ const UserTickets = () => {
       >
         <h4>Assigned Bounties</h4>
         <div style={{ display: 'flex' }}>
-          <EuiPopOverCheckbox className="CheckboxOuter" color={colors['light']}>
+          <PopoverCheckbox className="CheckboxOuter" color={colors['light']}>
             <EuiCheckboxGroup
               style={{ display: 'flex', alignItems: 'center', gap: 20, marginRight: 20 }}
               options={Status.map((status: string) => ({
@@ -241,7 +201,7 @@ const UserTickets = () => {
                 applyFilters(optionId);
               }}
             />
-          </EuiPopOverCheckbox>
+          </PopoverCheckbox>
         </div>
       </div>
       {loading && <PageLoadSpinner show={loading} />}
