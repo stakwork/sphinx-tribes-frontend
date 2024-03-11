@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Route, Switch, useParams, useRouteMatch, Router } from 'react-router-dom';
 import { useStores } from 'store';
 import { EuiCheckboxGroup } from '@elastic/eui';
@@ -51,8 +51,6 @@ const UserTickets = () => {
   const isMobile = useIsMobile();
   const { path, url } = useRouteMatch();
 
-  const Status = ['Assigned', 'Paid'];
-
   const [deletePayload, setDeletePayload] = useState<object>({});
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const closeModal = () => setShowDeleteModal(false);
@@ -61,9 +59,21 @@ const UserTickets = () => {
   const [loading, setIsLoading] = useState<boolean>(true);
   const [hasMoreBounties, setHasMoreBounties] = useState(true);
   const [bountyOwner, setBountyOwner] = useState<Person>();
-  const [sort, setSort] = useState('');
   const [page, setPage] = useState(1);
   const paginationLimit = 20;
+
+  const defaultStatus: Record<string, boolean> = {
+    Assigned: false,
+    Open: false,
+  };
+
+  const [checkboxIdToSelectedMap, setCheckboxIdToSelectedMap] = useState(defaultStatus);
+
+  const Status = Object.keys(defaultStatus);
+
+  const applyFilters = (id: string) => {
+    setCheckboxIdToSelectedMap({ ...defaultStatus, [id]: !checkboxIdToSelectedMap[id] });
+  };
 
   function onPanelClick(id: number, index: number) {
     history.push({
@@ -99,35 +109,35 @@ const UserTickets = () => {
     closeModal();
   };
 
-  const getUserTickets = async () => {
+  const getUserTickets = useCallback(async () => {
     setIsLoading(true);
-    const response = await main.getPersonAssignedBounties(
-      { page: page, limit: paginationLimit },
-      uuid
-    );
-    if (response.length < paginationLimit) {
-      setHasMoreBounties(false);
-    }
-    setDisplayedBounties((prevBounties: BountyType[]) => [...prevBounties, ...response]);
-    setIsLoading(false);
-  };
+  const response = await main.getPersonAssignedBounties(
+    { page: page, limit: paginationLimit,  ...checkboxIdToSelectedMap },
+    uuid
+  );
+  if (response.length < paginationLimit) {
+    setHasMoreBounties(false);
+  }
+  setDisplayedBounties(response);
+  setIsLoading(false);
+  }, [ main, page, uuid, checkboxIdToSelectedMap]);
 
   const nextBounties = async () => {
     const nextPage = page + 1;
     setPage(nextPage);
     const response = await main.getPersonAssignedBounties(
-      { page: nextPage, limit: paginationLimit, sortBy: sort },
+      { page: nextPage, limit: paginationLimit },
       uuid
     );
     if (response.length < paginationLimit) {
       setHasMoreBounties(false);
     }
-    setDisplayedBounties((prevBounties: BountyType[]) => [...prevBounties, ...response]);
+    setDisplayedBounties(response);
   };
 
   useEffect(() => {
     getUserTickets();
-  }, [main, sort]);
+  }, [main, getUserTickets, checkboxIdToSelectedMap],);
 
   const listItems =
     displayedBounties && displayedBounties.length ? (
@@ -183,19 +193,19 @@ const UserTickets = () => {
           alignItems: 'center'
         }}
       >
-        <h4>Assigned Bounties {sort}</h4>
+        <h4>Assigned Bounties</h4>
         <div style={{ display: 'flex' }}>
-          <EuiCheckboxGroup
-            style={{ display: 'flex', gap: 20, alignItems: 'center', alignContent: 'center' }}
-            options={Status.map((status: any) => ({
-              label: `${status}`,
+        <EuiCheckboxGroup
+            style={{ display: 'flex', alignItems: 'center', gap: 10, marginRight: 20 }}
+            options={Status.map((status: string) => ({
+              label: status,
               id: status
             }))}
-            idToSelectedMap={{ [sort]: true }}
-            onChange={(id: any) => {
-              setSort(id);
+            idToSelectedMap={checkboxIdToSelectedMap}
+            onChange={(optionId: any) => {
+              applyFilters(optionId);
             }}
-          />
+        />
         </div>
       </div>
       {!loading ? listItems : ''}

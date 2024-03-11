@@ -935,7 +935,7 @@ export class MainStore {
   }
 
   async getPersonAssignedBounties(queryParams?: any, uuid?: string): Promise<PersonBounty[]> {
-    queryParams = { ...queryParams, search: uiStore.searchText };
+    queryParams = { ...queryParams, ...(uiStore.searchText ? { search: uiStore.searchText} : {}) };
 
     const query = this.appendQueryParams(`people/wanteds/assigned/${uuid}`, paginationQueryLimit, {
       sortBy: 'paid',
@@ -982,7 +982,7 @@ export class MainStore {
   }
 
   async getPersonCreatedBounties(queryParams?: any, uuid?: string): Promise<PersonBounty[]> {
-    queryParams = { ...queryParams, search: uiStore.searchText };
+    queryParams = { ...queryParams, ...(uiStore.searchText ? { search: uiStore.searchText } : {}) };
 
     const query = this.appendQueryParams(`people/wanteds/created/${uuid}`, paginationQueryLimit, {
       ...queryParams
