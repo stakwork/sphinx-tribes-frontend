@@ -18,6 +18,13 @@ beforeAll(() => {
   mockUsehistory();
 });
 
+const resizeWindowWidth = (x: number) => {
+  window.innerWidth = x;
+  act(() => {
+    window.dispatchEvent(new Event('resize'));
+  });
+};
+
 describe('AboutView Component', () => {
   nock(user.url).get('/person/id/1').reply(200, {});
   nock(user.url).get(`/person/${user.uuid}`).reply(200, {});
@@ -184,6 +191,37 @@ describe('AboutView Component', () => {
       );
       fireEvent.click(getByText('Sign in'));
       expect(await screen.findByRole('button', { name: /Login with Sphinx/i })).toBeInTheDocument();
+    });
+  });
+
+  test.each([
+    1440, // Desktop
+    1200,
+    1024,
+    950 // The lower end of desktop viewport
+  ])('tests that username is visible at viewport width %ipx', async (width: number) => {
+    resizeWindowWidth(width); // resize window width
+
+    jest.spyOn(mainStore, 'getIsAdmin').mockReturnValue(Promise.resolve(false));
+    jest.spyOn(mainStore, 'getPersonById').mockReturnValue(Promise.resolve(person));
+    jest.spyOn(mainStore, 'getSelf').mockReturnValue(Promise.resolve());
+
+    uiStore.setMeInfo(user);
+    const history = createMemoryHistory();
+    await act(async () => {
+      render(
+        <Router history={history}>
+          <Header />
+        </Router>
+      );
+
+      const usernameElement = screen.getByText(person.owner_alias);
+      expect(usernameElement).toBeInTheDocument();
+
+      await waitFor(() => {
+        const isVisible = usernameElement.offsetParent === null;
+        expect(isVisible).toBe(true);
+      });
     });
   });
 });
