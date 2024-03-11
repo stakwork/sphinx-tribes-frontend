@@ -9,7 +9,6 @@ interface styledProps {
   color?: any;
 }
 
-// @ts-ignore
 const S = styled(CreatableSelect)<styledProps>`
   background: #ffffff00;
   border: 1px solid ${(p: any) => p.color && p.color.grayish.G750};
@@ -21,37 +20,6 @@ const S = styled(CreatableSelect)<styledProps>`
   font-size: 12px;
   border-width: 0px !important;
 
-  #react-select-10-listbox {
-    z-index: 1000;
-  }
-  #react-select-9-listbox {
-    z-index: 1000;
-  }
-  #react-select-8-listbox {
-    z-index: 1000;
-  }
-  #react-select-7-listbox {
-    z-index: 1000;
-  }
-  #react-select-6-listbox {
-    z-index: 1000;
-  }
-  #react-select-5-listbox {
-    z-index: 1000;
-  }
-  #react-select-4-listbox {
-    z-index: 1000;
-  }
-  #react-select-3-listbox {
-    z-index: 1000;
-  }
-  #react-select-2-listbox {
-    z-index: 1000;
-  }
-  #react-select-1-listbox {
-    z-index: 1000;
-  }
-
   div {
     border-width: 0px !important;
     border: none !important;
@@ -62,6 +30,7 @@ const S = styled(CreatableSelect)<styledProps>`
     background-color: ${(p: any) => p.color && p.color.pureWhite} !important;
   }
 `;
+
 export default function Sel(props: SelProps) {
   const { onChange, value, style, setIsTop } = props;
   const color = colors['light'];
@@ -76,7 +45,7 @@ export default function Sel(props: SelProps) {
     })) || [];
 
   return (
-    <div style={{ position: 'relative', ...style }}>
+    <div id="dropdown-wrapper" style={{ position: 'relative', ...style }}>
       <S
         placeholder={''}
         color={color}
@@ -92,6 +61,8 @@ export default function Sel(props: SelProps) {
           if (setIsTop) setIsTop(true);
         }}
         className={'multi-select-input'}
+        menuPortalTarget={document.getElementById('dropdown-wrapper')}
+        menuPosition={'fixed'}
         styles={{
           control: (styles: any) => ({ ...styles, backgroundColor: 'white' }),
           option: (styles: any) => ({
@@ -128,7 +99,8 @@ export default function Sel(props: SelProps) {
               backgroundColor: data.background,
               color: data.color
             }
-          })
+          }),
+          menuPortal: (styles: any) => ({ ...styles, zIndex: '100' })
         }}
       />
     </div>
