@@ -19,9 +19,9 @@ beforeAll(() => {
   mockUsehistory();
 });
 
-jest.mock("remark-gfm", () => null);
+jest.mock('remark-gfm', () => null);
 
-jest.mock("rehype-raw", () => null)
+jest.mock('rehype-raw', () => null);
 
 jest.mock('hooks', () => ({
   ...jest.requireActual('hooks'),
@@ -77,7 +77,6 @@ describe('Wanted Component', () => {
     });
   });
 
-  
   test('Correct calls are made when boxes are clicked', async () => {
     const userBounty = { ...mockBounties[0], body: {} } as any;
     userBounty.body = {
@@ -115,7 +114,7 @@ describe('Wanted Component', () => {
       );
       await waitFor(() => getAllByTestId('user-created-bounty'));
 
-      expect(screen.getByText("Bounties")).toBeInTheDocument()
+      expect(screen.getByText('Bounties')).toBeInTheDocument();
 
       expect(mockedPersonAssignedBounites).toHaveBeenCalledWith();
     });

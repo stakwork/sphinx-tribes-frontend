@@ -14,6 +14,7 @@ import { colors } from '../../config/colors';
 import WantedView from './WantedView';
 import DeleteTicketModal from './DeleteModal';
 import { LoadMoreContainer } from './WidgetSwitchViewer';
+import checkboxImage from './Icons/checkboxImage.svg';
 
 type BountyType = any;
 
@@ -44,6 +45,41 @@ const Panel = styled.a<PanelProps>`
   }
 `;
 
+const EuiPopOverCheckbox = styled.div<{ color?: any }>`
+  overflow-y: scroll;
+  &.CheckboxOuter > div {
+    height: 100%;
+    display: flex;
+    .euiCheckboxGroup__item {
+      .euiCheckbox__square {
+        top: 5px;
+        border: 1px solid ${(p: any) => p?.color && p?.color?.grayish.G500};
+        border-radius: 2px;
+      }
+      .euiCheckbox__input + .euiCheckbox__square {
+        background: ${(p: any) => p?.color && p?.color?.pureWhite} no-repeat center;
+      }
+      .euiCheckbox__input:checked + .euiCheckbox__square {
+        border: 1px solid ${(p: any) => p?.color && p?.color?.blue1};
+        background: ${(p: any) => p?.color && p?.color?.blue1} no-repeat center;
+        background-image: url(${checkboxImage});
+      }
+      .euiCheckbox__label {
+        font-family: 'Barlow';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 13px;
+        line-height: 16px;
+        color: ${(p: any) => p?.color && p?.color?.grayish.G50};
+      }
+      input.euiCheckbox__input:checked ~ label {
+        color: black;
+        font-weight: 600;
+      }
+    }
+  }
+`;
+
 const UserTickets = () => {
   const color = colors['light'];
   const { uuid } = useParams<{ uuid: string }>();
@@ -64,7 +100,7 @@ const UserTickets = () => {
 
   const defaultStatus: Record<string, boolean> = {
     Assigned: false,
-    Open: false,
+    Open: false
   };
 
   const [checkboxIdToSelectedMap, setCheckboxIdToSelectedMap] = useState(defaultStatus);
@@ -111,16 +147,16 @@ const UserTickets = () => {
 
   const getUserTickets = useCallback(async () => {
     setIsLoading(true);
-  const response = await main.getPersonAssignedBounties(
-    { page: page, limit: paginationLimit,  ...checkboxIdToSelectedMap },
-    uuid
-  );
-  if (response.length < paginationLimit) {
-    setHasMoreBounties(false);
-  }
-  setDisplayedBounties(response);
-  setIsLoading(false);
-  }, [ main, page, uuid, checkboxIdToSelectedMap]);
+    const response = await main.getPersonAssignedBounties(
+      { page: page, limit: paginationLimit, ...checkboxIdToSelectedMap },
+      uuid
+    );
+    if (response.length < paginationLimit) {
+      setHasMoreBounties(false);
+    }
+    setDisplayedBounties(response);
+    setIsLoading(false);
+  }, [main, page, uuid, checkboxIdToSelectedMap]);
 
   const nextBounties = async () => {
     const nextPage = page + 1;
@@ -137,7 +173,7 @@ const UserTickets = () => {
 
   useEffect(() => {
     getUserTickets();
-  }, [main, getUserTickets, checkboxIdToSelectedMap],);
+  }, [main, getUserTickets, checkboxIdToSelectedMap]);
 
   const listItems =
     displayedBounties && displayedBounties.length ? (
@@ -176,14 +212,6 @@ const UserTickets = () => {
 
   return (
     <Container data-testid="test">
-      {loading && <PageLoadSpinner show={loading} />}
-      <Router history={history}>
-        <Switch>
-          <Route path={`${path}/:wantedId/:wantedIndex`}>
-            <BountyModal fromPage={'usertickets'} bountyOwner={bountyOwner} basePath={url} />
-          </Route>
-        </Switch>
-      </Router>
       <div
         style={{
           width: '100%',
@@ -195,19 +223,29 @@ const UserTickets = () => {
       >
         <h4>Assigned Bounties</h4>
         <div style={{ display: 'flex' }}>
-        <EuiCheckboxGroup
-            style={{ display: 'flex', alignItems: 'center', gap: 10, marginRight: 20 }}
-            options={Status.map((status: string) => ({
-              label: status,
-              id: status
-            }))}
-            idToSelectedMap={checkboxIdToSelectedMap}
-            onChange={(optionId: any) => {
-              applyFilters(optionId);
-            }}
-        />
+          <EuiPopOverCheckbox className="CheckboxOuter" color={colors['light']}>
+            <EuiCheckboxGroup
+              style={{ display: 'flex', alignItems: 'center', gap: 20, marginRight: 20 }}
+              options={Status.map((status: string) => ({
+                label: status,
+                id: status
+              }))}
+              idToSelectedMap={checkboxIdToSelectedMap}
+              onChange={(optionId: any) => {
+                applyFilters(optionId);
+              }}
+            />
+          </EuiPopOverCheckbox>
         </div>
       </div>
+      {loading && <PageLoadSpinner show={loading} />}
+      <Router history={history}>
+        <Switch>
+          <Route path={`${path}/:wantedId/:wantedIndex`}>
+            <BountyModal fromPage={'usertickets'} bountyOwner={bountyOwner} basePath={url} />
+          </Route>
+        </Switch>
+      </Router>
       {!loading ? listItems : ''}
       {hasMoreBounties && !loading && (
         <LoadMoreContainer

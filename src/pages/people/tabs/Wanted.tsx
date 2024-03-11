@@ -14,6 +14,7 @@ import { paginationQueryLimit } from 'store/main';
 import styled from 'styled-components';
 import { LoadMoreContainer } from '../../../people/widgetViews/WidgetSwitchViewer';
 import { colors } from '../../../config/colors';
+import checkboxImage from './Icons/checkboxImage.svg';
 
 const config = widgetConfigs.bounties;
 type BountyType = any;
@@ -41,6 +42,43 @@ const Panel = styled.a<PanelProps>`
 
   &:hover {
     text-decoration: none !important;
+  }
+`;
+
+const EuiPopOverCheckbox = styled.div<{ color?: any }>`
+  margin-right: 3px;
+  overflow-y: scroll;
+  &.CheckboxOuter > div {
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    .euiCheckboxGroup__item {
+      .euiCheckbox__square {
+        top: 5px;
+        border: 1px solid ${(p: any) => p?.color && p?.color?.grayish.G500};
+        border-radius: 2px;
+      }
+      .euiCheckbox__input + .euiCheckbox__square {
+        background: ${(p: any) => p?.color && p?.color?.pureWhite} no-repeat center;
+      }
+      .euiCheckbox__input:checked + .euiCheckbox__square {
+        border: 1px solid ${(p: any) => p?.color && p?.color?.blue1};
+        background: ${(p: any) => p?.color && p?.color?.blue1} no-repeat center;
+        background-image: url(${checkboxImage});
+      }
+      .euiCheckbox__label {
+        font-family: 'Barlow';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 13px;
+        line-height: 16px;
+        color: ${(p: any) => p?.color && p?.color?.grayish.G50};
+      }
+      input.euiCheckbox__input:checked ~ label {
+        color: black;
+        font-weight: 600;
+      }
+    }
   }
 `;
 
@@ -136,12 +174,6 @@ export const Wanted = observer(() => {
   }
   return (
     <Container>
-      {loading && <PageLoadSpinner show={loading} />}
-      <Switch>
-        <Route path={`${path}/:wantedId/:wantedIndex`}>
-          <BountyModal basePath={url} />
-        </Route>
-      </Switch>
       <div
         style={{
           width: '100%',
@@ -152,12 +184,12 @@ export const Wanted = observer(() => {
         }}
       >
         <h4>Bounties </h4>
-        <div style={{ display: 'flex' }}>
+        <EuiPopOverCheckbox className="CheckboxOuter" color={colors['light']}>
           <EuiCheckboxGroup
-            style={{ display: 'flex', alignItems: 'center', gap: 20, marginRight: 20, }}
+            style={{ display: 'flex', alignItems: 'center', gap: 20, marginRight: 20 }}
             options={Status.map((status: string) => ({
               label: status,
-              id: status,
+              id: status
             }))}
             idToSelectedMap={checkboxIdToSelectedMap}
             onChange={(optionId: any) => {
@@ -165,8 +197,14 @@ export const Wanted = observer(() => {
             }}
           />
           {canEdit && <PostBounty widget="bounties" />}
-        </div>
+        </EuiPopOverCheckbox>
       </div>
+      {loading && <PageLoadSpinner show={loading} />}
+      <Switch>
+        <Route path={`${path}/:wantedId/:wantedIndex`}>
+          <BountyModal basePath={url} />
+        </Route>
+      </Switch>
       {displayedBounties
         .filter((w: BountyType) => w.body.owner_id === person?.owner_pubkey)
         .map((w: BountyType, i: any) => (
