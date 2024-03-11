@@ -9,7 +9,7 @@ export default function BotBar(props: { value: string }) {
   function addToast() {
     setToasts([
       {
-        id: '1',
+        id: `${Math.random()}`,
         title: 'Copied!'
       }
     ]);

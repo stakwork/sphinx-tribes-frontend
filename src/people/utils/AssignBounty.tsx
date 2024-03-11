@@ -27,7 +27,7 @@ export default function AssignBounty(props: ConnectCardProps) {
   const addToast = () => {
     setToasts([
       {
-        id: '1',
+        id: `${Math.random()}`,
         title: 'Bounty has been assigned'
       }
     ]);

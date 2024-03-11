@@ -132,12 +132,14 @@ function MobileView(props: CodingBountiesProps) {
 
   const pollMinutes = 2;
 
+  const toastId = Math.random();
+
   const addToast = (type: string) => {
     switch (type) {
       case SOCKET_MSG.invoice_success: {
         return setToasts([
           {
-            id: '1',
+            id: `${toastId}`,
             title: 'Invoice has been paid',
             color: 'success'
           }
@@ -146,7 +148,7 @@ function MobileView(props: CodingBountiesProps) {
       case SOCKET_MSG.keysend_error: {
         return setToasts([
           {
-            id: '2',
+            id: `${toastId}`,
             title: 'Keysend payment failed',
             toastLifeTimeMs: 10000,
             color: 'error'
@@ -156,7 +158,7 @@ function MobileView(props: CodingBountiesProps) {
       case SOCKET_MSG.keysend_success: {
         return setToasts([
           {
-            id: '3',
+            id: `${toastId}`,
             title: 'Successful keysend payment',
             color: 'success'
           }
