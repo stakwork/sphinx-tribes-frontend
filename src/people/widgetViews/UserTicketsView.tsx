@@ -47,10 +47,15 @@ const Panel = styled.a<PanelProps>`
 
 const EuiPopOverCheckbox = styled.div<{ color?: any }>`
   overflow-y: scroll;
+  display: flex;
+  align-items: center;
   &.CheckboxOuter > div {
     height: 100%;
     display: flex;
     .euiCheckboxGroup__item {
+      margin-top: 0px;
+      display: flex;
+      align-items: center;
       .euiCheckbox__square {
         top: 5px;
         border: 1px solid ${(p: any) => p?.color && p?.color?.grayish.G500};
@@ -71,6 +76,7 @@ const EuiPopOverCheckbox = styled.div<{ color?: any }>`
         font-size: 13px;
         line-height: 16px;
         color: ${(p: any) => p?.color && p?.color?.grayish.G50};
+        margin-top: 4px;
       }
       input.euiCheckbox__input:checked ~ label {
         color: black;
