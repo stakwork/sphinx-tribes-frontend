@@ -138,7 +138,7 @@ function BotBody() {
   function addToast(name: string) {
     setToasts([
       {
-        id: '1',
+        id: `${Math.random()}`,
         title: `Deleted ${name}`
       }
     ]);

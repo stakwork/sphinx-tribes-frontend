@@ -88,9 +88,7 @@ export default function TextAreaInput({
   borderType,
   github_state
 }: Props) {
-  let labeltext = label;
   const color = colors['light'];
-  if (error) labeltext = `${labeltext} (${error})`;
   const [active, setActive] = useState<boolean>(false);
   const normalizeAndTrimText = (text: string) => text.split('\n').join('\n');
 

@@ -109,7 +109,7 @@ function FocusedView(props: FocusViewProps) {
   const addToast = () => {
     setToasts([
       {
-        id: '1',
+        id: `${Math.random()}`,
         title: 'Add a description to your bounty'
       }
     ]);

@@ -55,7 +55,7 @@ export default function QrBar(props: QRBarProps) {
   function addToast() {
     setToasts([
       {
-        id: '1',
+        id: `${Math.random()}`,
         title: 'Copied!'
       }
     ]);
