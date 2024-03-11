@@ -98,3 +98,7 @@ Join our community on [Forum/Chat](https://people.sphinx.chat) to connect with o
 
 Feel free to explore the potential of **sphinx-tribes** and contribute to its vibrant ecosystem! 🌟
 
+## Cypress Testing 
+
+To write cypress test read the cypress guide for setting up your environment for cypress testing [cypress guide](docs/setupCypressTest.md).
+
