@@ -84,7 +84,13 @@ const Imgg = styled.div<ImageProps>`
 const Tabs = styled.div`
   display: flex;
   margin-left: 20px;
+  justify-content: space-around;
   height: 100%;
+  gap: 50px;
+
+  @media screen and (max-width: 990px) {
+    gap: 25px;
+  }
 `;
 
 const MTabs = styled.div`
@@ -97,7 +103,6 @@ interface TagProps {
 }
 const Tab = styled(Link)<TagProps>`
   display: flex;
-  margin-right: 50px;
   padding: 0 8px;
   color: ${(p: any) => (p.selected ? '#fff' : '#6B7A8D')};
   cursor: pointer;
@@ -454,7 +459,7 @@ function Header() {
             width: '100%'
           }}
         >
-          <Row style={{ height: '100%', marginBottom: '-2px' }}>
+          <Row style={{ height: '100%', marginBottom: '-2px', flex: 2 }}>
             <EuiHeaderSection grow={false}>
               <Img src="/static/people_logo.svg" />
             </EuiHeaderSection>
