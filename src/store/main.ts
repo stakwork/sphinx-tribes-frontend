@@ -1886,9 +1886,11 @@ export class MainStore {
     this.activeOrg = org;
   }
 
-  async getOrganizationNextBountyByCreated(org_uuid: string, bountyId: string): Promise<number> {
+  async getOrganizationNextBountyByCreated(org_uuid: string, created: number): Promise<number> {
     try {
-      const params = { languages: this.bountyLanguages, ...this.orgBountiesStatus };
+      const orgBountiesStatus =
+        JSON.parse(localStorage.getItem('orgBountyStatus') || `{}`) || this.defaultOrgBountyStatus;
+      const params = { languages: this.bountyLanguages, ...orgBountiesStatus };
 
       const queryParams: QueryParams = {
         limit: queryLimit,
@@ -1901,7 +1903,7 @@ export class MainStore {
 
       // if we don't pass the params, we should use previous params for invalidate query
       const query = this.appendQueryParams(
-        `gobounties/org/next/${org_uuid}/${bountyId}`,
+        `gobounties/org/next/${org_uuid}/${created}`,
         queryLimit,
         queryParams
       );
@@ -1914,12 +1916,11 @@ export class MainStore {
     }
   }
 
-  async getOrganizationPreviousBountyByCreated(
-    org_uuid: string,
-    bountyId: string
-  ): Promise<number> {
+  async getOrganizationPreviousBountyByCreated(org_uuid: string, created: number): Promise<number> {
     try {
-      const params = { languages: this.bountyLanguages, ...this.orgBountiesStatus };
+      const orgBountiesStatus =
+        JSON.parse(localStorage.getItem('orgBountyStatus') || `{}`) || this.defaultOrgBountyStatus;
+      const params = { languages: this.bountyLanguages, ...orgBountiesStatus };
 
       const queryParams: QueryParams = {
         limit: queryLimit,
@@ -1932,7 +1933,7 @@ export class MainStore {
 
       // if we don't pass the params, we should use previous params for invalidate query
       const query = this.appendQueryParams(
-        `gobounties/org/previous/${org_uuid}/${bountyId}`,
+        `gobounties/org/previous/${org_uuid}/${created}`,
         queryLimit,
         queryParams
       );
