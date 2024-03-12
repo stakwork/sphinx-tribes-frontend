@@ -83,6 +83,7 @@ const Imgg = styled.div<ImageProps>`
 
 const Tabs = styled.div`
   display: flex;
+  margin-left: 20px;
   justify-content: space-around;
   height: 100%;
   gap: 50px;
