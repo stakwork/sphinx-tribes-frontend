@@ -14,7 +14,7 @@ describe('Alice tries to assign a hunter after creating a bounty', () => {
 
   const assignee = 'carol';
 
-  it('Create a bounty without assignee', () => {
+  it('Creates a bounty without assignee', () => {
     let activeUser = 'alice';
     cy.login(activeUser);
     cy.wait(1000);
