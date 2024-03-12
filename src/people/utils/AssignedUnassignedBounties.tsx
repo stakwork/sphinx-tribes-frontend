@@ -144,7 +144,10 @@ const Bounties = (props: BountiesProps) => {
 
   const checkUserRoles = useCallback(async () => {
     const canAssignHunter = await userCanManageBounty(org_uuid, userPubkey, main);
-    setCanAssignHunter(canAssignHunter);
+    const bountyOwner = ui.meInfo?.owner_pubkey === person.owner_pubkey;
+
+    const canAssign = canAssignHunter || bountyOwner;
+    setCanAssignHunter(canAssign);
   }, [main, org_uuid, userPubkey]);
 
   useEffect(() => {
