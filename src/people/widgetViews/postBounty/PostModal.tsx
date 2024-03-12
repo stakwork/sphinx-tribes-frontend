@@ -31,7 +31,15 @@ export const PostModal: FC<PostModalProps> = observer(
 
     const getBountyData = useCallback(async () => {
       try {
-        const response = await main.getPeopleBounties();
+        const response = await main.getPeopleBounties({
+          page: 1,
+          resetPage: true,
+          ...{
+            Open: true,
+            Assigned: true,
+            Paid: true
+          }
+        });
         return response[0].body?.id;
       } catch (err) {
         console.log('e', err);
