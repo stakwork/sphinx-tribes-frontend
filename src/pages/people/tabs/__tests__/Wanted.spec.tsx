@@ -114,9 +114,17 @@ describe('Wanted Component', () => {
       );
       await waitFor(() => getAllByTestId('user-created-bounty'));
 
-      expect(screen.getByText('Bounties')).toBeInTheDocument();
+      const clickAssignedCheckBox = screen.getByText('Assigned');
 
-      expect(mockedPersonAssignedBounites).toHaveBeenCalledWith();
+      expect(clickAssignedCheckBox).toBeInTheDocument();
+
+      fireEvent.click(clickAssignedCheckBox);
+
+      expect(mockedPersonAssignedBounites).toHaveBeenCalledWith({
+        Assigned: true,
+        Open: false,
+        Paid: false
+      });
     });
   });
 
