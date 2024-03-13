@@ -112,11 +112,9 @@ Cypress.Commands.add('create_bounty', (bounty) => {
   cy.contains('Start').click();
 
   if (bounty.organization) {
-    cy.get('button[data-testid="Organization"]').click({ force: true });
-    cy.get('button[data-testid="Organization"]').should(($select: any) => {
-      const val = $select.val();
-      expect(val).to.eq(bounty.organization);
-    });
+    cy.contains('Organization (optional)').click({ force: true });
+    cy.wait(1000);
+    cy.contains(bounty.organization).click({ force: true });
   }
 
   cy.contains('label', 'Bounty Title').type(bounty.title);
@@ -250,7 +248,7 @@ Cypress.Commands.add('lnurl_login', () => {
 });
 
 Cypress.Commands.add('create_org', (organization) => {
-  cy.contains(organization.loggedInAs).click();
+  cy.contains(organization.loggedInAs).click({ force: true });
 
   cy.contains('Add Organization').click();
 
@@ -270,6 +268,7 @@ Cypress.Commands.add('create_org', (organization) => {
 });
 
 Cypress.Commands.add('pay_invoice', (details) => {
+  console.log('details ===', details);
   let user;
 
   cy.fixture('nodes.json').then((json) => {
