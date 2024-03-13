@@ -274,10 +274,9 @@ Cypress.Commands.add('assert_org_bounty', (bounty, organization) => {
     .should('exist')
     .and('contain', organization);
 
-  cy.contains('label', 'Bounty Title')
-    .type(bounty.title)
-    .find('button[data-testid="Organization"]')
-    .click();
+  cy.get('button[data-testid="Organization"]').should('exist');
+
+  cy.get('button[data-testid="Organization"]').click();
 
   cy.url().should('match', /\/org\/bounties\/\w+$/);
 });
