@@ -267,6 +267,20 @@ Cypress.Commands.add('create_org', (organization) => {
   cy.contains('* Required fields').next().click();
 });
 
+Cypress.Commands.add('assert_org_bounty', (bounty, organization) => {
+
+  cy.wait(5000); 
+  cy.contains('label', 'Bounty Title').type(bounty.title)
+  .should('exist')
+  .and('contain', organization);
+
+  cy.contains('label', 'Bounty Title').type(bounty.title)
+    .find('button[data-testid="Organization"]')
+    .click();
+
+  cy.url().should('match', /\/org\/bounties\/\w+$/);
+});
+
 Cypress.Commands.add('pay_invoice', (details) => {
   let user;
 
