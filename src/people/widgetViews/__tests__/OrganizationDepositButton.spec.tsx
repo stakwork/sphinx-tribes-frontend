@@ -145,7 +145,7 @@ describe('Organization Details component', () => {
       fireEvent.click(generateInvoiceButton);
     });
     waitFor(() => {
-      const copyButton = getByTestId('copy-button');
+      const copyButton = getByTestId('copy-btn');
       fireEvent.click(copyButton);
       expect(screen.getByText('COPIED')).toBeInTheDocument();
     });
