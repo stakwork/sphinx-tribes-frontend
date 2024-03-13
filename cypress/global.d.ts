@@ -6,6 +6,7 @@ declare namespace Cypress {
     lnurl_login(): void;
     create_org(Organization: Organization): void;
     pay_invoice(details: InvoiceDetail): void;
+    edit_bounty(title: string, description: string): void;
   }
 
   type Category =

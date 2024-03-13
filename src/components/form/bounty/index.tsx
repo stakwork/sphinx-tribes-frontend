@@ -633,6 +633,7 @@ function Form(props: FormProps) {
                       <Input
                         {...item}
                         key={item.name}
+                        data-testid={item.name}
                         values={values}
                         errors={errors}
                         scrollToTop={scrollToTop}
