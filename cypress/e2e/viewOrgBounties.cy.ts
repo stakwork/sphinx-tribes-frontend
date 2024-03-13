@@ -4,7 +4,7 @@ describe('View Organization Bounties', () => {
     cy.login(activeUser);
     cy.wait(1000);
 
-    const organization = 'New Organization test 12th march'; // Adjust organization name as per your test
+    const organization = 'Organization'; // Adjust organization name as per your test
 
     cy.create_bounty({
       organization: organization,
