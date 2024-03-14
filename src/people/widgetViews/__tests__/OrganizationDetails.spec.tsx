@@ -1,5 +1,7 @@
 import '@testing-library/jest-dom';
-import { act, render } from '@testing-library/react';
+import '@testing-library/jest-dom/extend-expect';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { act, render, fireEvent, waitFor } from '@testing-library/react';
 import { person } from '__test__/__mockData__/persons';
 import { user } from '__test__/__mockData__/user';
 import nock from 'nock';
@@ -34,10 +36,55 @@ const organization: Organization = {
  */
 describe('OrganizationDetails', () => {
   jest.setTimeout(20000);
-  nock.disableNetConnect();
+  //nock.disableNetConnect();
   nock(user.url).get('/person/id/1').reply(200, { user });
   nock(user.url).get('/ask').reply(200, {});
 
+  it('Add User button shows Add User modal', async () => {
+    const props: {
+      close: jest.Mock;
+      org: Organization | undefined;
+      resetOrg: jest.Mock;
+      getOrganizations: jest.Mock;
+      openAddUserModal: jest.Mock;
+    } = {
+      close: jest.fn(),
+      org: {
+        id: '51',
+        name: 'TEST_NEW',
+        owner_pubkey: '03cbb9c01cdcf91a3ac3b543a556fbec9c4c3c2a6ed753e19f2706012a26367ae3',
+        uuid: 'cmas9gatu2rvqiev4ur0',
+        created: '2024-01-03T20:34:09.585609Z',
+        updated: '2024-01-03T20:34:09.585609Z',
+        deleted: false,
+        description: '',
+        github: '',
+        img: '',
+        website: '',
+        show: false
+      },
+      resetOrg: jest.fn(),
+      getOrganizations: jest.fn(),
+      openAddUserModal: jest.fn()
+    };
+
+    const spyOpenAddUserModal = jest.spyOn(props, 'openAddUserModal');
+
+    const { getByText } = render(
+      <Router>
+        <OrganizationDetails {...props} />
+      </Router>
+    );
+
+    (async () => {
+      await waitFor(() => {
+        const addUserButton = getByText('Add User');
+        expect(addUserButton).toBeInTheDocument();
+        fireEvent.click(addUserButton);
+        expect(spyOpenAddUserModal).toHaveBeenCalledTimes(1);
+      });
+    })();
+  });
   it('render organization name', async () => {
     jest.spyOn(mainStore, 'getPersonAssignedBounties').mockReturnValue(Promise.resolve([]));
     jest.spyOn(mainStore, 'pollOrgBudgetInvoices').mockReturnValue(Promise.resolve([]));

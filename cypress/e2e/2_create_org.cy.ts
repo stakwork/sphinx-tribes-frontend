@@ -1,6 +1,7 @@
 describe('Create Organization', () => {
   it('Creating an Organization', () => {
     cy.login('carol');
+    cy.wait(1000);
 
     cy.create_org({
       loggedInAs: 'carol',

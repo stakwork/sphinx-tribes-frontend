@@ -1,18 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Route, Switch, useParams, useRouteMatch, Router } from 'react-router-dom';
 import { useStores } from 'store';
+import { EuiCheckboxGroup } from '@elastic/eui';
 import NoResults from 'people/utils/UserNoResults';
-import { useIsMobile, usePerson } from 'hooks';
+import { useIsMobile } from 'hooks';
 import { Spacer } from 'people/main/Body';
 import styled from 'styled-components';
 import { BountyModal } from 'people/main/bountyModal/BountyModal';
 import PageLoadSpinner from 'people/utils/PageLoadSpinner';
 import { Person } from 'store/main';
+import PopoverCheckbox from 'pages/people/tabs/popoverCheckboxStyles';
 import history from '../../config/history';
 import { colors } from '../../config/colors';
 import WantedView from './WantedView';
 import DeleteTicketModal from './DeleteModal';
 import { LoadMoreContainer } from './WidgetSwitchViewer';
+import checkboxImage from './Icons/checkboxImage.svg';
+
 type BountyType = any;
 
 const Container = styled.div`
@@ -49,18 +53,29 @@ const UserTickets = () => {
   const isMobile = useIsMobile();
   const { path, url } = useRouteMatch();
 
-  const { person } = usePerson(ui.selectedPerson);
-
   const [deletePayload, setDeletePayload] = useState<object>({});
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const closeModal = () => setShowDeleteModal(false);
   const showModal = () => setShowDeleteModal(true);
   const [displayedBounties, setDisplayedBounties] = useState<BountyType[]>([]);
-  const [loading, setIsLoading] = useState<boolean>(false);
+  const [loading, setIsLoading] = useState<boolean>(true);
   const [hasMoreBounties, setHasMoreBounties] = useState(true);
   const [bountyOwner, setBountyOwner] = useState<Person>();
   const [page, setPage] = useState(1);
   const paginationLimit = 20;
+
+  const defaultStatus: Record<string, boolean> = {
+    Assigned: false,
+    Open: false
+  };
+
+  const [checkboxIdToSelectedMap, setCheckboxIdToSelectedMap] = useState(defaultStatus);
+
+  const Status = Object.keys(defaultStatus);
+
+  const applyFilters = (id: string) => {
+    setCheckboxIdToSelectedMap({ ...defaultStatus, [id]: !checkboxIdToSelectedMap[id] });
+  };
 
   function onPanelClick(id: number, index: number) {
     history.push({
@@ -96,18 +111,18 @@ const UserTickets = () => {
     closeModal();
   };
 
-  const getUserTickets = async () => {
+  const getUserTickets = useCallback(async () => {
     setIsLoading(true);
     const response = await main.getPersonAssignedBounties(
-      { page: page, limit: paginationLimit },
+      { page: page, limit: paginationLimit, ...checkboxIdToSelectedMap },
       uuid
     );
     if (response.length < paginationLimit) {
       setHasMoreBounties(false);
     }
-    setDisplayedBounties((prevBounties: BountyType[]) => [...prevBounties, ...response]);
+    setDisplayedBounties(response);
     setIsLoading(false);
-  };
+  }, [main, page, uuid, checkboxIdToSelectedMap]);
 
   const nextBounties = async () => {
     const nextPage = page + 1;
@@ -119,17 +134,17 @@ const UserTickets = () => {
     if (response.length < paginationLimit) {
       setHasMoreBounties(false);
     }
-    setDisplayedBounties((prevBounties: BountyType[]) => [...prevBounties, ...response]);
+    setDisplayedBounties(response);
   };
 
   useEffect(() => {
     getUserTickets();
-  }, [main]);
+  }, [main, getUserTickets, checkboxIdToSelectedMap]);
 
   const listItems =
     displayedBounties && displayedBounties.length ? (
       displayedBounties.map((item: any, i: number) => {
-        const person = main.people.find((p: any) => p.owner_pubkey === item.body.owner_id);
+        const { person } = item;
         const body = { ...item.body };
         return (
           <Panel
@@ -163,7 +178,33 @@ const UserTickets = () => {
 
   return (
     <Container data-testid="test">
-      <PageLoadSpinner show={loading} />
+      <div
+        style={{
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'space-between',
+          paddingBottom: '16px',
+          alignItems: 'center'
+        }}
+      >
+        <h4>Assigned Bounties</h4>
+        <div style={{ display: 'flex' }}>
+          <PopoverCheckbox className="CheckboxOuter" color={colors['light']}>
+            <EuiCheckboxGroup
+              style={{ display: 'flex', alignItems: 'center', gap: 20, marginRight: 20 }}
+              options={Status.map((status: string) => ({
+                label: status,
+                id: status
+              }))}
+              idToSelectedMap={checkboxIdToSelectedMap}
+              onChange={(optionId: any) => {
+                applyFilters(optionId);
+              }}
+            />
+          </PopoverCheckbox>
+        </div>
+      </div>
+      {loading && <PageLoadSpinner show={loading} />}
       <Router history={history}>
         <Switch>
           <Route path={`${path}/:wantedId/:wantedIndex`}>
@@ -171,7 +212,7 @@ const UserTickets = () => {
           </Route>
         </Switch>
       </Router>
-      {listItems}
+      {!loading ? listItems : ''}
       {hasMoreBounties && !loading && (
         <LoadMoreContainer
           color={color}

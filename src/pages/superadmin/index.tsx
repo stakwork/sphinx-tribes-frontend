@@ -5,7 +5,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { EuiLoadingSpinner } from '@elastic/eui';
 import styled from 'styled-components';
-import { BountyMetrics, defaultBountyStatus } from 'store/main';
+import { BountyMetrics, defaultSuperAdminBountyStatus, Person } from 'store/main';
 import { useStores } from 'store';
 import moment from 'moment';
 import { useInViewPort } from 'hooks';
@@ -40,10 +40,17 @@ export const SuperAdmin = () => {
   const [bounties, setBounties] = useState<any[]>([]);
   const [bountyMetrics, setBountyMetrics] = useState<BountyMetrics | undefined>(undefined);
   const [sortOrder, setSortOrder] = useState<string>('desc');
-  const [checkboxIdToSelectedMap, setCheckboxIdToSelectedMap] = useState(defaultBountyStatus);
+  const [checkboxIdToSelectedMap, setCheckboxIdToSelectedMap] = useState(
+    defaultSuperAdminBountyStatus
+  );
   const [loading, setLoading] = useState(false);
   const [activeTabs, setActiveTabs] = useState<number[]>([]);
   const [totalBounties, setTotalBounties] = useState(0);
+  const [search, setSearch] = useState(false);
+  const [providers, setProviders] = useState<any[]>([]);
+  const [providersCurrentPage, setProvidersCurrentPage] = useState(1);
+  const [providersCheckboxSelected, setProvidersCheckboxSelected] = useState<Person[]>([]);
+  const [selectedProviders, setSelectedProviders] = useState<string>('');
 
   /**
    * Todo use the same date range,
@@ -82,7 +89,8 @@ export const SuperAdmin = () => {
             page: currentPage,
             resetPage: true,
             ...checkboxIdToSelectedMap,
-            direction: sortOrder
+            direction: sortOrder,
+            provider: selectedProviders
           }
         );
         setBounties(bounties);
@@ -94,11 +102,74 @@ export const SuperAdmin = () => {
         setLoading(false);
       }
     }
-  }, [main, startDate, endDate, checkboxIdToSelectedMap, sortOrder, currentPage]);
+  }, [
+    main,
+    startDate,
+    endDate,
+    checkboxIdToSelectedMap,
+    sortOrder,
+    currentPage,
+    selectedProviders
+  ]);
+
+  const getProviders = useCallback(
+    async (curPage?: number) => {
+      try {
+        const providersData = await main.getProviderList(
+          {
+            start_date: String(startDate),
+            end_date: String(endDate)
+          },
+          {
+            page: curPage ? curPage : 1,
+            ...checkboxIdToSelectedMap,
+            direction: sortOrder
+          }
+        );
+
+        if (curPage && curPage > 1) {
+          setProvidersCurrentPage(curPage);
+          setProviders((prev: Person[]) => {
+            // Create a new array combining previous and new providers
+            const combinedProviders = [...prev, ...providersData];
+            // Filter out duplicates based on 'owner_pubkey'
+            const uniqueProviders = combinedProviders.reduce((acc: Person[], current: Person) => {
+              const x = acc.find((item: Person) => item.owner_pubkey === current.owner_pubkey);
+              if (!x) {
+                return acc.concat([current]);
+              } else {
+                return acc;
+              }
+            }, []);
+            return uniqueProviders;
+          });
+        } else {
+          setProviders(providersData);
+        }
+      } catch (error) {
+        // Handle errors if any
+        console.error('Error fetching providers:', error);
+      }
+    },
+    [main, startDate, endDate, checkboxIdToSelectedMap, sortOrder]
+  );
 
   useEffect(() => {
     getBounties();
-  }, [getBounties, currentPage]);
+    setSearch(false);
+  }, [search, currentPage, sortOrder, selectedProviders, startDate, endDate]);
+
+  useEffect(() => {
+    getBounties();
+  }, []);
+
+  useEffect(() => {
+    getProviders();
+  }, [getProviders]);
+
+  const onClickApply = () => {
+    setSearch(true);
+  };
 
   const onChangeStatus = (optionId: any) => {
     const newCheckboxIdToSelectedMap = {
@@ -107,7 +178,37 @@ export const SuperAdmin = () => {
         [optionId]: !checkboxIdToSelectedMap[optionId]
       }
     };
+
     setCheckboxIdToSelectedMap(newCheckboxIdToSelectedMap);
+  };
+
+  const handleProviderSelection = (provider: Person) => {
+    if (providersCheckboxSelected.some((p: Person) => p.owner_pubkey === provider.owner_pubkey)) {
+      setProvidersCheckboxSelected(
+        providersCheckboxSelected.filter((p: Person) => p.owner_pubkey !== provider.owner_pubkey)
+      );
+    } else {
+      setProvidersCheckboxSelected([...providersCheckboxSelected, provider]);
+    }
+  };
+
+  const handleClearButtonClick = () => {
+    setSelectedProviders('');
+    setProvidersCheckboxSelected([]);
+  };
+
+  const handleApplyButtonClick = () => {
+    const selectedProviders: string = providers
+      .filter((provider: Person) =>
+        providersCheckboxSelected.find(
+          (providersCheckboxSelected: Person) =>
+            providersCheckboxSelected.owner_pubkey === provider.owner_pubkey
+        )
+      )
+      .map((provider: Person) => provider.owner_pubkey)
+      .join(',');
+
+    setSelectedProviders(selectedProviders);
   };
 
   const getMetrics = useCallback(async () => {
@@ -136,19 +237,23 @@ export const SuperAdmin = () => {
           String(endDate),
           {
             ...checkboxIdToSelectedMap,
-            direction: sortOrder
+            direction: sortOrder,
+            provider: selectedProviders
           }
         );
         setTotalBounties(totalBounties);
       } else {
         const totalBounties = await main.getBountiesCountByRange(
           String(startDate),
-          String(endDate)
+          String(endDate),
+          {
+            provider: selectedProviders
+          }
         );
         setTotalBounties(totalBounties);
       }
     }
-  }, [main, startDate, endDate, checkboxIdToSelectedMap]);
+  }, [main, startDate, endDate, checkboxIdToSelectedMap, selectedProviders]);
 
   useEffect(() => {
     getTotalBounties();
@@ -193,6 +298,7 @@ export const SuperAdmin = () => {
               headerIsFrozen={inView}
               sortOrder={sortOrder}
               onChangeFilterByDate={onDateFilterChange}
+              clickApply={onClickApply}
               onChangeStatus={onChangeStatus}
               checkboxIdToSelectedMap={checkboxIdToSelectedMap}
               currentPage={currentPage}
@@ -201,6 +307,13 @@ export const SuperAdmin = () => {
               setCurrentPage={setCurrentPage}
               activeTabs={activeTabs}
               setActiveTabs={setActiveTabs}
+              providers={providers}
+              providersCheckboxSelected={providersCheckboxSelected}
+              handleProviderSelection={handleProviderSelection}
+              handleClearButtonClick={handleClearButtonClick}
+              handleApplyButtonClick={handleApplyButtonClick}
+              getProviders={getProviders}
+              providersCurrentPage={providersCurrentPage}
             />
           )}
         </Container>

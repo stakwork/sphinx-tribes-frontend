@@ -112,6 +112,7 @@ const OrganizationDetails = (props: {
       const res = await main.deleteOrganizationUser(user, uuid);
 
       if (res.status === 200) {
+        addToast('User deleted successfully', 'success');
         await getOrganizationUsers();
       } else {
         addToast('Error: could not delete user', 'danger');
@@ -342,6 +343,7 @@ const OrganizationDetails = (props: {
         <HeadButtonWrap forSmallScreen={false}>
           <HeadButton
             text="Edit"
+            data-testid="edit-button"
             color="white"
             disabled={editOrgDisabled}
             onClick={() => setIsOpenEditOrg(true)}
@@ -350,6 +352,7 @@ const OrganizationDetails = (props: {
           <Button
             disabled={!org?.bounty_count}
             text="View Bounties"
+            data-testid="view-bounties"
             color="white"
             style={{ borderRadius: '5px' }}
             endingIcon="open_in_new"
@@ -392,6 +395,7 @@ const OrganizationDetails = (props: {
           <Button
             disabled={viewReportDisabled}
             text="History"
+            data-testid="history-button"
             dataTestId="organization-view-transaction-history-button"
             color="white"
             style={{ borderRadius: '5px' }}
@@ -400,6 +404,7 @@ const OrganizationDetails = (props: {
           <Button
             disabled={addWithdrawDisabled}
             text="Withdraw"
+            data-testid="withdrawal-button"
             dataTestId="organization-withdraw-budget-button"
             color="withdraw"
             style={{ borderRadius: '5px' }}
@@ -423,6 +428,7 @@ const OrganizationDetails = (props: {
             <Button
               disabled={editOrgDisabled}
               text="Add User"
+              data-testid="add-user"
               color="white"
               style={{
                 borderRadius: '5px'

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { Modal } from 'components/common';
+import { EuiGlobalToastList } from '@elastic/eui';
 import { colors } from 'config';
 import { useIsMobile } from 'hooks';
 import { observer } from 'mobx-react-lite';
@@ -32,6 +33,21 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
   const [visible, setVisible] = useState(false);
   const [isDeleted, setisDeleted] = useState(false);
 
+  const [toasts, setToasts]: any = useState([]);
+
+  function addToast(title: string, color: 'primary' | 'success') {
+    setToasts([
+      {
+        id: `${Math.random()}`,
+        title,
+        color
+      }
+    ]);
+  }
+
+  function removeToast() {
+    setToasts([]);
+  }
   let orgUuid = '';
   if (location.state) {
     const locationState: any = location.state;
@@ -101,7 +117,11 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
     if (activeOrg) {
       try {
         const bountyId = await main.getOrganizationNextBountyByCreated(activeOrg, created);
-        history.replace(`/bounty/${bountyId}`);
+        if (bountyId === 0) {
+          addToast('There are no more bounties to display!', 'primary');
+        } else {
+          history.replace(`/bounty/${bountyId}`);
+        }
       } catch (e) {
         console.error(e);
       }
@@ -113,6 +133,7 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
         console.error(e);
       }
     }
+    return 1;
   };
 
   const nextArrHandler = async () => {
@@ -120,7 +141,11 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
     if (activeOrg) {
       try {
         const bountyId = await main.getOrganizationPreviousBountyByCreated(activeOrg, created);
-        history.replace(`/bounty/${bountyId}`);
+        if (bountyId === 0) {
+          addToast('There are no more bounties to display!', 'primary');
+        } else {
+          history.replace(`/bounty/${bountyId}`);
+        }
       } catch (e) {
         console.error(e);
       }
@@ -205,6 +230,7 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
             prevArrowNew={removeNextAndPrev ? undefined : prevArrHandler}
             nextArrowNew={removeNextAndPrev ? undefined : nextArrHandler}
           >
+            <EuiGlobalToastList toasts={toasts} dismissToast={removeToast} toastLifeTimeMs={5000} />
             <FocusedView
               setRemoveNextAndPrev={setRemoveNextAndPrev}
               person={connectPersonBody}

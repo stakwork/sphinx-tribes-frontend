@@ -373,7 +373,9 @@ const EditOrgModal = (props: EditOrgModalProps) => {
                 values,
                 setFieldValue,
                 errors,
-                initialValues
+                initialValues,
+                isValid,
+                dirty
               }: any) => (
                 <InputWrapper>
                   {schema.map((item: FormField) => (
@@ -408,9 +410,11 @@ const EditOrgModal = (props: EditOrgModalProps) => {
                         }}
                         handleChange={(e: any) => {
                           setFieldValue(item.name, e);
-                          item.name === 'name'
-                            ? setNameCharacterCount(e.length)
-                            : setDescriptionCharacterCount(e.length);
+                          if (item.name === 'name') {
+                            setNameCharacterCount(e.length);
+                          } else if (item.name === 'description') {
+                            setDescriptionCharacterCount(e.length);
+                          }
                         }}
                         setFieldValue={(e: any, f: any) => {
                           setFieldValue(e, f);
@@ -430,7 +434,7 @@ const EditOrgModal = (props: EditOrgModalProps) => {
                     </InputContainer>
                   ))}
                   <Button
-                    disabled={nameColor || descColor ? true : false}
+                    disabled={!values.name || !isValid || !dirty}
                     onClick={() => handleSubmit()}
                     loading={loading}
                     style={{
@@ -443,7 +447,7 @@ const EditOrgModal = (props: EditOrgModalProps) => {
                       top: '390px',
                       left: '527px'
                     }}
-                    color={nameColor || descColor ? 'gray' : 'primary'}
+                    color={!values.name || !isValid || !dirty ? 'gray' : 'primary'}
                     text={'Save changes'}
                   />
                 </InputWrapper>

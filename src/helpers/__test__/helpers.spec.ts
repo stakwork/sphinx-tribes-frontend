@@ -19,7 +19,10 @@ import {
   formatSat,
   filterCount,
   userCanManageBounty,
-  formatPercentage
+  formatPercentage,
+  normalizeInput,
+  normalizeTextValue,
+  normalizeUrl
 } from '../helpers-extended';
 
 beforeAll(() => {
@@ -404,6 +407,88 @@ describe('testing helpers', () => {
     it('should display "0" for non-numeric inputs', () => {
       expect(formatPercentage(undefined)).toBe('0');
       expect(formatPercentage(null as any)).toBe('0');
+    });
+  });
+
+  describe('normalizeInput function', () => {
+    test('should trim spaces only without removing inner spaces', () => {
+      const input = '  Hello World  ';
+      const expected = 'Hello World';
+      expect(normalizeInput(input)).toBe(expected);
+    });
+
+    test('should replace multiple spaces with a single space', () => {
+      const input = 'Hello    World';
+      const expected = 'Hello World';
+      expect(normalizeInput(input)).toBe(expected);
+    });
+
+    test('should return empty string if input is only spaces', () => {
+      const input = '     ';
+      const expected = '';
+      expect(normalizeInput(input)).toBe(expected);
+    });
+  });
+
+  describe('normalizeTextValue function', () => {
+    test('should trim spaces and maintain line breaks', () => {
+      const textValue = '  Hello \n World  \n\n Test  ';
+      const expected = 'Hello\nWorld\n\nTest';
+      expect(normalizeTextValue(textValue)).toBe(expected);
+    });
+
+    test('should replace multiple spaces with a single space and maintain line breaks', () => {
+      const textValue = 'Hello       World\nThis         is          a         test';
+      const expected = 'Hello World\nThis is a test';
+      expect(normalizeTextValue(textValue)).toBe(expected);
+    });
+
+    test('should return empty string if input is only spaces or line breaks', () => {
+      const textValue = '   \n  \n ';
+      const expected = '';
+      expect(normalizeTextValue(textValue)).toBe(expected);
+    });
+  });
+
+  describe('normalizeUrl', () => {
+    it('removes all spaces from a URL and reconstructs it correctly', () => {
+      const inputsAndExpected: { input: string; expected: string }[] = [
+        {
+          input: 'https ://github.com/stakwork/sphinx-tribes-frontend/ issues/267',
+          expected: 'https://github.com/stakwork/sphinx-tribes-frontend/issues/267'
+        },
+        {
+          input: 'http s:// git hub.com /stak work/sphinx- tribes- frontend/issues / 267',
+          expected: 'https://github.com/stakwork/sphinx-tribes-frontend/issues/267'
+        },
+        {
+          input:
+            '          https  :/    /git              hub. com/ st                  akw  ork/sphinx-tri bes-fron tend/  issues     /2 67',
+          expected: 'https://github.com/stakwork/sphinx-tribes-frontend/issues/267'
+        },
+        {
+          input: 'https :// someotherurl.com /path/to /resource',
+          expected: 'https://someotherurl.com/path/to/resource'
+        },
+        {
+          input: 'https :// community.sphinx   .chat     /bounties',
+          expected: 'https://community.sphinx.chat/bounties'
+        },
+        {
+          input:
+            '      https:/   /community.    sphinx.c    hat/   org/boun     ties/ck95pe04nncj      naefo08g',
+          expected: 'https://community.sphinx.chat/org/bounties/ck95pe04nncjnaefo08g'
+        },
+        {
+          input:
+            'h          ttp         s:  //com      munity.sphinx.ch            at/p     /cd9dm5ua5fdts       j2c2mh0/organi   zations',
+          expected: 'https://community.sphinx.chat/p/cd9dm5ua5fdtsj2c2mh0/organizations'
+        }
+      ];
+
+      inputsAndExpected.forEach(({ input, expected }: { input: string; expected: string }) => {
+        expect(normalizeUrl(input)).toEqual(expected);
+      });
     });
   });
 });

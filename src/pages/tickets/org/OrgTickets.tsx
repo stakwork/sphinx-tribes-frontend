@@ -10,7 +10,7 @@ import { colors } from '../../../config/colors';
 import { useIsMobile } from '../../../hooks';
 import { useStores } from '../../../store';
 import { OrgBody, Body, Backdrop } from '../style';
-import { Organization, defaultOrgBountyStatus, queryLimit } from '../../../store/main';
+import { Organization, queryLimit } from '../../../store/main';
 import { OrgHeader } from './orgHeader';
 
 function OrgBodyComponent() {
@@ -19,7 +19,12 @@ function OrgBodyComponent() {
   const [showDropdown, setShowDropdown] = useState(false);
   const selectedWidget = 'bounties';
   const [scrollValue, setScrollValue] = useState<boolean>(false);
-  const [checkboxIdToSelectedMap, setCheckboxIdToSelectedMap] = useState(defaultOrgBountyStatus);
+
+  const item = localStorage.getItem('orgBountyStatus');
+  const savedStatus = item ? JSON.parse(item) : null; // or provide a default value other than null
+
+  const [checkboxIdToSelectedMap, setCheckboxIdToSelectedMap] = useState(savedStatus);
+
   const [checkboxIdToSelectedMapLanguage, setCheckboxIdToSelectedMapLanguage] = useState({});
   const { uuid } = useParams<{ uuid: string; bountyId: string }>();
 
@@ -46,7 +51,7 @@ function OrgBodyComponent() {
   }, [main, uuid, checkboxIdToSelectedMap, languageString]);
 
   useEffect(() => {
-    setCheckboxIdToSelectedMap({ ...defaultOrgBountyStatus });
+    setCheckboxIdToSelectedMap({ ...savedStatus });
   }, [loading]);
 
   useEffect(() => {
@@ -80,6 +85,7 @@ function OrgBodyComponent() {
       }
     };
     setCheckboxIdToSelectedMap(newCheckboxIdToSelectedMap);
+    localStorage.setItem('orgBountyStatus', JSON.stringify(newCheckboxIdToSelectedMap));
     // set the store status, to enable the accurate navigation modal call
     main.setBountiesStatus(newCheckboxIdToSelectedMap);
     getTotalBounties(uuid, newCheckboxIdToSelectedMap, page);
@@ -192,6 +198,7 @@ function OrgBodyComponent() {
           languageString={languageString}
           organizationData={organizationData as Organization}
           org_uuid={uuid}
+          totalBountyCount={OrgTotalBounties}
         />
         <>
           <div

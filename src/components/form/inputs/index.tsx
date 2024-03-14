@@ -85,7 +85,7 @@ export const FieldEnv = styled(EuiFormRow as any)<fieldEnvProps>`
     label {
       color: ${(p: any) => p?.color && p.color.grayish.G300} !important;
       background: ${(p: any) => p?.color && p.color.pureWhite};
-      z-index: 10;
+      z-index: 1;
       position: ${(p: any) => p?.isTop && 'absolute'};
       top: ${(p: any) => p?.isTop && '-20px'} !important;
       font-family: 'Barlow';

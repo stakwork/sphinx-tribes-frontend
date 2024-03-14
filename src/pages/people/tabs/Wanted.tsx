@@ -1,18 +1,22 @@
 import { usePerson } from 'hooks';
 import { observer } from 'mobx-react-lite';
+import { EuiCheckboxGroup } from '@elastic/eui';
 import { BountyModal } from 'people/main/bountyModal';
 import { widgetConfigs } from 'people/utils/Constants';
 import NoneSpace from 'people/utils/NoneSpace';
 import { PostBounty } from 'people/widgetViews/postBounty';
 import WantedView from 'people/widgetViews/WantedView';
 import PageLoadSpinner from 'people/utils/PageLoadSpinner';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Route, Switch, useHistory, useRouteMatch, useParams } from 'react-router-dom';
 import { useStores } from 'store';
 import { paginationQueryLimit } from 'store/main';
 import styled from 'styled-components';
 import { LoadMoreContainer } from '../../../people/widgetViews/WidgetSwitchViewer';
 import { colors } from '../../../config/colors';
+import checkboxImage from './Icons/checkboxImage.svg';
+import PopoverCheckbox from './popoverCheckboxStyles';
+
 const config = widgetConfigs.bounties;
 type BountyType = any;
 const Container = styled.div`
@@ -53,13 +57,27 @@ export const Wanted = observer(() => {
   const [page, setPage] = useState(1);
   const [hasMoreBounties, setHasMoreBounties] = useState(true);
 
+  const defaultStatus: Record<string, boolean> = {
+    Open: false,
+    Assigned: false,
+    Paid: false
+  };
+
+  const [checkboxIdToSelectedMap, setCheckboxIdToSelectedMap] = useState(defaultStatus);
+
+  const Status = Object.keys(defaultStatus);
+
+  const applyFilters = (id: string) => {
+    setCheckboxIdToSelectedMap({ ...defaultStatus, [id]: !checkboxIdToSelectedMap[id] });
+  };
+
   // Function to fetch user tickets with pagination
-  const getUserTickets = async () => {
+  const getUserTickets = useCallback(async () => {
     setIsLoading(true);
 
     // Fetch bounties for the specified page and limit
     const response = await main.getPersonCreatedBounties(
-      { page: page, limit: paginationQueryLimit },
+      { page: page, limit: paginationQueryLimit, sortBy: 'created', ...checkboxIdToSelectedMap },
       uuid
     );
 
@@ -68,16 +86,16 @@ export const Wanted = observer(() => {
       setHasMoreBounties(false);
     }
     // Update the displayed bounties by appending the new bounties
-    setDisplayedBounties((prevBounties: BountyType[]) => [...prevBounties, ...response]);
+    setDisplayedBounties(response);
     setIsLoading(false);
-  };
+  }, [checkboxIdToSelectedMap, main, page, uuid]);
 
   const nextBounties = async () => {
     const nextPage = page + 1;
     setPage(nextPage);
     // Fetch bounties for the next page
     const response = await main.getPersonCreatedBounties(
-      { page: nextPage, limit: paginationQueryLimit },
+      { page: nextPage, limit: paginationQueryLimit, ...checkboxIdToSelectedMap },
       uuid
     );
     // Check if the response has fewer bounties than the limit, indicating no more bounties to load
@@ -85,14 +103,14 @@ export const Wanted = observer(() => {
       setHasMoreBounties(false);
     }
     // Update the displayed bounties by appending the new bounties
-    setDisplayedBounties((prevBounties: BountyType[]) => [...prevBounties, ...response]);
+    setDisplayedBounties(response);
   };
 
   useEffect(() => {
     getUserTickets();
-  }, [main]);
+  }, [main, checkboxIdToSelectedMap, getUserTickets]);
 
-  if (!main.createdBounties?.length) {
+  if (!main.createdBounties?.length && !loading) {
     return (
       <NoneSpace
         style={{
@@ -120,22 +138,37 @@ export const Wanted = observer(() => {
   }
   return (
     <Container>
-      <PageLoadSpinner show={loading} />
+      <div
+        style={{
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'space-between',
+          paddingBottom: '16px',
+          alignItems: 'center'
+        }}
+      >
+        <h4>Bounties </h4>
+        <PopoverCheckbox className="CheckboxOuter" color={colors['light']}>
+          <EuiCheckboxGroup
+            style={{ display: 'flex', alignItems: 'center', gap: 20, marginRight: 50 }}
+            options={Status.map((status: string) => ({
+              label: status,
+              id: status
+            }))}
+            idToSelectedMap={checkboxIdToSelectedMap}
+            onChange={(optionId: any) => {
+              applyFilters(optionId);
+            }}
+          />
+          {canEdit && <PostBounty widget="bounties" />}
+        </PopoverCheckbox>
+      </div>
+      {loading && <PageLoadSpinner show={loading} />}
       <Switch>
         <Route path={`${path}/:wantedId/:wantedIndex`}>
           <BountyModal basePath={url} />
         </Route>
       </Switch>
-      <div
-        style={{
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'flex-end',
-          paddingBottom: '16px'
-        }}
-      >
-        {canEdit && <PostBounty widget="bounties" />}
-      </div>
       {displayedBounties
         .filter((w: BountyType) => w.body.owner_id === person?.owner_pubkey)
         .map((w: BountyType, i: any) => (

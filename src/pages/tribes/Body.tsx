@@ -12,7 +12,6 @@ import { observer } from 'mobx-react-lite';
 import { useStores } from '../../store';
 import { useIsMobile, usePageScroll } from '../../hooks';
 import { SearchTextInput } from '../../components/common';
-import NoResults from '../../people/utils/NoResults';
 import PageLoadSpinner from '../../people/utils/PageLoadSpinner';
 import { colors } from '../../config/colors';
 import tags from './tags';
@@ -22,7 +21,6 @@ import Tribe from './Tribe';
 const Body = styled.div`
   flex: 1;
   height: calc(100vh - 60px);
-  // padding-bottom:80px;
   width: 100%;
   overflow: auto;
   background: ${colors.dark.tribesBackground};
@@ -43,6 +41,35 @@ const StyledTagPopupWrapper = styled.div`
   .euiFormControlLayout {
     border: 10px solid red;
   }
+`;
+
+const H = styled.div`
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 37px;
+  letter-spacing: 0.1em;
+  text-align: center;
+
+  font-family: Roboto;
+  font-style: normal;
+  line-height: 26px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+
+  color: #292c33;
+  letter-spacing: 0px;
+  color: rgb(60, 63, 65);
+`;
+
+const NoResult = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 20px;
 `;
 
 function BodyComponent() {
@@ -120,7 +147,7 @@ function BodyComponent() {
 
   if (loading) {
     return (
-      <Body style={{ justifyContent: 'center', alignItems: 'center' }}>
+      <Body data-testid="content" style={{ justifyContent: 'center', alignItems: 'center' }}>
         <EuiLoadingSpinner size="xl" />
       </Body>
     );
@@ -225,7 +252,6 @@ function BodyComponent() {
               width: 204,
               height: 40,
               background: '#fff',
-              color: '#fff',
               border: 'none',
               marginLeft: 20
             }}
@@ -244,7 +270,9 @@ function BodyComponent() {
                 <Tribe {...t} key={t.uuid} selected={selected === t.uuid} select={selectTribe} />
               ))
             ) : (
-              <NoResults />
+              <NoResult>
+                <H>No results</H>
+              </NoResult>
             )}
           </div>
         </EuiFormFieldset>

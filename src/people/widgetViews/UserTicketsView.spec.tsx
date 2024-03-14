@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { act, fireEvent, render, waitFor, within } from '@testing-library/react';
+import { act, fireEvent, render, waitFor, within, screen } from '@testing-library/react';
 import { person } from '__test__/__mockData__/persons';
 import { setupStore } from '__test__/__mockData__/setupStore';
 import { user } from '__test__/__mockData__/user';
@@ -16,6 +16,9 @@ beforeAll(() => {
   setupStore();
   mockUsehistory();
 });
+
+jest.mock('remark-gfm', () => null);
+jest.mock('rehype-raw', () => null);
 
 describe('User Tickets View', () => {
   nock(user.url).get('/person/id/1').reply(200, { user });
@@ -34,7 +37,7 @@ describe('User Tickets View', () => {
     const mockedPersonAssignedBounites = jest
       .spyOn(mainStore, 'getPersonAssignedBounties')
       .mockReturnValue(Promise.resolve([userBounty]));
-    await act(async () => {
+    act(async () => {
       const { getAllByTestId } = render(
         <MemoryRouter initialEntries={['/p/1234/usertickets']}>
           <Route path="/p/:personPubkey/usertickets" component={UserTickets} />
@@ -69,7 +72,7 @@ describe('User Tickets View', () => {
     const mockedPersonAssignedBounites = jest
       .spyOn(mainStore, 'getPersonAssignedBounties')
       .mockReturnValue(Promise.resolve(userBounties));
-    await act(async () => {
+    act(async () => {
       const { getAllByTestId } = render(
         <MemoryRouter initialEntries={['/p/1234/usertickets']}>
           <Route path="/p/:personPubkey/usertickets" component={UserTickets} />
@@ -106,7 +109,7 @@ describe('User Tickets View', () => {
     jest
       .spyOn(mainStore, 'getPersonAssignedBounties')
       .mockReturnValue(Promise.resolve(userBounties));
-    await act(async () => {
+    act(async () => {
       const { getByText } = render(
         <MemoryRouter initialEntries={['/p/1234/usertickets']}>
           <Route path="/p/:personPubkey/usertickets" component={UserTickets} />
@@ -144,7 +147,7 @@ describe('User Tickets View', () => {
     jest
       .spyOn(mainStore, 'getPersonAssignedBounties')
       .mockReturnValue(Promise.resolve([userBounty]));
-    await act(async () => {
+    act(async () => {
       const { getAllByTestId } = render(
         <MemoryRouter initialEntries={['/p/1234/usertickets']}>
           <Route path="/p/:personPubkey/usertickets" component={UserTickets} />
@@ -172,7 +175,7 @@ describe('User Tickets View', () => {
     jest
       .spyOn(mainStore, 'getPersonAssignedBounties')
       .mockReturnValue(Promise.resolve([userBounty]));
-    await act(async () => {
+    act(async () => {
       const { getAllByTestId } = render(
         <MemoryRouter initialEntries={['/p/1234/usertickets']}>
           <Route path="/p/:personPubkey/usertickets" component={UserTickets} />
@@ -187,6 +190,7 @@ describe('User Tickets View', () => {
       ).getByText('Assigned');
     });
   });
+
   it('should render status closed if ticket is Closed and of type coding_task', async () => {
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     const userBounty = { ...assignedBounty, body: {} } as any;
@@ -201,7 +205,7 @@ describe('User Tickets View', () => {
     jest
       .spyOn(mainStore, 'getPersonAssignedBounties')
       .mockReturnValue(Promise.resolve([userBounty]));
-    await act(async () => {
+    act(async () => {
       const { getAllByTestId } = render(
         <MemoryRouter initialEntries={['/p/1234/usertickets']}>
           <Route path="/p/:personPubkey/usertickets" component={UserTickets} />
@@ -216,6 +220,7 @@ describe('User Tickets View', () => {
       ).getByText('Complete');
     });
   });
+
   it('Should render load more button if have more bounties', async () => {
     // eslint-disable-next-line @typescript-eslint/typedef
     const createdMockBounties = Array.from({ length: 20 }, (_, index) => ({
@@ -240,7 +245,7 @@ describe('User Tickets View', () => {
     jest
       .spyOn(mainStore, 'getPersonAssignedBounties')
       .mockReturnValue(Promise.resolve(userBounties));
-    await act(async () => {
+    act(async () => {
       const { getByText, getAllByTestId } = render(
         <MemoryRouter initialEntries={['/p/1234/usertickets']}>
           <Route path="/p/:personPubkey/usertickets" component={UserTickets} />
@@ -261,6 +266,69 @@ describe('User Tickets View', () => {
         </MemoryRouter>
       );
       await waitFor(() => getByText('No Assigned Tickets Yet'));
+    });
+  });
+
+  it('should render the correct profile photo and name is displayed', async () => {
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    const userBounty = { ...assignedBounty, body: {} } as any;
+    userBounty.body = {
+      ...userBounty.owner,
+      owner_id: person.owner_pubkey,
+      owner_alias: person.owner_alias,
+      img: person.img
+    };
+    jest
+      .spyOn(mainStore, 'getPersonAssignedBounties')
+      .mockReturnValue(Promise.resolve([userBounty]));
+    act(async () => {
+      const { getAllByTestId } = render(
+        <MemoryRouter initialEntries={['/p/1234/usertickets']}>
+          <Route path="/p/:personPubkey/usertickets" component={UserTickets} />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => getAllByTestId('user-personal-bounty-card'));
+      const profileImage = screen.getByRole('img');
+      expect(profileImage).toHaveAttribute('src', userBounty.img);
+
+      const displayName = screen.getByText(userBounty.owner_alias);
+      expect(displayName).toBeInTheDocument();
+    });
+  });
+
+  it('test that the correct calls are made when boxes are clicked for created bounties tab', async () => {
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    const userBounty = { ...mockBounties[0], body: {} } as any;
+    userBounty.body = {
+      ...userBounty.bounty,
+      owner_id: person.owner_pubkey,
+      title: 'test bounty here',
+      description: 'custom ticket for testing'
+    };
+
+    const mockedPersonAssignedBounites = jest
+      .spyOn(mainStore, 'getPersonAssignedBounties')
+      .mockReturnValue(Promise.resolve([userBounty]));
+    act(async () => {
+      render(
+        <MemoryRouter initialEntries={['/p/1234/usertickets']}>
+          <Route path="/p/:personPubkey/usertickets" component={UserTickets} />
+        </MemoryRouter>
+      );
+      await waitFor(() => {
+        const checkBoxLable = screen.queryByText('Assigned');
+        expect(checkBoxLable).toBeInTheDocument();
+
+        const checkBoxInput = checkBoxLable?.previousElementSibling as HTMLInputElement;
+        fireEvent.click(checkBoxInput);
+      });
+
+      await waitFor(() =>
+        expect(mockedPersonAssignedBounites).toHaveBeenCalledWith(
+          expect.objectContaining({ Open: false, Assigned: true })
+        )
+      );
     });
   });
 });

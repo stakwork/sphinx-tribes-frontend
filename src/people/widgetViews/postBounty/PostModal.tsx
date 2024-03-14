@@ -30,8 +30,20 @@ export const PostModal: FC<PostModalProps> = observer(
     const config = widgetConfigs[widget];
 
     const getBountyData = useCallback(async () => {
-      const response = await main.getPeopleBounties();
-      return response[0].body.id;
+      try {
+        const response = await main.getPeopleBounties({
+          page: 1,
+          resetPage: true,
+          ...{
+            Open: true,
+            Assigned: true,
+            Paid: true
+          }
+        });
+        return response[0].body?.id;
+      } catch (err) {
+        console.log('e', err);
+      }
     }, [main]);
 
     const ReCallBounties = async () => {
@@ -39,7 +51,10 @@ export const PostModal: FC<PostModalProps> = observer(
       TODO : after getting the better way to reload the bounty, this code will be removed.
       */
       const number = await getBountyData();
-      history.push(`/bounty/${number}`);
+
+      if (number) {
+        history.push(`/bounty/${number}`);
+      }
     };
 
     const closeHandler = () => {

@@ -112,8 +112,9 @@ Cypress.Commands.add('create_bounty', (bounty) => {
   cy.contains('Start').click();
 
   if (bounty.organization) {
-    cy.get('button[data-testid="Organization"]').click({ force: true });
-    cy.get('.euiSuperSelect__listbox').contains(bounty.organization).click();
+    cy.contains('Organization (optional)').click({ force: true });
+    cy.wait(1000);
+    cy.contains(bounty.organization).click({ force: true });
   }
 
   cy.contains('label', 'Bounty Title').type(bounty.title);
@@ -126,6 +127,7 @@ Cypress.Commands.add('create_bounty', (bounty) => {
 
   if (bounty.coding_language && bounty.coding_language.length > 0) {
     cy.contains('Coding Language').click();
+
     for (let i = 0; i < bounty.coding_language.length; i++) {
       cy.get('.CheckboxOuter').contains(bounty.coding_language[i]).scrollIntoView().click();
     }
@@ -133,7 +135,7 @@ Cypress.Commands.add('create_bounty', (bounty) => {
   }
 
   cy.get('[data-testid="Category *"]').click();
-  cy.get('.euiSuperSelect__listbox').contains(bounty.category).click();
+  cy.get('[data-testid="Category *"]').contains(bounty.category).click();
 
   cy.contains('Next').click();
 
@@ -143,13 +145,11 @@ Cypress.Commands.add('create_bounty', (bounty) => {
   cy.contains('label', 'Price (Sats)').type(bounty.amount);
 
   if (bounty.estimate_session_length) {
-    cy.get('button[data-testid="Estimate Session Length"]').click({ force: true });
-    cy.get('.euiSuperSelect__listbox').should('be.visible');
-    cy.get('.euiSuperSelect__listbox').contains(bounty.estimate_session_length).click();
-    cy.get('button[data-testid="Estimate Session Length"]').should(
-      'contain',
-      bounty.estimate_session_length
-    );
+    cy.get('[data-testid="Estimate Session Length"]').find('button').click();
+
+    cy.get('[data-testid="Estimate Session Length"]')
+      .contains(bounty.estimate_session_length)
+      .click();
   }
 
   if (bounty.estimate_completion_date) {
@@ -248,7 +248,8 @@ Cypress.Commands.add('lnurl_login', () => {
 });
 
 Cypress.Commands.add('create_org', (organization) => {
-  cy.contains(organization.loggedInAs).click();
+
+  cy.contains(organization.loggedInAs).click({ force: true });
 
   cy.wait(1000);
   cy.contains('Add Organization').click();
@@ -269,6 +270,7 @@ Cypress.Commands.add('create_org', (organization) => {
 });
 
 Cypress.Commands.add('pay_invoice', (details) => {
+  console.log('details ===', details);
   let user;
 
   cy.fixture('nodes.json').then((json) => {

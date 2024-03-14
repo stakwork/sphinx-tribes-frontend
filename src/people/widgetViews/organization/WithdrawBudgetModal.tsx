@@ -171,7 +171,7 @@ const WithdrawBudgetModal = (props: WithdrawModalProps) => {
         {displayInvoiceSats && (
           <PaymentDetailsWrap>
             <WithdrawText>You are about to withdraw</WithdrawText>
-            <WithdrawAmount>
+            <WithdrawAmount data-testid="WithdrawAmount">
               {amountInSats.toLocaleString()} <Grey>SATS</Grey>
             </WithdrawAmount>
             <DollarValue>{satToUsd(Number(amountInSats))} USD</DollarValue>
@@ -213,6 +213,7 @@ const WithdrawBudgetModal = (props: WithdrawModalProps) => {
                 Paste your invoice
               </InvoiceLabel>
               <InvoiceInput
+                data-testid="withdrawInvoiceInput"
                 type="text"
                 style={{
                   width: '100%'

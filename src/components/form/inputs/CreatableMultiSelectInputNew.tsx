@@ -152,7 +152,7 @@ export default function CreatableMultiSelectInputNew({ error, label, handleChang
   return (
     <div
       style={{
-        paddingTop: '11px'
+        paddingTop: '5px'
       }}
     >
       <EuiPopover

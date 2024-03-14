@@ -85,12 +85,25 @@ export default function TextAreaInput({
   handleFocus,
   readOnly,
   extraHTML,
-  borderType
+  borderType,
+  github_state
 }: Props) {
-  let labeltext = label;
   const color = colors['light'];
-  if (error) labeltext = `${labeltext} (${error})`;
   const [active, setActive] = useState<boolean>(false);
+  const normalizeAndTrimText = (text: string) => text.split('\n').join('\n');
+
+  const handleTextChange = (e: any) => {
+    const newText = normalizeAndTrimText(e.target.value.trimStart());
+    handleChange(newText);
+  };
+
+  const handleTextBlur = (e: any) => {
+    const normalizedText = normalizeAndTrimText(e.target.value);
+    handleChange(normalizedText);
+    handleBlur(e);
+    setActive(false);
+  };
+
   return (
     <OuterContainer color={color}>
       <FieldEnv
@@ -111,17 +124,15 @@ export default function TextAreaInput({
             width={StyleOnText[label]?.width ?? defaultWidth}
             name="first"
             value={value || ''}
-            readOnly={readOnly || false}
-            onChange={(e: any) => handleChange(e.target.value)}
-            onBlur={(e: any) => {
-              handleBlur(e);
-              setActive(false);
-            }}
+            readOnly={readOnly || github_state || false}
+            onChange={handleTextChange}
+            onBlur={handleTextBlur}
             onFocus={(e: any) => {
               handleFocus(e);
               setActive(true);
             }}
             rows={label === 'Description' ? 8 : 6}
+            data-testid={`checktextarea`}
           />
           {error && (
             <E color={color}>

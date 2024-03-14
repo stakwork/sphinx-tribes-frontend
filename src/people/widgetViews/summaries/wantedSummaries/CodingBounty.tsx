@@ -5,7 +5,8 @@ import { observer } from 'mobx-react-lite';
 import moment from 'moment';
 import { isInvoiceExpired, userCanManageBounty } from 'helpers';
 import { SOCKET_MSG, createSocketInstance } from 'config/socket';
-import { Button, Divider, Modal } from '../../../../components/common';
+import { Box } from '@mui/system';
+import { Button, Divider, Modal, usePaymentConfirmationModal } from '../../../../components/common';
 import { colors } from '../../../../config/colors';
 import { renderMarkdown } from '../../../utils/RenderMarkdown';
 import { satToUsd } from '../../../../helpers';
@@ -110,6 +111,7 @@ function MobileView(props: CodingBountiesProps) {
   const [toasts, setToasts]: any = useState([]);
   const [updatingPayment, setUpdatingPayment] = useState<boolean>(false);
   const [userBountyRole, setUserBountyRole] = useState(false);
+  const [enableDelete, setEnableDelete] = useState(false);
 
   const [paidStatus, setPaidStatus] = useState(paid);
 
@@ -130,12 +132,14 @@ function MobileView(props: CodingBountiesProps) {
 
   const pollMinutes = 2;
 
+  const toastId = Math.random();
+
   const addToast = (type: string) => {
     switch (type) {
       case SOCKET_MSG.invoice_success: {
         return setToasts([
           {
-            id: '1',
+            id: `${toastId}`,
             title: 'Invoice has been paid',
             color: 'success'
           }
@@ -144,7 +148,7 @@ function MobileView(props: CodingBountiesProps) {
       case SOCKET_MSG.keysend_error: {
         return setToasts([
           {
-            id: '2',
+            id: `${toastId}`,
             title: 'Keysend payment failed',
             toastLifeTimeMs: 10000,
             color: 'error'
@@ -154,7 +158,7 @@ function MobileView(props: CodingBountiesProps) {
       case SOCKET_MSG.keysend_success: {
         return setToasts([
           {
-            id: '3',
+            id: `${toastId}`,
             title: 'Successful keysend payment',
             color: 'success'
           }
@@ -379,6 +383,22 @@ function MobileView(props: CodingBountiesProps) {
   const hasAccess = isOwner || userBountyRole;
   const payBountyDisable = !isOwner && !userBountyRole;
 
+  const { openPaymentConfirmation } = usePaymentConfirmationModal();
+
+  const confirmPaymentHandler = () => {
+    openPaymentConfirmation({
+      onConfirmPayment: makePayment,
+      children: (
+        <Box fontSize={20} textAlign="center">
+          Are you sure you want to <br />
+          <Box component="span" fontWeight="500">
+            Pay this Bounty?
+          </Box>
+        </Box>
+      )
+    });
+  };
+
   useEffect(() => {
     setPaidStatus(paid);
   }, [paid]);
@@ -444,7 +464,7 @@ function MobileView(props: CodingBountiesProps) {
               }}
               hovercolor={color.button_secondary.hover}
               shadowcolor={color.button_secondary.shadow}
-              onClick={makePayment}
+              onClick={confirmPaymentHandler}
             />
           )
         }
@@ -558,6 +578,7 @@ function MobileView(props: CodingBountiesProps) {
                             disabled={isEditButtonDisable}
                           />
                           <ImageButton
+                            data-testid="delete-btn"
                             buttonText={!props.deletingState ? 'Delete' : 'Deleting'}
                             ButtonContainerStyle={{
                               width: '117px',
@@ -567,7 +588,7 @@ function MobileView(props: CodingBountiesProps) {
                             leadingImageContainerStyle={{
                               left: 450
                             }}
-                            disabled={!props?.deleteAction}
+                            disabled={enableDelete}
                             buttonAction={props?.deleteAction}
                             buttonTextStyle={{
                               paddingRight: '45px'
@@ -662,6 +683,7 @@ function MobileView(props: CodingBountiesProps) {
                             className="AssigneeCloseButtonContainer"
                             onClick={() => {
                               changeAssignedPerson();
+                              setEnableDelete(false);
                             }}
                           >
                             <img
@@ -695,6 +717,7 @@ function MobileView(props: CodingBountiesProps) {
                           }}
                           buttonAction={() => {
                             assigneeHandlerOpen();
+                            setEnableDelete(true);
                           }}
                         />
                       </div>
@@ -736,7 +759,7 @@ function MobileView(props: CodingBountiesProps) {
                           iconSize={14}
                           width={220}
                           height={48}
-                          onClick={makePayment}
+                          onClick={confirmPaymentHandler}
                           style={{ marginTop: '30px', marginBottom: '-20px', textAlign: 'left' }}
                           text="Pay Bounty"
                           ButtonTextStyle={{ padding: 0 }}

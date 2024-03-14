@@ -1,14 +1,14 @@
-import { makeAutoObservable, observable, action } from 'mobx';
-import memo from 'memo-decorator';
-import { persist } from 'mobx-persist';
 import { uniqBy } from 'lodash';
+import memo from 'memo-decorator';
+import { action, makeAutoObservable, observable } from 'mobx';
+import { persist } from 'mobx-persist';
 import api from '../api';
 import { Extras } from '../components/form/inputs/widgets/interfaces';
 import { getHostIncludingDockerHosts } from '../config/host';
-import { randomString } from '../helpers';
 import { TribesURL } from '../config/host';
-import { uiStore } from './ui';
+import { randomString } from '../helpers';
 import { getUserAvatarPlaceholder } from './lib';
+import { uiStore } from './ui';
 
 export const queryLimitTribes = 100;
 export const queryLimit = 10;
@@ -189,6 +189,7 @@ export interface QueryParams {
   resetPage?: boolean;
   languages?: string;
   org_uuid?: string;
+  provider?: string;
 }
 
 export interface ClaimOnLiquid {
@@ -310,6 +311,12 @@ export const defaultOrgBountyStatus: OrgBountyStatus = {
   Completed: false
 };
 
+export const defaultSuperAdminBountyStatus: BountyStatus = {
+  Open: false,
+  Assigned: false,
+  Paid: false
+};
+
 export class MainStore {
   [x: string]: any;
   tribes: Tribe[] = [];
@@ -362,7 +369,7 @@ export class MainStore {
     const info = uiStore.meInfo;
 
     if (uniqueName) {
-      b.forEach(function (t: Bot, i: number) {
+      b.forEach((t: Bot, i: number) => {
         if (t.unique_name === uniqueName) {
           b.splice(i, 1);
           b.unshift(t);
@@ -929,11 +936,12 @@ export class MainStore {
   }
 
   async getPersonAssignedBounties(queryParams?: any, uuid?: string): Promise<PersonBounty[]> {
-    queryParams = { ...queryParams, search: uiStore.searchText };
+    queryParams = { ...queryParams, ...(uiStore.searchText ? { search: uiStore.searchText } : {}) };
 
     const query = this.appendQueryParams(`people/wanteds/assigned/${uuid}`, paginationQueryLimit, {
-      sortBy: 'paid',
-      ...queryParams
+      sortBy: 'created',
+      ...queryParams,
+      direction: 'DESC'
     });
 
     try {
@@ -976,11 +984,12 @@ export class MainStore {
   }
 
   async getPersonCreatedBounties(queryParams?: any, uuid?: string): Promise<PersonBounty[]> {
-    queryParams = { ...queryParams, search: uiStore.searchText };
+    queryParams = { ...queryParams, ...(uiStore.searchText ? { search: uiStore.searchText } : {}) };
 
     const query = this.appendQueryParams(`people/wanteds/created/${uuid}`, paginationQueryLimit, {
       ...queryParams,
-      sortBy: 'paid'
+      sortBy: 'created',
+      direction: 'DESC'
     });
 
     try {
@@ -1565,7 +1574,6 @@ export class MainStore {
     if (!body) return; // avoid saving bad state
 
     if (body.price_to_meet) body.price_to_meet = parseInt(body.price_to_meet); // must be an int
-
     try {
       if (this.lnToken) {
         const r = await this.saveBountyPerson(body);
@@ -1580,6 +1588,9 @@ export class MainStore {
         const [r, error] = await this.doCallToRelay('POST', 'profile', body);
         if (error) throw error;
         if (!r) return;
+        if (!r.ok) {
+          throw new Error('Update failed. Please try again.');
+        }
 
         // first time profile makers will need this on first login
         if (!body.id) {
@@ -1602,6 +1613,12 @@ export class MainStore {
         ]);
       }
     } catch (e) {
+      uiStore.setToasts([
+        {
+          id: '1',
+          title: 'Failed to update profile'
+        }
+      ]);
       console.log('Error saveProfile: ', e);
     }
   }
@@ -1644,6 +1661,7 @@ export class MainStore {
       body.coding_languages = languages;
     }
 
+    // eslint-disable-next-line no-useless-catch
     try {
       const request = `gobounties?token=${info?.tribe_jwt}`;
       //TODO: add some sort of authentication
@@ -1659,16 +1677,15 @@ export class MainStore {
         }
       });
 
-      if (response.status) {
+      if (response?.status) {
         this.getPeopleBounties({
           resetPage: true,
           ...this.bountiesStatus,
           languages: this.bountyLanguages
         });
       }
-      return;
     } catch (e) {
-      console.log(e);
+      throw e;
     }
   }
 
@@ -1870,9 +1887,11 @@ export class MainStore {
     this.activeOrg = org;
   }
 
-  async getOrganizationNextBountyByCreated(org_uuid: string, bountyId: string): Promise<number> {
+  async getOrganizationNextBountyByCreated(org_uuid: string, created: number): Promise<number> {
     try {
-      const params = { languages: this.bountyLanguages, ...this.orgBountiesStatus };
+      const orgBountiesStatus =
+        JSON.parse(localStorage.getItem('orgBountyStatus') || `{}`) || this.defaultOrgBountyStatus;
+      const params = { languages: this.bountyLanguages, ...orgBountiesStatus };
 
       const queryParams: QueryParams = {
         limit: queryLimit,
@@ -1885,7 +1904,7 @@ export class MainStore {
 
       // if we don't pass the params, we should use previous params for invalidate query
       const query = this.appendQueryParams(
-        `gobounties/org/next/${org_uuid}/${bountyId}`,
+        `gobounties/org/next/${org_uuid}/${created}`,
         queryLimit,
         queryParams
       );
@@ -1898,12 +1917,11 @@ export class MainStore {
     }
   }
 
-  async getOrganizationPreviousBountyByCreated(
-    org_uuid: string,
-    bountyId: string
-  ): Promise<number> {
+  async getOrganizationPreviousBountyByCreated(org_uuid: string, created: number): Promise<number> {
     try {
-      const params = { languages: this.bountyLanguages, ...this.orgBountiesStatus };
+      const orgBountiesStatus =
+        JSON.parse(localStorage.getItem('orgBountyStatus') || `{}`) || this.defaultOrgBountyStatus;
+      const params = { languages: this.bountyLanguages, ...orgBountiesStatus };
 
       const queryParams: QueryParams = {
         limit: queryLimit,
@@ -1916,7 +1934,7 @@ export class MainStore {
 
       // if we don't pass the params, we should use previous params for invalidate query
       const query = this.appendQueryParams(
-        `gobounties/org/previous/${org_uuid}/${bountyId}`,
+        `gobounties/org/previous/${org_uuid}/${created}`,
         queryLimit,
         queryParams
       );
@@ -2735,6 +2753,45 @@ export class MainStore {
       return r.json();
     } catch (e) {
       console.error('getBountyMetrics', e);
+      return undefined;
+    }
+  }
+
+  async getProviderList(
+    date_range: {
+      start_date: string;
+      end_date: string;
+    },
+    params?: QueryParams
+  ): Promise<any | undefined> {
+    try {
+      if (!uiStore.meInfo) return undefined;
+      const info = uiStore.meInfo;
+
+      const queryParams: QueryParams = {
+        ...params
+      };
+
+      const query = this.appendQueryParams('metrics/bounties/providers', 5, queryParams);
+
+      const body = {
+        start_date: date_range.start_date,
+        end_date: date_range.end_date
+      };
+
+      const r: any = await fetch(`${TribesURL}/${query}`, {
+        method: 'POST',
+        mode: 'cors',
+        body: JSON.stringify(body),
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      return r.json();
+    } catch (e) {
+      console.error('getProviderList', e);
       return undefined;
     }
   }

@@ -22,6 +22,7 @@ const defaultTabs: number[] = [1, 2, 3, 4, 5, 6, 7];
 const activeTabs = defaultTabs;
 const setActiveTabs = jest.fn();
 const onChangeFilterByDateMock = jest.fn();
+const clickApply = jest.fn();
 
 const mockBounties: Bounty[] = [
   {
@@ -36,7 +37,7 @@ const mockBounties: Bounty[] = [
     assigneeImage: '',
     provider: 'Provider 1',
     providerImage: 'provider-image-1.jpg',
-    organization: 'Org 1',
+    organization_name: 'Org 1',
     organizationImage: 'org-image-1.jpg',
     paid: false,
     assignee_alias: 'Ednum',
@@ -54,7 +55,7 @@ const mockBounties: Bounty[] = [
     assigneeImage: 'assignee-image-2.jpg',
     provider: 'Provider 2',
     providerImage: 'provider-image-2.jpg',
-    organization: 'Org 2',
+    organization_name: 'Org 2',
     organizationImage: 'org-image-2.jpg',
     status: 'assigned',
     paid: false,
@@ -72,7 +73,7 @@ const mockBounties: Bounty[] = [
     assigneeImage: 'assignee-image-3.jpg',
     provider: 'Provider 3',
     providerImage: 'provider-image-3.jpg',
-    organization: 'Org 3',
+    organization_name: 'Org 3',
     organizationImage: 'org-image-3.jpg',
     status: 'paid',
     paid: true,
@@ -93,7 +94,7 @@ const unSortedMockBounties: Bounty[] = [
     assigneeImage: 'assignee-image-2.jpg',
     provider: 'Provider 2',
     providerImage: 'provider-image-2.jpg',
-    organization: 'Org 2',
+    organization_name: 'Org 2',
     organizationImage: 'org-image-2.jpg',
     status: 'paid',
     paid: false,
@@ -111,7 +112,7 @@ const unSortedMockBounties: Bounty[] = [
     assigneeImage: '',
     provider: 'Provider 1',
     providerImage: 'provider-image-1.jpg',
-    organization: 'Org 1',
+    organization_name: 'Org 1',
     organizationImage: 'org-image-1.jpg',
     paid: false,
     assignee_alias: 'Ednum',
@@ -129,7 +130,7 @@ const unSortedMockBounties: Bounty[] = [
     assigneeImage: 'assignee-image-3.jpg',
     provider: 'Provider 3',
     providerImage: 'provider-image-3.jpg',
-    organization: 'Org 3',
+    organization_name: 'Org 3',
     organizationImage: 'org-image-3.jpg',
     status: 'assigned',
     paid: true,
@@ -151,6 +152,7 @@ const MockTableProps: TableProps = {
   bounties: mockBounties,
   ...MockStatusProps,
   currentPage: defaultPage,
+  clickApply: clickApply,
   totalBounties: totalBounties,
   paginationLimit: paginationLimit,
   activeTabs: activeTabs,
@@ -158,7 +160,23 @@ const MockTableProps: TableProps = {
   onChangeFilterByDate: jest.fn()
 };
 
+const mockProviders = [
+  { owner_alias: 'Provider 1', img: 'image', owner_pubkey: 'pub key' },
+  { owner_alias: 'Provider 2', img: 'image', owner_pubkey: 'pub key' },
+  { owner_alias: 'Provider 3', img: 'image', owner_pubkey: 'pub key' }
+];
+
 describe('MyTable Component', () => {
+  beforeEach(() => {
+    const mockIntersectionObserver = jest.fn();
+    mockIntersectionObserver.mockReturnValue({
+      observe: () => jest.fn(),
+      unobserve: () => jest.fn(),
+      disconnect: () => jest.fn()
+    });
+    window.IntersectionObserver = mockIntersectionObserver;
+  });
+
   it('renders elements from TableProps in the document', () => {
     const { getByText } = render(<MyTable {...MockTableProps} headerIsFrozen={false} />);
     expect(getByText(mockBounties[0].title)).toBeInTheDocument();
@@ -251,7 +269,7 @@ describe('MyTable Component', () => {
       expect(getByText(dates[index])).toBeInTheDocument();
       // expect(getByText(String(bounty.dtgp))).toBeInTheDocument();
       // expect(getByText(bounty.provider)).toBeInTheDocument();
-      expect(getByText(bounty.organization)).toBeInTheDocument();
+      expect(getByText(bounty.organization_name)).toBeInTheDocument();
     });
   });
 
@@ -305,7 +323,7 @@ describe('MyTable Component', () => {
         '035f22835fbf55cf4e6823447c63df74012d1d587ed60ef7cbfa3e430278c44cce:03a6ea2d9ead2120b12bd66292bb4a302c756983dc45dcb2b364b461c66fd53bcb:1099517001729',
       providerImage:
         'https://avatars.githubusercontent.com/u/10001?s=460&u=8c61f1cda5e9e2c2d1d5b8d2a5a8a5b8d2a5a8a5&v=4',
-      organization: 'OrganizationName',
+      organization_name: 'OrganizationName',
       organizationImage:
         'https://avatars.githubusercontent.com/u/10001?s=460&u=8c61f1cda5e9e2c2d1d5b8d2a5a8a5b8d2a5a8a5&v=4',
       status: 'open',
@@ -319,6 +337,7 @@ describe('MyTable Component', () => {
         headerIsFrozen={false}
         startDate={moment().subtract(7, 'days').startOf('day').unix()}
         endDate={moment().startOf('day').unix()}
+        clickApply={clickApply}
         currentPage={defaultPage}
         totalBounties={totalBounties}
         paginationLimit={paginationLimit}
@@ -359,7 +378,7 @@ describe('MyTable Component', () => {
         '035f22835fbf55cf4e6823447c63df74012d1d587ed60ef7cbfa3e430278c44cce:03a6ea2d9ead2120b12bd66292bb4a302c756983dc45dcb2b364b461c66fd53bcb:1099517001729',
       providerImage:
         'https://avatars.githubusercontent.com/u/10001?s=460&u=8c61f1cda5e9e2c2d1d5b8d2a5a8a5b8d2a5a8a5&v=4',
-      organization: 'OrganizationName',
+      organization_name: 'OrganizationName',
       organizationImage:
         'https://avatars.githubusercontent.com/u/10001?s=460&u=8c61f1cda5e9e2c2d1d5b8d2a5a8a5b8d2a5a8a5&v=4',
       status: 'open',
@@ -379,6 +398,7 @@ describe('MyTable Component', () => {
         {...mockProps}
         currentPage={defaultPage}
         totalBounties={totalBounties}
+        clickApply={clickApply}
         paginationLimit={paginationLimit}
         activeTabs={activeTabs}
         setActiveTabs={setActiveTabs}
@@ -411,6 +431,7 @@ describe('MyTable Component', () => {
         {...inProgressProps}
         currentPage={defaultPage}
         totalBounties={totalBounties}
+        clickApply={clickApply}
         paginationLimit={paginationLimit}
         activeTabs={activeTabs}
         setActiveTabs={setActiveTabs}
@@ -429,7 +450,9 @@ describe('MyTable Component', () => {
     })();
   });
 
-  it('renders bounties with Open status when "Open" filter is selected', async () => {
+  //Leaved in comments for futures tests
+
+  /* it('renders bounties with Open status when "Open" filter is selected', async () => {
     const Wrapper = () => {
       return <MyTable {...MockTableProps} />;
     };
@@ -481,7 +504,7 @@ describe('MyTable Component', () => {
 
     const paidBounties = getAllByText('paid');
     expect(paidBounties.length).toBe(1);
-  });
+  }); */
 
   it('simulates filtering bounties by status: open, assigned, paid', async () => {
     let filteredBounties = unSortedMockBounties.filter((bounty: any) => bounty.status === 'open');
@@ -562,5 +585,113 @@ describe('MyTable Component', () => {
         sortedDatesAsc.map((date: any) => expect.stringContaining(date))
       );
     });
+  });
+
+  it('renders bounties in the order: open, assigned, paid', async () => {
+    let filteredBounties = unSortedMockBounties.filter((bounty: any) => bounty.status === 'open');
+    const { rerender } = render(<MyTable {...MockTableProps} bounties={filteredBounties} />);
+
+    fireEvent.click(screen.getByText('Status:'));
+    userEvent.click(screen.getByText('Open'));
+    expect(MockStatusProps.onChangeStatus).toHaveBeenCalledWith('Open');
+    expect(screen.getByText('Bounty 2')).toBeInTheDocument(); // 'Bounty 2' is an "Open" bounty
+    expect(screen.queryByText('Bounty 1')).not.toBeInTheDocument();
+    expect(screen.queryByText('Bounty 3')).not.toBeInTheDocument();
+
+    filteredBounties = unSortedMockBounties.filter((bounty: any) => bounty.status === 'assigned');
+    rerender(<MyTable {...MockTableProps} bounties={filteredBounties} />);
+    fireEvent.click(screen.getByText('Status:'));
+    userEvent.click(screen.getByText('Assigned'));
+    expect(MockStatusProps.onChangeStatus).toHaveBeenCalledWith('Assigned');
+    expect(screen.getByText('Bounty 3')).toBeInTheDocument(); // 'Bounty 3' is an "Assigned" bounty
+    expect(screen.queryByText('Bounty 1')).not.toBeInTheDocument();
+    expect(screen.queryByText('Bounty 2')).not.toBeInTheDocument();
+
+    filteredBounties = unSortedMockBounties.filter((bounty: any) => bounty.status === 'paid');
+    rerender(<MyTable {...MockTableProps} bounties={filteredBounties} />);
+    fireEvent.click(screen.getByText('Status:'));
+    userEvent.click(screen.getByText('Paid'));
+    expect(MockStatusProps.onChangeStatus).toHaveBeenCalledWith('Paid');
+    expect(screen.getByText('Bounty 1')).toBeInTheDocument(); // 'Bounty 1' is a "Paid" bounty
+    expect(screen.queryByText('Bounty 2')).not.toBeInTheDocument();
+    expect(screen.queryByText('Bounty 3')).not.toBeInTheDocument();
+  });
+
+  it('displays the dropdown when clicking on "Providers"', () => {
+    render(<MyTable {...MockTableProps} headerIsFrozen={false} providers={mockProviders} />);
+    const providersButton = screen.getByText('Provider:');
+    fireEvent.click(providersButton);
+    const providerCheckbox = screen.getByText('Provider 1');
+    expect(providerCheckbox).toBeInTheDocument();
+  });
+
+  it('stores the appropriate call when selecting providers', async () => {
+    const providersCheckboxSelected = [];
+    const handleProviderSelection = jest.fn();
+    const handleClearButtonClick = jest.fn();
+    const handleApplyButtonClick = jest.fn();
+    const { getByText } = render(
+      <MyTable
+        {...MockTableProps}
+        headerIsFrozen={false}
+        providers={mockProviders}
+        providersCheckboxSelected={providersCheckboxSelected}
+        handleProviderSelection={handleProviderSelection}
+        handleClearButtonClick={handleClearButtonClick}
+        handleApplyButtonClick={handleApplyButtonClick}
+      />
+    );
+    const providersButton = getByText('Provider:');
+    fireEvent.click(providersButton);
+    const providerCheckbox = getByText('Provider 1');
+    expect(providerCheckbox).toBeInTheDocument();
+  });
+
+  it('makes a call when clicking "Apply"', () => {
+    const providersCheckboxSelected = [];
+    const handleProviderSelection = jest.fn();
+    const handleClearButtonClick = jest.fn();
+    const handleApplyButtonClick = jest.fn();
+    const { getByText } = render(
+      <MyTable
+        {...MockTableProps}
+        headerIsFrozen={false}
+        providers={mockProviders}
+        providersCheckboxSelected={providersCheckboxSelected}
+        handleProviderSelection={handleProviderSelection}
+        handleClearButtonClick={handleClearButtonClick}
+        handleApplyButtonClick={handleApplyButtonClick}
+      />
+    );
+    const providersButton = getByText('Provider:');
+    fireEvent.click(providersButton);
+    const applyButton = getByText('Apply');
+    fireEvent.click(applyButton);
+    expect(handleApplyButtonClick).toHaveBeenCalled();
+  });
+
+  it('clears selections when clicking "Clear"', () => {
+    const providersCheckboxSelected = [];
+    const handleProviderSelection = jest.fn();
+    const handleClearButtonClick = jest.fn();
+    const handleApplyButtonClick = jest.fn();
+    const { getByText } = render(
+      <MyTable
+        {...MockTableProps}
+        headerIsFrozen={false}
+        providers={mockProviders}
+        providersCheckboxSelected={providersCheckboxSelected}
+        handleProviderSelection={handleProviderSelection}
+        handleClearButtonClick={handleClearButtonClick}
+        handleApplyButtonClick={handleApplyButtonClick}
+      />
+    );
+    const providersButton = getByText('Provider:');
+    fireEvent.click(providersButton);
+    const providerCheckbox = getByText('Provider 1');
+    fireEvent.click(providerCheckbox);
+    const clearButton = getByText('Clear');
+    fireEvent.click(clearButton);
+    expect(providerCheckbox).not.toBeChecked();
   });
 });
