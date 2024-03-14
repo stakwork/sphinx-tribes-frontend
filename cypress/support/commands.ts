@@ -249,6 +249,7 @@ Cypress.Commands.add('lnurl_login', () => {
 
 Cypress.Commands.add('create_org', (organization) => {
   cy.contains(organization.loggedInAs).click({ force: true });
+
   cy.wait(1000);
   cy.contains('Add Organization').click();
 
