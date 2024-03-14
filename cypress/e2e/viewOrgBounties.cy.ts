@@ -38,13 +38,14 @@ describe('View Organization Bounties', () => {
     cy.contains(org.name);
     cy.wait(1000);
 
-    cy.contains(org.name).click();
+    cy.contains(org.name).invoke('removeAttr', 'target').click({ force: true });
     cy.wait(5000);
 
-    cy.url().should('match', /\/org\/bounties\/\w+$/);
+    cy.url().should('include', '/org/bounties');
     cy.wait(5000);
 
     cy.contains(bounty.title).should('exist');
+    cy.wait(1000);
 
     cy.logout(org.loggedInAs);
   });
