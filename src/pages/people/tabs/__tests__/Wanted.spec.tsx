@@ -19,6 +19,10 @@ beforeAll(() => {
   mockUsehistory();
 });
 
+jest.mock('remark-gfm', () => null);
+
+jest.mock('rehype-raw', () => null);
+
 jest.mock('hooks', () => ({
   ...jest.requireActual('hooks'),
   usePerson: jest.fn()
@@ -70,6 +74,57 @@ describe('Wanted Component', () => {
       );
       await waitFor(() => getAllByTestId('user-created-bounty'));
       expect(mockedPersonAssignedBounites).toBeCalled();
+    });
+  });
+
+  test('Correct calls are made when boxes are clicked', async () => {
+    const userBounty = { ...mockBounties[0], body: {} } as any;
+    userBounty.body = {
+      ...userBounty.bounty,
+      owner_id: person.owner_pubkey,
+      title: 'test bounty here',
+      description: 'custom ticket for testing'
+    };
+
+    (usePerson as jest.Mock).mockImplementation(() => ({
+      person: {},
+      canEdit: false
+    }));
+
+    (useStores as jest.Mock).mockReturnValue({
+      main: {
+        getPersonCreatedBounties: jest.fn(() => [userBounty])
+      },
+      ui: {
+        selectedPerson: '123',
+        meInfo: {
+          owner_alias: 'test'
+        }
+      }
+    });
+
+    const mockedPersonCreatedBounites = jest
+      .spyOn(mainStore, 'getPersonCreatedBounties')
+      .mockReturnValue(Promise.resolve([userBounty]));
+    act(async () => {
+      const { getAllByTestId } = render(
+        <MemoryRouter initialEntries={['/p/1234/bounties']}>
+          <Route path="/p/:uuid/bounties" component={Wanted} />
+        </MemoryRouter>
+      );
+      await waitFor(() => getAllByTestId('user-created-bounty'));
+
+      const clickAssignedCheckBox = screen.getByText('Assigned');
+
+      expect(clickAssignedCheckBox).toBeInTheDocument();
+
+      fireEvent.click(clickAssignedCheckBox);
+
+      expect(mockedPersonCreatedBounites).toHaveBeenCalledWith({
+        Assigned: true,
+        Open: false,
+        Paid: false
+      });
     });
   });
 

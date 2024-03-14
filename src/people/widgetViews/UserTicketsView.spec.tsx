@@ -17,6 +17,9 @@ beforeAll(() => {
   mockUsehistory();
 });
 
+jest.mock('remark-gfm', () => null);
+jest.mock('rehype-raw', () => null);
+
 describe('User Tickets View', () => {
   nock(user.url).get('/person/id/1').reply(200, { user });
   nock(user.url).get('/ask').reply(200, {});
@@ -291,6 +294,41 @@ describe('User Tickets View', () => {
 
       const displayName = screen.getByText(userBounty.owner_alias);
       expect(displayName).toBeInTheDocument();
+    });
+  });
+
+  it('test that the correct calls are made when boxes are clicked for created bounties tab', async () => {
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    const userBounty = { ...mockBounties[0], body: {} } as any;
+    userBounty.body = {
+      ...userBounty.bounty,
+      owner_id: person.owner_pubkey,
+      title: 'test bounty here',
+      description: 'custom ticket for testing'
+    };
+
+    const mockedPersonAssignedBounites = jest
+      .spyOn(mainStore, 'getPersonAssignedBounties')
+      .mockReturnValue(Promise.resolve([userBounty]));
+    act(async () => {
+      render(
+        <MemoryRouter initialEntries={['/p/1234/usertickets']}>
+          <Route path="/p/:personPubkey/usertickets" component={UserTickets} />
+        </MemoryRouter>
+      );
+      await waitFor(() => {
+        const checkBoxLable = screen.queryByText('Assigned');
+        expect(checkBoxLable).toBeInTheDocument();
+
+        const checkBoxInput = checkBoxLable?.previousElementSibling as HTMLInputElement;
+        fireEvent.click(checkBoxInput);
+      });
+
+      await waitFor(() =>
+        expect(mockedPersonAssignedBounites).toHaveBeenCalledWith(
+          expect.objectContaining({ Open: false, Assigned: true })
+        )
+      );
     });
   });
 });

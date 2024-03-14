@@ -936,7 +936,7 @@ export class MainStore {
   }
 
   async getPersonAssignedBounties(queryParams?: any, uuid?: string): Promise<PersonBounty[]> {
-    queryParams = { ...queryParams, search: uiStore.searchText };
+    queryParams = { ...queryParams, ...(uiStore.searchText ? { search: uiStore.searchText } : {}) };
 
     const query = this.appendQueryParams(`people/wanteds/assigned/${uuid}`, paginationQueryLimit, {
       sortBy: 'created',
@@ -984,7 +984,7 @@ export class MainStore {
   }
 
   async getPersonCreatedBounties(queryParams?: any, uuid?: string): Promise<PersonBounty[]> {
-    queryParams = { ...queryParams, search: uiStore.searchText };
+    queryParams = { ...queryParams, ...(uiStore.searchText ? { search: uiStore.searchText } : {}) };
 
     const query = this.appendQueryParams(`people/wanteds/created/${uuid}`, paginationQueryLimit, {
       ...queryParams,
@@ -1661,6 +1661,7 @@ export class MainStore {
       body.coding_languages = languages;
     }
 
+    // eslint-disable-next-line no-useless-catch
     try {
       const request = `gobounties?token=${info?.tribe_jwt}`;
       //TODO: add some sort of authentication
