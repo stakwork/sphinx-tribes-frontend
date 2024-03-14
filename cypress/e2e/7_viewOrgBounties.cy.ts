@@ -1,14 +1,16 @@
 describe('View Organization Bounties', () => {
+  const OrgName = 'OrganizationView';
+
   const org: Cypress.Organization = {
     loggedInAs: 'alice',
-    name: 'Organization',
+    name: OrgName,
     description: 'An organization focused on amazing projects.',
     website: 'https://amazing.org',
     github: 'https://github.com/amazing'
   };
 
   const bounty: Cypress.Bounty = {
-    organization: 'Organization',
+    organization: OrgName,
     title: 'Bounty',
     category: 'Web development',
     coding_language: ['Typescript', 'Javascript', 'Lightning'],
