@@ -1,5 +1,5 @@
 describe('Alice tries to create a bounty on the user profile page and view them', () => {
-  it('Create a bounty with an assignee then paid and unpaid the user', () => {
+  it('Create view bounties user profile page', () => {
     let activeUser = 'alice';
     cy.login(activeUser);
     cy.wait(1000);
