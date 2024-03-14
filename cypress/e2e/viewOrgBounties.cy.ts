@@ -30,16 +30,19 @@ describe('View Organization Bounties', () => {
 
   it('should verify  bounty tile displays the organization label is clickable and redirects the user to the organizations bounty page.', () => {
     cy.create_bounty(bounty);
-    cy.wait(1000);
+    cy.wait(5000);
 
     cy.contains(bounty.title);
+    cy.wait(5000);
+
+    cy.contains(org.name);
     cy.wait(1000);
 
     cy.contains(org.name).click();
-    cy.wait(1000);
+    cy.wait(5000);
 
     cy.url().should('match', /\/org\/bounties\/\w+$/);
-    cy.wait(1000);
+    cy.wait(5000);
 
     cy.contains(bounty.title).should('exist');
 

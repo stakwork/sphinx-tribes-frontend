@@ -53,7 +53,7 @@ Cypress.Commands.add('login', (userAlias: string) => {
       }
     }
 
-    cy.visit('http://localhost:3007');
+    cy.visit('http://localhost:3000');
     cy.contains('Sign in').click();
 
     cy.get('[data-challenge]')
@@ -88,7 +88,7 @@ Cypress.Commands.add('login', (userAlias: string) => {
 
       cy.request({
         method: 'POST',
-        url: `http://localhost:13000/verify/${challenge}?token=${token}`,
+        url: `http://localhost:3000/verify/${challenge}?token=${token}`,
         body: info
       }).then((response) => {});
     });
@@ -178,7 +178,7 @@ Cypress.Commands.add('create_bounty', (bounty) => {
 });
 
 Cypress.Commands.add('lnurl_login', () => {
-  cy.visit('http://localhost:3007');
+  cy.visit('http://localhost:3000');
   cy.contains('Sign in').click();
 
   cy.contains('Login with LNAUTH').click();
@@ -250,6 +250,7 @@ Cypress.Commands.add('lnurl_login', () => {
 Cypress.Commands.add('create_org', (organization) => {
   cy.contains(organization.loggedInAs).click();
 
+  cy.wait(1000);
   cy.contains('Add Organization').click();
 
   cy.get('[placeholder="My Organization..."]').type(organization.name);
