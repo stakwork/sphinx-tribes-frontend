@@ -20,7 +20,7 @@ describe('Edit Bounty From Modal', () => {
     cy.create_bounty(bounty);
     cy.wait(1000);
 
-    cy.contains('My new Bounty').click();
+    cy.contains(bounty.title).click();
     cy.contains('Edit').click();
 
     const newTitle = 'Edited Bounty Title';
