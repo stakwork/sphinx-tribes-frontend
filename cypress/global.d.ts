@@ -2,7 +2,7 @@ declare namespace Cypress {
   interface Chainable {
     login(userAlias: string): void;
     logout(userAlias: string): void;
-    create_bounty(bounty: Bounty): void;
+    create_bounty(bounty: Bounty, clickMethod?: 'contains' | 'testId'): void;
     lnurl_login(): void;
     create_org(Organization: Organization): void;
     pay_invoice(details: InvoiceDetail): void;
