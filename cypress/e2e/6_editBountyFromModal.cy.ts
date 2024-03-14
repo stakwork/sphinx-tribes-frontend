@@ -34,8 +34,8 @@ describe('Edit Bounty From Modal', () => {
     const newTitle = 'Edited Bounty Title';
     const newDescription = 'This bounty has been edited';
 
-    cy.get('[data-testid="one_sentence_summary"]').clear().type(newTitle);
-    cy.get('[data-testid="description"]').clear().type(newDescription);
+    cy.get('#one-sentence-summary').clear().type(newTitle);
+    cy.get('#description').clear().type(newDescription);
 
     cy.contains('Save Changes').click();
     cy.contains(newTitle).should('exist');
