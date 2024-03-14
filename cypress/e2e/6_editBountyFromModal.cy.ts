@@ -1,11 +1,12 @@
 describe('Edit Bounty From Modal', () => {
+  const assignee = 'carol';
   const bounty: Cypress.Bounty = {
     title: 'My new Bounty',
     category: 'Web development',
     coding_language: ['Typescript', 'Javascript', 'Lightning'],
     description: 'This is available',
     amount: '123',
-    assign: 'carol',
+    assign: assignee,
     deliverables: 'We are good to go man',
     tribe: '',
     estimate_session_length: 'Less than 3 hour',
@@ -20,8 +21,15 @@ describe('Edit Bounty From Modal', () => {
     cy.create_bounty(bounty);
     cy.wait(1000);
 
-    cy.contains(bounty.title, { timeout: 10000 }).click();
+    cy.contains('Filter').click();
+    cy.contains('Assigned').click();
+    cy.wait(1000);
+
+    cy.contains(bounty.title).click();
+    cy.wait(1000);
+
     cy.contains('Edit').click();
+    cy.wait(1000);
 
     const newTitle = 'Edited Bounty Title';
     const newDescription = 'This bounty has been edited';
