@@ -1,17 +1,24 @@
 describe('Edit Bounty From Modal', () => {
+  const bounty: Cypress.Bounty = {
+    title: 'My new Bounty',
+    category: 'Web development',
+    coding_language: ['Typescript', 'Javascript', 'Lightning'],
+    description: 'This is available',
+    amount: '123',
+    assign: 'carol',
+    deliverables: 'We are good to go man',
+    tribe: '',
+    estimate_session_length: 'Less than 3 hour',
+    estimate_completion_date: '09/09/2024'
+  };
+
   it('Can edit a bounty from modal', () => {
-    cy.create_bounty({
-      title: 'My new Bounty',
-      category: 'Web development',
-      coding_language: ['Typescript', 'Javascript', 'Lightning'],
-      description: 'This is available',
-      amount: '123',
-      assign: 'carol',
-      deliverables: 'We are good to go man',
-      tribe: '',
-      estimate_session_length: 'Less than 3 hour',
-      estimate_completion_date: '09/09/2024'
-    });
+    const activeUser = 'alice';
+    cy.login(activeUser);
+    cy.wait(1000);
+
+    cy.create_bounty(bounty);
+    cy.wait(1000);
 
     cy.contains('My new Bounty').click();
     cy.contains('Edit').click();
