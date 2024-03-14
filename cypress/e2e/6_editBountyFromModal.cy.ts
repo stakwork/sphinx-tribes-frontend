@@ -43,5 +43,7 @@ describe('Edit Bounty From Modal', () => {
     cy.wait(1000);
     cy.contains(newTitle).should('exist');
     cy.contains(newDescription).should('exist');
+    cy.get('body').click(0, 0);
+    cy.logout(activeUser);
   });
 });
