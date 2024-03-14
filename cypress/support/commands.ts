@@ -53,7 +53,7 @@ Cypress.Commands.add('login', (userAlias: string) => {
       }
     }
 
-    cy.visit('http://localhost:3007');
+    cy.visit('http://localhost:3000');
     cy.contains('Sign in').click();
 
     cy.get('[data-challenge]')
@@ -88,7 +88,7 @@ Cypress.Commands.add('login', (userAlias: string) => {
 
       cy.request({
         method: 'POST',
-        url: `http://localhost:13000/verify/${challenge}?token=${token}`,
+        url: `http://localhost:3000/verify/${challenge}?token=${token}`,
         body: info
       }).then((response) => {});
     });
@@ -178,7 +178,7 @@ Cypress.Commands.add('create_bounty', (bounty) => {
 });
 
 Cypress.Commands.add('lnurl_login', () => {
-  cy.visit('http://localhost:3007');
+  cy.visit('http://localhost:3000');
   cy.contains('Sign in').click();
 
   cy.contains('Login with LNAUTH').click();
@@ -265,20 +265,6 @@ Cypress.Commands.add('create_org', (organization) => {
   }
 
   cy.contains('* Required fields').next().click();
-});
-
-Cypress.Commands.add('assert_org_bounty', (bounty, organization) => {
-  cy.wait(5000);
-  cy.contains('label', 'Bounty Title')
-    .type(bounty.title)
-    .should('exist')
-    .and('contain', organization);
-
-  cy.get('a[href="/org/bounties"]').should('exist');
-
-  cy.get('a[href="/org/bounties"]').click();
-
-  cy.url().should('match', /\/org\/bounties\/\w+$/);
 });
 
 Cypress.Commands.add('pay_invoice', (details) => {
