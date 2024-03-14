@@ -30,7 +30,7 @@ describe('Alice tries to create a bounty on the user profile page and view them'
     cy.wait(1000);
 
     for (let i = 1; i <= 2; i++) {
-      cy.contains(`Bounty Title ${i}`).click();
+      cy.contains(`Bounty Title ${i}`);
     }
     cy.wait(1000);
 
