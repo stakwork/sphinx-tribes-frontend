@@ -34,7 +34,7 @@ describe('Edit Bounty From Modal', () => {
     const newTitle = 'Edited Bounty Title';
     const newDescription = 'This bounty has been edited';
 
-    cy.get('.inputText').clear().type(newTitle);
+    cy.get('.inputText').clear({ force: true }).type(newTitle);
     cy.wait(1000);
     cy.get('[data-testid="checktextarea"]').clear().type(newDescription);
     cy.wait(1000);

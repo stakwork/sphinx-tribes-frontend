@@ -295,8 +295,8 @@ Cypress.Commands.add('pay_invoice', (details) => {
   Cypress.Commands.add('edit_bounty', (title: string, description: string) => {
     cy.contains(title).click();
     cy.contains('Edit').click();
-    cy.get('[data-testid="one_sentence_summary"]').clear().type(title);
-    cy.get('[data-testid="description"]').clear().type(description);
-    cy.contains('Save Changes').click();
+    cy.get('.inputText').clear({ force: true }).type(title);
+    cy.get('[data-testid="checktextarea"]').clear().type(description);
+    cy.contains('Save').click();
   });
 });
