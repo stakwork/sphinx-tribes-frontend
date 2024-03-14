@@ -500,7 +500,7 @@ export const MyTable = ({
                     ) : (
                       <p>No provider available</p>
                     )}
-                    <div ref={loaderRef}></div>
+                    <div ref={loaderRef} />
                   </ProvidersListContainer>
                   <HorizontalGrayLine />
                   <FooterContainer>
