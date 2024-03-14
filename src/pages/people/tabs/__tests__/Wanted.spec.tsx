@@ -103,7 +103,7 @@ describe('Wanted Component', () => {
       }
     });
 
-    const mockedPersonAssignedBounites = jest
+    const mockedPersonCreatedBounites = jest
       .spyOn(mainStore, 'getPersonCreatedBounties')
       .mockReturnValue(Promise.resolve([userBounty]));
     act(async () => {
@@ -120,7 +120,7 @@ describe('Wanted Component', () => {
 
       fireEvent.click(clickAssignedCheckBox);
 
-      expect(mockedPersonAssignedBounites).toHaveBeenCalledWith({
+      expect(mockedPersonCreatedBounites).toHaveBeenCalledWith({
         Assigned: true,
         Open: false,
         Paid: false
