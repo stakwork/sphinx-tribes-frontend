@@ -1,8 +1,8 @@
 describe('Add User to Organization', () => {
   it('should add a user to an organization', () => {
     const org = {
-      loggedInAs: 'bob',
-      name: 'NEW ORG TO TEST USER ROLES',
+      loggedInAs: 'alice',
+      name: 'Budget Org 2',
       description: 'We are testing out our organization',
       website: 'https://community.sphinx.chat',
       github: 'https://github.com/stakwork/sphinx-tribes-frontend'
@@ -20,7 +20,7 @@ describe('Add User to Organization', () => {
     cy.contains('Add User').click();
     cy.wait(1000);
 
-    cy.get('input').type('alice');
+    cy.get('input').type('bob');
     cy.wait(1000);
 
     cy.contains('Select').click();
