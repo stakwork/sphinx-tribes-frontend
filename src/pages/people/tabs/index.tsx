@@ -145,6 +145,7 @@ export const TabsPages = observer(() => {
             const selected = location.pathname.includes(name);
             const hasExtras = !!person?.extras?.[name]?.length;
             let count: any = 0;
+            const dataTestId = label + '-tab';
             if (name === 'bounties') {
               count = bountyCount;
             } else if (name === 'assigned') {
@@ -167,6 +168,7 @@ export const TabsPages = observer(() => {
                 key={i}
                 style={{ height: 64, alignItems: 'center' }}
                 selected={selected}
+                data-testid={dataTestId}
                 onClick={() => {
                   changeTabHandler(name);
                 }}
