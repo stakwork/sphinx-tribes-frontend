@@ -113,7 +113,8 @@ export const PeopleList = observer(() => {
             width: 120,
             height: 40,
             border: '1px solid #DDE1E5',
-            background: '#fff'
+            background: '#fff',
+            paddingRight: '26px'
           }}
           onChange={handleSearchChange}
         />
