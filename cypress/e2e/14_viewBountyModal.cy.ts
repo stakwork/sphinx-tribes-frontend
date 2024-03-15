@@ -1,4 +1,4 @@
-describe('Edit Bounty From Modal', () => {
+describe('View bounty modal', () => {
   const assignee = 'carol';
   const bounty: Cypress.Bounty = {
     title: 'My new Bounty',
@@ -20,6 +20,10 @@ describe('Edit Bounty From Modal', () => {
 
     cy.create_bounty(bounty);
     cy.wait(1000);
+
+    cy.contains(bounty.title).click();
+    cy.wait(1000);
+
 
     cy.contains(activeUser);
     cy.wait(1000);
