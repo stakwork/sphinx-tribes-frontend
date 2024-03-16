@@ -60,6 +60,7 @@ export default function TextAreaInputNew({
   style,
   labelStyle,
   name,
+  testId,
   setColor
 }: Props) {
   let labeltext = label;
@@ -89,6 +90,7 @@ export default function TextAreaInputNew({
         className="inputText"
         placeholder={showPlaceholder ? placeholder : ''} //displays the placeholder only when the textValue is empty
         id={name}
+        data-testid={testId}
         value={textValue}
         onFocus={() => {
           handleFocus();
