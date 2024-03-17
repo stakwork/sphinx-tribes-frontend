@@ -6,6 +6,7 @@ declare namespace Cypress {
     lnurl_login(): void;
     create_org(Organization: Organization): void;
     pay_invoice(details: InvoiceDetail): void;
+    add_invoice(details: AddInvoice): string;
   }
 
   type Category =
@@ -50,4 +51,10 @@ declare namespace Cypress {
     payersName: string;
     invoice: string;
   };
+
+  type AddInvoice = {
+    payersName: string;
+    amount: number;
+    memo: string;
+  }
 }

@@ -90,7 +90,7 @@ Cypress.Commands.add('login', (userAlias: string) => {
         method: 'POST',
         url: `http://localhost:13000/verify/${challenge}?token=${token}`,
         body: info
-      }).then((response) => {});
+      }).then((response) => { });
     });
 
     cy.contains(userAlias).eq(0);
@@ -275,7 +275,6 @@ Cypress.Commands.add('create_org', (organization) => {
 });
 
 Cypress.Commands.add('pay_invoice', (details) => {
-  console.log('details ===', details);
   let user;
 
   cy.fixture('nodes.json').then((json) => {
@@ -295,6 +294,30 @@ Cypress.Commands.add('pay_invoice', (details) => {
       }
     }).then((response) => {
       console.log(response);
+    });
+  });
+});
+
+Cypress.Commands.add('add_invoice', (details): any => {
+  let user;
+  cy.fixture('nodes.json').then(async (json) => {
+    for (let i = 0; i < json.length; i++) {
+      if (json[i].alias === details.payersName) {
+        user = json[i];
+      }
+    }
+    cy.request({
+      method: 'POST',
+      url: `${user.external_ip}/invoices`,
+      headers: {
+        'x-user-token': `${user.authToken}`
+      },
+      body: {
+        amount: details.amount,
+        memo: details.memo
+      }
+    }).then((response: any) => {
+      return response?.response.invoice;
     });
   });
 });
