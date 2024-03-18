@@ -90,7 +90,7 @@ Cypress.Commands.add('login', (userAlias: string) => {
         method: 'POST',
         url: `http://localhost:13000/verify/${challenge}?token=${token}`,
         body: info
-      }).then((response) => { });
+      }).then((response) => {});
     });
 
     cy.contains(userAlias).eq(0);
@@ -298,7 +298,7 @@ Cypress.Commands.add('pay_invoice', (details) => {
   });
 });
 
-Cypress.Commands.add('add_invoice', (details): any => {
+Cypress.Commands.add('add_invoice', (details) => {
   let user;
   cy.fixture('nodes.json').then(async (json) => {
     for (let i = 0; i < json.length; i++) {
@@ -316,8 +316,6 @@ Cypress.Commands.add('add_invoice', (details): any => {
         amount: details.amount,
         memo: details.memo
       }
-    }).then((response: any) => {
-      return response?.response.invoice;
     });
   });
 });

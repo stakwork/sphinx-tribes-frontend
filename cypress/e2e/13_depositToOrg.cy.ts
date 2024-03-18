@@ -41,7 +41,7 @@ describe('It desposits to an organization  ', () => {
         cy.contains('Successfully Deposited');
         cy.get('body').click(0, 0);
 
-        cy.contains(budgetAmount.toLocaleString() + ' ' + 'SATS');
+        cy.contains(`${budgetAmount.toLocaleString()} SATS`);
       });
 
     // logout
