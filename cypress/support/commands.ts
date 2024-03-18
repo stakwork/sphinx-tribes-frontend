@@ -105,8 +105,14 @@ Cypress.Commands.add('logout', (userAlias: string) => {
   cy.contains('Sign in').eq(0);
 });
 
-Cypress.Commands.add('create_bounty', (bounty) => {
-  cy.contains('Bounties').click();
+Cypress.Commands.add('create_bounty', (bounty, clickMethod = 'contains') => {
+  if (clickMethod === 'contains') {
+    cy.contains('Bounties').click();
+  } else if (clickMethod === 'testId') {
+    cy.get('[data-testid="Bounties-tab"]').click();
+  } else {
+    throw new Error('Invalid click method specified');
+  }
   cy.wait(1000);
   cy.contains('Post a Bounty').click();
   cy.contains('Start').click();
@@ -269,7 +275,6 @@ Cypress.Commands.add('create_org', (organization) => {
 });
 
 Cypress.Commands.add('pay_invoice', (details) => {
-  console.log('details ===', details);
   let user;
 
   cy.fixture('nodes.json').then((json) => {
@@ -289,6 +294,28 @@ Cypress.Commands.add('pay_invoice', (details) => {
       }
     }).then((response) => {
       console.log(response);
+    });
+  });
+});
+
+Cypress.Commands.add('add_invoice', (details) => {
+  let user;
+  cy.fixture('nodes.json').then(async (json) => {
+    for (let i = 0; i < json.length; i++) {
+      if (json[i].alias === details.payersName) {
+        user = json[i];
+      }
+    }
+    cy.request({
+      method: 'POST',
+      url: `${user.external_ip}/invoices`,
+      headers: {
+        'x-user-token': `${user.authToken}`
+      },
+      body: {
+        amount: details.amount,
+        memo: details.memo
+      }
     });
   });
 });

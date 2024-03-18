@@ -2,10 +2,11 @@ declare namespace Cypress {
   interface Chainable {
     login(userAlias: string): void;
     logout(userAlias: string): void;
-    create_bounty(bounty: Bounty): void;
+    create_bounty(bounty: Bounty, clickMethod?: 'contains' | 'testId'): void;
     lnurl_login(): void;
     create_org(Organization: Organization): void;
     pay_invoice(details: InvoiceDetail): void;
+    add_invoice(details: AddInvoice): Promise<any>;
   }
 
   type Category =
@@ -49,5 +50,11 @@ declare namespace Cypress {
   type InvoiceDetail = {
     payersName: string;
     invoice: string;
+  };
+
+  type AddInvoice = {
+    payersName: string;
+    amount: number;
+    memo: string;
   };
 }
