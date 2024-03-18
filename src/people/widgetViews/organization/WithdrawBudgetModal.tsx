@@ -190,6 +190,7 @@ const WithdrawBudgetModal = (props: WithdrawModalProps) => {
               />
               <Button
                 text={'Withdraw'}
+                dataTestId={'confirm-withdraw'}
                 style={{
                   borderRadius: '6px',
                   background: '#9157F6',
