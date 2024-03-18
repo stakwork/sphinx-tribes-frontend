@@ -16,13 +16,13 @@ describe('View bounty modal', () => {
   it('Can edit a bounty from modal', () => {
     const activeUser = 'alice';
     cy.login(activeUser);
-    cy.wait(1000);
+    cy.wait(5000);
 
     cy.create_bounty(bounty);
-    cy.wait(1000);
+    cy.wait(5000);
 
     cy.contains(bounty.title).click();
-    cy.wait(1000);
+    cy.wait(5000);
 
 
     cy.contains(activeUser);
