@@ -7,6 +7,7 @@ import MaterialIcon from '@material/react-material-icon';
 import { Route, Router, Switch, useRouteMatch } from 'react-router-dom';
 import { satToUsd, userHasRole } from 'helpers';
 import { BountyModal } from 'people/main/bountyModal';
+import { Link } from 'react-router-dom';
 import history from '../../config/history';
 import avatarIcon from '../../public/static/profile_avatar.svg';
 import DeleteTicketModal from './DeleteModal';
@@ -349,15 +350,20 @@ const OrganizationDetails = (props: {
             onClick={() => setIsOpenEditOrg(true)}
             style={{ borderRadius: '5px' }}
           />
-          <Button
-            disabled={!org?.bounty_count}
-            text="View Bounties"
-            data-testid="view-bounties"
-            color="white"
-            style={{ borderRadius: '5px' }}
-            endingIcon="open_in_new"
-            onClick={() => window.open(`/org/bounties/${uuid}`, '_target')}
-          />
+          <Link
+            to={`/org/bounties/${uuid}`}
+            style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
+            target="_blank"
+          >
+            <Button
+              disabled={!org?.bounty_count}
+              text="View Bounties"
+              data-testid="view-bounties"
+              color="white"
+              style={{ borderRadius: '5px', width: '100%' }}
+              endingIcon="open_in_new"
+            />
+          </Link>
         </HeadButtonWrap>
       </HeadWrap>
       <ActionWrap>
