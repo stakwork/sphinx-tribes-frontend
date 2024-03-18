@@ -1,12 +1,8 @@
 import React from 'react';
-import OrganizationDetails from '../OrganizationDetails';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { Organization } from 'store/main';
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useRouteMatch: jest.fn(() => ({ url: '', path: '' }))
-}));
+import { MemoryRouter } from 'react-router-dom';
+import OrganizationDetails from '../OrganizationDetails';
 
 jest.mock('remark-gfm', () => () => {});
 
@@ -36,12 +32,14 @@ describe('Organization Details component', () => {
 
   it('Renders Deposit Modal', async () => {
     const { getByText, container } = render(
-      <OrganizationDetails
-        close={closeFn}
-        getOrganizations={getOrgFn}
-        org={organization}
-        resetOrg={resetOrgFn}
-      />
+      <MemoryRouter>
+        <OrganizationDetails
+          close={closeFn}
+          getOrganizations={getOrgFn}
+          org={organization}
+          resetOrg={resetOrgFn}
+        />
+      </MemoryRouter>
     );
     const depositButton = getByText('Deposit');
     fireEvent.click(screen.getByText('Deposit'));
@@ -50,12 +48,14 @@ describe('Organization Details component', () => {
 
   it('Test that USD conversion are visible', async () => {
     const { getByTestId, container } = render(
-      <OrganizationDetails
-        close={closeFn}
-        getOrganizations={getOrgFn}
-        org={organization}
-        resetOrg={resetOrgFn}
-      />
+      <MemoryRouter>
+        <OrganizationDetails
+          close={closeFn}
+          getOrganizations={getOrgFn}
+          org={organization}
+          resetOrg={resetOrgFn}
+        />
+      </MemoryRouter>
     );
     fireEvent.click(screen.getByText('Deposit'));
     waitFor(() => expect(getByTestId('usd-amount')));
@@ -63,12 +63,14 @@ describe('Organization Details component', () => {
 
   it('User can input an amount for sats', async () => {
     const { getByText, getByTestId, container } = render(
-      <OrganizationDetails
-        close={closeFn}
-        getOrganizations={getOrgFn}
-        org={organization}
-        resetOrg={resetOrgFn}
-      />
+      <MemoryRouter>
+        <OrganizationDetails
+          close={closeFn}
+          getOrganizations={getOrgFn}
+          org={organization}
+          resetOrg={resetOrgFn}
+        />
+      </MemoryRouter>
     );
     fireEvent.click(screen.getByText('Deposit'));
     waitFor(() => {
@@ -80,12 +82,14 @@ describe('Organization Details component', () => {
 
   it('Test that generate invoice button creates an invoice', async () => {
     const { getByText, getByTestId, container } = render(
-      <OrganizationDetails
-        close={closeFn}
-        getOrganizations={getOrgFn}
-        org={organization}
-        resetOrg={resetOrgFn}
-      />
+      <MemoryRouter>
+        <OrganizationDetails
+          close={closeFn}
+          getOrganizations={getOrgFn}
+          org={organization}
+          resetOrg={resetOrgFn}
+        />
+      </MemoryRouter>
     );
     fireEvent.click(screen.getByText('Deposit'));
     waitFor(() => {
@@ -104,12 +108,14 @@ describe('Organization Details component', () => {
 
   it('Invoice is displayed in a QR code', async () => {
     const { getByTestId } = render(
-      <OrganizationDetails
-        close={closeFn}
-        getOrganizations={getOrgFn}
-        org={organization}
-        resetOrg={resetOrgFn}
-      />
+      <MemoryRouter>
+        <OrganizationDetails
+          close={closeFn}
+          getOrganizations={getOrgFn}
+          org={organization}
+          resetOrg={resetOrgFn}
+        />
+      </MemoryRouter>
     );
     fireEvent.click(screen.getByText('Deposit'));
     waitFor(() => {
@@ -128,12 +134,14 @@ describe('Organization Details component', () => {
 
   it('Copy button copies invoice', async () => {
     const { getByTestId } = render(
-      <OrganizationDetails
-        close={closeFn}
-        getOrganizations={getOrgFn}
-        org={organization}
-        resetOrg={resetOrgFn}
-      />
+      <MemoryRouter>
+        <OrganizationDetails
+          close={closeFn}
+          getOrganizations={getOrgFn}
+          org={organization}
+          resetOrg={resetOrgFn}
+        />
+      </MemoryRouter>
     );
     fireEvent.click(screen.getByText('Deposit'));
     waitFor(() => {
