@@ -231,6 +231,7 @@ function Form(props: FormProps) {
                       {...item}
                       key={item.name}
                       values={values}
+                      testId={item.name}
                       errors={errors}
                       scrollToTop={scrollToTop}
                       value={values[item.name]}
