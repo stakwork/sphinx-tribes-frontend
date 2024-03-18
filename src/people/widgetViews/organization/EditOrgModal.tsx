@@ -399,6 +399,7 @@ const EditOrgModal = (props: EditOrgModalProps) => {
                         {...item}
                         key={item.name}
                         name={item.name}
+                        testId={item.name}
                         values={values}
                         errors={errors}
                         value={values[item.name]}
