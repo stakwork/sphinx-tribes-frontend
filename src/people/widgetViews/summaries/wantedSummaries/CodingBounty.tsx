@@ -149,7 +149,7 @@ function MobileView(props: CodingBountiesProps) {
         return setToasts([
           {
             id: `${toastId}`,
-            title: 'Keysend payment failed',
+            title: 'Payment failed',
             toastLifeTimeMs: 10000,
             color: 'error'
           }
@@ -159,7 +159,7 @@ function MobileView(props: CodingBountiesProps) {
         return setToasts([
           {
             id: `${toastId}`,
-            title: 'Successful keysend payment',
+            title: 'Paid successfully',
             color: 'success'
           }
         ]);

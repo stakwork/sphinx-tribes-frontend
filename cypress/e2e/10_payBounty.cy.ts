@@ -68,7 +68,7 @@ describe('It Pays a bounty ', () => {
 
     cy.contains('Confirm').click({ force: true });
     cy.wait(1000);
-    cy.contains('Successful keysend payment');
+    cy.contains('Paid successfully');
 
     // close the bounty
     cy.get('body').click(0, 0);
