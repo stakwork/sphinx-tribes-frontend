@@ -226,6 +226,7 @@ function Form(props: FormProps) {
                     key={item.name}
                     newDesign={item.name === 'description' ? false : true}
                     values={values}
+                    testId={item.name}
                     setAssigneefunction={item.name === 'assignee' && setAssigneeName}
                     peopleList={peopleList}
                     isFocused={isFocused}
