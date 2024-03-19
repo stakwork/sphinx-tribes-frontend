@@ -118,7 +118,7 @@ Cypress.Commands.add('create_bounty', (bounty, clickMethod = 'contains') => {
   cy.contains('Start').click();
 
   if (bounty.organization) {
-    cy.contains('Organization (optional)').click({ force: true });
+    cy.get('[data-testid="Organization"]').click({ force: true });
     cy.wait(1000);
     cy.contains(bounty.organization).click({ force: true });
   }
