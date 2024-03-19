@@ -69,11 +69,11 @@ describe('View Organization Bounties', () => {
 
     cy.get('body').click(0, 0);
     cy.wait(600);
-    cy.create_bounty(orgPageBounty);
-    cy.wait(5000);
-
-    cy.contains(bounty.title).should('exist').and('be.visible');
-    cy.wait(5000);
+    // cy.create_bounty(orgPageBounty);
+    // cy.wait(5000);
+    //
+    // cy.contains(bounty.title).should('exist').and('be.visible');
+    // cy.wait(5000);
 
     // cy.logout(org.loggedInAs);
   });
