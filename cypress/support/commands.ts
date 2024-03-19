@@ -175,6 +175,7 @@ Cypress.Commands.add('create_bounty', (bounty, clickMethod = 'contains') => {
 
   if (bounty.assign) {
     cy.get('.SearchInput').type(bounty.assign);
+    cy.wait(1000);
     cy.get('.People').contains('Assign').click();
   } else {
     cy.contains('Decide Later').click();

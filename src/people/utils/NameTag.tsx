@@ -158,6 +158,7 @@ function NameTag(props: NameTagProps) {
           }}
         >
           <Name
+            data-testid="owner_name"
             textSize={textSize}
             color={isPaid ? color.grayish.G300 : color.pureBlack}
             onClick={(e: any) => {
