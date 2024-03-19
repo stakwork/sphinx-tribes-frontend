@@ -1,5 +1,5 @@
-describe('View Organization Bounties', () => {
-  const OrgName = 'AliSoftTech';
+describe('Create org bounty from Organization Page', () => {
+  const OrgName = 'Ali SoftDev';
 
   const org: Cypress.Organization = {
     loggedInAs: 'alice',
@@ -45,7 +45,7 @@ describe('View Organization Bounties', () => {
     cy.wait(1000);
   });
 
-  it('should verify  bounty tile displays the organization label is clickable and redirects the user to the organizations bounty page.', () => {
+  it('should verify  bounty tile displays the organization label is clickable and redirects the user to the organizations bounty page and create a new bounty', () => {
     cy.create_bounty(bounty);
     cy.wait(5000);
 
@@ -67,14 +67,15 @@ describe('View Organization Bounties', () => {
     cy.get('[data-testid="Organization"]').contains(org.name).should('exist').and('be.visible');
     cy.wait(1000);
 
-    cy.get('body').click(0, 0);
-    cy.wait(600);
-    // cy.create_bounty(orgPageBounty);
-    // cy.wait(5000);
-    //
-    // cy.contains(bounty.title).should('exist').and('be.visible');
-    // cy.wait(5000);
+    cy.get('[data-testid="close-btn"]').click();
+    cy.wait(1000);
 
-    // cy.logout(org.loggedInAs);
+    cy.create_orgBounty(orgPageBounty);
+    cy.wait(5000);
+
+    cy.contains(orgPageBounty.title).should('exist').and('be.visible');
+    cy.wait(5000);
+
+    cy.logout(org.loggedInAs);
   });
 });

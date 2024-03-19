@@ -3,6 +3,7 @@ declare namespace Cypress {
     login(userAlias: string): void;
     logout(userAlias: string): void;
     create_bounty(bounty: Bounty, clickMethod?: 'contains' | 'testId'): void;
+    create_orgBounty(orgBounty: Bounty): void;
     lnurl_login(): void;
     create_org(Organization: Organization): void;
     pay_invoice(details: InvoiceDetail): void;

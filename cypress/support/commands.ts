@@ -184,6 +184,71 @@ Cypress.Commands.add('create_bounty', (bounty, clickMethod = 'contains') => {
   cy.contains('Finish').click();
 });
 
+Cypress.Commands.add('create_orgBounty', (orgBounty) => {
+  cy.wait(1000);
+  cy.contains('Post a Bounty').click();
+  cy.contains('Start').click();
+
+  cy.contains('label', 'Bounty Title').type(orgBounty.title);
+  cy.wait(600);
+  if (orgBounty.github_issue_url) {
+    cy.get('[data-testid="Github"]').type(orgBounty.github_issue_url);
+  }
+
+  cy.wait(1000);
+
+  if (orgBounty.coding_language && orgBounty.coding_language.length > 0) {
+    cy.contains('Coding Language').click();
+
+    for (let i = 0; i < orgBounty.coding_language.length; i++) {
+      cy.get('.CheckboxOuter').contains(orgBounty.coding_language[i]).scrollIntoView().click();
+    }
+    cy.contains('Coding Language').click();
+  }
+
+  cy.get('[data-testid="Category *"]').click();
+  cy.get('[data-testid="Category *"]').contains(orgBounty.category).click();
+
+  cy.contains('Next').click();
+
+  cy.get('.euiTextArea').type(orgBounty.description);
+  cy.contains('Next').click();
+
+  cy.contains('label', 'Price (Sats)').type(orgBounty.amount);
+
+  if (orgBounty.estimate_session_length) {
+    cy.get('[data-testid="Estimate Session Length"]').find('button').click();
+
+    cy.get('[data-testid="Estimate Session Length"]')
+      .contains(orgBounty.estimate_session_length)
+      .click();
+  }
+
+  if (orgBounty.estimate_completion_date) {
+    cy.get('.react-datepicker__input-container > .euiDatePicker').click();
+    cy.get('.react-datepicker__input-container > .euiDatePicker').type('{selectAll}');
+    cy.wait(100);
+    cy.get('.react-datepicker__input-container > .euiDatePicker').type(
+      orgBounty.estimate_completion_date
+    );
+  }
+
+  if (orgBounty.deliverables) {
+    cy.get('textarea.inputText').type(orgBounty.deliverables);
+  }
+
+  cy.contains('Next').click();
+
+  if (orgBounty.assign) {
+    cy.get('.SearchInput').type(orgBounty.assign);
+    cy.wait(1000);
+    cy.get('.People').contains('Assign').click();
+  } else {
+    cy.contains('Decide Later').click();
+  }
+
+  cy.contains('Finish').click();
+});
 Cypress.Commands.add('lnurl_login', () => {
   cy.visit('http://localhost:3007');
   cy.contains('Sign in').click();
