@@ -1,6 +1,6 @@
 describe('filter by status for org bounty', () => {
   it('should filter bounties according to the status selected', () => {
-    const OrgName = 'E2EOrg';
+    const OrgName = 'E2EOrg2';
 
     const org: Cypress.Organization = {
       loggedInAs: 'bob',
