@@ -738,7 +738,7 @@ describe('Wanted Component', () => {
       const FinishButton = await screen.findByRole('button', { name: /Finish/i });
       expect(FinishButton).toBeInTheDocument();
       fireEvent.click(FinishButton);
-      expect(getByText(userBounty.body.title)).toBeInTheDocument();
+      expect(getByText(orgBounty.body.title)).toBeInTheDocument();
       expect(getByText('new bounty title')).toBeInTheDocument();
     });
   });
