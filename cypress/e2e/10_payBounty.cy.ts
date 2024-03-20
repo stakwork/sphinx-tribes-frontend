@@ -1,6 +1,3 @@
-import { Decoder } from '@nuintun/qrcode';
-const qrcode = new Decoder();
-
 describe('It Pays a bounty ', () => {
   it('It makes a Keysend payment to bounty assignee', async () => {
     cy.login('carol');

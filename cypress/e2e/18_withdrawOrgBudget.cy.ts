@@ -1,6 +1,3 @@
-import { Decoder } from '@nuintun/qrcode';
-const qrcode = new Decoder();
-
 describe('It Withdraws from Organization budget', () => {
   it('It generates an invoice and withdraws from organization budget', async () => {
     cy.login('carol');
