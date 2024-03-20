@@ -58,7 +58,7 @@ describe('Load More For Created And Assigned Bounties', () => {
     }
 
     cy.contains('Load More').scrollIntoView().click();
-    cy.wait(2000);
+    cy.wait(1000);
 
     for (let i = 2; i >= 1; i--) {
       cy.contains(`Syed Bounty${i}`, { timeout: 10000 }).should('exist');
