@@ -251,5 +251,7 @@ describe('filter by status for org bounty', () => {
 
     cy.contains('Status').first().click();
     cy.wait(1000);
+    
+    cy.logout(activeUser);
   });
 });
