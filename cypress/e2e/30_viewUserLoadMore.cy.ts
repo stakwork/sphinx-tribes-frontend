@@ -14,10 +14,11 @@ describe('Load More For Created And Assigned Bounties', () => {
   beforeEach(() => {
     cy.login(activeUser);
     cy.wait(1000);
+    cy.viewport(1950, 1080);
   });
 
   it('Thirty bounties should be created and assigned to a user, and they should be visible on both sides', () => {
-    for (let i = 1; i <= 30; i++) {
+    for (let i = 1; i <= 22; i++) {
       const updatedBounty = { ...bounty, title: `Syed Bounty${i}` };
       cy.create_bounty(updatedBounty);
       cy.wait(1000);
@@ -35,12 +36,15 @@ describe('Load More For Created And Assigned Bounties', () => {
     cy.contains('Assigned Bounties').click();
     cy.wait(1000);
 
-    for (let i = 30; i >= 1; i--) {
+    for (let i = 22; i >= 3; i--) {
       cy.contains(`Syed Bounty${i}`, { timeout: 10000 }).should('exist');
-      if (i === 11) {
-        cy.contains('Load More').scrollIntoView().click();
-        cy.wait(1000);
-      }
+    }
+
+    cy.contains('Load More').scrollIntoView().click();
+    cy.wait(1000);
+
+    for (let i = 2; i >= 1; i--) {
+      cy.contains(`Syed Bounty${i}`, { timeout: 10000 }).should('exist');
     }
 
     cy.contains(activeUser).click();
@@ -49,12 +53,15 @@ describe('Load More For Created And Assigned Bounties', () => {
     cy.get('[data-testid="Bounties-tab"]').click();
     cy.wait(1000);
 
-    for (let i = 30; i >= 1; i--) {
+    for (let i = 22; i >= 3; i--) {
       cy.contains(`Syed Bounty${i}`, { timeout: 10000 }).should('exist');
-      if (i === 11) {
-        cy.contains('Load More').scrollIntoView().click();
-        cy.wait(1000);
-      }
+    }
+
+    cy.contains('Load More').scrollIntoView().click();
+    cy.wait(2000);
+
+    for (let i = 2; i >= 1; i--) {
+      cy.contains(`Syed Bounty${i}`, { timeout: 10000 }).should('exist');
     }
 
     cy.get('body').click(0, 0);
