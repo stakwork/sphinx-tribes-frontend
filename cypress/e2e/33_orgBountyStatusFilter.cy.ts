@@ -1,6 +1,6 @@
 describe('filter by status for org bounty', () => {
   it('should filter bounties according to the status selected', () => {
-    const OrgName = 'E2EOrg2';
+    const OrgName = 'E2EOrg3';
 
     const org: Cypress.Organization = {
       loggedInAs: 'bob',
@@ -252,6 +252,6 @@ describe('filter by status for org bounty', () => {
     cy.contains('Status').first().click();
     cy.wait(1000);
     
-    cy.logout(activeUser);
+    cy.logout(org.loggedInAs);
   });
 });
