@@ -5,13 +5,16 @@ import { setupStore } from '__test__/__mockData__/setupStore';
 import { mockUsehistory } from '__test__/__mockFn__/useHistory';
 import mockBounties, { createdBounty } from 'bounties/__mock__/mockBounties.data';
 import React from 'react';
+import nock from 'nock';
 import { MemoryRouter, Route } from 'react-router-dom';
 import { mainStore } from 'store/main';
 import { useStores } from 'store/index.tsx';
 import { usePerson } from 'hooks/index.ts';
 import { OrgTicketsPage } from '../org/index';
+import { user } from '../../../__test__/__mockData__/user';
 
 beforeAll(() => {
+  nock.disableNetConnect();
   setupStore();
   mockUsehistory();
 });
@@ -31,6 +34,9 @@ jest.mock('store', () => ({
 }));
 
 describe('OrgTicketsPage Component', () => {
+  nock(user.url).get('/person/id/1').reply(200, { user });
+  nock(user.url).get('/ask').reply(200, {});
+
   test('Should post a bounty button, auto populates newer bounties on org bounty page', async () => {
     const orgBounty = { ...createdBounty, body: {} } as any;
     orgBounty.body = {
