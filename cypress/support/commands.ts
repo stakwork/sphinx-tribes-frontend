@@ -97,7 +97,7 @@ Cypress.Commands.add('login', (userAlias: string) => {
   });
 });
 
-Cypress.Commands.add('havesphinxlogin', (userAlias: string) => {
+Cypress.Commands.add('haves_phinx_login', (userAlias: string) => {
   let user;
   let challenge;
   let token;

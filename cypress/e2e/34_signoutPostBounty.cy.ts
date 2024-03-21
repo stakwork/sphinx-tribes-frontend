@@ -20,7 +20,7 @@ describe('Signed Out Post Bounty Flow ', () => {
     cy.contains('I have Sphinx').click();
     cy.wait(1000);
 
-    cy.havesphinxlogin(activeUser);
+    cy.haves_phinx_login(activeUser);
     cy.wait(1000);
 
     cy.create_bounty(bounty);
