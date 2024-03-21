@@ -41,7 +41,7 @@ function DesktopView(props: WantedViewsProps) {
     titleString
   } = props;
 
-  const { ui } = useStores();
+  const { ui, main } = useStores();
   const color = colors['light'];
 
   return (
@@ -105,20 +105,18 @@ function DesktopView(props: WantedViewsProps) {
                   marginTop: '8px'
                 }}
               >
-                <img
-                  src={
-                    {
-                      ...assignee
-                    }.img || '/static/person_placeholder.png'
-                  }
-                  alt="assignee_img"
-                  style={{
-                    borderRadius: '50%',
-                    height: '16px',
-                    width: '16px',
-                    margin: '0px 8px'
-                  }}
-                />
+                {assignee && (
+                  <img
+                    src={assignee.img || main.getUserAvatarPlaceholder(assignee.owner_pubkey)}
+                    alt="assignee_img"
+                    style={{
+                      borderRadius: '50%',
+                      height: '16px',
+                      width: '16px',
+                      margin: '0px 8px'
+                    }}
+                  />
+                )}
                 <span
                   onClick={(e: any) => {
                     e.stopPropagation();

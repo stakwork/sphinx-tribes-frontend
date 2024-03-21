@@ -57,7 +57,7 @@ export const UserInfo = observer(({ id }: { id: string }) => {
       <EuiAvatar
         size="l"
         name={person.owner_alias}
-        imageUrl={person.img || '/static/person_placeholder.png'}
+        imageUrl={person.img || main.getUserAvatarPlaceholder(person.owner_pubkey)}
       />
       <div className="info">
         <EuiText className="name">
