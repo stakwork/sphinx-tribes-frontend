@@ -19,7 +19,7 @@ const Text = styled.input`
   box-sizing: border-box;
   border-radius: 21px;
   padding-left: 20px;
-  padding-right: 10px;
+  padding-right: 26px;
   // width:100%;
   font-style: normal;
   font-weight: normal;
@@ -61,7 +61,7 @@ function SearchTextInput(props: SearchTextInputProps) {
         onChange={(e: any) => {
           setSearchValue(e.target.value);
           debounceValue = e.target.value;
-          debounce(doDelayedValueUpdate, 300);
+          debounce(doDelayedValueUpdate, 800);
         }}
         placeholder={'Search'}
         style={{ ...props.style, ...collapseStyles }}
