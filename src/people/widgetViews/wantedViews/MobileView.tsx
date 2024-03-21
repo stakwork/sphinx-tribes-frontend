@@ -44,7 +44,7 @@ function MobileView(props: any) {
     titleString
   } = props;
 
-  const { ui } = useStores();
+  const { ui, main } = useStores();
   const color = colors['light'];
 
   return (
@@ -116,11 +116,7 @@ function MobileView(props: any) {
                 }}
               >
                 <img
-                  src={
-                    {
-                      ...assignee
-                    }.img || '/static/person_placeholder.png'
-                  }
+                  src={assignee.img || main.getUserAvatarPlaceholder(assignee.owner_pubkey)}
                   alt="assignee_img"
                   style={{
                     borderRadius: '50%',
@@ -304,4 +300,5 @@ function MobileView(props: any) {
     </div>
   );
 }
+
 export default observer(MobileView);
