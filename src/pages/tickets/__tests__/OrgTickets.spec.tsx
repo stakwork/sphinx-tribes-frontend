@@ -31,7 +31,7 @@ jest.mock('store', () => ({
 }));
 
 describe('OrgTicketsPage Component', () => {
-  test('Test that post a bounty button, auto populates newer bounties on org bounty page', async () => {
+  test('Should post a bounty button, auto populates newer bounties on org bounty page', async () => {
     const orgBounty = { ...createdBounty, body: {} } as any;
     orgBounty.body = {
       ...orgBounty.bounty,
@@ -107,7 +107,7 @@ describe('OrgTicketsPage Component', () => {
     });
   });
 
-  test(' Test that org bounties are scrollable on org home page', async () => {
+  test('Should org bounties are scrollable on org home page', async () => {
     const createdMockBounties = Array.from({ length: 20 }, (_: any, index: number) => ({
       ...(mockBounties[0] || {}),
       bounty: {
