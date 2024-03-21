@@ -1,6 +1,7 @@
 declare namespace Cypress {
   interface Chainable {
     login(userAlias: string): void;
+    haves_phinx_login(userAlias: string): void;
     logout(userAlias: string): void;
     create_bounty(bounty: Bounty, clickMethod?: 'contains' | 'testId'): void;
     create_orgBounty(orgBounty: Bounty): void;
