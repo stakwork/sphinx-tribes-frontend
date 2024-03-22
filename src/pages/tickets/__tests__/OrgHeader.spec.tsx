@@ -3,7 +3,7 @@ import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { OrgHeader } from 'pages/tickets/org/orgHeader';
 import { act } from 'react-dom/test-utils';
-import { OrgBountyHeaderProps } from '../../interfaces.ts';
+import { OrgBountyHeaderProps } from '../../../people/interfaces';
 import { mainStore } from '../../../store/main.ts';
 import { uiStore } from '../../../store/ui.ts';
 import * as helpers from '../../../helpers/helpers-extended.ts';
