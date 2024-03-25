@@ -1,7 +1,7 @@
 describe('View Transaction History', () => {
   const org = {
     loggedInAs: 'alice',
-    name: 'SyedOrg',
+    name: 'SyedOrgZ',
     description: 'We are testing out our organization',
     website: '',
     github: ''
