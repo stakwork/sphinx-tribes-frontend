@@ -23,7 +23,7 @@ describe('Fund Organization Role Test', () => {
     cy.create_org(org);
     cy.wait(1000);
 
-    cy.contains(org.name).contains('Manage').click();
+    cy.contains(org.name).contains('Manage').scrollIntoView().click();
     cy.wait(1000);
 
     cy.contains('Add User').click();
@@ -70,7 +70,7 @@ describe('Fund Organization Role Test', () => {
     cy.contains(org.name).should('exist').and('be.visible');
     cy.wait(1000);
 
-    cy.contains(org.name).contains('Manage').click();
+    cy.contains(org.name).contains('Manage').scrollIntoView().click();
     cy.wait(1000);
 
     //Assert that the Deposit button is not disabled
