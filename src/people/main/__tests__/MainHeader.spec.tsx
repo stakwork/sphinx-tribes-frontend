@@ -2,14 +2,14 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { MemoryRouter } from 'react-router-dom';
-import { observer } from 'mobx-react-lite';
 import Header from '../Header';
 
 jest.mock('../../../store', () => ({
-  useStores: jest.fn(() => ({
+  useStores: () => ({
     main: {
-      getIsAdmin: jest.fn(),
-      getSelf: jest.fn()
+      getIsAdmin: jest.fn().mockResolvedValue(false),
+      getSelf: jest.fn().mockResolvedValue({}),
+      getPeople: jest.fn().mockResolvedValue([])
     },
     ui: {
       meInfo: null,
@@ -20,17 +20,24 @@ jest.mock('../../../store', () => ({
       showSignIn: false,
       torFormBodyQR: ''
     }
-  }))
+  })
 }));
 
 describe('Header Component', () => {
   test('renders Header component', () => {
-    render(<MemoryRouter>{<Header />}</MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <Header />
+      </MemoryRouter>
+    );
   });
 
-  test('clicking on the GetSphinxsBtn calls the correct handler', async () => {
-    render(<MemoryRouter>{<Header />}</MemoryRouter>);
-
+  test('clicking on the "Get Sphinx" button calls the correct handler', async () => {
+    render(
+      <MemoryRouter>
+        <Header />
+      </MemoryRouter>
+    );
     const getSphinxsBtn = screen.getByText('Get Sphinx');
     fireEvent.click(getSphinxsBtn);
   });

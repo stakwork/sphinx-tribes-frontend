@@ -475,9 +475,13 @@ function Header() {
                       key={i}
                       to={t.path}
                       selected={selected}
-                      onClick={() => {
+                      onClick={(e: any) => {
+                        e.preventDefault();
+                        if (t.name === 'people') {
+                          ui.setSearchText('');
+                          main.getPeople({ resetPage: true });
+                        }
                         history.push(t.path);
-                        ui.searchText && ui.setSearchText('');
                         localStorage.setItem('key', t.path);
                       }}
                     >
