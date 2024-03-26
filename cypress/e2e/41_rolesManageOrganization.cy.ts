@@ -79,5 +79,28 @@ describe('matches organization description with Carol updated description', () =
 
     cy.contains(updatedOrgDescription).should('exist');
     cy.wait(600);
+
+    // Deleting the current organization after a successful assertion.
+    cy.get('body').click(0, 0);
+    cy.logout('carol');
+    cy.wait(1000);
+
+    cy.login(org.loggedInAs);
+    cy.wait(1000);
+
+    cy.contains(org.loggedInAs).click({ force: true });
+    cy.wait(1000);
+
+    cy.contains(OrgName).contains('Manage').click({ force: true });
+    cy.wait(1000);
+
+    cy.contains(/^Edit$/).click();
+    cy.wait(1000);
+
+    cy.contains('Delete Organization').click({ force: true });
+    cy.wait(1000);
+
+    cy.contains(/^Delete$/).click();
+    cy.wait(1000);
   });
 });
