@@ -20,6 +20,7 @@ export const useUserInfo = () => {
     ui.setSelectingPerson(0);
     const path = localStorage.getItem('key');
     if (path) {
+      ui.setSearchText('');
       history.replace(path);
     } else {
       history.replace('/');
