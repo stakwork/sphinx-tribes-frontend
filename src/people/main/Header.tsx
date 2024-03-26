@@ -477,8 +477,8 @@ function Header() {
                       selected={selected}
                       onClick={(e: any) => {
                         e.preventDefault();
+                        ui.setSearchText('');
                         if (t.name === 'people') {
-                          ui.setSearchText('');
                           main.getPeople({ resetPage: true });
                         }
                         history.push(t.path);
