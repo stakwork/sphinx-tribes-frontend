@@ -39,7 +39,7 @@ describe('Super Admin Bounty Filter SortBy', () => {
 
     // Assert that the new bounties are sorted in reversed Ascending order
     for (let i = 1; i <= 6; i++) {
-      cy.contains(`MirzaTask${i}`, { timeout: 10000 }).should('exist');
+      cy.contains(`MirzaTask${i}`, { timeout: 10000 }).scrollIntoView().should('exist');
     }
 
     cy.logout(activeUser);
