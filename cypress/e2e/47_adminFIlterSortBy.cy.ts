@@ -2,7 +2,7 @@ describe('Super Admin Bounty Filter SortBy', () => {
   let activeUser = 'alice';
 
   const bounty: Cypress.Bounty = {
-    title: 'MirzaTask',
+    title: 'MirzaBounty',
     category: 'Web development',
     coding_language: ['Typescript', 'Javascript', 'Lightning'],
     description: 'This is available',
@@ -10,7 +10,8 @@ describe('Super Admin Bounty Filter SortBy', () => {
     tribe: 'Amazing Org Tribe',
     estimate_session_length: 'Less than 3 hour',
     estimate_completion_date: '09/09/2024',
-    deliverables: 'We are good to go man'
+    deliverables: 'We are good to go man',
+    assign: 'bob'
   };
 
   beforeEach(() => {
@@ -20,7 +21,7 @@ describe('Super Admin Bounty Filter SortBy', () => {
 
   it('Should create six bounties, verify order, change sort, verify new order, and logout', () => {
     for (let i = 1; i <= 6; i++) {
-      const updatedBounty = { ...bounty, title: `MirzaTask${i}` };
+      const updatedBounty = { ...bounty, title: `MirzaBounty${i}` };
       cy.create_bounty(updatedBounty);
       cy.wait(1000);
     }
@@ -30,16 +31,21 @@ describe('Super Admin Bounty Filter SortBy', () => {
 
     // Assert that the bounties are on the bounties list order in Descending order
     for (let i = 6; i >= 1; i--) {
-      cy.contains(`MirzaTask${i}`, { timeout: 10000 }).should('exist');
+      cy.contains(`MirzaBounty${i}`, { timeout: 10000 }).should('exist');
     }
+
+    cy.contains('Status').click();
+    cy.get('label[for="Assigned"]').click();
+    cy.contains('Apply').click();
+    cy.wait(1000);
 
     cy.get('[data-testid="Sort_By"]').contains('Sort By:').click();
     cy.contains('Oldest').click();
-    cy.wait(1000);
+    cy.wait(2000);
 
     // Assert that the new bounties are sorted in reversed Ascending order
     for (let i = 1; i <= 6; i++) {
-      cy.contains(`MirzaTask${i}`, { timeout: 10000 }).scrollIntoView().should('exist');
+      cy.contains(`MirzaBounty${i}`, { timeout: 10000 }).should('exist');
     }
 
     cy.logout(activeUser);
