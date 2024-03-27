@@ -522,6 +522,7 @@ export const MyTable = ({
                 button={
                   <DateFilterWrapper onClick={onButtonClick} color={color}>
                     <EuiText
+                      data-testid={'Sort_By'}
                       className="filterText"
                       style={{
                         color: isPopoverOpen ? color.grayish.G10 : ''
