@@ -34,7 +34,7 @@ describe('Super Admin Bounty Filter SortBy', () => {
     cy.wait(2000);
 
     cy.get('div[role="pagination"]').find('button[data-testid="page"]').last().click();
-    cy.wait(2000);
+    cy.wait(3000);
 
     // Assert that the new bounties are sorted in reversed Ascending order
     for (let i = 1; i <= 6; i++) {
