@@ -127,9 +127,6 @@ function MobileView(props: CodingBountiesProps) {
     bountyPaid = false;
   }
 
-  const showPayBounty =
-    !bountyPaid && !invoiceStatus && assignee && assignee.owner_alias.length < 30;
-
   const pollMinutes = 2;
 
   const toastId = Math.random();
@@ -382,6 +379,8 @@ function MobileView(props: CodingBountiesProps) {
 
   const hasAccess = isOwner || userBountyRole;
   const payBountyDisable = !isOwner && !userBountyRole;
+
+  const showPayBounty = !bountyPaid && !invoiceStatus && hasAccess;
 
   const { openPaymentConfirmation } = usePaymentConfirmationModal();
 
@@ -747,11 +746,6 @@ function MobileView(props: CodingBountiesProps) {
                         lnInvoice={lnInvoice}
                       />
                     )}
-                    {/**
-                     * LNURL AUTH users alias are their public keys
-                     * which make them so longF
-                     * A non LNAUTh user alias is shorter
-                     */}
                     {showPayBounty && (
                       <>
                         <Button
