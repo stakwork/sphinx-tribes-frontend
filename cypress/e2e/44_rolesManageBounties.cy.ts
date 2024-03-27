@@ -74,7 +74,7 @@ describe('carol manage organization bounties', () => {
     cy.contains(bounty.title).click();
     cy.wait(1000);
 
-    cy.contains('Mark as Paid').should('exist');
+    cy.contains('Pay Bounty').should('exist');
     cy.wait(600);
 
     cy.get('body').click(0, 0);
