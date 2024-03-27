@@ -726,6 +726,7 @@ export const MyTable = ({
               />
               {activeTabs.map((page: number) => (
                 <PaginationButtons
+                  data-testid={'page'}
                   key={page}
                   onClick={() => paginate(page)}
                   active={page === currentPage}
