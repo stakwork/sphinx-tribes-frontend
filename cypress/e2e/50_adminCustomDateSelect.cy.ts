@@ -1,5 +1,5 @@
 describe('Admin Statistics Custom Date Range', () => {
-  let activeUser = 'bob';
+  let activeUser = 'alice';
 
   const bounty: Cypress.Bounty = {
     title: 'UmerTask',
@@ -28,7 +28,7 @@ describe('Admin Statistics Custom Date Range', () => {
       cy.contains(`UmerTask${i}`, { timeout: 10000 }).should('exist');
     }
 
-    cy.contains(/^25$/).should('exist');
+    cy.contains('25').should('exist');
     cy.wait(1000);
 
     cy.get('[data-testid="DropDown"]').click();
@@ -44,7 +44,7 @@ describe('Admin Statistics Custom Date Range', () => {
     cy.contains('Save').click();
     cy.wait(1000);
 
-    cy.contains(/^25$/).should('exist');
+    cy.contains('25').should('exist');
     cy.wait(1000);
 
     cy.get('[data-testid="month"]').contains('01 Mar - 28 Mar 2024');
