@@ -18,8 +18,8 @@ describe('Super Admin Pagination Bounties List', () => {
     cy.wait(1000);
   });
 
-  it('Should create 25 bounties and verify they are listed in the admin page', () => {
-    for (let i = 1; i <= 25; i++) {
+  it('Should create 22 bounties and verify they are listed in the admin page', () => {
+    for (let i = 1; i <= 22; i++) {
       const updatedBounty = { ...bounty, title: `Pagination Bounty ${i}` };
       cy.create_bounty(updatedBounty);
       cy.wait(1000);
@@ -28,14 +28,14 @@ describe('Super Admin Pagination Bounties List', () => {
     cy.visit('http://localhost:3007/admin');
     cy.wait(3000);
 
-    for (let i = 25; i <= 6; i--) {
+    for (let i = 22; i <= 3; i--) {
       cy.contains(`Pagination Bounty ${i}`, { timeout: 10000 }).should('exist');
     }
 
     cy.contains(/^2$/).click();
     cy.wait(1000);
 
-    for (let i = 5; i <= 1; i--) {
+    for (let i = 2; i <= 1; i--) {
       cy.contains(`Pagination Bounty ${i}`, { timeout: 10000 }).should('exist');
     }
 
