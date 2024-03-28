@@ -522,6 +522,7 @@ export const MyTable = ({
                 button={
                   <DateFilterWrapper onClick={onButtonClick} color={color}>
                     <EuiText
+                      data-testid={'Sort_By'}
                       className="filterText"
                       style={{
                         color: isPopoverOpen ? color.grayish.G10 : ''
@@ -725,6 +726,7 @@ export const MyTable = ({
               />
               {activeTabs.map((page: number) => (
                 <PaginationButtons
+                  data-testid={'page'}
                   key={page}
                   onClick={() => paginate(page)}
                   active={page === currentPage}
