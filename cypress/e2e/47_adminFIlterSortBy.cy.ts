@@ -2,7 +2,7 @@ describe('Super Admin Bounty Filter SortBy', () => {
   let activeUser = 'alice';
 
   const bounty: Cypress.Bounty = {
-    title: 'Mirza',
+    title: 'MirzaRef',
     category: 'Web development',
     description: 'This is available',
     amount: '123',
@@ -16,7 +16,7 @@ describe('Super Admin Bounty Filter SortBy', () => {
 
   it('Should create six bounties, verify order, change sort, verify new order, and logout', () => {
     for (let i = 1; i <= 6; i++) {
-      const updatedBounty = { ...bounty, title: `Mirza${i}` };
+      const updatedBounty = { ...bounty, title: `MirzaRef${i}` };
       cy.create_bounty(updatedBounty);
       cy.wait(1000);
     }
@@ -26,7 +26,7 @@ describe('Super Admin Bounty Filter SortBy', () => {
 
     // Assert that the bounties are on the bounties list order in Descending order
     for (let i = 6; i >= 1; i--) {
-      cy.contains(`Mirza${i}`, { timeout: 10000 }).should('exist');
+      cy.contains(`MirzaRef${i}`, { timeout: 10000 }).should('exist');
     }
 
     cy.get('[data-testid="Sort_By"]').contains('Sort By:').click();
@@ -37,8 +37,8 @@ describe('Super Admin Bounty Filter SortBy', () => {
     cy.wait(2000);
 
     // Assert that the new bounties are sorted in reversed Ascending order
-    for (let i = 1; i <= 1; i++) {
-      cy.contains(`Mirza${i}`, { timeout: 10000 }).should('exist');
+    for (let i = 1; i <= 6; i++) {
+      cy.contains(`MirzaRef${i}`, { timeout: 10000 }).should('exist');
     }
 
     cy.logout(activeUser);
