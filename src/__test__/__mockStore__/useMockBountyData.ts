@@ -1,7 +1,7 @@
 import { bountyResponse } from '__test__/__mockData__/bounty';
 import { useEffect } from 'react';
 import { useStores } from 'store';
-import { transformBountyWithPeopleBounty } from 'store/__test__/util';
+import { transformBountyWithPeopleBounty } from 'store/__tests__/util';
 
 export const useMockBountyData = ({ enabled }: { enabled: boolean }) => {
   const { main } = useStores();

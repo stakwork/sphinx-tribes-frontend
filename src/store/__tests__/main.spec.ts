@@ -3,11 +3,14 @@ import sinon from 'sinon';
 import moment from 'moment';
 import { people } from '../../__test__/__mockData__/persons';
 import { user } from '../../__test__/__mockData__/user';
-import { MeInfo, emptyMeInfo, uiStore } from '../ui';
-import { MainStore } from '../main';
+import { MeInfo, UiStore, emptyMeInfo, uiStore } from '../ui';
+import { MainStore, mainStore } from '../main';
 import { localStorageMock } from '../../__test__/__mockData__/localStorage';
 import { TribesURL, getHost } from '../../config';
-import mockBounties, { expectedBountyResponses } from '../../bounties/__mock__/mockBounties.data';
+import mockBounties, {
+  assignedBounty,
+  expectedBountyResponses
+} from '../../bounties/__mock__/mockBounties.data';
 
 let fetchStub: sinon.SinonStub;
 let mockApiResponseData: any[];
@@ -1109,6 +1112,63 @@ describe('Main store', () => {
       }) as any
     );
     expect(res).toBeTruthy();
+  });
+
+  it('should accept search query and return results based on query ', async () => {
+    const uiStore = new UiStore();
+    const store = new MainStore();
+    uiStore.searchText = 'test';
+
+     const mockApiResponse = {
+      status: 200,
+      ok    : true,
+      json  : async () => Promise.resolve([mockBounties[0]])
+    };
+    const bountiesUrl = `https://${getHost()}/gobounties/all?limit=10&sortBy=created&search=${uiStore.searchText}&page=1&resetPage=false`;
+    fetchStub.callsFake((url: string) => {
+        if (url === bountiesUrl) {
+          return Promise.resolve(mockApiResponse);
+        }
+    });
+    const bounties = await store.getPeopleBounties({
+      resetPage: false,
+      search: uiStore.searchText,
+      limit: 10,
+      page: 1,
+      sortBy: 'created'
+    });
+
+    expect(fetchStub.resolves(bountiesUrl).calledOnce).toEqual(true);
+    expect(bounties).toHaveLength(1);
+    expect(bounties[0].body.title).toEqual(uiStore.searchText);
+  });
+
+  it('should return filter by languages, status response', async () => {
+    const store = new MainStore();
+    store.setBountyLanguages('Node');
+    store.setBountiesStatus({ Open: false, Assigned: true, Paid: false });
+
+    const apiResponse = {
+      status: 200,
+      ok    : true,
+      json  : async () => Promise.resolve([mockBounties[1]])
+    };
+    const bountiesUrl = `https://${getHost()}/gobounties/all?limit=10&sortBy=created&search=&page=1&resetPage=false&languages=${store.bountyLanguages}`;
+    fetchStub.callsFake((url: string) => {
+        if (url === bountiesUrl) {
+          return Promise.resolve(apiResponse);
+        }
+    });
+    await store.getPeopleBounties({
+      resetPage: false,
+      limit: 10,
+      page: 1,
+      sortBy: 'created',
+      languages: store.bountyLanguages
+    });
+
+    expect(fetchStub.resolves(bountiesUrl).calledOnce).toEqual(true);
+    expect(store.peopleBounties[0].body.codingLanguage).toContain(store.bountyLanguages);
   });
 
   it('I should be able to test that when a user is signed out, a user will get a 401 error if they make an API call', async () => {
