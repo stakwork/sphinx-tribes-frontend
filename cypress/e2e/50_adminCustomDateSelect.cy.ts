@@ -1,5 +1,5 @@
 describe('Admin Statistics Custom Date Range', () => {
-  let activeUser = 'alice';
+  let activeUser = 'bob';
 
   const bounty: Cypress.Bounty = {
     title: 'UmerTask',
