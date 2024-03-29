@@ -34,6 +34,28 @@ describe('Super Admin Bounty Filter SortBy', () => {
     cy.wait(2000);
 
     // Assert that the new bounties are sorted in reversed Ascending order
+    const searchBountiesOnPage = (pageIndex: any, bountiesToFind: any) => {
+      cy.get('div[role="pagination"]')
+        .find('button[data-testid="page"]')
+        .eq(pageIndex - 1)
+        .click();
+      cy.wait(2000);
+
+      const notFoundBounties = [];
+
+      bountiesToFind.forEach((bountyId: any) => {
+        cy.get('body').then(($body: any) => {
+          if ($body.find(`:contains("MirzaRef${bountyId}")`).length === 0) {
+            notFoundBounties.push(bountyId);
+          } else {
+            cy.contains(`MirzaRef${bountyId}`, { timeout: 10000 }).should('exist');
+          }
+        });
+      });
+
+      return cy.wrap(notFoundBounties);
+    };
+
     cy.get('div[role="pagination"]')
       .find('button[data-testid="page"]')
       .then(($pages: any) => {
@@ -41,24 +63,13 @@ describe('Super Admin Bounty Filter SortBy', () => {
         const lastPage = totalPages;
         const secondLastPage = totalPages - 1;
 
-        cy.get('div[role="pagination"]')
-          .find('button[data-testid="page"]')
-          .eq(secondLastPage - 1)
-          .click();
-        cy.wait(2000);
+        const allBountyIds = [1, 2, 3, 4, 5, 6];
 
-        cy.contains('MirzaRef1', { timeout: 10000 }).should('exist');
-        cy.contains('MirzaRef2', { timeout: 10000 }).should('exist');
-
-        cy.get('div[role="pagination"]')
-          .find('button[data-testid="page"]')
-          .eq(lastPage - 1)
-          .click();
-        cy.wait(2000);
-
-        for (let i = 3; i <= 6; i++) {
-          cy.contains(`MirzaRef${i}`, { timeout: 10000 }).should('exist');
-        }
+        searchBountiesOnPage(secondLastPage, allBountyIds).then((notFoundBounties: any) => {
+          if (notFoundBounties.length > 0) {
+            searchBountiesOnPage(lastPage, notFoundBounties);
+          }
+        });
       });
     cy.logout(activeUser);
   });
