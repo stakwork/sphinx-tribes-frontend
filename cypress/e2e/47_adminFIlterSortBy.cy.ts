@@ -33,14 +33,33 @@ describe('Super Admin Bounty Filter SortBy', () => {
     cy.contains('Oldest').click();
     cy.wait(2000);
 
-    cy.get('div[role="pagination"]').find('button[data-testid="page"]').last().click();
-    cy.wait(2000);
-
     // Assert that the new bounties are sorted in reversed Ascending order
-    for (let i = 1; i <= 6; i++) {
-      cy.contains(`MirzaRef${i}`, { timeout: 10000 }).should('exist');
-    }
+    cy.get('div[role="pagination"]')
+      .find('button[data-testid="page"]')
+      .then(($pages: any) => {
+        const totalPages = $pages.length;
+        const lastPage = totalPages;
+        const secondLastPage = totalPages - 1;
 
+        cy.get('div[role="pagination"]')
+          .find('button[data-testid="page"]')
+          .eq(secondLastPage - 1)
+          .click();
+        cy.wait(2000);
+
+        cy.contains('MirzaRef1', { timeout: 10000 }).should('exist');
+        cy.contains('MirzaRef2', { timeout: 10000 }).should('exist');
+
+        cy.get('div[role="pagination"]')
+          .find('button[data-testid="page"]')
+          .eq(lastPage - 1)
+          .click();
+        cy.wait(2000);
+
+        for (let i = 3; i <= 6; i++) {
+          cy.contains(`MirzaRef${i}`, { timeout: 10000 }).should('exist');
+        }
+      });
     cy.logout(activeUser);
   });
 });
