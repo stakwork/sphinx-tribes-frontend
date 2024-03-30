@@ -1,7 +1,5 @@
 describe('Admin Custom Date Input', () => {
   const activeUser = 'alice';
-  let startDate: Date;
-  let endDate: Date;
 
   const bounty: Cypress.Bounty = {
     title: 'Admin',
@@ -11,6 +9,20 @@ describe('Admin Custom Date Input', () => {
     assign: 'carol',
     deliverables: 'We are good to go man'
   };
+
+  const today = new Date();
+  const startDate = `${(today.getMonth() + 1).toString().padStart(2, '0')}/${today
+    .getDate()
+    .toString()
+    .padStart(2, '0')}/${today.getFullYear().toString().slice(-2)}`;
+
+  const endDate = new Date(today.getTime());
+  endDate.setDate(today.getDate() + 1);
+
+  const endDateFormatted = `${(endDate.getMonth() + 1).toString().padStart(2, '0')}/${endDate
+    .getDate()
+    .toString()
+    .padStart(2, '0')}/${endDate.getFullYear().toString().slice(-2)}`;
 
   beforeEach(() => {
     cy.login(activeUser);
@@ -32,32 +44,16 @@ describe('Admin Custom Date Input', () => {
     cy.contains('Last 7 Days').click();
     cy.contains('Custom').click();
 
-    cy.get('input[placeholder="MM/DD/YY"]')
-      .eq(0)
-      .clear()
-      .type(startDate.toISOString().substring(0, 10));
+    cy.get('input[placeholder="MM/DD/YY"]').eq(0).clear().type(startDate);
 
-    cy.get('input[placeholder="MM/DD/YY"]')
-      .eq(1)
-      .clear()
-      .type(endDate.toISOString().substring(0, 10));
+    cy.get('input[placeholder="MM/DD/YY"]').eq(1).clear().type(endDateFormatted);
 
     cy.contains('Save').click();
     cy.wait(2000);
 
     cy.contains('Bounties').should('contain.text', 'Bounties').and('contain.text', '22');
 
-    const formattedStartDate = startDate.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-    const formattedEndDate = endDate.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-    const expectedDateRange = `${formattedStartDate} - ${formattedEndDate}`;
+    const expectedDateRange = `${startDate} - ${endDateFormatted}`;
     cy.get('.date-range').should('contain.text', expectedDateRange);
 
     cy.logout(activeUser);
