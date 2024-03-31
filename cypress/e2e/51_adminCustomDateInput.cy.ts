@@ -54,7 +54,22 @@ describe('Admin Custom Date Input', () => {
 
     cy.contains('22');
     cy.contains('Bounties');
-    
+
+    const [startMonth, startDay, startYear] = startDate.split('/').map(Number);
+    const [endMonth, endDay, endYear] = endDateFormatted.split('/').map(Number);
+
+    const date = new Date(startYear, startMonth - 1, startDay);
+    const date2 = new Date(endYear, endMonth - 1, endDay);
+
+    const formattedDate = date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+    const formattedDate2 = date2.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    });
+
+    cy.get('[data-testid="month"]').should(`${formattedDate} - ${formattedDate2}`);
+
     cy.logout(activeUser);
   });
 });
