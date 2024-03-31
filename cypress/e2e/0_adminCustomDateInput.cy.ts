@@ -22,7 +22,7 @@ describe('Admin Custom Date Input', () => {
   const endDateFormatted = `${(endDate.getMonth() + 1).toString().padStart(2, '0')}/${endDate
     .getDate()
     .toString()
-    .padStart(2, '0')}/${endDate.getFullYear().toString().slice(-2)}`;
+    .padStart(2, '0')}/${endDate.getFullYear()}`;
 
   beforeEach(() => {
     cy.login(activeUser);
