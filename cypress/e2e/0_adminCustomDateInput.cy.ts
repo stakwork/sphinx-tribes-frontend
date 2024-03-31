@@ -55,8 +55,8 @@ describe('Admin Custom Date Input', () => {
     cy.contains('22');
     cy.contains('Bounties');
 
-    const [startDay, , startMonth, startYear] = startDate.split(', ');
-    const [endDay, , endMonth] = endDateFormatted.split(', ');
+    const [startDay, , startMonth, startYear] = startDate.split('/');
+    const [endDay, , endMonth] = endDateFormatted.split('/');
 
     const expectedDateRange = `${startDay} ${startMonth} - ${endDay} ${endMonth} ${startYear.slice(-2)}`;
 
