@@ -57,9 +57,8 @@ describe('Admin Custom Date Input', () => {
 
     const formattedStartDate = new Date(startDate).toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
     const formattedEndDate = new Date(endDateFormatted).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
-
-    const expectedDateRange = `${formattedStartDate} - ${formattedEndDate}`;
-    cy.get('[data-testid="month"]').should('contain', expectedDateRange);
+    
+    cy.get('[data-testid="month"]').should('contain', `${formattedStartDate} - ${formattedEndDate}`);
 
     cy.logout(activeUser);
   });
