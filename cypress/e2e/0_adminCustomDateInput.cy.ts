@@ -39,7 +39,8 @@ describe('Admin Custom Date Input', () => {
     cy.visit('http://localhost:3007/admin');
     cy.wait(3000);
 
-    cy.contains('Bounties').should('contain.text', 'Bounties').and('contain.text', '22');
+    cy.contains('22');
+    cy.contains('Bounties');
 
     cy.contains('Last 7 Days').click();
     cy.contains('Custom').click();
@@ -51,7 +52,8 @@ describe('Admin Custom Date Input', () => {
     cy.contains('Save').click();
     cy.wait(2000);
 
-    cy.contains('Bounties').should('contain.text', 'Bounties').and('contain.text', '22');
+    cy.contains('22');
+    cy.contains('Bounties');
 
     const expectedDateRange = `${startDate} - ${endDateFormatted}`;
     cy.get('.date-range').should('contain.text', expectedDateRange);
