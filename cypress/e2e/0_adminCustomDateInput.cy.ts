@@ -55,13 +55,18 @@ describe('Admin Custom Date Input', () => {
     cy.contains('22');
     cy.contains('Bounties');
 
-    const formattedStartDate = new Date(startDate).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
-    const formattedEndDate = new Date(endDateFormatted).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+    const startDate = new Date(today.getTime());
+    startDate.setDate(today.getDate() - 7);
     
-    const [startDay, startMonth, startYear] = formattedStartDate.split(' ');
-    const [endDay, endMonth] = formattedEndDate.split(' ');
+    const startDateVisible = `${startDate.getDate()} ${startDate.toLocaleString('default', { month: 'short' })} - `;
     
-    const expectedDateRange = `${startDay} ${startMonth} - ${endDay} ${endMonth} ${startYear}`;
+    const endDate = new Date(today.getTime());
+    endDate.setDate(today.getDate() + 1);
+    
+    const endDateVisible = `${endDate.getDate()} ${endDate.toLocaleString('default', { month: 'short', year: 'numeric' })}`;
+    
+    const expectedDateRange = `${startDateVisible}${endDateVisible}`;
+    
     cy.get('[data-testid="month"]').should('contain', expectedDateRange);
     
     cy.logout(activeUser);
