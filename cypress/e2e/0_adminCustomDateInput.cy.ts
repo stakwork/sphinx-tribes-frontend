@@ -58,7 +58,7 @@ describe('Admin Custom Date Input', () => {
     const [startDay, , startMonth, startYear] = startDate.split('/');
     const [endDay, , endMonth] = endDateFormatted.split('/');
 
-    const expectedDateRange = `${startDay} ${startMonth} - ${endDay} ${endMonth} ${startYear.slice(-2)}`;
+    const expectedDateRange = `${startDay} ${startMonth} - ${endDay} ${endMonth} ${startYear}`;
 
     cy.get('[data-testid="month"]').should('contain', expectedDateRange);
 
