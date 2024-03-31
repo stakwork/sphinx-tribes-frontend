@@ -55,7 +55,7 @@ describe('Admin Custom Date Input', () => {
     cy.contains('22');
     cy.contains('Bounties');
 
-    const formattedStartDate = new Date(startDate).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+    const formattedStartDate = new Date(startDate).toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
     const formattedEndDate = new Date(endDateFormatted).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
 
     const expectedDateRange = `${formattedStartDate} - ${formattedEndDate}`;
