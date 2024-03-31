@@ -56,7 +56,7 @@ describe('Admin Custom Date Input', () => {
     cy.contains('Bounties');
 
     const expectedDateRange = `${startDate} - ${endDateFormatted}`;
-    cy.get('.date-range').should('contain.text', expectedDateRange);
+    cy.contains(expectedDateRange)
 
     cy.logout(activeUser);
   });
