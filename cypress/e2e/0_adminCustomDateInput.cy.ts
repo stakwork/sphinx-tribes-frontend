@@ -68,7 +68,7 @@ describe('Admin Custom Date Input', () => {
       year: 'numeric'
     });
 
-    cy.get('[data-testid="month"]').should(`${formattedDate} - ${formattedDate2}`);
+    cy.get('[data-testid="month"]').contains(`${formattedDate} - ${formattedDate2}`);
 
     cy.logout(activeUser);
   });
