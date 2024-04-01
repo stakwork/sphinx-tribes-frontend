@@ -30,7 +30,7 @@ describe('Admin Custom Date Input', () => {
   });
 
   it('should create 22 bounties, navigate to admin page, and assert custom date input functionality', () => {
-    for (let i = 1; i <= 4; i++) {
+    for (let i = 1; i <= 22; i++) {
       const updatedBounty = { ...bounty, title: `Admin${i}` };
       cy.create_bounty(updatedBounty);
       cy.wait(1000);
@@ -69,6 +69,10 @@ describe('Admin Custom Date Input', () => {
     });
 
     cy.get('[data-testid="month"]').contains(`${formattedDate} - ${formattedDate2}`);
+
+    for (let i = 1; i <= 22; i++) {
+      cy.contains(`Admin${i}`);
+    }
 
     cy.logout(activeUser);
   });
