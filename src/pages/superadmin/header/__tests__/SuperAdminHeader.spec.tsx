@@ -83,7 +83,7 @@ describe('Header Component', () => {
 
     const StartDate90 = today.clone().subtract(90, 'days');
     expect(monthElement).toHaveTextContent(
-      `${StartDate90.format('DD MMM YYYY')} - ${expectedEndDate.format('DD MMM YYYY')}`
+      `${StartDate90.format('DD MMM')} - ${expectedEndDate.format('DD MMM YYYY')}`
     );
   });
   test('displays same year for startDate and endDate', () => {
