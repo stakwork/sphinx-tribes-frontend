@@ -146,6 +146,7 @@ function Form(props: FormProps) {
                         {...item}
                         key={item.name}
                         values={values}
+                        testId={item.name}
                         errors={errors}
                         scrollToTop={scrollToTop}
                         value={values[item.name]}
@@ -188,6 +189,7 @@ function Form(props: FormProps) {
                         {...item}
                         key={item.name}
                         values={values}
+                        testId={item.name}
                         errors={errors}
                         scrollToTop={scrollToTop}
                         value={values[item.name]}
@@ -231,6 +233,7 @@ function Form(props: FormProps) {
                       {...item}
                       key={item.name}
                       values={values}
+                      testId={item.name}
                       errors={errors}
                       scrollToTop={scrollToTop}
                       value={values[item.name]}
@@ -306,12 +309,6 @@ function Form(props: FormProps) {
                         setFieldValue('type', dynamicSchemaName);
                       }
                       handleSubmit();
-                      if (
-                        window.location.href.includes('bounty') ||
-                        window.location.href.includes('ticket')
-                      ) {
-                        history.push('/bounties');
-                      }
                     }}
                     loading={props.loading}
                     style={{ ...buttonStyle, width: '140px' }}

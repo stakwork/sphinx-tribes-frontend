@@ -1726,9 +1726,10 @@ export class MainStore {
     let error: any = null;
 
     const info = uiStore.meInfo as any;
+
     const URL = info.url.startsWith('http') ? info.url : `https://${info.url}`;
     if (!info) {
-      error = new Error('Youre not logged in');
+      error = new Error(`You're not logged in`);
       return [null, error];
     }
 
@@ -1748,7 +1749,7 @@ export class MainStore {
       return [response, error];
     } else {
       // fork between tor users non authentiacted and not
-      if (this.isTorSave() || info.url.startsWith('http://')) {
+      if (this.isTorSave()) {
         this.submitFormViaApp(method, path, body);
         return [null, null];
       }

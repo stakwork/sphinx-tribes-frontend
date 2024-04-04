@@ -99,6 +99,15 @@ const AboutFocusView = (props: FocusViewProps) => {
         ]
       }
     };
+
+    // TODO remove the delete
+    delete requestData.github;
+    delete requestData.twitter;
+    delete requestData.facebook;
+    delete requestData.email;
+    delete requestData.amboss;
+    delete requestData.lightning;
+
     return requestData;
   }
 
