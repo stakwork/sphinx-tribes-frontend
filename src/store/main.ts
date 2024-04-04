@@ -304,6 +304,22 @@ export interface OrgBountyStatus {
   Completed: boolean;
 }
 
+export interface OrganizationBudget {
+  org_uuid: string;
+  current_budget: number;
+  open_budget: number;
+  assigned_budget: number;
+  completed_budget: number;
+}
+
+export const defaultOrgBudget: OrganizationBudget = {
+  org_uuid: '',
+  current_budget: 0,
+  open_budget: 0,
+  assigned_budget: 0,
+  completed_budget: 0
+};
+
 export const defaultOrgBountyStatus: OrgBountyStatus = {
   Open: false,
   Assigned: false,
@@ -2509,7 +2525,6 @@ export class MainStore {
           'Content-Type': 'application/json'
         }
       });
-
       return r.json();
     } catch (e) {
       console.log('Error getOrganizationBudget', e);
