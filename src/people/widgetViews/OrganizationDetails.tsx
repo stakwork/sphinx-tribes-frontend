@@ -397,7 +397,8 @@ const OrganizationDetails = (props: {
                   <BudgetSmallHead>CURRENT BUDGET</BudgetSmallHead>
                   <ViewBudgetTextWrap>
                     <Budget>
-                      {orgBudget ? orgBudget.current_budget.toLocaleString() : 0} <Grey>SATS</Grey>
+                      {orgBudget.current_budget ? orgBudget.current_budget.toLocaleString() : 0}{' '}
+                      <Grey>SATS</Grey>
                     </Budget>
                     <Budget className="budget-small">
                       {satToUsd(orgBudget.current_budget)} <Grey>USD</Grey>
@@ -408,7 +409,7 @@ const OrganizationDetails = (props: {
                   <BudgetSmallHead>COMPLETED BUDGET</BudgetSmallHead>
                   <ViewBudgetTextWrap>
                     <Budget>
-                      {orgBudget ? orgBudget.completed_budget.toLocaleString() : 0}{' '}
+                      {orgBudget.completed_budget ? orgBudget.completed_budget.toLocaleString() : 0}{' '}
                       <Grey>SATS</Grey>
                     </Budget>
                     <Budget className="budget-small">
@@ -422,7 +423,8 @@ const OrganizationDetails = (props: {
                   <BudgetSmallHead>OPEN BUDGET</BudgetSmallHead>
                   <ViewBudgetTextWrap>
                     <Budget>
-                      {orgBudget ? orgBudget.open_budget.toLocaleString() : 0} <Grey>SATS</Grey>
+                      {orgBudget.open_budget ? orgBudget.open_budget.toLocaleString() : 0}{' '}
+                      <Grey>SATS</Grey>
                     </Budget>
                     <Budget className="budget-small">
                       {satToUsd(orgBudget.open_budget)} <Grey>USD</Grey>
@@ -433,7 +435,8 @@ const OrganizationDetails = (props: {
                   <BudgetSmallHead>ASSIGNED BUDGET</BudgetSmallHead>
                   <ViewBudgetTextWrap>
                     <Budget>
-                      {orgBudget ? orgBudget.assigned_budget.toLocaleString() : 0} <Grey>SATS</Grey>
+                      {orgBudget.assigned_budget ? orgBudget.assigned_budget.toLocaleString() : 0}{' '}
+                      <Grey>SATS</Grey>
                     </Budget>
                     <Budget className="budget-small">
                       {satToUsd(orgBudget.assigned_budget)} <Grey>USD</Grey>
