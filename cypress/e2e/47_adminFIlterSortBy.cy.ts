@@ -33,44 +33,10 @@ describe('Super Admin Bounty Filter SortBy', () => {
     cy.contains('Oldest').click();
     cy.wait(2000);
 
-    // Assert that the new bounties are sorted in reversed Ascending order
-    const searchBountiesOnPage = (pageIndex: any, bountiesToFind: any) => {
-      cy.get('div[role="pagination"]')
-        .find('button[data-testid="page"]')
-        .eq(pageIndex - 1)
-        .click();
-      cy.wait(2000);
+    // Assert that the first two bounties are no longer visible after changing the sort order
+    cy.contains('MirzaRef1').should('not.exist');
+    cy.contains('MirzaRef2').should('not.exist');
 
-      const notFoundBounties = [];
-
-      bountiesToFind.forEach((bountyId: any) => {
-        cy.get('body').then(($body: any) => {
-          if ($body.find(`:contains("MirzaRef${bountyId}")`).length === 0) {
-            notFoundBounties.push(bountyId);
-          } else {
-            cy.contains(`MirzaRef${bountyId}`, { timeout: 10000 }).should('exist');
-          }
-        });
-      });
-
-      return cy.wrap(notFoundBounties);
-    };
-
-    cy.get('div[role="pagination"]')
-      .find('button[data-testid="page"]')
-      .then(($pages: any) => {
-        const totalPages = $pages.length;
-        const lastPage = totalPages;
-        const secondLastPage = totalPages - 1;
-
-        const allBountyIds = [1, 2, 3, 4, 5, 6];
-
-        searchBountiesOnPage(secondLastPage, allBountyIds).then((notFoundBounties: any) => {
-          if (notFoundBounties.length > 0) {
-            searchBountiesOnPage(lastPage, notFoundBounties);
-          }
-        });
-      });
     cy.logout(activeUser);
   });
 });
