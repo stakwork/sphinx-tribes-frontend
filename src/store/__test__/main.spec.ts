@@ -1162,7 +1162,7 @@ describe('Main store', () => {
 
   it('should return filter by languages, status response', async () => {
     const store = new MainStore();
-    const searchCriteria = {
+    const filterCriteria = {
       limit: 10,
       page: 1,
       sortBy: 'created',
@@ -1185,22 +1185,22 @@ describe('Main store', () => {
         urlObj.origin === `http://${getHost()}` && urlObj.pathname === '/gobounties/all';
 
       const isValidParams =
-        params.get('limit') === searchCriteria.limit.toString() &&
-        params.get('sortBy') === searchCriteria.sortBy &&
-        params.get('coding_languages') === searchCriteria.coding_languages &&
-        params.get('page') === searchCriteria.page.toString() &&
-        params.get('Open') === String(searchCriteria.Open) &&
-        params.get('Assigned') === String(searchCriteria.Assigned) &&
-        params.get('Paid') === String(searchCriteria.Paid);
+        params.get('limit') === filterCriteria.limit.toString() &&
+        params.get('sortBy') === filterCriteria.sortBy &&
+        params.get('coding_languages') === filterCriteria.coding_languages &&
+        params.get('page') === filterCriteria.page.toString() &&
+        params.get('Open') === String(filterCriteria.Open) &&
+        params.get('Assigned') === String(filterCriteria.Assigned) &&
+        params.get('Paid') === String(filterCriteria.Paid);
 
       if (isValidBaseUrl && isValidParams) {
         return Promise.resolve(apiResponse);
       }
     });
 
-    await store.getPeopleBounties(searchCriteria);
+    await store.getPeopleBounties(filterCriteria);
     sinon.assert.called(fetchStub);
     expect(fetchStub.calledOnce).toEqual(true);
-    expect(store.peopleBounties[0].body.coding_languages).toEqual(searchCriteria.coding_languages);
+    expect(store.peopleBounties[0].body.coding_languages).toEqual(filterCriteria.coding_languages);
   });
 });
