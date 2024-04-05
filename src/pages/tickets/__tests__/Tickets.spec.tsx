@@ -297,6 +297,20 @@ describe('Tickets Component', () => {
     })();
   });
 
+  it('Test that a newly created bounty is visible.', async () => {
+    render(<Tickets />);
+
+    (async () => {
+      await waitFor(() => {
+        expect(screen.queryByTestId('tickets-component')).toBeInTheDocument();
+      });
+
+      mockBounties.forEach(({ bounty }) => {
+        expect(screen.getByText(`bounty title: ${bounty.title}`)).toBeInTheDocument();
+      });
+    })();
+  });
+
   it('tests that out of connection code is displayed when there are no codes', () => {
     uiStore.setMeInfo(null);
 
