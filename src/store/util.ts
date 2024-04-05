@@ -1,7 +1,7 @@
 export const transformBountyWithPeopleBounty = (bountyDetails: any) => {
   const bounty = { ...bountyDetails.bounty };
-  let assignee;
-  let organization;
+  let assignee: any;
+  let organization: any;
   const owner = { ...bountyDetails.owner };
 
   if (bounty.assignee) {
