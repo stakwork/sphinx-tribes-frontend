@@ -7,7 +7,10 @@ import { MeInfo, emptyMeInfo, uiStore } from '../ui';
 import { MainStore } from '../main';
 import { localStorageMock } from '../../__test__/__mockData__/localStorage';
 import { TribesURL, getHost } from '../../config';
-import mockBounties, { expectedBountyResponses } from '../../bounties/__mock__/mockBounties.data';
+import mockBounties, {
+  expectedBountyResponses,
+  filterBounty
+} from '../../bounties/__mock__/mockBounties.data';
 
 let fetchStub: sinon.SinonStub;
 let mockApiResponseData: any[];
@@ -1122,5 +1125,82 @@ describe('Main store', () => {
       }) as any
     );
     expect(res).toBeTruthy();
+  });
+  it('should accept search query and return results based on query ', async () => {
+    const store = new MainStore();
+
+    const searchCriteria = {
+      search: 'test',
+      limit: 10,
+      page: 1,
+      sortBy: 'created'
+    };
+
+    const mockApiResponse = {
+      status: 200,
+      ok: true,
+      json: async () => Promise.resolve([mockBounties[0]])
+    };
+
+    const bountiesUrl = `http://${getHost()}/gobounties/all?limit=${searchCriteria.limit}&sortBy=${
+      searchCriteria.sortBy
+    }&search=${searchCriteria.search}&page=${searchCriteria.page}&resetPage=false`;
+
+    fetchStub.callsFake((url: string) => {
+      if (url === bountiesUrl) {
+        return Promise.resolve(mockApiResponse);
+      }
+    });
+
+    await store.getPeopleBounties(searchCriteria);
+
+    sinon.assert.calledWithMatch(fetchStub, bountiesUrl);
+    expect(fetchStub.calledOnce).toBe(true);
+    expect(store.peopleBounties).toHaveLength(1);
+    expect(store.peopleBounties[0].body.title).toEqual(searchCriteria.search);
+  });
+
+  it('should return filter by languages, status response', async () => {
+    const store = new MainStore();
+    const filterCriteria = {
+      limit: 10,
+      page: 1,
+      sortBy: 'created',
+      coding_languages: 'Typescript',
+      Open: true,
+      Assigned: false,
+      Paid: false
+    };
+
+    const apiResponse = {
+      status: 200,
+      ok: true,
+      json: async () => Promise.resolve([filterBounty])
+    };
+    fetchStub.callsFake((url: string) => {
+      const urlObj = new URL(url);
+      const params = urlObj.searchParams;
+
+      const isValidBaseUrl =
+        urlObj.origin === `http://${getHost()}` && urlObj.pathname === '/gobounties/all';
+
+      const isValidParams =
+        params.get('limit') === filterCriteria.limit.toString() &&
+        params.get('sortBy') === filterCriteria.sortBy &&
+        params.get('coding_languages') === filterCriteria.coding_languages &&
+        params.get('page') === filterCriteria.page.toString() &&
+        params.get('Open') === String(filterCriteria.Open) &&
+        params.get('Assigned') === String(filterCriteria.Assigned) &&
+        params.get('Paid') === String(filterCriteria.Paid);
+
+      if (isValidBaseUrl && isValidParams) {
+        return Promise.resolve(apiResponse);
+      }
+    });
+
+    await store.getPeopleBounties(filterCriteria);
+    sinon.assert.called(fetchStub);
+    expect(fetchStub.calledOnce).toEqual(true);
+    expect(store.peopleBounties[0].body.coding_languages).toEqual(filterCriteria.coding_languages);
   });
 });
