@@ -83,7 +83,7 @@ describe('Withdraw From Organization Role Test', () => {
     cy.wait(1000);
 
     //Assert that the withdraw modal pops up
-    cy.get('h3.sc-pjIPr.dxPemv').contains('Withdraw').should('be.visible');
+    cy.get('h3.withdraw-title').contains('Withdraw').should('be.visible');
     cy.wait(1000);
 
     //Assert that 'Past your invoice' is visible

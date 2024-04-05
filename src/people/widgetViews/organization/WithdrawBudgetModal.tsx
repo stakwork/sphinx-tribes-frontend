@@ -204,7 +204,7 @@ const WithdrawBudgetModal = (props: WithdrawModalProps) => {
         )}
         {displayWuthdraw && (
           <>
-            <WithdrawModalTitle>Withdraw</WithdrawModalTitle>
+            <WithdrawModalTitle className="withdraw-title">Withdraw</WithdrawModalTitle>
             <InvoiceForm>
               <InvoiceLabel
                 style={{

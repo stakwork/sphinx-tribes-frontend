@@ -236,7 +236,7 @@ const AddBudgetModal = (props: AddBudgetModalProps) => {
         {!lnInvoice && ui.meInfo?.owner_pubkey && (
           <>
             <InvoiceForm>
-              <InvoiceFormHeading>Deposit</InvoiceFormHeading>
+              <InvoiceFormHeading className="deposit-title">Deposit</InvoiceFormHeading>
               <InvoiceWrapper>
                 <InvoiceLabel>Amount (in sats)</InvoiceLabel>
                 <InvoiceInputWrapper>
