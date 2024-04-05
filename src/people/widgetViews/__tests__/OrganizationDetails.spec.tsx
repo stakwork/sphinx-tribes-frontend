@@ -438,7 +438,7 @@ describe('OrganizationDetails', () => {
         expect(depositButton).toBeInTheDocument();
 
         // Verify Transaction History Text is Present
-        const txnHistory = await screen.getByText(/YOUR BALANCE/i);
+        const txnHistory = await screen.getByText(/CURRENT BUDGET/i);
         expect(txnHistory).toBeInTheDocument();
 
         // Verify Budget Display

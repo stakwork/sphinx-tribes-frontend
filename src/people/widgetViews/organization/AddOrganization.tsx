@@ -351,6 +351,7 @@ const AddOrganization = (props: {
         <OrgButton
           disabled={orgNameError || descriptionError || !orgName}
           onClick={addOrganization}
+          data-testid="add-organization"
         >
           {isLoading ? <EuiLoadingSpinner size="m" /> : 'Add Organization'}
         </OrgButton>

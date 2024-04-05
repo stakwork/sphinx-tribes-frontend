@@ -83,7 +83,7 @@ describe('Fund Organization Role Test', () => {
     cy.wait(1000);
 
     //Assert that 'Deposit' is visible
-    cy.get('h2.sc-prpXb.iqZzaC').contains('Deposit').should('be.visible');
+    cy.get('h2.deposit-title').contains('Deposit').should('be.visible');
     cy.wait(1000);
 
     //Assert that 'Amount (in sats)' is visible

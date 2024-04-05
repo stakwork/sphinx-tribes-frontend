@@ -249,7 +249,7 @@ function MobileView(props: CodingBountiesProps) {
     // without generating an invoice, else generate an invoice
     if (org_uuid) {
       const organizationBudget = await main.getOrganizationBudget(org_uuid);
-      const budget = organizationBudget.total_budget;
+      const budget = organizationBudget.current_budget;
 
       const bounty = await main.getBountyById(id ?? 0);
       if (bounty.length && Number(budget) >= Number(price)) {

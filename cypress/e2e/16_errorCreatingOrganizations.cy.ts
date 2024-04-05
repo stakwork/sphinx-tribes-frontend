@@ -26,7 +26,7 @@ describe('Organization creation error handling', () => {
 
     cy.wait(600);
 
-    cy.get('button.sc-pQtXH.fOUUSv').contains('Add Organization').should('be.disabled');
+    cy.get('[data-testid="add-organization"]').contains('Add Organization').should('be.disabled');
 
     cy.get('[placeholder="My Organization..."]').parent().contains('Name is too long.');
     cy.get('[placeholder="Description Text..."]').parent().contains('Description is too long.');

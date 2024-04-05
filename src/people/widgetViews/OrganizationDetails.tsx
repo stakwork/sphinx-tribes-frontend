@@ -2,7 +2,14 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useStores } from 'store';
 import { EuiGlobalToastList } from '@elastic/eui';
 import { Button } from 'components/common';
-import { BountyRoles, Organization, PaymentHistory, Person } from 'store/main';
+import {
+  BountyRoles,
+  defaultOrgBudget,
+  Organization,
+  OrganizationBudget,
+  PaymentHistory,
+  Person
+} from 'store/main';
 import MaterialIcon from '@material/react-material-icon';
 import { Route, Router, Switch, useRouteMatch } from 'react-router-dom';
 import { satToUsd, userHasRole } from 'helpers';
@@ -39,7 +46,8 @@ import {
   UsersHeadWrap,
   UsersHeader,
   ViewBudgetWrap,
-  ViewBudgetTextWrap
+  ViewBudgetTextWrap,
+  BudgetData
 } from './organization/style';
 import AssignUserRoles from './organization/AssignUserRole';
 
@@ -61,7 +69,7 @@ const OrganizationDetails = (props: {
   const [isOpenHistory, setIsOpenHistory] = useState<boolean>(false);
   const [isOpenEditOrg, setIsOpenEditOrg] = useState<boolean>(false);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
-  const [orgBudget, setOrgBudget] = useState<number>(0);
+  const [orgBudget, setOrgBudget] = useState<OrganizationBudget>(defaultOrgBudget);
   const [paymentsHistory, setPaymentsHistory] = useState<PaymentHistory[]>([]);
   const [disableFormButtons, setDisableFormButtons] = useState(false);
   const [users, setUsers] = useState<Person[]>([]);
@@ -148,7 +156,7 @@ const OrganizationDetails = (props: {
   const getOrganizationBudget = useCallback(async () => {
     if (!viewReportDisabled) {
       const organizationBudget = await main.getOrganizationBudget(uuid);
-      setOrgBudget(organizationBudget.total_budget);
+      setOrgBudget(organizationBudget);
     }
   }, [main, uuid, viewReportDisabled]);
 
@@ -259,7 +267,6 @@ const OrganizationDetails = (props: {
   const successAction = () => {
     setInvoiceStatus(true);
     main.setBudgetInvoice('');
-
     // get new organization budget
     getOrganizationBudget();
     getPaymentsHistory();
@@ -384,17 +391,60 @@ const OrganizationDetails = (props: {
               </NoBudgetText>
             </NoBudgetWrap>
           ) : (
-            <ViewBudgetWrap>
-              <BudgetSmallHead>YOUR BALANCE</BudgetSmallHead>
-              <ViewBudgetTextWrap>
-                <Budget>
-                  {orgBudget ? orgBudget.toLocaleString() : 0} <Grey>SATS</Grey>
-                </Budget>
-                <Budget className="budget-small">
-                  {satToUsd(orgBudget)} <Grey>USD</Grey>
-                </Budget>
-              </ViewBudgetTextWrap>
-            </ViewBudgetWrap>
+            <>
+              <ViewBudgetWrap>
+                <BudgetData>
+                  <BudgetSmallHead>CURRENT BUDGET</BudgetSmallHead>
+                  <ViewBudgetTextWrap>
+                    <Budget>
+                      {orgBudget.current_budget ? orgBudget.current_budget.toLocaleString() : 0}{' '}
+                      <Grey>SATS</Grey>
+                    </Budget>
+                    <Budget className="budget-small">
+                      {satToUsd(orgBudget.current_budget)} <Grey>USD</Grey>
+                    </Budget>
+                  </ViewBudgetTextWrap>
+                </BudgetData>
+                <BudgetData>
+                  <BudgetSmallHead>COMPLETED BUDGET</BudgetSmallHead>
+                  <ViewBudgetTextWrap>
+                    <Budget>
+                      {orgBudget.completed_budget ? orgBudget.completed_budget.toLocaleString() : 0}{' '}
+                      <Grey>SATS</Grey>
+                    </Budget>
+                    <Budget className="budget-small">
+                      {satToUsd(orgBudget.completed_budget)} <Grey>USD</Grey>
+                    </Budget>
+                  </ViewBudgetTextWrap>
+                </BudgetData>
+              </ViewBudgetWrap>
+              <ViewBudgetWrap>
+                <BudgetData>
+                  <BudgetSmallHead>OPEN BUDGET</BudgetSmallHead>
+                  <ViewBudgetTextWrap>
+                    <Budget>
+                      {orgBudget.open_budget ? orgBudget.open_budget.toLocaleString() : 0}{' '}
+                      <Grey>SATS</Grey>
+                    </Budget>
+                    <Budget className="budget-small">
+                      {satToUsd(orgBudget.open_budget)} <Grey>USD</Grey>
+                    </Budget>
+                  </ViewBudgetTextWrap>
+                </BudgetData>
+                <BudgetData>
+                  <BudgetSmallHead>ASSIGNED BUDGET</BudgetSmallHead>
+                  <ViewBudgetTextWrap>
+                    <Budget>
+                      {orgBudget.assigned_budget ? orgBudget.assigned_budget.toLocaleString() : 0}{' '}
+                      <Grey>SATS</Grey>
+                    </Budget>
+                    <Budget className="budget-small">
+                      {satToUsd(orgBudget.assigned_budget)} <Grey>USD</Grey>
+                    </Budget>
+                  </ViewBudgetTextWrap>
+                </BudgetData>
+              </ViewBudgetWrap>
+            </>
           )}
         </BudgetWrap>
         <HeadButtonWrap forSmallScreen={true}>

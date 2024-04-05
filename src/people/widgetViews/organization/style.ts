@@ -196,6 +196,17 @@ export const NoBudgetWrap = styled.div`
 
 export const ViewBudgetWrap = styled.div`
   display: flex;
+  flex-direction: row;
+  width: 100%;
+  :first-child {
+    margin-bottom: 15px;
+    border-bottom: 0.5px solid #ccc;
+    padding-bottom: 10px;
+  }
+`;
+
+export const BudgetData = styled.div`
+  display: flex;
   flex-direction: column;
   width: 100%;
 `;

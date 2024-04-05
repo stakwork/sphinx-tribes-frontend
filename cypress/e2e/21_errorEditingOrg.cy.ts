@@ -1,7 +1,7 @@
 describe('Alice Create an Organization and then Edit to validate characters the limit', () => {
   const org = {
     loggedInAs: 'alice',
-    name: 'Cypress Org name',
+    name: 'Cypress Org Edit',
     description: 'Cypress Org description'
   };
 
@@ -31,11 +31,11 @@ describe('Alice Create an Organization and then Edit to validate characters the 
 
     cy.wait(600);
 
-    cy.get('button.sc-pQtXH.fOUUSv').contains('Add Organization').click();
+    cy.get('[data-testid="add-organization"]').contains('Add Organization').click();
     cy.wait(1000);
 
-    cy.contains('.sc-pIkGh', org.name)
-      .parents('.sc-qYuao')
+    cy.contains('.org-text-wrap', org.name)
+      .parents('.org-data')
       .within(() => {
         cy.get('button').contains('Manage').click();
       });
