@@ -1182,11 +1182,9 @@ describe('Main store', () => {
       const urlObj = new URL(url);
       const params = urlObj.searchParams;
 
-      // Validate the base URL
       const isValidBaseUrl =
         urlObj.origin === `http://${getHost()}` && urlObj.pathname === '/gobounties/all';
 
-      // Validate query parameters
       const isValidParams =
         params.get('limit') === searchCriteria.limit.toString() &&
         params.get('sortBy') === searchCriteria.sortBy &&
