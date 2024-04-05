@@ -196,7 +196,7 @@ const Organizations = (props: { person: Person }) => {
     const btnDisabled = (!org.bounty_count && org.bount_count !== 0) || !org.uuid;
     return (
       <OrganizationWrap key={key}>
-        <OrganizationData>
+        <OrganizationData className="org-data">
           <OrganizationImg src={org.img || avatarIcon} />
           <OrganizationBudget org={org} user_pubkey={user_pubkey ?? ''} />
           <OrganizationActionWrap>

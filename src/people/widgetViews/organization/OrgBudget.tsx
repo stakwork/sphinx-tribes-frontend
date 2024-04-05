@@ -91,7 +91,7 @@ const OrganizationBudget = (props: { user_pubkey: string; org: any }) => {
   }, [getUserRoles]);
 
   return (
-    <OrganizationTextWrap>
+    <OrganizationTextWrap className="org-text-wrap">
       <OrganizationText hasAccess={hasAccess}>{org.name}</OrganizationText>
       {hasAccess && (
         <OrganizationBudgetText>
