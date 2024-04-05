@@ -491,3 +491,60 @@ export const createdBounty = {
     img: 'https://example.com/public/another_random_image.png'
   }
 };
+
+export const filterBounty = {
+  bounty: {
+    id: 9999,
+    owner_id: 'random_owner_id',
+    paid: false,
+    show: true,
+    type: 'coding_task',
+    award: '',
+    assigned_hours: 0,
+    bounty_expires: '',
+    commitment_fee: 0,
+    price: 50000,
+    title: 'Show "0" value if % is too low instead of no value in superadmin',
+    tribe: 'None',
+    assignee: 'random_assignee_id',
+    ticket_url: 'https://example.com/issue/123',
+    org_uuid: 'random_org_uuid',
+    description:
+      '**Describe the bug**\nOn staging there is a really small (close to 0) value for % conversion. This results in a "0" value. However, no 0 value is being displayed.\n**Expected behavior**\nDisplay a 0 value if the % is below 0.00%.\n**Desktop**\n - Browser: Chrome\n### Acceptance Criteria\n- I have tested on Chrome desktop\n- I have posted a screenshot in my PR\n- I have created a test that shows a 0 value gets displayed when value is below 0.00%\n- I have rebased and tested locally before submitting my PR',
+    wanted_type: 'Web development',
+    github_description: true,
+    estimated_completion_date: '2024-02-12T22:55:12.301Z',
+    created: 1707432920,
+    updated: '2024-02-09T00:09:02.297044Z',
+    coding_languages: 'Typescript'
+  },
+  assignee: {
+    id: 123,
+    uuid: 'random_uuid',
+    owner_pubkey: 'random_owner_pubkey',
+    owner_alias: 'RandomName',
+    unique_name: 'random_unique_name',
+    description: 'description',
+    img: '',
+    created: '2024-02-05T19:29:36.419064Z',
+    updated: '2024-02-05T19:29:36.720503Z',
+    last_login: 1707770720,
+    price_to_meet: 0
+  },
+  owner: {
+    id: 456,
+    uuid: 'another_random_uuid',
+    owner_pubkey: 'another_random_owner_pubkey',
+    owner_alias: 'AnotherRandomName',
+    unique_name: 'another_random_unique_name',
+    description: 'Bitcoin PM test',
+    img: 'https://example.com/public/random_image.png',
+    created: '2023-09-05T21:34:39.170759Z',
+    updated: '2024-01-30T17:25:48.8506Z'
+  },
+  organization: {
+    uuid: 'random_org_uuid_again',
+    name: 'Bounties Platform',
+    img: 'https://example.com/public/another_random_image.png'
+  }
+};
