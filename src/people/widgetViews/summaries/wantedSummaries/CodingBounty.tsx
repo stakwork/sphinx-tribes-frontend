@@ -667,8 +667,8 @@ function MobileView(props: CodingBountiesProps) {
                             bountyCompleted && !bountyPaid
                               ? 'completed'
                               : bountyPaid
-                                ? 'paid'
-                                : 'assigned'
+                              ? 'paid'
+                              : 'assigned'
                           }
                           canViewProfile={false}
                           statusStyle={{
@@ -678,8 +678,8 @@ function MobileView(props: CodingBountiesProps) {
                               bountyCompleted && !bountyPaid
                                 ? color.statusCompleted
                                 : bountyPaid
-                                  ? color.statusPaid
-                                  : color.statusAssigned
+                                ? color.statusPaid
+                                : color.statusAssigned
                           }}
                           UserProfileContainerStyle={{
                             height: 48,
