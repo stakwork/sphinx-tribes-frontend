@@ -35,7 +35,8 @@ const palette = {
   black500: '#3c3f41',
   background100: '#f0f1f3',
   statusAssigned: '#49C998',
-  statusCompleted: '#8256D0',
+  statusCompleted: '#9B870C',
+  statusPaid: '#8256D0',
   button_primary: {
     main: '#49C998',
     hover: '#3CBE88',

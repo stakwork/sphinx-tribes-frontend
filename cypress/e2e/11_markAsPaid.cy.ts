@@ -38,7 +38,7 @@ describe('Alice tries to Mark a Bounty as paid after creating a bounty', () => {
     cy.contains('Skip and Mark Paid').click();
     cy.wait(1000);
 
-    cy.contains('completed');
+    cy.contains('paid');
 
     // click outside the modal
     cy.get('body').click(0, 0);

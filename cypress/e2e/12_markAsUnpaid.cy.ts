@@ -38,7 +38,7 @@ describe('Alice tries to paid and unpaid a hunter after creating a bounty', () =
     cy.contains('Skip and Mark Paid').click();
     cy.wait(1000);
 
-    cy.contains('completed');
+    cy.contains('paid');
 
     cy.contains('Mark as Unpaid').click();
     cy.wait(1000);

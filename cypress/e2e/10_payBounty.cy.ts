@@ -1,11 +1,12 @@
 describe('It Pays a bounty ', () => {
   it('It makes a Keysend payment to bounty assignee', async () => {
     cy.login('carol');
+    cy.wait(2000);
 
     // create org
     const org = {
       loggedInAs: 'carol',
-      name: 'Payment Organization 1',
+      name: 'Pay Organization',
       description: 'We are testing out our oeganization',
       website: 'https://community.sphinx.chat',
       github: 'https://github.com/stakwork/sphinx-tribes-frontend'

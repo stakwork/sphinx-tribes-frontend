@@ -93,6 +93,8 @@ describe('MobileView component', () => {
     id: 987654321,
     localPaid: 'UNKNOWN' as any,
     setLocalPaid: jest.fn(),
+    localCompleted: 'UNKNOWN' as any,
+    setLocalCompleted: jest.fn(),
     isMobile: false,
     actionButtons: false,
     assigneeLabel: {},
@@ -443,7 +445,7 @@ describe('MobileView component', () => {
     fireEvent.click(markAsPaid);
 
     (async () => {
-      await waitFor(() => expect(screen.getByText('complete')));
+      await waitFor(() => expect(screen.getByText('paid')));
     })();
   });
 
