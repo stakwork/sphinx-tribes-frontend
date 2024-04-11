@@ -12,7 +12,12 @@ import { useStores } from '../../../store';
 import { LanguageObject, awards } from '../../utils/languageLabelStyle';
 import NameTag from '../../utils/NameTag';
 import { sendToRedirect } from '../../../helpers';
-import { CodingLanguageLabel, WantedSummaryProps, LocalPaymeentState } from '../../interfaces';
+import {
+  CodingLanguageLabel,
+  WantedSummaryProps,
+  LocalPaymeentState,
+  LocalCompletedState
+} from '../../interfaces';
 import CodingBounty from './wantedSummaries/CodingBounty';
 import CodingDesktop from './wantedSummaries/CodingDesktop';
 import { ButtonRow, Img, Assignee } from './wantedSummaries/style';
@@ -114,6 +119,7 @@ function WantedSummary(props: WantedSummaryProps) {
   const [labels, setLabels] = useState<Array<CodingLanguageLabel>>([]);
   const [assigneeValue, setAssigneeValue] = useState(false);
   const [localPaid, setLocalPaid] = useState<LocalPaymeentState>('UNKNOWN');
+  const [localCompleted, setLocalCompleted] = useState<LocalCompletedState>('UNKNOWN');
 
   const assigneeHandlerOpen = () => setAssigneeValue((assigneeValue: any) => !assigneeValue);
 
@@ -339,8 +345,12 @@ function WantedSummary(props: WantedSummaryProps) {
         console.log('e', e);
       }
 
-      setIsMarkPaidSaved(false);
-      setLocalPaid('PAID');
+      if (propertyName === 'paid') {
+        setIsMarkPaidSaved(false);
+        setLocalPaid('PAID');
+      } else if (propertyName === 'completed') {
+        setLocalCompleted('COMPLETED');
+      }
     }
   }
 
@@ -584,6 +594,8 @@ function WantedSummary(props: WantedSummaryProps) {
           id={id}
           localPaid={localPaid}
           setLocalPaid={setLocalPaid}
+          localCompleted={localCompleted}
+          setLocalCompleted={setLocalCompleted}
           isMobile={isMobile}
           actionButtons={actionButtons}
           assigneeLabel={assigneeLabel}

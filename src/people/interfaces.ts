@@ -261,6 +261,8 @@ export interface WantedSummaryProps {
 
 export type LocalPaymeentState = 'UNKNOWN' | 'PAID' | 'UNPAID';
 
+export type LocalCompletedState = 'UNKNOWN' | 'COMPLETED' | 'INCOMPLETE';
+
 export interface CodingBountiesProps extends WantedSummaryProps {
   deliverables?: string;
   description: any;
@@ -321,8 +323,11 @@ export interface CodingBountiesProps extends WantedSummaryProps {
   bounty_expires?: string;
   org_uuid?: string;
   id?: number;
+  completed?: boolean;
   localPaid: LocalPaymeentState;
   setLocalPaid: (state: LocalPaymeentState) => void;
+  localCompleted: LocalCompletedState;
+  setLocalCompleted: (state: LocalCompletedState) => void;
   isMobile?: boolean;
   assigneeLabel?: { [key: string]: any };
   actionButtons?: boolean | JSX.Element;

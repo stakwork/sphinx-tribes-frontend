@@ -97,10 +97,12 @@ function MobileView(props: CodingBountiesProps) {
     id,
     localPaid,
     setLocalPaid,
+    localCompleted,
     isMobile,
     actionButtons,
     assigneeLabel,
-    isEditButtonDisable
+    isEditButtonDisable,
+    completed
   } = props;
   const color = colors['light'];
 
@@ -120,11 +122,19 @@ function MobileView(props: CodingBountiesProps) {
   const userPubkey = ui.meInfo?.owner_pubkey;
 
   let bountyPaid = paid || invoiceStatus || keysendStatus;
+  const userAssigned = assignee && assignee.owner_pubkey !== '';
+  let bountyCompleted = completed;
 
   if (localPaid === 'PAID') {
     bountyPaid = true;
   } else if (localPaid === 'UNPAID') {
     bountyPaid = false;
+  }
+
+  if (localCompleted === 'COMPLETED') {
+    bountyCompleted = true;
+  } else if (localCompleted === 'INCOMPLETE') {
+    bountyCompleted = false;
   }
 
   const pollMinutes = 2;
@@ -287,6 +297,14 @@ function MobileView(props: CodingBountiesProps) {
     recallBounties();
   };
 
+  const updateCompletedStatus = async (created: number) => {
+    await main.updateBountyCompletedStatus(created);
+    await setExtrasPropertyAndSaveMultiple('completed', {
+      completed: true
+    });
+    recallBounties();
+  };
+
   const handleSetAsPaid = async (e: any) => {
     e.stopPropagation();
     setUpdatingPayment(true);
@@ -444,7 +462,8 @@ function MobileView(props: CodingBountiesProps) {
           )
         }
         payBounty={
-          hasAccess && (
+          hasAccess &&
+          userAssigned && (
             <IconButton
               width={'100%'}
               height={48}
@@ -644,19 +663,29 @@ function MobileView(props: CodingBountiesProps) {
                       <div className="BountyProfileOuterContainerCreatorView">
                         <BountyProfileView
                           assignee={!assignedPerson ? assignee : assignedPerson}
-                          status={bountyPaid ? 'completed' : 'assigned'}
+                          status={
+                            bountyCompleted && !bountyPaid
+                              ? 'completed'
+                              : bountyPaid
+                                ? 'paid'
+                                : 'assigned'
+                          }
                           canViewProfile={false}
                           statusStyle={{
                             width: '66px',
                             height: '16px',
-                            background: bountyPaid ? color.statusCompleted : color.statusAssigned
+                            background:
+                              bountyCompleted && !bountyPaid
+                                ? color.statusCompleted
+                                : bountyPaid
+                                  ? color.statusPaid
+                                  : color.statusAssigned
                           }}
                           UserProfileContainerStyle={{
                             height: 48,
                             width: 'fit-content',
                             minWidth: 'fit-content',
                             padding: 0
-                            // marginTop: '48px'
                           }}
                           isNameClickable={true}
                           UserImageStyle={{
@@ -746,8 +775,20 @@ function MobileView(props: CodingBountiesProps) {
                         lnInvoice={lnInvoice}
                       />
                     )}
-                    {showPayBounty && (
+                    {showPayBounty && userAssigned && created && (
                       <>
+                        {!bountyCompleted && (
+                          <Button
+                            disabled={paymentLoading || payBountyDisable}
+                            iconSize={14}
+                            width={220}
+                            height={48}
+                            color="withdraw"
+                            onClick={() => updateCompletedStatus(created)}
+                            style={{ marginTop: '30px', marginBottom: '-20px', textAlign: 'left' }}
+                            text="Complete Bounty"
+                          />
+                        )}
                         <Button
                           disabled={paymentLoading || payBountyDisable}
                           iconSize={14}

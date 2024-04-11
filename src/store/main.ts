@@ -2513,6 +2513,26 @@ export class MainStore {
     }
   }
 
+  async updateBountyCompletedStatus(created: number): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+      const r: any = await fetch(`${TribesURL}/gobounties/completedstatus/${created}`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      return r;
+    } catch (e) {
+      console.log('Error updateBountyPaymentStatus', e);
+      return false;
+    }
+  }
+
   async getOrganizationBudget(uuid: string): Promise<any> {
     try {
       if (!uiStore.meInfo) return null;
