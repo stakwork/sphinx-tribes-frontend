@@ -21,7 +21,7 @@ describe('carol manage organization bounties', () => {
       estimate_session_length: 'Less than 3 hour',
       estimate_completion_date: '09/09/2024',
       deliverables: 'We are good to go man',
-      assign: ''
+      assign: 'bob'
     };
 
     cy.login(org.loggedInAs);
@@ -69,6 +69,10 @@ describe('carol manage organization bounties', () => {
     cy.wait(1000);
 
     cy.create_bounty(bounty);
+    cy.wait(1000);
+
+    cy.contains('Filter').click();
+    cy.contains('Assigned').click();
     cy.wait(1000);
 
     cy.contains(bounty.title).click();
