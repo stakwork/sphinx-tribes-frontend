@@ -20,7 +20,7 @@ function WorkspaceBodyComponent() {
   const selectedWidget = 'bounties';
   const [scrollValue, setScrollValue] = useState<boolean>(false);
 
-  const item = localStorage.getItem('orgBountyStatus');
+  const item = localStorage.getItem('workspaceBountyStatus');
   const savedStatus = item ? JSON.parse(item) : null; // or provide a default value other than null
 
   const [checkboxIdToSelectedMap, setCheckboxIdToSelectedMap] = useState(savedStatus);

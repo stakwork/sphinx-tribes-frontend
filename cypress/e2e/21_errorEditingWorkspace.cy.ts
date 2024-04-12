@@ -1,7 +1,7 @@
 describe('Alice Create a Workspace and then Edit to validate characters the limit', () => {
   const worksapce = {
     loggedInAs: 'alice',
-    name: 'Cypress Workspace Edit',
+    name: 'Cypress Workspace1',
     description: 'Cypress Work description'
   };
 

@@ -74,7 +74,7 @@ function FocusedView(props: FocusViewProps) {
   }, [main]);
 
   function getUUIDFromURL(url: string) {
-    const regex = /.+\/org\/bounties\/([a-zA-Z0-9-]+)$/;
+    const regex = /.+\/workspace\/bounties\/([a-zA-Z0-9-]+)$/;
     const match = url.match(regex);
     if (match && match[1]) {
       return match[1];

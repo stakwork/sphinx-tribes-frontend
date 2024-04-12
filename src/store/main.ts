@@ -859,10 +859,10 @@ export class MainStore {
     this.bountiesStatus = status;
   }
 
-  orgBountiesStatus: BountyStatus = defaultWorkspaceBountyStatus;
+  workspaceBountiesStatus: BountyStatus = defaultWorkspaceBountyStatus;
 
   @action setWorkspaceBountiesStatus(status: WorkspaceBountyStatus) {
-    this.orgBountiesStatus = status;
+    this.workspaceBountiesStatus = status;
   }
 
   @persist('object')
@@ -1906,10 +1906,10 @@ export class MainStore {
 
   async getWorkspaceNextBountyByCreated(org_uuid: string, created: number): Promise<number> {
     try {
-      const orgBountiesStatus =
-        JSON.parse(localStorage.getItem('orgBountyStatus') || `{}`) ||
+      const workspaceBountiesStatus =
+        JSON.parse(localStorage.getItem('workspaceBountyStatus') || `{}`) ||
         this.defaultWorkspaceBountyStatus;
-      const params = { languages: this.bountyLanguages, ...orgBountiesStatus };
+      const params = { languages: this.bountyLanguages, ...workspaceBountiesStatus };
 
       const queryParams: QueryParams = {
         limit: queryLimit,
@@ -1937,10 +1937,10 @@ export class MainStore {
 
   async getWorkspacePreviousBountyByCreated(org_uuid: string, created: number): Promise<number> {
     try {
-      const orgBountiesStatus =
-        JSON.parse(localStorage.getItem('orgBountyStatus') || `{}`) ||
+      const workspaceBountiesStatus =
+        JSON.parse(localStorage.getItem('workspaceBountyStatus') || `{}`) ||
         this.defaultWorkspaceBountyStatus;
-      const params = { languages: this.bountyLanguages, ...orgBountiesStatus };
+      const params = { languages: this.bountyLanguages, ...workspaceBountiesStatus };
 
       const queryParams: QueryParams = {
         limit: queryLimit,

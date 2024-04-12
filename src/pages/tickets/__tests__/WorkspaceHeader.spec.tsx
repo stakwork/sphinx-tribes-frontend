@@ -3,7 +3,7 @@ import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { WorkspaceHeader } from 'pages/tickets/workspace/workspaceHeader/index.tsx';
 import { act } from 'react-dom/test-utils';
-import { WorkspaceBountyHeaderProps } from '../../../people/interfaces';
+import { WorkspaceBountyHeaderProps } from '../../../people/interfaces.ts';
 import { mainStore } from '../../../store/main.ts';
 import { uiStore } from '../../../store/ui.ts';
 import * as helpers from '../../../helpers/helpers-extended.ts';

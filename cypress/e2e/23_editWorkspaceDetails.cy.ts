@@ -1,7 +1,7 @@
 describe('Edit Workspace Details', () => {
   const workspace: Cypress.Workspace = {
     loggedInAs: 'alice',
-    name: 'Mirza Workspace_test_34',
+    name: 'Mirza Workspace_test',
     description: 'A workspace focused on amazing projects.',
     website: 'https://amazing.org'
   };
