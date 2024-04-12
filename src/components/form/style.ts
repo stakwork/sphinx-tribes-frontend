@@ -18,7 +18,7 @@ export const Wrap = styled.div<WrapProps>`
   min-width: auto;
 `;
 
-export const OrgWrap = styled.div<WrapProps>`
+export const WorkspaceWrap = styled.div<WrapProps>`
   padding: ${(p: any) => (p?.newDesign ? '28px 0px' : '30px 20px')};
   margin-bottom: ${(p: any) => !p?.newDesign && '100px'};
   display: flex;

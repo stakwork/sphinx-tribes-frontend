@@ -648,7 +648,7 @@ export const MyTable = ({
             <TableHeaderDataCenter>#DTGP</TableHeaderDataCenter>
             <TableHeaderData>Assignee</TableHeaderData>
             <TableHeaderData>Provider</TableHeaderData>
-            <TableHeaderDataAlternative>Organization</TableHeaderDataAlternative>
+            <TableHeaderDataAlternative>Workspace</TableHeaderDataAlternative>
             <TableHeaderDataRight>Status</TableHeaderDataRight>
           </TableRow>
           <tbody>
@@ -700,10 +700,10 @@ export const MyTable = ({
                         image={bounty?.owner_img || defaultPic}
                       />
                     </TableDataAlternative>
-                    <TableData className="organization">
+                    <TableData className="workspace">
                       <ImageWithText
-                        text={bounty?.organization_name}
-                        image={bounty?.organization_img || defaultPic}
+                        text={bounty?.workspace_name}
+                        image={bounty?.workspace_img || defaultPic}
                       />
                     </TableData>
                     <TableData3>

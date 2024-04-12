@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { isString } from 'lodash';
 import { Link } from 'react-router-dom';
-import { OrganizationText, OrganizationWrap } from '../people/utils/style';
+import { WorkspaceText, WorkspaceWrap } from '../people/utils/style';
 import { colors } from '../config/colors';
 import { LanguageObject } from '../people/utils/languageLabelStyle';
 import NameTag from '../people/utils/NameTag';
@@ -169,15 +169,15 @@ const BountyDescription = (props: BountiesDescriptionProps) => {
               onClick={(e: any) => {
                 e.stopPropagation();
               }}
-              to={`/org/bounties/${props.org_uuid}`}
+              to={`/workspace/bounties/${props.org_uuid}`}
               target="_blank"
             >
-              <OrganizationWrap>
+              <WorkspaceWrap>
                 <Img
                   title={`${props.name} logo`}
                   src={props.org_img || '/static/person_placeholder.png'}
                 />
-                <OrganizationText>{props.name}</OrganizationText>
+                <WorkspaceText>{props.name}</WorkspaceText>
                 <img
                   className="buttonImage"
                   src={'/static/github_ticket.svg'}
@@ -186,7 +186,7 @@ const BountyDescription = (props: BountiesDescriptionProps) => {
                   width={'10px'}
                   style={{ transform: 'translateY(1px)' }}
                 />
-              </OrganizationWrap>
+              </WorkspaceWrap>
             </Link>
           )}
         </Header>

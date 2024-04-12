@@ -10,7 +10,7 @@ export const Body = styled.div`
   align-items: center;
 `;
 
-export const OrgBody = styled.div`
+export const WorkspaceBody = styled.div`
   display: flex;
   flex-direction: column;
   background: var(--Search-bar-background, #f2f3f5);

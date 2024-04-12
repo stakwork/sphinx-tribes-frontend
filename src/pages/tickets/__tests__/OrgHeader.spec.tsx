@@ -1,9 +1,9 @@
 import React from 'react';
 import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { OrgHeader } from 'pages/tickets/org/orgHeader';
+import { WorkspaceHeader } from 'pages/tickets/workspace/workspaceHeader/index.tsx';
 import { act } from 'react-dom/test-utils';
-import { OrgBountyHeaderProps } from '../../../people/interfaces';
+import { WorkspaceBountyHeaderProps } from '../../../people/interfaces';
 import { mainStore } from '../../../store/main.ts';
 import { uiStore } from '../../../store/ui.ts';
 import * as helpers from '../../../helpers/helpers-extended.ts';
@@ -11,9 +11,9 @@ import * as helpers from '../../../helpers/helpers-extended.ts';
 jest.mock('../../../store/main.ts', () => ({
   mainStore: {
     getUserRoles: jest.fn(),
-    getUserOrganizationByUuid: jest.fn(),
-    getSpecificOrganizationBounties: jest.fn(),
-    dropDownOrganizations: []
+    getUserWorkspaceByUuid: jest.fn(),
+    getSpecificWorkspaceBounties: jest.fn(),
+    dropDownWorkspaces: []
   }
 }));
 
@@ -30,7 +30,7 @@ jest.mock('../../../helpers/helpers-extended.ts', () => ({
   userCanManageBounty: jest.fn()
 }));
 
-const MockProps: OrgBountyHeaderProps = {
+const MockProps: WorkspaceBountyHeaderProps = {
   totalBountyCount: 284,
   checkboxIdToSelectedMap: {
     Open: false,
@@ -43,10 +43,10 @@ const MockProps: OrgBountyHeaderProps = {
   org_uuid: 'clf6qmo4nncmf23du7ng',
   onChangeStatus: jest.fn(),
   onChangeLanguage: jest.fn(),
-  organizationData: {
+  workspaceData: {
     id: '57',
     uuid: 'cmg6oqitu2rnslkcjbqg',
-    name: 'Sample Organization',
+    name: 'Sample Workspace',
     description:
       'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium totam rem aperiam eaque',
     github: 'http://mock-github.com',
@@ -61,11 +61,11 @@ const MockProps: OrgBountyHeaderProps = {
     deleted: false
   }
 };
-describe('OrgHeader Component', () => {
+describe('WorkspaceHeader Component', () => {
   beforeEach(() => {
     jest.spyOn(helpers, 'userCanManageBounty').mockResolvedValue(true);
-    jest.spyOn(mainStore, 'getSpecificOrganizationBounties').mockReset();
-    jest.spyOn(mainStore, 'getUserOrganizationByUuid').mockReset();
+    jest.spyOn(mainStore, 'getSpecificWorkspaceBounties').mockReset();
+    jest.spyOn(mainStore, 'getUserWorkspaceByUuid').mockReset();
   });
 
   afterEach(() => {
@@ -77,7 +77,7 @@ describe('OrgHeader Component', () => {
     uiStore.meInfo = { pubkey: '' };
     jest.spyOn(helpers, 'userCanManageBounty').mockResolvedValue(true);
 
-    render(<OrgHeader {...MockProps} />);
+    render(<WorkspaceHeader {...MockProps} />);
 
     await waitFor(() => {
       expect(screen.getByText('Post a Bounty')).toBeInTheDocument();
@@ -85,10 +85,10 @@ describe('OrgHeader Component', () => {
   });
 
   it('renders the component correctly', async () => {
-    render(<OrgHeader {...MockProps} />);
+    render(<WorkspaceHeader {...MockProps} />);
     waitFor(() => {
-      expect(screen.findByText(MockProps.organizationData.name ?? '')).toBeInTheDocument();
-      expect(screen.findByText(MockProps.organizationData.description ?? '')).toBeInTheDocument();
+      expect(screen.findByText(MockProps.workspaceData.name ?? '')).toBeInTheDocument();
+      expect(screen.findByText(MockProps.workspaceData.description ?? '')).toBeInTheDocument();
       expect(screen.getByText('Post a Bounty')).toBeInTheDocument();
       expect(screen.getByText('Status')).toBeInTheDocument();
       expect(screen.getByText('Skill')).toBeInTheDocument();
@@ -99,27 +99,27 @@ describe('OrgHeader Component', () => {
   });
 
   it('opens the PostModal on "Post a Bounty" button click', async () => {
-    render(<OrgHeader {...MockProps} />);
+    render(<WorkspaceHeader {...MockProps} />);
     await waitFor(() => {
       fireEvent.click(screen.getByText('Post a Bounty'));
     });
   });
 
   it('displays the correct number of bounties', () => {
-    render(<OrgHeader {...MockProps} />);
+    render(<WorkspaceHeader {...MockProps} />);
     expect(screen.getByText('284')).toBeInTheDocument();
     expect(screen.getByText('Bounties')).toBeInTheDocument();
   });
 
-  it('should call getSpecificOrganizationBounties with correct parameters', () => {
+  it('should call getSpecificWorkspaceBounties with correct parameters', () => {
     Object.defineProperty(window, 'location', {
       value: {
-        pathname: `/org/bounties/${MockProps.org_uuid}`
+        pathname: `/workspace/bounties/${MockProps.org_uuid}`
       },
       writable: true
     });
 
-    render(<OrgHeader {...MockProps} />);
+    render(<WorkspaceHeader {...MockProps} />);
 
     jest.clearAllMocks();
 
@@ -131,8 +131,8 @@ describe('OrgHeader Component', () => {
     // Simulate pressing Enter key
     fireEvent.keyUp(searchInput, { key: 'Enter', code: 'Enter' });
 
-    // Check if getSpecificOrganizationBounties is called with correct parameters
-    expect(mainStore.getSpecificOrganizationBounties).toHaveBeenCalledWith(MockProps.org_uuid, {
+    // Check if getSpecificWorkspaceBounties is called with correct parameters
+    expect(mainStore.getSpecificWorkspaceBounties).toHaveBeenCalledWith(MockProps.org_uuid, {
       page: 1,
       resetPage: true,
       search: searchText,
@@ -140,8 +140,8 @@ describe('OrgHeader Component', () => {
     });
   });
 
-  it('should trigger API call in response to click on status from OrgHeader', async () => {
-    const { getByText, getByRole, rerender } = render(<OrgHeader {...MockProps} />);
+  it('should trigger API call in response to click on status from WorkspaceHeader', async () => {
+    const { getByText, getByRole, rerender } = render(<WorkspaceHeader {...MockProps} />);
 
     const statusFilter = getByText('Status');
     expect(statusFilter).toBeInTheDocument();
@@ -162,7 +162,7 @@ describe('OrgHeader Component', () => {
       fireEvent.click(newestFirstOption);
 
       await waitFor(() => {
-        expect(mainStore.getSpecificOrganizationBounties).toHaveBeenCalledWith(
+        expect(mainStore.getSpecificWorkspaceBounties).toHaveBeenCalledWith(
           expect.anything(),
           expect.objectContaining({
             direction: 'desc'
@@ -176,7 +176,7 @@ describe('OrgHeader Component', () => {
       });
 
       await waitFor(() => {
-        expect(mainStore.getSpecificOrganizationBounties).toHaveBeenCalledWith(
+        expect(mainStore.getSpecificWorkspaceBounties).toHaveBeenCalledWith(
           expect.anything(),
           expect.objectContaining({
             direction: 'asc'
@@ -191,10 +191,10 @@ describe('OrgHeader Component', () => {
       };
 
       rerender(
-        <OrgHeader {...MockProps} checkboxIdToSelectedMap={updatedCheckboxIdToSelectedMap} />
+        <WorkspaceHeader {...MockProps} checkboxIdToSelectedMap={updatedCheckboxIdToSelectedMap} />
       );
 
-      expect(mainStore.getSpecificOrganizationBounties).toHaveBeenCalledWith(MockProps.org_uuid, {
+      expect(mainStore.getSpecificWorkspaceBounties).toHaveBeenCalledWith(MockProps.org_uuid, {
         page: 1,
         resetPage: true,
         ...updatedCheckboxIdToSelectedMap,
@@ -204,7 +204,7 @@ describe('OrgHeader Component', () => {
   });
 
   it('validates the buttons appear when website and github is available', () => {
-    const { getByText } = render(<OrgHeader {...MockProps} />);
+    const { getByText } = render(<WorkspaceHeader {...MockProps} />);
     const websiteButton = getByText(/Website/i);
     const githubButton = getByText(/Github/i);
     expect(websiteButton).toBeInTheDocument();
@@ -212,14 +212,14 @@ describe('OrgHeader Component', () => {
   });
 
   it('UrlButtons are left-aligned if visible', () => {
-    const { getByTestId } = render(<OrgHeader {...MockProps} />);
+    const { getByTestId } = render(<WorkspaceHeader {...MockProps} />);
     const urlButtonContainer = getByTestId('url-button-container');
     const containerStyle = window.getComputedStyle(urlButtonContainer);
     expect(containerStyle.marginLeft).toBe('0px');
   });
 
   it('does not display "Post a Bounty" button when user is not logged in', () => {
-    render(<OrgHeader {...MockProps} />);
+    render(<WorkspaceHeader {...MockProps} />);
     expect(screen.queryByText('Post a Bounty')).not.toBeInTheDocument();
   });
 
@@ -228,7 +228,7 @@ describe('OrgHeader Component', () => {
     uiStore.meInfo = { pubkey: '' };
     jest.spyOn(helpers, 'userCanManageBounty').mockResolvedValue(false);
 
-    render(<OrgHeader {...MockProps} />);
+    render(<WorkspaceHeader {...MockProps} />);
 
     await waitFor(() => {
       expect(screen.queryByText('Post a Bounty')).not.toBeInTheDocument();
@@ -240,7 +240,7 @@ describe('OrgHeader Component', () => {
     uiStore.meInfo = { pubkey: '' };
     jest.spyOn(helpers, 'userCanManageBounty').mockResolvedValue(false);
 
-    render(<OrgHeader {...MockProps} />);
+    render(<WorkspaceHeader {...MockProps} />);
 
     await waitFor(() => {
       expect(screen.queryByText('Post a Bounty')).not.toBeInTheDocument();
@@ -248,7 +248,7 @@ describe('OrgHeader Component', () => {
   });
 
   it('correct number is displayed next to the button as the number of items selected in the status filter', async () => {
-    const { rerender } = render(<OrgHeader {...MockProps} />);
+    const { rerender } = render(<WorkspaceHeader {...MockProps} />);
 
     const statusFilterButton = screen.getByText('Status');
     fireEvent.click(statusFilterButton);
@@ -265,7 +265,7 @@ describe('OrgHeader Component', () => {
       checkboxIdToSelectedMap: newCheckboxIdToSelectedMap
     };
 
-    rerender(<OrgHeader {...newProps} />);
+    rerender(<WorkspaceHeader {...newProps} />);
 
     const selectedCount = Object.values(newCheckboxIdToSelectedMap).filter(Boolean).length;
 
@@ -275,7 +275,7 @@ describe('OrgHeader Component', () => {
   });
 
   it('correct number is displayed next to the button as the number of items selected in the skill filter', async () => {
-    const { rerender } = render(<OrgHeader {...MockProps} />);
+    const { rerender } = render(<WorkspaceHeader {...MockProps} />);
 
     const skillFilterButton = screen.getByText('Skill');
     fireEvent.click(skillFilterButton);
@@ -292,7 +292,7 @@ describe('OrgHeader Component', () => {
       checkboxIdToSelectedMap: newCheckboxIdToSelectedMapLanguage
     };
 
-    rerender(<OrgHeader {...newProps} />);
+    rerender(<WorkspaceHeader {...newProps} />);
 
     const selectedCount = Object.values(newCheckboxIdToSelectedMapLanguage).filter(Boolean).length;
 
@@ -303,16 +303,14 @@ describe('OrgHeader Component', () => {
 
   it('displays the correct number of bounties based on the status filter', async () => {
     act(async () => {
-      jest
-        .spyOn(mainStore, 'getSpecificOrganizationBounties')
-        .mockImplementation((filters: any) => {
-          if (filters && filters.Open) {
-            return Promise.resolve(Array(3).fill({}));
-          }
-          return Promise.resolve(Array(8).fill({}));
-        });
+      jest.spyOn(mainStore, 'getSpecificWorkspaceBounties').mockImplementation((filters: any) => {
+        if (filters && filters.Open) {
+          return Promise.resolve(Array(3).fill({}));
+        }
+        return Promise.resolve(Array(8).fill({}));
+      });
 
-      render(<OrgHeader {...MockProps} />);
+      render(<WorkspaceHeader {...MockProps} />);
 
       await waitFor(() => {
         expect(screen.getByText('8 Bounties')).toBeInTheDocument();
@@ -326,7 +324,7 @@ describe('OrgHeader Component', () => {
         ...MockProps,
         checkboxIdToSelectedMap: { ...MockProps.checkboxIdToSelectedMap, Open: true }
       };
-      render(<OrgHeader {...newProps} />);
+      render(<WorkspaceHeader {...newProps} />);
 
       await waitFor(() => {
         expect(screen.getByText('3 Bounties')).toBeInTheDocument();
@@ -335,7 +333,7 @@ describe('OrgHeader Component', () => {
   });
 
   test('shows hand icon on hover over the Skill text and toggles dropdown', () => {
-    render(<OrgHeader {...MockProps} />);
+    render(<WorkspaceHeader {...MockProps} />);
     const skillText = screen.getByText('Skill');
 
     expect(skillText).toBeInTheDocument();

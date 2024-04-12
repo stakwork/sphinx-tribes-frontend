@@ -18,23 +18,23 @@ const theme = createTheme({
 });
 
 function App() {
-  const getUserOrganizations = useCallback(async () => {
+  const getUserWorkspaces = useCallback(async () => {
     if (uiStore.selectedPerson !== 0) {
-      await mainStore.getUserOrganizations(uiStore.selectedPerson);
+      await mainStore.getUserWorkspaces(uiStore.selectedPerson);
     } else {
-      await mainStore.getUserOrganizations(uiStore.meInfo?.id || 0);
+      await mainStore.getUserWorkspaces(uiStore.meInfo?.id || 0);
     }
 
-    // this is to make sure the organizations dropdown on bounty page
+    // this is to make sure the workspaces dropdown on bounty page
     // is always for the user
     if (uiStore.meInfo?.id) {
-      await mainStore.getUserDropdownOrganizations(uiStore.meInfo?.id);
+      await mainStore.getUserDropdownWorkspaces(uiStore.meInfo?.id);
     }
   }, [uiStore.selectedPerson]);
 
   useEffect(() => {
-    getUserOrganizations();
-  }, [getUserOrganizations]);
+    getUserWorkspaces();
+  }, [getUserWorkspaces]);
 
   const getBountyRoles = useCallback(async () => {
     await mainStore.getRoles();

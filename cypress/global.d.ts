@@ -4,9 +4,9 @@ declare namespace Cypress {
     haves_phinx_login(userAlias: string): void;
     logout(userAlias: string): void;
     create_bounty(bounty: Bounty, clickMethod?: 'contains' | 'testId'): void;
-    create_orgBounty(orgBounty: Bounty): void;
+    create_workspace_bounty(workspaceBounty: Bounty): void;
     lnurl_login(): void;
-    create_org(Organization: Organization): void;
+    create_workspace(Workspace: Workspace): void;
     pay_invoice(details: InvoiceDetail): void;
     add_invoice(details: AddInvoice): Promise<any>;
   }
@@ -27,7 +27,7 @@ declare namespace Cypress {
     | 'Not sure yet';
 
   type Bounty = {
-    organization?: string;
+    workspace?: string;
     title: string;
     github_issue_url?: string;
     category: Category;
@@ -41,7 +41,7 @@ declare namespace Cypress {
     assign?: string;
   };
 
-  type Organization = {
+  type Workspace = {
     loggedInAs: string;
     name: string;
     description: string;

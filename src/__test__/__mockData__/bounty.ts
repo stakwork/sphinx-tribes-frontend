@@ -78,9 +78,9 @@ export const bountyResponse = [
       extras: null,
       github_issues: null
     },
-    organization: {
+    workspace: {
       uuid: 'dummy_org_uuid',
-      name: 'Dummy Organization',
+      name: 'Dummy Workspace',
       img: 'https://dummy-image-url.com'
     }
   }

@@ -43,7 +43,7 @@ describe('AboutView Component', () => {
       );
       const me = getByText(user.alias);
       fireEvent.click(me);
-      expect(history.location.pathname).toEqual(`/p/${user.uuid}/organizations`);
+      expect(history.location.pathname).toEqual(`/p/${user.uuid}/workspaces`);
       expect(history.length).toEqual(3);
     });
   });
@@ -53,7 +53,7 @@ describe('AboutView Component', () => {
     jest.spyOn(mainStore, 'getPersonById').mockReturnValue(Promise.resolve(person));
     jest.spyOn(mainStore, 'getSelf').mockReturnValue(Promise.resolve());
     const history = createMemoryHistory();
-    history.push(`/p/${user.uuid}/organizations`);
+    history.push(`/p/${user.uuid}/workspaces`);
     await act(async () => {
       const { getByText } = render(
         <Router history={history}>
@@ -62,7 +62,7 @@ describe('AboutView Component', () => {
       );
       const me = getByText(user.alias);
       fireEvent.click(me);
-      expect(history.location.pathname).toEqual(`/p/${user.uuid}/organizations`);
+      expect(history.location.pathname).toEqual(`/p/${user.uuid}/workspaces`);
       expect(history.length).toEqual(2);
     });
   });

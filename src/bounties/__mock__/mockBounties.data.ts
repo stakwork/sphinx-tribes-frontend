@@ -73,7 +73,7 @@ const mockBounties = [
       extras: null,
       github_issues: null
     },
-    organization: {
+    workspace: {
       uuid: 'ck13rgua5fdkhph1po4g',
       name: 'test after jwt',
       img: 'https://memes.sphinx.chat/public/l-_K9mJatGvz16Ixw1lPHtG9Om8QWtZtiRS_aIQme9c='
@@ -154,7 +154,7 @@ const mockBounties = [
       extras: null,
       github_issues: null
     },
-    organization: { uuid: 'clrqpvg4nncuuf32kh30', name: 'LoS', img: '' }
+    workspace: { uuid: 'clrqpvg4nncuuf32kh30', name: 'LoS', img: '' }
   }
 ];
 
@@ -228,7 +228,7 @@ export const mockBountiesMutated = [
       updated: '2023-12-12T16:24:14.585187Z',
       wanted_type: 'Mobile development'
     },
-    organization: {
+    workspace: {
       img: 'https://memes.sphinx.chat/public/l-_K9mJatGvz16Ixw1lPHtG9Om8QWtZtiRS_aIQme9c=',
       name: 'test after jwt',
       uuid: 'ck13rgua5fdkhph1po4g'
@@ -287,7 +287,7 @@ export const mockBountiesMutated = [
       updated: '2023-12-12T00:47:12.671921Z',
       wanted_type: 'Bitcoin / Lightning'
     },
-    organization: { img: '', name: 'LoS', uuid: 'clrqpvg4nncuuf32kh30' },
+    workspace: { img: '', name: 'LoS', uuid: 'clrqpvg4nncuuf32kh30' },
     person: {
       created: '2023-12-12T00:44:25.83042Z',
       deleted: false,
@@ -346,7 +346,7 @@ export const expectedBountyResponses = [
       updated: '2023-12-12T16:24:14.585187Z',
       wanted_type: 'Mobile development'
     },
-    organization: {
+    workspace: {
       img: 'https://memes.sphinx.chat/public/l-_K9mJatGvz16Ixw1lPHtG9Om8QWtZtiRS_aIQme9c=',
       name: 'test after jwt',
       uuid: 'ck13rgua5fdkhph1po4g'
@@ -428,7 +428,7 @@ export const assignedBounty = {
     created: '2023-09-05T21:34:39.170759Z',
     updated: '2024-01-30T17:25:48.8506Z'
   },
-  organization: {
+  workspace: {
     uuid: 'random_org_uuid_again', // Randomized
     name: 'Bounties Platform',
     img: 'https://example.com/public/another_random_image.png' // Randomized
@@ -485,7 +485,7 @@ export const createdBounty = {
     created: '2023-09-05T21:34:39.170759Z',
     updated: '2024-01-30T17:25:48.8506Z'
   },
-  organization: {
+  workspace: {
     uuid: 'random_org_uuid_again',
     name: 'Bounties Platform',
     img: 'https://example.com/public/another_random_image.png'
@@ -542,7 +542,7 @@ export const filterBounty = {
     created: '2023-09-05T21:34:39.170759Z',
     updated: '2024-01-30T17:25:48.8506Z'
   },
-  organization: {
+  workspace: {
     uuid: 'random_org_uuid_again',
     name: 'Bounties Platform',
     img: 'https://example.com/public/another_random_image.png'

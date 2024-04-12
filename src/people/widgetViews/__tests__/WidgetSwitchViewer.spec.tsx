@@ -14,7 +14,7 @@ describe('WidgetSwitchViewer Component', () => {
     jest.clearAllMocks();
     (storeModule.useStores as jest.Mock).mockReturnValue({
       main: {
-        getSpecificOrganizationBounties: jest.fn(() => Promise.resolve()),
+        getSpecificWorkspaceBounties: jest.fn(() => Promise.resolve()),
         peopleBounties: [],
         peopleOffers: [],
         peoplePosts: []
@@ -34,7 +34,7 @@ describe('WidgetSwitchViewer Component', () => {
     expect(screen.getByText(/No results/i)).toBeInTheDocument();
   });
 
-  test('Load more functionality for organization bounties', async () => {
+  test('Load more functionality for workspace bounties', async () => {
     const org_uuid = 'clf6qmo4nncmf23du7ng';
     render(
       <WidgetSwitchViewer
@@ -42,7 +42,7 @@ describe('WidgetSwitchViewer Component', () => {
         selectedWidget="bounties"
         currentItems={10}
         totalBounties={0}
-        OrgTotalBounties={20}
+        WorkspaceTotalBounties={20}
         languageString="Typescript"
         orgQueryLimit={0}
       />
@@ -52,7 +52,7 @@ describe('WidgetSwitchViewer Component', () => {
 
     await waitFor(() => {
       expect(
-        (storeModule.useStores as jest.Mock)().main.getSpecificOrganizationBounties
+        (storeModule.useStores as jest.Mock)().main.getSpecificWorkspaceBounties
       ).toHaveBeenCalledWith(org_uuid, expect.any(Object));
     });
   });

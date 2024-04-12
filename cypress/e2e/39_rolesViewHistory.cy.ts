@@ -1,20 +1,20 @@
 describe('View Transaction History', () => {
-  const org = {
+  const workSpace = {
     loggedInAs: 'alice',
-    name: 'SyedOrgZ',
-    description: 'We are testing out our organization',
+    name: 'SyedWorkspaceZ',
+    description: 'We are testing out our workspace',
     website: '',
     github: ''
   };
 
-  it('Create an organization and assign a View History role to a user and user would be able to view the organization transaction history', () => {
-    cy.login(org.loggedInAs);
+  it('Create a workspace and assign a View History role to a user and user would be able to view the workspace transaction history', () => {
+    cy.login(workSpace.loggedInAs);
     cy.wait(1000);
 
-    cy.create_org(org);
+    cy.create_workspace(workSpace);
     cy.wait(1000);
 
-    cy.contains(org.name).contains('Manage').click();
+    cy.contains(workSpace.name).contains('Manage').click();
     cy.wait(1000);
 
     cy.contains('Add User').click();
@@ -32,18 +32,18 @@ describe('View Transaction History', () => {
     });
     cy.wait(1000);
 
-    cy.contains('label', 'Fund organization').prev('input[type="checkbox"]').uncheck();
+    cy.contains('label', 'Fund workspace').prev('input[type="checkbox"]').uncheck();
     cy.wait(1000);
     cy.contains('label', 'Manage bounties').prev('input[type="checkbox"]').uncheck();
     cy.wait(1000);
-    cy.contains('label', 'Withdraw from organization').prev('input[type="checkbox"]').uncheck();
+    cy.contains('label', 'Withdraw from workspace').prev('input[type="checkbox"]').uncheck();
     cy.wait(1000);
     cy.get('#sphinx-top-level-overlay').within(() => {
       cy.contains('Assign').click();
       cy.wait(1000);
     });
 
-    cy.logout(org.loggedInAs);
+    cy.logout(workSpace.loggedInAs);
     cy.wait(1000);
 
     cy.login('carol');
@@ -52,10 +52,10 @@ describe('View Transaction History', () => {
     cy.contains('carol').click();
     cy.wait(1000);
 
-    cy.contains(org.name).should('exist');
+    cy.contains(workSpace.name).should('exist');
     cy.wait(1000);
 
-    cy.contains(org.name).contains('Manage').click();
+    cy.contains(workSpace.name).contains('Manage').click();
     cy.wait(1000);
 
     cy.contains('History').should('not.be.disabled');

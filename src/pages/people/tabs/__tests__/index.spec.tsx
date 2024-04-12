@@ -7,13 +7,13 @@ import { TabsPages } from '..';
 describe('TabsPages Component', () => {
   test('Test that clicking on the profile and view the title sections for org, badges, bounties, assigned', async () => {
     render(
-      <MemoryRouter initialEntries={['/p/1234/organizations']}>
-        <Route path="/p/:uuid/organizations" component={TabsPages} />
+      <MemoryRouter initialEntries={['/p/1234/workspaces']}>
+        <Route path="/p/:uuid/workspaces" component={TabsPages} />
       </MemoryRouter>
     );
 
     await waitFor(() => {
-      expect(screen.getByText('Organizations')).toBeInTheDocument();
+      expect(screen.getByText('Workspaces')).toBeInTheDocument();
       expect(screen.getByText('Badges')).toBeInTheDocument();
       expect(screen.getByText('Bounties')).toBeInTheDocument();
       expect(screen.getByText('Assigned Bounties')).toBeInTheDocument();

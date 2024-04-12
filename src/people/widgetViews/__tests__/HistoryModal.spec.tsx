@@ -2,7 +2,7 @@ import React from 'react';
 import { PaymentHistory } from 'store/main';
 import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import HistoryModal from '../organization/HistoryModal';
+import HistoryModal from '../workspace/HistoryModal';
 
 jest.mock('hooks/uiHooks', () => ({
   useIsMobile: jest.fn().mockReturnValue(false)
@@ -30,7 +30,7 @@ describe('HistoryModal component', () => {
   const mockPaymentsHistory: PaymentHistory[] = [
     {
       id: 1,
-      org_uuid: 'organization_uuid',
+      org_uuid: 'workspace_uuid',
       status: true,
       updated: '2022-01-01T00:00:00.000Z',
       payment_type: 'payment',
@@ -46,7 +46,7 @@ describe('HistoryModal component', () => {
     },
     {
       id: 2,
-      org_uuid: 'organization_uuid',
+      org_uuid: 'workspace_uuid',
       status: true,
       updated: '2022-01-02T00:00:00.000Z',
       payment_type: 'deposit',
@@ -62,7 +62,7 @@ describe('HistoryModal component', () => {
     },
     {
       id: 3,
-      org_uuid: 'organization_uuid',
+      org_uuid: 'workspace_uuid',
       status: true,
       updated: '2022-01-03T00:00:00.000Z',
       payment_type: 'withdraw',

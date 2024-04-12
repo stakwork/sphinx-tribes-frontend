@@ -7,7 +7,7 @@ describe('Super Admin Pagination Bounties List', () => {
     coding_language: ['Typescript', 'Javascript', 'Lightning'],
     description: 'This is available',
     amount: '123',
-    tribe: 'Amazing Org Tribe',
+    tribe: 'Amazing Workspace Tribe',
     estimate_session_length: 'Less than 3 hour',
     estimate_completion_date: '09/09/2024',
     deliverables: 'We are good to go man'

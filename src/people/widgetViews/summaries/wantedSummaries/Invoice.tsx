@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import lighningDecoder from 'light-bolt11-decoder';
-import { InvoiceState } from 'people/widgetViews/organization/interface';
+import { InvoiceState } from 'people/widgetViews/workspace/interface';
 import QrBar from 'people/utils/QrBar';
 import QR from '../../../../components/common/QR';
 import { calculateTimeLeft } from '../../../../helpers';

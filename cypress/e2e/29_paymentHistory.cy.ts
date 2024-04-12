@@ -6,16 +6,16 @@ describe('It Lists all payments in history', () => {
     cy.login(activeUser);
     cy.wait(1000);
 
-    // create org
-    const org = {
+    // create workspace
+    const workSpace = {
       loggedInAs: activeUser,
-      name: 'Deduct Budget Org',
-      description: 'We are testing out our oeganization',
+      name: 'Deduct Budget Work',
+      description: 'We are testing out our workspace',
       website: 'https://community.sphinx.chat',
       github: 'https://github.com/stakwork/sphinx-tribes-frontend'
     };
 
-    cy.create_org(org);
+    cy.create_workspace(workSpace);
     cy.wait(1000);
 
     cy.contains('Manage').click();
@@ -26,7 +26,7 @@ describe('It Lists all payments in history', () => {
     const afterWithdrawAmount = depositAmount - withdrawAmount;
     const finalPaymentAmount = depositAmount - withdrawAmount - paymentAmount;
 
-    // add organization budget
+    // add workspace budget
     cy.contains('Deposit').click();
     cy.get('[data-testid="input-amount"]').type(String(depositAmount));
     cy.get('[data-testid="generate-button"]').click();
@@ -43,11 +43,11 @@ describe('It Lists all payments in history', () => {
         cy.get('body').click(0, 0);
       });
 
-    // Withdraw organization budget
+    // Withdraw workspace budget
     cy.contains('Withdraw').click();
     cy.wait(1000);
 
-    // generate lightning invoice and withdraw from organization
+    // generate lightning invoice and withdraw from workspace
     cy.add_invoice({ payersName: 'carol', amount: withdrawAmount, memo: '' }).then((res: any) => {
       const invoice = res?.body.response.invoice;
       cy.get('[data-testid="withdrawInvoiceInput"]').type(invoice);
@@ -76,7 +76,7 @@ describe('It Lists all payments in history', () => {
       amount: String(paymentAmount),
       assign: 'carol',
       deliverables: 'We are good to go man',
-      organization: org.name,
+      workspace: workSpace.name,
       tribe: '',
       estimate_session_length: 'Less than 3 hour',
       estimate_completion_date: '09/09/2024'
@@ -108,7 +108,7 @@ describe('It Lists all payments in history', () => {
     cy.contains(activeUser).click();
     cy.wait(1000);
 
-    cy.contains(org.name).contains('Manage').click();
+    cy.contains(workSpace.name).contains('Manage').click();
     cy.wait(1000);
 
     cy.contains('History').click({ force: true });

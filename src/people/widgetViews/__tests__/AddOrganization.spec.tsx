@@ -2,36 +2,36 @@ import '@testing-library/jest-dom';
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { mainStore } from 'store/main';
-import AddOrganization from '../organization/AddOrganization';
+import AddWorkspace from '../workspace/AddWorkspace';
 const mockCloseHandler = jest.fn();
-const mockGetUserOrganizations = jest.fn();
+const mockGetUserWorkspaces = jest.fn();
 const mockAddToast = jest.fn();
 const mockOwnerPubKey = 'somePublicKey';
 
-describe('AddOrganization Component Tests', () => {
+describe('AddWorkspace Component Tests', () => {
   beforeEach(() => {
     mockCloseHandler.mockReset();
-    mockGetUserOrganizations.mockReset();
+    mockGetUserWorkspaces.mockReset();
     mockAddToast.mockReset();
     jest.clearAllMocks();
   });
 
-  test('Organization Name text field appears', () => {
+  test('Workspace Name text field appears', () => {
     render(
-      <AddOrganization
+      <AddWorkspace
         closeHandler={mockCloseHandler}
-        getUserOrganizations={mockGetUserOrganizations}
+        getUserWorkspaces={mockGetUserWorkspaces}
         owner_pubkey={mockOwnerPubKey}
       />
     );
-    expect(screen.getByPlaceholderText('My Organization...')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('My Workspace...')).toBeInTheDocument();
   });
 
   test('Website text field appears', () => {
     render(
-      <AddOrganization
+      <AddWorkspace
         closeHandler={mockCloseHandler}
-        getUserOrganizations={mockGetUserOrganizations}
+        getUserWorkspaces={mockGetUserWorkspaces}
         owner_pubkey={mockOwnerPubKey}
       />
     );
@@ -40,9 +40,9 @@ describe('AddOrganization Component Tests', () => {
 
   test('Github repo text field appears', () => {
     render(
-      <AddOrganization
+      <AddWorkspace
         closeHandler={mockCloseHandler}
-        getUserOrganizations={mockGetUserOrganizations}
+        getUserWorkspaces={mockGetUserWorkspaces}
         owner_pubkey={mockOwnerPubKey}
       />
     );
@@ -51,9 +51,9 @@ describe('AddOrganization Component Tests', () => {
 
   test('Logo button appears', () => {
     render(
-      <AddOrganization
+      <AddWorkspace
         closeHandler={mockCloseHandler}
-        getUserOrganizations={mockGetUserOrganizations}
+        getUserWorkspaces={mockGetUserWorkspaces}
         owner_pubkey={mockOwnerPubKey}
       />
     );
@@ -62,47 +62,47 @@ describe('AddOrganization Component Tests', () => {
 
   test('Description box appears', () => {
     render(
-      <AddOrganization
+      <AddWorkspace
         closeHandler={mockCloseHandler}
-        getUserOrganizations={mockGetUserOrganizations}
+        getUserWorkspaces={mockGetUserWorkspaces}
         owner_pubkey={mockOwnerPubKey}
       />
     );
     expect(screen.getByPlaceholderText('Description Text...')).toBeInTheDocument();
   });
 
-  test('Add Org button appears', () => {
+  test('Add Workspace button appears', () => {
     render(
-      <AddOrganization
+      <AddWorkspace
         closeHandler={mockCloseHandler}
-        getUserOrganizations={mockGetUserOrganizations}
+        getUserWorkspaces={mockGetUserWorkspaces}
         owner_pubkey={mockOwnerPubKey}
       />
     );
-    expect(screen.getByText('Add Organization')).toBeInTheDocument();
+    expect(screen.getByText('Add Workspace')).toBeInTheDocument();
   });
 
-  test('Org Name character limit restriction works', () => {
+  test('Workspace Name character limit restriction works', () => {
     render(
-      <AddOrganization
+      <AddWorkspace
         closeHandler={mockCloseHandler}
-        getUserOrganizations={mockGetUserOrganizations}
+        getUserWorkspaces={mockGetUserWorkspaces}
         owner_pubkey={mockOwnerPubKey}
       />
     );
 
-    const orgNameInput = screen.getByPlaceholderText(/My Organization.../i);
+    const orgNameInput = screen.getByPlaceholderText(/My Workspace.../i);
     fireEvent.change(orgNameInput, { target: { value: '123456789012345678901' } });
 
     expect(orgNameInput).toHaveStyle('border-color: #FF8F80');
     expect(screen.getByText('Name is too long.')).toBeInTheDocument();
   });
 
-  test('Org Description character limit restriction works', () => {
+  test('Workspace Description character limit restriction works', () => {
     render(
-      <AddOrganization
+      <AddWorkspace
         closeHandler={mockCloseHandler}
-        getUserOrganizations={mockGetUserOrganizations}
+        getUserWorkspaces={mockGetUserWorkspaces}
         owner_pubkey={mockOwnerPubKey}
       />
     );
@@ -121,11 +121,11 @@ describe('AddOrganization Component Tests', () => {
     expect(screen.getByText('Description is too long.')).toBeInTheDocument();
   });
 
-  test('Clicking on Add Org button triggers an action', async () => {
+  test('Clicking on Add Workspace button triggers an action', async () => {
     const mockCloseHandler = jest.fn();
-    const mockGetUserOrganizations = jest.fn();
+    const mockGetUserWorkspaces = jest.fn();
     const mockOwnerPubKey = 'somePublicKey';
-    jest.spyOn(mainStore, 'addOrganization').mockReturnValueOnce(
+    jest.spyOn(mainStore, 'addWorkspace').mockReturnValueOnce(
       Promise.resolve({
         status: 200,
         json: () => Promise.resolve({})
@@ -133,30 +133,30 @@ describe('AddOrganization Component Tests', () => {
     );
 
     render(
-      <AddOrganization
+      <AddWorkspace
         closeHandler={mockCloseHandler}
-        getUserOrganizations={mockGetUserOrganizations}
+        getUserWorkspaces={mockGetUserWorkspaces}
         owner_pubkey={mockOwnerPubKey}
       />
     );
 
-    const addButton = screen.getByText('Add Organization');
+    const addButton = screen.getByText('Add Workspace');
     expect(addButton).toBeInTheDocument();
-    const orgNameInput = screen.getByPlaceholderText(/My Organization.../i);
-    fireEvent.change(orgNameInput, { target: { value: 'My Org' } });
+    const orgNameInput = screen.getByPlaceholderText(/My Workspace.../i);
+    fireEvent.change(orgNameInput, { target: { value: 'My Workspace' } });
 
     fireEvent.click(addButton);
 
     await waitFor(() => {
       expect(mockCloseHandler).toHaveBeenCalled();
-      expect(mockGetUserOrganizations).toHaveBeenCalled();
+      expect(mockGetUserWorkspaces).toHaveBeenCalled();
     });
   });
 
-  test('all fields are passed while adding organization', async () => {
-    const mockGetUserOrganizations = jest.fn();
+  test('all fields are passed while adding workspace', async () => {
+    const mockGetUserWorkspaces = jest.fn();
     const mockOwnerPubKey = 'somePublicKey';
-    const mockOrgSpy = jest.spyOn(mainStore, 'addOrganization').mockReturnValueOnce(
+    const mockWorkspaceSpy = jest.spyOn(mainStore, 'addWorkspace').mockReturnValueOnce(
       Promise.resolve({
         status: 200,
         json: () => Promise.resolve({})
@@ -164,17 +164,17 @@ describe('AddOrganization Component Tests', () => {
     );
 
     render(
-      <AddOrganization
+      <AddWorkspace
         closeHandler={mockCloseHandler}
-        getUserOrganizations={mockGetUserOrganizations}
+        getUserWorkspaces={mockGetUserWorkspaces}
         owner_pubkey={mockOwnerPubKey}
       />
     );
 
-    const addButton = screen.getByText('Add Organization');
+    const addButton = screen.getByText('Add Workspace');
     expect(addButton).toBeInTheDocument();
-    const orgNameInput = screen.getByPlaceholderText(/My Organization.../i);
-    fireEvent.change(orgNameInput, { target: { value: 'My Org' } });
+    const orgNameInput = screen.getByPlaceholderText(/My Workspace.../i);
+    fireEvent.change(orgNameInput, { target: { value: 'My Workspace' } });
 
     const orgWebsiteInput = screen.getByPlaceholderText('Website URL...');
     fireEvent.change(orgWebsiteInput, { target: { value: 'https://john.doe' } });
@@ -188,42 +188,42 @@ describe('AddOrganization Component Tests', () => {
     fireEvent.click(addButton);
 
     await waitFor(() => {
-      expect(mockOrgSpy).toHaveBeenCalledWith({
+      expect(mockWorkspaceSpy).toHaveBeenCalledWith({
         owner_pubkey: mockOwnerPubKey,
-        name: 'My Org',
+        name: 'My Workspace',
         description: 'My org description',
         img: '',
         github: 'https://github.com/john-doe',
         website: 'https://john.doe'
       });
-      expect(mockGetUserOrganizations).toHaveBeenCalled();
+      expect(mockGetUserWorkspaces).toHaveBeenCalled();
     });
   });
 
-  test('Nothing happens if only spaces are entered in the Org Name', async () => {
+  test('Nothing happens if only spaces are entered in the Workspace Name', async () => {
     jest
-      .spyOn(mainStore, 'addOrganization')
+      .spyOn(mainStore, 'addWorkspace')
       .mockImplementation(() => Promise.resolve({ status: 200 }));
 
     render(
-      <AddOrganization
+      <AddWorkspace
         closeHandler={mockCloseHandler}
-        getUserOrganizations={mockGetUserOrganizations}
+        getUserWorkspaces={mockGetUserWorkspaces}
         owner_pubkey={mockOwnerPubKey}
       />
     );
 
-    const orgNameInput = screen.getByPlaceholderText('My Organization...');
+    const orgNameInput = screen.getByPlaceholderText('My Workspace...');
     fireEvent.change(orgNameInput, { target: { value: '   ' } });
 
-    const addButton = screen.getByText('Add Organization');
+    const addButton = screen.getByText('Add Workspace');
     fireEvent.click(addButton);
 
     await waitFor(() => {
-      expect(mainStore.addOrganization).not.toHaveBeenCalled();
+      expect(mainStore.addWorkspace).not.toHaveBeenCalled();
       expect(mockCloseHandler).not.toHaveBeenCalled();
-      expect(mockGetUserOrganizations).not.toHaveBeenCalled();
-      expect(mockAddToast).not.toHaveBeenCalledWith('Organization created successfully', 'success');
+      expect(mockGetUserWorkspaces).not.toHaveBeenCalled();
+      expect(mockAddToast).not.toHaveBeenCalledWith('Workspace created successfully', 'success');
     });
   });
 });

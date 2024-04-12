@@ -347,7 +347,7 @@ function Header() {
 
   function goToEditSelf() {
     if (ui.meInfo?.id && !location.pathname.includes(`/p/${ui.meInfo.uuid}`)) {
-      history.push(`/p/${ui.meInfo.uuid}/organizations`);
+      history.push(`/p/${ui.meInfo.uuid}/workspaces`);
       ui.setSelectedPerson(ui.meInfo.id);
       ui.setSelectingPerson(ui.meInfo.id);
     }

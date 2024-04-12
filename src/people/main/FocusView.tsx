@@ -4,7 +4,7 @@ import { cloneDeep } from 'lodash';
 import { observer } from 'mobx-react-lite';
 import { FocusViewProps } from 'people/interfaces';
 import { EuiGlobalToastList } from '@elastic/eui';
-import { Organization } from 'store/main';
+import { Workspace } from 'store/main';
 import { Box } from '@mui/system';
 import { uiStore } from 'store/ui';
 import { useStores } from '../../store';
@@ -67,7 +67,7 @@ function FocusedView(props: FocusViewProps) {
   useEffect(() => {
     async function fetchData() {
       if (uiStore.meInfo?.id) {
-        await main.getUserDropdownOrganizations(uiStore.meInfo.id);
+        await main.getUserDropdownWorkspaces(uiStore.meInfo.id);
       }
     }
     fetchData();
@@ -84,8 +84,8 @@ function FocusedView(props: FocusViewProps) {
   }
   const uuid = getUUIDFromURL(window.location.href);
 
-  const userOrganizations = main.dropDownOrganizations.length
-    ? main.dropDownOrganizations.map((org: Organization) => ({
+  const userWorkspaces = main.dropDownWorkspaces.length
+    ? main.dropDownWorkspaces.map((org: Workspace) => ({
         label: toCapitalize(org.name),
         value: org.uuid
       }))
@@ -312,10 +312,10 @@ function FocusedView(props: FocusViewProps) {
   const searchKey = uuid;
   let orgToAppend = '';
 
-  const DefaultOrgObject = userOrganizations.find((obj: any) => obj.value === searchKey);
+  const DefaultWorkspaceObject = userWorkspaces.find((obj: any) => obj.value === searchKey);
 
-  if (DefaultOrgObject) {
-    orgToAppend = DefaultOrgObject.value;
+  if (DefaultWorkspaceObject) {
+    orgToAppend = DefaultWorkspaceObject.value;
   }
 
   let initialValues: any = {
@@ -396,9 +396,9 @@ function FocusedView(props: FocusViewProps) {
     setAfterEdit && setAfterEdit(true);
   }
 
-  // set user organizations
+  // set user workspaces
   if (config?.schema?.[0]?.['defaultSchema']?.[0]?.['options']) {
-    config.schema[0]['defaultSchema'][0]['options'] = userOrganizations;
+    config.schema[0]['defaultSchema'][0]['options'] = userWorkspaces;
   }
 
   return (

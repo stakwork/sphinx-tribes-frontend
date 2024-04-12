@@ -673,11 +673,11 @@ export const wantedOtherSchema: FormField[] = [
 export const wantedCodingTaskSchema: FormField[] = [
   {
     name: 'org_uuid',
-    label: 'Organization (optional)',
+    label: 'Workspace (optional)',
     type: 'select',
     options: [],
     validator: strValidatorNotRequired,
-    testId: 'Organization'
+    testId: 'Workspace'
   },
   {
     name: 'one_sentence_summary',
@@ -804,10 +804,10 @@ export const dynamicSchemaAutofillFieldsByType = {
   }
 };
 
-export const organizationSchema: FormField[] = [
+export const workspaceSchema: FormField[] = [
   {
     name: 'name',
-    label: 'Organization Name',
+    label: 'Workspace Name',
     type: 'text',
     required: true,
     validator: strValidator,
@@ -863,7 +863,7 @@ export const organizationSchema: FormField[] = [
   }
 ];
 
-export const organizationUserSchema: FormField[] = [
+export const workspaceUserSchema: FormField[] = [
   {
     name: 'owner_pubkey',
     label: 'Public key',

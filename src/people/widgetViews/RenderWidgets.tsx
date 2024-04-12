@@ -14,7 +14,7 @@ import OfferView from './OfferView';
 import { AboutView } from './AboutView';
 import { PostBounty } from './postBounty';
 import UserTickets from './UserTicketsView';
-import OrganizationView from './OrganizationView';
+import WorkspaceView from './WorkspaceView';
 
 interface PanelProps {
   isMobile: boolean;
@@ -185,8 +185,8 @@ function RenderWidgets({ widget }: RenderWidgetsProps) {
     }
 
     switch (selectedWidget) {
-      case 'organizations':
-        return <OrganizationView person={person} />;
+      case 'workspaces':
+        return <WorkspaceView person={person} />;
       case 'badges':
         return <Badges person={person} />;
       case 'about':

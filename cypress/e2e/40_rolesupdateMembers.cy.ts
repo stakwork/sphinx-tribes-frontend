@@ -1,22 +1,22 @@
-describe('filter by status for org bounty', () => {
+describe('filter by status for workspace bounty', () => {
   it('should filter bounties according to the status selected', () => {
-    const OrgName = 'UpdateRolesE2E';
+    const WorkSpaceName = 'UpdateRolesE2E';
 
-    const org: Cypress.Organization = {
+    const workSpace: Cypress.Workspace = {
       loggedInAs: 'alice',
-      name: OrgName,
-      description: 'An organization focused on amazing projects.',
+      name: WorkSpaceName,
+      description: 'A workspace focused on amazing projects.',
       website: 'https://amazing.org',
       github: 'https://github.com/amazing'
     };
 
-    cy.login(org.loggedInAs);
+    cy.login(workSpace.loggedInAs);
     cy.wait(1000);
 
-    cy.create_org(org);
+    cy.create_workspace(workSpace);
     cy.wait(1000);
 
-    cy.contains(org.name).contains('Manage').click();
+    cy.contains(workSpace.name).contains('Manage').click();
     cy.wait(1000);
 
     cy.contains('Add User').click();
@@ -36,7 +36,7 @@ describe('filter by status for org bounty', () => {
     });
     cy.wait(1000);
 
-    cy.contains('Manage organization').click();
+    cy.contains('Manage workspace').click();
     cy.wait(1000);
 
     cy.contains('Update members').click();
@@ -48,7 +48,7 @@ describe('filter by status for org bounty', () => {
     });
     cy.wait(1000);
 
-    cy.logout(org.loggedInAs);
+    cy.logout(workSpace.loggedInAs);
     cy.wait(1000);
 
     cy.login('carol');
@@ -56,7 +56,7 @@ describe('filter by status for org bounty', () => {
     cy.contains('carol').click({ force: true });
     cy.wait(1000);
 
-    cy.contains(OrgName).contains('Manage').click({ force: true });
+    cy.contains(WorkSpaceName).contains('Manage').click({ force: true });
     cy.wait(1000);
 
     cy.contains('Add User').click();

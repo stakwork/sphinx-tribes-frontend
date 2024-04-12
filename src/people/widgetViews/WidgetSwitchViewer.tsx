@@ -79,18 +79,18 @@ function WidgetSwitchViewer(props: any) {
     currentItems,
     setCurrentItems,
     totalBounties,
-    OrgTotalBounties,
+    WorkspaceTotalBounties,
     page: propsPage,
     setPage,
     languageString,
-    activeOrg,
+    activeWorkspace,
     uuid,
     orgQueryLimit
   } = props;
 
   const items = currentItems ?? 0;
   const bountiesTotal = totalBounties ?? 0;
-  const OrgBountiesTotal = OrgTotalBounties ?? 0;
+  const WorkspaceBountiesTotal = WorkspaceTotalBounties ?? 0;
   const page = propsPage ?? 0;
 
   const panelStyles = isMobile
@@ -184,7 +184,7 @@ function WidgetSwitchViewer(props: any) {
       ...props.checkboxIdToSelectedMap
     });
   };
-  const nextOrgBounties = async () => {
+  const nextWorkspaceBounties = async () => {
     const currentPage = page + 1;
     if (setPage) {
       setPage(currentPage);
@@ -193,7 +193,7 @@ function WidgetSwitchViewer(props: any) {
     if (setCurrentItems) {
       setCurrentItems(currentItems + queryLimit);
     }
-    await main.getSpecificOrganizationBounties(uuid, {
+    await main.getSpecificWorkspaceBounties(uuid, {
       limit: queryLimit,
       page: currentPage,
       ...props.checkboxIdToSelectedMap
@@ -249,13 +249,13 @@ function WidgetSwitchViewer(props: any) {
               <WantedView
                 showName
                 onPanelClick={() => {
-                  if (onPanelClick) onPanelClick(activeOrg, body);
+                  if (onPanelClick) onPanelClick(activeWorkspace, body);
                 }}
                 person={person}
                 showModal={showModal}
                 setDeletePayload={setDeletePayload}
                 fromBountyPage={props.fromBountyPage}
-                activeOrg={activeOrg}
+                activeWorkspace={activeWorkspace}
                 {...body}
                 {...organization}
               />
@@ -267,7 +267,7 @@ function WidgetSwitchViewer(props: any) {
       <NoResults loaded={!!languageString} />
     );
   const showLoadMore = bountiesTotal > items && activeList.length >= queryLimit;
-  const OrgLoadMore = OrgBountiesTotal > items && activeList.length >= orgQueryLimit;
+  const WorkspaceLoadMore = WorkspaceBountiesTotal > items && activeList.length >= orgQueryLimit;
   return (
     <>
       {listItems}
@@ -290,7 +290,7 @@ function WidgetSwitchViewer(props: any) {
           </div>
         </LoadMoreContainer>
       )}
-      {uuid && OrgLoadMore && (
+      {uuid && WorkspaceLoadMore && (
         <LoadMoreContainer
           color={color}
           style={{
@@ -300,7 +300,7 @@ function WidgetSwitchViewer(props: any) {
             alignItems: 'center'
           }}
         >
-          <div className="LoadMoreButton" onClick={() => nextOrgBounties()}>
+          <div className="LoadMoreButton" onClick={() => nextWorkspaceBounties()}>
             Load More
           </div>
         </LoadMoreContainer>

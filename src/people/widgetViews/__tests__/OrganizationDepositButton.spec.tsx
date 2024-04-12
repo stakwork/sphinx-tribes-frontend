@@ -1,16 +1,16 @@
 import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { Organization } from 'store/main';
+import { Workspace } from 'store/main';
 import { MemoryRouter } from 'react-router-dom';
-import OrganizationDetails from '../OrganizationDetails';
+import WorkspaceDetails from '../WorkspaceDetails';
 
 jest.mock('remark-gfm', () => () => {});
 
 jest.mock('rehype-raw', () => () => {});
 
-const organization: Organization = {
+const workspace: Workspace = {
   id: 'clrqpq84nncuuf32kh2g',
-  name: 'test organization',
+  name: 'test workspace',
   description: 'test',
   github: 'https://github.com/stakwork',
   website: 'https://community.sphinx.chat',
@@ -25,19 +25,19 @@ const organization: Organization = {
   deleted: false
 };
 
-describe('Organization Details component', () => {
+describe('Workspace Details component', () => {
   const closeFn = jest.fn();
-  const resetOrgFn = jest.fn();
-  const getOrgFn = jest.fn();
+  const resetWorkspaceFn = jest.fn();
+  const getWorkspaceFn = jest.fn();
 
   it('Renders Deposit Modal', async () => {
     const { getByText, container } = render(
       <MemoryRouter>
-        <OrganizationDetails
+        <WorkspaceDetails
           close={closeFn}
-          getOrganizations={getOrgFn}
-          org={organization}
-          resetOrg={resetOrgFn}
+          getWorkspaces={getWorkspaceFn}
+          org={workspace}
+          resetWorkspace={resetWorkspaceFn}
         />
       </MemoryRouter>
     );
@@ -49,11 +49,11 @@ describe('Organization Details component', () => {
   it('Test that USD conversion are visible', async () => {
     const { getByTestId, container } = render(
       <MemoryRouter>
-        <OrganizationDetails
+        <WorkspaceDetails
           close={closeFn}
-          getOrganizations={getOrgFn}
-          org={organization}
-          resetOrg={resetOrgFn}
+          getWorkspaces={getWorkspaceFn}
+          org={workspace}
+          resetWorkspace={resetWorkspaceFn}
         />
       </MemoryRouter>
     );
@@ -64,11 +64,11 @@ describe('Organization Details component', () => {
   it('User can input an amount for sats', async () => {
     const { getByText, getByTestId, container } = render(
       <MemoryRouter>
-        <OrganizationDetails
+        <WorkspaceDetails
           close={closeFn}
-          getOrganizations={getOrgFn}
-          org={organization}
-          resetOrg={resetOrgFn}
+          getWorkspaces={getWorkspaceFn}
+          org={workspace}
+          resetWorkspace={resetWorkspaceFn}
         />
       </MemoryRouter>
     );
@@ -83,11 +83,11 @@ describe('Organization Details component', () => {
   it('Test that generate invoice button creates an invoice', async () => {
     const { getByText, getByTestId, container } = render(
       <MemoryRouter>
-        <OrganizationDetails
+        <WorkspaceDetails
           close={closeFn}
-          getOrganizations={getOrgFn}
-          org={organization}
-          resetOrg={resetOrgFn}
+          getWorkspaces={getWorkspaceFn}
+          org={workspace}
+          resetWorkspace={resetWorkspaceFn}
         />
       </MemoryRouter>
     );
@@ -109,11 +109,11 @@ describe('Organization Details component', () => {
   it('Invoice is displayed in a QR code', async () => {
     const { getByTestId } = render(
       <MemoryRouter>
-        <OrganizationDetails
+        <WorkspaceDetails
           close={closeFn}
-          getOrganizations={getOrgFn}
-          org={organization}
-          resetOrg={resetOrgFn}
+          getWorkspaces={getWorkspaceFn}
+          org={workspace}
+          resetWorkspace={resetWorkspaceFn}
         />
       </MemoryRouter>
     );
@@ -135,11 +135,11 @@ describe('Organization Details component', () => {
   it('Copy button copies invoice', async () => {
     const { getByTestId } = render(
       <MemoryRouter>
-        <OrganizationDetails
+        <WorkspaceDetails
           close={closeFn}
-          getOrganizations={getOrgFn}
-          org={organization}
-          resetOrg={resetOrgFn}
+          getWorkspaces={getWorkspaceFn}
+          org={workspace}
+          resetWorkspace={resetWorkspaceFn}
         />
       </MemoryRouter>
     );

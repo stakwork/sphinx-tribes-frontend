@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import Users from '../organization/UsersList.tsx';
+import Users from '../workspace/UsersList.tsx';
 
 jest.mock('store', () => ({
   useStores: () => ({

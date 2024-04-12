@@ -5,8 +5,8 @@ import {
   offerOtherSchema,
   wantedCodingTaskSchema,
   wantedOtherSchema,
-  organizationSchema,
-  organizationUserSchema
+  workspaceSchema,
+  workspaceUserSchema
 } from '../../components/form/schema';
 
 const MAX_UPLOAD_SIZE = 10194304; //10MB
@@ -24,9 +24,9 @@ const widgetConfigs = {
       icon: 'edit'
     }
   },
-  organizations: {
-    label: 'Organizations',
-    name: 'organizations',
+  workspaces: {
+    label: 'Workspaces',
+    name: 'workspaces',
     submitText: 'Save',
     modalStyle: {
       width: 'auto',
@@ -35,9 +35,9 @@ const widgetConfigs = {
       minHeight: '40%',
       maxHeight: '70%'
     },
-    schema: organizationSchema,
+    schema: workspaceSchema,
     action: {
-      text: 'Add Organization',
+      text: 'Add Workspace',
       icon: 'add'
     },
     noneSpace: {
@@ -48,8 +48,8 @@ const widgetConfigs = {
       },
       noResult: {
         img: 'no_org.png',
-        text: 'No Organization Yet',
-        sub: 'Looks like this person has not created or added to any organizations yet.'
+        text: 'No Workspace Yet',
+        sub: 'Looks like this person has not created or added to any workspaces yet.'
       }
     }
   },
@@ -173,9 +173,9 @@ const badges = {
 };
 
 const nonWidgetConfigs = {
-  organizationusers: {
-    label: 'Organization Users',
-    name: 'organizationusers',
+  workspaceusers: {
+    label: 'Workspace Users',
+    name: 'workspaceusers',
     submitText: 'Save',
     modalStyle: {
       width: 'auto',
@@ -184,7 +184,7 @@ const nonWidgetConfigs = {
       minHeight: '40%',
       maxHeight: '70%'
     },
-    schema: organizationUserSchema
+    schema: workspaceUserSchema
   }
 };
 

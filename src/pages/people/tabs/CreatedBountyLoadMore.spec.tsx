@@ -48,7 +48,7 @@ describe('Wanted component', () => {
     (useStores as jest.Mock).mockReturnValue({
       main: {
         getPersonCreatedBounties: jest.fn(() => []),
-        dropDownOrganizations: []
+        dropDownWorkspaces: []
       },
       ui: {
         selectedPerson: '123',
@@ -85,7 +85,7 @@ describe('Wanted component', () => {
     (useStores as jest.Mock).mockReturnValue({
       main: {
         getPersonCreatedBounties: jest.fn(() => []),
-        dropDownOrganizations: []
+        dropDownWorkspaces: []
       },
       ui: {
         selectedPerson: '123',

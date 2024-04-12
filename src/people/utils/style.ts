@@ -46,7 +46,7 @@ export const InvoiceInput = styled.input`
   border-radius: 8px;
   border: 0.5px solid black;
 `;
-export const OrganizationWrap = styled.div`
+export const WorkspaceWrap = styled.div`
   display: flex;
   justify-content: space-between;
   gap: 8px;
@@ -56,7 +56,7 @@ export const OrganizationWrap = styled.div`
   border: 1px solid #dde1e5;
   border-radius: 4px;
 `;
-export const OrganizationText = styled.span`
+export const WorkspaceText = styled.span`
   font-weight: 500;
   font-size: 0.8125rem;
   text-transform: capitalize;

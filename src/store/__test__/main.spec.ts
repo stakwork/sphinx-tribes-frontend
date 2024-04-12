@@ -43,16 +43,16 @@ describe('Main store', () => {
     fetchStub.reset();
   });
 
-  it('should call endpoint on addOrganization', async () => {
+  it('should call endpoint on addWorkspace', async () => {
     const mainStore = new MainStore();
 
     const mockApiResponse = { status: 200, message: 'success' };
 
     fetchStub.resolves(Promise.resolve(mockApiResponse));
 
-    const addOrganization = {
+    const addWorkspace = {
       img: '',
-      name: 'New Orgination test',
+      name: 'New Workspaceination test',
       owner_pubkey: '035f22835fbf55cf4e6823447c63df74012d1d587ed60ef7cbfa3e430278c44cce'
     };
 
@@ -61,32 +61,32 @@ describe('Main store', () => {
       'x-jwt': 'test_jwt'
     };
 
-    await mainStore.addOrganization(addOrganization);
+    await mainStore.addWorkspace(addWorkspace);
 
     sinon.assert.calledWith(
       fetchStub,
-      `${TribesURL}/organizations`,
+      `${TribesURL}/workspaces`,
       sinon.match({
         method: 'POST',
         headers: expectedHeaders,
-        body: JSON.stringify(addOrganization),
+        body: JSON.stringify(addWorkspace),
         mode: 'cors'
       })
     );
   });
 
-  it('should call endpoint on addOrganization with description, github and website url', async () => {
+  it('should call endpoint on addWorkspace with description, github and website url', async () => {
     const mainStore = new MainStore();
 
     const mockApiResponse = { status: 200, message: 'success' };
 
     fetchStub.resolves(Promise.resolve(mockApiResponse));
 
-    const addOrganization = {
+    const addWorkspace = {
       img: '',
-      name: 'New Orgination test',
+      name: 'New Workspaceination test',
       owner_pubkey: '035f22835fbf55cf4e6823447c63df74012d1d587ed60ef7cbfa3e430278c44cce',
-      description: 'My test Organization',
+      description: 'My test Workspace',
       github: 'https://github.com/john-doe',
       website: 'https://john.doe'
     };
@@ -96,28 +96,28 @@ describe('Main store', () => {
       'x-jwt': 'test_jwt'
     };
 
-    await mainStore.addOrganization(addOrganization);
+    await mainStore.addWorkspace(addWorkspace);
 
     sinon.assert.calledWith(
       fetchStub,
-      `${TribesURL}/organizations`,
+      `${TribesURL}/workspaces`,
       sinon.match({
         method: 'POST',
         headers: expectedHeaders,
-        body: JSON.stringify(addOrganization),
+        body: JSON.stringify(addWorkspace),
         mode: 'cors'
       })
     );
   });
 
-  it('should call endpoint on UpdateOrganization Name', async () => {
+  it('should call endpoint on UpdateWorkspace Name', async () => {
     const mainStore = new MainStore();
 
     const mockApiResponse = { status: 200, message: 'success' };
 
     fetchStub.resolves(Promise.resolve(mockApiResponse));
 
-    const updateOrganization = {
+    const updateWorkspace = {
       id: '42',
       uuid: 'clic8k04nncuuf32kgr0',
       name: 'TEST1',
@@ -138,28 +138,28 @@ describe('Main store', () => {
       'x-jwt': 'test_jwt'
     };
 
-    await mainStore.updateOrganization(updateOrganization);
+    await mainStore.updateWorkspace(updateWorkspace);
 
     sinon.assert.calledWith(
       fetchStub,
-      `${TribesURL}/organizations`,
+      `${TribesURL}/workspaces`,
       sinon.match({
         method: 'POST',
         headers: expectedHeaders,
-        body: JSON.stringify(updateOrganization),
+        body: JSON.stringify(updateWorkspace),
         mode: 'cors'
       })
     );
   });
 
-  it('should call endpoint on UpdateOrganization description, github url and website url, non mandatory fields', async () => {
+  it('should call endpoint on UpdateWorkspace description, github url and website url, non mandatory fields', async () => {
     const mainStore = new MainStore();
 
     const mockApiResponse = { status: 200, message: 'success' };
 
     fetchStub.resolves(Promise.resolve(mockApiResponse));
 
-    const updateOrganization = {
+    const updateWorkspace = {
       id: '42',
       uuid: 'clic8k04nncuuf32kgr0',
       name: 'TEST1',
@@ -180,15 +180,15 @@ describe('Main store', () => {
       'x-jwt': 'test_jwt'
     };
 
-    await mainStore.updateOrganization(updateOrganization);
+    await mainStore.updateWorkspace(updateWorkspace);
 
     sinon.assert.calledWith(
       fetchStub,
-      `${TribesURL}/organizations`,
+      `${TribesURL}/workspaces`,
       sinon.match({
         method: 'POST',
         headers: expectedHeaders,
-        body: JSON.stringify(updateOrganization),
+        body: JSON.stringify(updateWorkspace),
         mode: 'cors'
       })
     );
@@ -241,14 +241,14 @@ describe('Main store', () => {
     expect(localStorageMock.getItem('ui')).toEqual(JSON.stringify(uiStore));
   });
 
-  it('should call endpoint on addOrganizationUser', async () => {
+  it('should call endpoint on addWorkspaceUser', async () => {
     const mainStore = new MainStore();
 
     const mockApiResponse = { status: 200, message: 'success' };
 
     fetchStub.resolves(Promise.resolve(mockApiResponse));
 
-    const organizationUser = {
+    const workspaceUser = {
       owner_pubkey: user.owner_pubkey || '',
       org_uuid: mockApiResponseData[2]
     };
@@ -258,21 +258,21 @@ describe('Main store', () => {
       'x-jwt': 'test_jwt'
     };
 
-    await mainStore.addOrganizationUser(organizationUser);
+    await mainStore.addWorkspaceUser(workspaceUser);
 
     sinon.assert.calledWith(
       fetchStub,
-      `${TribesURL}/organizations/users/${mockApiResponseData[2]}`,
+      `${TribesURL}/workspaces/users/${mockApiResponseData[2]}`,
       sinon.match({
         method: 'POST',
         headers: expectedHeaders,
-        body: JSON.stringify(organizationUser),
+        body: JSON.stringify(workspaceUser),
         mode: 'cors'
       })
     );
   });
 
-  it('should call endpoint on getOrganizationUsers', async () => {
+  it('should call endpoint on getWorkspaceUsers', async () => {
     const mainStore = new MainStore();
 
     const mockApiResponse = {
@@ -282,18 +282,18 @@ describe('Main store', () => {
 
     fetchStub.resolves(Promise.resolve(mockApiResponse));
 
-    const endpoint = `${TribesURL}/organizations/users/${mockApiResponseData[2].orgUUID}`;
+    const endpoint = `${TribesURL}/workspaces/users/${mockApiResponseData[2].orgUUID}`;
 
-    const users = await mainStore.getOrganizationUsers(mockApiResponseData[2].orgUUID);
+    const users = await mainStore.getWorkspaceUsers(mockApiResponseData[2].orgUUID);
 
     sinon.assert.calledWithMatch(fetchStub, endpoint, sinon.match.any);
     expect(users).toEqual(mockApiResponseData.slice(0, 1));
   });
 
-  it('should call endpoint on getUserOrganizations', async () => {
+  it('should call endpoint on getUserWorkspaces', async () => {
     const mainStore = new MainStore();
     const userId = 232;
-    const mockOrganizations = [
+    const mockWorkspaces = [
       {
         id: 42,
         uuid: 'clic8k04nncuuf32kgr0',
@@ -312,7 +312,7 @@ describe('Main store', () => {
       {
         id: 55,
         uuid: 'cmen35itu2rvqicrm020',
-        name: 'Orgination name test',
+        name: 'Workspaceination name test',
         description: 'test',
         github: 'https://github.com/stakwork',
         website: 'https://community.sphinx.chat',
@@ -326,7 +326,7 @@ describe('Main store', () => {
       {
         id: 56,
         uuid: 'cmen38itu2rvqicrm02g',
-        name: 'New Orgination test',
+        name: 'New Workspaceination test',
         description: 'test',
         github: 'https://github.com/stakwork',
         website: 'https://community.sphinx.chat',
@@ -368,15 +368,15 @@ describe('Main store', () => {
     ];
     const mockApiResponse = {
       status: 200,
-      json: sinon.stub().resolves(mockOrganizations)
+      json: sinon.stub().resolves(mockWorkspaces)
     };
     fetchStub.resolves(Promise.resolve(mockApiResponse));
 
-    const organizationUser = await mainStore.getUserOrganizations(userId);
+    const workspaceUser = await mainStore.getUserWorkspaces(userId);
 
     sinon.assert.calledWithMatch(
       fetchStub,
-      `${TribesURL}/organizations/user/${userId}`,
+      `${TribesURL}/workspaces/user/${userId}`,
       sinon.match({
         method: 'GET',
         mode: 'cors',
@@ -386,13 +386,13 @@ describe('Main store', () => {
       })
     );
 
-    expect(organizationUser).toEqual(mockOrganizations);
+    expect(workspaceUser).toEqual(mockWorkspaces);
   });
 
-  it('should call endpoint on getUserOrganizationsUuid', async () => {
+  it('should call endpoint on getUserWorkspacesUuid', async () => {
     const mainStore = new MainStore();
     const uuid = 'ck1p7l6a5fdlqdgmmnpg';
-    const mockOrganizations = {
+    const mockWorkspaces = {
       id: 6,
       uuid: 'ck1p7l6a5fdlqdgmmnpg',
       name: 'Stakwork',
@@ -407,15 +407,15 @@ describe('Main store', () => {
     };
     const mockApiResponse = {
       status: 200,
-      json: sinon.stub().resolves(mockOrganizations)
+      json: sinon.stub().resolves(mockWorkspaces)
     };
     fetchStub.resolves(Promise.resolve(mockApiResponse));
 
-    const organizationUser = await mainStore.getUserOrganizationByUuid(uuid);
+    const workspaceUser = await mainStore.getUserWorkspaceByUuid(uuid);
 
     sinon.assert.calledWithMatch(
       fetchStub,
-      `${TribesURL}/organizations/${uuid}`,
+      `${TribesURL}/workspaces/${uuid}`,
       sinon.match({
         method: 'GET',
         mode: 'cors',
@@ -425,9 +425,9 @@ describe('Main store', () => {
       })
     );
 
-    expect(organizationUser).toEqual(mockOrganizations);
+    expect(workspaceUser).toEqual(mockWorkspaces);
   });
-  it('should call endpoint on getOrganizationUser', async () => {
+  it('should call endpoint on getWorkspaceUser', async () => {
     const mainStore = new MainStore();
 
     const mockApiResponse = {
@@ -439,11 +439,11 @@ describe('Main store', () => {
 
     fetchStub.resolves(Promise.resolve(mockApiResponse));
 
-    const organizationUser = await mainStore.getOrganizationUser(mockApiResponseData[0].uuid);
+    const workspaceUser = await mainStore.getWorkspaceUser(mockApiResponseData[0].uuid);
 
     sinon.assert.calledWithMatch(
       fetchStub,
-      `${TribesURL}/organizations/foruser/${mockApiResponseData[0].uuid}`,
+      `${TribesURL}/workspaces/foruser/${mockApiResponseData[0].uuid}`,
       sinon.match({
         method: 'GET',
         mode: 'cors',
@@ -454,12 +454,12 @@ describe('Main store', () => {
       })
     );
 
-    expect(organizationUser).toEqual({
+    expect(workspaceUser).toEqual({
       uuid: mockApiResponseData[0].uuid
     });
   });
 
-  it('should call endpoint on getOrganizationUsersCount', async () => {
+  it('should call endpoint on getWorkspaceUsersCount', async () => {
     const mainStore = new MainStore();
 
     const mockApiResponse = {
@@ -471,23 +471,21 @@ describe('Main store', () => {
 
     fetchStub.resolves(Promise.resolve(mockApiResponse));
 
-    const organizationsCount = await mainStore.getOrganizationUsersCount(
-      mockApiResponseData[2].orgUUID
-    );
+    const workspacesCount = await mainStore.getWorkspaceUsersCount(mockApiResponseData[2].orgUUID);
 
     sinon.assert.calledWithMatch(
       fetchStub,
-      `${TribesURL}/organizations/users/${mockApiResponseData[2].orgUUID}/count`,
+      `${TribesURL}/workspaces/users/${mockApiResponseData[2].orgUUID}/count`,
       sinon.match({
         method: 'GET',
         mode: 'cors'
       })
     );
 
-    expect(organizationsCount).toEqual({ count: 2 });
+    expect(workspacesCount).toEqual({ count: 2 });
   });
 
-  it('should call endpoint on deleteOrganizationUser', async () => {
+  it('should call endpoint on deleteWorkspaceUser', async () => {
     const mainStore = new MainStore();
 
     const mockApiResponse = {
@@ -527,11 +525,11 @@ describe('Main store', () => {
       github_issues: {}
     };
 
-    const deleteResponse = await mainStore.deleteOrganizationUser(deleteRequestBody, orgUserUUID);
+    const deleteResponse = await mainStore.deleteWorkspaceUser(deleteRequestBody, orgUserUUID);
 
     sinon.assert.calledWithMatch(
       fetchStub,
-      `${TribesURL}/organizations/users/${orgUserUUID}`,
+      `${TribesURL}/workspaces/users/${orgUserUUID}`,
       sinon.match({
         method: 'DELETE',
         mode: 'cors',
@@ -901,9 +899,9 @@ describe('Main store', () => {
     expect(res).toBeTruthy();
   });
 
-  it('should fetch and store organization bounties successfully, user signed out', async () => {
+  it('should fetch and store workspace bounties successfully, user signed out', async () => {
     uiStore.setMeInfo(emptyMeInfo);
-    const allBountiesUrl = `http://${getHost()}/organizations/bounties/1111`;
+    const allBountiesUrl = `http://${getHost()}/workspaces/bounties/1111`;
     fetchStub.withArgs(allBountiesUrl, sinon.match.any).returns(
       Promise.resolve({
         status: 200,
@@ -913,7 +911,7 @@ describe('Main store', () => {
     );
 
     const store = new MainStore();
-    const bounties = await store.getOrganizationBounties('1111', {
+    const bounties = await store.getWorkspaceBounties('1111', {
       resetPage: true,
       search: 'random',
       limit: 11,
@@ -926,9 +924,9 @@ describe('Main store', () => {
     expect(bounties).toEqual([expectedBountyResponses[0]]);
   });
 
-  it('should reset exisiting organization bounty if reset flag is passed, user signed out', async () => {
+  it('should reset exisiting workspace bounty if reset flag is passed, user signed out', async () => {
     uiStore.setMeInfo(emptyMeInfo);
-    const allBountiesUrl = `http://${getHost()}/organizations/bounties/1111`;
+    const allBountiesUrl = `http://${getHost()}/workspaces/bounties/1111`;
     const mockBounty = { ...mockBounties[0] };
     mockBounty.bounty.id = 2;
     fetchStub.withArgs(allBountiesUrl, sinon.match.any).returns(
@@ -943,7 +941,7 @@ describe('Main store', () => {
     store.setPeopleBounties([expectedBountyResponses[0] as any]);
     expect(store.peopleBounties.length).toEqual(1);
 
-    const bounties = await store.getOrganizationBounties('1111', {
+    const bounties = await store.getWorkspaceBounties('1111', {
       resetPage: true,
       search: 'random',
       limit: 11,
@@ -959,7 +957,7 @@ describe('Main store', () => {
 
   it('should add to exisiting bounty if reset flag is not passed, user signed out', async () => {
     uiStore.setMeInfo(emptyMeInfo);
-    const allBountiesUrl = `http://${getHost()}/organizations/bounties/1111`;
+    const allBountiesUrl = `http://${getHost()}/workspaces/bounties/1111`;
     const mockBounty = { ...mockBounties[0] };
     mockBounty.bounty.id = 2;
     fetchStub.withArgs(allBountiesUrl, sinon.match.any).returns(
@@ -977,7 +975,7 @@ describe('Main store', () => {
     expect(store.peopleBounties.length).toEqual(1);
     expect(store.peopleBounties[0].body.id).not.toEqual(2);
 
-    const bounties = await store.getOrganizationBounties('1111', {
+    const bounties = await store.getWorkspaceBounties('1111', {
       resetPage: false,
       search: 'random',
       limit: 11,

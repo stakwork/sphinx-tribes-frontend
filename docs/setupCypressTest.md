@@ -122,13 +122,13 @@ With the above commands executed properly you should be able to start writing yo
     });
     ```
 
-4. To create an organizaztion, you can use the command below and pass in the org details as Parameter:
+4. To create a workspace, you can use the command below and pass in the org details as Parameter:
 
     ```bash
-    cy.create_org({
+    cy.create_workspace({
       loggedInAs: 'carol',
-      name: 'New Organization',
-      description: 'We are testing out our oeganization',
+      name: 'New Workspace',
+      description: 'We are testing out our workspace',
       website: 'https://community.sphinx.chat',
       github: 'https://github.com/stakwork/sphinx-tribes-frontend'
     });

@@ -4,20 +4,20 @@ describe('It Pays a bounty ', () => {
     cy.wait(2000);
 
     // create org
-    const org = {
+    const workSpace = {
       loggedInAs: 'carol',
-      name: 'Pay Organization',
-      description: 'We are testing out our oeganization',
+      name: 'Pay Workspace',
+      description: 'We are testing out our workspace',
       website: 'https://community.sphinx.chat',
       github: 'https://github.com/stakwork/sphinx-tribes-frontend'
     };
 
-    cy.create_org(org);
+    cy.create_workspace(workSpace);
     cy.wait(1000);
 
     cy.contains('Manage').click();
 
-    // add organization budget
+    // add workspace budget
     cy.contains('Deposit').click();
     cy.get('[data-testid="input-amount"]').type('5000');
     cy.get('[data-testid="generate-button"]').click();
@@ -43,7 +43,7 @@ describe('It Pays a bounty ', () => {
       amount: '500',
       assign: 'carol',
       deliverables: 'We are good to go man',
-      organization: org.name,
+      workspace: workSpace.name,
       tribe: '',
       estimate_session_length: 'Less than 3 hour',
       estimate_completion_date: '09/09/2024'

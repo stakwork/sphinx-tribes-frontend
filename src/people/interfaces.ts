@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import { Extras } from '../components/form/inputs/widgets/interfaces';
-import { Organization, Person, PersonBounty } from '../store/main';
+import { Workspace, Person, PersonBounty } from '../store/main';
 import { MeData } from '../store/ui';
 import { Widget } from './main/types';
 import { coding_languages } from './utils/languageLabelStyle';
@@ -15,7 +15,7 @@ export interface AuthProps {
 export interface BountyModalProps {
   basePath: string;
   bountyOwner?: Person;
-  fromPage?: 'usertickets' | 'bounties' | 'organization';
+  fromPage?: 'usertickets' | 'bounties' | 'workspace';
 }
 
 export interface FocusViewProps {
@@ -80,7 +80,7 @@ export interface BountiesProps {
   uuid?: string;
   img?: string;
   id?: number;
-  activeOrg?: string;
+  activeWorkspace?: string;
 }
 
 export interface BadgesProps {
@@ -173,7 +173,7 @@ export interface PaidBountiesProps {
   created: number;
   name?: string;
   org_img?: string;
-  activeOrg?: string;
+  activeWorkspace?: string;
 }
 
 export interface QRProps {
@@ -404,7 +404,7 @@ export interface WantedViews2Props extends WantedViewsProps {
   type?: string;
   coding_languages?: any;
   fromBountyPage?: boolean;
-  activeOrg?: string;
+  activeWorkspace?: string;
 }
 
 export interface AboutViewProps {
@@ -433,14 +433,14 @@ export interface BountyHeaderProps {
   checkboxIdToSelectedMapLanguage: any;
 }
 
-export interface OrgBountyHeaderProps {
+export interface WorkspaceBountyHeaderProps {
   onChangeStatus: (number) => void;
   onChangeLanguage: (number) => void;
   checkboxIdToSelectedMap?: any;
   checkboxIdToSelectedMapLanguage?: any;
   languageString?: string;
   org_uuid?: string;
-  organizationData: Organization;
+  workspaceData: Workspace;
   direction?: string;
   totalBountyCount: number;
 }

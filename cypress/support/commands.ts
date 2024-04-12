@@ -170,10 +170,10 @@ Cypress.Commands.add('create_bounty', (bounty, clickMethod = 'contains') => {
   cy.contains('Post a Bounty').click();
   cy.contains('Start').click();
 
-  if (bounty.organization) {
-    cy.get('[data-testid="Organization"]').click({ force: true });
+  if (bounty.workspace) {
+    cy.get('[data-testid="Workspace"]').click({ force: true });
     cy.wait(1000);
-    cy.contains(bounty.organization).click({ force: true });
+    cy.contains(bounty.workspace).click({ force: true });
   }
 
   cy.contains('label', 'Bounty Title').type(bounty.title);
@@ -237,63 +237,66 @@ Cypress.Commands.add('create_bounty', (bounty, clickMethod = 'contains') => {
   cy.contains('Finish').click();
 });
 
-Cypress.Commands.add('create_orgBounty', (orgBounty) => {
+Cypress.Commands.add('create_workspace_bounty', (workspaceBounty) => {
   cy.wait(1000);
   cy.contains('Post a Bounty').click();
   cy.contains('Start').click();
 
-  cy.contains('label', 'Bounty Title').type(orgBounty.title);
+  cy.contains('label', 'Bounty Title').type(workspaceBounty.title);
   cy.wait(600);
-  if (orgBounty.github_issue_url) {
-    cy.get('[data-testid="Github"]').type(orgBounty.github_issue_url);
+  if (workspaceBounty.github_issue_url) {
+    cy.get('[data-testid="Github"]').type(workspaceBounty.github_issue_url);
   }
 
   cy.wait(1000);
 
-  if (orgBounty.coding_language && orgBounty.coding_language.length > 0) {
+  if (workspaceBounty.coding_language && workspaceBounty.coding_language.length > 0) {
     cy.contains('Coding Language').click();
 
-    for (let i = 0; i < orgBounty.coding_language.length; i++) {
-      cy.get('.CheckboxOuter').contains(orgBounty.coding_language[i]).scrollIntoView().click();
+    for (let i = 0; i < workspaceBounty.coding_language.length; i++) {
+      cy.get('.CheckboxOuter')
+        .contains(workspaceBounty.coding_language[i])
+        .scrollIntoView()
+        .click();
     }
     cy.contains('Coding Language').click();
   }
 
   cy.get('[data-testid="Category *"]').click();
-  cy.get('[data-testid="Category *"]').contains(orgBounty.category).click();
+  cy.get('[data-testid="Category *"]').contains(workspaceBounty.category).click();
 
   cy.contains('Next').click();
 
-  cy.get('.euiTextArea').type(orgBounty.description);
+  cy.get('.euiTextArea').type(workspaceBounty.description);
   cy.contains('Next').click();
 
-  cy.contains('label', 'Price (Sats)').type(orgBounty.amount);
+  cy.contains('label', 'Price (Sats)').type(workspaceBounty.amount);
 
-  if (orgBounty.estimate_session_length) {
+  if (workspaceBounty.estimate_session_length) {
     cy.get('[data-testid="Estimate Session Length"]').find('button').click();
 
     cy.get('[data-testid="Estimate Session Length"]')
-      .contains(orgBounty.estimate_session_length)
+      .contains(workspaceBounty.estimate_session_length)
       .click();
   }
 
-  if (orgBounty.estimate_completion_date) {
+  if (workspaceBounty.estimate_completion_date) {
     cy.get('.react-datepicker__input-container > .euiDatePicker').click();
     cy.get('.react-datepicker__input-container > .euiDatePicker').type('{selectAll}');
     cy.wait(100);
     cy.get('.react-datepicker__input-container > .euiDatePicker').type(
-      orgBounty.estimate_completion_date
+      workspaceBounty.estimate_completion_date
     );
   }
 
-  if (orgBounty.deliverables) {
-    cy.get('textarea.inputText').type(orgBounty.deliverables);
+  if (workspaceBounty.deliverables) {
+    cy.get('textarea.inputText').type(workspaceBounty.deliverables);
   }
 
   cy.contains('Next').click();
 
-  if (orgBounty.assign) {
-    cy.get('.SearchInput').type(orgBounty.assign);
+  if (workspaceBounty.assign) {
+    cy.get('.SearchInput').type(workspaceBounty.assign);
     cy.wait(1000);
     cy.get('.People').contains('Assign').click();
   } else {
@@ -372,22 +375,22 @@ Cypress.Commands.add('lnurl_login', () => {
     });
 });
 
-Cypress.Commands.add('create_org', (organization) => {
-  cy.contains(organization.loggedInAs).click({ force: true });
+Cypress.Commands.add('create_workspace', (workspace) => {
+  cy.contains(workspace.loggedInAs).click({ force: true });
 
   cy.wait(1000);
-  cy.contains('Add Organization').click();
+  cy.contains('Add Workspace').click();
 
-  cy.get('[placeholder="My Organization..."]').type(organization.name);
+  cy.get('[placeholder="My Workspace..."]').type(workspace.name);
 
-  cy.get('[placeholder="Description Text..."]').type(organization.description);
+  cy.get('[placeholder="Description Text..."]').type(workspace.description);
 
-  if (organization.website) {
-    cy.get('[placeholder="Website URL..."]').type(organization.website);
+  if (workspace.website) {
+    cy.get('[placeholder="Website URL..."]').type(workspace.website);
   }
 
-  if (organization.github) {
-    cy.get('[placeholder="Github link..."]').type(organization.github);
+  if (workspace.github) {
+    cy.get('[placeholder="Github link..."]').type(workspace.github);
   }
 
   cy.contains('* Required fields').next().click();

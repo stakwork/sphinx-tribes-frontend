@@ -10,13 +10,13 @@ export const bounties = [
       '035f22835fbf55cf4e6823447c63df74012d1d587ed60ef7cbfa3e430278c44cce:03a6ea2d9ead2120b12bd66292bb4a302c756983dc45dcb2b364b461c66fd53bcb:1099517001729',
     provider:
       '035f22835fbf55cf4e6823447c63df74012d1d587ed60ef7cbfa3e430278c44cce:03a6ea2d9ead2120b12bd66292bb4a302c756983dc45dcb2b364b461c66fd53bcb:1099517001729',
-    organization_name: 'OrganizationName',
+    workspace_name: 'WorkspaceName',
     status: 'open',
     assigneeImage:
       'https://avatars.githubusercontent.com/u/10001?s=460&u=8c61f1cda5e9e2c2d1d5b8d2a5a8a5b8d2a5a8a5&v=4',
     providerImage:
       'https://avatars.githubusercontent.com/u/10001?s=460&u=8c61f1cda5e9e2c2d1d5b8d2a5a8a5b8d2a5a8a5&v=4',
-    organizationImage:
+    workspaceImage:
       'https://avatars.githubusercontent.com/u/10001?s=460&u=8c61f1cda5e9e2c2d1d5b8d2a5a8a5b8d2a5a8a5&v=4',
     bounty_created: '2023-10-04T14:58:50.441223Z',
     paid_date: '2023-10-04T14:58:50.441223Z',
@@ -32,13 +32,13 @@ export const bounties = [
     dtgp: 1,
     assignee: 'John Doe',
     provider: 'Jane Doe',
-    organization_name: 'Doe Inc.',
+    workspace_name: 'Doe Inc.',
     status: 'paid',
     assigneeImage:
       'https://avatars.githubusercontent.com/u/10001?s=460&u=8c61f1cda5e9e2c2d1d5b8d2a5a8a5b8d2a5a8a5&v=4',
     providerImage:
       'https://avatars.githubusercontent.com/u/10001?s=460&u=8c61f1cda5e9e2c2d1d5b8d2a5a8a5b8d2a5a8a5&v=4',
-    organizationImage:
+    workspaceImage:
       'https://avatars.githubusercontent.com/u/10001?s=460&u=8c61f1cda5e9e2c2d1d5b8d2a5a8a5b8d2a5a8a5&v=4',
     bounty_created: '2023-10-04T14:58:50.441223Z',
     paid_date: '2023-10-04T14:58:50.441223Z',
@@ -54,13 +54,13 @@ export const bounties = [
     dtgp: 1,
     assignee: 'John Doe',
     provider: 'Jane Doe',
-    organization_name: 'Doe Inc.',
+    workspace_name: 'Doe Inc.',
     status: 'assigned',
     assigneeImage:
       'https://avatars.githubusercontent.com/u/10001?s=460&u=8c61f1cda5e9e2c2d1d5b8d2a5a8a5b8d2a5a8a5&v=4',
     providerImage:
       'https://avatars.githubusercontent.com/u/10001?s=460&u=8c61f1cda5e9e2c2d1d5b8d2a5a8a5b8d2a5a8a5&v=4',
-    organizationImage:
+    workspaceImage:
       'https://avatars.githubusercontent.com/u/10001?s=460&u=8c61f1cda5e9e2c2d1d5b8d2a5a8a5b8d2a5a8a5&v=4',
     bounty_created: '2023-10-04T14:58:50.441223Z',
     paid_date: '2023-10-04T14:58:50.441223Z',

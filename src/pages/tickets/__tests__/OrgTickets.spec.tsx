@@ -10,7 +10,7 @@ import { MemoryRouter, Route } from 'react-router-dom';
 import { mainStore } from 'store/main';
 import { useStores } from 'store/index.tsx';
 import { usePerson } from 'hooks/index.ts';
-import { OrgTicketsPage } from '../org/index';
+import { WorkspaceTicketsPage } from '../workspace/index';
 import { user } from '../../../__test__/__mockData__/user';
 
 beforeAll(() => {
@@ -33,7 +33,7 @@ jest.mock('store', () => ({
   useStores: jest.fn()
 }));
 
-describe('OrgTicketsPage Component', () => {
+describe('WorkspaceTicketsPage Component', () => {
   nock(user.url).get('/person/id/1').reply(200, { user });
   nock(user.url).get('/ask').reply(200, {});
 
@@ -53,9 +53,9 @@ describe('OrgTicketsPage Component', () => {
 
     (useStores as jest.Mock).mockReturnValue({
       main: {
-        getSpecificOrganizationBounties: jest.fn(() => [orgBounty]),
+        getSpecificWorkspaceBounties: jest.fn(() => [orgBounty]),
         getTribesByOwner: jest.fn(),
-        getTotalOrgBounties: jest.fn(() => 1)
+        getTotalWorkspaceBounties: jest.fn(() => 1)
       },
       ui: {
         selectedPerson: '123',
@@ -66,13 +66,13 @@ describe('OrgTicketsPage Component', () => {
     });
 
     jest
-      .spyOn(mainStore, 'getSpecificOrganizationBounties')
+      .spyOn(mainStore, 'getSpecificWorkspaceBounties')
       .mockReturnValue(Promise.resolve(orgBounty));
-    jest.spyOn(mainStore, 'getTotalOrgBounties').mockReturnValue(Promise.resolve(1));
+    jest.spyOn(mainStore, 'getTotalWorkspaceBounties').mockReturnValue(Promise.resolve(1));
     act(async () => {
       const { getByText } = render(
-        <MemoryRouter initialEntries={['/org/bounties/random_org_uuid']}>
-          <Route path="/org/bounties/random_org_uuid" component={OrgTicketsPage} />
+        <MemoryRouter initialEntries={['/workspace/bounties/random_org_uuid']}>
+          <Route path="/workspace/bounties/random_org_uuid" component={WorkspaceTicketsPage} />
         </MemoryRouter>
       );
       const PostBountyButton = await screen.findByRole('button', { name: /Post a Bounty/i });
@@ -138,9 +138,9 @@ describe('OrgTicketsPage Component', () => {
 
     (useStores as jest.Mock).mockReturnValue({
       main: {
-        getSpecificOrganizationBounties: jest.fn(() => [orgBounties]),
+        getSpecificWorkspaceBounties: jest.fn(() => [orgBounties]),
         getTribesByOwner: jest.fn(),
-        getTotalOrgBounties: jest.fn(() => 20)
+        getTotalWorkspaceBounties: jest.fn(() => 20)
       },
       ui: {
         selectedPerson: '123',
@@ -151,13 +151,13 @@ describe('OrgTicketsPage Component', () => {
     });
 
     jest
-      .spyOn(mainStore, 'getSpecificOrganizationBounties')
+      .spyOn(mainStore, 'getSpecificWorkspaceBounties')
       .mockReturnValue(Promise.resolve(orgBounties));
-    jest.spyOn(mainStore, 'getTotalOrgBounties').mockReturnValue(Promise.resolve(20));
+    jest.spyOn(mainStore, 'getTotalWorkspaceBounties').mockReturnValue(Promise.resolve(20));
     async () => {
       const { getByText } = render(
-        <MemoryRouter initialEntries={['/org/bounties/random_org_uuid']}>
-          <Route path="/org/bounties/random_org_uuid" component={OrgTicketsPage} />
+        <MemoryRouter initialEntries={['/workspace/bounties/random_org_uuid']}>
+          <Route path="/workspace/bounties/random_org_uuid" component={WorkspaceTicketsPage} />
         </MemoryRouter>
       );
 

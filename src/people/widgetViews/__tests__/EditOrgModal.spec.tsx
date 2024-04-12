@@ -1,18 +1,18 @@
 import '@testing-library/jest-dom';
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { Organization } from 'store/main';
-import EditOrgModal from '../organization/EditOrgModal';
+import { Workspace } from 'store/main';
+import EditWorkspaceModal from '../workspace/EditWorkspaceModal';
 import { useStores } from '../../../store';
 
 jest.mock('../../../store', () => ({
   useStores: jest.fn()
 }));
 
-const mockUpdateOrganization = jest.fn();
+const mockUpdateWorkspace = jest.fn();
 const mockAddToast = jest.fn();
 
-const mockOrganization: Organization = {
+const mockWorkspace: Workspace = {
   id: '1',
   uuid: 'abc123',
   name: 'Tech Innovators Ltd.',
@@ -30,21 +30,21 @@ const mockOrganization: Organization = {
 };
 
 const props = {
-  ...mockOrganization,
+  ...mockWorkspace,
   isOpen: true,
   onDelete: () => null,
-  resetOrg: () => null,
+  resetWorkspace: () => null,
   addToast: () => null,
   close: () => null
 };
 
 beforeEach(() => {
-  mockUpdateOrganization.mockReset();
+  mockUpdateWorkspace.mockReset();
   mockAddToast.mockReset();
 
   (useStores as jest.Mock).mockReturnValue({
     main: {
-      updateOrganization: mockUpdateOrganization
+      updateWorkspace: mockUpdateWorkspace
     },
     ui: {
       meInfo: { owner_pubkey: 'xyz456' }
@@ -52,47 +52,47 @@ beforeEach(() => {
   });
 });
 
-describe('EditOrgModal Component', () => {
-  test('displays the Organization Name text field', () => {
-    render(<EditOrgModal {...props} />);
-    expect(screen.getAllByText(/Organization Name/i)).toHaveLength(2);
+describe('EditWorkspaceModal Component', () => {
+  test('displays the Workspace Name text field', () => {
+    render(<EditWorkspaceModal {...props} />);
+    expect(screen.getAllByText(/Workspace Name/i)).toHaveLength(2);
   });
 
   test('displays the Website text field', () => {
-    render(<EditOrgModal {...props} />);
+    render(<EditWorkspaceModal {...props} />);
     expect(screen.getAllByText(/Website/i)).toHaveLength(2);
   });
 
   test('displays the Github repo text field', () => {
-    render(<EditOrgModal {...props} />);
+    render(<EditWorkspaceModal {...props} />);
     expect(screen.getAllByText(/Github repo/i)).toHaveLength(2);
   });
 
   test('Padding for the Github repo text field should not be 0', () => {
-    render(<EditOrgModal {...props} />);
+    render(<EditWorkspaceModal {...props} />);
     expect(screen.getByLabelText(/Github repo/i)).not.toHaveStyle('padding: 0');
   });
 
   test('displays the Description box', () => {
-    render(<EditOrgModal {...props} />);
+    render(<EditWorkspaceModal {...props} />);
     expect(screen.getAllByText(/Description/i)).toHaveLength(2);
   });
 
   test('displays the Save changes button', () => {
-    render(<EditOrgModal {...props} />);
+    render(<EditWorkspaceModal {...props} />);
     expect(screen.getByText(/Save changes/i)).toBeInTheDocument();
   });
 
   test('displays the Delete button', () => {
-    render(<EditOrgModal {...props} />);
-    expect(screen.getByText(/Delete Organization/i)).toBeInTheDocument();
+    render(<EditWorkspaceModal {...props} />);
+    expect(screen.getByText(/Delete Workspace/i)).toBeInTheDocument();
   });
 
   test('Save button is enabled if name have a value, and website, github, logo, description are empty', async () => {
-    render(<EditOrgModal {...props} />);
+    render(<EditWorkspaceModal {...props} />);
 
-    fireEvent.change(screen.getByLabelText(/Organization Name/i) as HTMLInputElement, {
-      target: { value: 'Updated Org' }
+    fireEvent.change(screen.getByLabelText(/Workspace Name/i) as HTMLInputElement, {
+      target: { value: 'Updated Workspace' }
     });
 
     await waitFor(() => {
@@ -110,7 +110,7 @@ describe('EditOrgModal Component', () => {
   });
 
   test('Entering text in GitHub field does not increase character count in description field', async () => {
-    render(<EditOrgModal {...props} />);
+    render(<EditWorkspaceModal {...props} />);
 
     const initialDescriptionElement = screen.getByLabelText(/Description/i) as HTMLInputElement;
     const initialDescriptionLength = initialDescriptionElement.value.length;
@@ -126,7 +126,7 @@ describe('EditOrgModal Component', () => {
   });
 
   test('Entering text in Website field does not increase character count in description field', async () => {
-    render(<EditOrgModal {...props} />);
+    render(<EditWorkspaceModal {...props} />);
 
     const initialDescriptionElement = screen.getByLabelText(/Description/i) as HTMLInputElement;
     const initialDescriptionLength = initialDescriptionElement.value.length;
@@ -141,18 +141,18 @@ describe('EditOrgModal Component', () => {
     expect(updatedDescriptionLength).toBe(initialDescriptionLength);
   });
 
-  test('Nothing happens if only spaces are entered in the Org Name', async () => {
-    render(<EditOrgModal {...props} />);
+  test('Nothing happens if only spaces are entered in the Workspace Name', async () => {
+    render(<EditWorkspaceModal {...props} />);
 
-    const orgNameInput = screen.getByLabelText(/Organization Name/i) as HTMLInputElement;
+    const orgNameInput = screen.getByLabelText(/Workspace Name/i) as HTMLInputElement;
     fireEvent.change(orgNameInput, { target: { value: '   ' } });
 
     const saveChangesButton = screen.getByText('Save changes');
     fireEvent.click(saveChangesButton);
 
     await waitFor(() => {
-      expect(mockUpdateOrganization).not.toHaveBeenCalled();
-      expect(mockAddToast).not.toHaveBeenCalledWith('Successfully updated organization', 'success');
+      expect(mockUpdateWorkspace).not.toHaveBeenCalled();
+      expect(mockAddToast).not.toHaveBeenCalledWith('Successfully updated workspace', 'success');
     });
   });
 });
