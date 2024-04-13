@@ -474,12 +474,12 @@ describe('testing helpers', () => {
         },
         {
           input:
-            '      https:/   /community.    sphinx.c    hat/   org/boun     ties/ck95pe04nncj      naefo08g',
+            '      https:/   /community.    sphinx.c    hat/   workspace/boun     ties/ck95pe04nncj      naefo08g',
           expected: 'https://community.sphinx.chat/workspace/bounties/ck95pe04nncjnaefo08g'
         },
         {
           input:
-            'h          ttp         s:  //com      munity.sphinx.ch            at/p     /cd9dm5ua5fdts       j2c2mh0/organi   zations',
+            'h          ttp         s:  //com      munity.sphinx.ch            at/p     /cd9dm5ua5fdts       j2c2mh0/work   spaces',
           expected: 'https://community.sphinx.chat/p/cd9dm5ua5fdtsj2c2mh0/workspaces'
         }
       ];

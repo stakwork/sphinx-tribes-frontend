@@ -65,7 +65,7 @@ describe('Main store', () => {
 
     sinon.assert.calledWith(
       fetchStub,
-      `${TribesURL}/workspaces`,
+      `${TribesURL}/organizations`,
       sinon.match({
         method: 'POST',
         headers: expectedHeaders,
@@ -100,7 +100,7 @@ describe('Main store', () => {
 
     sinon.assert.calledWith(
       fetchStub,
-      `${TribesURL}/workspaces`,
+      `${TribesURL}/organizations`,
       sinon.match({
         method: 'POST',
         headers: expectedHeaders,
@@ -142,7 +142,7 @@ describe('Main store', () => {
 
     sinon.assert.calledWith(
       fetchStub,
-      `${TribesURL}/workspaces`,
+      `${TribesURL}/organizations`,
       sinon.match({
         method: 'POST',
         headers: expectedHeaders,
@@ -184,7 +184,7 @@ describe('Main store', () => {
 
     sinon.assert.calledWith(
       fetchStub,
-      `${TribesURL}/workspaces`,
+      `${TribesURL}/organizations`,
       sinon.match({
         method: 'POST',
         headers: expectedHeaders,
@@ -262,7 +262,7 @@ describe('Main store', () => {
 
     sinon.assert.calledWith(
       fetchStub,
-      `${TribesURL}/workspaces/users/${mockApiResponseData[2]}`,
+      `${TribesURL}/organizations/users/${mockApiResponseData[2]}`,
       sinon.match({
         method: 'POST',
         headers: expectedHeaders,
@@ -282,7 +282,7 @@ describe('Main store', () => {
 
     fetchStub.resolves(Promise.resolve(mockApiResponse));
 
-    const endpoint = `${TribesURL}/workspaces/users/${mockApiResponseData[2].orgUUID}`;
+    const endpoint = `${TribesURL}/organizations/users/${mockApiResponseData[2].orgUUID}`;
 
     const users = await mainStore.getWorkspaceUsers(mockApiResponseData[2].orgUUID);
 
@@ -376,7 +376,7 @@ describe('Main store', () => {
 
     sinon.assert.calledWithMatch(
       fetchStub,
-      `${TribesURL}/workspaces/user/${userId}`,
+      `${TribesURL}/organizations/user/${userId}`,
       sinon.match({
         method: 'GET',
         mode: 'cors',
@@ -415,7 +415,7 @@ describe('Main store', () => {
 
     sinon.assert.calledWithMatch(
       fetchStub,
-      `${TribesURL}/workspaces/${uuid}`,
+      `${TribesURL}/organizations/${uuid}`,
       sinon.match({
         method: 'GET',
         mode: 'cors',
@@ -443,7 +443,7 @@ describe('Main store', () => {
 
     sinon.assert.calledWithMatch(
       fetchStub,
-      `${TribesURL}/workspaces/foruser/${mockApiResponseData[0].uuid}`,
+      `${TribesURL}/organizations/foruser/${mockApiResponseData[0].uuid}`,
       sinon.match({
         method: 'GET',
         mode: 'cors',
@@ -475,7 +475,7 @@ describe('Main store', () => {
 
     sinon.assert.calledWithMatch(
       fetchStub,
-      `${TribesURL}/workspaces/users/${mockApiResponseData[2].orgUUID}/count`,
+      `${TribesURL}/organizations/users/${mockApiResponseData[2].orgUUID}/count`,
       sinon.match({
         method: 'GET',
         mode: 'cors'
@@ -529,7 +529,7 @@ describe('Main store', () => {
 
     sinon.assert.calledWithMatch(
       fetchStub,
-      `${TribesURL}/workspaces/users/${orgUserUUID}`,
+      `${TribesURL}/organizations/users/${orgUserUUID}`,
       sinon.match({
         method: 'DELETE',
         mode: 'cors',
@@ -901,7 +901,7 @@ describe('Main store', () => {
 
   it('should fetch and store workspace bounties successfully, user signed out', async () => {
     uiStore.setMeInfo(emptyMeInfo);
-    const allBountiesUrl = `http://${getHost()}/workspaces/bounties/1111`;
+    const allBountiesUrl = `http://${getHost()}/organizations/bounties/1111`;
     fetchStub.withArgs(allBountiesUrl, sinon.match.any).returns(
       Promise.resolve({
         status: 200,
@@ -926,7 +926,7 @@ describe('Main store', () => {
 
   it('should reset exisiting workspace bounty if reset flag is passed, user signed out', async () => {
     uiStore.setMeInfo(emptyMeInfo);
-    const allBountiesUrl = `http://${getHost()}/workspaces/bounties/1111`;
+    const allBountiesUrl = `http://${getHost()}/organizations/bounties/1111`;
     const mockBounty = { ...mockBounties[0] };
     mockBounty.bounty.id = 2;
     fetchStub.withArgs(allBountiesUrl, sinon.match.any).returns(
@@ -957,7 +957,7 @@ describe('Main store', () => {
 
   it('should add to exisiting bounty if reset flag is not passed, user signed out', async () => {
     uiStore.setMeInfo(emptyMeInfo);
-    const allBountiesUrl = `http://${getHost()}/workspaces/bounties/1111`;
+    const allBountiesUrl = `http://${getHost()}/organizations/bounties/1111`;
     const mockBounty = { ...mockBounties[0] };
     mockBounty.bounty.id = 2;
     fetchStub.withArgs(allBountiesUrl, sinon.match.any).returns(
