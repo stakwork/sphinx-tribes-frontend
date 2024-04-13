@@ -1,26 +1,26 @@
-describe('Edit Bounty By Searching, Change Organization And Assignee', () => {
-  const OrgName1 = 'UmerOrgT1';
-  const OrgName2 = 'UmerOrgT2';
+describe('Edit Bounty By Searching, Change Workspace And Assignee', () => {
+  const WorkspaceName1 = 'UmerWorkspaceT1';
+  const WorkspaceName2 = 'UmerWorkspaceT2';
   const NewAssignee = 'carol';
   const NewAmount = '200';
   const NewCodingLanguages = ['Python', 'Rust'];
 
-  const org: Cypress.Organization = {
+  const workSpace: Cypress.Workspace = {
     loggedInAs: 'alice',
-    name: 'UmerOrgT',
-    description: 'An organization focused on amazing projects.',
+    name: 'UmerWorkspaceT',
+    description: 'An workspace focused on amazing projects.',
     website: 'https://amazing.org',
     github: 'https://github.com/amazing'
   };
 
   const bounty: Cypress.Bounty = {
-    organization: OrgName1,
+    workspace: WorkspaceName1,
     title: 'UmerBounty',
     category: 'Web development',
     coding_language: ['Typescript', 'Javascript', 'Lightning'],
     description: 'This is available',
     amount: '110',
-    tribe: 'Amazing Org Tribe',
+    tribe: 'Amazing Workspace Tribe',
     estimate_session_length: 'Less than 3 hour',
     estimate_completion_date: '09/09/2024',
     deliverables: 'We are good to go man',
@@ -28,19 +28,19 @@ describe('Edit Bounty By Searching, Change Organization And Assignee', () => {
   };
 
   beforeEach(() => {
-    cy.login(org.loggedInAs);
+    cy.login(workSpace.loggedInAs);
     cy.wait(1000);
-    cy.contains(org.loggedInAs).click();
+    cy.contains(workSpace.loggedInAs).click();
     cy.wait(1000);
     for (let i = 1; i <= 2; i++) {
-      const updatedOrgName = `UmerOrgT${i}`;
-      const updatedOrg = { ...org, name: updatedOrgName };
-      cy.create_org(updatedOrg);
+      const updatedName = `UmerWorkspaceT${i}`;
+      const updatedWorkspace = { ...workSpace, name: updatedName };
+      cy.create_workspace(updatedWorkspace);
       cy.wait(1000);
     }
   });
 
-  it('should be able to edit a bounty by searching, changing organization, amount, coding languages, and assignee', () => {
+  it('should be able to edit a bounty by searching, changing workspace, amount, coding languages, and assignee', () => {
     cy.create_bounty(bounty);
     cy.wait(1000);
 
@@ -63,7 +63,7 @@ describe('Edit Bounty By Searching, Change Organization And Assignee', () => {
     cy.get('[data-testid="org_uuid"]').click({ force: true });
     cy.wait(600);
 
-    cy.contains(OrgName2).click({ force: true });
+    cy.contains(WorkspaceName2).click({ force: true });
     cy.wait(1000);
 
     cy.get('.SearchInput').type(NewAssignee);
@@ -105,7 +105,7 @@ describe('Edit Bounty By Searching, Change Organization And Assignee', () => {
     cy.get('body').click(0, 0);
     cy.wait(1000);
 
-    cy.contains(OrgName2).should('exist').and('be.visible');
+    cy.contains(WorkspaceName2).should('exist').and('be.visible');
     cy.wait(600);
 
     NewCodingLanguages.forEach((language: any) => {
@@ -120,6 +120,6 @@ describe('Edit Bounty By Searching, Change Organization And Assignee', () => {
     cy.wait(600);
 
     cy.get('body').click(0, 0);
-    cy.logout(org.loggedInAs);
+    cy.logout(workSpace.loggedInAs);
   });
 });

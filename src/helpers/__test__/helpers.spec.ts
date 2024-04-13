@@ -247,15 +247,15 @@ describe('testing helpers', () => {
     test('should correctly update the status of a role if it is present in the default roles', () => {
       const displayedRoles: RolesCategory[] = [
         { name: 'Manage bounties', roles: [], status: false },
-        { name: 'Fund organization', roles: [], status: false },
-        { name: 'Withdraw from organization', roles: [], status: false },
+        { name: 'Fund workspace', roles: [], status: false },
+        { name: 'Withdraw from workspace', roles: [], status: false },
         { name: 'View transaction history', roles: [], status: false }
       ];
       const result = handleDisplayRole(displayedRoles);
       expect(result.newDisplayedRoles).toEqual([
         { name: 'Manage bounties', roles: [], status: true },
-        { name: 'Fund organization', roles: [], status: true },
-        { name: 'Withdraw from organization', roles: [], status: true },
+        { name: 'Fund workspace', roles: [], status: true },
+        { name: 'Withdraw from workspace', roles: [], status: true },
         { name: 'View transaction history', roles: [], status: true }
       ]);
       expect(result.tempDataRole).toEqual({});
@@ -264,15 +264,15 @@ describe('testing helpers', () => {
     test('should correctly update the tempDataRole object with the data roles of a role if it is present in the default roles', () => {
       const displayedRoles: RolesCategory[] = [
         { name: 'Manage bounties', roles: ['role1', 'role2'], status: false },
-        { name: 'Fund organization', roles: ['role3'], status: false },
-        { name: 'Withdraw from organization', roles: ['role4'], status: false },
+        { name: 'Fund workspace', roles: ['role3'], status: false },
+        { name: 'Withdraw from workspace', roles: ['role4'], status: false },
         { name: 'View transaction history', roles: ['role5'], status: false }
       ];
       const result = handleDisplayRole(displayedRoles);
       expect(result.newDisplayedRoles).toEqual([
         { name: 'Manage bounties', roles: ['role1', 'role2'], status: true },
-        { name: 'Fund organization', roles: ['role3'], status: true },
-        { name: 'Withdraw from organization', roles: ['role4'], status: true },
+        { name: 'Fund workspace', roles: ['role3'], status: true },
+        { name: 'Withdraw from workspace', roles: ['role4'], status: true },
         { name: 'View transaction history', roles: ['role5'], status: true }
       ]);
       expect(result.tempDataRole).toEqual({
@@ -301,9 +301,7 @@ describe('testing helpers', () => {
     test('should return false if org id not present', async () => {
       jest.spyOn(mainStore, 'getUserRoles').mockReturnValue(Promise.resolve([]));
 
-      jest
-        .spyOn(mainStore, 'getUserOrganizationByUuid')
-        .mockReturnValue(Promise.resolve(undefined));
+      jest.spyOn(mainStore, 'getUserWorkspaceByUuid').mockReturnValue(Promise.resolve(undefined));
       const canManage = await userCanManageBounty('', user.owner_pubkey, mainStore);
       expect(canManage).toBeFalsy();
     });
@@ -316,7 +314,7 @@ describe('testing helpers', () => {
     test('should return false if org not present', async () => {
       jest.spyOn(mainStore, 'getUserRoles').mockReturnValueOnce(Promise.resolve([]));
       jest
-        .spyOn(mainStore, 'getUserOrganizationByUuid')
+        .spyOn(mainStore, 'getUserWorkspaceByUuid')
         .mockReturnValueOnce(Promise.resolve(undefined));
       const canManage = await userCanManageBounty('org_id', user.owner_pubkey, mainStore);
       await waitFor(async () => {
@@ -327,7 +325,7 @@ describe('testing helpers', () => {
     test('should return true if user is owner of the org', async () => {
       jest.spyOn(mainStore, 'getUserRoles').mockReturnValueOnce(Promise.resolve([]));
       jest
-        .spyOn(mainStore, 'getUserOrganizationByUuid')
+        .spyOn(mainStore, 'getUserWorkspaceByUuid')
         .mockReturnValueOnce(Promise.resolve({ owner_pubkey: user.owner_pubkey } as any));
       const canManage = await userCanManageBounty('org_id', user.owner_pubkey, mainStore);
       await waitFor(async () => {
@@ -335,7 +333,7 @@ describe('testing helpers', () => {
       });
     });
 
-    test('should return true is has manage bounty roles for that organization', async () => {
+    test('should return true is has manage bounty roles for that workspace', async () => {
       jest
         .spyOn(mainStore, 'getUserRoles')
         .mockReturnValueOnce(
@@ -348,7 +346,7 @@ describe('testing helpers', () => {
           ])
         );
       jest
-        .spyOn(mainStore, 'getUserOrganizationByUuid')
+        .spyOn(mainStore, 'getUserWorkspaceByUuid')
         .mockReturnValueOnce(Promise.resolve({ owner_pubkey: 'other_owner' } as any));
       mainStore.setBountyRoles([
         { name: 'ADD BOUNTY' },
@@ -364,12 +362,12 @@ describe('testing helpers', () => {
       });
     });
 
-    test('should return false if user does not have manage bounty roles for that organization', async () => {
+    test('should return false if user does not have manage bounty roles for that workspace', async () => {
       jest
         .spyOn(mainStore, 'getUserRoles')
         .mockReturnValueOnce(Promise.resolve([{ name: 'VIEW REPORT' }]));
       jest
-        .spyOn(mainStore, 'getUserOrganizationByUuid')
+        .spyOn(mainStore, 'getUserWorkspaceByUuid')
         .mockReturnValueOnce(Promise.resolve({ owner_pubkey: 'other_owner' } as any));
 
       mainStore.setBountyRoles([
@@ -476,13 +474,13 @@ describe('testing helpers', () => {
         },
         {
           input:
-            '      https:/   /community.    sphinx.c    hat/   org/boun     ties/ck95pe04nncj      naefo08g',
-          expected: 'https://community.sphinx.chat/org/bounties/ck95pe04nncjnaefo08g'
+            '      https:/   /community.    sphinx.c    hat/   workspace/boun     ties/ck95pe04nncj      naefo08g',
+          expected: 'https://community.sphinx.chat/workspace/bounties/ck95pe04nncjnaefo08g'
         },
         {
           input:
-            'h          ttp         s:  //com      munity.sphinx.ch            at/p     /cd9dm5ua5fdts       j2c2mh0/organi   zations',
-          expected: 'https://community.sphinx.chat/p/cd9dm5ua5fdtsj2c2mh0/organizations'
+            'h          ttp         s:  //com      munity.sphinx.ch            at/p     /cd9dm5ua5fdts       j2c2mh0/work   spaces',
+          expected: 'https://community.sphinx.chat/p/cd9dm5ua5fdtsj2c2mh0/workspaces'
         }
       ];
 

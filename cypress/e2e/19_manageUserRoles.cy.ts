@@ -1,20 +1,20 @@
-describe('Alice Create an Organization and then manage user roles', () => {
-  const org = {
+describe('Alice Create an Workspace and then manage user roles', () => {
+  const workSpace = {
     loggedInAs: 'alice',
-    name: 'User Org',
-    description: 'We are testing out our organization',
+    name: 'User Workspace',
+    description: 'We are testing out our workspace',
     website: 'https://community.sphinx.chat',
     github: 'https://github.com/stakwork/sphinx-tribes-frontend'
   };
 
-  it('Create and organization and the manage user roles', () => {
-    cy.login(org.loggedInAs);
+  it('Create and workspace and the manage user roles', () => {
+    cy.login(workSpace.loggedInAs);
     cy.wait(1000);
 
-    cy.create_org(org);
+    cy.create_workspace(workSpace);
     cy.wait(1000);
 
-    cy.contains(org.name).contains('Manage').click();
+    cy.contains(workSpace.name).contains('Manage').click();
     cy.wait(1000);
 
     cy.contains('Add User').click();
@@ -42,7 +42,7 @@ describe('Alice Create an Organization and then manage user roles', () => {
     cy.contains('bob').get('[data-testid="settings-icon"]').click();
     cy.wait(1000);
 
-    cy.contains('label', 'Withdraw from organization').prev('input[type="checkbox"]').uncheck();
+    cy.contains('label', 'Withdraw from workspace').prev('input[type="checkbox"]').uncheck();
     cy.wait(1000);
 
     cy.contains('Update roles').click();
@@ -51,12 +51,12 @@ describe('Alice Create an Organization and then manage user roles', () => {
     cy.contains('bob').get('[data-testid="settings-icon"]').click();
     cy.wait(1000);
 
-    cy.contains('label', 'Withdraw from organization')
+    cy.contains('label', 'Withdraw from workspace')
       .prev('input[type="checkbox"]')
       .should('not.be.checked');
     cy.wait(1000);
 
     cy.get('body').click(0, 0);
-    cy.logout(org.loggedInAs);
+    cy.logout(workSpace.loggedInAs);
   });
 });

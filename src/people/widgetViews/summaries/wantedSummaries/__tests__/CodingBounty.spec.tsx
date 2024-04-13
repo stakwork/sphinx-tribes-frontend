@@ -89,7 +89,7 @@ describe('MobileView component', () => {
     createdURL: 'DefaultCreatedURL',
     created: 1234567890,
     loomEmbedUrl: 'DefaultLoomEmbedUrl',
-    org_uuid: 'DefaultOrgUUID',
+    org_uuid: 'DefaultWorkspaceUUID',
     id: 987654321,
     localPaid: 'UNKNOWN' as any,
     setLocalPaid: jest.fn(),

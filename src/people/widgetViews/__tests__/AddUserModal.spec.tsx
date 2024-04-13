@@ -3,7 +3,7 @@ import nock from 'nock';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
-import AddUserModal from '../organization/AddUserModal';
+import AddUserModal from '../workspace/AddUserModal.tsx';
 import { user } from '../../../__test__/__mockData__/user.ts';
 
 describe('AddUserModal Component', () => {

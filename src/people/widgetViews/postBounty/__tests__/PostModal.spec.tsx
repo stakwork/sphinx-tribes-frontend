@@ -51,7 +51,7 @@ describe('Post bounty modal', () => {
     const startButton = screen.getByText('Start');
     fireEvent.click(startButton);
     expect(screen.getByText('Basic info')).toBeInTheDocument();
-    const Form1 = screen.getByText('Organization (optional)');
+    const Form1 = screen.getByText('Workspace (optional)');
     const Form2 = screen.getByText('Bounty Title *');
     const Form3 = screen.getByText('Github Issue URL');
     const Form4 = screen.getByText('Category *');
@@ -66,7 +66,7 @@ describe('Post bounty modal', () => {
   test('clicking on assign hunter', () => {
     const closeHandler = jest.fn();
     const formData = {
-      organization: 'organization',
+      workspace: 'workspace',
       title: 'title',
       category: 'Web development',
       description: 'description',

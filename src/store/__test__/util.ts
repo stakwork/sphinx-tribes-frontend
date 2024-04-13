@@ -1,18 +1,18 @@
 export const transformBountyWithPeopleBounty = (bountyDetails: any) => {
   const bounty = { ...bountyDetails.bounty };
   let assignee;
-  let organization;
+  let workspace;
   const owner = { ...bountyDetails.owner };
 
   if (bounty.assignee) {
     assignee = { ...bountyDetails.assignee };
   }
   if (bounty.org_uuid) {
-    organization = { ...bountyDetails.organization };
+    workspace = { ...bountyDetails.workspace };
   }
   return {
     body: { ...bounty, assignee: assignee || '' },
     person: { ...owner, wanteds: [] } || { wanteds: [] },
-    organization: { ...organization }
+    workspace: { ...workspace }
   };
 };

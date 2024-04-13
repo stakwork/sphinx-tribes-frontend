@@ -127,7 +127,7 @@ const Bounties = (props: BountiesProps) => {
     widget,
     created,
     org_uuid,
-    activeOrg
+    activeWorkspace
   } = props;
 
   const color = colors['light'];
@@ -160,7 +160,7 @@ const Bounties = (props: BountiesProps) => {
         <BountyLink
           to={{
             pathname: `/bounty/${props.id}`,
-            state: { activeOrg }
+            state: { activeWorkspace }
           }}
         >
           <BountyContainer
@@ -215,7 +215,7 @@ const Bounties = (props: BountiesProps) => {
             <BountyLink
               to={{
                 pathname: `/bounty/${props.id}`,
-                state: { activeOrg }
+                state: { activeWorkspace }
               }}
             >
               <div style={{ display: 'flex', flexDirection: 'row' }}>

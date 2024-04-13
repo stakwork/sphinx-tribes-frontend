@@ -254,12 +254,12 @@ function MobileView(props: CodingBountiesProps) {
     setPaymentLoading(true);
     // If the bounty has a commitment fee, add the fee to the user payment
     const price = Number(props.price);
-    // if there is an organization and the organization's
+    // if there is an workspace and the workspace's
     // buudget is sufficient keysend to the user immediately
     // without generating an invoice, else generate an invoice
     if (org_uuid) {
-      const organizationBudget = await main.getOrganizationBudget(org_uuid);
-      const budget = organizationBudget.current_budget;
+      const workspaceBudget = await main.getWorkspaceBudget(org_uuid);
+      const budget = workspaceBudget.current_budget;
 
       const bounty = await main.getBountyById(id ?? 0);
       if (bounty.length && Number(budget) >= Number(price)) {
@@ -281,7 +281,7 @@ function MobileView(props: CodingBountiesProps) {
         return setToasts([
           {
             id: `${Math.random()}`,
-            title: 'Insufficient funds in the organization.',
+            title: 'Insufficient funds in the workspace.',
             color: 'danger',
             toastLifeTimeMs: 10000
           }

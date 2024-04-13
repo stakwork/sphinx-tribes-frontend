@@ -48,7 +48,7 @@ function WantedView(props: WantedViews2Props) {
     show = true,
     paid = false,
     id,
-    activeOrg
+    activeWorkspace
   } = props;
 
   const titleString = one_sentence_summary || title || '';
@@ -161,7 +161,7 @@ function WantedView(props: WantedViews2Props) {
                 name={name}
                 org_uuid={org_uuid}
                 org_img={img}
-                activeOrg={activeOrg}
+                activeWorkspace={activeWorkspace}
               />
             </BountyBox>
           ) : (
@@ -185,7 +185,7 @@ function WantedView(props: WantedViews2Props) {
                 org_uuid={org_uuid}
                 img={img}
                 id={id}
-                activeOrg={activeOrg}
+                activeWorkspace={activeWorkspace}
               />
             </BountyBox>
           )}

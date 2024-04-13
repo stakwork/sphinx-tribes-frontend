@@ -24,7 +24,7 @@ const mockBounties = [
     },
     assignee: {},
     owner: {},
-    organization: {
+    workspace: {
       name: 'sphinx-tribe'
     }
   }
@@ -141,7 +141,7 @@ describe('Tickets Component', () => {
     })();
   });
 
-  it('Test if a bounty is created by an organization, the organization name should be visible.', async () => {
+  it('Test if a bounty is created by an workspace, the workspace name should be visible.', async () => {
     render(<Tickets />);
 
     (async () => {
@@ -150,8 +150,8 @@ describe('Tickets Component', () => {
       });
 
       // Check if bounties are rendered
-      mockBounties.forEach(({ organization }) => {
-        expect(screen.getByText(`Organization name: ${organization.name}`)).toBeInTheDocument();
+      mockBounties.forEach(({ workspace }) => {
+        expect(screen.getByText(`Workspace name: ${workspace.name}`)).toBeInTheDocument();
       });
     })();
   });

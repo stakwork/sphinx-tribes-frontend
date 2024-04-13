@@ -13,7 +13,7 @@ import { MainLayout } from './MainLayout';
 import { Modals } from './Modals';
 import { People } from './people';
 import { TicketsPage } from './tickets';
-import { OrgTicketsPage } from './tickets/org';
+import { WorkspaceTicketsPage } from './tickets/workspace';
 import { LeaderboardPage } from './leaderboard';
 import { SuperAdmin } from './superadmin/index';
 
@@ -41,8 +41,8 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
           <Route path="/bounty/:bountyId">
             <TicketsPage />
           </Route>
-          <Route path="/org/bounties/:uuid">
-            <OrgTicketsPage />
+          <Route path="/workspace/bounties/:uuid">
+            <WorkspaceTicketsPage />
           </Route>
           <Route path="/leaderboard">
             <LeaderboardPage />

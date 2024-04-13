@@ -83,7 +83,7 @@ export interface Person {
   bounty_expires?: number;
 }
 
-export interface OrganizationUser {
+export interface WorkspaceUser {
   id: number;
   owner_pubkey: string;
   org_uuid: string;
@@ -138,7 +138,7 @@ export interface PersonBounty {
   commitment_fee?: number;
 }
 
-export type OrgTransactionType = 'deposit' | 'payment' | 'withdraw';
+export type WorkspaceTransactionType = 'deposit' | 'payment' | 'withdraw';
 
 export interface PaymentHistory {
   id: number;
@@ -153,7 +153,7 @@ export interface PaymentHistory {
   receiver_img: string;
   created: string;
   updated: string;
-  payment_type: OrgTransactionType;
+  payment_type: WorkspaceTransactionType;
   status: boolean;
 }
 
@@ -211,7 +211,7 @@ export interface LnInvoice {
   };
 }
 
-export interface Organization {
+export interface Workspace {
   id: string;
   uuid: string;
   name: string;
@@ -228,7 +228,7 @@ export interface Organization {
   deleted?: boolean;
 }
 
-export interface CreateOrganizationInput {
+export interface CreateWorkspaceInput {
   img: string;
   name: string;
   description?: string;
@@ -297,14 +297,14 @@ export const defaultBountyStatus: BountyStatus = {
   Paid: false
 };
 
-export interface OrgBountyStatus {
+export interface WorkspaceBountyStatus {
   Open: boolean;
   Assigned: boolean;
   Paid: boolean;
   Completed: boolean;
 }
 
-export interface OrganizationBudget {
+export interface WorkspaceBudget {
   org_uuid: string;
   current_budget: number;
   open_budget: number;
@@ -312,7 +312,7 @@ export interface OrganizationBudget {
   completed_budget: number;
 }
 
-export const defaultOrgBudget: OrganizationBudget = {
+export const defaultWorkspaceBudget: WorkspaceBudget = {
   org_uuid: '',
   current_budget: 0,
   open_budget: 0,
@@ -320,7 +320,7 @@ export const defaultOrgBudget: OrganizationBudget = {
   completed_budget: 0
 };
 
-export const defaultOrgBountyStatus: OrgBountyStatus = {
+export const defaultWorkspaceBountyStatus: WorkspaceBountyStatus = {
   Open: false,
   Assigned: false,
   Paid: false,
@@ -859,10 +859,10 @@ export class MainStore {
     this.bountiesStatus = status;
   }
 
-  orgBountiesStatus: BountyStatus = defaultOrgBountyStatus;
+  workspaceBountiesStatus: BountyStatus = defaultWorkspaceBountyStatus;
 
-  @action setOrgBountiesStatus(status: OrgBountyStatus) {
-    this.orgBountiesStatus = status;
+  @action setWorkspaceBountiesStatus(status: WorkspaceBountyStatus) {
+    this.workspaceBountiesStatus = status;
   }
 
   @persist('object')
@@ -938,6 +938,7 @@ export class MainStore {
         );
         this.setPeopleBounties(wanteds);
       }
+
       return ps3;
     } catch (e) {
       console.log('fetch failed getPeopleBounties: ', e);
@@ -1124,8 +1125,8 @@ export class MainStore {
     }
   }
 
-  getWantedsSpecOrgPrevParams?: QueryParams = {};
-  async getSpecificOrganizationBounties(uuid: string, params?: any): Promise<PersonBounty[]> {
+  getWantedsSpecWorkspacePrevParams?: QueryParams = {};
+  async getSpecificWorkspaceBounties(uuid: string, params?: any): Promise<PersonBounty[]> {
     const queryParams: QueryParams = {
       limit: queryLimit,
       sortBy: 'created',
@@ -1137,14 +1138,14 @@ export class MainStore {
 
     if (params) {
       // save previous params
-      this.getWantedsSpecOrgPrevParams = queryParams;
+      this.getWantedsSpecWorkspacePrevParams = queryParams;
     }
 
     // if we don't pass the params, we should use previous params for invalidate query
     const query2 = this.appendQueryParams(
       `organizations/bounties/${uuid}`,
       queryLimit,
-      params ? queryParams : this.getWantedsOrgPrevParams
+      params ? queryParams : this.getWantedsWorkspacePrevParams
     );
     try {
       const ps2 = await api.get(query2);
@@ -1191,12 +1192,12 @@ export class MainStore {
       }
       return ps3;
     } catch (e) {
-      console.log('fetch failed getSpecificOrganizationBounti: ', e);
+      console.log('fetch failed getSpecificWorkspaceBounti: ', e);
       return [];
     }
   }
 
-  async getOrganizationBounties(uuid: string, queryParams?: any): Promise<PersonBounty[]> {
+  async getWorkspaceBounties(uuid: string, queryParams?: any): Promise<PersonBounty[]> {
     queryParams = { ...queryParams, search: uiStore.searchText };
     try {
       const ps2 = await api.get(`organizations/bounties/${uuid}`);
@@ -1243,13 +1244,13 @@ export class MainStore {
       }
       return ps3;
     } catch (e) {
-      console.log('fetch failed getOrganizationBounties: ', e);
+      console.log('fetch failed getWorkspaceBounties: ', e);
       return [];
     }
   }
 
-  getWantedsTotalOrgPrevParams?: QueryParams = {};
-  async getTotalOrgBounties(uuid: string, params?: any): Promise<number> {
+  getWantedsTotalWorkspacePrevParams?: QueryParams = {};
+  async getTotalWorkspaceBounties(uuid: string, params?: any): Promise<number> {
     const queryParams: QueryParams = {
       limit: queryLimit,
       sortBy: 'created',
@@ -1261,14 +1262,14 @@ export class MainStore {
 
     if (params) {
       // save previous params
-      this.getWantedsTotalOrgPrevParams = queryParams;
+      this.getWantedsTotalWorkspacePrevParams = queryParams;
     }
 
     // if we don't pass the params, we should use previous params for invalidate query
     const query2 = this.appendQueryParams(
       `organizations/bounties/${uuid}`,
       orgQuerLimit,
-      params ? queryParams : this.getWantedsOrgPrevParams
+      params ? queryParams : this.getWantedsWorkspacePrevParams
     );
     try {
       const ps2 = await api.get(query2);
@@ -1316,7 +1317,7 @@ export class MainStore {
       }
       return ps3.length;
     } catch (e) {
-      console.log('fetch failed getOrganizationBounties: ', e);
+      console.log('fetch failed getWorkspaceBounties: ', e);
       return 0;
     }
   }
@@ -1898,16 +1899,17 @@ export class MainStore {
   }
 
   @persist
-  activeOrg = '';
-  setActiveOrg(org: string) {
-    this.activeOrg = org;
+  activeWorkspace = '';
+  setActiveWorkspace(org: string) {
+    this.activeWorkspace = org;
   }
 
-  async getOrganizationNextBountyByCreated(org_uuid: string, created: number): Promise<number> {
+  async getWorkspaceNextBountyByCreated(org_uuid: string, created: number): Promise<number> {
     try {
-      const orgBountiesStatus =
-        JSON.parse(localStorage.getItem('orgBountyStatus') || `{}`) || this.defaultOrgBountyStatus;
-      const params = { languages: this.bountyLanguages, ...orgBountiesStatus };
+      const workspaceBountiesStatus =
+        JSON.parse(localStorage.getItem('workspaceBountyStatus') || `{}`) ||
+        this.defaultWorkspaceBountyStatus;
+      const params = { languages: this.bountyLanguages, ...workspaceBountiesStatus };
 
       const queryParams: QueryParams = {
         limit: queryLimit,
@@ -1928,16 +1930,17 @@ export class MainStore {
       const bounty = await api.get(query);
       return bounty;
     } catch (e) {
-      console.log('fetch failed getOrganizationNextBountyById: ', e);
+      console.log('fetch failed getWorkspaceNextBountyById: ', e);
       return 0;
     }
   }
 
-  async getOrganizationPreviousBountyByCreated(org_uuid: string, created: number): Promise<number> {
+  async getWorkspacePreviousBountyByCreated(org_uuid: string, created: number): Promise<number> {
     try {
-      const orgBountiesStatus =
-        JSON.parse(localStorage.getItem('orgBountyStatus') || `{}`) || this.defaultOrgBountyStatus;
-      const params = { languages: this.bountyLanguages, ...orgBountiesStatus };
+      const workspaceBountiesStatus =
+        JSON.parse(localStorage.getItem('workspaceBountyStatus') || `{}`) ||
+        this.defaultWorkspaceBountyStatus;
+      const params = { languages: this.bountyLanguages, ...workspaceBountiesStatus };
 
       const queryParams: QueryParams = {
         limit: queryLimit,
@@ -1958,7 +1961,7 @@ export class MainStore {
       const bounty = await api.get(query);
       return bounty;
     } catch (e) {
-      console.log('fetch failed getOrganizationPreviousBountyById: ', e);
+      console.log('fetch failed getWorkspacePreviousBountyById: ', e);
       return 0;
     }
   }
@@ -2187,20 +2190,20 @@ export class MainStore {
   }
 
   @observable
-  organizations: Organization[] = [];
+  workspaces: Workspace[] = [];
 
-  @action setOrganizations(organizations: Organization[]) {
-    this.organizations = organizations;
+  @action setWorkspaces(workspaces: Workspace[]) {
+    this.workspaces = workspaces;
   }
 
   @observable
-  dropDownOrganizations: Organization[] = [];
+  dropDownWorkspaces: Workspace[] = [];
 
-  @action setDropDownOrganizations(organizations: Organization[]) {
-    this.dropDownOrganizations = organizations;
+  @action setDropDownWorkspaces(workspaces: Workspace[]) {
+    this.dropDownWorkspaces = workspaces;
   }
 
-  @action async getUserOrganizations(id: number): Promise<Organization[]> {
+  @action async getUserWorkspaces(id: number): Promise<Workspace[]> {
     try {
       const info = uiStore;
       if (!info.selectedPerson && !uiStore.meInfo?.id) return [];
@@ -2214,15 +2217,15 @@ export class MainStore {
       });
 
       const data = await r.json();
-      this.setOrganizations(data);
+      this.setWorkspaces(data);
       return await data;
     } catch (e) {
-      console.log('Error getUserOrganizations', e);
+      console.log('Error getUserWorkspaces', e);
       return [];
     }
   }
 
-  @action async getUserDropdownOrganizations(id: number): Promise<Organization[]> {
+  @action async getUserDropdownWorkspaces(id: number): Promise<Workspace[]> {
     try {
       const info = uiStore;
       if (!info.selectedPerson && !uiStore.meInfo?.id) return [];
@@ -2236,15 +2239,15 @@ export class MainStore {
       });
 
       const data = await r.json();
-      this.setDropDownOrganizations(data);
+      this.setDropDownWorkspaces(data);
       return await data;
     } catch (e) {
-      console.log('Error getUserDropdownOrganizations', e);
+      console.log('Error getUserDropdownWorkspaces', e);
       return [];
     }
   }
 
-  async getUserOrganizationByUuid(uuid: string): Promise<Organization | undefined> {
+  async getUserWorkspaceByUuid(uuid: string): Promise<Workspace | undefined> {
     try {
       const r: any = await fetch(`${TribesURL}/organizations/${uuid}`, {
         method: 'GET',
@@ -2257,12 +2260,12 @@ export class MainStore {
       const data = await r.json();
       return await data;
     } catch (e) {
-      console.log('Error getOrganizationByUuid', e);
+      console.log('Error getWorkspaceByUuid', e);
       return undefined;
     }
   }
 
-  @action async addOrganization(body: CreateOrganizationInput): Promise<any> {
+  @action async addWorkspace(body: CreateWorkspaceInput): Promise<any> {
     try {
       if (!uiStore.meInfo) return null;
       const info = uiStore.meInfo;
@@ -2280,7 +2283,7 @@ export class MainStore {
 
       return r;
     } catch (e) {
-      console.log('Error addOrganization', e);
+      console.log('Error addWorkspace', e);
       return false;
     }
   }
@@ -2300,7 +2303,7 @@ export class MainStore {
     return r;
   }
 
-  async updateOrganization(body: Organization): Promise<any> {
+  async updateWorkspace(body: Workspace): Promise<any> {
     try {
       if (!uiStore.meInfo) return null;
       const info = uiStore.meInfo;
@@ -2319,12 +2322,12 @@ export class MainStore {
 
       return r;
     } catch (e) {
-      console.log('Error addOrganization', e);
+      console.log('Error addWorkspace', e);
       return false;
     }
   }
 
-  async getOrganizationUsersCount(uuid: string): Promise<number> {
+  async getWorkspaceUsersCount(uuid: string): Promise<number> {
     try {
       const r: any = await fetch(`${TribesURL}/organizations/users/${uuid}/count`, {
         method: 'GET',
@@ -2333,12 +2336,12 @@ export class MainStore {
 
       return r.json();
     } catch (e) {
-      console.log('Error getOrganizationUsersCount', e);
+      console.log('Error getWorkspaceUsersCount', e);
       return 0;
     }
   }
 
-  async getOrganizationUsers(uuid: string): Promise<Person[]> {
+  async getWorkspaceUsers(uuid: string): Promise<Person[]> {
     try {
       const r: any = await fetch(`${TribesURL}/organizations/users/${uuid}`, {
         method: 'GET',
@@ -2347,12 +2350,12 @@ export class MainStore {
 
       return r.json();
     } catch (e) {
-      console.log('Error getOrganizationUsers', e);
+      console.log('Error getWorkspaceUsers', e);
       return [];
     }
   }
 
-  async getOrganizationUser(uuid: string): Promise<OrganizationUser | undefined> {
+  async getWorkspaceUser(uuid: string): Promise<WorkspaceUser | undefined> {
     try {
       if (!uiStore.meInfo) return undefined;
       const info = uiStore.meInfo;
@@ -2368,15 +2371,12 @@ export class MainStore {
       const user = await r.json();
       return user;
     } catch (e) {
-      console.log('Error getOrganizationUser', e);
+      console.log('Error getWorkspaceUser', e);
       return undefined;
     }
   }
 
-  @action async addOrganizationUser(body: {
-    owner_pubkey: string;
-    org_uuid: string;
-  }): Promise<any> {
+  @action async addWorkspaceUser(body: { owner_pubkey: string; org_uuid: string }): Promise<any> {
     try {
       if (!uiStore.meInfo) return null;
       const info = uiStore.meInfo;
@@ -2394,12 +2394,12 @@ export class MainStore {
 
       return r;
     } catch (e) {
-      console.log('Error addOrganizationUser', e);
+      console.log('Error addWorkspaceUser', e);
       return false;
     }
   }
 
-  @action async deleteOrganizationUser(body: any, uuid: string): Promise<any> {
+  @action async deleteWorkspaceUser(body: any, uuid: string): Promise<any> {
     try {
       if (!uiStore.meInfo) return null;
       const info = uiStore.meInfo;
@@ -2417,7 +2417,7 @@ export class MainStore {
 
       return r;
     } catch (e) {
-      console.log('Error deleteOrganizationUser', e);
+      console.log('Error deleteWorkspaceUser', e);
       return false;
     }
   }
@@ -2533,7 +2533,7 @@ export class MainStore {
     }
   }
 
-  async getOrganizationBudget(uuid: string): Promise<any> {
+  async getWorkspaceBudget(uuid: string): Promise<any> {
     try {
       if (!uiStore.meInfo) return null;
       const info = uiStore.meInfo;
@@ -2547,7 +2547,7 @@ export class MainStore {
       });
       return r.json();
     } catch (e) {
-      console.log('Error getOrganizationBudget', e);
+      console.log('Error getWorkspaceBudget', e);
       return false;
     }
   }
@@ -2708,7 +2708,7 @@ export class MainStore {
     }
   }
 
-  async pollOrgBudgetInvoices(org_uuid: string): Promise<any> {
+  async pollWorkspaceBudgetInvoices(org_uuid: string): Promise<any> {
     try {
       if (!uiStore.meInfo) return undefined;
       const info = uiStore.meInfo;
@@ -2727,7 +2727,7 @@ export class MainStore {
     }
   }
 
-  async organizationInvoiceCount(org_uuid: string): Promise<any> {
+  async workspaceInvoiceCount(org_uuid: string): Promise<any> {
     try {
       if (!uiStore.meInfo) return 0;
       const info = uiStore.meInfo;
@@ -2746,7 +2746,7 @@ export class MainStore {
     }
   }
 
-  async organizationDelete(org_uuid: string): Promise<any> {
+  async workspaceDelete(org_uuid: string): Promise<any> {
     try {
       if (!uiStore.meInfo) return 0;
       const info = uiStore.meInfo;
@@ -2761,7 +2761,7 @@ export class MainStore {
 
       return r;
     } catch (e) {
-      console.error('organizationDelete', e);
+      console.error('workspaceDelete', e);
     }
   }
 

@@ -6,8 +6,8 @@ import { withProviders } from '../../providers';
 import { MOCK_ENVIRONMENT_HOOKS } from './constants';
 import { useMockBountyData } from './useMockBountyData';
 import { useMockBountyRoleData } from './useMockBountyRoleData';
-import { useMockDropdownOrganizationData } from './useMockDropdownOrganizationData';
-import { useMockOrganizationsData } from './useMockOrganizationsData';
+import { useMockDropdownWorkspaceData } from './useMockDropdownWorkspaceData';
+import { useMockWorkspacesData } from './useMockWorkspacesData';
 import { useMockUsdToSatExchangeRate } from './useMockUsdToSatExchangeRate';
 import { useMockSelfProfileStore } from './useMockSelfProfileStore';
 
@@ -23,10 +23,10 @@ export function MockStoreEnvironment({
   });
   useMockBountyData({ enabled: hooks.includes(MOCK_ENVIRONMENT_HOOKS.BOUNTY_DATA) });
   useMockBountyRoleData({ enabled: hooks.includes(MOCK_ENVIRONMENT_HOOKS.BOUNTY_ROES) });
-  useMockDropdownOrganizationData({
+  useMockDropdownWorkspaceData({
     enabled: hooks.includes(MOCK_ENVIRONMENT_HOOKS.DROPDOWN_ORGANIZATION_DATA)
   });
-  useMockOrganizationsData({ enabled: hooks.includes(MOCK_ENVIRONMENT_HOOKS.ORGANIZATION_DATA) });
+  useMockWorkspacesData({ enabled: hooks.includes(MOCK_ENVIRONMENT_HOOKS.ORGANIZATION_DATA) });
   useMockUsdToSatExchangeRate({
     enabled: hooks.includes(MOCK_ENVIRONMENT_HOOKS.USD_TO_SAT_EXCHANGE_RATE)
   });

@@ -27,7 +27,7 @@ describe('Post bounty', () => {
   test('display error message if bounty fails to create', () => {
     const closeHandler = jest.fn();
     const formData = {
-      organization: 'organization',
+      workspace: 'workspace',
       title: 'title',
       category: 'Web development',
       description: 'description',

@@ -51,8 +51,8 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
   let orgUuid = '';
   if (location.state) {
     const locationState: any = location.state;
-    orgUuid = locationState?.activeOrg;
-    main.setActiveOrg(orgUuid);
+    orgUuid = locationState?.activeWorkspace;
+    main.setActiveWorkspace(orgUuid);
   }
 
   const isMobile = useIsMobile();
@@ -65,7 +65,7 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
     };
   }, [location.search]);
 
-  const { activeOrg } = main;
+  const { activeWorkspace } = main;
 
   const getBounty = useCallback(async () => {
     let bounty;
@@ -102,21 +102,21 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
     setVisible(false);
     setisDeleted(false);
 
-    if (isDirectAccess() && !activeOrg) {
+    if (isDirectAccess() && !activeWorkspace) {
       history.push('/bounties');
     } else {
       history.goBack();
     }
 
     // set the active org to an empty string before closing
-    main.setActiveOrg('');
+    main.setActiveWorkspace('');
   };
 
   const prevArrHandler = async () => {
     const { created } = activeBounty[0].body;
-    if (activeOrg) {
+    if (activeWorkspace) {
       try {
-        const bountyId = await main.getOrganizationNextBountyByCreated(activeOrg, created);
+        const bountyId = await main.getWorkspaceNextBountyByCreated(activeWorkspace, created);
         if (bountyId === 0) {
           addToast('There are no more bounties to display!', 'primary');
         } else {
@@ -138,9 +138,9 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
 
   const nextArrHandler = async () => {
     const { created } = activeBounty[0].body;
-    if (activeOrg) {
+    if (activeWorkspace) {
       try {
-        const bountyId = await main.getOrganizationPreviousBountyByCreated(activeOrg, created);
+        const bountyId = await main.getWorkspacePreviousBountyByCreated(activeWorkspace, created);
         if (bountyId === 0) {
           addToast('There are no more bounties to display!', 'primary');
         } else {

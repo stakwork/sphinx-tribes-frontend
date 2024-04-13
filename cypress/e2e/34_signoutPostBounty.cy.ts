@@ -6,7 +6,7 @@ describe('Signed Out Post Bounty Flow ', () => {
     category: 'Web development',
     description: 'This is available',
     amount: '12',
-    tribe: 'Amazing Org Tribe',
+    tribe: 'Amazing Workspace Tribe',
     deliverables: 'We are good to go man'
   };
 

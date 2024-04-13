@@ -10,7 +10,7 @@
   text-align: center;
 }
 
-.organization {
+.workspace {
   overflow: hidden;
   color: var(--Primary-Text-1, var(--Press-Icon-Color, #292c33));
   text-overflow: ellipsis;

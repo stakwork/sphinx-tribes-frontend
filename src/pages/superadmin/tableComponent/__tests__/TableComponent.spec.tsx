@@ -37,8 +37,8 @@ const mockBounties: Bounty[] = [
     assigneeImage: '',
     provider: 'Provider 1',
     providerImage: 'provider-image-1.jpg',
-    organization_name: 'Org 1',
-    organizationImage: 'org-image-1.jpg',
+    workspace_name: 'Workspace 1',
+    workspaceImage: 'org-image-1.jpg',
     paid: false,
     assignee_alias: 'Ednum',
     status: 'open'
@@ -55,8 +55,8 @@ const mockBounties: Bounty[] = [
     assigneeImage: 'assignee-image-2.jpg',
     provider: 'Provider 2',
     providerImage: 'provider-image-2.jpg',
-    organization_name: 'Org 2',
-    organizationImage: 'org-image-2.jpg',
+    workspace_name: 'Workspace 2',
+    workspaceImage: 'org-image-2.jpg',
     status: 'assigned',
     paid: false,
     assignee_alias: 'Ednum'
@@ -73,8 +73,8 @@ const mockBounties: Bounty[] = [
     assigneeImage: 'assignee-image-3.jpg',
     provider: 'Provider 3',
     providerImage: 'provider-image-3.jpg',
-    organization_name: 'Org 3',
-    organizationImage: 'org-image-3.jpg',
+    workspace_name: 'Workspace 3',
+    workspaceImage: 'org-image-3.jpg',
     status: 'paid',
     paid: true,
     assignee_alias: 'Ednum'
@@ -94,8 +94,8 @@ const unSortedMockBounties: Bounty[] = [
     assigneeImage: 'assignee-image-2.jpg',
     provider: 'Provider 2',
     providerImage: 'provider-image-2.jpg',
-    organization_name: 'Org 2',
-    organizationImage: 'org-image-2.jpg',
+    workspace_name: 'Workspace 2',
+    workspaceImage: 'org-image-2.jpg',
     status: 'paid',
     paid: false,
     assignee_alias: 'Ednum'
@@ -112,8 +112,8 @@ const unSortedMockBounties: Bounty[] = [
     assigneeImage: '',
     provider: 'Provider 1',
     providerImage: 'provider-image-1.jpg',
-    organization_name: 'Org 1',
-    organizationImage: 'org-image-1.jpg',
+    workspace_name: 'Workspace 1',
+    workspaceImage: 'org-image-1.jpg',
     paid: false,
     assignee_alias: 'Ednum',
     status: 'open'
@@ -130,8 +130,8 @@ const unSortedMockBounties: Bounty[] = [
     assigneeImage: 'assignee-image-3.jpg',
     provider: 'Provider 3',
     providerImage: 'provider-image-3.jpg',
-    organization_name: 'Org 3',
-    organizationImage: 'org-image-3.jpg',
+    workspace_name: 'Workspace 3',
+    workspaceImage: 'org-image-3.jpg',
     status: 'assigned',
     paid: true,
     assignee_alias: 'Ednum'
@@ -246,9 +246,9 @@ describe('MyTable Component', () => {
     expect(getByText('Provider')).toBeInTheDocument();
   });
 
-  it('renders "Organization" in the document', () => {
+  it('renders "Workspace" in the document', () => {
     const { getByText } = render(<MyTable {...MockTableProps} headerIsFrozen={false} />);
-    expect(getByText('Organization')).toBeInTheDocument();
+    expect(getByText('Workspace')).toBeInTheDocument();
   });
 
   it('renders each element in the table in the document', () => {
@@ -269,7 +269,7 @@ describe('MyTable Component', () => {
       expect(getByText(dates[index])).toBeInTheDocument();
       // expect(getByText(String(bounty.dtgp))).toBeInTheDocument();
       // expect(getByText(bounty.provider)).toBeInTheDocument();
-      expect(getByText(bounty.organization_name)).toBeInTheDocument();
+      expect(getByText(bounty.workspace_name)).toBeInTheDocument();
     });
   });
 
@@ -323,8 +323,8 @@ describe('MyTable Component', () => {
         '035f22835fbf55cf4e6823447c63df74012d1d587ed60ef7cbfa3e430278c44cce:03a6ea2d9ead2120b12bd66292bb4a302c756983dc45dcb2b364b461c66fd53bcb:1099517001729',
       providerImage:
         'https://avatars.githubusercontent.com/u/10001?s=460&u=8c61f1cda5e9e2c2d1d5b8d2a5a8a5b8d2a5a8a5&v=4',
-      organization_name: 'OrganizationName',
-      organizationImage:
+      workspace_name: 'WorkspaceName',
+      workspaceImage:
         'https://avatars.githubusercontent.com/u/10001?s=460&u=8c61f1cda5e9e2c2d1d5b8d2a5a8a5b8d2a5a8a5&v=4',
       status: 'open',
       paid: false,
@@ -378,8 +378,8 @@ describe('MyTable Component', () => {
         '035f22835fbf55cf4e6823447c63df74012d1d587ed60ef7cbfa3e430278c44cce:03a6ea2d9ead2120b12bd66292bb4a302c756983dc45dcb2b364b461c66fd53bcb:1099517001729',
       providerImage:
         'https://avatars.githubusercontent.com/u/10001?s=460&u=8c61f1cda5e9e2c2d1d5b8d2a5a8a5b8d2a5a8a5&v=4',
-      organization_name: 'OrganizationName',
-      organizationImage:
+      workspace_name: 'WorkspaceName',
+      workspaceImage:
         'https://avatars.githubusercontent.com/u/10001?s=460&u=8c61f1cda5e9e2c2d1d5b8d2a5a8a5b8d2a5a8a5&v=4',
       status: 'open',
       assignee_alias: '',

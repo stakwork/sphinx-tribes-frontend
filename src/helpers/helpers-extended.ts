@@ -202,7 +202,7 @@ export interface RolesCategory {
 
 export const s_RolesCategories = [
   {
-    name: 'Manage organization',
+    name: 'Manage workspace',
     roles: ['EDIT ORGANIZATION'],
     status: false
   },
@@ -212,12 +212,12 @@ export const s_RolesCategories = [
     status: false
   },
   {
-    name: 'Fund organization',
+    name: 'Fund workspace',
     roles: ['ADD BUDGET'],
     status: false
   },
   {
-    name: 'Withdraw from organization',
+    name: 'Withdraw from workspace',
     roles: ['WITHDRAW BUDGET'],
     status: false
   },
@@ -315,8 +315,8 @@ export function handleDisplayRole(displayedRoles: RolesCategory[]) {
   // Set default data roles for first assign user
   const defaultRole = {
     'Manage bounties': true,
-    'Fund organization': true,
-    'Withdraw from organization': true,
+    'Fund workspace': true,
+    'Withdraw from workspace': true,
     'View transaction history': true
   };
 
@@ -339,14 +339,14 @@ export async function userCanManageBounty(
 ): Promise<boolean> {
   if (org_uuid && userPubkey) {
     const userRoles = await main.getUserRoles(org_uuid, userPubkey);
-    const org = await main.getUserOrganizationByUuid(org_uuid);
+    const org = await main.getUserWorkspaceByUuid(org_uuid);
     if (org) {
-      const isOrganizationAdmin = org.owner_pubkey === userPubkey;
+      const isWorkspaceAdmin = org.owner_pubkey === userPubkey;
       const userAccess =
         userHasManageBountyRoles(main.bountyRoles, userRoles) &&
         userHasRole(main.bountyRoles, userRoles, 'VIEW REPORT');
       const hasManageBountyRole = userRoles.some((role) => ManageBountiesGroup.includes(role.role));
-      return isOrganizationAdmin || userAccess || hasManageBountyRole;
+      return isWorkspaceAdmin || userAccess || hasManageBountyRole;
     }
   }
   return false;
