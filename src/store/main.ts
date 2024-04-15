@@ -1143,7 +1143,7 @@ export class MainStore {
 
     // if we don't pass the params, we should use previous params for invalidate query
     const query2 = this.appendQueryParams(
-      `organizations/bounties/${uuid}`,
+      `workspaces/bounties/${uuid}`,
       queryLimit,
       params ? queryParams : this.getWantedsWorkspacePrevParams
     );
@@ -1200,7 +1200,7 @@ export class MainStore {
   async getWorkspaceBounties(uuid: string, queryParams?: any): Promise<PersonBounty[]> {
     queryParams = { ...queryParams, search: uiStore.searchText };
     try {
-      const ps2 = await api.get(`organizations/bounties/${uuid}`);
+      const ps2 = await api.get(`workspaces/bounties/${uuid}`);
       const ps3: any[] = [];
 
       if (ps2 && ps2.length) {
@@ -1267,7 +1267,7 @@ export class MainStore {
 
     // if we don't pass the params, we should use previous params for invalidate query
     const query2 = this.appendQueryParams(
-      `organizations/bounties/${uuid}`,
+      `workspaces/bounties/${uuid}`,
       orgQuerLimit,
       params ? queryParams : this.getWantedsWorkspacePrevParams
     );
@@ -2208,7 +2208,7 @@ export class MainStore {
       const info = uiStore;
       if (!info.selectedPerson && !uiStore.meInfo?.id) return [];
 
-      const r: any = await fetch(`${TribesURL}/organizations/user/${id}`, {
+      const r: any = await fetch(`${TribesURL}/workspaces/user/${id}`, {
         method: 'GET',
         mode: 'cors',
         headers: {
@@ -2230,7 +2230,7 @@ export class MainStore {
       const info = uiStore;
       if (!info.selectedPerson && !uiStore.meInfo?.id) return [];
 
-      const r: any = await fetch(`${TribesURL}/organizations/user/dropdown/${id}`, {
+      const r: any = await fetch(`${TribesURL}/workspaces/user/dropdown/${id}`, {
         method: 'GET',
         mode: 'cors',
         headers: {
@@ -2249,7 +2249,7 @@ export class MainStore {
 
   async getUserWorkspaceByUuid(uuid: string): Promise<Workspace | undefined> {
     try {
-      const r: any = await fetch(`${TribesURL}/organizations/${uuid}`, {
+      const r: any = await fetch(`${TribesURL}/workspaces/${uuid}`, {
         method: 'GET',
         mode: 'cors',
         headers: {
@@ -2269,7 +2269,7 @@ export class MainStore {
     try {
       if (!uiStore.meInfo) return null;
       const info = uiStore.meInfo;
-      const r: any = await fetch(`${TribesURL}/organizations`, {
+      const r: any = await fetch(`${TribesURL}/workspaces`, {
         method: 'POST',
         mode: 'cors',
         body: JSON.stringify({
@@ -2307,7 +2307,7 @@ export class MainStore {
     try {
       if (!uiStore.meInfo) return null;
       const info = uiStore.meInfo;
-      const r: any = await fetch(`${TribesURL}/organizations`, {
+      const r: any = await fetch(`${TribesURL}/workspaces`, {
         method: 'POST',
 
         mode: 'cors',
@@ -2329,7 +2329,7 @@ export class MainStore {
 
   async getWorkspaceUsersCount(uuid: string): Promise<number> {
     try {
-      const r: any = await fetch(`${TribesURL}/organizations/users/${uuid}/count`, {
+      const r: any = await fetch(`${TribesURL}/workspaces/users/${uuid}/count`, {
         method: 'GET',
         mode: 'cors'
       });
@@ -2343,7 +2343,7 @@ export class MainStore {
 
   async getWorkspaceUsers(uuid: string): Promise<Person[]> {
     try {
-      const r: any = await fetch(`${TribesURL}/organizations/users/${uuid}`, {
+      const r: any = await fetch(`${TribesURL}/workspaces/users/${uuid}`, {
         method: 'GET',
         mode: 'cors'
       });
@@ -2359,7 +2359,7 @@ export class MainStore {
     try {
       if (!uiStore.meInfo) return undefined;
       const info = uiStore.meInfo;
-      const r: any = await fetch(`${TribesURL}/organizations/foruser/${uuid}`, {
+      const r: any = await fetch(`${TribesURL}/workspaces/foruser/${uuid}`, {
         method: 'GET',
         mode: 'cors',
         headers: {
@@ -2380,7 +2380,7 @@ export class MainStore {
     try {
       if (!uiStore.meInfo) return null;
       const info = uiStore.meInfo;
-      const r: any = await fetch(`${TribesURL}/organizations/users/${body.org_uuid}`, {
+      const r: any = await fetch(`${TribesURL}/workspaces/users/${body.org_uuid}`, {
         method: 'POST',
         mode: 'cors',
         body: JSON.stringify({
@@ -2403,7 +2403,7 @@ export class MainStore {
     try {
       if (!uiStore.meInfo) return null;
       const info = uiStore.meInfo;
-      const r: any = await fetch(`${TribesURL}/organizations/users/${uuid}`, {
+      const r: any = await fetch(`${TribesURL}/workspaces/users/${uuid}`, {
         method: 'DELETE',
         mode: 'cors',
         body: JSON.stringify({
@@ -2433,7 +2433,7 @@ export class MainStore {
     try {
       if (!uiStore.meInfo) return [];
       const info = uiStore.meInfo;
-      const r: any = await fetch(`${TribesURL}/organizations/bounty/roles`, {
+      const r: any = await fetch(`${TribesURL}/workspaces/bounty/roles`, {
         method: 'GET',
         mode: 'cors',
         headers: {
@@ -2456,7 +2456,7 @@ export class MainStore {
     try {
       if (!uiStore.meInfo) return [];
       const info = uiStore.meInfo;
-      const r: any = await fetch(`${TribesURL}/organizations/users/role/${uuid}/${user}`, {
+      const r: any = await fetch(`${TribesURL}/workspaces/users/role/${uuid}/${user}`, {
         method: 'GET',
         mode: 'cors',
         headers: {
@@ -2476,7 +2476,7 @@ export class MainStore {
     try {
       if (!uiStore.meInfo) return null;
       const info = uiStore.meInfo;
-      const r: any = await fetch(`${TribesURL}/organizations/users/role/${uuid}/${user}`, {
+      const r: any = await fetch(`${TribesURL}/workspaces/users/role/${uuid}/${user}`, {
         method: 'POST',
         mode: 'cors',
         body: JSON.stringify(body),
@@ -2537,7 +2537,7 @@ export class MainStore {
     try {
       if (!uiStore.meInfo) return null;
       const info = uiStore.meInfo;
-      const r: any = await fetch(`${TribesURL}/organizations/budget/${uuid}`, {
+      const r: any = await fetch(`${TribesURL}/workspaces/budget/${uuid}`, {
         method: 'GET',
         mode: 'cors',
         headers: {
@@ -2579,7 +2579,7 @@ export class MainStore {
       if (!uiStore.meInfo) return [];
       const info = uiStore.meInfo;
       const r: any = await fetch(
-        `${TribesURL}/organizations/payments/${uuid}?page=${page}&limit=${limit}`,
+        `${TribesURL}/workspaces/payments/${uuid}?page=${page}&limit=${limit}`,
         {
           method: 'GET',
           mode: 'cors',
@@ -2602,7 +2602,7 @@ export class MainStore {
     try {
       if (!uiStore.meInfo) return [];
       const info = uiStore.meInfo;
-      const r: any = await fetch(`${TribesURL}/organizations/budget/history/${uuid}`, {
+      const r: any = await fetch(`${TribesURL}/workspaces/budget/history/${uuid}`, {
         method: 'GET',
         mode: 'cors',
         headers: {
@@ -2713,7 +2713,7 @@ export class MainStore {
       if (!uiStore.meInfo) return undefined;
       const info = uiStore.meInfo;
 
-      const r: any = await fetch(`${TribesURL}/organizations/poll/invoices/${org_uuid}`, {
+      const r: any = await fetch(`${TribesURL}/workspaces/poll/invoices/${org_uuid}`, {
         method: 'GET',
         mode: 'cors',
         headers: {
@@ -2731,7 +2731,7 @@ export class MainStore {
     try {
       if (!uiStore.meInfo) return 0;
       const info = uiStore.meInfo;
-      const r: any = await fetch(`${TribesURL}/organizations/invoices/count/${org_uuid}`, {
+      const r: any = await fetch(`${TribesURL}/workspaces/invoices/count/${org_uuid}`, {
         method: 'GET',
         mode: 'cors',
         headers: {
@@ -2750,7 +2750,7 @@ export class MainStore {
     try {
       if (!uiStore.meInfo) return 0;
       const info = uiStore.meInfo;
-      const r: any = await fetch(`${TribesURL}/organizations/delete/${org_uuid}`, {
+      const r: any = await fetch(`${TribesURL}/workspaces/delete/${org_uuid}`, {
         method: 'DELETE',
         mode: 'cors',
         headers: {
