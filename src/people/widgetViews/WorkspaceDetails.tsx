@@ -1,6 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useStores } from 'store';
-import { EuiGlobalToastList } from '@elastic/eui';
+import {
+  EuiFlexGrid,
+  EuiFlexItem,
+  EuiGlobalToastList,
+  useIsWithinBreakpoints,
+  EuiIcon
+} from '@elastic/eui';
 import { Button } from 'components/common';
 import {
   BountyRoles,
@@ -17,6 +23,8 @@ import { BountyModal } from 'people/main/bountyModal';
 import { Link } from 'react-router-dom';
 import history from '../../config/history';
 import avatarIcon from '../../public/static/profile_avatar.svg';
+import balanceIcon from '../../public/static/toll.svg';
+import balanceVector from '../../public/static/balancevector.svg';
 import DeleteTicketModal from './DeleteModal';
 import RolesModal from './workspace/RolesModal';
 import HistoryModal from './workspace/HistoryModal';
@@ -45,9 +53,15 @@ import {
   UserWrap,
   UsersHeadWrap,
   UsersHeader,
-  ViewBudgetWrap,
   ViewBudgetTextWrap,
-  BudgetData
+  BudgetData,
+  ActionHeader,
+  BalanceImg,
+  BudgetStatsWrap,
+  BalanceAmountImg,
+  BudgetBountyLink,
+  BudgetCount,
+  BudgetHeaderWrap
 } from './workspace/style';
 import AssignUserRoles from './workspace/AssignUserRole';
 
@@ -93,6 +107,7 @@ const WorkspaceDetails = (props: {
 
   const { org, close, getWorkspaces } = props;
   const uuid = org?.uuid || '';
+  const isMobile = useIsWithinBreakpoints(['xs', 's']);
 
   function addToast(title: string, color: 'danger' | 'success') {
     setToasts([
@@ -374,79 +389,9 @@ const WorkspaceDetails = (props: {
         </HeadButtonWrap>
       </HeadWrap>
       <ActionWrap>
-        <BudgetWrap>
-          {viewReportDisabled ? (
-            <NoBudgetWrap>
-              <MaterialIcon
-                icon={'lock'}
-                style={{
-                  fontSize: 30,
-                  cursor: 'pointer',
-                  color: '#ccc'
-                }}
-              />
-              <NoBudgetText>
-                You have restricted permissions and are unable to view the budget. Reach out to the
-                workspace admin to get them updated.
-              </NoBudgetText>
-            </NoBudgetWrap>
-          ) : (
-            <>
-              <ViewBudgetWrap>
-                <BudgetData>
-                  <BudgetSmallHead>CURRENT BUDGET</BudgetSmallHead>
-                  <ViewBudgetTextWrap>
-                    <Budget>
-                      {orgBudget.current_budget ? orgBudget.current_budget.toLocaleString() : 0}{' '}
-                      <Grey>SATS</Grey>
-                    </Budget>
-                    <Budget className="budget-small">
-                      {satToUsd(orgBudget.current_budget)} <Grey>USD</Grey>
-                    </Budget>
-                  </ViewBudgetTextWrap>
-                </BudgetData>
-                <BudgetData>
-                  <BudgetSmallHead>COMPLETED BUDGET</BudgetSmallHead>
-                  <ViewBudgetTextWrap>
-                    <Budget>
-                      {orgBudget.completed_budget ? orgBudget.completed_budget.toLocaleString() : 0}{' '}
-                      <Grey>SATS</Grey>
-                    </Budget>
-                    <Budget className="budget-small">
-                      {satToUsd(orgBudget.completed_budget)} <Grey>USD</Grey>
-                    </Budget>
-                  </ViewBudgetTextWrap>
-                </BudgetData>
-              </ViewBudgetWrap>
-              <ViewBudgetWrap>
-                <BudgetData>
-                  <BudgetSmallHead>OPEN BUDGET</BudgetSmallHead>
-                  <ViewBudgetTextWrap>
-                    <Budget>
-                      {orgBudget.open_budget ? orgBudget.open_budget.toLocaleString() : 0}{' '}
-                      <Grey>SATS</Grey>
-                    </Budget>
-                    <Budget className="budget-small">
-                      {satToUsd(orgBudget.open_budget)} <Grey>USD</Grey>
-                    </Budget>
-                  </ViewBudgetTextWrap>
-                </BudgetData>
-                <BudgetData>
-                  <BudgetSmallHead>ASSIGNED BUDGET</BudgetSmallHead>
-                  <ViewBudgetTextWrap>
-                    <Budget>
-                      {orgBudget.assigned_budget ? orgBudget.assigned_budget.toLocaleString() : 0}{' '}
-                      <Grey>SATS</Grey>
-                    </Budget>
-                    <Budget className="budget-small">
-                      {satToUsd(orgBudget.assigned_budget)} <Grey>USD</Grey>
-                    </Budget>
-                  </ViewBudgetTextWrap>
-                </BudgetData>
-              </ViewBudgetWrap>
-            </>
-          )}
-        </BudgetWrap>
+        <ActionHeader>
+          Balance <BalanceImg src={balanceIcon} />
+        </ActionHeader>
         <HeadButtonWrap forSmallScreen={true}>
           <Button
             disabled={viewReportDisabled}
@@ -477,6 +422,109 @@ const WorkspaceDetails = (props: {
           />
         </HeadButtonWrap>
       </ActionWrap>
+      <BudgetWrap>
+        {viewReportDisabled ? (
+          <NoBudgetWrap>
+            <MaterialIcon
+              icon={'lock'}
+              style={{
+                fontSize: 30,
+                cursor: 'pointer',
+                color: '#ccc'
+              }}
+            />
+            <NoBudgetText>
+              You have restricted permissions and are unable to view the budget. Reach out to the
+              workspace admin to get them updated.
+            </NoBudgetText>
+          </NoBudgetWrap>
+        ) : (
+          <BudgetStatsWrap>
+            <EuiFlexGrid responsive={true} columns={isMobile ? 2 : 4}>
+              <EuiFlexItem>
+                <BudgetData background="#FAFBFC" borderColor="#DDE1E5">
+                  <BudgetHeaderWrap>
+                    <BudgetSmallHead color="#3C3F41">Current Balance</BudgetSmallHead>
+                  </BudgetHeaderWrap>
+                  <ViewBudgetTextWrap>
+                    <Budget>
+                      {orgBudget.current_budget ? orgBudget.current_budget.toLocaleString() : 0}{' '}
+                      <Grey>SATS</Grey>
+                    </Budget>
+                    <Budget className="budget-small">
+                      <BalanceAmountImg src={balanceVector} />
+                      {satToUsd(orgBudget.current_budget)} <Grey>USD</Grey>
+                    </Budget>
+                  </ViewBudgetTextWrap>
+                </BudgetData>
+              </EuiFlexItem>
+              <EuiFlexItem>
+                <BudgetData background="#9157F612" borderColor="#A76CF34D">
+                  <BudgetBountyLink>
+                    <EuiIcon type="popout" color="#9157F6" />
+                  </BudgetBountyLink>
+                  <BudgetHeaderWrap>
+                    <BudgetSmallHead color="#9157F6">Completed</BudgetSmallHead>
+                    <BudgetCount color="#9157F6">20</BudgetCount>
+                  </BudgetHeaderWrap>
+                  <ViewBudgetTextWrap>
+                    <Budget>
+                      {orgBudget.completed_budget ? orgBudget.completed_budget.toLocaleString() : 0}{' '}
+                      <Grey>SATS</Grey>
+                    </Budget>
+                    <Budget className="budget-small">
+                      <BalanceAmountImg src={balanceVector} />
+                      {satToUsd(orgBudget.completed_budget)} <Grey>USD</Grey>
+                    </Budget>
+                  </ViewBudgetTextWrap>
+                </BudgetData>
+              </EuiFlexItem>
+              <EuiFlexItem>
+                <BudgetData background="#49C99812" borderColor="#49C9984D">
+                  <BudgetBountyLink>
+                    <EuiIcon type="popout" color="#2FB379" />
+                  </BudgetBountyLink>
+                  <BudgetHeaderWrap>
+                    <BudgetSmallHead color="#2FB379">Assigned</BudgetSmallHead>
+                    <BudgetCount color="#2FB379">20</BudgetCount>
+                  </BudgetHeaderWrap>
+                  <ViewBudgetTextWrap>
+                    <Budget>
+                      {orgBudget.assigned_budget ? orgBudget.assigned_budget.toLocaleString() : 0}{' '}
+                      <Grey>SATS</Grey>
+                    </Budget>
+                    <Budget className="budget-small">
+                      <BalanceAmountImg src={balanceVector} />
+                      {satToUsd(orgBudget.assigned_budget)} <Grey>USD</Grey>
+                    </Budget>
+                  </ViewBudgetTextWrap>
+                </BudgetData>
+              </EuiFlexItem>
+              <EuiFlexItem>
+                <BudgetData background="#618AFF12" borderColor="#618AFF4D">
+                  <BudgetBountyLink>
+                    <EuiIcon type="popout" color="#5078F2" />
+                  </BudgetBountyLink>
+                  <BudgetHeaderWrap>
+                    <BudgetSmallHead color="#5078F2">Open</BudgetSmallHead>
+                    <BudgetCount color="#5078F2">20</BudgetCount>
+                  </BudgetHeaderWrap>
+                  <ViewBudgetTextWrap>
+                    <Budget>
+                      {orgBudget.open_budget ? orgBudget.open_budget.toLocaleString() : 0}{' '}
+                      <Grey>SATS</Grey>
+                    </Budget>
+                    <Budget className="budget-small">
+                      <BalanceAmountImg src={balanceVector} />
+                      {satToUsd(orgBudget.open_budget)} <Grey>USD</Grey>
+                    </Budget>
+                  </ViewBudgetTextWrap>
+                </BudgetData>
+              </EuiFlexItem>
+            </EuiFlexGrid>
+          </BudgetStatsWrap>
+        )}
+      </BudgetWrap>
       <UserWrap>
         <UsersHeadWrap>
           <UsersHeader>Users</UsersHeader>

@@ -9,6 +9,15 @@ interface UserProps {
   inactive: boolean;
 }
 
+interface BudgetColorProps {
+  background: string;
+  borderColor: string;
+}
+
+interface BudgetHeaderProps {
+  color: string;
+}
+
 export const ModalTitle = styled.h3`
   font-size: 1.2rem;
 `;
@@ -89,7 +98,7 @@ export const WorkspaceImg = styled.img`
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  margin-left: 20px;
+  margin-left: 15px;
   @media only screen and (max-width: 700px) {
     width: 42px;
     height: 42px;
@@ -157,9 +166,8 @@ export const DetailsWrap = styled.div`
 export const ActionWrap = styled.div`
   display: flex;
   align-items: center;
-  padding-right: 40px;
-  border-bottom: 1px solid #ebedef;
-  box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.15);
+  padding: 30px 40px;
+  padding-left: 55px;
   @media only screen and (max-width: 700px) {
     padding: 25px 0px;
   }
@@ -170,9 +178,40 @@ export const ActionWrap = styled.div`
   }
 `;
 
+export const ActionHeader = styled.h3`
+  font-size: 1.3rem;
+  font-weight: bolder;
+`;
+
+export const BalanceImg = styled.img`
+  width: 22px;
+  height: 22px;
+  margin-left: 5px;
+  @media only screen and (max-width: 700px) {
+    width: 20px;
+    height: 18px;
+  }
+  @media only screen and (max-width: 500px) {
+    width: 18px;
+    height: 18px;
+  }
+`;
+
+export const BalanceAmountImg = styled.img`
+  width: 15px;
+  height: 15px;
+  margin-right: 6px;
+  @media only screen and (max-width: 700px) {
+    width: 13px;
+    height: 13px;
+  }
+`;
+
 export const BudgetWrap = styled.div`
-  padding: 25px 60px;
-  width: 55%;
+  padding: 25px 40px;
+  padding-left: 55px;
+  padding-top: 0px;
+  width: 100%;
   display: flex;
   flex-direction: column;
   @media only screen and (max-width: 700px) {
@@ -194,27 +233,33 @@ export const NoBudgetWrap = styled.div`
   border: 1px solid #ebedef;
 `;
 
-export const ViewBudgetWrap = styled.div`
-  display: flex;
-  flex-direction: row;
+export const BudgetStatsWrap = styled.div`
   width: 100%;
-  :first-child {
-    margin-bottom: 15px;
-    border-bottom: 0.5px solid #ccc;
-    padding-bottom: 10px;
-  }
 `;
 
-export const BudgetData = styled.div`
+export const BudgetData = styled.div<BudgetColorProps>`
   display: flex;
+  position: relative;
   flex-direction: column;
   width: 100%;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  padding: 25px;
+  background: ${(p: any) => p.background};
+  border: 1px solid ${(p: any) => p.borderColor};
+`;
+
+export const BudgetBountyLink = styled.span`
+  cursor: pointer;
+  position: absolute;
+  right: 10px;
+  top: 5px;
 `;
 
 export const ViewBudgetTextWrap = styled.div`
   display: flex;
+  flex-direction: column;
   width: 100%;
-  align-items: center;
   margin-top: 12px;
 `;
 
@@ -227,22 +272,40 @@ export const BudgetSmall = styled.h6`
   }
 `;
 
-export const BudgetSmallHead = styled.h6`
-  padding: 0px;
-  font-size: 0.625rem;
-  color: #8e969c;
+export const BudgetHeaderWrap = styled.div`
   margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  height: 15px;
+`;
+
+export const BudgetSmallHead = styled.h5<BudgetHeaderProps>`
+  padding: 0px;
+  font-size: 0.9rem;
+  color: ${(p: any) => p.color};
+  margin: 0px;
+`;
+
+export const BudgetCount = styled.span<BudgetHeaderProps>`
+  background: ${(p: any) => p.color};
+  color: #fff;
+  padding: 2px 4px;
+  border-radius: 50%;
+  font-size: 0.66rem;
+  font-weight: bolder;
+  display: inline-block;
+  margin-left: 4px;
 `;
 
 export const Budget = styled.h4`
   color: #3c3f41;
-  font-size: 1.0625rem;
+  font-size: 1.25rem;
   font-weight: 600;
 
   &.budget-small {
-    border-left: 1px solid #ebedef;
-    padding-left: 22px;
-    margin-left: 22px;
+    font-size: 0.95rem;
+    color: #8e969c;
   }
 
   @media only screen and (max-width: 500px) {
