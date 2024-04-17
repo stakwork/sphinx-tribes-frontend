@@ -6,10 +6,16 @@ import WidgetSwitchViewer from 'people/widgetViews/WidgetSwitchViewer';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { queryLimit, defaultBountyStatus } from 'store/main';
+import { useLocation } from 'react-router-dom';
 import { colors } from '../../config/colors';
 import { useIsMobile } from '../../hooks';
 import { useStores } from '../../store';
 import { Body, Backdrop } from './style';
+
+function useQuery() {
+  const { search } = useLocation();
+  return React.useMemo(() => new URLSearchParams(search), [search]);
+}
 
 // avoid hook within callback warning by renaming hooks
 function BodyComponent() {
@@ -30,6 +36,30 @@ function BodyComponent() {
   const history = useHistory();
   const isMobile = useIsMobile();
 
+  const searchParams = useQuery();
+
+  useEffect(() => {
+    const status = searchParams.get('status');
+    if (status === 'completed') {
+      setCheckboxIdToSelectedMap({
+        ...defaultBountyStatus,
+        Open: false,
+        Completed: true
+      });
+    } else if (status === 'assigned') {
+      setCheckboxIdToSelectedMap({
+        ...defaultBountyStatus,
+        Open: false,
+        Assigned: true
+      });
+    } else if (status === 'open') {
+      setCheckboxIdToSelectedMap({
+        ...defaultBountyStatus,
+        Open: true
+      });
+    }
+  }, [searchParams, loading]);
+
   useEffect(() => {
     (async () => {
       await main.getOpenGithubIssues();
@@ -43,12 +73,7 @@ function BodyComponent() {
       });
       setLoading(false);
     })();
-  }, [main, checkboxIdToSelectedMap, languageString]);
-
-  useEffect(() => {
-    setCheckboxIdToSelectedMap({ ...defaultBountyStatus });
-    main.setBountiesStatus({ ...defaultBountyStatus });
-  }, [loading]);
+  }, [main, checkboxIdToSelectedMap, languageString, searchParams]);
 
   useEffect(() => {
     if (ui.meInfo) {

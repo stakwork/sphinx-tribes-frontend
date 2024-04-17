@@ -290,9 +290,9 @@ export const BudgetSmallHead = styled.h5<BudgetHeaderProps>`
 export const BudgetCount = styled.span<BudgetHeaderProps>`
   background: ${(p: any) => p.color};
   color: #fff;
-  padding: 2px 4px;
+  padding: 1px 4px;
   border-radius: 50%;
-  font-size: 0.66rem;
+  font-size: 0.65rem;
   font-weight: bolder;
   display: inline-block;
   margin-left: 4px;

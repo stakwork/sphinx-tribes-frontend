@@ -440,7 +440,7 @@ const WorkspaceDetails = (props: {
           </NoBudgetWrap>
         ) : (
           <BudgetStatsWrap>
-            <EuiFlexGrid responsive={true} columns={isMobile ? 2 : 4}>
+            <EuiFlexGrid responsive={false} columns={isMobile ? 2 : 4}>
               <EuiFlexItem>
                 <BudgetData background="#FAFBFC" borderColor="#DDE1E5">
                   <BudgetHeaderWrap>
@@ -461,15 +461,19 @@ const WorkspaceDetails = (props: {
               <EuiFlexItem>
                 <BudgetData background="#9157F612" borderColor="#A76CF34D">
                   <BudgetBountyLink>
-                    <EuiIcon type="popout" color="#9157F6" />
+                    <Link target="_blank" to={'/bounties?status=completed'}>
+                      <EuiIcon type="popout" color="#9157F6" />
+                    </Link>
                   </BudgetBountyLink>
                   <BudgetHeaderWrap>
                     <BudgetSmallHead color="#9157F6">Completed</BudgetSmallHead>
-                    <BudgetCount color="#9157F6">20</BudgetCount>
+                    <BudgetCount color="#9157F6">
+                      {orgBudget.completed_count ? orgBudget.completed_count.toLocaleString() : 0}
+                    </BudgetCount>
                   </BudgetHeaderWrap>
                   <ViewBudgetTextWrap>
                     <Budget>
-                      {orgBudget.completed_budget ? orgBudget.completed_budget.toLocaleString() : 0}{' '}
+                      {orgBudget.completed_budget ? orgBudget.completed_budget.toLocaleString() : 0}
                       <Grey>SATS</Grey>
                     </Budget>
                     <Budget className="budget-small">
@@ -482,15 +486,19 @@ const WorkspaceDetails = (props: {
               <EuiFlexItem>
                 <BudgetData background="#49C99812" borderColor="#49C9984D">
                   <BudgetBountyLink>
-                    <EuiIcon type="popout" color="#2FB379" />
+                    <Link target="_blank" to={'/bounties?status=assigned'}>
+                      <EuiIcon type="popout" color="#2FB379" />
+                    </Link>
                   </BudgetBountyLink>
                   <BudgetHeaderWrap>
                     <BudgetSmallHead color="#2FB379">Assigned</BudgetSmallHead>
-                    <BudgetCount color="#2FB379">20</BudgetCount>
+                    <BudgetCount color="#2FB379">
+                      {orgBudget.assigned_count ? orgBudget.assigned_count.toLocaleString() : 0}
+                    </BudgetCount>
                   </BudgetHeaderWrap>
                   <ViewBudgetTextWrap>
                     <Budget>
-                      {orgBudget.assigned_budget ? orgBudget.assigned_budget.toLocaleString() : 0}{' '}
+                      {orgBudget.assigned_budget ? orgBudget.assigned_budget.toLocaleString() : 0}
                       <Grey>SATS</Grey>
                     </Budget>
                     <Budget className="budget-small">
@@ -503,15 +511,19 @@ const WorkspaceDetails = (props: {
               <EuiFlexItem>
                 <BudgetData background="#618AFF12" borderColor="#618AFF4D">
                   <BudgetBountyLink>
-                    <EuiIcon type="popout" color="#5078F2" />
+                    <Link target="_blank" to={'/bounties?status=open'}>
+                      <EuiIcon type="popout" color="#5078F2" />
+                    </Link>
                   </BudgetBountyLink>
                   <BudgetHeaderWrap>
                     <BudgetSmallHead color="#5078F2">Open</BudgetSmallHead>
-                    <BudgetCount color="#5078F2">20</BudgetCount>
+                    <BudgetCount color="#5078F2">
+                      {orgBudget.open_count ? orgBudget.open_count.toLocaleString() : 0}
+                    </BudgetCount>
                   </BudgetHeaderWrap>
                   <ViewBudgetTextWrap>
                     <Budget>
-                      {orgBudget.open_budget ? orgBudget.open_budget.toLocaleString() : 0}{' '}
+                      {orgBudget.open_budget ? orgBudget.open_budget.toLocaleString() : 0}
                       <Grey>SATS</Grey>
                     </Budget>
                     <Budget className="budget-small">

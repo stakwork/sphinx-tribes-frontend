@@ -356,6 +356,7 @@ const BountyHeader = ({
   const [counts, setCounts] = useState({
     open: 0,
     assigned: 0,
+    completed: 0,
     paid: 0
   });
 
@@ -367,6 +368,7 @@ const BountyHeader = ({
         setCounts({
           open: response.open || 0,
           assigned: response.assigned || 0,
+          completed: response.completed || 0,
           paid: response.paid || 0
         });
       } catch (error) {

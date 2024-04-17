@@ -19,7 +19,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /home/ec2-user/sphinx-deploy/traefik.yaml:/etc/traefik/traefik.yaml
       - /home/ec2-user/letsencrypt:/letsencrypt
-    environment: 
+    environment:
       - AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
       - AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
       - AWS_REGION=$AWS_REGION
@@ -44,7 +44,7 @@ services:
       - "traefik.http.routers.auth.tls.certresolver=myresolver"
       - "traefik.http.routers.auth.entrypoints=websecure"
     restart: on-failure
-    environment: 
+    environment:
       - JWT_KEY=$JWT_KEY
       - CLIENT_KEYS=$CLIENT_KEYS
       - OAUTH_TIMEOUT=$OAUTH_TIMEOUT
@@ -64,7 +64,7 @@ services:
       - "traefik.http.routers.tribes.tls.certresolver=myresolver"
       - "traefik.http.routers.tribes.entrypoints=websecure"
     restart: on-failure
-    environment: 
+    environment:
       - DATABASE_URL=$DATABASE_URL
       - PODCAST_INDEX_SECRET=$PODCAST_INDEX_SECRET
       - PODCAST_INDEX_KEY=$PODCAST_INDEX_KEY
@@ -73,7 +73,7 @@ services:
       - ALERT_SECRET=$ALERT_SECRET
       - ALERT_TRIBE_UUID=$ALERT_TRIBE_UUID
       - ALERT_BOT_ID=$ALERT_BOT_ID
-      - ALERT_URL=$ALERT_URL  
+      - ALERT_URL=$ALERT_URL
       - RELAY_URL=$RELAY_URL
       - RELAY_AUTH_KEY=$RELAY_AUTH_KEY
       - RELAY_URL_BACKUP=$RELAY_URL_BACKUP
@@ -99,7 +99,7 @@ services:
       - reverse-proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.tribes-frontend.rule=(Host(`tribes.sphinx.chat`) || Host(`people.sphinx.chat`) || Host(`community.sphinx.chat`)|| Host(`bounties.sphinx.chat`)) && (Path(`/`) || PathPrefix(`/static`) || Path(`/manifest.json`) || Path(`/favicon.ico`) || Path(`/logo192.png`) || PathPrefix(`/t/`) || Path(`/t`) || PathPrefix(`/p/`) || Path(`/p`) || Path(`/tickets`) || Path(`/bounties`) || Path(`/bounty`) || PathPrefix(`/bounty/`) || Path(`/leaderboard`) || PathPrefix(`/org/`) || Path(`/admin`) || PathPrefix(`/b/`) || Path(`/b`))"
+      - "traefik.http.routers.tribes-frontend.rule=(Host(`tribes.sphinx.chat`) || Host(`people.sphinx.chat`) || Host(`community.sphinx.chat`)|| Host(`bounties.sphinx.chat`)) && (Path(`/`) || PathPrefix(`/static`) || Path(`/manifest.json`) || Path(`/favicon.ico`) || Path(`/logo192.png`) || PathPrefix(`/t/`) || Path(`/t`) || PathPrefix(`/p/`) || Path(`/p`) || Path(`/tickets`) || Path(`/bounties`) || Path(`/bounty`) || PathPrefix(`/bounty/`) || Path(`/leaderboard`) || PathPrefix(`/workspace/`) || Path(`/admin`) || PathPrefix(`/b/`) || Path(`/b`))"
       - "traefik.http.routers.tribes-frontend.priority=2"
       - "traefik.http.services.tribes-frontend.loadbalancer.server.port=80"
       - "traefik.http.routers.tribes-frontend.tls=true"
