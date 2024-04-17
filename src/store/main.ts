@@ -288,39 +288,40 @@ export interface BountyMetrics {
 export interface BountyStatus {
   Open: boolean;
   Assigned: boolean;
+  Completed: boolean;
   Paid: boolean;
 }
 
 export const defaultBountyStatus: BountyStatus = {
   Open: true,
   Assigned: false,
+  Completed: false,
   Paid: false
 };
-
-export interface WorkspaceBountyStatus {
-  Open: boolean;
-  Assigned: boolean;
-  Paid: boolean;
-  Completed: boolean;
-}
 
 export interface WorkspaceBudget {
   org_uuid: string;
   current_budget: number;
   open_budget: number;
+  open_count: number;
   assigned_budget: number;
+  assigned_count: number;
   completed_budget: number;
+  completed_count: number;
 }
 
 export const defaultWorkspaceBudget: WorkspaceBudget = {
   org_uuid: '',
   current_budget: 0,
   open_budget: 0,
+  open_count: 0,
   assigned_budget: 0,
-  completed_budget: 0
+  assigned_count: 0,
+  completed_budget: 0,
+  completed_count: 0
 };
 
-export const defaultWorkspaceBountyStatus: WorkspaceBountyStatus = {
+export const defaultWorkspaceBountyStatus: BountyStatus = {
   Open: false,
   Assigned: false,
   Paid: false,
@@ -330,6 +331,7 @@ export const defaultWorkspaceBountyStatus: WorkspaceBountyStatus = {
 export const defaultSuperAdminBountyStatus: BountyStatus = {
   Open: false,
   Assigned: false,
+  Completed: false,
   Paid: false
 };
 
@@ -861,7 +863,7 @@ export class MainStore {
 
   workspaceBountiesStatus: BountyStatus = defaultWorkspaceBountyStatus;
 
-  @action setWorkspaceBountiesStatus(status: WorkspaceBountyStatus) {
+  @action setWorkspaceBountiesStatus(status: BountyStatus) {
     this.workspaceBountiesStatus = status;
   }
 
@@ -1922,7 +1924,7 @@ export class MainStore {
 
       // if we don't pass the params, we should use previous params for invalidate query
       const query = this.appendQueryParams(
-        `gobounties/org/next/${org_uuid}/${created}`,
+        `gobounties/workspace/next/${org_uuid}/${created}`,
         queryLimit,
         queryParams
       );
@@ -1953,7 +1955,7 @@ export class MainStore {
 
       // if we don't pass the params, we should use previous params for invalidate query
       const query = this.appendQueryParams(
-        `gobounties/org/previous/${org_uuid}/${created}`,
+        `gobounties/workspace/previous/${org_uuid}/${created}`,
         queryLimit,
         queryParams
       );

@@ -143,7 +143,7 @@ export const coding_languages = [
   'Other'
 ] as const;
 
-export const status = ['Open', 'Assigned', 'Paid'];
+export const status = ['Open', 'Assigned', 'Completed', 'Paid'];
 
 export const GetValue = <Item = string>(arr: any): Array<{ id: Item; label: Item; value: Item }> =>
   arr.map((val: Item) => ({
