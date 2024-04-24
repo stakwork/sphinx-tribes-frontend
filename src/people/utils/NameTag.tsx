@@ -72,8 +72,19 @@ const Wrap = styled.div<WrapProps>`
 `;
 
 function NameTag(props: NameTagProps) {
-  const { owner_alias, owner_pubkey, img, created, id, style, widget, iconSize, textSize, isPaid } =
-    props;
+  const {
+    owner_alias,
+    owner_pubkey,
+    uuid,
+    img,
+    created,
+    id,
+    style,
+    widget,
+    iconSize,
+    textSize,
+    isPaid
+  } = props;
   const { ui, main } = useStores();
   const color = colors['light'];
 
@@ -94,8 +105,8 @@ function NameTag(props: NameTagProps) {
     ui.setSelectedPerson(id);
     ui.setSelectingPerson(id);
 
-    if (owner_pubkey) {
-      history.push(`/p/${owner_pubkey}`);
+    if (uuid) {
+      history.push(`/p/${uuid}`);
     }
   }
 

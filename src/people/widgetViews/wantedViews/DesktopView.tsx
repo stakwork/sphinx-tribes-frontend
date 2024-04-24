@@ -124,8 +124,8 @@ function DesktopView(props: WantedViewsProps) {
                       `/p/${
                         {
                           ...assignee
-                        }.owner_pubkey
-                      }?widget=wanted`,
+                        }.uuid
+                      }?widget=bounties`,
                       '_blank'
                     );
                   }}

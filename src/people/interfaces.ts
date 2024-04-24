@@ -125,6 +125,7 @@ export interface NameTagProps {
   org_img?: string;
   org_name?: string;
   org_uuid?: string;
+  uuid?: string;
 }
 
 export interface NoneSpaceProps {

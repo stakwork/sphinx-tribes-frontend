@@ -14,7 +14,6 @@ import { paginationQueryLimit } from 'store/main';
 import styled from 'styled-components';
 import { LoadMoreContainer } from '../../../people/widgetViews/WidgetSwitchViewer';
 import { colors } from '../../../config/colors';
-import checkboxImage from './Icons/checkboxImage.svg';
 import PopoverCheckbox from './popoverCheckboxStyles';
 
 const config = widgetConfigs.bounties;
