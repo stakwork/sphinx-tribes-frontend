@@ -15,7 +15,6 @@ import { colors } from '../../config/colors';
 import WantedView from './WantedView';
 import DeleteTicketModal from './DeleteModal';
 import { LoadMoreContainer } from './WidgetSwitchViewer';
-import checkboxImage from './Icons/checkboxImage.svg';
 
 type BountyType = any;
 
