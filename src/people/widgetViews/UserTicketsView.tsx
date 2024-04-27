@@ -65,7 +65,7 @@ const UserTickets = () => {
 
   const defaultStatus: Record<string, boolean> = {
     Assigned: false,
-    Open: false
+    Paid: false
   };
 
   const [checkboxIdToSelectedMap, setCheckboxIdToSelectedMap] = useState(defaultStatus);
@@ -112,16 +112,19 @@ const UserTickets = () => {
 
   const getUserTickets = useCallback(async () => {
     setIsLoading(true);
+    setPage(1);
     const response = await main.getPersonAssignedBounties(
-      { page: page, limit: paginationLimit, ...checkboxIdToSelectedMap },
+      { page: 1, limit: paginationLimit, ...checkboxIdToSelectedMap },
       uuid
     );
     if (response.length < paginationLimit) {
       setHasMoreBounties(false);
+    } else {
+      setHasMoreBounties(true);
     }
     setDisplayedBounties(response);
     setIsLoading(false);
-  }, [main, page, uuid, checkboxIdToSelectedMap]);
+  }, [main, uuid, checkboxIdToSelectedMap]);
 
   const nextBounties = async () => {
     const nextPage = page + 1;
@@ -133,7 +136,7 @@ const UserTickets = () => {
     if (response.length < paginationLimit) {
       setHasMoreBounties(false);
     }
-    setDisplayedBounties(response);
+    setDisplayedBounties((prevBounties: BountyType[]) => [...prevBounties, ...response]);
   };
 
   useEffect(() => {

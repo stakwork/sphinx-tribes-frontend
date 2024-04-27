@@ -73,21 +73,23 @@ export const Wanted = observer(() => {
   // Function to fetch user tickets with pagination
   const getUserTickets = useCallback(async () => {
     setIsLoading(true);
-
+    setPage(1);
     // Fetch bounties for the specified page and limit
     const response = await main.getPersonCreatedBounties(
-      { page: page, limit: paginationQueryLimit, sortBy: 'created', ...checkboxIdToSelectedMap },
+      { page: 1, limit: paginationQueryLimit, sortBy: 'created', ...checkboxIdToSelectedMap },
       uuid
     );
 
     // Check if the response has fewer bounties than the limit, indicating no more bounties to load
     if (response.length < paginationQueryLimit) {
       setHasMoreBounties(false);
+    } else {
+      setHasMoreBounties(true);
     }
     // Update the displayed bounties by appending the new bounties
     setDisplayedBounties(response);
     setIsLoading(false);
-  }, [checkboxIdToSelectedMap, main, page, uuid]);
+  }, [main, uuid, checkboxIdToSelectedMap]);
 
   const nextBounties = async () => {
     const nextPage = page + 1;
@@ -102,7 +104,7 @@ export const Wanted = observer(() => {
       setHasMoreBounties(false);
     }
     // Update the displayed bounties by appending the new bounties
-    setDisplayedBounties(response);
+    setDisplayedBounties((prevBounties: BountyType[]) => [...prevBounties, ...response]);
   };
 
   useEffect(() => {
