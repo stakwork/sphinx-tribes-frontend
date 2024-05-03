@@ -24,7 +24,6 @@ import {
   HorizontalGrayLine,
   CardHunter
 } from './StatisticsStyles';
-// import './StatStyles.css';
 export interface MockHunterMetrics {
   hunters_total_paid: number;
   hunters_first_bounty_paid: number;
@@ -71,7 +70,7 @@ export const Statistics = ({ freezeHeaderRef, metrics }: StatisticsProps) => (
           </DivWrapper>
           <DivWrapper>
             <div>
-              <Title>78</Title>
+              <Title>{convertToLocaleString(metrics?.bounties_assigned || 0)}</Title>
               <Subheading>Assigned</Subheading>
             </div>
             <VerticaGrayLineSecondary />

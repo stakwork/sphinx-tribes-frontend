@@ -1026,7 +1026,7 @@ describe('Main store', () => {
       end_date
     };
 
-    store.exportMetricsBountiesCsv(body);
+    store.exportMetricsBountiesCsv(body, '');
     expect(store.exportMetricsBountiesCsv).toBeCalledWith(body);
   });
 

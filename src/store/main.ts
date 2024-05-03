@@ -190,6 +190,7 @@ export interface QueryParams {
   languages?: string;
   org_uuid?: string;
   provider?: string;
+  workspace?: string;
 }
 
 export interface ClaimOnLiquid {
@@ -275,6 +276,7 @@ export interface FilterStatusCount {
 export interface BountyMetrics {
   bounties_posted: number;
   bounties_paid: number;
+  bounties_assigned?: number;
   bounties_paid_average: number;
   sats_posted: number;
   sats_paid: number;
@@ -2378,6 +2380,27 @@ export class MainStore {
     }
   }
 
+  async getAdminWorkspaces(): Promise<Workspace[]> {
+    try {
+      if (!uiStore.meInfo) return [];
+      const info = uiStore.meInfo;
+      const r: any = await fetch(`${TribesURL}/metrics/workspaces`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const workspaces = await r.json();
+      return workspaces;
+    } catch (e) {
+      console.log('Error getAdminWorkspaces', e);
+      return [];
+    }
+  }
+
   @action async addWorkspaceUser(body: { owner_pubkey: string; org_uuid: string }): Promise<any> {
     try {
       if (!uiStore.meInfo) return null;
@@ -2767,7 +2790,11 @@ export class MainStore {
     }
   }
 
-  async getBountyMetrics(start_date: string, end_date: string): Promise<BountyMetrics | undefined> {
+  async getBountyMetrics(
+    start_date: string,
+    end_date: string,
+    workspace: string
+  ): Promise<BountyMetrics | undefined> {
     try {
       if (!uiStore.meInfo) return undefined;
       const info = uiStore.meInfo;
@@ -2777,7 +2804,7 @@ export class MainStore {
         end_date
       };
 
-      const r: any = await fetch(`${TribesURL}/metrics/bounty_stats`, {
+      const r: any = await fetch(`${TribesURL}/metrics/bounty_stats?workspace=${workspace}`, {
         method: 'POST',
         mode: 'cors',
         body: JSON.stringify(body),
@@ -2849,7 +2876,7 @@ export class MainStore {
       };
 
       // if we don't pass the params, we should use previous params for invalidate query
-      const query = this.appendQueryParams('metrics/bounties', 20, queryParams);
+      const query = this.appendQueryParams(`metrics/bounties`, 20, queryParams);
 
       const body = {
         start_date: date_range.start_date,
@@ -2908,10 +2935,13 @@ export class MainStore {
     }
   }
 
-  async exportMetricsBountiesCsv(date_range: {
-    start_date: string;
-    end_date: string;
-  }): Promise<string | undefined> {
+  async exportMetricsBountiesCsv(
+    date_range: {
+      start_date: string;
+      end_date: string;
+    },
+    workspace: string
+  ): Promise<string | undefined> {
     try {
       if (!uiStore.meInfo) return undefined;
       const info = uiStore.meInfo;
@@ -2921,7 +2951,7 @@ export class MainStore {
         end_date: date_range.end_date
       };
 
-      const r: any = await fetch(`${TribesURL}/metrics/csv`, {
+      const r: any = await fetch(`${TribesURL}/metrics/csv?workspace=${workspace}`, {
         method: 'POST',
         mode: 'cors',
         body: JSON.stringify(body),

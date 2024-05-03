@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import moment from 'moment';
-import { mainStore } from 'store/main';
+import { mainStore, Workspace } from 'store/main';
 import {
   AlternateWrapper,
   ButtonWrapper,
@@ -13,24 +13,39 @@ import {
   RightWrapper,
   Container,
   Option,
-  CustomButton
+  CustomButton,
+  WorkspaceOption,
+  WorkspaceText
 } from './HeaderStyles';
 import arrowback from './icons/arrowback.svg';
 import arrowforward from './icons/arrowforward.svg';
 import expand_more from './icons/expand_more.svg';
 import App from './components/Calendar/App';
+
 interface HeaderProps {
   startDate?: number;
   endDate?: number;
   setStartDate: (newDate: number) => void;
   setEndDate: (newDate: number) => void;
+  workspace: string;
+  setWorkspace: React.Dispatch<React.SetStateAction<string>>;
 }
-export const Header = ({ startDate, setStartDate, endDate, setEndDate }: HeaderProps) => {
+export const Header = ({
+  startDate,
+  setStartDate,
+  endDate,
+  setEndDate,
+  workspace,
+  setWorkspace
+}: HeaderProps) => {
   const [showSelector, setShowSelector] = useState(false);
+  const [showWorkspace, setShowWorkspace] = useState(false);
   const [dateDiff, setDateDiff] = useState(7);
   const [exportLoading, setExportLoading] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
   const [dropdownText, setDropdownText] = useState<string>('Last 7 Days');
+  const [workspaceText, setWorkspaceText] = useState<string>('Workspaces ...');
+  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const formatUnixDate = (unixDate: number) => {
     const formatString = 'DD MMM YYYY';
     if (startDate !== undefined && endDate !== undefined) {
@@ -67,10 +82,13 @@ export const Header = ({ startDate, setStartDate, endDate, setEndDate }: HeaderP
 
   const exportCsv = async () => {
     setExportLoading(true);
-    const csvUrl = await mainStore.exportMetricsBountiesCsv({
-      start_date: String(startDate),
-      end_date: String(endDate)
-    });
+    const csvUrl = await mainStore.exportMetricsBountiesCsv(
+      {
+        start_date: String(startDate),
+        end_date: String(endDate)
+      },
+      workspace
+    );
 
     if (csvUrl) {
       window.open(csvUrl);
@@ -109,13 +127,29 @@ export const Header = ({ startDate, setStartDate, endDate, setEndDate }: HeaderP
     }
   };
 
+  const handleWorkspaceChange = (option: string) => {
+    if (option === 'all') {
+      setWorkspaceText('All');
+      setWorkspace('');
+    } else {
+      setWorkspace(option);
+      const activeSpace = workspaces.find((work: Workspace) => work.uuid === option);
+      setWorkspaceText(activeSpace?.name ?? '');
+    }
+  };
+
   const currentDateUnix = moment().unix();
   const optionRef = useRef<HTMLDivElement | null>(null);
+  const workspaceRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
       if (optionRef.current && !optionRef.current.contains(event.target as Node)) {
         setShowSelector(!showSelector);
+      }
+
+      if (workspaceRef.current && !workspaceRef.current.contains(event.target as Node)) {
+        setShowWorkspace(!showWorkspace);
       }
     };
 
@@ -124,7 +158,16 @@ export const Header = ({ startDate, setStartDate, endDate, setEndDate }: HeaderP
     return () => {
       window.removeEventListener('click', handleOutsideClick);
     };
-  }, [showSelector]);
+  }, [showSelector, showWorkspace]);
+
+  const getWorkspaces = useCallback(async () => {
+    const workspaces = await mainStore.getAdminWorkspaces();
+    setWorkspaces(workspaces);
+  }, []);
+
+  useEffect(() => {
+    getWorkspaces();
+  }, [getWorkspaces]);
 
   return (
     <Container>
@@ -156,6 +199,30 @@ export const Header = ({ startDate, setStartDate, endDate, setEndDate }: HeaderP
           <ExportButton disabled={exportLoading} onClick={() => exportCsv()}>
             <ExportText>{exportLoading ? 'Exporting ...' : 'Export CSV'}</ExportText>
           </ExportButton>
+          <DropDown
+            data-testid="WorkspaceDropDown"
+            onClick={() => {
+              setShowWorkspace(!showWorkspace);
+            }}
+            style={{ position: 'relative' }}
+          >
+            <WorkspaceText style={{ flex: 2, textAlign: 'center' }}>{workspaceText}</WorkspaceText>
+            <div>
+              <img src={expand_more} alt="a" />
+            </div>
+            {showWorkspace ? (
+              <WorkspaceOption ref={workspaceRef}>
+                <ul>
+                  <li onClick={() => handleWorkspaceChange('all')}>All</li>
+                  {workspaces.map((work: Workspace) => (
+                    <li key={work.uuid} onClick={() => handleWorkspaceChange(work.uuid)}>
+                      {work.name}
+                    </li>
+                  ))}
+                </ul>
+              </WorkspaceOption>
+            ) : null}
+          </DropDown>
           <DropDown
             data-testid="DropDown"
             onClick={() => {

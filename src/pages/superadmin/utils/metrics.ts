@@ -3,6 +3,7 @@ import { BountyMetrics } from '../../../store/main';
 export const normalizeMetrics = (data: any): BountyMetrics => ({
   bounties_posted: data.BountiesPosted || data.bounties_posted,
   bounties_paid: data.BountiesPaid || data.bounties_paid,
+  bounties_assigned: data.BountiesAssigned || data.bounties_assigned,
   bounties_paid_average: data.bounties_paid_average || data.BountiesPaidPercentage,
   sats_posted: data.sats_posted || data.SatsPosted,
   sats_paid: data.sats_paid || data.SatsPaid,

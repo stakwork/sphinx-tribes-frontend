@@ -702,8 +702,8 @@ export const MyTable = ({
                     </TableDataAlternative>
                     <TableData className="workspace">
                       <ImageWithText
-                        text={bounty?.workspace_name}
-                        image={bounty?.workspace_img || defaultPic}
+                        text={bounty?.organization_name}
+                        image={bounty?.organization_img || defaultPic}
                       />
                     </TableData>
                     <TableData3>

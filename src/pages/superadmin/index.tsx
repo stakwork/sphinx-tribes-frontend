@@ -51,6 +51,7 @@ export const SuperAdmin = () => {
   const [providersCurrentPage, setProvidersCurrentPage] = useState(1);
   const [providersCheckboxSelected, setProvidersCheckboxSelected] = useState<Person[]>([]);
   const [selectedProviders, setSelectedProviders] = useState<string>('');
+  const [workspace, setWorkspace] = useState<string>('');
 
   /**
    * Todo use the same date range,
@@ -90,6 +91,7 @@ export const SuperAdmin = () => {
             resetPage: true,
             ...checkboxIdToSelectedMap,
             direction: sortOrder,
+            workspace: workspace,
             provider: selectedProviders
           }
         );
@@ -109,7 +111,9 @@ export const SuperAdmin = () => {
     checkboxIdToSelectedMap,
     sortOrder,
     currentPage,
-    selectedProviders
+    selectedProviders,
+    workspace,
+    search
   ]);
 
   const getProviders = useCallback(
@@ -157,7 +161,7 @@ export const SuperAdmin = () => {
   useEffect(() => {
     getBounties();
     setSearch(false);
-  }, [search, currentPage, sortOrder, selectedProviders, startDate, endDate]);
+  }, [getBounties]);
 
   useEffect(() => {
     getBounties();
@@ -214,14 +218,14 @@ export const SuperAdmin = () => {
   const getMetrics = useCallback(async () => {
     if (startDate && endDate) {
       try {
-        const metrics = await main.getBountyMetrics(String(startDate), String(endDate));
+        const metrics = await main.getBountyMetrics(String(startDate), String(endDate), workspace);
         const normalizedMetrics = normalizeMetrics(metrics);
         setBountyMetrics(normalizedMetrics);
       } catch (error) {
         console.error('Error fetching metrics:', error);
       }
     }
-  }, [main, startDate, endDate]);
+  }, [main, startDate, endDate, workspace]);
 
   useEffect(() => {
     getMetrics();
@@ -238,7 +242,8 @@ export const SuperAdmin = () => {
           {
             ...checkboxIdToSelectedMap,
             direction: sortOrder,
-            provider: selectedProviders
+            provider: selectedProviders,
+            workspace
           }
         );
         setTotalBounties(totalBounties);
@@ -247,13 +252,14 @@ export const SuperAdmin = () => {
           String(startDate),
           String(endDate),
           {
-            provider: selectedProviders
+            provider: selectedProviders,
+            workspace
           }
         );
         setTotalBounties(totalBounties);
       }
     }
-  }, [main, startDate, endDate, checkboxIdToSelectedMap, selectedProviders]);
+  }, [main, startDate, endDate, checkboxIdToSelectedMap, selectedProviders, workspace]);
 
   useEffect(() => {
     getTotalBounties();
@@ -284,6 +290,8 @@ export const SuperAdmin = () => {
             endDate={endDate}
             setStartDate={setStartDate}
             setEndDate={setEndDate}
+            workspace={workspace}
+            setWorkspace={setWorkspace}
           />
           <Statistics freezeHeaderRef={ref} metrics={bountyMetrics} />
           {loading ? (
