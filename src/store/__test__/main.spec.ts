@@ -1027,7 +1027,7 @@ describe('Main store', () => {
     };
 
     store.exportMetricsBountiesCsv(body, '');
-    expect(store.exportMetricsBountiesCsv).toBeCalledWith(body);
+    expect(store.exportMetricsBountiesCsv).toBeCalledWith(body, '');
   });
 
   it('I should be able to test that the signed-in user details are persisted in the local storage', async () => {

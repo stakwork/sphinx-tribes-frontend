@@ -27,6 +27,8 @@ describe('Header Component', () => {
   test('displays header with extras', async () => {
     const setStartDateMock = jest.fn();
     const setEndDateMock = jest.fn();
+    const setWorkspaceMock = jest.fn();
+
     const exportCSVText = 'Export CSV';
 
     const { rerender } = render(
@@ -35,6 +37,8 @@ describe('Header Component', () => {
         endDate={moment().startOf('day').unix()}
         setStartDate={setStartDateMock}
         setEndDate={setEndDateMock}
+        workspace={''}
+        setWorkspace={setWorkspaceMock}
       />
     );
 
@@ -61,6 +65,8 @@ describe('Header Component', () => {
           endDate={moment().startOf('day').unix()}
           setStartDate={setStartDateMock}
           setEndDate={setEndDateMock}
+          workspace={''}
+          setWorkspace={setWorkspaceMock}
         />
       );
     });
@@ -77,6 +83,8 @@ describe('Header Component', () => {
           endDate={moment().startOf('day').unix()}
           setStartDate={setStartDateMock}
           setEndDate={setEndDateMock}
+          workspace={''}
+          setWorkspace={setWorkspaceMock}
         />
       );
     });
@@ -89,6 +97,7 @@ describe('Header Component', () => {
   test('displays same year for startDate and endDate', () => {
     const setStartDateMock = jest.fn();
     const setEndDateMock = jest.fn();
+    const setWorkspaceMock = jest.fn();
     const exportCSVText = 'Export CSV';
 
     const { rerender } = render(
@@ -97,6 +106,8 @@ describe('Header Component', () => {
         endDate={moment().subtract('days').startOf('day').unix()} // Same year as startDate
         setStartDate={setStartDateMock}
         setEndDate={setEndDateMock}
+        workspace={''}
+        setWorkspace={setWorkspaceMock}
       />
     );
 
@@ -125,6 +136,7 @@ describe('Header Component', () => {
   test('displays year for both dates for different startDate and endDate years', () => {
     const setStartDateMock = jest.fn();
     const setEndDateMock = jest.fn();
+    const setWorkspaceMock = jest.fn();
     const exportCSVText = 'Export CSV';
 
     const { rerender } = render(
@@ -133,6 +145,8 @@ describe('Header Component', () => {
         endDate={moment().subtract('days').startOf('day').unix()} // Same year as startDate
         setStartDate={setStartDateMock}
         setEndDate={setEndDateMock}
+        workspace={''}
+        setWorkspace={setWorkspaceMock}
       />
     );
 
@@ -158,6 +172,7 @@ describe('Header Component', () => {
   test('displays header with a 7-day difference by default', async () => {
     const setStartDateMock = jest.fn();
     const setEndDateMock = jest.fn();
+    const setWorkspaceMock = jest.fn();
     const exportCSVText = 'Export CSV';
 
     // Adjusted to ensure a 7-day difference by default
@@ -170,6 +185,8 @@ describe('Header Component', () => {
         endDate={endDate}
         setStartDate={setStartDateMock}
         setEndDate={setEndDateMock}
+        workspace={''}
+        setWorkspace={setWorkspaceMock}
       />
     );
 
@@ -192,6 +209,7 @@ describe('Header Component', () => {
   test('displays "Custom" when dates are selected', async () => {
     const setStartDateMock = jest.fn();
     const setEndDateMock = jest.fn();
+    const setWorkspaceMock = jest.fn();
 
     render(
       <Header
@@ -199,6 +217,8 @@ describe('Header Component', () => {
         endDate={moment().startOf('day').unix()}
         setStartDate={setStartDateMock}
         setEndDate={setEndDateMock}
+        workspace={''}
+        setWorkspace={setWorkspaceMock}
       />
     );
 

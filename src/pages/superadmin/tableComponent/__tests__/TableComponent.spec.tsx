@@ -37,6 +37,7 @@ const mockBounties: Bounty[] = [
     assigneeImage: '',
     provider: 'Provider 1',
     providerImage: 'provider-image-1.jpg',
+    organization_name: 'Workspace 1',
     workspace_name: 'Workspace 1',
     workspaceImage: 'org-image-1.jpg',
     paid: false,
@@ -55,6 +56,7 @@ const mockBounties: Bounty[] = [
     assigneeImage: 'assignee-image-2.jpg',
     provider: 'Provider 2',
     providerImage: 'provider-image-2.jpg',
+    organization_name: 'Workspace 2',
     workspace_name: 'Workspace 2',
     workspaceImage: 'org-image-2.jpg',
     status: 'assigned',
@@ -73,6 +75,7 @@ const mockBounties: Bounty[] = [
     assigneeImage: 'assignee-image-3.jpg',
     provider: 'Provider 3',
     providerImage: 'provider-image-3.jpg',
+    organization_name: 'Workspace 3',
     workspace_name: 'Workspace 3',
     workspaceImage: 'org-image-3.jpg',
     status: 'paid',
@@ -267,9 +270,7 @@ describe('MyTable Component', () => {
     mockBounties.forEach((bounty: Bounty, index: number) => {
       expect(getByText(bounty.title)).toBeInTheDocument();
       expect(getByText(dates[index])).toBeInTheDocument();
-      // expect(getByText(String(bounty.dtgp))).toBeInTheDocument();
-      // expect(getByText(bounty.provider)).toBeInTheDocument();
-      expect(getByText(bounty.workspace_name)).toBeInTheDocument();
+      expect(getByText(bounty?.organization_name ?? '')).toBeInTheDocument();
     });
   });
 
