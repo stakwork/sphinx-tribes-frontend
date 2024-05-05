@@ -633,7 +633,9 @@ export const MyTable = ({
                       onChangeStatus(id);
                     }}
                   />
-                  <StatusApplyButton onClick={clickApply}>Apply</StatusApplyButton>
+                  <StatusApplyButton data-testid={'status-apply-btn'} onClick={clickApply}>
+                    Apply
+                  </StatusApplyButton>
                 </EuiPopOverCheckbox>
               </div>
             </EuiPopover>
@@ -702,8 +704,8 @@ export const MyTable = ({
                     </TableDataAlternative>
                     <TableData className="workspace">
                       <ImageWithText
-                        text={bounty?.workspace_name}
-                        image={bounty?.workspace_img || defaultPic}
+                        text={bounty?.organization_name}
+                        image={bounty?.organization_img || defaultPic}
                       />
                     </TableData>
                     <TableData3>

@@ -60,7 +60,7 @@ describe('Super Admin Bounty Filter Status Dropdown ', () => {
 
     cy.contains('Status').click();
     cy.get('label[for="Open"]').click();
-    cy.contains('Apply').click();
+    cy.get('button').contains('Apply').click();
     cy.wait(1000);
 
     for (let i = 5; i <= 6; i++) {
@@ -71,10 +71,10 @@ describe('Super Admin Bounty Filter Status Dropdown ', () => {
       cy.contains(`Syed${i}`, { timeout: 10000 }).should('not.exist');
     }
 
-    cy.contains('Status').click();
+    cy.contains('Status:').click();
     cy.get('label[for="Open"]').click();
     cy.get('label[for="Assigned"]').click();
-    cy.contains('Apply').click();
+    cy.get('button').contains('Apply').click();
     cy.wait(1000);
 
     for (let i = 3; i <= 4; i++) {
@@ -92,7 +92,7 @@ describe('Super Admin Bounty Filter Status Dropdown ', () => {
     cy.contains('Status').click();
     cy.get('label[for="Assigned"]').click();
     cy.get('label[for="Paid"]').click();
-    cy.contains('Apply').click();
+    cy.get('button').contains('Apply').click();
     cy.wait(1000);
 
     for (let i = 1; i <= 2; i++) {

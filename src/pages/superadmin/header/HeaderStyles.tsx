@@ -140,8 +140,14 @@ export const Select = styled.select`
   box-shadow: 0px 2px 10px 0px rgba(97, 138, 255, 0.5);
   outline: none;
   border: none;
-  width: 113px;
+  width: 115px;
+  min-height: 40px;
+  padding: 0px 15px;
   color: var(--White, #fff);
+  border-radius: 6px;
+  box-shadow: 0px 2px 10px 0px rgba(97, 138, 255, 0.5);
+  font-size: 14px;
+  align-items: center;
 `;
 
 export const Option = styled.div`
@@ -183,6 +189,56 @@ export const Option = styled.div`
   }
 `;
 
+export const WorkspaceOption = styled.div`
+  position: absolute;
+  z-index: 1;
+  top: 50px;
+  right: -40px;
+  width: 210px;
+  height: 155px;
+  display: inline-flex;
+  padding: 12px 28px 12px 28px;
+  flex-direction: column;
+  align-items: center;
+  gap: 25px;
+  border-radius: 6px;
+  background: #fff;
+  overflow-y: scroll;
+  box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.25);
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    color: grey;
+  }
+
+  li {
+    padding: 8px 3px;
+    cursor: pointer;
+    color: grey;
+    font-family: 'Barlow', sans-serif;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 18px;
+    border-bottom: 0.5px solid #ccc;
+
+    &:hover {
+      color: #3c3f41;
+    }
+  }
+`;
+
+export const WorkspaceText = styled.div`
+  flex: 2, 
+  text-align: 'center';
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+`;
+
 export const CustomButton = styled.button`
   display: flex;
   width: 113px;
@@ -202,3 +258,5 @@ export const CustomButton = styled.button`
 export const Flex = styled.div`
   display: flex;
 `;
+
+export const HeaderSelect = styled(Select)``;

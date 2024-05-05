@@ -6,6 +6,7 @@ import { setupStore } from '../../../../__test__/__mockData__/setupStore';
 import { user } from '../../../../__test__/__mockData__/user';
 import { mockUsehistory } from '../../../../__test__/__mockFn__/useHistory';
 import { Statistics } from '../';
+import { bounties } from 'pages/superadmin/tableComponent/mockBountyData';
 
 beforeAll(() => {
   nock.disableNetConnect();
@@ -20,6 +21,7 @@ beforeAll(() => {
 const mockMetrics = {
   bounties_posted: 100,
   bounties_paid: 50,
+  bounties_assigned: 30,
   sats_posted: 5000,
   sats_paid: 2500,
   bounties_paid_average: 78,
@@ -45,7 +47,7 @@ describe('Statistics Component', () => {
     expect(getByTestId('total_bounties_posted')).toHaveTextContent('Total Posted');
     expect(getByText('50')).toBeInTheDocument();
     expect(getByText('Assigned')).toBeInTheDocument();
-    expect(getByText('78')).toBeInTheDocument();
+    expect(getByText('30')).toBeInTheDocument();
     expect(getByTestId('total_bounties_paid')).toHaveTextContent('Paid');
     expect(getByText('Completed')).toBeInTheDocument();
   });
