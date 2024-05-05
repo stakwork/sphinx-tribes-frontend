@@ -633,7 +633,9 @@ export const MyTable = ({
                       onChangeStatus(id);
                     }}
                   />
-                  <StatusApplyButton onClick={clickApply}>Apply</StatusApplyButton>
+                  <StatusApplyButton data-testid={'status-apply-btn'} onClick={clickApply}>
+                    Apply
+                  </StatusApplyButton>
                 </EuiPopOverCheckbox>
               </div>
             </EuiPopover>

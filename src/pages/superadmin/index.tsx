@@ -104,17 +104,7 @@ export const SuperAdmin = () => {
         setLoading(false);
       }
     }
-  }, [
-    main,
-    startDate,
-    endDate,
-    checkboxIdToSelectedMap,
-    sortOrder,
-    currentPage,
-    selectedProviders,
-    workspace,
-    search
-  ]);
+  }, [main, startDate, endDate, sortOrder, currentPage, selectedProviders, workspace, search]);
 
   const getProviders = useCallback(
     async (curPage?: number) => {
