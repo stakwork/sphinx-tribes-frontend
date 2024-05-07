@@ -2144,7 +2144,7 @@ export class MainStore {
 
   async getBudgetInvoice(body: {
     amount: number;
-    org_uuid: string;
+    workspace_uuid: string;
     sender_pubkey: string;
     payment_type: string;
   }): Promise<LnInvoice> {
@@ -2153,7 +2153,7 @@ export class MainStore {
         'budgetinvoices',
         {
           amount: body.amount,
-          org_uuid: body.org_uuid,
+          workspace_uuid: body.workspace_uuid,
           sender_pubkey: body.sender_pubkey,
           payment_type: body.payment_type
         },
