@@ -114,7 +114,7 @@ const invoiceDetails = [
     amount: 10,
     bounty_id: 0,
     payment_type: 'payment',
-    org_uuid: 'cn6pq4qtu2rj3nhh5kkg',
+    workspace_uuid: 'cn6pq4qtu2rj3nhh5kkg',
     sender_pubkey: '029a49ce2ec0885bd5edb09dbc4e4f700529dd76a7d19baab1656da61d909304c1',
     receiver_pubkey: '',
     created: '2024-02-15T05:24:13.021248Z',

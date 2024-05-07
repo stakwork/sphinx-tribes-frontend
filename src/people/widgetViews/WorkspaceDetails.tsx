@@ -178,6 +178,7 @@ const WorkspaceDetails = (props: {
   const getPaymentsHistory = useCallback(async () => {
     if (!viewReportDisabled) {
       const paymentHistories = await main.getPaymentHistories(uuid, 1, 2000);
+
       if (Array.isArray(paymentHistories)) {
         const payments = paymentHistories.map((history: PaymentHistory) => {
           if (!history.payment_type) {

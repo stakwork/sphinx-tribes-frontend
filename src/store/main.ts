@@ -144,7 +144,7 @@ export interface PaymentHistory {
   id: number;
   bounty_id: number;
   amount: number;
-  org_uuid: string;
+  workspace_uuid: string;
   sender_name: string;
   sender_pubkey: string;
   sender_img: string;

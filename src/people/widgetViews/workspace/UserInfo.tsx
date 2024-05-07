@@ -98,7 +98,7 @@ const UserInfo = (props: PaymentHistoryUserInfo) => {
           <ToolTipWrapper className="tooltipText">{props.name}</ToolTipWrapper>
         ) : null}
         <Name>{formatName(props.name)}</Name>
-        <Pubkey>{props.pubkey.substring(0, 17)}...</Pubkey>
+        <Pubkey> {props && props.pubkey ? `${props.pubkey.substring(0, 17)}...` : ''}</Pubkey>
       </DetailWrapper>
     </UserInfoWrapper>
   );
