@@ -158,7 +158,7 @@ const AddBudgetModal = (props: AddBudgetModalProps) => {
         const data = await main.getBudgetInvoice({
           amount: Number(amount),
           sender_pubkey: ui.meInfo?.owner_pubkey ?? '',
-          org_uuid: uuid,
+          workspace_uuid: uuid,
           payment_type: 'deposit'
         });
 
