@@ -68,7 +68,7 @@ export const WorkspaceHeader = ({
   checkboxIdToSelectedMapLanguage,
   onChangeStatus,
   checkboxIdToSelectedMap,
-  org_uuid,
+  workspace_uuid,
   languageString,
   workspaceData,
   totalBountyCount
@@ -103,14 +103,14 @@ export const WorkspaceHeader = ({
     const checkUserPermissions = async () => {
       const isLoggedIn = !!ui.meInfo;
       const hasPermission =
-        isLoggedIn && (await userCanManageBounty(org_uuid, ui.meInfo?.pubkey, main));
+        isLoggedIn && (await userCanManageBounty(workspace_uuid, ui.meInfo?.pubkey, main));
       setCanPostBounty(hasPermission);
     };
 
-    if (ui.meInfo && org_uuid) {
+    if (ui.meInfo && workspace_uuid) {
       checkUserPermissions();
     }
-  }, [ui.meInfo, org_uuid, main]);
+  }, [ui.meInfo, workspace_uuid, main]);
 
   const selectedWidget = 'bounties';
 
@@ -129,8 +129,8 @@ export const WorkspaceHeader = ({
   };
 
   const handleSearch = (searchText: string) => {
-    if (org_uuid) {
-      main.getSpecificWorkspaceBounties(org_uuid, {
+    if (workspace_uuid) {
+      main.getSpecificWorkspaceBounties(workspace_uuid, {
         page: 1,
         resetPage: true,
         ...checkboxIdToSelectedMap,
@@ -154,8 +154,8 @@ export const WorkspaceHeader = ({
   };
 
   useEffect(() => {
-    if (org_uuid) {
-      main.getSpecificWorkspaceBounties(org_uuid, {
+    if (workspace_uuid) {
+      main.getSpecificWorkspaceBounties(workspace_uuid, {
         page: 1,
         resetPage: true,
         ...checkboxIdToSelectedMap,
@@ -163,7 +163,7 @@ export const WorkspaceHeader = ({
         direction: sortDirection
       });
     }
-  }, [org_uuid, checkboxIdToSelectedMap, main, languageString, sortDirection]);
+  }, [workspace_uuid, checkboxIdToSelectedMap, main, languageString, sortDirection]);
 
   const { name, img, description, website, github } = workspaceData;
 
@@ -185,7 +185,7 @@ export const WorkspaceHeader = ({
     return () => {
       window.removeEventListener('click', handleWindowClick);
     };
-  }, [org_uuid, checkboxIdToSelectedMap, languageString, main, filterClick]);
+  }, [workspace_uuid, checkboxIdToSelectedMap, languageString, main, filterClick]);
 
   useEffect(() => {
     setStatusCountNumber(filterCount(checkboxIdToSelectedMap));
