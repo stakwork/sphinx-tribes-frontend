@@ -374,6 +374,27 @@ const WorkspaceDetails = (props: {
             style={{ borderRadius: '5px' }}
           />
           <Link
+            to={`/workspace/${uuid}`}
+            style={{
+              textDecoration: 'none',
+              color: 'inherit',
+              display: 'block'
+            }}
+            target="_blank"
+          >
+            <Button
+              disabled={editWorkspaceDisabled}
+              text="Edit Mission"
+              data-testid="mission-btn"
+              color="white"
+              style={{
+                borderRadius: '5px',
+                width: '100%'
+              }}
+              endingIcon="open_in_new"
+            />
+          </Link>
+          <Link
             to={`/workspace/bounties/${uuid}`}
             style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
             target="_blank"
