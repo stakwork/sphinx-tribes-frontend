@@ -40,7 +40,7 @@ const MockProps: WorkspaceBountyHeaderProps = {
   },
   languageString: '',
   direction: 'desc',
-  org_uuid: 'clf6qmo4nncmf23du7ng',
+  workspace_uuid: 'clf6qmo4nncmf23du7ng',
   onChangeStatus: jest.fn(),
   onChangeLanguage: jest.fn(),
   workspaceData: {
@@ -114,7 +114,7 @@ describe('WorkspaceHeader Component', () => {
   it('should call getSpecificWorkspaceBounties with correct parameters', () => {
     Object.defineProperty(window, 'location', {
       value: {
-        pathname: `/workspace/bounties/${MockProps.org_uuid}`
+        pathname: `/workspace/bounties/${MockProps.workspace_uuid}`
       },
       writable: true
     });
@@ -132,7 +132,7 @@ describe('WorkspaceHeader Component', () => {
     fireEvent.keyUp(searchInput, { key: 'Enter', code: 'Enter' });
 
     // Check if getSpecificWorkspaceBounties is called with correct parameters
-    expect(mainStore.getSpecificWorkspaceBounties).toHaveBeenCalledWith(MockProps.org_uuid, {
+    expect(mainStore.getSpecificWorkspaceBounties).toHaveBeenCalledWith(MockProps.workspace_uuid, {
       page: 1,
       resetPage: true,
       search: searchText,
@@ -194,12 +194,15 @@ describe('WorkspaceHeader Component', () => {
         <WorkspaceHeader {...MockProps} checkboxIdToSelectedMap={updatedCheckboxIdToSelectedMap} />
       );
 
-      expect(mainStore.getSpecificWorkspaceBounties).toHaveBeenCalledWith(MockProps.org_uuid, {
-        page: 1,
-        resetPage: true,
-        ...updatedCheckboxIdToSelectedMap,
-        languageString: MockProps.languageString
-      });
+      expect(mainStore.getSpecificWorkspaceBounties).toHaveBeenCalledWith(
+        MockProps.workspace_uuid,
+        {
+          page: 1,
+          resetPage: true,
+          ...updatedCheckboxIdToSelectedMap,
+          languageString: MockProps.languageString
+        }
+      );
     });
   });
 
