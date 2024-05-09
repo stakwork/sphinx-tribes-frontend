@@ -4,6 +4,7 @@ import '@material/react-material-icon/dist/material-icon.css';
 import { AppMode } from 'config';
 import { Route, Switch } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
+import WorkspaceMission from 'people/widgetViews/WorkspaceMission';
 import PeopleHeader from '../people/main/Header';
 import TokenRefresh from '../people/utils/TokenRefresh';
 import BotsBody from './bots/Body';
@@ -43,6 +44,9 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
           </Route>
           <Route path="/workspace/bounties/:uuid">
             <WorkspaceTicketsPage />
+          </Route>
+          <Route path="/workspace/:uuid">
+            <WorkspaceMission />
           </Route>
           <Route path="/leaderboard">
             <LeaderboardPage />

@@ -42,9 +42,9 @@ function WorkspaceBodyComponent() {
   useEffect(() => {
     (async () => {
       if (!uuid) return;
-      const orgData = await main.getUserWorkspaceByUuid(uuid);
-      if (!orgData) return;
-      setWorkspaceData(orgData);
+      const workspaceData = await main.getUserWorkspaceByUuid(uuid);
+      if (!workspaceData) return;
+      setWorkspaceData(workspaceData);
 
       setLoading(false);
     })();
@@ -197,7 +197,7 @@ function WorkspaceBodyComponent() {
           checkboxIdToSelectedMapLanguage={checkboxIdToSelectedMapLanguage}
           languageString={languageString}
           workspaceData={workspaceData as Workspace}
-          org_uuid={uuid}
+          workspace_uuid={uuid}
           totalBountyCount={WorkspaceTotalBounties}
         />
         <>

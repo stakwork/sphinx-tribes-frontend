@@ -440,7 +440,7 @@ export interface WorkspaceBountyHeaderProps {
   checkboxIdToSelectedMap?: any;
   checkboxIdToSelectedMapLanguage?: any;
   languageString?: string;
-  org_uuid?: string;
+  workspace_uuid?: string;
   workspaceData: Workspace;
   direction?: string;
   totalBountyCount: number;

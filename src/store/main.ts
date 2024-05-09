@@ -221,6 +221,8 @@ export interface Workspace {
   website?: string;
   owner_pubkey: string;
   img: string;
+  mission?: string;
+  tactics?: string;
   created: string;
   updated: string;
   show: boolean;
@@ -2787,6 +2789,54 @@ export class MainStore {
       return r;
     } catch (e) {
       console.error('workspaceDelete', e);
+    }
+  }
+
+  async workspaceUpdateMission(body: {
+    uuid: string;
+    owner_pubkey: string;
+    mission: string;
+  }): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return 0;
+      const info = uiStore.meInfo;
+      const r: any = await fetch(`${TribesURL}/workspaces/mission`, {
+        method: 'POST',
+        body: JSON.stringify(body),
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      return r;
+    } catch (e) {
+      console.error('workspaceUpdateMission', e);
+    }
+  }
+
+  async workspaceUpdateTactics(body: {
+    uuid: string;
+    owner_pubkey: string;
+    tactics: string;
+  }): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return 0;
+      const info = uiStore.meInfo;
+      const r: any = await fetch(`${TribesURL}/workspaces/tactics`, {
+        method: 'POST',
+        body: JSON.stringify(body),
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      return r;
+    } catch (e) {
+      console.error('workspaceUpdateMTactic', e);
     }
   }
 
