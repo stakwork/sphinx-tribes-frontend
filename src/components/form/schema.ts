@@ -863,32 +863,6 @@ export const workspaceSchema: FormField[] = [
   }
 ];
 
-export const missionSchema: FormField[] = [
-  {
-    name: 'mission',
-    label: 'Mission',
-    type: 'textarea',
-    required: true,
-    validator: strValidator,
-    style: {
-      height: '100px',
-      width: '100%',
-      marginBottom: '30px'
-    }
-  },
-  {
-    name: 'tactics',
-    label: 'Tactics and Objectives',
-    type: 'textarea',
-    validator: strValidator,
-    style: {
-      height: '300px',
-      width: '100%',
-      backgroundColor: 'transaprent'
-    }
-  }
-];
-
 export const workspaceUserSchema: FormField[] = [
   {
     name: 'owner_pubkey',

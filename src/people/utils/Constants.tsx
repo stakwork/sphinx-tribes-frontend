@@ -6,8 +6,7 @@ import {
   wantedCodingTaskSchema,
   wantedOtherSchema,
   workspaceSchema,
-  workspaceUserSchema,
-  missionSchema
+  workspaceUserSchema
 } from '../../components/form/schema';
 
 const MAX_UPLOAD_SIZE = 10194304; //10MB
@@ -52,16 +51,6 @@ const widgetConfigs = {
         text: 'No Workspace Yet',
         sub: 'Looks like this person has not created or added to any workspaces yet.'
       }
-    }
-  },
-  workspaceMission: {
-    label: 'Workspace Mision',
-    name: 'workspace mission',
-    submitText: 'Save',
-    schema: missionSchema,
-    action: {
-      text: 'Update Mission',
-      icon: 'add'
     }
   },
   badges: {

@@ -470,7 +470,7 @@ const WorkspaceDetails = (props: {
                     <BudgetSmallHead color="#3C3F41">Current Balance</BudgetSmallHead>
                   </BudgetHeaderWrap>
                   <ViewBudgetTextWrap>
-                    <Budget>
+                    <Budget data-testid="current-balance-amount">
                       {orgBudget.current_budget ? orgBudget.current_budget.toLocaleString() : 0}{' '}
                       <Grey>SATS</Grey>
                     </Budget>

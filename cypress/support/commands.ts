@@ -166,7 +166,7 @@ Cypress.Commands.add('create_bounty', (bounty, clickMethod = 'contains') => {
   } else {
     throw new Error('Invalid click method specified');
   }
-  cy.wait(1000);
+  cy.wait(5000);
   cy.contains('Post a Bounty').click();
   cy.contains('Start').click();
 
