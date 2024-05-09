@@ -118,7 +118,7 @@ export default function ConnectCard(props: ConnectCardProps) {
           >
             <N color={color}>Discuss this bounty with</N>
             <D color={color}>
-              <B>{person?.owner_alias} </B>
+              <B data-testid="ican-help-alias">{person?.owner_alias} </B>
             </D>
 
             <QR value={qrString} size={210} type={'connect'} />

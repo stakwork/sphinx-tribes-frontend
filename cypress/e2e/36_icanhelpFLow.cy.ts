@@ -50,7 +50,7 @@ describe('I Can Help Flow', () => {
 
     // Assert you can see Alice's Connect Modal QRcode
     cy.contains('Discuss this bounty with').should('exist').and('be.visible');
-    cy.get('span.sc-pLyGp.cZiIZl').contains('alice').should('exist').and('be.visible');
+    cy.get('[data-testid="ican-help-alias"]').contains('alice').should('exist').and('be.visible');
     cy.wait(1000);
 
     cy.get('[data-testid="testid-connectimg"]')
