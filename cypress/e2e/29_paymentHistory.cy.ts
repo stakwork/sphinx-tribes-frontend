@@ -9,7 +9,7 @@ describe('It Lists all payments in history', () => {
     // create workspace
     const workSpace = {
       loggedInAs: activeUser,
-      name: 'Deduct Budget Work',
+      name: 'Deduct Budget Pay3',
       description: 'We are testing out our workspace',
       website: 'https://community.sphinx.chat',
       github: 'https://github.com/stakwork/sphinx-tribes-frontend'
@@ -117,6 +117,7 @@ describe('It Lists all payments in history', () => {
     cy.contains('Deposit');
     cy.contains('Payment');
     cy.contains('Withdraw');
+
     cy.contains(formatSat(paymentAmount));
     cy.contains(formatSat(withdrawAmount));
     cy.contains(formatSat(depositAmount));
@@ -125,7 +126,12 @@ describe('It Lists all payments in history', () => {
     cy.get('body').click(0, 0);
     cy.wait(1000);
 
-    cy.contains(finalPaymentAmount.toLocaleString());
+    // cy.contains(finalPaymentAmount.toLocaleString()).should('exist');
+    cy.get('[data-testid="current-balance-amount"]')
+      .invoke('text')
+      .then((text) => {
+        expect(text).equal(finalPaymentAmount.toLocaleString());
+      });
     cy.wait(1000);
 
     cy.logout(activeUser);

@@ -6,7 +6,7 @@ describe('It Withdraws from Workspace budget', () => {
     // create org
     const workspace = {
       loggedInAs: 'carol',
-      name: 'Deduct Budget Workspace',
+      name: 'Deduct Budget Work',
       description: 'We are testing out our oeganization',
       website: 'https://community.sphinx.chat',
       github: 'https://github.com/stakwork/sphinx-tribes-frontend'
