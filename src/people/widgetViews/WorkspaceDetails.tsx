@@ -381,6 +381,7 @@ const WorkspaceDetails = (props: {
               display: 'block'
             }}
             target="_blank"
+            data-testid="mission-link"
           >
             <Button
               disabled={editWorkspaceDisabled}

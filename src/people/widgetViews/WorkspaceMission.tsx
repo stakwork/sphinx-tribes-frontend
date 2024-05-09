@@ -17,7 +17,6 @@ import {
 import githubIcon from 'pages/tickets/workspace/workspaceHeader/Icons/githubIcon.svg';
 import websiteIcon from 'pages/tickets/workspace/workspaceHeader/Icons/websiteIcon.svg';
 import styled from 'styled-components';
-import { userCanManageBounty } from '../../helpers/index.ts';
 
 export const ImgText = styled.h3`
   color: #b0b7bc;
@@ -153,7 +152,6 @@ const WorkspaceMission = () => {
   const { uuid } = useParams<{ uuid: string }>();
   const [workspaceData, setWorkspaceData] = useState<Workspace>();
   const [loading, setLoading] = useState(true);
-  const [canPostBounty, setCanPostBounty] = useState(false);
   const [displayMission, setDidplayMission] = useState(false);
   const [editMission, setEditMission] = useState(false);
   const [editTactics, setEditTactics] = useState(false);
@@ -173,19 +171,6 @@ const WorkspaceMission = () => {
   useEffect(() => {
     getWorkspaceData();
   }, [getWorkspaceData]);
-
-  useEffect(() => {
-    const checkUserPermissions = async () => {
-      const isLoggedIn = !!ui.meInfo;
-      const hasPermission =
-        isLoggedIn && (await userCanManageBounty(uuid, ui.meInfo?.pubkey, main));
-      setCanPostBounty(hasPermission);
-    };
-
-    if (ui.meInfo && uuid) {
-      checkUserPermissions();
-    }
-  }, [ui.meInfo, uuid, main]);
 
   const toastsEl = (
     <EuiGlobalToastList
@@ -294,10 +279,12 @@ const WorkspaceMission = () => {
                   icon={'more_horiz'}
                   className="MaterialIcon"
                   onClick={() => setDidplayMission(!displayMission)}
+                  data-testid="mission-option-btn"
                 />
                 <button
                   style={{ display: displayMission ? 'block' : 'none' }}
                   onClick={editMissionActions}
+                  data-testid="mission-edit-btn"
                 >
                   Edit
                 </button>
@@ -308,10 +295,24 @@ const WorkspaceMission = () => {
 
               {editMission && (
                 <>
-                  <TextArea placeholder="Enter mission" onChange={missionChange} value={mission} />
+                  <TextArea
+                    placeholder="Enter mission"
+                    onChange={missionChange}
+                    value={mission}
+                    data-testid="mission-textarea"
+                  />
                   <ButtonWrap>
-                    <ActionButton onClick={() => setEditMission(!editMission)}>Cancel</ActionButton>
-                    <ActionButton color="primary" onClick={submitMission}>
+                    <ActionButton
+                      onClick={() => setEditMission(!editMission)}
+                      data-testid="mission-cancel-btn"
+                    >
+                      Cancel
+                    </ActionButton>
+                    <ActionButton
+                      color="primary"
+                      onClick={submitMission}
+                      data-testid="mission-update-btn"
+                    >
                       Update
                     </ActionButton>
                   </ButtonWrap>
@@ -327,10 +328,12 @@ const WorkspaceMission = () => {
                   onClick={() => setDidplayTactics(!displayTactics)}
                   icon={'more_horiz'}
                   className="MaterialIcon"
+                  data-testid="tactics-option-btn"
                 />
                 <button
                   style={{ display: displayTactics ? 'block' : 'none' }}
                   onClick={editTacticsActions}
+                  data-testid="tactics-edit-btn"
                 >
                   Edit
                 </button>
@@ -341,10 +344,24 @@ const WorkspaceMission = () => {
 
               {editTactics && (
                 <>
-                  <TextArea placeholder="Enter tactics" onChange={tacticsChange} value={tactics} />
+                  <TextArea
+                    placeholder="Enter tactics"
+                    onChange={tacticsChange}
+                    value={tactics}
+                    data-testid="tactics-textarea"
+                  />
                   <ButtonWrap>
-                    <ActionButton onClick={() => setEditTactics(!editTactics)}>Cancel</ActionButton>
-                    <ActionButton color="primary" onClick={submitTactics}>
+                    <ActionButton
+                      data-testid="tactics-cancel-btn"
+                      onClick={() => setEditTactics(!editTactics)}
+                    >
+                      Cancel
+                    </ActionButton>
+                    <ActionButton
+                      data-testid="tactics-update-btn"
+                      color="primary"
+                      onClick={submitTactics}
+                    >
                       Update
                     </ActionButton>
                   </ButtonWrap>
