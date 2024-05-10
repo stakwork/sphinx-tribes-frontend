@@ -58,7 +58,7 @@ describe('It Withdraws from Workspace budget', () => {
       cy.get('body').click(0, 0);
       cy.wait(1000);
 
-      cy.contains(currentAmount.toLocaleString());
+      cy.contains(currentAmount.toLocaleString()).should('exist', { timeout: 2000 });
       cy.wait(500);
 
       // logout

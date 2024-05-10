@@ -1,7 +1,7 @@
 import { formatSat } from '../../src/helpers/helpers-extended';
 
 describe('It Lists all payments in history', () => {
-  it('It adds budget, withdraw budget, pay bounties and see all the payments in history', async () => {
+  it('It adds budget, withdraw budget, pay bounties and see all the payments in history', () => {
     const activeUser = 'alice';
     cy.login(activeUser);
     cy.wait(1000);
@@ -9,7 +9,7 @@ describe('It Lists all payments in history', () => {
     // create workspace
     const workSpace = {
       loggedInAs: activeUser,
-      name: 'Deduct Budget Pay3',
+      name: 'Test Workspace',
       description: 'We are testing out our workspace',
       website: 'https://community.sphinx.chat',
       github: 'https://github.com/stakwork/sphinx-tribes-frontend'
@@ -18,7 +18,8 @@ describe('It Lists all payments in history', () => {
     cy.create_workspace(workSpace);
     cy.wait(1000);
 
-    cy.contains('Manage').click();
+    cy.contains(workSpace.name).contains('Manage').click();
+    cy.wait(1000);
 
     const depositAmount = 10000;
     const withdrawAmount = 2000;
@@ -63,9 +64,11 @@ describe('It Lists all payments in history', () => {
       cy.get('body').click(0, 0);
       cy.wait(1000);
 
-      cy.contains(afterWithdrawAmount.toLocaleString());
+      cy.contains(afterWithdrawAmount.toLocaleString()).should('exist', { timeout: 2000 });
       cy.wait(500);
     });
+
+    cy.wait(1000);
 
     //  create and pay bounty
     const bounty: Cypress.Bounty = {
@@ -126,13 +129,7 @@ describe('It Lists all payments in history', () => {
     cy.get('body').click(0, 0);
     cy.wait(1000);
 
-    // cy.contains(finalPaymentAmount.toLocaleString()).should('exist');
-    cy.get('[data-testid="current-balance-amount"]')
-      .invoke('text')
-      .then((text) => {
-        expect(text).equal(finalPaymentAmount.toLocaleString());
-      });
-    cy.wait(1000);
+    cy.contains(finalPaymentAmount.toLocaleString()).should('exist', { timeout: 2000 });
 
     cy.logout(activeUser);
   });

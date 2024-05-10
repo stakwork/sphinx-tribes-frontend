@@ -250,7 +250,7 @@ describe('Main store', () => {
 
     const workspaceUser = {
       owner_pubkey: user.owner_pubkey || '',
-      org_uuid: mockApiResponseData[2]
+      workspace_uuid: mockApiResponseData[2]
     };
 
     const expectedHeaders = {

@@ -2403,11 +2403,14 @@ export class MainStore {
     }
   }
 
-  @action async addWorkspaceUser(body: { owner_pubkey: string; org_uuid: string }): Promise<any> {
+  @action async addWorkspaceUser(body: {
+    owner_pubkey: string;
+    workspace_uuid: string;
+  }): Promise<any> {
     try {
       if (!uiStore.meInfo) return null;
       const info = uiStore.meInfo;
-      const r: any = await fetch(`${TribesURL}/workspaces/users/${body.org_uuid}`, {
+      const r: any = await fetch(`${TribesURL}/workspaces/users/${body.workspace_uuid}`, {
         method: 'POST',
         mode: 'cors',
         body: JSON.stringify({
@@ -2754,11 +2757,11 @@ export class MainStore {
     }
   }
 
-  async workspaceInvoiceCount(org_uuid: string): Promise<any> {
+  async workspaceInvoiceCount(workspace_uuid: string): Promise<any> {
     try {
       if (!uiStore.meInfo) return 0;
       const info = uiStore.meInfo;
-      const r: any = await fetch(`${TribesURL}/workspaces/invoices/count/${org_uuid}`, {
+      const r: any = await fetch(`${TribesURL}/workspaces/invoices/count/${workspace_uuid}`, {
         method: 'GET',
         mode: 'cors',
         headers: {
