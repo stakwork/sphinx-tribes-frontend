@@ -229,7 +229,7 @@ const WorkspaceDetails = (props: {
   const onSubmitUser = async (body: any) => {
     setIsLoading(true);
 
-    body.org_uuid = uuid;
+    body.workspace_uuid = uuid;
 
     const res = await main.addWorkspaceUser(body);
     if (res.status === 200) {
@@ -265,7 +265,7 @@ const WorkspaceDetails = (props: {
       .filter((r: any) => r.status)
       .map((role: any) => ({
         owner_pubkey: user?.owner_pubkey,
-        org_uuid: uuid,
+        workspace_uuid: uuid,
         role: role.name
       }));
 
