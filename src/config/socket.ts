@@ -3,7 +3,7 @@ import { getHost } from './host';
 export const URL =
   process.env.NODE_ENV !== 'development'
     ? `wss://${getHost()}/websocket`
-    : `ws://${getHost()}/websocket`;
+    : `wss://${getHost()}/websocket`;
 
 export const SOCKET_MSG = {
   keysend_error: 'keysend_error',

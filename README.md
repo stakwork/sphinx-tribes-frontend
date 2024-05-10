@@ -1,3 +1,18 @@
+branch: feature-add-fields-to-workspaces
+
+# Information specific to bounty
+
+................................
+................................
+
+To start the project just run: 
+
+run yarn start
+
+
+more info on sphinx Tribes...
+
+
 # Sphinx Tribes 🌐
 
 ![Tribes](https://github.com/stakwork/sphinx-tribes/raw/master/img/sphinx-tribes.png)
