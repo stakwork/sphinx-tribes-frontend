@@ -2,16 +2,15 @@ branch: feature-add-fields-to-workspaces
 
 # Information specific to bounty
 
-................................
-................................
+##Add Fields to Workspaces
 
 To start the project just run: 
 
-run yarn start
+- `yarn install` to install the dependencies
+- `yarn start` to run the frontend locally
 
 
-more info on sphinx Tribes...
-
+more info on sphinx Tribes, the master readme file...
 
 # Sphinx Tribes 🌐
 
