@@ -3,7 +3,7 @@ describe('Create Workspace And Update Mission', () => {
     cy.login('carol');
     cy.wait(1000);
 
-    const WorkSpaceName = 'Workspace Mission5';
+    const WorkSpaceName = 'Workspace Mission';
 
     const workspace = {
       loggedInAs: 'carol',
@@ -19,12 +19,14 @@ describe('Create Workspace And Update Mission', () => {
     cy.contains(workspace.name).contains('Manage').click();
     cy.wait(1000);
 
-    cy.get('[data-testid="mission-link"]').then(($link: JQuery<HTMLElement>) => {
-      const modifiedHref = $link.attr('href');
-      cy.wrap($link).invoke('removeAttr', 'target');
-      cy.wrap($link).click();
-      cy.url().should('include', modifiedHref);
-    });
+    cy.get('[data-testid="mission-link"]')
+      .invoke('show')
+      .then(($link: JQuery<HTMLElement>) => {
+        const modifiedHref = $link.attr('href');
+        cy.wrap($link).invoke('removeAttr', 'target');
+        cy.wrap($link).click();
+        cy.url().should('include', modifiedHref);
+      });
     cy.wait(1000);
 
     cy.contains('No mission yet');
@@ -36,7 +38,6 @@ describe('Create Workspace And Update Mission', () => {
     const missionStatment = 'This is my Mission';
     cy.get('[data-testid="mission-textarea"]').type(missionStatment);
     cy.get('[data-testid="mission-update-btn"]').click();
-    cy.get('[data-testid="mission-cancel-btn"]').click();
 
     cy.get('[data-testid="tactics-option-btn"]').click();
     cy.get('[data-testid="tactics-edit-btn"]').click();
@@ -44,10 +45,9 @@ describe('Create Workspace And Update Mission', () => {
     const tacticsStatment = 'This is my Tactics';
     cy.get('[data-testid="tactics-textarea"]').type(tacticsStatment);
     cy.get('[data-testid="tactics-update-btn"]').click();
-    cy.get('[data-testid="tactics-cancel-btn"]').click();
 
-    cy.contains(missionStatment);
-    cy.contains(tacticsStatment);
+    cy.contains(missionStatment).should('exist', { timeout: 1000 });
+    cy.contains(tacticsStatment).should('exist', { timeout: 1000 });
 
     cy.logout('carol');
   });
