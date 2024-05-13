@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom';
+import userEvent from '@testing-library/user-event';
 import { render, screen, within, act, fireEvent } from '@testing-library/react';
 import moment from 'moment';
 import nock from 'nock';
@@ -252,9 +253,12 @@ describe('Header Component', () => {
     );
 
     const dropDownButton = screen.getByTestId('DropDown');
+    fireEvent.click(dropDownButton);
+
+    userEvent.selectOptions(dropDownButton, ['Current Month']);
 
     const daysPassed = moment().date();
-    const expectedTextContent = `${moment().format('MMM')} (${daysPassed} Days)`;
+    const expectedTextContent = `${moment().format('MMMM')} (${daysPassed} Days)`;
     expect(dropDownButton).toHaveTextContent(expectedTextContent);
 
     const leftWrapperElement = screen.getByTestId('leftWrapper');
