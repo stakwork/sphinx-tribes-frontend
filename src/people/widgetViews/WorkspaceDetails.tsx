@@ -378,7 +378,7 @@ const WorkspaceDetails = (props: {
             style={{
               textDecoration: 'none',
               color: 'inherit',
-              display: 'block'
+              display: 'none'
             }}
             target="_blank"
             data-testid="mission-link"

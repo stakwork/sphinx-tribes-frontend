@@ -108,11 +108,32 @@ const OptionsWrap = styled.div`
 `;
 
 const TextArea = styled.textarea`
-  border: 0.5px solid #000000;
-  padding: 12px 20px;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  border: 2px solid #dde1e5;
+  outline: none;
+  caret-color: #618aff;
+  color: #3c3f41;
+  font-family: 'Barlow';
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
   width: 100%;
-  margin-top: 10px;
-  border-radius: 5px;
+  resize: none;
+  min-height: 5.9375rem;
+
+  ::placeholder {
+    color: #b0b7bc;
+    font-family: 'Barlow';
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+  }
+  :focus {
+    border: 2px solid #82b4ff;
+  }
 `;
 
 const ButtonWrap = styled.div`
@@ -206,8 +227,11 @@ const WorkspaceMission = () => {
     setDidplayMission(false);
   };
 
-  const missionChange = (e: any) => {
-    setMission(e.target.value);
+  const missionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newValue = e.target.value;
+    if (newValue.length) {
+      setMission(newValue);
+    }
   };
 
   const tacticsChange = (e: any) => {
@@ -222,6 +246,7 @@ const WorkspaceMission = () => {
     };
     await main.workspaceUpdateMission(body);
     await getWorkspaceData();
+    setEditMission(false);
   };
 
   const submitTactics = async () => {
@@ -232,6 +257,7 @@ const WorkspaceMission = () => {
     };
     await main.workspaceUpdateTactics(body);
     await getWorkspaceData();
+    setEditTactics(false);
   };
 
   return (
@@ -298,7 +324,7 @@ const WorkspaceMission = () => {
                   <TextArea
                     placeholder="Enter mission"
                     onChange={missionChange}
-                    value={mission}
+                    value={mission ?? workspaceData?.mission}
                     data-testid="mission-textarea"
                   />
                   <ButtonWrap>
@@ -347,7 +373,7 @@ const WorkspaceMission = () => {
                   <TextArea
                     placeholder="Enter tactics"
                     onChange={tacticsChange}
-                    value={tactics}
+                    value={tactics ?? workspaceData?.tactics}
                     data-testid="tactics-textarea"
                   />
                   <ButtonWrap>
