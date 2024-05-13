@@ -206,6 +206,8 @@ describe('Header Component', () => {
 
     expect(screen.getByText(exportCSVText)).toBeInTheDocument();
   });
+
+  
   test('displays "Custom" when dates are selected', async () => {
     const setStartDateMock = jest.fn();
     const setEndDateMock = jest.fn();
@@ -229,5 +231,39 @@ describe('Header Component', () => {
     fireEvent.click(customOption);
 
     expect(dropDownButton).toHaveTextContent('Custom');
+  });
+  
+  test('displays current month and number of days dynamically based on current date', () => {
+    const setStartDateMock = jest.fn();
+    const setEndDateMock = jest.fn();
+    const setWorkspaceMock = jest.fn();
+  
+    const endDate = moment().startOf('day').unix();
+    const startDate = moment().startOf('month').unix(); 
+  
+    render(
+      <Header
+        startDate={startDate}
+        endDate={endDate}
+        setStartDate={setStartDateMock}
+        setEndDate={setEndDateMock}
+        workspace={''}
+        setWorkspace={setWorkspaceMock}
+      />
+    );
+  
+    const dropDownButton = screen.getByTestId('DropDown');
+  
+    const daysPassed = moment().date();
+    const expectedTextContent = `${moment().format('MMM')} (${daysPassed} Days)`;
+    expect(dropDownButton).toHaveTextContent(expectedTextContent);
+  
+    const leftWrapperElement = screen.getByTestId('leftWrapper');
+    const monthElement = within(leftWrapperElement).getByTestId('month');
+  
+    expect(monthElement).toBeInTheDocument();
+  
+    const expectedDateRange = `${moment.unix(startDate).format('DD MMM')} - ${moment.unix(endDate).format('DD MMM YYYY')}`;
+    expect(monthElement).toHaveTextContent(expectedDateRange);
   });
 });
