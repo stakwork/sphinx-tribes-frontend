@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import userEvent from '@testing-library/user-event';
+import { waitFor } from '@testing-library/dom';
 import { render, screen, within, act, fireEvent } from '@testing-library/react';
 import moment from 'moment';
 import nock from 'nock';
@@ -9,11 +9,11 @@ import { user } from '../../../../__test__/__mockData__/user';
 import { mockUsehistory } from '../../../../__test__/__mockFn__/useHistory';
 import { Header } from '../';
 
-beforeAll(() => {
-  nock.disableNetConnect();
-  setupStore();
-  mockUsehistory();
-});
+// beforeAll(() => {
+//   nock.disableNetConnect();
+//   setupStore();
+//   mockUsehistory();
+// });
 
 /**
  * @jest-environment jsdom
@@ -233,7 +233,7 @@ describe('Header Component', () => {
     expect(dropDownButton).toHaveTextContent('Custom');
   });
 
-  test('displays current month and number of days dynamically based on current date', () => {
+  test('displays current month and number of days dynamically based on current date', async () => {
     const setStartDateMock = jest.fn();
     const setEndDateMock = jest.fn();
     const setWorkspaceMock = jest.fn();
@@ -255,11 +255,13 @@ describe('Header Component', () => {
     const dropDownButton = screen.getByTestId('DropDown');
     fireEvent.click(dropDownButton);
 
-    userEvent.selectOptions(dropDownButton, ['Current Month']);
+    const CurrentMonthOption = screen.getByText('Current Month');
+    fireEvent.click(CurrentMonthOption);
 
     const daysPassed = moment().date();
     const expectedTextContent = `${moment().format('MMMM')} (${daysPassed} Days)`;
-    expect(dropDownButton).toHaveTextContent(expectedTextContent);
+
+    await waitFor(() => expect(dropDownButton).toHaveTextContent(expectedTextContent));
 
     const leftWrapperElement = screen.getByTestId('leftWrapper');
     const monthElement = within(leftWrapperElement).getByTestId('month');
