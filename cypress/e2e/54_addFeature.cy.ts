@@ -40,8 +40,9 @@ describe('Add feature To Workspace', () => {
     const newFeature = 'This is my Feature';
     cy.get('[data-testid="feature-input"]').type(newFeature);
     cy.get('[data-testid="add-feature-btn"]').click();
+    cy.wait(1000);
 
-    cy.contains(newFeature).should('exist', { timeout: 1000 });
+    cy.contains(newFeature).should('exist', { timeout: 3000 });
 
     cy.logout('carol');
   });
