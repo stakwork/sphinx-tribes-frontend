@@ -3,7 +3,7 @@ import { WorkspaceWrap } from 'components/form/style';
 import { useIsMobile } from 'hooks/uiHooks';
 import { nonWidgetConfigs } from 'people/utils/Constants';
 import moment from 'moment';
-import { BudgetHistory } from 'store/main';
+import { BudgetHistory } from 'store/interface';
 import { Modal } from '../../../components/common';
 import { colors } from '../../../config/colors';
 import { ModalTitle } from './style';

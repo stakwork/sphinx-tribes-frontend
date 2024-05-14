@@ -3,7 +3,7 @@ import { useIsMobile } from 'hooks/uiHooks';
 import { InvoiceForm, InvoiceInput, InvoiceLabel } from 'people/utils/style';
 import { useStores } from 'store';
 import styled from 'styled-components';
-import { BudgetWithdrawSuccess } from 'store/main';
+import { BudgetWithdrawSuccess } from 'store/interface';
 import { satToUsd } from 'helpers';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore

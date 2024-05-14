@@ -1,6 +1,6 @@
 import MaterialIcon from '@material/react-material-icon';
 import React from 'react';
-import { Person } from 'store/main';
+import { Person } from 'store/interface';
 import { userHasRole } from 'helpers';
 import { useStores } from 'store';
 import avatarIcon from '../../../public/static/profile_avatar.svg';

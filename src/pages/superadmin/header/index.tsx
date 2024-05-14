@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import moment from 'moment';
-import { mainStore, Workspace } from 'store/main';
+import { Workspace } from 'store/interface';
+import { mainStore } from 'store/main';
 import {
   AlternateWrapper,
   ButtonWrapper,

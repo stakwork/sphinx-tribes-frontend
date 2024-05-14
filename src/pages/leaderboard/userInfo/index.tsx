@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import { colors } from '../../../config';
 import ConnectCard from '../../../people/utils/ConnectCard';
 import { useStores } from '../../../store';
-import { Person } from '../../../store/main';
+import { Person } from '../../../store/interface';
 const UserItemContainer = styled.div`
   display: flex;
   gap: 1rem;

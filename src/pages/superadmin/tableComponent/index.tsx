@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import moment from 'moment';
 import { EuiCheckboxGroup, EuiPopover, EuiText } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
-import { Person } from 'store/main';
+import { Person } from 'store/interface';
 import paginationarrow1 from '../header/icons/paginationarrow1.svg';
 import paginationarrow2 from '../header/icons/paginationarrow2.svg';
 import defaultPic from '../../../public/static/profile_avatar.svg';

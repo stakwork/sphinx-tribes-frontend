@@ -5,7 +5,7 @@ import BountyHeader from 'people/widgetViews/BountyHeader';
 import WidgetSwitchViewer from 'people/widgetViews/WidgetSwitchViewer';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
-import { queryLimit, defaultBountyStatus } from 'store/main';
+import { queryLimit, defaultBountyStatus } from 'store/interface';
 import { useLocation } from 'react-router-dom';
 import { colors } from '../../config/colors';
 import { useIsMobile } from '../../hooks';

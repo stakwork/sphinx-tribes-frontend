@@ -10,7 +10,7 @@ import PageLoadSpinner from 'people/utils/PageLoadSpinner';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Route, Switch, useHistory, useRouteMatch, useParams } from 'react-router-dom';
 import { useStores } from 'store';
-import { paginationQueryLimit } from 'store/main';
+import { paginationQueryLimit } from 'store/interface';
 import styled from 'styled-components';
 import { LoadMoreContainer } from '../../../people/widgetViews/WidgetSwitchViewer';
 import { colors } from '../../../config/colors';
