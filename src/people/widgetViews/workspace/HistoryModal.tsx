@@ -3,7 +3,7 @@ import { useIsMobile } from 'hooks/uiHooks';
 import { nonWidgetConfigs } from 'people/utils/Constants';
 import moment from 'moment';
 import styled from 'styled-components';
-import { PaymentHistory, WorkspaceTransactionType } from 'store/main';
+import { PaymentHistory, WorkspaceTransactionType } from 'store/interface';
 import { useStores } from 'store';
 import { formatSat } from '../../../helpers';
 import { Modal } from '../../../components/common';

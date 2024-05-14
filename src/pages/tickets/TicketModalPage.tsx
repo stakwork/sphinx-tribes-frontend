@@ -9,7 +9,7 @@ import FocusedView from '../../people/main/FocusView';
 import { widgetConfigs } from '../../people/utils/Constants';
 import { AlreadyDeleted } from '../../components/common/AfterDeleteNotification/AlreadyDeleted';
 import { useStores } from '../../store';
-import { PersonBounty } from '../../store/main';
+import { PersonBounty } from '../../store/interface';
 
 const color = colors['light'];
 const focusedDesktopModalStyles = widgetConfigs.bounties.modalStyle;

@@ -6,7 +6,7 @@ import { DollarConverter } from 'helpers';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useStores } from 'store';
-import { Person } from 'store/main';
+import { Person } from 'store/interface';
 import styled from 'styled-components';
 import { LeaderItem } from '../store';
 

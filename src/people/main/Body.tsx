@@ -4,7 +4,7 @@ import { useHistory } from 'react-router';
 import styled from 'styled-components';
 import { EuiGlobalToastList, EuiLoadingSpinner } from '@elastic/eui';
 import PeopleHeader from 'people/widgetViews/PeopleHeader';
-import type { Person } from 'store/main';
+import type { Person } from 'store/interface';
 import { SearchTextInput } from '../../components/common';
 import { colors } from '../../config/colors';
 import { useIsMobile, usePageScroll, useScreenWidth } from '../../hooks';
