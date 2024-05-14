@@ -1,6 +1,6 @@
 import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { Workspace } from 'store/main';
+import { Workspace } from 'store/interface';
 import { MemoryRouter } from 'react-router-dom';
 import WorkspaceDetails from '../WorkspaceDetails';
 

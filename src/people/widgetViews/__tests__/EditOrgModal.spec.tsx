@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { Workspace } from 'store/main';
+import { Workspace } from 'store/interface';
 import EditWorkspaceModal from '../workspace/EditWorkspaceModal';
 import { useStores } from '../../../store';
 
