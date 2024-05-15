@@ -112,6 +112,9 @@ export const Header = ({
         case 90:
           text = 'Last 90 Days';
           break;
+        case moment().date():
+          text = `Current Month`;
+          break;
         default:
           break;
       }
@@ -240,6 +243,7 @@ export const Header = ({
                   <li onClick={() => handleDropDownChange(7)}>7 Days</li>
                   <li onClick={() => handleDropDownChange(30)}>30 Days</li>
                   <li onClick={() => handleDropDownChange(90)}>90 Days</li>
+                  <li onClick={() => handleDropDownChange(moment().date())}>Current Month</li>
                   <li>
                     <CustomButton onClick={() => handleDropDownChange('Custom')}>
                       Custom

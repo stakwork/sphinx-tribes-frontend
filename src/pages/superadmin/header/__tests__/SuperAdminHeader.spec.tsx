@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom';
+import { waitFor } from '@testing-library/dom';
 import { render, screen, within, act, fireEvent } from '@testing-library/react';
 import moment from 'moment';
 import nock from 'nock';
@@ -8,11 +9,11 @@ import { user } from '../../../../__test__/__mockData__/user';
 import { mockUsehistory } from '../../../../__test__/__mockFn__/useHistory';
 import { Header } from '../';
 
-beforeAll(() => {
-  nock.disableNetConnect();
-  setupStore();
-  mockUsehistory();
-});
+// beforeAll(() => {
+//   nock.disableNetConnect();
+//   setupStore();
+//   mockUsehistory();
+// });
 
 /**
  * @jest-environment jsdom
@@ -206,6 +207,7 @@ describe('Header Component', () => {
 
     expect(screen.getByText(exportCSVText)).toBeInTheDocument();
   });
+
   test('displays "Custom" when dates are selected', async () => {
     const setStartDateMock = jest.fn();
     const setEndDateMock = jest.fn();
@@ -229,5 +231,45 @@ describe('Header Component', () => {
     fireEvent.click(customOption);
 
     expect(dropDownButton).toHaveTextContent('Custom');
+  });
+
+  test('displays current month and number of days dynamically based on current date', async () => {
+    const setStartDateMock = jest.fn();
+    const setEndDateMock = jest.fn();
+    const setWorkspaceMock = jest.fn();
+
+    const endDate = moment().startOf('day').unix();
+    const startDate = moment().startOf('month').unix();
+
+    render(
+      <Header
+        startDate={startDate}
+        endDate={endDate}
+        setStartDate={setStartDateMock}
+        setEndDate={setEndDateMock}
+        workspace={''}
+        setWorkspace={setWorkspaceMock}
+      />
+    );
+
+    const dropDownButton = screen.getByTestId('DropDown');
+    fireEvent.click(dropDownButton);
+
+    const CurrentMonthOption = screen.getByText('Current Month');
+    fireEvent.click(CurrentMonthOption);
+
+    const expectedTextContent = 'Current Month';
+
+    await waitFor(() => expect(dropDownButton).toHaveTextContent(expectedTextContent));
+
+    const leftWrapperElement = screen.getByTestId('leftWrapper');
+    const monthElement = within(leftWrapperElement).getByTestId('month');
+
+    expect(monthElement).toBeInTheDocument();
+
+    const expectedDateRange = `${moment.unix(startDate).format('DD MMM')} - ${moment
+      .unix(endDate)
+      .format('DD MMM YYYY')}`;
+    expect(monthElement).toHaveTextContent(expectedDateRange);
   });
 });
