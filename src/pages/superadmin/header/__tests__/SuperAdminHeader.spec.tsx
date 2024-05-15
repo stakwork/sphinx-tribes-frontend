@@ -258,7 +258,7 @@ describe('Header Component', () => {
     const CurrentMonthOption = screen.getByText('Current Month');
     fireEvent.click(CurrentMonthOption);
 
-    const expectedTextContent = `${moment().format('MMM')}`;
+    const expectedTextContent = 'Current Month';
 
     await waitFor(() => expect(dropDownButton).toHaveTextContent(expectedTextContent));
 
