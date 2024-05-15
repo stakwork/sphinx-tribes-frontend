@@ -111,8 +111,8 @@ export const Header = ({
         case 90:
           text = 'Last 90 Days';
           break;
-        case moment().date(): 
-          text = `Current Month`; 
+        case moment().date():
+          text = `Current Month`;
           break;
         default:
           break;
