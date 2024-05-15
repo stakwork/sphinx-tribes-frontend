@@ -112,7 +112,7 @@ export const Header = ({
           text = 'Last 90 Days';
           break;
         case moment().date(): // Current day of the month
-          text = `${moment().format('MMM')} (${selectedValue} Days)`; // Name of the current month
+          text = `${moment().format('MMM')}`; // Name of the current month
           break;
         default:
           break;
