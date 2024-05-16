@@ -1,9 +1,9 @@
 describe('Update feature To Workspace', () => {
-  it('Updating A Workspace', () => {
+  it('Updating A Workspace Feature', () => {
     cy.login('carol');
     cy.wait(1000);
 
-    const WorkSpaceName = 'Workspace Feature Update';
+    const WorkSpaceName = 'WS Feature Update';
 
     const workspace = {
       loggedInAs: 'carol',
@@ -37,7 +37,7 @@ describe('Update feature To Workspace', () => {
 
     cy.contains('Add New Feature');
 
-    const newFeature = 'This is my new Feature';
+    const newFeature = 'A new Feature';
     cy.get('[data-testid="feature-input"]').type(newFeature);
     cy.get('[data-testid="add-feature-btn"]').click();
     cy.wait(1000);
@@ -48,9 +48,10 @@ describe('Update feature To Workspace', () => {
     cy.get('[data-testid="architecture-option-btn"]').click();
     cy.get('[data-testid="architecture-edit-btn"]').click();
 
-    const updatedFeature = 'This is my updated Feature';
+    const updatedFeature = 'Feature Architecture';
     cy.get('[data-testid="architecture-textarea"]').type(updatedFeature);
     cy.get('[data-testid="architecture-update-btn"]').click();
+    cy.wait(1000);
 
     cy.contains(updatedFeature).should('exist', { timeout: 1000 });
 
