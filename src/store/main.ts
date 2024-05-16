@@ -39,7 +39,8 @@ import {
   peopleQueryLimit,
   queryLimitTribes,
   Feature,
-  featureLimit
+  featureLimit,
+  CreateFeatureInput
 } from './interface';
 
 function makeTorSaveURL(host: string, key: string) {

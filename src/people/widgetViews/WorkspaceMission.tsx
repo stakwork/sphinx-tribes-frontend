@@ -10,9 +10,7 @@ import {
   Label,
   Data,
   OptionsWrap,
-  TextArea,
-  ButtonWrap,
-  ActionButton
+  TextArea
 } from 'pages/tickets/style';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';

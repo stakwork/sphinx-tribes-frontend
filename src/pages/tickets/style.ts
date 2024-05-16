@@ -149,37 +149,9 @@ export const TextArea = styled.textarea`
   }
 `;
 
-export const ButtonWrap = styled.div`
-  margin-left: auto;
-  margin-top: 10px;
-  display: flex;
-  gap: 15px;
-`;
-
 interface ButtonProps {
   color?: string;
 }
-export const ActionButton = styled.button<ButtonProps>`
-  padding: 5px 20px;
-  border-radius: 5px;
-  background: ${(p: any) => {
-    if (p.color === 'primary') {
-      return 'rgb(97, 138, 255)';
-    }
-  }};
-  color: ${(p: any) => {
-    if (p.color === 'primary') {
-      return '#FFF';
-    }
-  }};
-  border: ${(p: any) => {
-    if (p.color === 'primary') {
-      return '1px solid rgb(97, 138, 255)';
-    } else {
-      return '1px solid #636363';
-    }
-  }};
-`;
 
 export const FeatureLabel = styled.p`
   color: var(--Text-2, #3c3f41);

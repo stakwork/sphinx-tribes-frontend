@@ -289,7 +289,7 @@ export interface WorkspaceBudget {
 
 export interface Feature {
   id: number;
-  uuid: number;
+  uuid: string;
   workspace_uuid: string;
   name: string;
   brief: string;
@@ -300,6 +300,15 @@ export interface Feature {
   updated: string;
   created_by: string;
   updated_by: string;
+}
+
+export interface CreateFeatureInput {
+  uuid?: string;
+  workspace_uuid: string;
+  name?: string;
+  brief?: string;
+  requirements?: string;
+  architecture?: string;
 }
 
 // Default data
