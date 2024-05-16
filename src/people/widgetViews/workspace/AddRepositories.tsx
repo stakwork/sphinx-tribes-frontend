@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { mainStore } from 'store/main';
-import { EuiTitle } from '@elastic/eui';
 import styled from 'styled-components';
+import threeDotsIcon from '../Icons/threeDotsIcon.svg';
 
 const AddRepos: React.FC = () => {
   const [name, setName] = useState('');
@@ -67,6 +67,14 @@ const AddRepos: React.FC = () => {
   const StyledListElement = styled.li`
     display: flex;
   `;
+
+  const StyledList = styled.ul`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0;
+  `;
+
   return (
     <>
       {/* <div>
@@ -94,17 +102,17 @@ const AddRepos: React.FC = () => {
       <Container>
         <h5>Repositories</h5>
 
-        <ul>
+        <StyledList>
           {repositories.map((repository: any) => (
             <StyledListElement key={repository.id}>
-              <input type="button" />
+              <img width={20} height={20} src={threeDotsIcon} alt="Three dots icon" />
               <p>{repository.name}</p>:
               <a href={repository.url} target="_blank" rel="noreferrer">
                 {repository.url}
               </a>
             </StyledListElement>
           ))}
-        </ul>
+        </StyledList>
       </Container>
     </>
   );
