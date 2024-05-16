@@ -2,11 +2,57 @@ import React, { useEffect, useState } from 'react';
 import { mainStore } from 'store/main';
 import styled from 'styled-components';
 import threeDotsIcon from '../Icons/threeDotsIcon.svg';
+import { AddRepoModal } from './AddRepoModal';
 
-const AddRepos: React.FC = () => {
+const AddRepos = () => {
   const [name, setName] = useState('');
   const [url, setUrl] = useState('');
   const [repositories, setRepositories] = useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [currentuuid, setCurrentuuid] = useState('');
+  const [modalType, setModalType] = useState('add'); // add this line
+
+  const openModal = (type: string, repository?: any) => {
+    if (type === 'add') {
+      setName('');
+      setCurrentuuid('');
+      setUrl('');
+      setIsModalVisible(true);
+      setModalType(type);
+    } else if (type === 'edit') {
+      setName(repository.name);
+      setCurrentuuid(repository.uuid);
+      setUrl(repository.url);
+      setIsModalVisible(true);
+      setModalType(type);
+    }
+  };
+
+  const closeModal = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleSave = () => {
+    // handle save logic here
+    closeModal();
+  };
+
+  const DeleteRepository = async (workspace_uuid: string, repository_uuid: string) => {
+    try {
+      const resp = await mainStore.deleteRepository(workspace_uuid, repository_uuid);
+      console.log('DeleteRepository', resp);
+      closeModal();
+    } catch (error) {
+      console.error('Error deleteRepository', error);
+    }
+  };
+
+  const handleDelete = () => {
+    // handle delete logic here
+    closeModal();
+    console.log('Delete', currentuuid);
+    DeleteRepository('cmrrbatm098te8m1rvd0', currentuuid);
+  };
 
   useEffect(() => {
     const fetchRepositories = async () => {
@@ -18,7 +64,6 @@ const AddRepos: React.FC = () => {
         console.error(error);
       }
     };
-
     fetchRepositories();
   }, []);
 
@@ -34,16 +79,16 @@ const AddRepos: React.FC = () => {
 
   const StyledTitle = styled.h1`
     font-family: 'Barlow', sans-serif;
-    color: #3f3f3f; // replace with your preferred color
+    color: #3f3f3f;
     text-align: left;
-    margin: 20px 60px; // replace with your preferred margin
+    margin: 20px 60px;
   `;
 
   const Container = styled.div`
     font-family: 'Barlow', sans-serif;
-    color: #3f3f3f; // replace with your preferred color
+    color: #3f3f3f;
     text-align: left;
-    margin: 10px 60px; // replace with your preferred margin
+    margin: 10px 60px;
   `;
 
   const StyledInput = styled.input`
@@ -77,13 +122,9 @@ const AddRepos: React.FC = () => {
 
   return (
     <>
-      {/* <div>
-      <form onSubmit={handleSubmit}>
-        <input type="text" value={name} onChange={(e:any) => setName(e.target.value)} placeholder="Repository name" />
-        <input type="text" value={url} onChange={(e:any) => setUrl(e.target.value)} placeholder="Repository url" />
-        <button type="submit">Add Repository</button>
-      </form>
-    </div> */}
+      <Container>
+        <button onClick={() => openModal('add')}>Add Repository</button>
+      </Container>
 
       <div>
         <StyledTitle>Bounties Platform</StyledTitle>
@@ -105,7 +146,13 @@ const AddRepos: React.FC = () => {
         <StyledList>
           {repositories.map((repository: any) => (
             <StyledListElement key={repository.id}>
-              <img width={20} height={20} src={threeDotsIcon} alt="Three dots icon" />
+              <img
+                width={20}
+                height={20}
+                src={threeDotsIcon}
+                alt="Three dots icon"
+                onClick={() => openModal('edit', repository)}
+              />
               <p>{repository.name}</p>:
               <a href={repository.url} target="_blank" rel="noreferrer">
                 {repository.url}
@@ -114,6 +161,19 @@ const AddRepos: React.FC = () => {
           ))}
         </StyledList>
       </Container>
+      {isModalVisible && (
+        <AddRepoModal
+          isModalVisible={isModalVisible}
+          closeModal={() => setIsModalVisible(false)}
+          handleSave={handleSave}
+          handleDelete={handleDelete}
+          name={name}
+          setName={setName}
+          url={url}
+          setUrl={setUrl}
+          modalType={modalType} // add this line
+        />
+      )}
     </>
   );
 };
