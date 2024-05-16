@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { mainStore } from 'store/main';
 import styled from 'styled-components';
+import { Button } from 'components/common';
 import threeDotsIcon from '../Icons/threeDotsIcon.svg';
 import { AddRepoModal } from './AddRepoModal';
 
@@ -12,6 +13,15 @@ const AddRepos = () => {
   const [currentuuid, setCurrentuuid] = useState('');
   const [modalType, setModalType] = useState('add'); // add this line
 
+  const AddRepos = async () => {
+    const workspace_uuid = 'cmrrbatm098te8m1rvd0';
+    try {
+      await mainStore.createOrUpdateRepository({ workspace_uuid, name, url });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const openModal = (type: string, repository?: any) => {
     if (type === 'add') {
       setName('');
@@ -19,6 +29,7 @@ const AddRepos = () => {
       setUrl('');
       setIsModalVisible(true);
       setModalType(type);
+      AddRepos();
     } else if (type === 'edit') {
       setName(repository.name);
       setCurrentuuid(repository.uuid);
@@ -32,11 +43,6 @@ const AddRepos = () => {
     setIsModalVisible(false);
   };
 
-  const handleSave = () => {
-    // handle save logic here
-    closeModal();
-  };
-
   const DeleteRepository = async (workspace_uuid: string, repository_uuid: string) => {
     try {
       const resp = await mainStore.deleteRepository(workspace_uuid, repository_uuid);
@@ -45,6 +51,10 @@ const AddRepos = () => {
     } catch (error) {
       console.error('Error deleteRepository', error);
     }
+  };
+
+  const handleSave = () => {
+    closeModal();
   };
 
   const handleDelete = () => {
@@ -113,7 +123,7 @@ const AddRepos = () => {
   return (
     <>
       <Container>
-        <button onClick={() => openModal('add')}>Add Repository</button>
+        <Button text={'Add Repository'} onClick={() => openModal('add')} />
       </Container>
 
       <div>
