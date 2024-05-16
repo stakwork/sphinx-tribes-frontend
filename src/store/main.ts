@@ -35,6 +35,12 @@ export interface Tribe {
   matchCount?: number; // for tag search
 }
 
+export interface Repository {
+  workspace_uuid: string;
+  name: string;
+  url: string;
+}
+
 export interface Bot {
   id?: number;
   uuid: string;
@@ -3042,6 +3048,55 @@ export class MainStore {
       console.error('Error pollInvoice', e);
     }
   }
-}
 
+  async getRepositories(workspace_uuid: string): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return [];
+      const info = uiStore.meInfo;
+      const response = await fetch(`${TribesURL}/workspaces/repositories/${workspace_uuid}`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (e) {
+      console.log('Error getRepositories', e);
+      return [];
+    }
+  }
+  async createOrUpdateRepository(repo: Repository): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return [];
+      const info = uiStore.meInfo;
+      const response = await fetch(`${TribesURL}/workspaces/repositories`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(repo)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (e) {
+      console.log('Error createOrUpdateRepository', e);
+      return null;
+    }
+  }
+}
 export const mainStore = new MainStore();
