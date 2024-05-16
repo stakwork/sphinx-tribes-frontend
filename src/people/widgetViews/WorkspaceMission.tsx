@@ -1,5 +1,19 @@
 import { EuiGlobalToastList, EuiLoadingSpinner } from '@elastic/eui';
-import { Body, WorkspaceBody } from 'pages/tickets/style';
+import {
+  Body,
+  WorkspaceBody,
+  Leftheader,
+  Header,
+  HeaderWrap,
+  DataWrap,
+  FieldWrap,
+  Label,
+  Data,
+  OptionsWrap,
+  TextArea,
+  ButtonWrap,
+  ActionButton
+} from 'pages/tickets/style';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useStores } from 'store';
@@ -7,13 +21,11 @@ import { Feature, featureLimit, Workspace } from 'store/interface';
 import MaterialIcon from '@material/react-material-icon';
 import { Button, Modal } from 'components/common';
 import {
-  Leftheader,
   ImageContainer,
   CompanyNameAndLink,
   CompanyLabel,
   UrlButtonContainer,
-  UrlButton,
-  Header
+  UrlButton
 } from 'pages/tickets/workspace/workspaceHeader/WorkspaceHeaderStyles';
 import githubIcon from 'pages/tickets/workspace/workspaceHeader/Icons/githubIcon.svg';
 import websiteIcon from 'pages/tickets/workspace/workspaceHeader/Icons/websiteIcon.svg';
@@ -39,110 +51,6 @@ export const ImgText = styled.h3`
   text-transform: uppercase;
   opacity: 0.5;
   margin-bottom: 0;
-`;
-
-const HeaderWrap = styled.div`
-  display: flex;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: #fff;
-`;
-
-const DataWrap = styled.div`
-  padding: 40px 50px;
-  display: flex;
-  width: 50%;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: left;
-  justify-content: center;
-
-  @media only screen and (max-width: 900px) {
-    width: 90%;
-    padding: 30px 40px;
-  }
-
-  @media only screen and (max-width: 500px) {
-    width: 90%;
-    padding: 20px 10px;
-  }
-`;
-
-const FieldWrap = styled.div`
-  margin-bottom: 30px;
-`;
-
-const Label = styled.h5`
-  font-size: 1.12rem;
-  font-weight: bolder;
-`;
-
-const Data = styled.div`
-  border: 1px solid #ccc;
-  min-height: 50px;
-  border-radius: 5px;
-  padding: 20px 30px;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-
-  .MaterialIcon {
-    font-style: normal;
-    font-weight: 900;
-    font-size: 1.4rem;
-    color: #000000;
-  }
-`;
-
-const OptionsWrap = styled.div`
-  position: absolute;
-  right: 6px;
-  top: 4px;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  button {
-    border: 0.5px solid #000000;
-    font-size: 0.8rem;
-    font-weight: 700;
-    border-radius: 5px;
-    padding: 2px 10px;
-  }
-`;
-
-const TextArea = styled.textarea`
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  border: 2px solid #dde1e5;
-  outline: none;
-  caret-color: #618aff;
-  color: #3c3f41;
-  font-family: 'Barlow';
-  font-size: 1rem;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 20px;
-  width: 100%;
-  resize: none;
-  min-height: 5.9375rem;
-
-  ::placeholder {
-    color: #b0b7bc;
-    font-family: 'Barlow';
-    font-size: 13px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 20px;
-  }
-  :focus {
-    border: 2px solid #82b4ff;
-  }
 `;
 
 const FeaturesWrap = styled.div`

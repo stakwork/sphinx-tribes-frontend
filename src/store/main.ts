@@ -2550,7 +2550,7 @@ export class MainStore {
     }
   }
 
-  async addWorkspaceFeature(body: { workspace_uuid: string; name: string }): Promise<any> {
+  async addWorkspaceFeature(body: CreateFeatureInput): Promise<any> {
     try {
       if (!uiStore.meInfo) return {};
       const info = uiStore.meInfo;
