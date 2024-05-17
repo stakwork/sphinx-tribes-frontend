@@ -1,4 +1,4 @@
-import { Workspace } from 'store/main';
+import { Workspace } from 'store/interface';
 
 export const mockWorkspaces: Workspace[] = [
   {

@@ -5,6 +5,7 @@ import { AppMode } from 'config';
 import { Route, Switch } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import WorkspaceMission from 'people/widgetViews/WorkspaceMission';
+import WorkspaceFeature from 'people/widgetViews/WorkspaceFeature';
 import PeopleHeader from '../people/main/Header';
 import TokenRefresh from '../people/utils/TokenRefresh';
 import BotsBody from './bots/Body';
@@ -47,6 +48,9 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
           </Route>
           <Route path="/workspace/:uuid">
             <WorkspaceMission />
+          </Route>
+          <Route path="/feature/:feature_uuid">
+            <WorkspaceFeature />
           </Route>
           <Route path="/leaderboard">
             <LeaderboardPage />

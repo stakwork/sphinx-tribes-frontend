@@ -2,7 +2,7 @@ import React, { ChangeEvent, useState } from 'react';
 import { useIsMobile } from 'hooks/uiHooks';
 import { EuiLoadingSpinner } from '@elastic/eui';
 import { useStores } from 'store';
-import { Person } from 'store/main';
+import { Person } from 'store/interface';
 import { nonWidgetConfigs } from 'people/utils/Constants';
 import { Modal } from '../../../components/common';
 import { colors } from '../../../config/colors';

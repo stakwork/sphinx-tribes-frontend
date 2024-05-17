@@ -1,4 +1,4 @@
-import { PersonBounty } from 'store/main';
+import { PersonBounty } from 'store/interface';
 
 export const userAssignedBounties: PersonBounty[] = [
   {

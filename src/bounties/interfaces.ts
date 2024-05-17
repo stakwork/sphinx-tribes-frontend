@@ -1,5 +1,5 @@
 import { CodingLanguageLabel } from 'people/interfaces';
-import { Person } from 'store/main';
+import { Person } from 'store/interface';
 
 export interface BountiesDescriptionProps {
   description?: any;

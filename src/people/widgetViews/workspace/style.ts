@@ -552,9 +552,13 @@ export const ImgDetailInfo = styled.p`
   margin-top: 1rem;
 `;
 
-export const WorkspaceInputContainer = styled.div`
-  width: 16rem;
-  height: 223px;
+interface InputContainerProps {
+  feature?: boolean;
+}
+
+export const WorkspaceInputContainer = styled.div<InputContainerProps>`
+  width: ${(p: any) => (p.feature ? '100%' : '16rem')};
+  height: ${(p: any) => (p.feature ? 'auto' : '223px')};
   display: flex;
   flex-direction: column;
   @media only screen and (max-width: 500px) {
@@ -571,9 +575,14 @@ export const WorkspaceLabel = styled.label`
   font-weight: 500;
   margin-bottom: 0.75rem;
   height: 0.5625rem;
+  width: 100%;
 `;
 
-export const TextInput = styled.input`
+interface TextInputProps {
+  feature?: boolean;
+}
+
+export const TextInput = styled.input<TextInputProps>`
   padding: 8px 14px;
   border-radius: 6px;
   border: 2px solid #dde1e5;
@@ -585,7 +594,7 @@ export const TextInput = styled.input`
   font-style: normal;
   font-weight: 500;
   line-height: 20px;
-  width: 16rem;
+  width: ${(p: any) => (p.feature ? '100%' : '16rem')};
   height: 2.4rem;
 
   ::placeholder {
@@ -902,6 +911,65 @@ export const BudgetButton = styled.button`
     background: rgba(0, 0, 0, 0.04);
     color: rgba(142, 150, 156, 0.85);
     cursor: not-allowed;
+    box-shadow: none;
+  }
+`;
+
+export const RowFlex = styled.div`
+  display: flex;
+  width: 100%;
+  align-items: center;
+`;
+
+export const ButtonWrap = styled.div`
+  margin-left: auto;
+  margin-top: 10px;
+  display: flex;
+  gap: 15px;
+`;
+
+interface ButtonProps {
+  color?: string;
+}
+
+export const ActionButton = styled.button<ButtonProps>`
+  padding: 5px 20px;
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-family: 'Barlow';
+  font-size: 0.9375rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 0rem;
+  letter-spacing: 0.00938rem;
+  margin-top: 1.5rem;
+  border: none;
+  height: 40px;
+  background: var(--Primary-blue, #618aff);
+  box-shadow: 0px 2px 10px 0px rgba(97, 138, 255, 0.5);
+  border: none;
+  color: #fff;
+
+  background: ${(p: any) => {
+    if (p.color === 'primary') {
+      return 'rgb(97, 138, 255)';
+    } else if (p.color === 'cancel') {
+      return '#D3D3D3';
+    }
+  }};
+  color: ${(p: any) => {
+    if (p.color === 'primary') {
+      return '#FFF';
+    } else if (p.color === 'cancel') {
+      return '#000';
+    }
+  }};
+
+  :disabled {
+    border: 1px solid rgba(0, 0, 0, 0.07);
+    background: rgba(0, 0, 0, 0.04);
+    color: rgba(142, 150, 156, 0.85);
     box-shadow: none;
   }
 `;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { BountyMetrics } from 'store/main';
+import { BountyMetrics } from 'store/interface';
 import { convertToLocaleString, formatPercentage } from 'helpers/helpers-extended';
 import copy from '../header/icons/copy.svg';
 import hunter from '../header/icons/hunter.svg';

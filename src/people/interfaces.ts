@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import { Extras } from '../components/form/inputs/widgets/interfaces';
-import { Workspace, Person, PersonBounty } from '../store/main';
+import { Workspace, Person, PersonBounty } from '../store/interface';
 import { MeData } from '../store/ui';
 import { Widget } from './main/types';
 import { coding_languages } from './utils/languageLabelStyle';

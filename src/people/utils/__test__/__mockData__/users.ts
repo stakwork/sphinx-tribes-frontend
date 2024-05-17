@@ -1,4 +1,4 @@
-import { Person } from 'store/main';
+import { Person } from 'store/interface';
 
 export const users: Person[] = [
   {

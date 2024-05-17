@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import nock from 'nock';
 import React from 'react';
 import { setupStore } from '../../../../__test__/__mockData__/setupStore';

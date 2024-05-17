@@ -4,7 +4,7 @@ import { cloneDeep } from 'lodash';
 import { observer } from 'mobx-react-lite';
 import { FocusViewProps } from 'people/interfaces';
 import { EuiGlobalToastList } from '@elastic/eui';
-import { Workspace } from 'store/main';
+import { Workspace } from 'store/interface';
 import { Box } from '@mui/system';
 import { uiStore } from 'store/ui';
 import { useStores } from '../../store';
