@@ -1,5 +1,5 @@
 describe('Create Workspace And Update Mission', () => {
-  it('Creating an Workspace', () => {
+  it('Creating A Workspace', () => {
     cy.login('carol');
     cy.wait(1000);
 

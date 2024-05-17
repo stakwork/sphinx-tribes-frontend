@@ -8,7 +8,7 @@ import { Spacer } from 'people/main/Body';
 import styled from 'styled-components';
 import { BountyModal } from 'people/main/bountyModal/BountyModal';
 import PageLoadSpinner from 'people/utils/PageLoadSpinner';
-import { Person } from 'store/main';
+import { Person } from 'store/interface';
 import PopoverCheckbox from 'pages/people/tabs/popoverCheckboxStyles';
 import history from '../../config/history';
 import { colors } from '../../config/colors';

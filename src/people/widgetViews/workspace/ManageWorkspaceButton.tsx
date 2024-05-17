@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useStores } from 'store';
-import { WorkspaceUser } from 'store/main';
+import { WorkspaceUser } from 'store/interface';
 import styled from 'styled-components';
 
 const Button = styled.button`

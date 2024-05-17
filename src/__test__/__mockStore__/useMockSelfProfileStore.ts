@@ -1,7 +1,7 @@
 import { user } from '__test__/__mockData__/user';
 import { useEffect } from 'react';
 import { useStores } from 'store';
-import { Person } from 'store/main';
+import { Person } from 'store/interface';
 
 export const useMockSelfProfileStore = ({ enabled }: { enabled: boolean }) => {
   const { ui, main } = useStores();

@@ -1,5 +1,5 @@
 import React from 'react';
-import { PaymentHistory } from 'store/main';
+import { PaymentHistory } from 'store/interface';
 import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import HistoryModal from '../workspace/HistoryModal';

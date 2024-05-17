@@ -15,7 +15,7 @@ import {
   WorkspaceBudget,
   PaymentHistory,
   Person
-} from 'store/main';
+} from 'store/interface';
 import MaterialIcon from '@material/react-material-icon';
 import { Route, Router, Switch, useRouteMatch } from 'react-router-dom';
 import { satToUsd, userHasRole } from 'helpers';

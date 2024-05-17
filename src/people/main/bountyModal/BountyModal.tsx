@@ -5,7 +5,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { useStores } from 'store';
 import { BountyModalProps } from 'people/interfaces';
-import { PersonBounty } from 'store/main';
+import { PersonBounty } from 'store/interface';
 import FocusedView from '../FocusView';
 
 const config = widgetConfigs.bounties;

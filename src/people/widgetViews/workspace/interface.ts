@@ -1,4 +1,4 @@
-import { BountyRoles, BudgetHistory, Workspace, PaymentHistory, Person } from 'store/main';
+import { BountyRoles, BudgetHistory, Workspace, PaymentHistory, Person } from 'store/interface';
 
 export interface ModalProps {
   isOpen: boolean;

@@ -6,7 +6,7 @@ import { mockUsehistory } from '__test__/__mockFn__/useHistory';
 import nock from 'nock';
 import { user } from '__test__/__mockData__/user';
 import { person } from '__test__/__mockData__/persons';
-import { Workspace } from 'store/main';
+import { Workspace } from 'store/interface';
 import { uiStore } from 'store/ui';
 import { mainStore } from '../../../store/main.ts';
 import WorkspaceView from '../WorkspaceView.tsx';

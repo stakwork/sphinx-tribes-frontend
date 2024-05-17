@@ -10,7 +10,7 @@ import { colors } from '../../../config/colors';
 import { useIsMobile } from '../../../hooks';
 import { useStores } from '../../../store';
 import { WorkspaceBody, Body, Backdrop } from '../style';
-import { Workspace, queryLimit } from '../../../store/main';
+import { Workspace, queryLimit } from '../../../store/interface';
 import { WorkspaceHeader } from './workspaceHeader';
 
 function WorkspaceBodyComponent() {

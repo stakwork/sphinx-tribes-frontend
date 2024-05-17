@@ -5,7 +5,7 @@ import PageLoadSpinner from 'people/utils/PageLoadSpinner';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { useStores } from 'store';
-import { queryLimit } from 'store/main';
+import { queryLimit } from 'store/interface';
 import styled from 'styled-components';
 import { observer } from 'mobx-react-lite';
 import Person from '../Person';

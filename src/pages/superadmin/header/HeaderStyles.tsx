@@ -156,7 +156,7 @@ export const Option = styled.div`
   top: 65px;
   right: 48px;
   width: 169px;
-  height: 157px;
+  height: 167px;
   display: inline-flex;
   padding: 12px 28px 12px 28px;
   flex-direction: column;
@@ -231,7 +231,7 @@ export const WorkspaceOption = styled.div`
 `;
 
 export const WorkspaceText = styled.div`
-  flex: 2, 
+  flex: 2;
   text-align: 'center';
   white-space: nowrap;
   overflow: hidden;

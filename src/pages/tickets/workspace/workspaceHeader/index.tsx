@@ -8,6 +8,7 @@ import { WorkspaceBountyHeaderProps } from '../../../../people/interfaces.ts';
 import { SearchBar } from '../../../../components/common/index.tsx';
 import { useStores } from '../../../../store/index.tsx';
 import { userCanManageBounty, filterCount } from '../../../../helpers/index.ts';
+import { Leftheader, Header } from '../../style.ts';
 import addBounty from './Icons/addBounty.svg';
 import file from './Icons/file.svg';
 import githubIcon from './Icons/githubIcon.svg';
@@ -25,11 +26,9 @@ import {
   FillContainer,
   Filters,
   FiltersRight,
-  Header,
   ImageContainer,
   Img,
   InternalContainer,
-  Leftheader,
   NewStatusContainer,
   NumberOfBounties,
   PrimaryText,

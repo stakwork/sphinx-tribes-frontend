@@ -1,4 +1,4 @@
-import { Person } from '../store/main';
+import { Person } from '../store/interface';
 import { useStores } from '../store';
 
 export const usePerson = (id: any) => {

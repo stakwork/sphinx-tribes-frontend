@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { observer } from 'mobx-react-lite';
 import { useIsMobile } from 'hooks/uiHooks';
-import { queryLimit } from 'store/main';
+import { queryLimit } from 'store/interface';
 import { Spacer } from '../main/Body';
 import NoResults from '../utils/NoResults';
 import { uiStore } from '../../store/ui';

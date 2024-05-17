@@ -5,7 +5,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { EuiLoadingSpinner } from '@elastic/eui';
 import styled from 'styled-components';
-import { BountyMetrics, defaultSuperAdminBountyStatus, Person } from 'store/main';
+import { BountyMetrics, defaultSuperAdminBountyStatus, Person } from 'store/interface';
 import { useStores } from 'store';
 import moment from 'moment';
 import { useInViewPort } from 'hooks';
