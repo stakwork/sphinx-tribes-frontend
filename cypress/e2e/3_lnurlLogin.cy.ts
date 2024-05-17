@@ -3,9 +3,10 @@
 
 describe('Login with LNURL', () => {
   it('User trying to login with LNURL', () => {
-    cy.lnurl_login();
+    cy.lnurl_login().then((value) => {
+      cy.wait(1000);
 
-    cy.wait(1000);
-    cy.logout('0430'); // NOTE: to logout LNURL auth use the first for letters of the pubkey as the userAlias.
+      cy.logout(value.substring(0, 5)); // NOTE: to logout LNURL auth use the first four letters of the pubkey as the userAlias.
+    });
   });
 });
