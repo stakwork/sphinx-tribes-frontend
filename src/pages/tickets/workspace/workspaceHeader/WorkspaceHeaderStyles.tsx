@@ -5,15 +5,6 @@ interface styledProps {
   color?: any;
 }
 
-export const Header = styled.div`
-  height: 130px;
-  width: 65%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #fff;
-`;
-
 export const UrlButtonContainer = styled.div`
   width: 180px;
   display: flex;
@@ -132,12 +123,6 @@ export const FilterLabel = styled.label`
   font-weight: 500;
   line-height: 17px;
   letter-spacing: 0.15px;
-`;
-export const Leftheader = styled.div`
-  display: flex;
-  gap: 20px;
-  align-items: center;
-  justify-content: center;
 `;
 export const CompanyNameAndLink = styled.div`
   display: flex;
