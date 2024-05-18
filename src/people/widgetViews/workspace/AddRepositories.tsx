@@ -77,18 +77,11 @@ const AddRepos = () => {
     fetchRepositories();
   }, []);
 
-  const StyledTitle = styled.h1`
-    font-family: 'Barlow', sans-serif;
-    color: #3f3f3f;
-    text-align: left;
-    margin: 20px 60px;
-  `;
-
   const Container = styled.div`
     font-family: 'Barlow', sans-serif;
     color: #3f3f3f;
     text-align: left;
-    margin: 10px 60px;
+    margin: 10px 120px;
   `;
 
   const StyledInput = styled.input`
@@ -101,7 +94,7 @@ const AddRepos = () => {
   `;
   const StyledTextArea = styled.textarea`
     width: 500px;
-    height: 300px;
+    height: 200px;
     padding: 5px;
     margin: 10px 0;
     font-weight: 500;
@@ -118,49 +111,87 @@ const AddRepos = () => {
     flex-direction: column;
     justify-content: center;
     padding: 0;
+    margin: 0;
   `;
+
+  const FlexSection = styled.div`
+    display: flex;
+    flex-direction: row;
+  `;
+  const RightContainer = styled.div`
+    width: 570px;
+    height: 450px;
+    border: 1px solid #3f3f3f;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
+  `;
+  const TopContainer = styled.div`
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+  `;
+  const BottomContainer = styled.div``;
 
   return (
     <>
-      <Container>
-        <Button text={'Add Repository'} onClick={() => openModal('add')} />
-      </Container>
+      <TopContainer>
+        <Container>
+          <Button text={'Add Repository'} onClick={() => openModal('add')} />
+        </Container>
 
-      <div>
-        <StyledTitle>Bounties Platform</StyledTitle>
-      </div>
+        <Container>
+          <h2>Bounties Platform</h2>
+        </Container>
+      </TopContainer>
 
-      <Container>
-        <h5>Mission</h5>
-        <StyledInput type="text" value={'Acesss the largest pool of human cognition'} />
-      </Container>
+      <BottomContainer>
+        <FlexSection>
+          <div>
+            <Container>
+              <h5>Mission</h5>
+              <StyledInput type="text" value={'Acesss the largest pool of human cognition'} />
+            </Container>
 
-      <Container>
-        <h5>Tactics and Objectives</h5>
-        <StyledTextArea />
-      </Container>
+            <Container>
+              <h5>Tactics and Objectives</h5>
+              <StyledTextArea />
+            </Container>
 
-      <Container>
-        <h5>Repositories</h5>
+            <Container>
+              <h5>Repositories</h5>
 
-        <StyledList>
-          {repositories.map((repository: any) => (
-            <StyledListElement key={repository.id}>
-              <img
-                width={20}
-                height={20}
-                src={threeDotsIcon}
-                alt="Three dots icon"
-                onClick={() => openModal('edit', repository)}
-              />
-              <p>{repository.name}</p>:
-              <a href={repository.url} target="_blank" rel="noreferrer">
-                {repository.url}
-              </a>
-            </StyledListElement>
-          ))}
-        </StyledList>
-      </Container>
+              <StyledList>
+                {repositories.map((repository: any) => (
+                  <StyledListElement key={repository.id}>
+                    <img
+                      width={20}
+                      height={20}
+                      src={threeDotsIcon}
+                      alt="Three dots icon"
+                      onClick={() => openModal('edit', repository)}
+                    />
+                    <h6>{repository.name}</h6>:
+                    <a href={repository.url} target="_blank" rel="noreferrer">
+                      {repository.url}
+                    </a>
+                  </StyledListElement>
+                ))}
+              </StyledList>
+            </Container>
+          </div>
+          <RightContainer>
+            <h5>Schematics</h5>
+            <h5>Test-Coverage</h5>
+            <h5>Knowledge Graph</h5>
+            <h5>People</h5>
+          </RightContainer>
+        </FlexSection>
+      </BottomContainer>
       {isModalVisible && (
         <AddRepoModal
           isModalVisible={isModalVisible}
