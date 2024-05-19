@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { mainStore } from 'store/main';
 import styled from 'styled-components';
 import { Button } from 'components/common';
+import { useDeleteConfirmationModal } from 'components/common';
+import { Box } from '@mui/system';
+import { EuiToolTip } from '@elastic/eui';
 import threeDotsIcon from '../Icons/threeDotsIcon.svg';
 import { AddRepoModal } from './AddRepoModal';
 
@@ -53,15 +56,30 @@ const AddRepos = () => {
     }
   };
 
+  const { openDeleteConfirmation } = useDeleteConfirmationModal();
+
   const handleSave = () => {
     closeModal();
   };
 
   const handleDelete = () => {
-    // handle delete logic here
     closeModal();
     console.log('Delete', currentuuid);
     DeleteRepository('cmrrbatm098te8m1rvd0', currentuuid);
+  };
+
+  const deleteHandler = () => {
+    openDeleteConfirmation({
+      onDelete: handleDelete,
+      children: (
+        <Box fontSize={20} textAlign="center">
+          Are you sure you want to <br />
+          <Box component="span" fontWeight="500">
+            Delete this Bounty?
+          </Box>
+        </Box>
+      )
+    });
   };
 
   useEffect(() => {
@@ -176,9 +194,11 @@ const AddRepos = () => {
                       onClick={() => openModal('edit', repository)}
                     />
                     <h6>{repository.name}</h6>:
-                    <a href={repository.url} target="_blank" rel="noreferrer">
-                      {repository.url}
-                    </a>
+                    <EuiToolTip position="top" content={repository.url}>
+                      <a href={repository.url} target="_blank" rel="noreferrer">
+                        {repository.url}
+                      </a>
+                    </EuiToolTip>
                   </StyledListElement>
                 ))}
               </StyledList>
@@ -197,7 +217,7 @@ const AddRepos = () => {
           isModalVisible={isModalVisible}
           closeModal={() => setIsModalVisible(false)}
           handleSave={handleSave}
-          handleDelete={handleDelete}
+          handleDelete={deleteHandler}
           name={name}
           setName={setName}
           url={url}
