@@ -26,6 +26,9 @@ const WorkspaceFeature = () => {
   const { feature_uuid } = useParams<{ feature_uuid: string }>();
   const [featureData, setFeatureData] = useState<Feature>();
   const [loading, setLoading] = useState(true);
+  const [displayBrief, setDidplayBrief] = useState(false);
+  const [editBrief, setEditBrief] = useState(false);
+  const [brief, setBrief] = useState(featureData?.brief);
   const [displayArchitecture, setDidplayArchitecture] = useState(false);
   const [editArchitecture, setEditArchitecture] = useState(false);
   const [architecture, setArchitecture] = useState(featureData?.architecture);
@@ -59,6 +62,18 @@ const WorkspaceFeature = () => {
     );
   }
 
+  const editBriefActions = () => {
+    setEditBrief(!editBrief);
+    setDidplayBrief(false);
+  };
+
+  const briefChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newValue = e.target.value;
+    if (newValue.length) {
+      setBrief(newValue);
+    }
+  };
+
   const editArchitectureActions = () => {
     setEditArchitecture(!editArchitecture);
     setDidplayArchitecture(false);
@@ -69,6 +84,17 @@ const WorkspaceFeature = () => {
     if (newValue.length) {
       setArchitecture(newValue);
     }
+  };
+
+  const submitBrief = async () => {
+    const body = {
+      brief: brief ?? '',
+      uuid: featureData?.uuid ?? '',
+      workspace_uuid: featureData?.workspace_uuid ?? ''
+    };
+    await main.addWorkspaceFeature(body);
+    await getFeatureData();
+    setEditBrief(false);
   };
 
   const submitArchitecture = async () => {
@@ -96,6 +122,62 @@ const WorkspaceFeature = () => {
         </HeaderWrap>
         <DataWrap>
           <FieldWrap>
+            <Label>Feature Brief</Label>
+            <Data>
+              <OptionsWrap>
+                <MaterialIcon
+                  icon={'more_horiz'}
+                  className="MaterialIcon"
+                  onClick={() => setDidplayBrief(!displayBrief)}
+                  data-testid="brief-option-btn"
+                />
+                <button
+                  style={{ display: displayBrief ? 'block' : 'none' }}
+                  onClick={editBriefActions}
+                  data-testid="brief-edit-btn"
+                >
+                  Edit
+                </button>
+              </OptionsWrap>
+              {!editBrief && (
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: featureData?.brief
+                      ? featureData.brief.replace(/\n/g, '<br/>')
+                      : 'No brief yet'
+                  }}
+                />
+              )}
+              {editBrief && (
+                <>
+                  <TextArea
+                    placeholder="Enter Brief"
+                    onChange={briefChange}
+                    value={brief ?? featureData?.brief}
+                    data-testid="brief-textarea"
+                    rows={10}
+                    cols={50}
+                  />
+                  <ButtonWrap>
+                    <ActionButton
+                      onClick={() => setEditBrief(!editBrief)}
+                      data-testid="brief-cancel-btn"
+                    >
+                      Cancel
+                    </ActionButton>
+                    <ActionButton
+                      color="primary"
+                      onClick={submitBrief}
+                      data-testid="brief-update-btn"
+                    >
+                      Update
+                    </ActionButton>
+                  </ButtonWrap>
+                </>
+              )}
+            </Data>
+          </FieldWrap>
+          <FieldWrap>
             <Label>Architecture</Label>
             <Data>
               <OptionsWrap>
@@ -122,7 +204,6 @@ const WorkspaceFeature = () => {
                   }}
                 />
               )}
-
               {editArchitecture && (
                 <>
                   <TextArea
