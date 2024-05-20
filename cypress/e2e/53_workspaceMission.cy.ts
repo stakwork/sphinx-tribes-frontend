@@ -49,6 +49,39 @@ describe('Create Workspace And Update Mission', () => {
     cy.contains(missionStatment).should('exist', { timeout: 1000 });
     cy.contains(tacticsStatment).should('exist', { timeout: 1000 });
 
+    cy.get('button').contains('Add Repository').click();
+    cy.get('.euiModal').within(() => {
+      cy.get('input[placeholder="Repository name"]').type('Test Repo');
+      cy.get('input[placeholder="Repository url"]').type('https://github.com/test/repo');
+      cy.get('button').contains('Save').click();
+    });
+    cy.get('.euiModal').should('not.exist');
+
+    cy.get('h5').contains('Repositories').should('be.visible');
+
+    cy.get('StyledListElement').should('be.visible');
+
+    cy.get('img[alt="Three dots icon"]').first().click();
+    cy.get('.euiModal').should('be.visible');
+
+    cy.get('img[alt="Three dots icon"]').first().click();
+    cy.get('.euiModal').within(() => {
+      cy.get('input[placeholder="Repository name"]').clear().type('Updated Repo');
+      cy.get('input[placeholder="Repository url"]').clear().type('https://github.com/updated/repo');
+      cy.get('button').contains('Save').click();
+    });
+    cy.get('.euiModal').should('not.exist');
+    cy.contains('Updated Repo').should('be.visible');
+    cy.contains('https://github.com/updated/repo').should('be.visible');
+
+    cy.get('img[alt="Three dots icon"]').first().click();
+    cy.get('.euiModal').within(() => {
+      cy.get('button').contains('Delete').click();
+    });
+    cy.get('.euiModal').should('not.exist');
+    cy.contains('Updated Repo').should('not.exist');
+    cy.contains('https://github.com/updated/repo').should('not.exist');
+
     cy.logout('carol');
   });
 });
