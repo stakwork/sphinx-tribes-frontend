@@ -210,21 +210,34 @@ const RepoContainer = styled.div`
   align-items: center;
 `;
 
-const StyledList = styled.ul`
+const StyledList = styled.div`
   padding: 0;
   margin: 0;
 `;
 
-const StyledListElement = styled.li`
+const StyledListElement = styled.span`
   display: flex;
+  align-items: baseline;
 `;
 
 const StyledButton = styled.button`
   border-radius: 5px;
-  padding: 6px;
+  padding: 0 12px;
   border: none;
-  background-color: #618aff;
-  color: white;
+  border-radius: 100px;
+  box-shadow: 10px;
+  background: rgb(73, 201, 152);
+  color: rgb(255, 255, 255);
+  position: relative;
+  opacity: 1;
+  height: 48px;
+  width: 204px;
+`;
+
+const SubTitle = styled.h6`
+  margin-top: 20px;
+  text-align: center;
+  color: #909baa;
 `;
 
 const WorkspaceMission = () => {
@@ -574,25 +587,29 @@ const WorkspaceMission = () => {
           <DataWrap2>
             <h5>Repositories</h5>
 
-            <StyledList>
-              {repositories.map((repository: any) => (
-                <StyledListElement key={repository.id}>
-                  <img
-                    width={20}
-                    height={20}
-                    src={threeDotsIcon}
-                    alt="Three dots icon"
-                    onClick={() => openModal('edit', repository)}
-                  />
-                  <h6>{repository.name}</h6>:
-                  <EuiToolTip position="top" content={repository.url}>
-                    <a href={repository.url} target="_blank" rel="noreferrer">
-                      {repository.url}
-                    </a>
-                  </EuiToolTip>
-                </StyledListElement>
-              ))}
-            </StyledList>
+            {repositories.length > 0 ? (
+              <StyledList>
+                {repositories.map((repository: any) => (
+                  <StyledListElement key={repository.id}>
+                    <img
+                      width={15}
+                      height={15}
+                      src={threeDotsIcon}
+                      alt="Three dots icon"
+                      onClick={() => openModal('edit', repository)}
+                    />
+                    <h6>{repository.name}</h6>:
+                    <EuiToolTip position="top" content={repository.url}>
+                      <a href={repository.url} target="_blank" rel="noreferrer">
+                        {repository.url}
+                      </a>
+                    </EuiToolTip>
+                  </StyledListElement>
+                ))}
+              </StyledList>
+            ) : (
+              <SubTitle>Add Repositories to manage them</SubTitle>
+            )}
           </DataWrap2>
           {isModalVisible && (
             <AddRepoModal
