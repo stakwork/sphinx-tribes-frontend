@@ -244,7 +244,7 @@ const WorkspaceMission = () => {
     try {
       const data = await mainStore.getRepositories(uuid);
       setRepositories(data);
-      console.log(data)
+      console.log(data);
     } catch (error) {
       console.error(error);
     }
@@ -256,23 +256,21 @@ const WorkspaceMission = () => {
     try {
       const repo = { workspace_uuid, name, url };
       await mainStore.createOrUpdateRepository(repo);
-      
     } catch (error) {
       console.error(error);
     }
-    
   };
 
   const EditRepos = async () => {
-    console.log(modalType)
+    console.log(modalType);
     const repo_uuid = currentuuid;
     console.log(repo_uuid, name, url);
     try {
       const repo = { repo_uuid, name, url };
       const response = await mainStore.createOrUpdateRepository(repo);
-      console.log(response)
+      console.log(response);
     } catch (error) {
-      console.error(error); 
+      console.error(error);
     }
     fetchRepositories();
   };
@@ -298,10 +296,9 @@ const WorkspaceMission = () => {
   };
 
   const handleSave = () => {
-    if(modalType === 'add'){
+    if (modalType === 'add') {
       AddRepos();
-    }
-    else if (modalType === 'edit'){
+    } else if (modalType === 'edit') {
       EditRepos();
     }
     closeModal();
