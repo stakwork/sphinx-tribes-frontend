@@ -50,7 +50,8 @@ const HeaderWrap = styled.div`
 `;
 
 const DataWrap = styled.div`
-  padding: 15px 50px;
+  padding: 0px 50px;
+  padding-top: 15px;
   display: flex;
   width: 50%;
   margin: 0 auto;
@@ -197,11 +198,10 @@ const ActionButton = styled.button<ButtonProps>`
 `;
 
 const Container = styled.div`
-  font-family: 'Barlow', sans-serif;
-  color: #3f3f3f;
-  text-align: left;
-  margin: 0px;
-  padding: 0px;
+  justify-content: space-between;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: baseline;
 `;
 
 const RepoContainer = styled.div`
@@ -221,7 +221,7 @@ const StyledListElement = styled.span`
 `;
 
 const StyledButton = styled.button`
-  padding: 0 12px;
+  padding: 0 8px;
   border: none;
   border-radius: 5px;
   box-shadow: 10px;
@@ -229,8 +229,8 @@ const StyledButton = styled.button`
   color: rgb(255, 255, 255);
   position: relative;
   opacity: 1;
-  height: 43px;
-  width: 153px;
+  height: 40px;
+  width: 150px;
   font-weight: 600;
   margin-bottom: 20px;
 `;
@@ -583,8 +583,11 @@ const WorkspaceMission = () => {
         {toastsEl}
         <RepoContainer>
           <DataWrap2>
-            <StyledButton onClick={() => openModal('add')}>{'Add Repository'}</StyledButton>
-            <h5>Repositories</h5>
+            <Container>
+              <StyledButton onClick={() => openModal('add')}>{'Add Repository'}</StyledButton>
+
+              <h5>Repositories</h5>
+            </Container>
             {repositories.length > 0 ? (
               <StyledList>
                 {repositories.map((repository: any) => (
