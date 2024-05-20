@@ -211,16 +211,11 @@ const RepoContainer = styled.div`
 `;
 
 const StyledList = styled.ul`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
   padding: 0;
   margin: 0;
 `;
 
-const StyledListElement = styled.li`
-  display: flex;
-`;
+const StyledListElement = styled.li``;
 
 const WorkspaceMission = () => {
   const { main, ui } = useStores();
@@ -255,18 +250,24 @@ const WorkspaceMission = () => {
     console.log(workspace_uuid, name, url);
     try {
       const repo = { workspace_uuid, name, url };
-      await mainStore.createOrUpdateRepository(repo);
+      await mainStore.createOrUpdateRepository1(repo);
     } catch (error) {
       console.error(error);
     }
+    fetchRepositories();
   };
 
   const EditRepos = async () => {
     console.log(modalType);
-    const repo_uuid = currentuuid;
-    console.log(repo_uuid, name, url);
+    console.log(currentuuid, name);
     try {
-      const repo = { repo_uuid, name, url };
+      const repo = {
+        uuid: currentuuid,
+        name: name,
+        url,
+        workspace_uuid: uuid
+      };
+      console.log(repo);
       const response = await mainStore.createOrUpdateRepository(repo);
       console.log(response);
     } catch (error) {
@@ -565,7 +566,10 @@ const WorkspaceMission = () => {
 
             <StyledList>
               {repositories.map((repository: any) => (
-                <StyledListElement key={repository.id}>
+                <StyledListElement
+                  key={repository.id}
+                  style={{ display: 'flex', alignItems: 'center' }}
+                >
                   <img
                     width={20}
                     height={20}
