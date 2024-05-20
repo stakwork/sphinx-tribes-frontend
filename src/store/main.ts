@@ -2,6 +2,7 @@ import { uniqBy } from 'lodash';
 import memo from 'memo-decorator';
 import { action, makeAutoObservable, observable } from 'mobx';
 import { persist } from 'mobx-persist';
+import { Repository } from 'people/widgetViews/workspace/interface';
 import api from '../api';
 import { Extras } from '../components/form/inputs/widgets/interfaces';
 import { getHostIncludingDockerHosts } from '../config/host';
@@ -33,12 +34,6 @@ export interface Tribe {
   member_count: number;
   last_active: number;
   matchCount?: number; // for tag search
-}
-
-export interface Repository {
-  workspace_uuid: string;
-  name: string;
-  url: string;
 }
 
 export interface Bot {
@@ -3061,6 +3056,7 @@ export class MainStore {
           'Content-Type': 'application/json'
         }
       });
+      console.log('response', response);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

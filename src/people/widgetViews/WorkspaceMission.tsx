@@ -3,8 +3,12 @@ import { Body, WorkspaceBody } from 'pages/tickets/style';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useStores } from 'store';
+import { mainStore } from 'store/main';
 import { Workspace } from 'store/main';
+import { Button } from 'components/common';
 import MaterialIcon from '@material/react-material-icon';
+import { useDeleteConfirmationModal } from 'components/common';
+import { Box } from '@mui/system';
 import {
   Leftheader,
   ImageContainer,
@@ -17,6 +21,9 @@ import {
 import githubIcon from 'pages/tickets/workspace/workspaceHeader/Icons/githubIcon.svg';
 import websiteIcon from 'pages/tickets/workspace/workspaceHeader/Icons/websiteIcon.svg';
 import styled from 'styled-components';
+import { EuiToolTip } from '@elastic/eui';
+import threeDotsIcon from '../widgetViews/Icons/threeDotsIcon.svg';
+import { AddRepoModal } from './workspace/AddRepoModal';
 
 export const ImgText = styled.h3`
   color: #b0b7bc;
@@ -43,7 +50,7 @@ const HeaderWrap = styled.div`
 `;
 
 const DataWrap = styled.div`
-  padding: 40px 50px;
+  padding: 15px 50px;
   display: flex;
   width: 50%;
   margin: 0 auto;
@@ -54,12 +61,33 @@ const DataWrap = styled.div`
 
   @media only screen and (max-width: 900px) {
     width: 90%;
-    padding: 30px 40px;
+    padding: 15px 40px;
   }
 
   @media only screen and (max-width: 500px) {
     width: 90%;
-    padding: 20px 10px;
+    padding: 15px 10px;
+  }
+`;
+
+const DataWrap2 = styled.div`
+  padding: 10px 50px;
+  display: flex;
+  width: 50%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  justify-content: center;
+
+  @media only screen and (max-width: 900px) {
+    width: 90%;
+    padding: 10px 40px;
+  }
+
+  @media only screen and (max-width: 500px) {
+    width: 90%;
+    padding: 10px 10px;
   }
 `;
 
@@ -168,9 +196,36 @@ const ActionButton = styled.button<ButtonProps>`
   }};
 `;
 
+const Container = styled.div`
+  font-family: 'Barlow', sans-serif;
+  color: #3f3f3f;
+  text-align: left;
+  margin: 0px;
+  padding: 0px;
+`;
+
+const RepoContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const StyledList = styled.ul`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+`;
+
+const StyledListElement = styled.li`
+  display: flex;
+`;
+
 const WorkspaceMission = () => {
   const { main, ui } = useStores();
   const { uuid } = useParams<{ uuid: string }>();
+  console.log(uuid);
   const [workspaceData, setWorkspaceData] = useState<Workspace>();
   const [loading, setLoading] = useState(true);
   const [displayMission, setDidplayMission] = useState(false);
@@ -179,6 +234,93 @@ const WorkspaceMission = () => {
   const [displayTactics, setDidplayTactics] = useState(false);
   const [mission, setMission] = useState(workspaceData?.mission);
   const [tactics, setTactics] = useState(workspaceData?.tactics);
+  const [name, setName] = useState('');
+  const [url, setUrl] = useState('');
+  const [repositories, setRepositories] = useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [currentuuid, setCurrentuuid] = useState('');
+  const [modalType, setModalType] = useState('add'); // add this line
+
+  const fetchRepositories = async () => {
+    try {
+      const data = await mainStore.getRepositories(uuid);
+      setRepositories(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const AddRepos = async () => {
+    const workspace_uuid = uuid;
+    console.log(workspace_uuid, name, url);
+    try {
+      const repo = { workspace_uuid, name, url };
+      await mainStore.createOrUpdateRepository(repo);
+      fetchRepositories();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const openModal = (type: string, repository?: any) => {
+    if (type === 'add') {
+      setName('');
+      setCurrentuuid('');
+      setUrl('');
+      setIsModalVisible(true);
+      setModalType(type);
+    } else if (type === 'edit') {
+      setName(repository.name);
+      setCurrentuuid(repository.uuid);
+      setUrl(repository.url);
+      setIsModalVisible(true);
+      setModalType(type);
+    }
+  };
+
+  const closeModal = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleSave = () => {
+    AddRepos();
+    closeModal();
+  };
+
+  const { openDeleteConfirmation } = useDeleteConfirmationModal();
+
+  const DeleteRepository = async (workspace_uuid: string, repository_uuid: string) => {
+    try {
+      await mainStore.deleteRepository(workspace_uuid, repository_uuid);
+      closeModal();
+      fetchRepositories();
+    } catch (error) {
+      console.error('Error deleteRepository', error);
+    }
+  };
+
+  const handleDelete = () => {
+    closeModal();
+    DeleteRepository(uuid, currentuuid);
+  };
+
+  const deleteHandler = () => {
+    openDeleteConfirmation({
+      onDelete: handleDelete,
+      children: (
+        <Box fontSize={20} textAlign="center">
+          Are you sure you want to <br />
+          <Box component="span" fontWeight="500">
+            Delete this Bounty?
+          </Box>
+        </Box>
+      )
+    });
+  };
+
+  useEffect(() => {
+    fetchRepositories();
+  }, []);
 
   const getWorkspaceData = useCallback(async () => {
     if (!uuid) return;
@@ -294,6 +436,9 @@ const WorkspaceMission = () => {
                 </UrlButtonContainer>
               </CompanyNameAndLink>
             </Leftheader>
+            <Container>
+              <Button text={'Add Repository'} onClick={() => openModal('add')} />
+            </Container>
           </Header>
         </HeaderWrap>
         <DataWrap>
@@ -397,6 +542,44 @@ const WorkspaceMission = () => {
           </FieldWrap>
         </DataWrap>
         {toastsEl}
+        <RepoContainer>
+          <DataWrap2>
+            <h5>Repositories</h5>
+
+            <StyledList>
+              {repositories.map((repository: any) => (
+                <StyledListElement key={repository.id}>
+                  <img
+                    width={20}
+                    height={20}
+                    src={threeDotsIcon}
+                    alt="Three dots icon"
+                    onClick={() => openModal('edit', repository)}
+                  />
+                  <h6>{repository.name}</h6>:
+                  <EuiToolTip position="top" content={repository.url}>
+                    <a href={repository.url} target="_blank" rel="noreferrer">
+                      {repository.url}
+                    </a>
+                  </EuiToolTip>
+                </StyledListElement>
+              ))}
+            </StyledList>
+          </DataWrap2>
+          {isModalVisible && (
+            <AddRepoModal
+              isModalVisible={isModalVisible}
+              closeModal={() => setIsModalVisible(false)}
+              handleSave={handleSave}
+              handleDelete={deleteHandler}
+              name={name}
+              setName={setName}
+              url={url}
+              setUrl={setUrl}
+              modalType={modalType} // add this line
+            />
+          )}
+        </RepoContainer>
       </WorkspaceBody>
     )
   );
