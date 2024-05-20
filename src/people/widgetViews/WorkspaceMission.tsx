@@ -221,17 +221,18 @@ const StyledListElement = styled.span`
 `;
 
 const StyledButton = styled.button`
-  border-radius: 5px;
   padding: 0 12px;
   border: none;
-  border-radius: 100px;
+  border-radius: 5px;
   box-shadow: 10px;
-  background: rgb(73, 201, 152);
+  background: #5078f2;
   color: rgb(255, 255, 255);
   position: relative;
   opacity: 1;
   height: 48px;
-  width: 204px;
+  width: 159px;
+  font-weight: 600;
+  margin-right: 159px;
 `;
 
 const SubTitle = styled.h6`
