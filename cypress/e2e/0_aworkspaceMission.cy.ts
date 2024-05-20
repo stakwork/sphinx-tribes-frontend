@@ -59,7 +59,9 @@ describe('Create Workspace And Update Mission', () => {
 
     cy.get('h5').contains('Repositories').should('be.visible');
 
-    cy.get('StyledListElement').should('be.visible');
+    cy.get('div[StyledList]').within(() => {
+      cy.get('span[StyledListElement]').should('be.visible');
+    });
 
     cy.get('img[alt="Three dots icon"]').first().click();
     cy.get('.euiModal').should('be.visible');
