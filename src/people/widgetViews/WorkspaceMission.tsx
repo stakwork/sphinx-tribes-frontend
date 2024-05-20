@@ -216,16 +216,16 @@ const StyledList = styled.ul`
 `;
 
 const StyledListElement = styled.li`
-display: flex;
+  display: flex;
 `;
 
 const StyledButton = styled.button`
   border-radius: 5px;
-  padding:6px;
-  border:none;
-  background-color: #618AFF;
+  padding: 6px;
+  border: none;
+  background-color: #618aff;
   color: white;
-`
+`;
 
 const WorkspaceMission = () => {
   const { main, ui } = useStores();
@@ -576,10 +576,7 @@ const WorkspaceMission = () => {
 
             <StyledList>
               {repositories.map((repository: any) => (
-                <StyledListElement
-                  key={repository.id}
-                  
-                >
+                <StyledListElement key={repository.id}>
                   <img
                     width={20}
                     height={20}
