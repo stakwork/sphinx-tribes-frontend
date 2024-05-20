@@ -225,7 +225,6 @@ const StyledListElement = styled.li`
 const WorkspaceMission = () => {
   const { main, ui } = useStores();
   const { uuid } = useParams<{ uuid: string }>();
-  console.log(uuid);
   const [workspaceData, setWorkspaceData] = useState<Workspace>();
   const [loading, setLoading] = useState(true);
   const [displayMission, setDidplayMission] = useState(false);
@@ -245,6 +244,7 @@ const WorkspaceMission = () => {
     try {
       const data = await mainStore.getRepositories(uuid);
       setRepositories(data);
+      console.log(data)
     } catch (error) {
       console.error(error);
     }
@@ -256,10 +256,25 @@ const WorkspaceMission = () => {
     try {
       const repo = { workspace_uuid, name, url };
       await mainStore.createOrUpdateRepository(repo);
-      fetchRepositories();
+      
     } catch (error) {
       console.error(error);
     }
+    
+  };
+
+  const EditRepos = async () => {
+    console.log(modalType)
+    const repo_uuid = currentuuid;
+    console.log(repo_uuid, name, url);
+    try {
+      const repo = { repo_uuid, name, url };
+      const response = await mainStore.createOrUpdateRepository(repo);
+      console.log(response)
+    } catch (error) {
+      console.error(error); 
+    }
+    fetchRepositories();
   };
 
   const openModal = (type: string, repository?: any) => {
@@ -283,7 +298,12 @@ const WorkspaceMission = () => {
   };
 
   const handleSave = () => {
-    AddRepos();
+    if(modalType === 'add'){
+      AddRepos();
+    }
+    else if (modalType === 'edit'){
+      EditRepos();
+    }
     closeModal();
   };
 
