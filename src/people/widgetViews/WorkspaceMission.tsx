@@ -215,7 +215,17 @@ const StyledList = styled.ul`
   margin: 0;
 `;
 
-const StyledListElement = styled.li``;
+const StyledListElement = styled.li`
+display: flex;
+`;
+
+const StyledButton = styled.button`
+  border-radius: 5px;
+  padding:6px;
+  border:none;
+  background-color: #618AFF;
+  color: white;
+`
 
 const WorkspaceMission = () => {
   const { main, ui } = useStores();
@@ -455,7 +465,7 @@ const WorkspaceMission = () => {
               </CompanyNameAndLink>
             </Leftheader>
             <Container>
-              <Button text={'Add Repository'} onClick={() => openModal('add')} />
+              <StyledButton onClick={() => openModal('add')}>{'Add Repository'}</StyledButton>
             </Container>
           </Header>
         </HeaderWrap>
@@ -568,7 +578,7 @@ const WorkspaceMission = () => {
               {repositories.map((repository: any) => (
                 <StyledListElement
                   key={repository.id}
-                  style={{ display: 'flex', alignItems: 'center' }}
+                  
                 >
                   <img
                     width={20}
