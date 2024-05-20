@@ -71,7 +71,7 @@ const DataWrap = styled.div`
 `;
 
 const DataWrap2 = styled.div`
-  padding: 10px 50px;
+  padding: 5px 50px;
   display: flex;
   width: 50%;
   margin: 0 auto;
@@ -229,10 +229,10 @@ const StyledButton = styled.button`
   color: rgb(255, 255, 255);
   position: relative;
   opacity: 1;
-  height: 48px;
-  width: 159px;
+  height: 43px;
+  width: 153px;
   font-weight: 600;
-  margin-right: 159px;
+  margin-bottom: 20px;
 `;
 
 const SubTitle = styled.h6`
@@ -478,9 +478,6 @@ const WorkspaceMission = () => {
                 </UrlButtonContainer>
               </CompanyNameAndLink>
             </Leftheader>
-            <Container>
-              <StyledButton onClick={() => openModal('add')}>{'Add Repository'}</StyledButton>
-            </Container>
           </Header>
         </HeaderWrap>
         <DataWrap>
@@ -586,8 +583,8 @@ const WorkspaceMission = () => {
         {toastsEl}
         <RepoContainer>
           <DataWrap2>
+            <StyledButton onClick={() => openModal('add')}>{'Add Repository'}</StyledButton>
             <h5>Repositories</h5>
-
             {repositories.length > 0 ? (
               <StyledList>
                 {repositories.map((repository: any) => (
