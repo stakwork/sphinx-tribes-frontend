@@ -59,8 +59,9 @@ describe('Create Workspace And Update Mission', () => {
 
     cy.get('h5').contains('Repositories').should('be.visible');
 
-    cy.get('div[StyledList]').within(() => {
-      cy.get('span[StyledListElement]').should('be.visible');
+    cy.get('[data-cy="repo-container"]').within(() => {
+      cy.get('[data-cy="add-repo-button"]').click();
+      cy.get('[data-cy="styled-list"]').should('be.visible');
     });
 
     cy.get('img[alt="Three dots icon"]').first().click();

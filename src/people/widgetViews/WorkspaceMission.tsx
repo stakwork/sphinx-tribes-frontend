@@ -581,17 +581,18 @@ const WorkspaceMission = () => {
           </FieldWrap>
         </DataWrap>
         {toastsEl}
-        <RepoContainer>
-          <DataWrap2>
-            <Container>
-              <StyledButton onClick={() => openModal('add')}>{'Add Repository'}</StyledButton>
-
+        <RepoContainer data-cy="repo-container">
+          <DataWrap2 data-cy="data-wrap2">
+            <Container data-cy="container">
+              <StyledButton data-cy="add-repo-button" onClick={() => openModal('add')}>
+                {'Add Repository'}
+              </StyledButton>
               <h5>Repositories</h5>
             </Container>
             {repositories.length > 0 ? (
-              <StyledList>
+              <StyledList data-cy="styled-list">
                 {repositories.map((repository: any) => (
-                  <StyledListElement key={repository.id}>
+                  <StyledListElement data-cy="styled-list-element" key={repository.id}>
                     <img
                       width={15}
                       height={15}
@@ -609,7 +610,7 @@ const WorkspaceMission = () => {
                 ))}
               </StyledList>
             ) : (
-              <SubTitle>Add Repositories to manage them</SubTitle>
+              <SubTitle data-cy="sub-title">Add Repositories to manage them</SubTitle>
             )}
           </DataWrap2>
           {isModalVisible && (
@@ -622,7 +623,7 @@ const WorkspaceMission = () => {
               setName={setName}
               url={url}
               setUrl={setUrl}
-              modalType={modalType} // add this line
+              modalType={modalType}
             />
           )}
         </RepoContainer>
