@@ -82,9 +82,11 @@ describe('Create Workspace And Update Mission', () => {
     cy.wait(1000);
     cy.contains('Are you sure you want to Delete this Repo?');
 
-    cy.get('.MuiStack-root').within(() => {
-      cy.get('button').contains('Delete').click({ force: true });
-    });
+    cy.get('.MuiStack-root')
+      .eq(1)
+      .within(() => {
+        cy.get('button').contains('Delete').click({ force: true });
+      });
 
     cy.wait(5000);
     cy.get('.euiModal').should('not.exist');
