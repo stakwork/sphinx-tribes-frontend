@@ -5,7 +5,6 @@ import { useParams } from 'react-router-dom';
 import { useStores } from 'store';
 import { mainStore } from 'store/main';
 import { Workspace } from 'store/main';
-import { Button } from 'components/common';
 import MaterialIcon from '@material/react-material-icon';
 import { useDeleteConfirmationModal } from 'components/common';
 import { Box } from '@mui/system';
@@ -353,7 +352,7 @@ const WorkspaceMission = () => {
         <Box fontSize={20} textAlign="center">
           Are you sure you want to <br />
           <Box component="span" fontWeight="500">
-            Delete this Bounty?
+            Delete this Repo?
           </Box>
         </Box>
       )
