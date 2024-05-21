@@ -3,7 +3,7 @@ describe('Update Requirements in Workspace Feature', () => {
     cy.login('carol');
     cy.wait(1000);
 
-    const WorkSpaceName = 'Requirements Feature Update';
+    const WorkSpaceName = `Carol's Workspace`;
 
     const workspace = {
       loggedInAs: 'carol',

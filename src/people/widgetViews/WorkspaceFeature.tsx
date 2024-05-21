@@ -23,7 +23,7 @@ import { ActionButton, ButtonWrap } from './workspace/style';
 
 type DispatchSetStateAction<T> = React.Dispatch<React.SetStateAction<T>>;
 
-interface EditableFieldProps {
+interface WSEditableFieldProps {
   label: string;
   value: string;
   setValue: DispatchSetStateAction<string>;
@@ -36,7 +36,7 @@ interface EditableFieldProps {
   onSubmit: () => Promise<void>;
 }
 
-const WorkspaceEditableField: React.FC<EditableFieldProps> = ({
+const WorkspaceEditableField = ({
   label,
   value,
   setValue,
@@ -47,7 +47,7 @@ const WorkspaceEditableField: React.FC<EditableFieldProps> = ({
   placeholder,
   dataTestIdPrefix,
   onSubmit
-}) => {
+}: WSEditableFieldProps) => {
   const handleEditClick = () => {
     setIsEditing(!isEditing);
     setDisplayOptions(false);
