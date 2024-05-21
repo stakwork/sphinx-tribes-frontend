@@ -69,6 +69,7 @@ describe('Create Workspace And Update Mission', () => {
       cy.get('input[placeholder="Repository url"]').clear().type('https://github.com/updated/repo');
       cy.get('button').contains('Save').click();
     });
+
     cy.get('.euiModal').should('not.exist');
     cy.contains('Updated Repo').should('be.visible');
     cy.contains('https://github.com/updated/repo').should('be.visible');
@@ -76,8 +77,14 @@ describe('Create Workspace And Update Mission', () => {
     cy.get('img[alt="Three dots icon"]').first().click();
     cy.get('.euiModal').within(() => {
       cy.get('button').contains('Delete').click();
+      cy.wait(1000);
+      cy.contains('Are you sure you want to Delete this Bounty?');
+      cy.get('button').contains('Delete').click();
     });
+
+    cy.wait(2000);
     cy.get('.euiModal').should('not.exist');
+    cy.wait(2000);
     cy.contains('Updated Repo').should('not.exist');
     cy.contains('https://github.com/updated/repo').should('not.exist');
 
