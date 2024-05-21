@@ -77,10 +77,11 @@ describe('Create Workspace And Update Mission', () => {
     cy.get('img[alt="Three dots icon"]').first().click();
     cy.get('.euiModal').within(() => {
       cy.get('button').contains('Delete').click();
-      cy.wait(1000);
-      cy.contains('Are you sure you want to Delete this Bounty?');
-      cy.get('button').contains('Delete').click();
     });
+
+    cy.wait(1000);
+    cy.contains('Are you sure you want to Delete this Bounty?');
+    cy.get('button').contains('Delete').click();
 
     cy.wait(2000);
     cy.get('.euiModal').should('not.exist');
