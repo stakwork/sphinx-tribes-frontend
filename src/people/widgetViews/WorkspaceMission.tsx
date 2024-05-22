@@ -188,7 +188,7 @@ const WorkspaceMission = () => {
     try {
       const data = await mainStore.getRepositories(uuid);
       setRepositories(data);
-      console.log(data)
+      console.log(data);
     } catch (error) {
       console.error(error);
     }
