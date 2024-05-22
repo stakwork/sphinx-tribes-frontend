@@ -15,6 +15,7 @@ import {
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useStores } from 'store';
+import { mainStore } from 'store/main';
 import { Feature, featureLimit, Workspace } from 'store/interface';
 import MaterialIcon from '@material/react-material-icon';
 import { Button, Modal } from 'components/common';
@@ -159,7 +160,6 @@ const Container = styled.div`
 const WorkspaceMission = () => {
   const { main, ui } = useStores();
   const { uuid } = useParams<{ uuid: string }>();
-  console.log(uuid);
   const [workspaceData, setWorkspaceData] = useState<Workspace>();
   const [loading, setLoading] = useState(true);
   const [displayMission, setDidplayMission] = useState(false);
@@ -168,6 +168,12 @@ const WorkspaceMission = () => {
   const [displayTactics, setDidplayTactics] = useState(false);
   const [mission, setMission] = useState(workspaceData?.mission);
   const [tactics, setTactics] = useState(workspaceData?.tactics);
+  const [, setRepoName] = useState('');
+  const [, setRepoUrl] = useState('');
+  const [, setRepositories] = useState([]);
+  const [, setIsModalVisible] = useState(false);
+  const [, setCurrentuuid] = useState('');
+  const [, setModalType] = useState('add');
   const [featureModal, setFeatureModal] = useState(false);
   const [features, setFeatures] = useState<Feature[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -176,16 +182,37 @@ const WorkspaceMission = () => {
 
   const paginationLimit = Math.floor(featuresCount / featureLimit) + 1;
   const visibleTabs = 3;
-
   const isMobile = useIsMobile();
+
+  const fetchRepositories = async () => {
+    try {
+      const data = await mainStore.getRepositories(uuid);
+      setRepositories(data);
+      console.log(data)
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const openModal = (type: string, repository?: any) => {
     if (type === 'add') {
-      console.log(repository)
+      setRepoName('');
+      setCurrentuuid('');
+      setRepoUrl('');
+      setIsModalVisible(true);
+      setModalType(type);
     } else if (type === 'edit') {
-      console.log(repository)
+      setRepoName(repository.name);
+      setCurrentuuid(repository.uuid);
+      setRepoUrl(repository.url);
+      setIsModalVisible(true);
+      setModalType(type);
     }
   };
+
+  useEffect(() => {
+    fetchRepositories();
+  }, []);
 
   const getWorkspaceData = useCallback(async () => {
     if (!uuid) return;

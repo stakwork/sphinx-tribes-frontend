@@ -78,7 +78,7 @@ export interface AssignUserModalProps extends ModalProps {
 }
 
 export interface Repository {
-  workspace_uuid: string;
+  workspace_uuid?: string;
   name: string;
   url: string;
 }
