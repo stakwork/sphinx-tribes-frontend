@@ -172,7 +172,6 @@ const WorkspaceMission = () => {
     setIsModalVisible(false);
   };
 
-
   const DeleteRepository = async (workspace_uuid: string, repository_uuid: string) => {
     try {
       await main.deleteRepository(workspace_uuid, repository_uuid);
@@ -548,7 +547,7 @@ const WorkspaceMission = () => {
                         {repository.url}
                       </a>
                     </EuiToolTip>
-                  </StyledListElement >
+                  </StyledListElement>
                 ))}
               </StyledList>
             </DataWrap2>
@@ -610,7 +609,7 @@ const WorkspaceMission = () => {
               </FlexDiv>
             </PaginatonSection>
           </FieldWrap>
-        </DataWrap >
+        </DataWrap>
         <Modal
           visible={featureModal}
           style={{
