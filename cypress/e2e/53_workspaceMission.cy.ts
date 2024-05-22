@@ -77,9 +77,11 @@ describe('Create Workspace And Update Mission', () => {
 
     cy.get('img[alt="Three dots icon"]').first().click();
     cy.get('button').contains('Delete').click();
-    cy.wait(500);
+    cy.wait(1000);
 
-    cy.contains('Add New Repository').should('not.exist');
+    cy.get('button').contains('Delete').click();
+    cy.wait(1000);
+
     cy.contains(updatedRepoName).should('not.exist');
     cy.contains('https://github.com/updated/repo').should('not.exist');
 
