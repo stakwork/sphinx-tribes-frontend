@@ -52,25 +52,27 @@ describe('Create Workspace And Update Mission', () => {
     cy.get('button').contains('Add Repository').click();
     cy.wait(500);
 
-    cy.get('[data-testid="repo-name-input"]').type('Test Repo');
+    const repoName = 'Repo Name';
+    cy.get('[data-testid="repo-name-input"]').type(repoName);
     cy.get('[data-testid="repo-url-input"]').type('https://github.com/test/repo');
     cy.get('button').contains('Save').click();
     cy.wait(500);
 
     cy.contains('Add New Repository').should('not.exist');
     cy.get('h5').contains('Repositories').should('be.visible');
-    cy.get('StyledListElement').should('be.visible');
+    cy.contains(repoName).should('exist', { timeout: 1000 });
 
     cy.get('img[alt="Three dots icon"]').first().click();
     cy.wait(500);
 
-    cy.get('[data-testid="repo-name-input"]').clear().type('Updated Repo');
+    const updatedRepoName = 'Updated Repo';
+    cy.get('[data-testid="repo-name-input"]').clear().type(updatedRepoName);
     cy.get('[data-testid="repo-url-input"]').clear().type('https://github.com/updated/repo');
     cy.get('button').contains('Save').click();
     cy.wait(500);
 
     cy.contains('Add New Repository').should('not.exist');
-    cy.contains('Updated Repo').should('be.visible');
+    cy.contains(updatedRepoName).should('be.visible');
     cy.contains('https://github.com/updated/repo').should('be.visible');
 
     cy.get('img[alt="Three dots icon"]').first().click();
@@ -78,7 +80,7 @@ describe('Create Workspace And Update Mission', () => {
     cy.wait(500);
 
     cy.contains('Add New Repository').should('not.exist');
-    cy.contains('Updated Repo').should('not.exist');
+    cy.contains(updatedRepoName).should('not.exist');
     cy.contains('https://github.com/updated/repo').should('not.exist');
 
     cy.logout('carol');
