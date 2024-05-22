@@ -2,11 +2,6 @@ import { EuiGlobalToastList, EuiLoadingSpinner } from '@elastic/eui';
 import {
   Body,
   FeatureBody,
-  FeatureLabel,
-  FeatureName,
-  Leftheader,
-  Header,
-  HeaderWrap,
   DataWrap,
   FieldWrap,
   Label,
@@ -15,11 +10,18 @@ import {
   TextArea
 } from 'pages/tickets/style';
 import React, { useCallback, useEffect, useState } from 'react';
+import history from 'config/history';
 import { useParams } from 'react-router-dom';
 import { useStores } from 'store';
 import { Feature } from 'store/interface';
 import MaterialIcon from '@material/react-material-icon';
-import { ActionButton, ButtonWrap } from './workspace/style';
+import {
+  ActionButton,
+  ButtonWrap,
+  HeadNameWrap,
+  FeatureHeadWrap,
+  WorkspaceName
+} from './workspace/style';
 
 type DispatchSetStateAction<T> = React.Dispatch<React.SetStateAction<T>>;
 
@@ -184,15 +186,19 @@ const WorkspaceFeature: React.FC = () => {
 
   return (
     <FeatureBody>
-      <HeaderWrap>
-        <Header>
-          <Leftheader>
-            <FeatureName>
-              <FeatureLabel>{featureData?.name}</FeatureLabel>
-            </FeatureName>
-          </Leftheader>
-        </Header>
-      </HeaderWrap>
+      <FeatureHeadWrap>
+        <HeadNameWrap>
+          <MaterialIcon
+            onClick={() => history.goBack()}
+            icon={'arrow_back'}
+            style={{
+              fontSize: 25,
+              cursor: 'pointer'
+            }}
+          />
+          <WorkspaceName>{featureData?.name}</WorkspaceName>
+        </HeadNameWrap>
+      </FeatureHeadWrap>
       <DataWrap>
         <WorkspaceEditableField
           label="Feature Brief"

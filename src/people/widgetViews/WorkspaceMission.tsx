@@ -23,10 +23,11 @@ import {
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useStores } from 'store';
+import { useDeleteConfirmationModal } from 'components/common';
+import { Box } from '@mui/system';
 import { Feature, featureLimit, Workspace } from 'store/interface';
 import MaterialIcon from '@material/react-material-icon';
-import { Box } from '@mui/system';
-import { Button, Modal, useDeleteConfirmationModal } from 'components/common';
+import { Button, Modal } from 'components/common';
 import {
   ImageContainer,
   CompanyNameAndLink,
@@ -37,31 +38,18 @@ import {
 import githubIcon from 'pages/tickets/workspace/workspaceHeader/Icons/githubIcon.svg';
 import websiteIcon from 'pages/tickets/workspace/workspaceHeader/Icons/websiteIcon.svg';
 import { EuiToolTip } from '@elastic/eui';
-import styled from 'styled-components';
 import { useIsMobile } from 'hooks';
+import styled from 'styled-components';
+import avatarIcon from '../../public/static/profile_avatar.svg';
 import threeDotsIcon from '../widgetViews/Icons/threeDotsIcon.svg';
 import { colors } from '../../config/colors';
 import paginationarrow1 from '../../pages/superadmin/header/icons/paginationarrow1.svg';
 import paginationarrow2 from '../../pages/superadmin/header/icons/paginationarrow2.svg';
 import AddFeature from './workspace/AddFeatureModal';
-import { ActionButton, RowFlex, ButtonWrap } from './workspace/style';
+import { ActionButton, RowFlex, ButtonWrap, RepoName, RepoEliipsis } from './workspace/style';
 import AddRepoModal from './workspace/AddRepoModal';
 
 const color = colors['light'];
-
-export const ImgText = styled.h3`
-  color: #b0b7bc;
-  text-align: center;
-  font-family: 'Barlow';
-  font-size: 1.875rem;
-  font-style: normal;
-  font-weight: 800;
-  line-height: 1.0625rem;
-  letter-spacing: 0.01875rem;
-  text-transform: uppercase;
-  opacity: 0.5;
-  margin-bottom: 0;
-`;
 
 const FeaturesWrap = styled.div`
   margin-top: 25px;
@@ -118,13 +106,6 @@ const PaginatonSection = styled.div`
   padding: 1em;
 `;
 
-const RepoContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-
 const WorkspaceMission = () => {
   const { main, ui } = useStores();
   const { uuid } = useParams<{ uuid: string }>();
@@ -180,6 +161,7 @@ const WorkspaceMission = () => {
   const closeRepoModal = () => {
     setIsModalVisible(false);
   };
+
 
   const DeleteRepository = async (workspace_uuid: string, repository_uuid: string) => {
     try {
@@ -325,6 +307,10 @@ const WorkspaceMission = () => {
     setFeatureModal(!featureModal);
   };
 
+  const toggleRepoModal = () => {
+    setFeatureModal(!featureModal);
+  };
+
   const paginateNext = () => {
     const activeTab = paginationLimit > visibleTabs;
     const activePage = currentPage < featuresCount / featureLimit;
@@ -390,7 +376,7 @@ const WorkspaceMission = () => {
           <Header>
             <Leftheader>
               <ImageContainer
-                src={workspaceData?.img}
+                src={workspaceData?.img || avatarIcon}
                 width="72px"
                 height="72px"
                 alt="workspace icon"
@@ -417,8 +403,8 @@ const WorkspaceMission = () => {
                 </UrlButtonContainer>
               </CompanyNameAndLink>
             </Leftheader>
-          </Header >
-        </HeaderWrap >
+          </Header>
+        </HeaderWrap>
         <DataWrap>
           <FieldWrap>
             <Label>Mission</Label>
@@ -520,92 +506,40 @@ const WorkspaceMission = () => {
               )}
             </Data>
           </FieldWrap>
-          <FieldWrap>
-            <RowFlex>
-              <Label>Features</Label>
-              <Button
-                onClick={toggleFeatureModal}
-                style={{
-                  borderRadius: '5px',
-                  margin: 0,
-                  marginLeft: 'auto'
-                }}
-                dataTestId="new-feature-btn"
-                text="New Feature"
-              />
-            </RowFlex>
-            <FeaturesWrap>
-              {features &&
-                features.map((feat: Feature, i: number) => (
-                  <FeatureDataWrap key={i}>
-                    <FeatureCount>{i + 1}</FeatureCount>
-                    <FeatureData>
-                      <FeatureLink href={`/feature/${feat.uuid}`} target="_blank">
-                        {feat.name}
-                      </FeatureLink>
-                      <FeatureDetails>
-                        <FeatureText>Filter Status</FeatureText>
-                      </FeatureDetails>
-                    </FeatureData>
-                  </FeatureDataWrap>
-                ))}
-            </FeaturesWrap>
-            <PaginatonSection>
-              <FlexDiv>
-                {featuresCount > featureLimit ? (
-                  <PageContainer role="pagination">
-                    <PaginationImg
-                      src={paginationarrow1}
-                      alt="pagination arrow 1"
-                      onClick={() => paginatePrev()}
-                    />
-                    {activeTabs.map((page: number) => (
-                      <PaginationButtons
-                        data-testid={'page'}
-                        key={page}
-                        onClick={() => paginate(page)}
-                        active={page === currentPage}
-                      >
-                        {page}
-                      </PaginationButtons>
-                    ))}
-                    <PaginationImg
-                      src={paginationarrow2}
-                      alt="pagination arrow 2"
-                      onClick={() => paginateNext()}
-                    />
-                  </PageContainer>
-                ) : null}
-              </FlexDiv>
-            </PaginatonSection>
-          </FieldWrap>
-          <RepoContainer>
+          <div>
             <DataWrap2>
-              <h5>Repositories</h5>
+              <RowFlex>
+                <Label>Repositories</Label>
+                <Button
+                  onClick={() => openModal('add')}
+                  style={{
+                    borderRadius: '5px',
+                    margin: 0,
+                    marginLeft: 'auto'
+                  }}
+                  dataTestId="new-repository-btn"
+                  text="Add Repository"
+                />
+              </RowFlex>
               <StyledList>
                 {repositories.map((repository: any) => (
-                  <StyledListElement
-                    key={repository.id}
-                    style={{ display: 'flex', alignItems: 'center' }}
-                  >
-                    <img
-                      width={20}
-                      height={20}
+                  <StyledListElement key={repository.id}>
+                    <RepoEliipsis
                       src={threeDotsIcon}
                       alt="Three dots icon"
                       onClick={() => openModal('edit', repository)}
                     />
-                    <h6>{repository.name}</h6>:
+                    <RepoName>{repository.name} : </RepoName>
                     <EuiToolTip position="top" content={repository.url}>
                       <a href={repository.url} target="_blank" rel="noreferrer">
                         {repository.url}
                       </a>
                     </EuiToolTip>
-                  </StyledListElement>
+                  </StyledListElement >
                 ))}
-              </StyledList>
-            </DataWrap2>
-          </RepoContainer>
+              </StyledList >
+            </DataWrap2 >
+          </div>
           <FieldWrap>
             <RowFlex>
               <Label>Features</Label>
@@ -663,7 +597,7 @@ const WorkspaceMission = () => {
               </FlexDiv>
             </PaginatonSection>
           </FieldWrap>
-        </DataWrap>
+        </DataWrap >
         <Modal
           visible={featureModal}
           style={{
@@ -730,7 +664,7 @@ const WorkspaceMission = () => {
           />
         </Modal>
         {toastsEl}
-      </WorkspaceBody >
+      </WorkspaceBody>
     )
   );
 };

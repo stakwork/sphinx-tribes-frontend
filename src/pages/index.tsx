@@ -49,6 +49,9 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
           <Route path="/workspace/:uuid">
             <WorkspaceMission />
           </Route>
+          <Route path="/feature/:feature_uuid">
+            <WorkspaceFeature />
+          </Route>
           <Route path="/leaderboard">
             <LeaderboardPage />
           </Route>

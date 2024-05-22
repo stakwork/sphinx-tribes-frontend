@@ -86,6 +86,27 @@ export const HeadWrap = styled.div`
   }
 `;
 
+export const FeatureHeadWrap = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 30px 50px;
+  padding-right: 40px;
+  border-bottom: 1px solid #ebedef;
+  @media only screen and (max-width: 800px) {
+    padding: 15px 15px;
+  }
+  @media only screen and (max-width: 700px) {
+    padding: 12px 10px;
+  }
+  @media only screen and (max-width: 500px) {
+    padding: 0px;
+    padding-bottom: 15px;
+    flex-direction: column;
+    align-items: start;
+    padding: 20px 30px;
+  }
+`;
+
 export const HeadNameWrap = styled.div`
   display: flex;
   align-items: center;
@@ -972,4 +993,17 @@ export const ActionButton = styled.button<ButtonProps>`
     color: rgba(142, 150, 156, 0.85);
     box-shadow: none;
   }
+`;
+
+export const RepoName = styled.h6`
+  padding: 0px;
+  margin: 0px;
+  margin-right: 10px;
+`;
+
+export const RepoEliipsis = styled.img`
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+  font-weight: 900;
 `;

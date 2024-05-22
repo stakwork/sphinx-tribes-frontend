@@ -66,7 +66,7 @@ const FooterContainer = styled.div`
 
 const errcolor = '#FF8F80';
 
-const MAX_NAME_LENGTH = 20;
+const MAX_NAME_LENGTH = 50;
 
 const AddRepo = (props: {
     closeHandler: () => void;
