@@ -207,18 +207,6 @@ const WorkspaceFeature: React.FC = () => {
           onSubmit={() => submitField('brief', brief, setEditBrief)}
         />
         <WorkspaceEditableField
-          label="Architecture"
-          value={architecture}
-          setValue={setArchitecture}
-          isEditing={editArchitecture}
-          setIsEditing={setEditArchitecture}
-          displayOptions={displayArchitectureOptions}
-          setDisplayOptions={setDisplayArchitectureOptions}
-          placeholder="Architecture"
-          dataTestIdPrefix="architecture"
-          onSubmit={() => submitField('architecture', architecture, setEditArchitecture)}
-        />
-        <WorkspaceEditableField
           label="Requirements"
           value={requirements}
           setValue={setRequirements}
@@ -229,6 +217,18 @@ const WorkspaceFeature: React.FC = () => {
           placeholder="Requirements"
           dataTestIdPrefix="requirements"
           onSubmit={() => submitField('requirements', requirements, setEditRequirements)}
+        />
+        <WorkspaceEditableField
+          label="Architecture"
+          value={architecture}
+          setValue={setArchitecture}
+          isEditing={editArchitecture}
+          setIsEditing={setEditArchitecture}
+          displayOptions={displayArchitectureOptions}
+          setDisplayOptions={setDisplayArchitectureOptions}
+          placeholder="Architecture"
+          dataTestIdPrefix="architecture"
+          onSubmit={() => submitField('architecture', architecture, setEditArchitecture)}
         />
       </DataWrap>
       {toastsEl}
