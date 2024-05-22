@@ -36,7 +36,7 @@ import paginationarrow1 from '../../pages/superadmin/header/icons/paginationarro
 import paginationarrow2 from '../../pages/superadmin/header/icons/paginationarrow2.svg';
 import AddFeature from './workspace/AddFeatureModal';
 import EditSchematic from './workspace/EditSchematicModal';
-import { ActionButton, RowFlex, ButtonWrap } from './workspace/style';
+import { ActionButton, RowFlex, ButtonWrap, SelectedImg, ImgContainer } from './workspace/style';
 
 const color = colors['light'];
 
@@ -564,7 +564,18 @@ const WorkspaceMission = () => {
                     Edit
                   </button>
                 </OptionsWrap>
-                <a href={workspaceData?.schematic_url} target="_blank">
+                <ImgContainer>
+                  {workspaceData?.schematic_img ? (
+                    <SelectedImg src={workspaceData?.schematic_img} alt="schematic image" />
+                  ) : (
+                    <ImgText>Image</ImgText>
+                  )}
+                </ImgContainer>
+                <a
+                  href={workspaceData?.schematic_url}
+                  target="_blank"
+                  style={{ marginTop: '1rem' }}
+                >
                   {workspaceData?.schematic_url ? 'schematic' : 'No schematic url yet'}
                 </a>
               </Data>

@@ -162,7 +162,6 @@ const EditSchematic = (props: {
           props.closeHandler();
 
           const schematic = await res.json();
-          console.log('schematic: ', schematic);
           history.push(`/workspace/${schematic.uuid}`);
         }, 500);
       } else {
@@ -189,7 +188,7 @@ const EditSchematic = (props: {
               {selectedFile ? (
                 <SelectedImg src={URL.createObjectURL(selectedFile)} alt="selected file" />
               ) : props.schematic_img ? (
-                <SelectedImg src={props.schematic_img} alt="schematic" />
+                <SelectedImg src={props.schematic_img} alt="schematic image" />
               ) : (
                 <ImgText>Image</ImgText>
               )}
