@@ -2899,5 +2899,34 @@ export class MainStore {
       return null;
     }
   }
+
+  async deleteRepository(workspace_uuid: string, repository_uuid: string): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return [];
+      const info = uiStore.meInfo;
+      const response = await fetch(
+        `${TribesURL}/workspaces/${workspace_uuid}/repository/${repository_uuid}`,
+        {
+          method: 'DELETE',
+          mode: 'cors',
+          headers: {
+            'x-jwt': info.tribe_jwt,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      console.log('response', response);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (e) {
+      console.log('Error deleteRepository', e);
+      return null;
+    }
+  }
 }
 export const mainStore = new MainStore();
