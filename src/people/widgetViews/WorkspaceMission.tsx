@@ -656,6 +656,7 @@ const WorkspaceMission = () => {
                   href={workspaceData?.schematic_url}
                   target="_blank"
                   style={{ marginTop: '1rem' }}
+                  data-testid="schematic-url"
                 >
                   {workspaceData?.schematic_url ? 'schematic' : 'No schematic url yet'}
                 </a>
