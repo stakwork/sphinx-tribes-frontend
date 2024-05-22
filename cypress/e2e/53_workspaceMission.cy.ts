@@ -50,35 +50,34 @@ describe('Create Workspace And Update Mission', () => {
     cy.contains(tacticsStatment).should('exist', { timeout: 1000 });
 
     cy.get('button').contains('Add Repository').click();
-    cy.get('.euiModal').within(() => {
-      cy.get('input[placeholder="Repository name"]').type('Test Repo');
-      cy.get('input[placeholder="Repository url"]').type('https://github.com/test/repo');
-      cy.get('button').contains('Save').click();
-    });
-    cy.get('.euiModal').should('not.exist');
+    cy.wait(500);
 
+    cy.get('[data-testid="repo-name-input"]').type('Test Repo');
+    cy.get('[data-testid="repo-url-input"]').type('https://github.com/test/repo');
+    cy.get('button').contains('Save').click();
+    cy.wait(500);
+
+    cy.contains('Add New Repository').should('not.exist');
     cy.get('h5').contains('Repositories').should('be.visible');
-
     cy.get('StyledListElement').should('be.visible');
 
     cy.get('img[alt="Three dots icon"]').first().click();
-    cy.get('.euiModal').should('be.visible');
+    cy.wait(500);
 
-    cy.get('img[alt="Three dots icon"]').first().click();
-    cy.get('.euiModal').within(() => {
-      cy.get('input[placeholder="Repository name"]').clear().type('Updated Repo');
-      cy.get('input[placeholder="Repository url"]').clear().type('https://github.com/updated/repo');
-      cy.get('button').contains('Save').click();
-    });
-    cy.get('.euiModal').should('not.exist');
+    cy.get('[data-testid="repo-name-input"]').clear().type('Updated Repo');
+    cy.get('[data-testid="repo-url-input"]').clear().type('https://github.com/updated/repo');
+    cy.get('button').contains('Save').click();
+    cy.wait(500);
+
+    cy.contains('Add New Repository').should('not.exist');
     cy.contains('Updated Repo').should('be.visible');
     cy.contains('https://github.com/updated/repo').should('be.visible');
 
     cy.get('img[alt="Three dots icon"]').first().click();
-    cy.get('.euiModal').within(() => {
-      cy.get('button').contains('Delete').click();
-    });
-    cy.get('.euiModal').should('not.exist');
+    cy.get('button').contains('Delete').click();
+    cy.wait(500);
+
+    cy.contains('Add New Repository').should('not.exist');
     cy.contains('Updated Repo').should('not.exist');
     cy.contains('https://github.com/updated/repo').should('not.exist');
 
