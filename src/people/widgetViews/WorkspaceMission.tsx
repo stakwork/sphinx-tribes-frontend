@@ -6,11 +6,19 @@ import {
   Header,
   HeaderWrap,
   DataWrap,
+  DataWrap2,
   FieldWrap,
   Label,
   Data,
   OptionsWrap,
-  TextArea
+  TextArea,
+  StyledListElement,
+  FeatureLink,
+  StyledList,
+  FlexDiv,
+  PaginationImg,
+  PageContainer,
+  PaginationButtons
 } from 'pages/tickets/style';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -18,7 +26,8 @@ import { useStores } from 'store';
 import { mainStore } from 'store/main';
 import { Feature, featureLimit, Workspace } from 'store/interface';
 import MaterialIcon from '@material/react-material-icon';
-import { Button, Modal } from 'components/common';
+import { Box } from '@mui/system';
+import { Button, Modal, useDeleteConfirmationModal } from 'components/common';
 import {
   ImageContainer,
   CompanyNameAndLink,
@@ -28,13 +37,16 @@ import {
 } from 'pages/tickets/workspace/workspaceHeader/WorkspaceHeaderStyles';
 import githubIcon from 'pages/tickets/workspace/workspaceHeader/Icons/githubIcon.svg';
 import websiteIcon from 'pages/tickets/workspace/workspaceHeader/Icons/websiteIcon.svg';
+import { EuiToolTip } from '@elastic/eui';
 import styled from 'styled-components';
 import { useIsMobile } from 'hooks';
+import threeDotsIcon from '../widgetViews/Icons/threeDotsIcon.svg';
 import { colors } from '../../config/colors';
 import paginationarrow1 from '../../pages/superadmin/header/icons/paginationarrow1.svg';
 import paginationarrow2 from '../../pages/superadmin/header/icons/paginationarrow2.svg';
 import AddFeature from './workspace/AddFeatureModal';
 import { ActionButton, RowFlex, ButtonWrap } from './workspace/style';
+import AddRepoModal from './workspace/AddRepoModal';
 
 const color = colors['light'];
 
@@ -107,54 +119,10 @@ const PaginatonSection = styled.div`
   padding: 1em;
 `;
 
-interface PaginationButtonsProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  active: boolean;
-}
-
-const PaginationButtons = styled.button<PaginationButtonsProps>`
-  border-radius: 3px;
-  width: 30px;
-  height: 30px;
-  flex-shrink: 0;
-  outline: none;
-  border: none;
-  text-align: center;
-  margin: 5px;
-  background: ${(props: any) => (props.active ? 'var(--Active-blue, #618AFF)' : 'white')};
-  color: ${(props: any) => (props.active ? 'white' : 'black')};
-`;
-
-const PageContainer = styled.div`
+const RepoContainer = styled.div`
   display: flex;
+  flex-direction: column;
   align-items: center;
-`;
-
-const PaginationImg = styled.img`
-  cursor: pointer;
-`;
-
-const FlexDiv = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 2px;
-
-  .euiPopover__anchor {
-    margin-top: 6px !important;
-  }
-`;
-
-const FeatureLink = styled.a`
-  text-decoration: none;
-  color: #000;
-`;
-
-const Container = styled.div`
-  font-family: 'Barlow', sans-serif;
-  color: #3f3f3f;
-  text-align: left;
-  margin: 0px;
-  padding: 0px;
 `;
 
 const WorkspaceMission = () => {
@@ -168,12 +136,12 @@ const WorkspaceMission = () => {
   const [displayTactics, setDidplayTactics] = useState(false);
   const [mission, setMission] = useState(workspaceData?.mission);
   const [tactics, setTactics] = useState(workspaceData?.tactics);
-  const [, setRepoName] = useState('');
-  const [, setRepoUrl] = useState('');
-  const [, setRepositories] = useState([]);
-  const [, setIsModalVisible] = useState(false);
-  const [, setCurrentuuid] = useState('');
-  const [, setModalType] = useState('add');
+  const [repoName, setRepoName] = useState('');
+  const [repoUrl, setRepoUrl] = useState('');
+  const [repositories, setRepositories] = useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [currentuuid, setCurrentuuid] = useState('');
+  const [modalType, setModalType] = useState('add');
   const [featureModal, setFeatureModal] = useState(false);
   const [features, setFeatures] = useState<Feature[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -208,6 +176,41 @@ const WorkspaceMission = () => {
       setIsModalVisible(true);
       setModalType(type);
     }
+  };
+
+  const closeRepoModal = () => {
+    setIsModalVisible(false);
+  };
+
+  const DeleteRepository = async (workspace_uuid: string, repository_uuid: string) => {
+    try {
+      await mainStore.deleteRepository(workspace_uuid, repository_uuid);
+      closeRepoModal();
+      fetchRepositories();
+    } catch (error) {
+      console.error('Error deleteRepository', error);
+    }
+  };
+
+  const handleDelete = () => {
+    closeRepoModal();
+    DeleteRepository(uuid, currentuuid);
+  };
+
+  const { openDeleteConfirmation } = useDeleteConfirmationModal();
+
+  const deleteHandler = () => {
+    openDeleteConfirmation({
+      onDelete: handleDelete,
+      children: (
+        <Box fontSize={20} textAlign="center">
+          Are you sure you want to <br />
+          <Box component="span" fontWeight="500">
+            Delete this Repo?
+          </Box>
+        </Box>
+      )
+    });
   };
 
   useEffect(() => {
@@ -415,9 +418,6 @@ const WorkspaceMission = () => {
                 </UrlButtonContainer>
               </CompanyNameAndLink>
             </Leftheader>
-            <Container>
-              <Button text={'Add Repository'} onClick={() => openModal('add')} />
-            </Container>
           </Header>
         </HeaderWrap>
         <DataWrap>
@@ -580,8 +580,91 @@ const WorkspaceMission = () => {
               </FlexDiv>
             </PaginatonSection>
           </FieldWrap>
+          <RepoContainer>
+            <DataWrap2>
+              <h5>Repositories</h5>
+              <StyledList>
+                {repositories.map((repository: any) => (
+                  <StyledListElement
+                    key={repository.id}
+                    style={{ display: 'flex', alignItems: 'center' }}
+                  >
+                    <img
+                      width={20}
+                      height={20}
+                      src={threeDotsIcon}
+                      alt="Three dots icon"
+                      onClick={() => openModal('edit', repository)}
+                    />
+                    <h6>{repository.name}</h6>:
+                    <EuiToolTip position="top" content={repository.url}>
+                      <a href={repository.url} target="_blank" rel="noreferrer">
+                        {repository.url}
+                      </a>
+                    </EuiToolTip>
+                  </StyledListElement>
+                ))}
+              </StyledList>
+            </DataWrap2>
+          </RepoContainer>
+          <FieldWrap>
+            <RowFlex>
+              <Label>Features</Label>
+              <Button
+                onClick={toggleFeatureModal}
+                style={{
+                  borderRadius: '5px',
+                  margin: 0,
+                  marginLeft: 'auto'
+                }}
+                dataTestId="new-feature-btn"
+                text="New Feature"
+              />
+            </RowFlex>
+            <FeaturesWrap>
+              {features &&
+                features.map((feat: Feature, i: number) => (
+                  <FeatureDataWrap key={i}>
+                    <FeatureCount>{i + 1}</FeatureCount>
+                    <FeatureData>
+                      <FeatureLink href={`/feature/${feat.uuid}`}>{feat.name}</FeatureLink>
+                      <FeatureDetails>
+                        <FeatureText>Filter Status</FeatureText>
+                      </FeatureDetails>
+                    </FeatureData>
+                  </FeatureDataWrap>
+                ))}
+            </FeaturesWrap>
+            <PaginatonSection>
+              <FlexDiv>
+                {featuresCount > featureLimit ? (
+                  <PageContainer role="pagination">
+                    <PaginationImg
+                      src={paginationarrow1}
+                      alt="pagination arrow 1"
+                      onClick={() => paginatePrev()}
+                    />
+                    {activeTabs.map((page: number) => (
+                      <PaginationButtons
+                        data-testid={'page'}
+                        key={page}
+                        onClick={() => paginate(page)}
+                        active={page === currentPage}
+                      >
+                        {page}
+                      </PaginationButtons>
+                    ))}
+                    <PaginationImg
+                      src={paginationarrow2}
+                      alt="pagination arrow 2"
+                      onClick={() => paginateNext()}
+                    />
+                  </PageContainer>
+                ) : null}
+              </FlexDiv>
+            </PaginatonSection>
+          </FieldWrap>
         </DataWrap>
-        {toastsEl}
         <Modal
           visible={featureModal}
           style={{
@@ -612,7 +695,43 @@ const WorkspaceMission = () => {
             workspace_uuid={uuid}
           />
         </Modal>
-      </WorkspaceBody >
+        <Modal
+          visible={isModalVisible}
+          style={{
+            height: '100%',
+            flexDirection: 'column'
+          }}
+          envStyle={{
+            marginTop: isMobile ? 64 : 0,
+            background: color.pureWhite,
+            zIndex: 20,
+            maxHeight: '100%',
+            borderRadius: '10px',
+            minWidth: isMobile ? '100%' : '25%',
+            minHeight: isMobile ? '100%' : '20%'
+          }}
+          overlayClick={closeRepoModal}
+          bigCloseImage={closeRepoModal}
+          bigCloseImageStyle={{
+            top: '-18px',
+            right: '-18px',
+            background: '#000',
+            borderRadius: '50%'
+          }}
+        >
+          <AddRepoModal
+            closeHandler={closeRepoModal}
+            getRepositories={fetchRepositories}
+            workspace_uuid={uuid}
+            currentUuid={currentuuid}
+            modalType={modalType}
+            handleDelete={deleteHandler}
+            name={repoName}
+            url={repoUrl}
+          />
+        </Modal>
+        {toastsEl}
+      </WorkspaceBody>
     )
   );
 };

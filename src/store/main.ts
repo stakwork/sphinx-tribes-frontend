@@ -2874,7 +2874,7 @@ export class MainStore {
       return [];
     }
   }
-  async createOrUpdateRepository(repo: Repository): Promise<any> {
+  async createOrUpdateRepository1(repo: Repository): Promise<any> {
     try {
       if (!uiStore.meInfo) return [];
       const info = uiStore.meInfo;
@@ -2887,6 +2887,37 @@ export class MainStore {
         },
         body: JSON.stringify(repo)
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (e) {
+      console.log('Error createOrUpdateRepository', e);
+      return null;
+    }
+  }
+
+  async createOrUpdateRepository(repo: Repository): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return [];
+      const info = uiStore.meInfo;
+
+      const url = `${TribesURL}/workspaces/repositories`;
+      const method = 'POST';
+      const mode = 'cors';
+      const headers = {
+        'x-jwt': info.tribe_jwt,
+        'Content-Type': 'application/json'
+      };
+      const body = JSON.stringify(repo);
+
+      // Log the request details
+      console.log('Request details:', { url, method, mode, headers, body });
+
+      const response = await fetch(url, { method, mode, headers, body });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
