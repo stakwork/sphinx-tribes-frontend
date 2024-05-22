@@ -203,6 +203,8 @@ export interface Workspace {
   img: string;
   mission?: string;
   tactics?: string;
+  schematic_url?: string;
+  schematic_img?: string;
   created: string;
   updated: string;
   show: boolean;

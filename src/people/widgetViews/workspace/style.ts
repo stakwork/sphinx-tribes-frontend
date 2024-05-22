@@ -494,6 +494,12 @@ export const UploadImageContainer = styled.div`
   cursor: pointer;
 `;
 
+export const WorkspaceImgOutterContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
 export const ImgContainer = styled.div`
   width: 7.875rem;
   height: 7.875rem;
@@ -751,6 +757,43 @@ export const SmallBtn = styled.button<SmallBtnProps>`
   line-height: 0rem; /* 0% */
   letter-spacing: 0.00813rem;
   border: none;
+`;
+
+export const AddWorkspaceWrapper = styled.div`
+  min-width: 100%;
+  padding: 3rem 2rem;
+  display: flex;
+  flex-direction: column;
+
+  @media only screen and (max-width: 500px) {
+    padding: 1rem;
+    width: 100%;
+  }
+`;
+
+export const AddWorkspaceHeader = styled.h2`
+  color: #3c3f41;
+  font-family: 'Barlow';
+  font-size: 1.875rem;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 1.875rem;
+  margin-bottom: 0;
+  min-width: 100%;
+
+  @media only screen and (max-width: 500px) {
+    text-align: center;
+    font-size: 1.4rem;
+  }
+`;
+export const WorkspaceDetailsContainer = styled.div`
+  margin-top: 3rem;
+  min-width: 100%;
+  gap: 3.56rem;
+  @media only screen and (max-width: 500px) {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
 `;
 
 export const FooterContainer = styled.div`
