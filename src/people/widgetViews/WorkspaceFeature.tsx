@@ -20,7 +20,8 @@ import {
   ButtonWrap,
   HeadNameWrap,
   FeatureHeadWrap,
-  WorkspaceName
+  WorkspaceName,
+  WorkspaceOption
 } from './workspace/style';
 
 type DispatchSetStateAction<T> = React.Dispatch<React.SetStateAction<T>>;
@@ -74,13 +75,15 @@ const WorkspaceEditableField = ({
             onClick={() => setDisplayOptions(!displayOptions)}
             data-testid={`${dataTestIdPrefix}-option-btn`}
           />
-          <button
-            style={{ display: displayOptions ? 'block' : 'none' }}
-            onClick={handleEditClick}
-            data-testid={`${dataTestIdPrefix}-edit-btn`}
-          >
-            Edit
-          </button>
+          {displayOptions && (
+            <WorkspaceOption>
+              <ul>
+                <li data-testid={`${dataTestIdPrefix}-edit-btn`} onClick={handleEditClick}>
+                  Edit
+                </li>
+              </ul>
+            </WorkspaceOption>
+          )}
         </OptionsWrap>
         {!isEditing ? (
           <div

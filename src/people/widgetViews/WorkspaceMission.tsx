@@ -33,7 +33,9 @@ import {
   CompanyNameAndLink,
   CompanyLabel,
   UrlButtonContainer,
-  UrlButton
+  UrlButton,
+  RightHeader,
+  CompanyDescription
 } from 'pages/tickets/workspace/workspaceHeader/WorkspaceHeaderStyles';
 import githubIcon from 'pages/tickets/workspace/workspaceHeader/Icons/githubIcon.svg';
 import websiteIcon from 'pages/tickets/workspace/workspaceHeader/Icons/websiteIcon.svg';
@@ -46,7 +48,15 @@ import { colors } from '../../config/colors';
 import paginationarrow1 from '../../pages/superadmin/header/icons/paginationarrow1.svg';
 import paginationarrow2 from '../../pages/superadmin/header/icons/paginationarrow2.svg';
 import AddFeature from './workspace/AddFeatureModal';
-import { ActionButton, RowFlex, ButtonWrap, RepoName, RepoEliipsis } from './workspace/style';
+import {
+  ActionButton,
+  RowFlex,
+  ButtonWrap,
+  RepoName,
+  RepoEliipsis,
+  RepoWrap,
+  WorkspaceOption
+} from './workspace/style';
 import AddRepoModal from './workspace/AddRepoModal';
 
 const color = colors['light'];
@@ -399,6 +409,9 @@ const WorkspaceMission = () => {
                 </UrlButtonContainer>
               </CompanyNameAndLink>
             </Leftheader>
+            <RightHeader>
+              <CompanyDescription>{workspaceData?.description}</CompanyDescription>
+            </RightHeader>
           </Header>
         </HeaderWrap>
         <DataWrap>
@@ -412,13 +425,15 @@ const WorkspaceMission = () => {
                   onClick={() => setDidplayMission(!displayMission)}
                   data-testid="mission-option-btn"
                 />
-                <button
-                  style={{ display: displayMission ? 'block' : 'none' }}
-                  onClick={editMissionActions}
-                  data-testid="mission-edit-btn"
-                >
-                  Edit
-                </button>
+                {displayMission && (
+                  <WorkspaceOption>
+                    <ul>
+                      <li data-testid="mission-edit-btn" onClick={editMissionActions}>
+                        Edit
+                      </li>
+                    </ul>
+                  </WorkspaceOption>
+                )}
               </OptionsWrap>
               {!editMission && (
                 <>{workspaceData?.mission ? workspaceData.mission : 'No mission yet'}</>
@@ -462,13 +477,15 @@ const WorkspaceMission = () => {
                   className="MaterialIcon"
                   data-testid="tactics-option-btn"
                 />
-                <button
-                  style={{ display: displayTactics ? 'block' : 'none' }}
-                  onClick={editTacticsActions}
-                  data-testid="tactics-edit-btn"
-                >
-                  Edit
-                </button>
+                {displayTactics && (
+                  <WorkspaceOption>
+                    <ul>
+                      <li data-testid="tactics-edit-btn" onClick={editTacticsActions}>
+                        Edit
+                      </li>
+                    </ul>
+                  </WorkspaceOption>
+                )}
               </OptionsWrap>
               {!editTactics && (
                 <>{workspaceData?.tactics ? workspaceData.tactics : 'No tactics yet'}</>
@@ -502,7 +519,7 @@ const WorkspaceMission = () => {
               )}
             </Data>
           </FieldWrap>
-          <div>
+          <RepoWrap>
             <DataWrap2>
               <RowFlex>
                 <Label>Repositories</Label>
@@ -533,9 +550,9 @@ const WorkspaceMission = () => {
                     </EuiToolTip>
                   </StyledListElement >
                 ))}
-              </StyledList >
-            </DataWrap2 >
-          </div>
+              </StyledList>
+            </DataWrap2>
+          </RepoWrap>
           <FieldWrap>
             <RowFlex>
               <Label>Features</Label>

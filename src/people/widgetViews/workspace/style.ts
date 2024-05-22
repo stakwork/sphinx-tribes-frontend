@@ -1003,7 +1003,59 @@ export const RepoName = styled.h6`
 
 export const RepoEliipsis = styled.img`
   cursor: pointer;
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 15px;
   font-weight: 900;
+  color: #36454f;
+  padding: 0px;
+  margin-left: -5px;
+`;
+
+export const RepoWrap = styled.div`
+  margin-bottom: 10px;
+`;
+
+export const WorkspaceOption = styled.div`
+  position: absolute;
+  z-index: 1;
+  top: 20px;
+  right: -40px;
+  width: 110px;
+  height: 55px;
+  display: inline-flex;
+  padding: 15px 10px;
+  flex-direction: column;
+  align-items: center;
+  gap: 25px;
+  border-radius: 6px;
+  background: #fff;
+  overflow-y: scroll;
+  box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.25);
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    color: grey;
+    width: 100%;
+  }
+
+  li {
+    padding: 0px;
+    width: 100%;
+    text-align: center;
+    padding-bottom: 5px;
+    cursor: pointer;
+    color: grey;
+    font-family: 'Barlow', sans-serif;
+    font-size: 0.8rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 18px;
+    border-bottom: 0.5px solid #ccc;
+
+    &:hover {
+      color: #3c3f41;
+    }
+  }
 `;
