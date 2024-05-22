@@ -125,6 +125,7 @@ const RepoContainer = styled.div`
   align-items: center;
 `;
 
+
 const WorkspaceMission = () => {
   const { main, ui } = useStores();
   const { uuid } = useParams<{ uuid: string }>();
@@ -418,8 +419,8 @@ const WorkspaceMission = () => {
                 </UrlButtonContainer>
               </CompanyNameAndLink>
             </Leftheader>
-          </Header>
-        </HeaderWrap>
+          </Header >
+        </HeaderWrap >
         <DataWrap>
           <FieldWrap>
             <Label>Mission</Label>
@@ -731,7 +732,7 @@ const WorkspaceMission = () => {
           />
         </Modal>
         {toastsEl}
-      </WorkspaceBody>
+      </WorkspaceBody >
     )
   );
 };
