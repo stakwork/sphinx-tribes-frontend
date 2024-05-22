@@ -171,10 +171,6 @@ export const TextArea = styled.textarea`
   }
 `;
 
-interface ButtonProps {
-  color?: string;
-}
-
 export const FeatureLabel = styled.p`
   color: var(--Text-2, #3c3f41);
   font-family: Barlow;

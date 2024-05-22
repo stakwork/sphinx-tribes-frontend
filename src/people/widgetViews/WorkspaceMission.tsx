@@ -23,7 +23,6 @@ import {
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useStores } from 'store';
-import { mainStore } from 'store/main';
 import { Feature, featureLimit, Workspace } from 'store/interface';
 import MaterialIcon from '@material/react-material-icon';
 import { Box } from '@mui/system';
@@ -153,15 +152,14 @@ const WorkspaceMission = () => {
   const visibleTabs = 3;
   const isMobile = useIsMobile();
 
-  const fetchRepositories = async () => {
+  const fetchRepositories = useCallback(async () => {
     try {
-      const data = await mainStore.getRepositories(uuid);
+      const data = await main.getRepositories(uuid);
       setRepositories(data);
-      console.log(data);
     } catch (error) {
       console.error(error);
     }
-  };
+  }, [main, uuid]);
 
   const openModal = (type: string, repository?: any) => {
     if (type === 'add') {
@@ -185,7 +183,7 @@ const WorkspaceMission = () => {
 
   const DeleteRepository = async (workspace_uuid: string, repository_uuid: string) => {
     try {
-      await mainStore.deleteRepository(workspace_uuid, repository_uuid);
+      await main.deleteRepository(workspace_uuid, repository_uuid);
       closeRepoModal();
       fetchRepositories();
     } catch (error) {
@@ -216,7 +214,7 @@ const WorkspaceMission = () => {
 
   useEffect(() => {
     fetchRepositories();
-  }, []);
+  }, [fetchRepositories]);
 
   const getWorkspaceData = useCallback(async () => {
     if (!uuid) return;
