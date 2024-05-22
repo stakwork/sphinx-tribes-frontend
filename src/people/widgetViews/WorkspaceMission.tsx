@@ -307,10 +307,6 @@ const WorkspaceMission = () => {
     setFeatureModal(!featureModal);
   };
 
-  const toggleRepoModal = () => {
-    setFeatureModal(!featureModal);
-  };
-
   const paginateNext = () => {
     const activeTab = paginationLimit > visibleTabs;
     const activePage = currentPage < featuresCount / featureLimit;
