@@ -76,3 +76,9 @@ export interface AssignUserModalProps extends ModalProps {
   setLoading: (value: boolean) => void;
   addToast: (title: string, color: 'danger' | 'success') => void;
 }
+
+export interface Repository {
+  workspace_uuid: string;
+  name: string;
+  url: string;
+}

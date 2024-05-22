@@ -8,7 +8,6 @@ import WorkspaceMission from 'people/widgetViews/WorkspaceMission';
 import WorkspaceFeature from 'people/widgetViews/WorkspaceFeature';
 import PeopleHeader from '../people/main/Header';
 import TokenRefresh from '../people/utils/TokenRefresh';
-import AddRepos from '../../src/people/widgetViews/workspace/AddRepositories';
 import BotsBody from './bots/Body';
 import Body from './tribes/Body';
 import Header from './tribes/Header';
@@ -50,10 +49,6 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
           <Route path="/workspace/:uuid">
             <WorkspaceMission />
           </Route>
-          <Route path="/workspaces/:uuid">
-            <AddRepos />
-          </Route>
-
           <Route path="/leaderboard">
             <LeaderboardPage />
           </Route>

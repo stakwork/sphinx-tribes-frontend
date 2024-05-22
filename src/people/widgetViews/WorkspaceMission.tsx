@@ -148,9 +148,18 @@ const FeatureLink = styled.a`
   color: #000;
 `;
 
+const Container = styled.div`
+  font-family: 'Barlow', sans-serif;
+  color: #3f3f3f;
+  text-align: left;
+  margin: 0px;
+  padding: 0px;
+`;
+
 const WorkspaceMission = () => {
   const { main, ui } = useStores();
   const { uuid } = useParams<{ uuid: string }>();
+  console.log(uuid);
   const [workspaceData, setWorkspaceData] = useState<Workspace>();
   const [loading, setLoading] = useState(true);
   const [displayMission, setDidplayMission] = useState(false);
@@ -169,6 +178,14 @@ const WorkspaceMission = () => {
   const visibleTabs = 3;
 
   const isMobile = useIsMobile();
+
+  const openModal = (type: string, repository?: any) => {
+    if (type === 'add') {
+      console.log(repository)
+    } else if (type === 'edit') {
+      console.log(repository)
+    }
+  };
 
   const getWorkspaceData = useCallback(async () => {
     if (!uuid) return;
@@ -371,6 +388,9 @@ const WorkspaceMission = () => {
                 </UrlButtonContainer>
               </CompanyNameAndLink>
             </Leftheader>
+            <Container>
+              <Button text={'Add Repository'} onClick={() => openModal('add')} />
+            </Container>
           </Header>
         </HeaderWrap>
         <DataWrap>
@@ -565,7 +585,7 @@ const WorkspaceMission = () => {
             workspace_uuid={uuid}
           />
         </Modal>
-      </WorkspaceBody>
+      </WorkspaceBody >
     )
   );
 };

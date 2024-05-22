@@ -2,6 +2,7 @@ import { uniqBy } from 'lodash';
 import memo from 'memo-decorator';
 import { action, makeAutoObservable, observable } from 'mobx';
 import { persist } from 'mobx-persist';
+import { Repository } from 'people/widgetViews/workspace/interface';
 import api from '../api';
 import { getHostIncludingDockerHosts } from '../config/host';
 import { TribesURL } from '../config/host';
@@ -2862,6 +2863,7 @@ export class MainStore {
           'Content-Type': 'application/json'
         }
       });
+      console.log('response', response);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
