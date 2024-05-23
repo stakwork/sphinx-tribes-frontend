@@ -40,6 +40,7 @@ export const DeleteConfirmationModal = ({
             hovercolor={'#E96464'}
             activecolor={'#E15A5A'}
             shadowcolor={'#ED747480'}
+            data-testid="delete-confirmation"
             text="Delete"
             onClick={deleteHandler}
           />
