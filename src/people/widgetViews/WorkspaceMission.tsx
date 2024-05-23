@@ -57,7 +57,10 @@ import {
   RepoName,
   RepoEliipsis,
   RepoWrap,
-  WorkspaceOption
+  WorkspaceOption,
+  SelectedImg,
+  ImgContainer,
+  ImgText
 } from './workspace/style';
 import AddRepoModal from './workspace/AddRepoModal';
 import EditSchematic from './workspace/EditSchematicModal';
@@ -642,7 +645,18 @@ const WorkspaceMission = () => {
                     Edit
                   </button>
                 </OptionsWrap>
-                <a href={workspaceData?.schematic_url} target="_blank">
+                <ImgContainer>
+                  {workspaceData?.schematic_img ? (
+                    <SelectedImg src={workspaceData?.schematic_img} alt="schematic image" />
+                  ) : (
+                    <ImgText>Image</ImgText>
+                  )}
+                </ImgContainer>
+                <a
+                  href={workspaceData?.schematic_url}
+                  target="_blank"
+                  style={{ marginTop: '1rem' }}
+                >
                   {workspaceData?.schematic_url ? 'schematic' : 'No schematic url yet'}
                 </a>
               </Data>
