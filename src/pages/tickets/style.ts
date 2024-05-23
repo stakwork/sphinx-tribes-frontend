@@ -187,3 +187,37 @@ export const Spacer = styled.div`
   height: 10px;
   width: 100%;
 `;
+
+export const InputField = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+export const Input = styled.input`
+  border: 1px solid #ccc;
+  max-height: 30px;
+  border-radius: 5px;
+  padding: 10px 20px;
+  position: relative;
+  caret-color: #618aff;
+  color: #3c3f41;
+  font-family: 'Barlow';
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  width: 80%;
+
+  ::placeholder {
+    color: #b0b7bc;
+    font-family: 'Barlow';
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+  }
+  :focus {
+    border: 2px solid #82b4ff;
+  }
+`;

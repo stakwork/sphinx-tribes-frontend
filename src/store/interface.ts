@@ -1,4 +1,5 @@
 import { Extras } from '../components/form/inputs/widgets/interfaces';
+import history from '../config/history.ts';
 
 export interface Tribe {
   uuid: string;
@@ -300,6 +301,23 @@ export interface Feature {
   updated: string;
   created_by: string;
   updated_by: string;
+}
+
+export interface FeatureStory {
+  id?: number;
+  uuid: string;
+  feature_uuid: string;
+  description: string;
+  priority: number;
+  created: string;
+  updated: string;
+  created_by: string;
+  updated_by: string;
+}
+export interface CreateFeatureStoryInput {
+  feature_uuid: string;
+  description: string;
+  priority?: number;
 }
 
 export interface CreateFeatureInput {
