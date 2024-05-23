@@ -57,7 +57,28 @@ export const HeaderWrap = styled.div`
 export const DataWrap = styled.div`
   padding: 40px 50px;
   display: flex;
-  width: 50%;
+  width: 58%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  justify-content: center;
+
+  @media only screen and (max-width: 900px) {
+    width: 90%;
+    padding: 30px 40px;
+  }
+
+  @media only screen and (max-width: 500px) {
+    width: 90%;
+    padding: 20px 10px;
+  }
+`;
+
+export const DataWrap2 = styled.div`
+  padding: 0px;
+  display: flex;
+  width: 100%;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -80,12 +101,13 @@ export const FieldWrap = styled.div`
 `;
 
 export const Label = styled.h5`
-  font-size: 1.12rem;
+  font-size: 1.1rem;
   font-weight: bolder;
 `;
 
 export const Data = styled.div`
-  border: 1px solid #ccc;
+  border: 2px solid #dde1e5;
+  caret-color: #618aff;
   min-height: 50px;
   border-radius: 5px;
   padding: 20px 30px;
@@ -97,8 +119,8 @@ export const Data = styled.div`
   .MaterialIcon {
     font-style: normal;
     font-weight: 900;
-    font-size: 1.4rem;
-    color: #000000;
+    font-size: 1.3rem;
+    color: #36454f;
   }
 `;
 
@@ -149,10 +171,6 @@ export const TextArea = styled.textarea`
   }
 `;
 
-interface ButtonProps {
-  color?: string;
-}
-
 export const FeatureLabel = styled.p`
   color: var(--Text-2, #3c3f41);
   font-family: Barlow;
@@ -186,4 +204,70 @@ export const Spacer = styled.div`
   min-width: 100%;
   height: 10px;
   width: 100%;
+`;
+
+export const PageContainer = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+export const PaginationImg = styled.img`
+  cursor: pointer;
+`;
+
+export const FlexDiv = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+
+  .euiPopover__anchor {
+    margin-top: 6px !important;
+  }
+`;
+
+export const FeatureLink = styled.a`
+  text-decoration: none;
+  color: #000;
+`;
+
+export const StyledList = styled.ul`
+  padding: 0;
+  margin-top: 10px;
+`;
+
+export const StyledListElement = styled.li`
+  display: flex;
+  align-items: center;
+`;
+
+interface PaginationButtonsProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  active: boolean;
+}
+
+export const PaginationButtons = styled.button<PaginationButtonsProps>`
+  border-radius: 3px;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  outline: none;
+  border: none;
+  text-align: center;
+  margin: 5px;
+  background: ${(props: any) => (props.active ? 'var(--Active-blue, #618AFF)' : 'white')};
+  color: ${(props: any) => (props.active ? 'white' : 'black')};
+`;
+
+export const ImgText = styled.h3`
+  color: #b0b7bc;
+  text-align: center;
+  font-family: 'Barlow';
+  font-size: 1.875rem;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 1.0625rem;
+  letter-spacing: 0.01875rem;
+  text-transform: uppercase;
+  opacity: 0.5;
+  margin-bottom: 0;
 `;

@@ -56,18 +56,18 @@ const FooterContainer = styled.div`
   gap: 3.56rem;
   align-items: end;
   justify-content: space-between;
-  margin-top: 35px;
+  margin-top: 15px;
 
   @media only screen and (max-width: 500px) {
     flex-direction: column;
     gap: 0.5rem;
-    margin-top: 20px;
+    margin-top: 10px;
   }
 `;
 
 const errcolor = '#FF8F80';
 
-const MAX_ORG_NAME_LENGTH = 20;
+const MAX_NAME_LENGTH = 50;
 
 const AddFeature = (props: {
   closeHandler: () => void;
@@ -82,7 +82,7 @@ const AddFeature = (props: {
 
   const handleWorkspaceNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
-    if (newValue.length <= MAX_ORG_NAME_LENGTH) {
+    if (newValue.length <= MAX_NAME_LENGTH) {
       setFeatureName(newValue);
       setFeatureNameError(false);
     } else {

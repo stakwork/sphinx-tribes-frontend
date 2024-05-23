@@ -6,15 +6,25 @@ import {
   Header,
   HeaderWrap,
   DataWrap,
+  DataWrap2,
   FieldWrap,
   Label,
   Data,
   OptionsWrap,
-  TextArea
+  TextArea,
+  StyledListElement,
+  FeatureLink,
+  StyledList,
+  FlexDiv,
+  PaginationImg,
+  PageContainer,
+  PaginationButtons
 } from 'pages/tickets/style';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useStores } from 'store';
+import { useDeleteConfirmationModal } from 'components/common';
+import { Box } from '@mui/system';
 import { Feature, featureLimit, Workspace } from 'store/interface';
 import MaterialIcon from '@material/react-material-icon';
 import { Button, Modal } from 'components/common';
@@ -23,33 +33,33 @@ import {
   CompanyNameAndLink,
   CompanyLabel,
   UrlButtonContainer,
-  UrlButton
+  UrlButton,
+  RightHeader,
+  CompanyDescription
 } from 'pages/tickets/workspace/workspaceHeader/WorkspaceHeaderStyles';
 import githubIcon from 'pages/tickets/workspace/workspaceHeader/Icons/githubIcon.svg';
 import websiteIcon from 'pages/tickets/workspace/workspaceHeader/Icons/websiteIcon.svg';
-import styled from 'styled-components';
+import { EuiToolTip } from '@elastic/eui';
 import { useIsMobile } from 'hooks';
+import styled from 'styled-components';
+import avatarIcon from '../../public/static/profile_avatar.svg';
+import threeDotsIcon from '../widgetViews/Icons/threeDotsIcon.svg';
 import { colors } from '../../config/colors';
 import paginationarrow1 from '../../pages/superadmin/header/icons/paginationarrow1.svg';
 import paginationarrow2 from '../../pages/superadmin/header/icons/paginationarrow2.svg';
 import AddFeature from './workspace/AddFeatureModal';
-import { ActionButton, RowFlex, ButtonWrap } from './workspace/style';
+import {
+  ActionButton,
+  RowFlex,
+  ButtonWrap,
+  RepoName,
+  RepoEliipsis,
+  RepoWrap,
+  WorkspaceOption
+} from './workspace/style';
+import AddRepoModal from './workspace/AddRepoModal';
 
 const color = colors['light'];
-
-export const ImgText = styled.h3`
-  color: #b0b7bc;
-  text-align: center;
-  font-family: 'Barlow';
-  font-size: 1.875rem;
-  font-style: normal;
-  font-weight: 800;
-  line-height: 1.0625rem;
-  letter-spacing: 0.01875rem;
-  text-transform: uppercase;
-  opacity: 0.5;
-  margin-bottom: 0;
-`;
 
 const FeaturesWrap = styled.div`
   margin-top: 25px;
@@ -106,48 +116,6 @@ const PaginatonSection = styled.div`
   padding: 1em;
 `;
 
-interface PaginationButtonsProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  active: boolean;
-}
-
-const PaginationButtons = styled.button<PaginationButtonsProps>`
-  border-radius: 3px;
-  width: 30px;
-  height: 30px;
-  flex-shrink: 0;
-  outline: none;
-  border: none;
-  text-align: center;
-  margin: 5px;
-  background: ${(props: any) => (props.active ? 'var(--Active-blue, #618AFF)' : 'white')};
-  color: ${(props: any) => (props.active ? 'white' : 'black')};
-`;
-
-const PageContainer = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const PaginationImg = styled.img`
-  cursor: pointer;
-`;
-
-const FlexDiv = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 2px;
-
-  .euiPopover__anchor {
-    margin-top: 6px !important;
-  }
-`;
-
-const FeatureLink = styled.a`
-  text-decoration: none;
-  color: #000;
-`;
-
 const WorkspaceMission = () => {
   const { main, ui } = useStores();
   const { uuid } = useParams<{ uuid: string }>();
@@ -159,6 +127,12 @@ const WorkspaceMission = () => {
   const [displayTactics, setDidplayTactics] = useState(false);
   const [mission, setMission] = useState(workspaceData?.mission);
   const [tactics, setTactics] = useState(workspaceData?.tactics);
+  const [repoName, setRepoName] = useState('');
+  const [repoUrl, setRepoUrl] = useState('');
+  const [repositories, setRepositories] = useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [currentuuid, setCurrentuuid] = useState('');
+  const [modalType, setModalType] = useState('add');
   const [featureModal, setFeatureModal] = useState(false);
   const [features, setFeatures] = useState<Feature[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -167,8 +141,71 @@ const WorkspaceMission = () => {
 
   const paginationLimit = Math.floor(featuresCount / featureLimit) + 1;
   const visibleTabs = 3;
-
   const isMobile = useIsMobile();
+
+  const fetchRepositories = useCallback(async () => {
+    try {
+      const data = await main.getRepositories(uuid);
+      setRepositories(data);
+    } catch (error) {
+      console.error(error);
+    }
+  }, [main, uuid]);
+
+  const openModal = (type: string, repository?: any) => {
+    if (type === 'add') {
+      setRepoName('');
+      setCurrentuuid('');
+      setRepoUrl('');
+      setIsModalVisible(true);
+      setModalType(type);
+    } else if (type === 'edit') {
+      setRepoName(repository.name);
+      setCurrentuuid(repository.uuid);
+      setRepoUrl(repository.url);
+      setIsModalVisible(true);
+      setModalType(type);
+    }
+  };
+
+  const closeRepoModal = () => {
+    setIsModalVisible(false);
+  };
+
+  const DeleteRepository = async (workspace_uuid: string, repository_uuid: string) => {
+    try {
+      await main.deleteRepository(workspace_uuid, repository_uuid);
+      closeRepoModal();
+      fetchRepositories();
+    } catch (error) {
+      console.error('Error deleteRepository', error);
+    }
+  };
+
+  const handleDelete = () => {
+    closeRepoModal();
+    DeleteRepository(uuid, currentuuid);
+  };
+
+  const { openDeleteConfirmation } = useDeleteConfirmationModal();
+
+  const deleteHandler = () => {
+    openDeleteConfirmation({
+      onDelete: handleDelete,
+      children: (
+        <Box fontSize={20} textAlign="center">
+          Are you sure you want to <br />
+          <Box component="span" fontWeight="500">
+            Delete this Repo?
+          </Box>
+        </Box>
+      )
+    });
+  };
+
+  useEffect(() => {
+    fetchRepositories();
+  }, [fetchRepositories]);
 
   const getWorkspaceData = useCallback(async () => {
     if (!uuid) return;
@@ -344,7 +381,7 @@ const WorkspaceMission = () => {
           <Header>
             <Leftheader>
               <ImageContainer
-                src={workspaceData?.img}
+                src={workspaceData?.img || avatarIcon}
                 width="72px"
                 height="72px"
                 alt="workspace icon"
@@ -371,6 +408,9 @@ const WorkspaceMission = () => {
                 </UrlButtonContainer>
               </CompanyNameAndLink>
             </Leftheader>
+            <RightHeader>
+              <CompanyDescription>{workspaceData?.description}</CompanyDescription>
+            </RightHeader>
           </Header>
         </HeaderWrap>
         <DataWrap>
@@ -384,13 +424,15 @@ const WorkspaceMission = () => {
                   onClick={() => setDidplayMission(!displayMission)}
                   data-testid="mission-option-btn"
                 />
-                <button
-                  style={{ display: displayMission ? 'block' : 'none' }}
-                  onClick={editMissionActions}
-                  data-testid="mission-edit-btn"
-                >
-                  Edit
-                </button>
+                {displayMission && (
+                  <WorkspaceOption>
+                    <ul>
+                      <li data-testid="mission-edit-btn" onClick={editMissionActions}>
+                        Edit
+                      </li>
+                    </ul>
+                  </WorkspaceOption>
+                )}
               </OptionsWrap>
               {!editMission && (
                 <>{workspaceData?.mission ? workspaceData.mission : 'No mission yet'}</>
@@ -434,13 +476,15 @@ const WorkspaceMission = () => {
                   className="MaterialIcon"
                   data-testid="tactics-option-btn"
                 />
-                <button
-                  style={{ display: displayTactics ? 'block' : 'none' }}
-                  onClick={editTacticsActions}
-                  data-testid="tactics-edit-btn"
-                >
-                  Edit
-                </button>
+                {displayTactics && (
+                  <WorkspaceOption>
+                    <ul>
+                      <li data-testid="tactics-edit-btn" onClick={editTacticsActions}>
+                        Edit
+                      </li>
+                    </ul>
+                  </WorkspaceOption>
+                )}
               </OptionsWrap>
               {!editTactics && (
                 <>{workspaceData?.tactics ? workspaceData.tactics : 'No tactics yet'}</>
@@ -474,6 +518,40 @@ const WorkspaceMission = () => {
               )}
             </Data>
           </FieldWrap>
+          <RepoWrap>
+            <DataWrap2>
+              <RowFlex>
+                <Label>Repositories</Label>
+                <Button
+                  onClick={() => openModal('add')}
+                  style={{
+                    borderRadius: '5px',
+                    margin: 0,
+                    marginLeft: 'auto'
+                  }}
+                  dataTestId="new-repository-btn"
+                  text="Add Repository"
+                />
+              </RowFlex>
+              <StyledList>
+                {repositories.map((repository: any) => (
+                  <StyledListElement key={repository.id}>
+                    <RepoEliipsis
+                      src={threeDotsIcon}
+                      alt="Three dots icon"
+                      onClick={() => openModal('edit', repository)}
+                    />
+                    <RepoName>{repository.name} : </RepoName>
+                    <EuiToolTip position="top" content={repository.url}>
+                      <a href={repository.url} target="_blank" rel="noreferrer">
+                        {repository.url}
+                      </a>
+                    </EuiToolTip>
+                  </StyledListElement>
+                ))}
+              </StyledList>
+            </DataWrap2>
+          </RepoWrap>
           <FieldWrap>
             <RowFlex>
               <Label>Features</Label>
@@ -494,9 +572,7 @@ const WorkspaceMission = () => {
                   <FeatureDataWrap key={i}>
                     <FeatureCount>{i + 1}</FeatureCount>
                     <FeatureData>
-                      <FeatureLink href={`/feature/${feat.uuid}`} target="_blank">
-                        {feat.name}
-                      </FeatureLink>
+                      <FeatureLink href={`/feature/${feat.uuid}`}>{feat.name}</FeatureLink>
                       <FeatureDetails>
                         <FeatureText>Filter Status</FeatureText>
                       </FeatureDetails>
@@ -534,7 +610,6 @@ const WorkspaceMission = () => {
             </PaginatonSection>
           </FieldWrap>
         </DataWrap>
-        {toastsEl}
         <Modal
           visible={featureModal}
           style={{
@@ -565,6 +640,42 @@ const WorkspaceMission = () => {
             workspace_uuid={uuid}
           />
         </Modal>
+        <Modal
+          visible={isModalVisible}
+          style={{
+            height: '100%',
+            flexDirection: 'column'
+          }}
+          envStyle={{
+            marginTop: isMobile ? 64 : 0,
+            background: color.pureWhite,
+            zIndex: 20,
+            maxHeight: '100%',
+            borderRadius: '10px',
+            minWidth: isMobile ? '100%' : '25%',
+            minHeight: isMobile ? '100%' : '20%'
+          }}
+          overlayClick={closeRepoModal}
+          bigCloseImage={closeRepoModal}
+          bigCloseImageStyle={{
+            top: '-18px',
+            right: '-18px',
+            background: '#000',
+            borderRadius: '50%'
+          }}
+        >
+          <AddRepoModal
+            closeHandler={closeRepoModal}
+            getRepositories={fetchRepositories}
+            workspace_uuid={uuid}
+            currentUuid={currentuuid}
+            modalType={modalType}
+            handleDelete={deleteHandler}
+            name={repoName}
+            url={repoUrl}
+          />
+        </Modal>
+        {toastsEl}
       </WorkspaceBody>
     )
   );

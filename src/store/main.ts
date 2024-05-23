@@ -2,6 +2,7 @@ import { uniqBy } from 'lodash';
 import memo from 'memo-decorator';
 import { action, makeAutoObservable, observable } from 'mobx';
 import { persist } from 'mobx-persist';
+import { Repository } from 'people/widgetViews/workspace/interface';
 import api from '../api';
 import { getHostIncludingDockerHosts } from '../config/host';
 import { TribesURL } from '../config/host';
@@ -2849,6 +2850,114 @@ export class MainStore {
       console.error('Error pollInvoice', e);
     }
   }
-}
 
+  async getRepositories(workspace_uuid: string): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return [];
+      const info = uiStore.meInfo;
+      const response = await fetch(`${TribesURL}/workspaces/repositories/${workspace_uuid}`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (e) {
+      console.log('Error getRepositories', e);
+      return [];
+    }
+  }
+  async createOrUpdateRepository1(repo: Repository): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return [];
+      const info = uiStore.meInfo;
+      const response = await fetch(`${TribesURL}/workspaces/repositories`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(repo)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (e) {
+      console.log('Error createOrUpdateRepository', e);
+      return null;
+    }
+  }
+
+  async createOrUpdateRepository(repo: Repository): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return [];
+      const info = uiStore.meInfo;
+
+      const url = `${TribesURL}/workspaces/repositories`;
+      const method = 'POST';
+      const mode = 'cors';
+      const headers = {
+        'x-jwt': info.tribe_jwt,
+        'Content-Type': 'application/json'
+      };
+      const body = JSON.stringify(repo);
+
+      // Log the request details
+      console.log('Request details:', { url, method, mode, headers, body });
+
+      const response = await fetch(url, { method, mode, headers, body });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (e) {
+      console.log('Error createOrUpdateRepository', e);
+      return null;
+    }
+  }
+
+  async deleteRepository(workspace_uuid: string, repository_uuid: string): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return [];
+      const info = uiStore.meInfo;
+      const response = await fetch(
+        `${TribesURL}/workspaces/${workspace_uuid}/repository/${repository_uuid}`,
+        {
+          method: 'DELETE',
+          mode: 'cors',
+          headers: {
+            'x-jwt': info.tribe_jwt,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      console.log('response', response);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (e) {
+      console.log('Error deleteRepository', e);
+      return null;
+    }
+  }
+}
 export const mainStore = new MainStore();
