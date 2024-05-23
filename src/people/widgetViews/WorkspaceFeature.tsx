@@ -13,6 +13,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import history from 'config/history';
 import { useParams } from 'react-router-dom';
 import { useStores } from 'store';
+import { mainStore } from 'store/main';
 import { Feature } from 'store/interface';
 import MaterialIcon from '@material/react-material-icon';
 import {
@@ -37,6 +38,7 @@ interface WSEditableFieldProps {
   placeholder: string;
   dataTestIdPrefix: string;
   onSubmit: () => Promise<void>;
+  main: typeof mainStore;
 }
 
 const WorkspaceEditableField = ({
@@ -49,7 +51,8 @@ const WorkspaceEditableField = ({
   setDisplayOptions,
   placeholder,
   dataTestIdPrefix,
-  onSubmit
+  onSubmit,
+  main
 }: WSEditableFieldProps) => {
   const handleEditClick = () => {
     setIsEditing(!isEditing);
@@ -62,6 +65,29 @@ const WorkspaceEditableField = ({
 
   const handleCancelClick = () => {
     setIsEditing(false);
+  };
+
+  const handlePaste = async (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    e.persist();
+
+    const clipboardItems: DataTransferItemList = e.clipboardData?.items as DataTransferItemList;
+    const itemsArray: DataTransferItem[] = Array.from(clipboardItems);
+    for (const item of itemsArray) {
+      if (item.type.startsWith('image/')) {
+        const imageFile = item.getAsFile();
+        if (imageFile) {
+          const formData = new FormData();
+          formData.append('file', imageFile);
+          const file = await main.uploadFile(formData);
+          let img_url = '';
+          if (file && file.ok) {
+            img_url = await file.json();
+          }
+          setValue((prevValue: string) => `${prevValue}\n![Uploaded Image](${img_url})`);
+        }
+        e.preventDefault();
+      }
+    }
   };
 
   return (
@@ -87,6 +113,9 @@ const WorkspaceEditableField = ({
         </OptionsWrap>
         {!isEditing ? (
           <div
+            style={{
+              overflowY: 'auto'
+            }}
             dangerouslySetInnerHTML={{
               __html: value ? value.replace(/\n/g, '<br/>') : `No ${label.toLowerCase()} yet`
             }}
@@ -96,6 +125,7 @@ const WorkspaceEditableField = ({
             <TextArea
               placeholder={`Enter ${placeholder}`}
               onChange={handleChange}
+              onPaste={handlePaste}
               value={value}
               data-testid={`${dataTestIdPrefix}-textarea`}
               rows={10}
@@ -214,6 +244,7 @@ const WorkspaceFeature: React.FC = () => {
           placeholder="Brief"
           dataTestIdPrefix="brief"
           onSubmit={() => submitField('brief', brief, setEditBrief)}
+          main={main}
         />
         <WorkspaceEditableField
           label="Requirements"
@@ -226,6 +257,7 @@ const WorkspaceFeature: React.FC = () => {
           placeholder="Requirements"
           dataTestIdPrefix="requirements"
           onSubmit={() => submitField('requirements', requirements, setEditRequirements)}
+          main={main}
         />
         <WorkspaceEditableField
           label="Architecture"
@@ -238,6 +270,7 @@ const WorkspaceFeature: React.FC = () => {
           placeholder="Architecture"
           dataTestIdPrefix="architecture"
           onSubmit={() => submitField('architecture', architecture, setEditArchitecture)}
+          main={main}
         />
       </DataWrap>
       {toastsEl}
