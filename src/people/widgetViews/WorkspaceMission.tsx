@@ -7,6 +7,8 @@ import {
   HeaderWrap,
   DataWrap,
   DataWrap2,
+  LeftSection,
+  RightSection,
   FieldWrap,
   Label,
   Data,
@@ -58,6 +60,7 @@ import {
   WorkspaceOption
 } from './workspace/style';
 import AddRepoModal from './workspace/AddRepoModal';
+import EditSchematic from './workspace/EditSchematicModal';
 
 const color = colors['light'];
 
@@ -123,9 +126,11 @@ const WorkspaceMission = () => {
   const [loading, setLoading] = useState(true);
   const [displayMission, setDidplayMission] = useState(false);
   const [editMission, setEditMission] = useState(false);
+  const [displaySchematic, setDidplaySchematic] = useState(false);
   const [editTactics, setEditTactics] = useState(false);
   const [displayTactics, setDidplayTactics] = useState(false);
   const [mission, setMission] = useState(workspaceData?.mission);
+  const [schematicModal, setSchematicModal] = useState(false);
   const [tactics, setTactics] = useState(workspaceData?.tactics);
   const [repoName, setRepoName] = useState('');
   const [repoUrl, setRepoUrl] = useState('');
@@ -316,6 +321,11 @@ const WorkspaceMission = () => {
     setFeatureModal(!featureModal);
   };
 
+  const toggleSchematicModal = () => {
+    setDidplaySchematic(false);
+    setSchematicModal(!schematicModal);
+  };
+
   const paginateNext = () => {
     const activeTab = paginationLimit > visibleTabs;
     const activePage = currentPage < featuresCount / featureLimit;
@@ -414,202 +424,231 @@ const WorkspaceMission = () => {
           </Header>
         </HeaderWrap>
         <DataWrap>
-          <FieldWrap>
-            <Label>Mission</Label>
-            <Data>
-              <OptionsWrap>
-                <MaterialIcon
-                  icon={'more_horiz'}
-                  className="MaterialIcon"
-                  onClick={() => setDidplayMission(!displayMission)}
-                  data-testid="mission-option-btn"
-                />
-                {displayMission && (
-                  <WorkspaceOption>
-                    <ul>
-                      <li data-testid="mission-edit-btn" onClick={editMissionActions}>
-                        Edit
-                      </li>
-                    </ul>
-                  </WorkspaceOption>
-                )}
-              </OptionsWrap>
-              {!editMission && (
-                <>{workspaceData?.mission ? workspaceData.mission : 'No mission yet'}</>
-              )}
-
-              {editMission && (
-                <>
-                  <TextArea
-                    placeholder="Enter mission"
-                    onChange={missionChange}
-                    value={mission ?? workspaceData?.mission}
-                    data-testid="mission-textarea"
+          <LeftSection>
+            <FieldWrap>
+              <Label>Mission</Label>
+              <Data>
+                <OptionsWrap>
+                  <MaterialIcon
+                    icon={'more_horiz'}
+                    className="MaterialIcon"
+                    onClick={() => setDidplayMission(!displayMission)}
+                    data-testid="mission-option-btn"
                   />
-                  <ButtonWrap>
-                    <ActionButton
-                      onClick={() => setEditMission(!editMission)}
-                      data-testid="mission-cancel-btn"
-                      color="cancel"
-                    >
-                      Cancel
-                    </ActionButton>
-                    <ActionButton
-                      color="primary"
-                      onClick={submitMission}
-                      data-testid="mission-update-btn"
-                    >
-                      Update
-                    </ActionButton>
-                  </ButtonWrap>
-                </>
-              )}
-            </Data>
-          </FieldWrap>
-          <FieldWrap>
-            <Label>Tactics and Objectives</Label>
-            <Data>
-              <OptionsWrap>
-                <MaterialIcon
-                  onClick={() => setDidplayTactics(!displayTactics)}
-                  icon={'more_horiz'}
-                  className="MaterialIcon"
-                  data-testid="tactics-option-btn"
-                />
-                {displayTactics && (
-                  <WorkspaceOption>
-                    <ul>
-                      <li data-testid="tactics-edit-btn" onClick={editTacticsActions}>
-                        Edit
-                      </li>
-                    </ul>
-                  </WorkspaceOption>
+                  {displayMission && (
+                    <WorkspaceOption>
+                      <ul>
+                        <li data-testid="mission-edit-btn" onClick={editMissionActions}>
+                          Edit
+                        </li>
+                      </ul>
+                    </WorkspaceOption>
+                  )}
+                </OptionsWrap>
+                {!editMission && (
+                  <>{workspaceData?.mission ? workspaceData.mission : 'No mission yet'}</>
                 )}
-              </OptionsWrap>
-              {!editTactics && (
-                <>{workspaceData?.tactics ? workspaceData.tactics : 'No tactics yet'}</>
-              )}
 
-              {editTactics && (
-                <>
-                  <TextArea
-                    placeholder="Enter tactics"
-                    onChange={tacticsChange}
-                    value={tactics ?? workspaceData?.tactics}
-                    data-testid="tactics-textarea"
+                {editMission && (
+                  <>
+                    <TextArea
+                      placeholder="Enter mission"
+                      onChange={missionChange}
+                      value={mission ?? workspaceData?.mission}
+                      data-testid="mission-textarea"
+                    />
+                    <ButtonWrap>
+                      <ActionButton
+                        onClick={() => setEditMission(!editMission)}
+                        data-testid="mission-cancel-btn"
+                        color="cancel"
+                      >
+                        Cancel
+                      </ActionButton>
+                      <ActionButton
+                        color="primary"
+                        onClick={submitMission}
+                        data-testid="mission-update-btn"
+                      >
+                        Update
+                      </ActionButton>
+                    </ButtonWrap>
+                  </>
+                )}
+              </Data>
+            </FieldWrap>
+            <FieldWrap>
+              <Label>Tactics and Objectives</Label>
+              <Data>
+                <OptionsWrap>
+                  <MaterialIcon
+                    onClick={() => setDidplayTactics(!displayTactics)}
+                    icon={'more_horiz'}
+                    className="MaterialIcon"
+                    data-testid="tactics-option-btn"
                   />
-                  <ButtonWrap>
-                    <ActionButton
-                      data-testid="tactics-cancel-btn"
-                      onClick={() => setEditTactics(!editTactics)}
-                      color="cancel"
-                    >
-                      Cancel
-                    </ActionButton>
-                    <ActionButton
-                      data-testid="tactics-update-btn"
-                      color="primary"
-                      onClick={submitTactics}
-                    >
-                      Update
-                    </ActionButton>
-                  </ButtonWrap>
-                </>
-              )}
-            </Data>
-          </FieldWrap>
-          <RepoWrap>
-            <DataWrap2>
+                  {displayTactics && (
+                    <WorkspaceOption>
+                      <ul>
+                        <li data-testid="tactics-edit-btn" onClick={editTacticsActions}>
+                          Edit
+                        </li>
+                      </ul>
+                    </WorkspaceOption>
+                  )}
+                </OptionsWrap>
+                {!editTactics && (
+                  <>{workspaceData?.tactics ? workspaceData.tactics : 'No tactics yet'}</>
+                )}
+
+                {editTactics && (
+                  <>
+                    <TextArea
+                      placeholder="Enter tactics"
+                      onChange={tacticsChange}
+                      value={tactics ?? workspaceData?.tactics}
+                      data-testid="tactics-textarea"
+                    />
+                    <ButtonWrap>
+                      <ActionButton
+                        data-testid="tactics-cancel-btn"
+                        onClick={() => setEditTactics(!editTactics)}
+                        color="cancel"
+                      >
+                        Cancel
+                      </ActionButton>
+                      <ActionButton
+                        data-testid="tactics-update-btn"
+                        color="primary"
+                        onClick={submitTactics}
+                      >
+                        Update
+                      </ActionButton>
+                    </ButtonWrap>
+                  </>
+                )}
+              </Data>
+            </FieldWrap>
+            <RepoWrap>
+              <DataWrap2>
+                <RowFlex>
+                  <Label>Repositories</Label>
+                  <Button
+                    onClick={() => openModal('add')}
+                    style={{
+                      borderRadius: '5px',
+                      margin: 0,
+                      marginLeft: 'auto'
+                    }}
+                    dataTestId="new-repository-btn"
+                    text="Add Repository"
+                  />
+                </RowFlex>
+                <StyledList>
+                  {repositories.map((repository: any) => (
+                    <StyledListElement key={repository.id}>
+                      <RepoEliipsis
+                        src={threeDotsIcon}
+                        alt="Three dots icon"
+                        onClick={() => openModal('edit', repository)}
+                      />
+                      <RepoName>{repository.name} : </RepoName>
+                      <EuiToolTip position="top" content={repository.url}>
+                        <a href={repository.url} target="_blank" rel="noreferrer">
+                          {repository.url}
+                        </a>
+                      </EuiToolTip>
+                    </StyledListElement>
+                  ))}
+                </StyledList>
+              </DataWrap2>
+            </RepoWrap>
+            <FieldWrap>
               <RowFlex>
-                <Label>Repositories</Label>
+                <Label>Features</Label>
                 <Button
-                  onClick={() => openModal('add')}
+                  onClick={toggleFeatureModal}
                   style={{
                     borderRadius: '5px',
                     margin: 0,
                     marginLeft: 'auto'
                   }}
-                  dataTestId="new-repository-btn"
-                  text="Add Repository"
+                  dataTestId="new-feature-btn"
+                  text="New Feature"
                 />
               </RowFlex>
-              <StyledList>
-                {repositories.map((repository: any) => (
-                  <StyledListElement key={repository.id}>
-                    <RepoEliipsis
-                      src={threeDotsIcon}
-                      alt="Three dots icon"
-                      onClick={() => openModal('edit', repository)}
-                    />
-                    <RepoName>{repository.name} : </RepoName>
-                    <EuiToolTip position="top" content={repository.url}>
-                      <a href={repository.url} target="_blank" rel="noreferrer">
-                        {repository.url}
-                      </a>
-                    </EuiToolTip>
-                  </StyledListElement>
-                ))}
-              </StyledList>
-            </DataWrap2>
-          </RepoWrap>
-          <FieldWrap>
-            <RowFlex>
-              <Label>Features</Label>
-              <Button
-                onClick={toggleFeatureModal}
-                style={{
-                  borderRadius: '5px',
-                  margin: 0,
-                  marginLeft: 'auto'
-                }}
-                dataTestId="new-feature-btn"
-                text="New Feature"
-              />
-            </RowFlex>
-            <FeaturesWrap>
-              {features &&
-                features.map((feat: Feature, i: number) => (
-                  <FeatureDataWrap key={i}>
-                    <FeatureCount>{i + 1}</FeatureCount>
-                    <FeatureData>
-                      <FeatureLink href={`/feature/${feat.uuid}`}>{feat.name}</FeatureLink>
-                      <FeatureDetails>
-                        <FeatureText>Filter Status</FeatureText>
-                      </FeatureDetails>
-                    </FeatureData>
-                  </FeatureDataWrap>
-                ))}
-            </FeaturesWrap>
-            <PaginatonSection>
-              <FlexDiv>
-                {featuresCount > featureLimit ? (
-                  <PageContainer role="pagination">
-                    <PaginationImg
-                      src={paginationarrow1}
-                      alt="pagination arrow 1"
-                      onClick={() => paginatePrev()}
-                    />
-                    {activeTabs.map((page: number) => (
-                      <PaginationButtons
-                        data-testid={'page'}
-                        key={page}
-                        onClick={() => paginate(page)}
-                        active={page === currentPage}
-                      >
-                        {page}
-                      </PaginationButtons>
-                    ))}
-                    <PaginationImg
-                      src={paginationarrow2}
-                      alt="pagination arrow 2"
-                      onClick={() => paginateNext()}
-                    />
-                  </PageContainer>
-                ) : null}
-              </FlexDiv>
-            </PaginatonSection>
-          </FieldWrap>
-        </DataWrap>
+              <FeaturesWrap>
+                {features &&
+                  features.map((feat: Feature, i: number) => (
+                    <FeatureDataWrap key={i}>
+                      <FeatureCount>{i + 1}</FeatureCount>
+                      <FeatureData>
+                        <FeatureLink href={`/feature/${feat.uuid}`} target="_blank">
+                          {feat.name}
+                        </FeatureLink>
+                        <FeatureDetails>
+                          <FeatureText>Filter Status</FeatureText>
+                        </FeatureDetails>
+                      </FeatureData>
+                    </FeatureDataWrap>
+                  ))}
+              </FeaturesWrap>
+              <PaginatonSection>
+                <FlexDiv>
+                  {featuresCount > featureLimit ? (
+                    <PageContainer role="pagination">
+                      <PaginationImg
+                        src={paginationarrow1}
+                        alt="pagination arrow 1"
+                        onClick={() => paginatePrev()}
+                      />
+                      {activeTabs.map((page: number) => (
+                        <PaginationButtons
+                          data-testid={'page'}
+                          key={page}
+                          onClick={() => paginate(page)}
+                          active={page === currentPage}
+                        >
+                          {page}
+                        </PaginationButtons>
+                      ))}
+                      <PaginationImg
+                        src={paginationarrow2}
+                        alt="pagination arrow 2"
+                        onClick={() => paginateNext()}
+                      />
+                    </PageContainer>
+                  ) : null}
+                </FlexDiv>
+              </PaginatonSection>
+            </FieldWrap>
+          </LeftSection >
+          <RightSection>
+            <FieldWrap>
+              <Label>Schematic</Label>
+              <Data style={{ border: 'none' }}>
+                <OptionsWrap>
+                  <MaterialIcon
+                    icon={'more_horiz'}
+                    className="MaterialIcon"
+                    onClick={() => setDidplaySchematic(!displaySchematic)}
+                    data-testid="schematic-option-btn"
+                  />
+                  <button
+                    style={{ display: displaySchematic ? 'block' : 'none' }}
+                    onClick={toggleSchematicModal}
+                    data-testid="schematic-edit-btn"
+                  >
+                    Edit
+                  </button>
+                </OptionsWrap>
+                <a href={workspaceData?.schematic_url} target="_blank">
+                  {workspaceData?.schematic_url ? 'schematic' : 'No schematic url yet'}
+                </a>
+              </Data>
+            </FieldWrap>
+          </RightSection>
+        </DataWrap >
         <Modal
           visible={featureModal}
           style={{
@@ -675,8 +714,40 @@ const WorkspaceMission = () => {
             url={repoUrl}
           />
         </Modal>
-        {toastsEl}
-      </WorkspaceBody>
+        <Modal
+          visible={schematicModal}
+          style={{
+            height: '100%',
+            flexDirection: 'column'
+          }}
+          envStyle={{
+            marginTop: isMobile ? 64 : 0,
+            background: color.pureWhite,
+            zIndex: 20,
+            maxHeight: '100%',
+            borderRadius: '10px',
+            minWidth: isMobile ? '100%' : '25%',
+            minHeight: isMobile ? '100%' : '20%'
+          }}
+          overlayClick={toggleSchematicModal}
+          bigCloseImage={toggleSchematicModal}
+          bigCloseImageStyle={{
+            top: '-18px',
+            right: '-18px',
+            background: '#000',
+            borderRadius: '50%'
+          }}
+        >
+          <EditSchematic
+            closeHandler={toggleSchematicModal}
+            getSchematic={getWorkspaceData}
+            uuid={workspaceData?.uuid}
+            owner_pubkey={ui.meInfo?.owner_pubkey}
+            schematic_url={workspaceData?.schematic_url ?? ''}
+            schematic_img={workspaceData?.schematic_img ?? ''}
+          />
+        </Modal>
+      </WorkspaceBody >
     )
   );
 };
