@@ -20,7 +20,7 @@ import {
   FlexDiv,
   PaginationImg,
   PageContainer,
-  PaginationButtons
+  PaginationButtons,
 } from 'pages/tickets/style';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -60,7 +60,7 @@ import {
   WorkspaceOption,
   SelectedImg,
   ImgContainer,
-  ImgText
+  ImgText,
 } from './workspace/style';
 import AddRepoModal from './workspace/AddRepoModal';
 import EditSchematic from './workspace/EditSchematicModal';
@@ -120,6 +120,12 @@ const PaginatonSection = styled.div`
   align-self: stretch;
   border-radius: 8px;
   padding: 1em;
+`;
+
+export const RowWrap = styled.div`
+  display: flex;
+  align-items: center;
+  margin-top: 1rem; /* Adjust this margin as needed */
 `;
 
 const WorkspaceMission = () => {
@@ -630,21 +636,6 @@ const WorkspaceMission = () => {
             <FieldWrap>
               <Label>Schematic</Label>
               <Data style={{ border: 'none' }}>
-                <OptionsWrap>
-                  <MaterialIcon
-                    icon={'more_horiz'}
-                    className="MaterialIcon"
-                    onClick={() => setDidplaySchematic(!displaySchematic)}
-                    data-testid="schematic-option-btn"
-                  />
-                  <button
-                    style={{ display: displaySchematic ? 'block' : 'none' }}
-                    onClick={toggleSchematicModal}
-                    data-testid="schematic-edit-btn"
-                  >
-                    Edit
-                  </button>
-                </OptionsWrap>
                 <ImgContainer>
                   {workspaceData?.schematic_img ? (
                     <SelectedImg src={workspaceData?.schematic_img} alt="schematic image" />
@@ -652,14 +643,32 @@ const WorkspaceMission = () => {
                     <ImgText>Image</ImgText>
                   )}
                 </ImgContainer>
-                <a
-                  href={workspaceData?.schematic_url}
-                  target="_blank"
-                  style={{ marginTop: '1rem' }}
-                  data-testid="schematic-url"
-                >
-                  {workspaceData?.schematic_url ? 'schematic' : 'No schematic url yet'}
-                </a>
+                <RowWrap>
+                  <OptionsWrap style={{ position: 'unset', display: 'contents' }}>
+                    <MaterialIcon
+                      icon={'more_horiz'}
+                      className="MaterialIcon"
+                      onClick={() => setDidplaySchematic(!displaySchematic)}
+                      data-testid="schematic-option-btn"
+                      style={{ transform: 'rotate(90deg)' }}
+                    />
+                    <button
+                      style={{ display: displaySchematic ? 'block' : 'none' }}
+                      onClick={toggleSchematicModal}
+                      data-testid="schematic-edit-btn"
+                    >
+                      Edit
+                    </button>
+                  </OptionsWrap>
+                  <a
+                    href={workspaceData?.schematic_url}
+                    target="_blank"
+                    data-testid="schematic-url"
+                    style={{ marginLeft: '0.5rem' }}
+                  >
+                    {workspaceData?.schematic_url ? 'schematic' : 'No schematic url yet'}
+                  </a>
+                </RowWrap>
               </Data>
             </FieldWrap>
           </RightSection>
