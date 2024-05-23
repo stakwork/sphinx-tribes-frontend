@@ -10,46 +10,11 @@ import {
   WorkspaceInputContainer,
   WorkspaceLabel,
   ActionButton,
-  ButtonWrap
+  ButtonWrap,
+  AddWorkspaceWrapper,
+  AddWorkspaceHeader,
+  WorkspaceDetailsContainer
 } from './style';
-
-const AddWorkspaceWrapper = styled.div`
-  min-width: 100%;
-  padding: 3rem 2rem;
-  display: flex;
-  flex-direction: column;
-
-  @media only screen and (max-width: 500px) {
-    padding: 1rem;
-    width: 100%;
-  }
-`;
-
-const AddWorkspaceHeader = styled.h2`
-  color: #3c3f41;
-  font-family: 'Barlow';
-  font-size: 1.875rem;
-  font-style: normal;
-  font-weight: 800;
-  line-height: 1.875rem;
-  margin-bottom: 0;
-  min-width: 100%;
-
-  @media only screen and (max-width: 500px) {
-    text-align: center;
-    font-size: 1.4rem;
-  }
-`;
-const WorkspaceDetailsContainer = styled.div`
-  margin-top: 3rem;
-  min-width: 100%;
-  display: flex;
-  gap: 3.56rem;
-  @media only screen and (max-width: 500px) {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-`;
 
 const FooterContainer = styled.div`
   display: flex;
@@ -156,7 +121,7 @@ const AddFeature = (props: {
   return (
     <AddWorkspaceWrapper>
       <AddWorkspaceHeader>Add New Feature</AddWorkspaceHeader>
-      <WorkspaceDetailsContainer>
+      <WorkspaceDetailsContainer style={{ display: 'flex' }}>
         <WorkspaceInputContainer feature={true} style={{ color: featureNameError ? errcolor : '' }}>
           <WorkspaceLabel style={{ color: featureNameError ? errcolor : '' }}>
             Feature Name *

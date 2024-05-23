@@ -18,7 +18,9 @@ import {
   SelectedImg,
   UploadImageContainer,
   TextAreaInput,
-  SecondaryText
+  SecondaryText,
+  WorkspaceImgOutterContainer,
+  ImgContainer
 } from './style';
 
 const AddWorkspaceWrapper = styled.div`
@@ -65,22 +67,6 @@ const FooterContainer = styled.div`
     flex-direction: column;
     gap: 0.5rem;
   }
-`;
-
-const WorkspaceImgOutterContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-const ImgContainer = styled.div`
-  width: 7.875rem;
-  height: 7.875rem;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #ebedf1;
 `;
 
 const WorkspaceButton = styled.button`

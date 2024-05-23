@@ -55,12 +55,15 @@ export const HeaderWrap = styled.div`
 `;
 
 export const DataWrap = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
   padding: 40px 50px;
   display: flex;
   width: 58%;
   margin: 0 auto;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: left;
   justify-content: center;
 
@@ -84,20 +87,46 @@ export const DataWrap2 = styled.div`
   flex-direction: column;
   align-items: left;
   justify-content: center;
-
   @media only screen and (max-width: 900px) {
     width: 90%;
     padding: 30px 40px;
+    flex-direction: column;
   }
 
   @media only screen and (max-width: 500px) {
     width: 90%;
     padding: 20px 10px;
+    flex-direction: column;
+  }
+`;
+
+export const LeftSection = styled.div`
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Aligns content to the left */
+
+  @media only screen and (max-width: 900px) {
+    width: 100%;
+    align-items: center; /* Centers content on smaller screens */
+  }
+`;
+
+export const RightSection = styled.div`
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end; /* Aligns content to the right */
+
+  @media only screen and (max-width: 900px) {
+    width: 100%;
+    align-items: center; /* Centers content on smaller screens */
   }
 `;
 
 export const FieldWrap = styled.div`
   margin-bottom: 30px;
+  width: 95%;
 `;
 
 export const Label = styled.h5`

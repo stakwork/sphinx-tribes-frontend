@@ -2528,6 +2528,31 @@ export class MainStore {
     }
   }
 
+  async workspaceUpdateSchematic(body: {
+    uuid: string;
+    owner_pubkey: string;
+    schematic_url: string;
+    schematic_img: string;
+  }): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return 0;
+      const info = uiStore.meInfo;
+      const r: any = await fetch(`${TribesURL}/workspaces/schematicurl`, {
+        method: 'POST',
+        body: JSON.stringify(body),
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      return r;
+    } catch (e) {
+      console.error('workspaceUpdateSchematic', e);
+    }
+  }
+
   async workspaceUpdateTactics(body: {
     uuid: string;
     owner_pubkey: string;
