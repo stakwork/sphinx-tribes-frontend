@@ -58,14 +58,21 @@ import {
   RepoEliipsis,
   RepoWrap,
   WorkspaceOption,
-  SelectedImg,
-  ImgContainer,
   ImgText,
 } from './workspace/style';
 import AddRepoModal from './workspace/AddRepoModal';
 import EditSchematic from './workspace/EditSchematicModal';
 
 const color = colors['light'];
+
+
+const PaginatonSection = styled.div`
+  height: 150px;
+  flex-shrink: 0;
+  align-self: stretch;
+  border-radius: 8px;
+  padding: 1em;
+`;
 
 const FeaturesWrap = styled.div`
   margin-top: 25px;
@@ -114,12 +121,21 @@ const FeatureText = styled.p`
   margin: 0px;
 `;
 
-const PaginatonSection = styled.div`
-  height: 150px;
-  flex-shrink: 0;
-  align-self: stretch;
-  border-radius: 8px;
-  padding: 1em;
+export const ImgContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 18rem;
+  height: 9rem;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #ebedf1;
+`;
+
+export const SelectedImg = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 `;
 
 export const RowWrap = styled.div`
@@ -635,7 +651,7 @@ const WorkspaceMission = () => {
           <RightSection>
             <FieldWrap>
               <Label>Schematic</Label>
-              <Data style={{ border: 'none' }}>
+              <Data style={{ border: 'none', paddingLeft: '0px' }}>
                 <ImgContainer>
                   {workspaceData?.schematic_img ? (
                     <SelectedImg src={workspaceData?.schematic_img} alt="schematic image" />
@@ -660,14 +676,18 @@ const WorkspaceMission = () => {
                       Edit
                     </button>
                   </OptionsWrap>
-                  <a
-                    href={workspaceData?.schematic_url}
-                    target="_blank"
-                    data-testid="schematic-url"
-                    style={{ marginLeft: '0.5rem' }}
-                  >
-                    {workspaceData?.schematic_url ? 'schematic' : 'No schematic url yet'}
-                  </a>
+                  {workspaceData?.schematic_url ? (
+                    <a
+                      href={workspaceData?.schematic_url}
+                      target="_blank"
+                      data-testid="schematic-url"
+                      style={{ marginLeft: '0.5rem' }}
+                    >
+                      schematic
+                    </a>
+                  ) : (
+                    <span style={{ marginLeft: '0.5rem' }}>No schematic url yet</span>
+                  )}
                 </RowWrap>
               </Data>
             </FieldWrap>
