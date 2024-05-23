@@ -59,12 +59,11 @@ export const DataWrap = styled.div`
   width: 100%;
   justify-content: space-between;
   padding: 40px 50px;
-<<<<<<< HEAD
   display: flex;
   width: 58%;
   margin: 0 auto;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: left;
   justify-content: center;
 
@@ -88,7 +87,7 @@ export const DataWrap2 = styled.div`
   flex-direction: column;
   align-items: left;
   justify-content: center;
-  =======>>>>>>>9e3e7f9 (Added schematic section) @media only screen and (max-width: 900px) {
+  @media only screen and (max-width: 900px) {
     width: 90%;
     padding: 30px 40px;
     flex-direction: column;

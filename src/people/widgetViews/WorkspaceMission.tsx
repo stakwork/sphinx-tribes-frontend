@@ -56,7 +56,6 @@ import {
   ButtonWrap,
   RepoName,
   RepoEliipsis,
-  RepoWrap,
   WorkspaceOption,
   ImgText
 } from './workspace/style';
@@ -553,7 +552,7 @@ const WorkspaceMission = () => {
                 )}
               </Data>
             </FieldWrap>
-            <RepoWrap>
+            <FieldWrap>
               <DataWrap2>
                 <RowFlex>
                   <Label>Repositories</Label>
@@ -586,7 +585,7 @@ const WorkspaceMission = () => {
                   ))}
                 </StyledList>
               </DataWrap2>
-            </RepoWrap>
+            </FieldWrap>
             <FieldWrap>
               <RowFlex>
                 <Label>Features</Label>
@@ -790,6 +789,7 @@ const WorkspaceMission = () => {
             schematic_img={workspaceData?.schematic_img ?? ''}
           />
         </Modal>
+        {toastsEl}
       </WorkspaceBody>
     )
   );
