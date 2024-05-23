@@ -90,6 +90,22 @@ const WorkspaceEditableField = ({
     }
   };
 
+  const parseValue = (input: string | null): string => {
+    if (!input) {
+      return `No ${label.toLowerCase()} yet`;
+    }
+
+    // Regex to detect markdown image syntax ![alt text](url)
+    const imageMarkdownRegex = /!\[.*?\]\((.*?)\)/g;
+
+    // Replace the markdown image syntax with HTML <img> tag
+    return input
+      .replace(imageMarkdownRegex, (match: string, p1: string) => {
+        return `<img src="${p1}" alt="Uploaded Image" />`;
+      })
+      .replace(/\n/g, '<br/>');
+  };
+
   return (
     <FieldWrap>
       <Label>{label}</Label>
@@ -117,7 +133,7 @@ const WorkspaceEditableField = ({
               overflowY: 'auto'
             }}
             dangerouslySetInnerHTML={{
-              __html: value ? value.replace(/\n/g, '<br/>') : `No ${label.toLowerCase()} yet`
+              __html: parseValue(value)
             }}
           />
         ) : (
