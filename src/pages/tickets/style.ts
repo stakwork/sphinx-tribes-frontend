@@ -88,10 +88,7 @@ export const DataWrap2 = styled.div`
   flex-direction: column;
   align-items: left;
   justify-content: center;
-=======
->>>>>>> 9e3e7f9 (Added schematic section)
-
-  @media only screen and (max-width: 900px) {
+  =======>>>>>>>9e3e7f9 (Added schematic section) @media only screen and (max-width: 900px) {
     width: 90%;
     padding: 30px 40px;
     flex-direction: column;

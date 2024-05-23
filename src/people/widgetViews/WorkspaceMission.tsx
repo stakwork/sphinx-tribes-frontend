@@ -20,7 +20,7 @@ import {
   FlexDiv,
   PaginationImg,
   PageContainer,
-  PaginationButtons,
+  PaginationButtons
 } from 'pages/tickets/style';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -58,13 +58,12 @@ import {
   RepoEliipsis,
   RepoWrap,
   WorkspaceOption,
-  ImgText,
+  ImgText
 } from './workspace/style';
 import AddRepoModal from './workspace/AddRepoModal';
+
 import EditSchematic from './workspace/EditSchematicModal';
-
 const color = colors['light'];
-
 
 const PaginatonSection = styled.div`
   height: 150px;
@@ -647,7 +646,7 @@ const WorkspaceMission = () => {
                 </FlexDiv>
               </PaginatonSection>
             </FieldWrap>
-          </LeftSection >
+          </LeftSection>
           <RightSection>
             <FieldWrap>
               <Label>Schematic</Label>
@@ -692,7 +691,7 @@ const WorkspaceMission = () => {
               </Data>
             </FieldWrap>
           </RightSection>
-        </DataWrap >
+        </DataWrap>
         <Modal
           visible={featureModal}
           style={{
@@ -791,7 +790,7 @@ const WorkspaceMission = () => {
             schematic_img={workspaceData?.schematic_img ?? ''}
           />
         </Modal>
-      </WorkspaceBody >
+      </WorkspaceBody>
     )
   );
 };
