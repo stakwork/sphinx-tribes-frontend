@@ -152,6 +152,9 @@ const FeatureLink = styled.a`
 `;
 
 export const ImgContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 18rem;
   height: 9rem;
   border-radius: 10px;
@@ -568,7 +571,7 @@ const WorkspaceMission = () => {
           <RightSection>
             <FieldWrap>
               <Label>Schematic</Label>
-              <Data style={{ border: 'none' }}>
+              <Data style={{ border: 'none', paddingLeft: '0px' }}>
                 <ImgContainer>
                   {workspaceData?.schematic_img ? (
                     <SelectedImg src={workspaceData?.schematic_img} alt="schematic image" />
@@ -593,14 +596,18 @@ const WorkspaceMission = () => {
                       Edit
                     </button>
                   </OptionsWrap>
-                  <a
-                    href={workspaceData?.schematic_url}
-                    target="_blank"
-                    data-testid="schematic-url"
-                    style={{ marginLeft: '0.5rem' }}
-                  >
-                    {workspaceData?.schematic_url ? 'schematic' : 'No schematic url yet'}
-                  </a>
+                  {workspaceData?.schematic_url ? (
+                    <a
+                      href={workspaceData?.schematic_url}
+                      target="_blank"
+                      data-testid="schematic-url"
+                      style={{ marginLeft: '0.5rem' }}
+                    >
+                      schematic
+                    </a>
+                  ) : (
+                    <span style={{ marginLeft: '0.5rem' }}>No schematic url yet</span>
+                  )}
                 </RowWrap>
               </Data>
             </FieldWrap>
