@@ -224,6 +224,7 @@ export interface StatusPillProps {
   assignee?: Person;
   style?: React.CSSProperties;
   paid?: boolean;
+  completed?: boolean;
 }
 
 export interface WantedSummaryProps {
@@ -373,6 +374,7 @@ export interface WantedViewsProps {
   ticketUrl?: string;
   gallery?: any;
   assignee?: Person;
+  completed?: boolean;
   estimated_session_length?: string;
   loomEmbedUrl?: string;
   showModal?: () => void;

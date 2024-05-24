@@ -38,6 +38,7 @@ function DesktopView(props: WantedViewsProps) {
     show,
     paid,
     isMine,
+    completed,
     titleString
   } = props;
 
@@ -91,6 +92,7 @@ function DesktopView(props: WantedViewsProps) {
                   marginTop: 10
                 }}
                 paid={paid}
+                completed={completed}
               />
             ) : (
               <div

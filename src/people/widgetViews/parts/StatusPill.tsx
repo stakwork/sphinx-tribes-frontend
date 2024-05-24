@@ -57,23 +57,29 @@ const W = styled.div`
   align-items: center;
 `;
 export default function StatusPill(props: StatusPillProps) {
-  const { paid, assignee, style } = props;
+  const { assignee, style, completed } = props;
 
   const [assigneText, setAssigneText] = useState('');
-  const isOpen = !assignee ? true : false;
-  const isClosed = paid ? true : false;
+  const [status, setStatus] = useState('Assigned');
 
   useEffect(() => {
     const assignedText = assignee && !assignee?.owner_alias ? 'Not assigned' : assignee ? '' : '';
     setAssigneText(assignedText);
-  }, [assignee]);
+
+    if (!assignee) {
+      setStatus('Open');
+    } else if (completed) {
+      setStatus('Complete');
+    } else {
+      setStatus('Assigned');
+    }
+  }, [assignee, completed]);
 
   return (
     <div style={{ display: 'flex', ...style }} data-testid="status-pill">
-      <Pill isOpen={isOpen} isClosed={isClosed}>
-        <div>{isOpen ? 'Open' : isClosed ? 'Complete' : 'Assigned'}</div>
+      <Pill isOpen={status === 'Open'} isClosed={status === 'Complete'}>
+        <div>{status}</div>
       </Pill>
-
       <W>
         <Assignee>{assigneText}</Assignee>
       </W>
