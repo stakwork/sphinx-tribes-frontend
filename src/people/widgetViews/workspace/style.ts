@@ -1001,7 +1001,7 @@ interface ButtonProps {
 
 export const ActionButton = styled.button<ButtonProps>`
   padding: 5px 20px;
-  width: 120px;
+  width: 124px;
   border-radius: 5px;
   border-radius: ${(p: any) => p.borderRadius ?? '0.375rem'};
   font-family: 'Barlow';
