@@ -123,7 +123,7 @@ export const ImgContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 18rem;
+  width: 100%;
   height: 9rem;
   border-radius: 10px;
   overflow: hidden;
@@ -446,7 +446,7 @@ const WorkspaceMission = () => {
             </RightHeader>
           </Header>
         </HeaderWrap>
-        <DataWrap>
+        <DataWrap  style={{ paddingBottom: '0px' }}>
           <LeftSection>
             <FieldWrap>
               <Label>Mission</Label>
@@ -586,7 +586,55 @@ const WorkspaceMission = () => {
                 </StyledList>
               </DataWrap2>
             </FieldWrap>
+          </LeftSection>
+          <RightSection>
             <FieldWrap>
+              <Label>Schematic</Label>
+              <Data style={{ border: 'none', paddingLeft: '0px', padding: '5px 5px' }}>
+                <ImgContainer>
+                  {workspaceData?.schematic_img ? (
+                    <SelectedImg src={workspaceData?.schematic_img} alt="schematic image" />
+                  ) : (
+                    <ImgText>Image</ImgText>
+                  )}
+                </ImgContainer>
+                <RowWrap>
+                  <OptionsWrap style={{ position: 'unset', display: 'contents' }}>
+                    <MaterialIcon
+                      icon={'more_horiz'}
+                      className="MaterialIcon"
+                      onClick={() => setDidplaySchematic(!displaySchematic)}
+                      data-testid="schematic-option-btn"
+                      style={{ transform: 'rotate(90deg)' }}
+                    />
+                    <button
+                      style={{ display: displaySchematic ? 'block' : 'none' }}
+                      onClick={toggleSchematicModal}
+                      data-testid="schematic-edit-btn"
+                    >
+                      Edit
+                    </button>
+                  </OptionsWrap>
+                  {workspaceData?.schematic_url ? (
+                    <a
+                      href={workspaceData?.schematic_url}
+                      target="_blank"
+                      rel="noopener"
+                      data-testid="schematic-url"
+                      style={{ marginLeft: '0.5rem' }}
+                    >
+                      schematic
+                    </a>
+                  ) : (
+                    <span style={{ marginLeft: '0.5rem' }}>No schematic url yet</span>
+                  )}
+                </RowWrap>
+              </Data>
+            </FieldWrap>
+          </RightSection>
+        </DataWrap>
+        <DataWrap  style={{ padding: '0px 20px' }}>
+          <FieldWrap>
               <RowFlex>
                 <Label>Features</Label>
                 <Button
@@ -645,51 +693,6 @@ const WorkspaceMission = () => {
                 </FlexDiv>
               </PaginatonSection>
             </FieldWrap>
-          </LeftSection>
-          <RightSection>
-            <FieldWrap>
-              <Label>Schematic</Label>
-              <Data style={{ border: 'none', paddingLeft: '0px' }}>
-                <ImgContainer>
-                  {workspaceData?.schematic_img ? (
-                    <SelectedImg src={workspaceData?.schematic_img} alt="schematic image" />
-                  ) : (
-                    <ImgText>Image</ImgText>
-                  )}
-                </ImgContainer>
-                <RowWrap>
-                  <OptionsWrap style={{ position: 'unset', display: 'contents' }}>
-                    <MaterialIcon
-                      icon={'more_horiz'}
-                      className="MaterialIcon"
-                      onClick={() => setDidplaySchematic(!displaySchematic)}
-                      data-testid="schematic-option-btn"
-                      style={{ transform: 'rotate(90deg)' }}
-                    />
-                    <button
-                      style={{ display: displaySchematic ? 'block' : 'none' }}
-                      onClick={toggleSchematicModal}
-                      data-testid="schematic-edit-btn"
-                    >
-                      Edit
-                    </button>
-                  </OptionsWrap>
-                  {workspaceData?.schematic_url ? (
-                    <a
-                      href={workspaceData?.schematic_url}
-                      target="_blank"
-                      data-testid="schematic-url"
-                      style={{ marginLeft: '0.5rem' }}
-                    >
-                      schematic
-                    </a>
-                  ) : (
-                    <span style={{ marginLeft: '0.5rem' }}>No schematic url yet</span>
-                  )}
-                </RowWrap>
-              </Data>
-            </FieldWrap>
-          </RightSection>
         </DataWrap>
         <Modal
           visible={featureModal}
