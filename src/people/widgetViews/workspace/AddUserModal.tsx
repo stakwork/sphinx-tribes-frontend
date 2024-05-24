@@ -104,6 +104,7 @@ const AddUserModal = (props: AddUserModalProps) => {
         </UsersListContainer>
         <FooterContainer>
           <AddUserBtn
+            data-testid="add-user-btn"
             onClick={() => onSubmit({ owner_pubkey: selectedPubkey })}
             disabled={!selectedPubkey}
           >

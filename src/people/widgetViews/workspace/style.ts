@@ -352,8 +352,8 @@ export const UserWrap = styled.div`
   display: flex;
   flex-direction: column;
   background-color: rgb(240, 241, 243);
+  width: 100%;
   @media only screen and (max-width: 700px) {
-    width: 100%;
     padding: 20px 0px;
   }
   @media only screen and (max-width: 500px) {
@@ -1001,7 +1001,7 @@ interface ButtonProps {
 
 export const ActionButton = styled.button<ButtonProps>`
   padding: 5px 20px;
-  width: 120px;
+  width: 124px;
   border-radius: 5px;
   border-radius: ${(p: any) => p.borderRadius ?? '0.375rem'};
   font-family: 'Barlow';

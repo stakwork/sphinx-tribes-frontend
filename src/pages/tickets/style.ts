@@ -15,7 +15,7 @@ export const WorkspaceBody = styled.div`
   flex-direction: column;
   background: var(--Search-bar-background, #f2f3f5);
   height: 100vh;
-  overflow-y: auto;
+  overflow-y: scroll;
   overflow-x: hidden;
 `;
 
@@ -24,7 +24,7 @@ export const FeatureBody = styled.div`
   flex-direction: column;
   background: var(--Search-bar-background, #f2f3f5);
   height: 100vh;
-  overflow-y: auto;
+  overflow-y: scroll;
   overflow-x: hidden;
 `;
 

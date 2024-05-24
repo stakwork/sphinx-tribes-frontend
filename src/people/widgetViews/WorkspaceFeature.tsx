@@ -1,4 +1,5 @@
 import { EuiGlobalToastList, EuiLoadingSpinner } from '@elastic/eui';
+import { DispatchSetStateAction } from 'components/common/WorkspaceEditableFeild';
 import {
   Body,
   FeatureBody,
@@ -37,8 +38,6 @@ import {
   ButtonGroup,
   StoryButtonWrap
 } from './workspace/style';
-
-type DispatchSetStateAction<T> = React.Dispatch<React.SetStateAction<T>>;
 
 interface WSEditableFieldProps {
   label: string;
