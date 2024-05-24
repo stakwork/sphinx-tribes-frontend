@@ -152,7 +152,7 @@ export default function Modal(props: ModalProps) {
           position: 'absolute',
           top: 0,
           left: 0,
-          zIndex: 1000000,
+          zIndex: 5000,
           width: '100%',
           height: '100%',
           display: 'flex',

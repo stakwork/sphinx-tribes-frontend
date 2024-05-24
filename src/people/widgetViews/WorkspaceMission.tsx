@@ -1,4 +1,4 @@
-import { EuiGlobalToastList, EuiLoadingSpinner } from '@elastic/eui';
+import { EuiGlobalToastList, EuiLink, EuiLoadingSpinner } from '@elastic/eui';
 import {
   Body,
   WorkspaceBody,
@@ -22,12 +22,12 @@ import {
   PageContainer,
   PaginationButtons
 } from 'pages/tickets/style';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useStores } from 'store';
 import { useDeleteConfirmationModal } from 'components/common';
 import { Box } from '@mui/system';
-import { Feature, featureLimit, Workspace } from 'store/interface';
+import { Feature, featureLimit, Person, Workspace } from 'store/interface';
 import MaterialIcon from '@material/react-material-icon';
 import { Button, Modal } from 'components/common';
 import {
@@ -44,6 +44,7 @@ import websiteIcon from 'pages/tickets/workspace/workspaceHeader/Icons/websiteIc
 import { EuiToolTip } from '@elastic/eui';
 import { useIsMobile } from 'hooks';
 import styled from 'styled-components';
+import { AvatarGroup } from 'components/common/AvatarGroup';
 import avatarIcon from '../../public/static/profile_avatar.svg';
 import threeDotsIcon from '../widgetViews/Icons/threeDotsIcon.svg';
 import { colors } from '../../config/colors';
@@ -60,7 +61,6 @@ import {
   ImgText
 } from './workspace/style';
 import AddRepoModal from './workspace/AddRepoModal';
-
 import EditSchematic from './workspace/EditSchematicModal';
 const color = colors['light'];
 
@@ -142,6 +142,13 @@ export const RowWrap = styled.div`
   margin-top: 1rem; /* Adjust this margin as needed */
 `;
 
+const EuiLinkStyled = styled(EuiLink) <{ isMobile: boolean }>`
+  border: none;
+  text-decoration: underline;
+  margin-left: ${(props: any) => (props.isMobile ? 'auto' : '0')};
+  margin: ${(props: any) => (props.isMobile ? '0' : '0')};
+`;
+
 const WorkspaceMission = () => {
   const { main, ui } = useStores();
   const { uuid } = useParams<{ uuid: string }>();
@@ -166,6 +173,8 @@ const WorkspaceMission = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [featuresCount, setFeaturesCount] = useState(0);
   const [activeTabs, setActiveTabs] = useState<number[]>([]);
+  const [isOpenUserManage, setIsOpenUserManage] = useState<boolean>(false);
+  const [users, setUsers] = useState<Person[]>([]);
 
   const paginationLimit = Math.floor(featuresCount / featureLimit) + 1;
   const visibleTabs = 3;
@@ -244,9 +253,18 @@ const WorkspaceMission = () => {
     setLoading(false);
   }, [uuid, main]);
 
+  const getWorkspaceUsers = useCallback(async () => {
+    if (uuid) {
+      const users = await main.getWorkspaceUsers(uuid);
+      setUsers(users);
+      return users;
+    }
+  }, [main, uuid]);
+
   useEffect(() => {
     getWorkspaceData();
-  }, [getWorkspaceData]);
+    getWorkspaceUsers();
+  }, [getWorkspaceData, getWorkspaceUsers]);
 
   const getFeaturesCount = useCallback(async () => {
     if (!uuid) return;
@@ -297,6 +315,7 @@ const WorkspaceMission = () => {
     window.open(githubUrl, '_blank');
   };
 
+
   const editTacticsActions = () => {
     setEditTactics(!editTactics);
     setDidplayTactics(false);
@@ -317,6 +336,7 @@ const WorkspaceMission = () => {
   const tacticsChange = (e: any) => {
     setTactics(e.target.value);
   };
+
 
   const submitMission = async () => {
     const body = {
@@ -398,6 +418,10 @@ const WorkspaceMission = () => {
       toastLifeTimeMs={3000}
     />
   );
+  const avatarList = useMemo(
+    () => users.map((user: Person) => ({ name: user.owner_alias, imageUrl: user.img })),
+    [users]
+  );
 
   if (loading) {
     return (
@@ -406,6 +430,8 @@ const WorkspaceMission = () => {
       </Body>
     );
   }
+
+  const toggleManageUserModal = () => setIsOpenUserManage(!isOpenUserManage);
 
   return (
     !loading && (
@@ -664,9 +690,9 @@ const WorkspaceMission = () => {
                   </FeatureDataWrap>
                 ))}
             </FeaturesWrap>
-            <PaginatonSection>
-              <FlexDiv>
-                {featuresCount > featureLimit ? (
+            {featuresCount > featureLimit ? (
+              <PaginatonSection>
+                <FlexDiv>
                   <PageContainer role="pagination">
                     <PaginationImg
                       src={paginationarrow1}
@@ -689,9 +715,18 @@ const WorkspaceMission = () => {
                       onClick={() => paginateNext()}
                     />
                   </PageContainer>
-                ) : null}
-              </FlexDiv>
-            </PaginatonSection>
+                </FlexDiv>
+              </PaginatonSection>
+            ) : null}
+          </FieldWrap>
+          <FieldWrap>
+            <RowFlex style={{ gap: '25px', marginBottom: '25px' }}>
+              <Label style={{ margin: 0 }}>People</Label>
+              <EuiLinkStyled isMobile={isMobile} color="primary" onClick={toggleManageUserModal}>
+                Manage
+              </EuiLinkStyled>
+            </RowFlex>
+            <AvatarGroup avatarList={avatarList} avatarSize="xl" maxGroupSize={5} />
           </FieldWrap>
         </DataWrap>
         <Modal

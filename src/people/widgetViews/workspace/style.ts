@@ -352,8 +352,8 @@ export const UserWrap = styled.div`
   display: flex;
   flex-direction: column;
   background-color: rgb(240, 241, 243);
+  width: 100%;
   @media only screen and (max-width: 700px) {
-    width: 100%;
     padding: 20px 0px;
   }
   @media only screen and (max-width: 500px) {
