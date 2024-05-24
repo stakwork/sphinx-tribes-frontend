@@ -66,7 +66,7 @@ describe('Workspace Phasing Feature Tests', () => {
     cy.contains(editedPhase).should('exist');
     cy.wait(1000);
 
-    cy.get('.MaterialIcon').click();
+    cy.get('[data-testid="phase-option-btn"]').click();
     cy.wait(500);
     cy.contains('Edit').click();
     cy.wait(1000);
