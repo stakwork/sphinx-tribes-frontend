@@ -669,15 +669,6 @@ const WorkspaceMission = () => {
                 </PaginatonSection>
               ) : null}
             </FieldWrap>
-            <FieldWrap>
-              <RowFlex style={{ gap: '25px', marginBottom: '15px' }}>
-                <Label style={{ margin: 0 }}>People</Label>
-                <EuiLinkStyled isMobile={isMobile} color="primary" onClick={toggleManageUserModal}>
-                  Manage
-                </EuiLinkStyled>
-              </RowFlex>
-              <AvatarGroup avatarList={avatarList} avatarSize="xl" maxGroupSize={5} />
-            </FieldWrap>
           </LeftSection>
           <RightSection>
             <FieldWrap>
@@ -722,6 +713,15 @@ const WorkspaceMission = () => {
                   )}
                 </RowWrap>
               </Data>
+            </FieldWrap>
+            <FieldWrap>
+              <RowFlex style={{ gap: '25px', marginBottom: '15px' }}>
+                <Label style={{ margin: 0 }}>People</Label>
+                <EuiLinkStyled isMobile={isMobile} color="primary" onClick={toggleManageUserModal}>
+                  Manage
+                </EuiLinkStyled>
+              </RowFlex>
+              <AvatarGroup avatarList={avatarList} avatarSize="xl" maxGroupSize={5} />
             </FieldWrap>
           </RightSection>
         </DataWrap>

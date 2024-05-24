@@ -22,12 +22,11 @@ export const AvatarGroup = (props: AvatarGroupProps) => {
     cursor: pointer;
 
     > .euiAvatar {
-      margin-left: -10px;
+      margin-left: 0px;
       box-shadow: 0px 0px 0 2px ${colors['light'].grayish};
     }
 
     &:hover > .euiAvatar {
-      margin-left: -8px;
       transition: margin-left 200ms ease-in-out;
     }
   `;
