@@ -51,7 +51,7 @@ const ManageWorkspaceUsersModal = (props: ManageWorkspaceUsersModalProps) => {
       updateUsers(users);
       return users;
     }
-  }, [main, updateUsers, uuid]);
+  }, [main, uuid]);
 
   useEffect(() => {
     getWorkspaceUsers();

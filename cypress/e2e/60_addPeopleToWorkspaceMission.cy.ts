@@ -33,7 +33,7 @@ describe('Create Workspace And Update People On Mission', () => {
     cy.contains('Add User').click();
     cy.wait(1000);
 
-    const username = 'Alice';
+    const username = 'alice';
     cy.contains('Add New User').should('exist');
     cy.get('input[placeholder="Type to search ..."]').type(username.toLowerCase());
     cy.wait(1000);
@@ -41,12 +41,10 @@ describe('Create Workspace And Update People On Mission', () => {
     cy.contains('Select').click();
     cy.wait(1000);
 
-    cy.get('#sphinx-top-level-overlay').within(() => {
-      cy.contains('Add User').click();
-      cy.wait(1000);
-    });
+    cy.get('[data-testid="add-user-btn"]').click();
+    cy.wait(1000);
 
-    cy.contains(username).should('exist');
+    cy.get('[data-testid="user_alias"]').contains(username.toLocaleLowerCase()).should('exist');
     cy.get('body').click(0, 0);
 
     cy.logout('carol');
