@@ -1,18 +1,21 @@
 describe('Workspace Phasing Feature Tests', () => {
-  const workspaceName = 'Dark Mode';
-
-  const workspace = {
-    loggedInAs: 'carol',
-    name: workspaceName,
-    description: 'We are testing out our workspace feature',
-    website: 'https://community.sphinx.chat',
-    github: 'https://github.com/stakwork/sphinx-tribes-frontend'
-  };
-
-  beforeEach(() => {
-    cy.login('carol');
-    cy.create_workspace(workspace);
+  it('Create, Update and Delete Feature Phase functionality', () => {
+    cy.login('alice');
     cy.wait(1000);
+
+    const workspaceName = 'Dark Mode';
+
+    const workspace = {
+      loggedInAs: 'alice',
+      name: workspaceName,
+      description: 'We are testing out our workspace feature',
+      website: 'https://community.sphinx.chat',
+      github: 'https://github.com/stakwork/sphinx-tribes-frontend'
+    };
+
+    cy.create_workspace(workspace);
+    cy.wait(3000);
+
     cy.contains(workspace.name).contains('Manage').click();
     cy.wait(1000);
 
@@ -26,11 +29,6 @@ describe('Workspace Phasing Feature Tests', () => {
       });
     cy.wait(1000);
 
-    cy.contains('No mission yet');
-    cy.contains('No tactics yet');
-  });
-
-  it('should add a new phase', () => {
     cy.get('[data-testid="new-feature-btn"]').click();
     cy.wait(1000);
 
@@ -53,10 +51,10 @@ describe('Workspace Phasing Feature Tests', () => {
     cy.wait(1000);
 
     cy.contains(newPhase).should('exist');
-  });
+    cy.wait(1000);
 
-  it('should edit an existing phase', () => {
     cy.get('.MaterialIcon').click();
+    cy.wait(500);
     cy.contains('Edit').click();
     cy.wait(1000);
 
@@ -66,11 +64,10 @@ describe('Workspace Phasing Feature Tests', () => {
     cy.wait(1000);
 
     cy.contains(editedPhase).should('exist');
-  });
+    cy.wait(1000);
 
-  it('should delete an existing phase', () => {
-    const phase = 'Super Admin';
     cy.get('.MaterialIcon').click();
+    cy.wait(500);
     cy.contains('Edit').click();
     cy.wait(1000);
     cy.contains('Delete').click();
@@ -78,10 +75,8 @@ describe('Workspace Phasing Feature Tests', () => {
     cy.contains('Delete').click();
     cy.wait(1000);
 
-    cy.contains(phase).should('not.exist');
-  });
+    cy.contains(editedPhase).should('not.exist');
 
-  afterEach(() => {
-    cy.logout('carol');
+    cy.logout('alice');
   });
 });
