@@ -994,22 +994,25 @@ export const ButtonWrap = styled.div`
 
 interface ButtonProps {
   color?: string;
+  marginTop?: string;
+  height?: string;
+  borderRadius?: string;
 }
 
 export const ActionButton = styled.button<ButtonProps>`
   padding: 5px 20px;
+  width: 120px;
   border-radius: 5px;
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
+  border-radius: ${(p: any) => p.borderRadius ?? '0.375rem'};
   font-family: 'Barlow';
   font-size: 0.9375rem;
   font-style: normal;
   font-weight: 500;
   line-height: 0rem;
   letter-spacing: 0.00938rem;
-  margin-top: 1.5rem;
+  margin-top: ${(p: any) => p.marginTop ?? '1.5rem'};
   border: none;
-  height: 40px;
+  height: ${(p: any) => p.height ?? '40px'};
   background: var(--Primary-blue, #618aff);
   box-shadow: 0px 2px 10px 0px rgba(97, 138, 255, 0.5);
   border: none;
@@ -1101,4 +1104,79 @@ export const WorkspaceOption = styled.div`
       color: #3c3f41;
     }
   }
+`;
+
+export const UserStoryOption = styled.div`
+  position: absolute;
+  z-index: 2;
+  top: 100%;
+  right: -65px;
+  width: 80px;
+  height: 30px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.25);
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  li {
+    padding: 5px;
+    text-align: center;
+    cursor: pointer;
+    font-family: 'Barlow', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    line-height: 18px;
+    border-bottom: 0.5px solid #ccc;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: #f0f0f0;
+      color: #3c3f41;
+      border-radius: 6px;
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+`;
+export const UserStoryFields = styled.div`
+  margin-top: 20px;
+`;
+
+export const UserStoryField = styled.div`
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+`;
+
+export const StyledModal = styled.div`
+  background: #fff;
+  width: 600px;
+  border: 2px solid dimgray;
+`;
+
+export const ModalBody = styled.div`
+  margin: 20px 0 20px 40px;
+  width: 100%;
+`;
+
+export const StoryButtonWrap = styled.div`
+  margin-right: auto;
+  margin-top: 10px;
+  display: flex;
+  gap: 15px;
+`;
+
+export const ButtonGroup = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-top: 20px;
 `;

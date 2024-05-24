@@ -56,14 +56,31 @@ export const HeaderWrap = styled.div`
 
 export const DataWrap = styled.div`
   display: flex;
-  width: 100%;
   justify-content: space-between;
   padding: 40px 50px;
-  display: flex;
-  width: 58%;
+  width: 60%;
   margin: 0 auto;
+  align-items: left;
+  justify-content: center;
+
+  @media only screen and (max-width: 900px) {
+    width: 90%;
+    padding: 30px 40px;
+  }
+
+  @media only screen and (max-width: 500px) {
+    width: 90%;
+    padding: 20px 10px;
+  }
+`;
+
+export const FeatureDataWrap = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 40px 50px;
+  width: 60%;
+  margin: 0 auto;
   align-items: left;
   justify-content: center;
 
@@ -171,6 +188,24 @@ export const OptionsWrap = styled.div`
   }
 `;
 
+export const UserStoryOptionWrap = styled.div`
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+
+  button {
+    border: 0.5px solid #000000;
+    font-size: 0.8rem;
+    font-weight: 700;
+    border-radius: 5px;
+    padding: 2px 10px;
+  }
+`;
 export const TextArea = styled.textarea`
   padding: 0.5rem 1rem;
   border-radius: 0.375rem;
@@ -299,4 +334,37 @@ export const ImgText = styled.h3`
   text-transform: uppercase;
   opacity: 0.5;
   margin-bottom: 0;
+`;
+export const InputField = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+export const Input = styled.input`
+  border: 1px solid #ccc;
+  max-height: 30px;
+  border-radius: 5px;
+  padding: 10px 20px;
+  position: relative;
+  caret-color: #618aff;
+  color: #3c3f41;
+  font-family: 'Barlow';
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  width: 80%;
+
+  ::placeholder {
+    color: #b0b7bc;
+    font-family: 'Barlow';
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+  }
+  :focus {
+    border: 2px solid #82b4ff;
+  }
 `;
