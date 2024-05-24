@@ -142,7 +142,7 @@ export const RowWrap = styled.div`
   margin-top: 1rem; /* Adjust this margin as needed */
 `;
 
-const EuiLinkStyled = styled(EuiLink) <{ isMobile: boolean }>`
+const EuiLinkStyled = styled(EuiLink)<{ isMobile: boolean }>`
   border: none;
   text-decoration: underline;
   margin-left: ${(props: any) => (props.isMobile ? 'auto' : '0')};
@@ -315,7 +315,6 @@ const WorkspaceMission = () => {
     window.open(githubUrl, '_blank');
   };
 
-
   const editTacticsActions = () => {
     setEditTactics(!editTactics);
     setDidplayTactics(false);
@@ -336,7 +335,6 @@ const WorkspaceMission = () => {
   const tacticsChange = (e: any) => {
     setTactics(e.target.value);
   };
-
 
   const submitMission = async () => {
     const body = {

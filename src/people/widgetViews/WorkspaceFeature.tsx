@@ -1,7 +1,5 @@
 import { EuiGlobalToastList, EuiLoadingSpinner } from '@elastic/eui';
-import {
-  DispatchSetStateAction,
-} from 'components/common/WorkspaceEditableFeild';
+import { DispatchSetStateAction } from 'components/common/WorkspaceEditableFeild';
 import {
   Body,
   FeatureBody,
