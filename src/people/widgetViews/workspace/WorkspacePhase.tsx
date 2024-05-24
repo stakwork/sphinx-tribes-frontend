@@ -189,7 +189,7 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
           <Label>Phasing</Label>
           <Button
             style={{ borderRadius: '5px', margin: 0, marginLeft: 'auto' }}
-            dataTestId="new-bounty-btn"
+            dataTestId="phase-add-btn"
             text="Add Phase"
             onClick={handleAddPhaseClick}
           />
