@@ -2594,6 +2594,30 @@ export class MainStore {
     }
   }
 
+  async deleteFeatureStory(
+    feature_uuid: string,
+    uuid: string
+  ): Promise<FeatureStory[] | undefined> {
+    try {
+      if (!uiStore.meInfo) return undefined;
+      const info = uiStore.meInfo;
+
+      const r: any = await fetch(`${TribesURL}/features/${feature_uuid}/story/${uuid}`, {
+        method: 'DELETE',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      return r.json();
+    } catch (e) {
+      console.error('getFeaturesByUuid', e);
+      return undefined;
+    }
+  }
+
   async addWorkspaceFeature(body: CreateFeatureInput): Promise<any> {
     try {
       if (!uiStore.meInfo) return {};

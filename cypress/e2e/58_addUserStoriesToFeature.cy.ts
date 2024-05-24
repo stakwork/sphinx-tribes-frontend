@@ -3,7 +3,7 @@ describe('Add user stories to features', () => {
     cy.login('carol');
     cy.wait(1000);
 
-    const WorkSpaceName = 'user story';
+    const WorkSpaceName = 'user story8';
 
     const workspace = {
       loggedInAs: 'carol',
@@ -46,12 +46,36 @@ describe('Add user stories to features', () => {
     cy.wait(1000);
 
     const userStory = 'this is the story of a user';
-    cy.get('[data-testid="story-input"]').type(userStory);
-    cy.get('[data-testid="story-input-update-btn"]').click();
+    for (let i = 1; i <= 2; i++) {
+      const userStoryWithNumber = `${userStory} ${i}`;
+      cy.get('[data-testid="story-input"]').type(userStoryWithNumber);
+      cy.get('[data-testid="story-input-update-btn"]').click();
+      cy.wait(1000);
+
+      cy.contains(userStoryWithNumber).should('exist', { timeout: 1000 });
+      cy.wait(1000);
+    }
+
+    cy.get('[data-testid="0-user-story-option-btn"]').click();
+    cy.get('[data-testid="user-story-edit-btn"]').click();
+    cy.wait(1000);
+    cy.get('[data-testid="edit-story-input"]').clear();
+    const updatedUserStory = 'this is the story of a user changed';
+    cy.get('[data-testid="edit-story-input"]').type(updatedUserStory);
+    cy.get('[data-testid="user-story-save-btn"]').click();
     cy.wait(1000);
 
-    cy.contains(userStory).should('exist', { timeout: 1000 });
-    cy.wait(5000);
+    cy.contains(updatedUserStory).should('exist', { timeout: 1000 });
+
+    cy.get('[data-testid="1-user-story-option-btn"]').click();
+    cy.get('[data-testid="user-story-edit-btn"]').click();
+    cy.wait(1000);
+    cy.get('[data-testid="user-story-delete-btn"]').click();
+    cy.wait(1000);
+    cy.contains('Delete').click({ force: true });
+    cy.wait(1000);
+    const userStoryWithNumber = `${userStory} ${2}`;
+    cy.contains(userStoryWithNumber).should('not.exist', { timeout: 1000 });
     cy.logout('carol');
   });
 });
