@@ -37,6 +37,8 @@ import {
   ButtonGroup,
   StoryButtonWrap
 } from './workspace/style';
+import WorkspacePhasingTabs from './workspace/WorkspacePhase';
+import { Phase, Toast } from './workspace/interface';
 
 type DispatchSetStateAction<T> = React.Dispatch<React.SetStateAction<T>>;
 
@@ -113,9 +115,10 @@ const WorkspaceEditableField = ({
 
     // Replace the markdown image syntax with HTML <img> tag
     return input
-      .replace(imageMarkdownRegex, (match: string, p1: string) => {
-        return `<img src="${p1}" alt="Uploaded Image" />`;
-      })
+      .replace(
+        imageMarkdownRegex,
+        (match: string, p1: string) => `<img src="${p1}" alt="Uploaded Image" />`
+      )
       .replace(/\n/g, '<br/>');
   };
 
@@ -256,7 +259,7 @@ const UserStoryModal: React.FC<UserStoryModalProps> = ({
   );
 };
 
-const WorkspaceFeature: React.FC = () => {
+const WorkspaceFeature = () => {
   const { main, ui } = useStores();
   const { feature_uuid } = useParams<{ feature_uuid: string }>();
   const [featureData, setFeatureData] = useState<Feature | null>(null);
@@ -265,6 +268,7 @@ const WorkspaceFeature: React.FC = () => {
   const [userStoryPriority, setUserStoryPriority] = useState<number>(0);
   const [featureStories, setFeatureStories] = useState<FeatureStory[] | undefined>([]);
   const [brief, setBrief] = useState<string>('');
+  const [phases, setPhases] = useState<Phase[]>([]);
   const [architecture, setArchitecture] = useState<string>('');
   const [requirements, setRequirements] = useState<string>('');
   const [editBrief, setEditBrief] = useState<boolean>(false);
@@ -278,8 +282,9 @@ const WorkspaceFeature: React.FC = () => {
   );
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [editUserStory, setEditUserStory] = useState<FeatureStory>();
+  const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const getFeatureData = useCallback(async (): Promise<void> => {
+  const getFeatureData = useCallback(async () => {
     if (!feature_uuid) return;
     const data = await main.getFeaturesByUuid(feature_uuid);
 
@@ -289,7 +294,18 @@ const WorkspaceFeature: React.FC = () => {
       setArchitecture(data.architecture);
       setRequirements(data.requirements);
     }
-    setLoading(false);
+
+    return data;
+  }, [feature_uuid, main]);
+
+  const getFeaturePhaseData = useCallback(async () => {
+    if (!feature_uuid) return;
+    const phases = await main.getFeaturePhases(feature_uuid);
+
+    if (phases) {
+      setPhases(phases);
+    }
+    return phases;
   }, [feature_uuid, main]);
 
   const getFeatureStoryData = useCallback(async (): Promise<void> => {
@@ -303,9 +319,10 @@ const WorkspaceFeature: React.FC = () => {
   }, [feature_uuid, main]);
 
   useEffect(() => {
-    getFeatureData();
-    getFeatureStoryData();
-  }, [getFeatureData, getFeatureStoryData]);
+    Promise.all([getFeatureData(), getFeaturePhaseData(), getFeatureStoryData()]).finally(() => {
+      setLoading(false);
+    });
+  }, [getFeatureData, getFeaturePhaseData, getFeatureStoryData]);
 
   const submitField = async (
     field: string,
@@ -399,9 +416,21 @@ const WorkspaceFeature: React.FC = () => {
     deleteHandler();
   };
 
+  const updateFeaturePhase = (reason: any, title: string, message: string) => {
+    getFeaturePhaseData();
+    setToasts([
+      {
+        id: '1',
+        title,
+        color: (reason === 'success' ? 'sucess' : 'danger') as any,
+        text: message
+      }
+    ]);
+  };
+
   const toastsEl = (
     <EuiGlobalToastList
-      toasts={ui.toasts}
+      toasts={toasts}
       dismissToast={() => ui.setToasts([])}
       toastLifeTimeMs={3000}
     />
@@ -523,15 +552,20 @@ const WorkspaceFeature: React.FC = () => {
           onSubmit={() => submitField('architecture', architecture, setEditArchitecture)}
           main={main}
         />
+        <WorkspacePhasingTabs
+          featureId={feature_uuid}
+          phases={phases}
+          updateFeaturePhase={updateFeaturePhase}
+        />
+        <UserStoryModal
+          open={modalOpen}
+          storyDescription={editUserStory?.description as string}
+          handleClose={handleModalClose}
+          handleSave={handleModalSave}
+          handleDelete={handleModalDelete}
+        />
       </FeatureDataWrap>
       {toastsEl}
-      <UserStoryModal
-        open={modalOpen}
-        storyDescription={editUserStory?.description as string}
-        handleClose={handleModalClose}
-        handleSave={handleModalSave}
-        handleDelete={handleModalDelete}
-      />
     </FeatureBody>
   );
 };
