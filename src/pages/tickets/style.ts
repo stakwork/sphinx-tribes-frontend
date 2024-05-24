@@ -171,6 +171,24 @@ export const OptionsWrap = styled.div`
   }
 `;
 
+export const UserStoryOptionWrap = styled.div`
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+
+  button {
+    border: 0.5px solid #000000;
+    font-size: 0.8rem;
+    font-weight: 700;
+    border-radius: 5px;
+    padding: 2px 10px;
+  }
+`;
 export const TextArea = styled.textarea`
   padding: 0.5rem 1rem;
   border-radius: 0.375rem;

@@ -9,16 +9,19 @@ import {
   OptionsWrap,
   TextArea,
   InputField,
-  Input
+  Input,
+  UserStoryOptionWrap
 } from 'pages/tickets/style';
 import React, { useCallback, useEffect, useState } from 'react';
 import history from 'config/history';
 import { useParams } from 'react-router-dom';
 import { useStores } from 'store';
 import { mainStore } from 'store/main';
-import { Feature } from 'store/interface';
+import { Feature, FeatureStory } from 'store/interface';
 import MaterialIcon from '@material/react-material-icon';
-import { FeatureStory } from 'store/interface';
+import { EuiOverlayMask, EuiModalHeader, EuiModalFooter, EuiText } from '@elastic/eui';
+import { Box } from '@mui/system';
+import { useDeleteConfirmationModal } from '../../components/common';
 import {
   ActionButton,
   ButtonWrap,
@@ -27,7 +30,12 @@ import {
   WorkspaceName,
   WorkspaceOption,
   UserStoryField,
-  UserStoryFields
+  UserStoryFields,
+  UserStoryOption,
+  StyledModal,
+  ModalBody,
+  ButtonGroup,
+  StoryButtonWrap
 } from './workspace/style';
 
 type DispatchSetStateAction<T> = React.Dispatch<React.SetStateAction<T>>;
@@ -175,6 +183,81 @@ const WorkspaceEditableField = ({
   );
 };
 
+interface UserStoryModalProps {
+  open: boolean;
+  storyDescription: string;
+  handleClose: () => void;
+  handleSave: (inputValue: string) => void;
+  handleDelete: () => void;
+}
+
+const UserStoryModal: React.FC<UserStoryModalProps> = ({
+  open,
+  storyDescription,
+  handleClose,
+  handleSave,
+  handleDelete
+}: UserStoryModalProps) => {
+  const [inputValue, setInputValue] = useState<string>(storyDescription);
+
+  useEffect(() => {
+    setInputValue(storyDescription);
+  }, [storyDescription]);
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(event.target.value);
+  };
+
+  return (
+    <>
+      {open && (
+        <EuiOverlayMask>
+          <StyledModal>
+            <EuiModalHeader>
+              <EuiText>
+                <h2>Edit User Story</h2>
+              </EuiText>
+            </EuiModalHeader>
+            <ModalBody>
+              <Label>User Story</Label>
+              <Input
+                placeholder="Edit Story"
+                onChange={handleInputChange}
+                value={inputValue}
+                data-testid="edit-story-input"
+              />
+            </ModalBody>
+            <EuiModalFooter>
+              <ButtonGroup>
+                <StoryButtonWrap>
+                  <ActionButton
+                    borderRadius="50px"
+                    data-testid="user-story-save-btn"
+                    onClick={() => handleSave(inputValue)}
+                  >
+                    Save
+                  </ActionButton>
+                  <ActionButton borderRadius="50px" color="cancel" onClick={handleClose}>
+                    Cancel
+                  </ActionButton>
+                </StoryButtonWrap>
+                <ActionButton
+                  borderRadius="50px"
+                  data-testid="user-story-delete-btn"
+                  marginTop="30px"
+                  color="cancel"
+                  onClick={handleDelete}
+                >
+                  Delete
+                </ActionButton>
+              </ButtonGroup>
+            </EuiModalFooter>
+          </StyledModal>
+        </EuiOverlayMask>
+      )}
+    </>
+  );
+};
+
 const WorkspaceFeature: React.FC = () => {
   const { main, ui } = useStores();
   const { feature_uuid } = useParams<{ feature_uuid: string }>();
@@ -192,6 +275,11 @@ const WorkspaceFeature: React.FC = () => {
   const [displayBriefOptions, setDisplayBriefOptions] = useState<boolean>(false);
   const [displayArchitectureOptions, setDisplayArchitectureOptions] = useState<boolean>(false);
   const [displayRequirementsOptions, setDisplayRequirementsOptions] = useState<boolean>(false);
+  const [displayUserStoryOptions, setDisplayUserStoryOptions] = useState<Record<number, boolean>>(
+    {}
+  );
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [editUserStory, setEditUserStory] = useState<FeatureStory>();
 
   const getFeatureData = useCallback(async (): Promise<void> => {
     if (!feature_uuid) return;
@@ -250,6 +338,69 @@ const WorkspaceFeature: React.FC = () => {
     setUserStory(e.target.value);
   };
 
+  const handleUserStoryOptionClick = (storyId: number) => {
+    setDisplayUserStoryOptions((prev: Record<number, boolean>) => ({
+      ...prev,
+      [storyId]: !prev[storyId]
+    }));
+  };
+
+  const handleUserStoryEdit = (featureStory: FeatureStory) => {
+    const storyId = featureStory?.id as number;
+    setEditUserStory(featureStory);
+    setModalOpen(true);
+    setDisplayUserStoryOptions((prev: Record<number, boolean>) => ({
+      ...prev,
+      [storyId]: !prev[storyId]
+    }));
+  };
+
+  const handleModalClose = () => {
+    setModalOpen(false);
+  };
+
+  const handleModalSave = async (inputValue: string) => {
+    const body = {
+      uuid: editUserStory?.uuid,
+      feature_uuid: editUserStory?.feature_uuid ?? '',
+      description: inputValue,
+      priority: editUserStory?.priority
+    };
+    await main.addFeatureStory(body);
+    await getFeatureStoryData();
+    setModalOpen(false);
+  };
+
+  const deleteUserStory = async () => {
+    await main.deleteFeatureStory(
+      editUserStory?.feature_uuid as string,
+      editUserStory?.uuid as string
+    );
+    await getFeatureStoryData();
+    return;
+  };
+
+  const { openDeleteConfirmation } = useDeleteConfirmationModal();
+
+  const deleteHandler = () => {
+    openDeleteConfirmation({
+      onDelete: deleteUserStory,
+      children: (
+        <Box fontSize={20} textAlign="center">
+          Are you sure you want to <br />
+          <Box component="span" fontWeight="500">
+            delete this User Story?
+          </Box>
+        </Box>
+      )
+    });
+  };
+
+  const handleModalDelete = async () => {
+    setModalOpen(false);
+    deleteHandler();
+  };
+
   const toastsEl = (
     <EuiGlobalToastList
       toasts={ui.toasts}
@@ -305,12 +456,32 @@ const WorkspaceFeature: React.FC = () => {
             </InputField>
 
             <UserStoryFields>
-              {featureStories?.map((story: FeatureStory) => (
-                <UserStoryField key={story.id}>
-                  <MaterialIcon icon="more_vert" />
-                  <span>{story.description}</span>
-                </UserStoryField>
-              ))}
+              {featureStories
+                ?.sort((a: FeatureStory, b: FeatureStory) => a.priority - b.priority)
+                ?.map((story: FeatureStory) => (
+                  <UserStoryField key={story.id}>
+                    <UserStoryOptionWrap>
+                      <MaterialIcon
+                        icon="more_vert"
+                        onClick={() => handleUserStoryOptionClick(story.id as number)}
+                        data-testid={`${story.priority}-user-story-option-btn`}
+                      />
+                      {displayUserStoryOptions[story?.id as number] && (
+                        <UserStoryOption>
+                          <ul>
+                            <li
+                              data-testid="user-story-edit-btn"
+                              onClick={() => handleUserStoryEdit(story)}
+                            >
+                              Edit
+                            </li>
+                          </ul>
+                        </UserStoryOption>
+                      )}
+                    </UserStoryOptionWrap>
+                    <span>{story.description}</span>
+                  </UserStoryField>
+                ))}
             </UserStoryFields>
           </Data>
         </FieldWrap>
@@ -356,6 +527,13 @@ const WorkspaceFeature: React.FC = () => {
         />
       </DataWrap>
       {toastsEl}
+      <UserStoryModal
+        open={modalOpen}
+        storyDescription={editUserStory?.description as string}
+        handleClose={handleModalClose}
+        handleSave={handleModalSave}
+        handleDelete={handleModalDelete}
+      />
     </FeatureBody>
   );
 };
