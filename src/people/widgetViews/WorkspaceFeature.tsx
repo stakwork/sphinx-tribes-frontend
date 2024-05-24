@@ -7,7 +7,9 @@ import {
   Label,
   Data,
   OptionsWrap,
-  TextArea
+  TextArea,
+  InputField,
+  Input
 } from 'pages/tickets/style';
 import React, { useCallback, useEffect, useState } from 'react';
 import history from 'config/history';
@@ -16,13 +18,16 @@ import { useStores } from 'store';
 import { mainStore } from 'store/main';
 import { Feature } from 'store/interface';
 import MaterialIcon from '@material/react-material-icon';
+import { FeatureStory } from 'store/interface';
 import {
   ActionButton,
   ButtonWrap,
   HeadNameWrap,
   FeatureHeadWrap,
   WorkspaceName,
-  WorkspaceOption
+  WorkspaceOption,
+  UserStoryField,
+  UserStoryFields
 } from './workspace/style';
 
 type DispatchSetStateAction<T> = React.Dispatch<React.SetStateAction<T>>;
@@ -175,6 +180,9 @@ const WorkspaceFeature: React.FC = () => {
   const { feature_uuid } = useParams<{ feature_uuid: string }>();
   const [featureData, setFeatureData] = useState<Feature | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [userStory, setUserStory] = useState<string>('');
+  const [userStoryPriority, setUserStoryPriority] = useState<number>(0);
+  const [featureStories, setFeatureStories] = useState<FeatureStory[] | undefined>([]);
   const [brief, setBrief] = useState<string>('');
   const [architecture, setArchitecture] = useState<string>('');
   const [requirements, setRequirements] = useState<string>('');
@@ -198,9 +206,20 @@ const WorkspaceFeature: React.FC = () => {
     setLoading(false);
   }, [feature_uuid, main]);
 
+  const getFeatureStoryData = useCallback(async (): Promise<void> => {
+    if (!feature_uuid) return;
+    const data = await main.getFeatureStories(feature_uuid);
+
+    setUserStoryPriority(data?.length as number);
+    setFeatureStories(data);
+
+    setLoading(false);
+  }, [feature_uuid, main]);
+
   useEffect(() => {
     getFeatureData();
-  }, [getFeatureData]);
+    getFeatureStoryData();
+  }, [getFeatureData, getFeatureStoryData]);
 
   const submitField = async (
     field: string,
@@ -215,6 +234,20 @@ const WorkspaceFeature: React.FC = () => {
     await main.addWorkspaceFeature(body);
     await getFeatureData();
     setIsEditing(false);
+  };
+
+  const handleUserStorySubmit = async () => {
+    const body = {
+      feature_uuid: feature_uuid ?? '',
+      description: userStory,
+      priority: userStoryPriority
+    };
+    await main.addFeatureStory(body);
+    await getFeatureStoryData();
+    setUserStory('');
+  };
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUserStory(e.target.value);
   };
 
   const toastsEl = (
@@ -249,6 +282,39 @@ const WorkspaceFeature: React.FC = () => {
         </HeadNameWrap>
       </FeatureHeadWrap>
       <DataWrap>
+        <FieldWrap>
+          <Label>User Stories</Label>
+          <Data>
+            <InputField>
+              <Input
+                placeholder="Enter Story"
+                onChange={handleChange}
+                value={userStory}
+                data-testid="story-input"
+              />
+
+              <ActionButton
+                marginTop="0"
+                height="30px"
+                color="cancel"
+                onClick={handleUserStorySubmit}
+                data-testid="story-input-update-btn"
+              >
+                Create
+              </ActionButton>
+            </InputField>
+
+            <UserStoryFields>
+              {featureStories?.map((story: FeatureStory) => (
+                <UserStoryField key={story.id}>
+                  <MaterialIcon icon="more_vert" />
+                  <span>{story.description}</span>
+                </UserStoryField>
+              ))}
+            </UserStoryFields>
+          </Data>
+        </FieldWrap>
+
         <WorkspaceEditableField
           label="Feature Brief"
           value={brief}

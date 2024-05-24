@@ -304,6 +304,23 @@ export interface Feature {
   updated_by: string;
 }
 
+export interface FeatureStory {
+  id?: number;
+  uuid: string;
+  feature_uuid: string;
+  description: string;
+  priority: number;
+  created: string;
+  updated: string;
+  created_by: string;
+  updated_by: string;
+}
+export interface CreateFeatureStoryInput {
+  feature_uuid: string;
+  description: string;
+  priority?: number;
+}
+
 export interface CreateFeatureInput {
   uuid?: string;
   workspace_uuid: string;

@@ -994,12 +994,13 @@ export const ButtonWrap = styled.div`
 
 interface ButtonProps {
   color?: string;
+  marginTop?: string;
+  height?: string;
 }
 
 export const ActionButton = styled.button<ButtonProps>`
   padding: 5px 20px;
   border-radius: 5px;
-  padding: 0.5rem 1rem;
   border-radius: 0.375rem;
   font-family: 'Barlow';
   font-size: 0.9375rem;
@@ -1007,9 +1008,9 @@ export const ActionButton = styled.button<ButtonProps>`
   font-weight: 500;
   line-height: 0rem;
   letter-spacing: 0.00938rem;
-  margin-top: 1.5rem;
+  margin-top: ${(p: any) => p.marginTop ?? '1.5rem'};
   border: none;
-  height: 40px;
+  height: ${(p: any) => p.height ?? '40px'};
   background: var(--Primary-blue, #618aff);
   box-shadow: 0px 2px 10px 0px rgba(97, 138, 255, 0.5);
   border: none;
@@ -1101,4 +1102,14 @@ export const WorkspaceOption = styled.div`
       color: #3c3f41;
     }
   }
+`;
+
+export const UserStoryFields = styled.div`
+  margin-top: 20px;
+`;
+
+export const UserStoryField = styled.div`
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
 `;
