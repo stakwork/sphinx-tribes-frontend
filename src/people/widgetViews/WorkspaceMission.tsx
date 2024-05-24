@@ -123,7 +123,7 @@ export const ImgContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 18rem;
+  width: 100%;
   height: 9rem;
   border-radius: 10px;
   overflow: hidden;
@@ -446,7 +446,7 @@ const WorkspaceMission = () => {
             </RightHeader>
           </Header>
         </HeaderWrap>
-        <DataWrap>
+        <DataWrap style={{ paddingBottom: '0px' }}>
           <LeftSection>
             <FieldWrap>
               <Label>Mission</Label>
@@ -586,70 +586,11 @@ const WorkspaceMission = () => {
                 </StyledList>
               </DataWrap2>
             </FieldWrap>
-            <FieldWrap>
-              <RowFlex>
-                <Label>Features</Label>
-                <Button
-                  onClick={toggleFeatureModal}
-                  style={{
-                    borderRadius: '5px',
-                    margin: 0,
-                    marginLeft: 'auto'
-                  }}
-                  dataTestId="new-feature-btn"
-                  text="New Feature"
-                />
-              </RowFlex>
-              <FeaturesWrap>
-                {features &&
-                  features.map((feat: Feature, i: number) => (
-                    <FeatureDataWrap key={i}>
-                      <FeatureCount>{i + 1}</FeatureCount>
-                      <FeatureData>
-                        <FeatureLink href={`/feature/${feat.uuid}`} target="_blank">
-                          {feat.name}
-                        </FeatureLink>
-                        <FeatureDetails>
-                          <FeatureText>Filter Status</FeatureText>
-                        </FeatureDetails>
-                      </FeatureData>
-                    </FeatureDataWrap>
-                  ))}
-              </FeaturesWrap>
-              <PaginatonSection>
-                <FlexDiv>
-                  {featuresCount > featureLimit ? (
-                    <PageContainer role="pagination">
-                      <PaginationImg
-                        src={paginationarrow1}
-                        alt="pagination arrow 1"
-                        onClick={() => paginatePrev()}
-                      />
-                      {activeTabs.map((page: number) => (
-                        <PaginationButtons
-                          data-testid={'page'}
-                          key={page}
-                          onClick={() => paginate(page)}
-                          active={page === currentPage}
-                        >
-                          {page}
-                        </PaginationButtons>
-                      ))}
-                      <PaginationImg
-                        src={paginationarrow2}
-                        alt="pagination arrow 2"
-                        onClick={() => paginateNext()}
-                      />
-                    </PageContainer>
-                  ) : null}
-                </FlexDiv>
-              </PaginatonSection>
-            </FieldWrap>
           </LeftSection>
           <RightSection>
             <FieldWrap>
               <Label>Schematic</Label>
-              <Data style={{ border: 'none', paddingLeft: '0px' }}>
+              <Data style={{ border: 'none', paddingLeft: '0px', padding: '5px 5px' }}>
                 <ImgContainer>
                   {workspaceData?.schematic_img ? (
                     <SelectedImg src={workspaceData?.schematic_img} alt="schematic image" />
@@ -678,6 +619,7 @@ const WorkspaceMission = () => {
                     <a
                       href={workspaceData?.schematic_url}
                       target="_blank"
+                      rel="noopener"
                       data-testid="schematic-url"
                       style={{ marginLeft: '0.5rem' }}
                     >
@@ -690,6 +632,67 @@ const WorkspaceMission = () => {
               </Data>
             </FieldWrap>
           </RightSection>
+        </DataWrap>
+        <DataWrap style={{ padding: '0px 20px' }}>
+          <FieldWrap>
+            <RowFlex>
+              <Label>Features</Label>
+              <Button
+                onClick={toggleFeatureModal}
+                style={{
+                  borderRadius: '5px',
+                  margin: 0,
+                  marginLeft: 'auto'
+                }}
+                dataTestId="new-feature-btn"
+                text="New Feature"
+              />
+            </RowFlex>
+            <FeaturesWrap>
+              {features &&
+                features.map((feat: Feature, i: number) => (
+                  <FeatureDataWrap key={i}>
+                    <FeatureCount>{i + 1}</FeatureCount>
+                    <FeatureData>
+                      <FeatureLink href={`/feature/${feat.uuid}`} target="_blank">
+                        {feat.name}
+                      </FeatureLink>
+                      <FeatureDetails>
+                        <FeatureText>Filter Status</FeatureText>
+                      </FeatureDetails>
+                    </FeatureData>
+                  </FeatureDataWrap>
+                ))}
+            </FeaturesWrap>
+            <PaginatonSection>
+              <FlexDiv>
+                {featuresCount > featureLimit ? (
+                  <PageContainer role="pagination">
+                    <PaginationImg
+                      src={paginationarrow1}
+                      alt="pagination arrow 1"
+                      onClick={() => paginatePrev()}
+                    />
+                    {activeTabs.map((page: number) => (
+                      <PaginationButtons
+                        data-testid={'page'}
+                        key={page}
+                        onClick={() => paginate(page)}
+                        active={page === currentPage}
+                      >
+                        {page}
+                      </PaginationButtons>
+                    ))}
+                    <PaginationImg
+                      src={paginationarrow2}
+                      alt="pagination arrow 2"
+                      onClick={() => paginateNext()}
+                    />
+                  </PageContainer>
+                ) : null}
+              </FlexDiv>
+            </PaginatonSection>
+          </FieldWrap>
         </DataWrap>
         <Modal
           visible={featureModal}
