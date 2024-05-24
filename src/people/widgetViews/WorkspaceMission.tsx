@@ -446,7 +446,7 @@ const WorkspaceMission = () => {
             </RightHeader>
           </Header>
         </HeaderWrap>
-        <DataWrap  style={{ paddingBottom: '0px' }}>
+        <DataWrap style={{ paddingBottom: '0px' }}>
           <LeftSection>
             <FieldWrap>
               <Label>Mission</Label>
@@ -633,7 +633,7 @@ const WorkspaceMission = () => {
             </FieldWrap>
           </RightSection>
         </DataWrap>
-        <DataWrap  style={{ padding: '0px 20px' }}>
+        <DataWrap style={{ padding: '0px 20px' }}>
           <FieldWrap>
               <RowFlex>
                 <Label>Features</Label>
