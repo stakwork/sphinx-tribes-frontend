@@ -81,6 +81,7 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
 
   const handleTabClick = (selectedTab: EuiTabbedContentTab) => {
     setSelectedIndex(parseInt(selectedTab.id));
+    setPhaseName(phases[selectedIndex]?.name);
   };
 
   const handleAddPhaseClick = () => {
@@ -111,9 +112,9 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
     const phase = phases[selectedIndex];
 
     const body = {
-      uuid: op === 'edit' ? phase.uuid || '' : '',
+      uuid: op === 'edit' ? phase?.uuid || '' : '',
       feature_uuid: featureId,
-      name: phaseName || phase.name,
+      name: phaseName || phase?.name,
       priority: phase?.priority
     };
 
@@ -130,6 +131,12 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
         phaseOperationMessages[op].title,
         phaseOperationMessages[op].message
       );
+    } finally {
+      if (op === 'edit') {
+        handleEditPhaseModalClose();
+      } else {
+        handleAddPhaseModalClose();
+      }
     }
   };
 
@@ -153,6 +160,8 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
         phaseOperationMessages[op].title,
         phaseOperationMessages[op].message
       );
+    } finally {
+      handleDeletePhaseModalClose();
     }
   };
 
@@ -210,7 +219,7 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
           onSave={() => createOrUpdateFeaturePhase('edit')}
           onEditPhase={handlePhaseNameChange}
           onClose={handleEditPhaseModalClose}
-          phaseName={phaseName || phases[selectedIndex].name}
+          phaseName={phaseName}
           onConfirmDelete={() => {
             setShowDeletePhaseModal(true);
             handleEditPhaseModalClose();

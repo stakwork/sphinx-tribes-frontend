@@ -1184,6 +1184,10 @@ export const ButtonGroup = styled.div`
 
 export const StyledEuiTabbedContent = styled(EuiTabbedContent as any)`
   && {
+    .euiTabs {
+      overflow: unset;
+    }
+
     .euiTab {
       position: relative;
       border-radius: 0 14px 0 0;
@@ -1202,6 +1206,7 @@ export const StyledEuiTabbedContent = styled(EuiTabbedContent as any)`
       .euiTab__prepend {
         color: black;
         border-radius: 8px;
+        margin-right: 3px;
         width: 25px;
       }
     }
@@ -1227,8 +1232,7 @@ export const TabContentOptions = styled.div`
   flex-direction: column;
   align-items: center;
   position: absolute;
-  transform: translate(-0%, -25%);
-  min-height: 50px;
+  transform: translate(-0%, -45%);
 `;
 
 export const TabContent = styled.div`

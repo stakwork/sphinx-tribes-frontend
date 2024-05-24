@@ -622,6 +622,7 @@ const WorkspaceMission = () => {
                       rel="noopener"
                       data-testid="schematic-url"
                       style={{ marginLeft: '0.5rem' }}
+                      rel="noreferrer"
                     >
                       schematic
                     </a>

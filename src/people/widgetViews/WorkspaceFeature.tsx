@@ -459,6 +459,7 @@ const WorkspaceFeature = () => {
           <WorkspaceName>{featureData?.name}</WorkspaceName>
         </HeadNameWrap>
       </FeatureHeadWrap>
+<<<<<<< HEAD
       <FeatureDataWrap>
         <FieldWrap>
           <Label>User Stories</Label>
@@ -513,6 +514,13 @@ const WorkspaceFeature = () => {
           </Data>
         </FieldWrap>
 
+=======
+      <DataWrap
+        style={{
+          flexDirection: 'column'
+        }}
+      >
+>>>>>>> c183154 (chore: ui fixes)
         <WorkspaceEditableField
           label="Feature Brief"
           value={brief}

@@ -76,6 +76,7 @@ export const DataWrap = styled.div`
 
 export const FeatureDataWrap = styled.div`
   display: flex;
+<<<<<<< HEAD
   flex-direction: column;
 <<<<<<< HEAD
   justify-content: space-between;
@@ -84,6 +85,9 @@ export const FeatureDataWrap = styled.div`
   margin: 0 auto;
 =======
 >>>>>>> 0a9db7e (feat: added phases to workspace features)
+=======
+  flex-direction: row;
+>>>>>>> c183154 (chore: ui fixes)
   align-items: left;
   justify-content: center;
 

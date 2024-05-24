@@ -22,6 +22,11 @@ const CenteredText = styled(EuiText)`
 const StyledButton = styled(EuiButton)`
   text-decoration: none !important;
   border-radius: 25px;
+  height: 35px;
+  display: flex;
+  align-item: center;
+  justify-content: space-between;
+  font-size: 12px;
 `;
 
 const CancelButton = styled(StyledButton)`
@@ -65,6 +70,14 @@ const Label = styled.span`
   margin-bottom: 3px;
 `;
 
+const DeleteIcon = styled.img`
+  width: 27.857px;
+  height: 30px;
+  flex-shrink: 0;
+  fill: var(--Input-Outline-1, #d0d5d8);
+  margin: 0 auto;
+`;
+
 interface ModalProps {
   onClose: () => void;
   onConfirmDelete?: () => void;
@@ -88,7 +101,15 @@ const ModalWrapper = (props: ModalWrapperProps) => {
           padding: '50px 30px 30px 30px'
         }}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '20px',
+            justifyContent: 'center',
+            height: '100%'
+          }}
+        >
           <ModalTitle>{title}</ModalTitle>
           {children}
         </div>
@@ -101,7 +122,8 @@ export const DeletePhaseModal = (props: ModalProps) => {
   const { onClose, onConfirmDelete } = props;
 
   return (
-    <ModalWrapper title="Delete Phase" onClose={onClose}>
+    <ModalWrapper title="" onClose={onClose}>
+      <DeleteIcon src="/static/Delete.svg" alt="delete icon" />
       <CenteredText>
         Are you sure you want to <br />
         <BoldText>Delete this Phase?</BoldText>
@@ -142,8 +164,10 @@ export const EditPhaseModal = (props: EditOrAddPhaseModalProps) => {
 
       <ModalContainer>
         <SaveButton onClick={onSave}>Save</SaveButton>
-
-        <DeleteButton onClick={onConfirmDelete}>Delete</DeleteButton>
+        <CancelButton onClick={onConfirmDelete}>
+          <DeleteIcon style={{ height: '14px' }} src="/static/Delete.svg" alt="delete icon" />{' '}
+          Delete
+        </CancelButton>
       </ModalContainer>
     </ModalWrapper>
   );
@@ -157,7 +181,7 @@ export const AddPhaseModal = (props: EditOrAddPhaseModalProps) => {
 
   return (
     <ModalWrapper title="Add Phase" onClose={onClose}>
-      <div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         <Label>Phase Name *</Label>
         <TextInput
           placeholder="Phase..."
