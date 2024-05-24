@@ -56,14 +56,31 @@ export const HeaderWrap = styled.div`
 
 export const DataWrap = styled.div`
   display: flex;
-  width: 100%;
   justify-content: space-between;
   padding: 40px 50px;
-  display: flex;
-  width: 58%;
+  width: 60%;
   margin: 0 auto;
+  align-items: left;
+  justify-content: center;
+
+  @media only screen and (max-width: 900px) {
+    width: 90%;
+    padding: 30px 40px;
+  }
+
+  @media only screen and (max-width: 500px) {
+    width: 90%;
+    padding: 20px 10px;
+  }
+`;
+
+export const FeatureDataWrap = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 40px 50px;
+  width: 60%;
+  margin: 0 auto;
   align-items: left;
   justify-content: center;
 

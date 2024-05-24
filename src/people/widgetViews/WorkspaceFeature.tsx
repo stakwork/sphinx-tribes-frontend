@@ -2,7 +2,7 @@ import { EuiGlobalToastList, EuiLoadingSpinner } from '@elastic/eui';
 import {
   Body,
   FeatureBody,
-  DataWrap,
+  FeatureDataWrap,
   FieldWrap,
   Label,
   Data,
@@ -230,18 +230,16 @@ const UserStoryModal: React.FC<UserStoryModalProps> = ({
               <ButtonGroup>
                 <StoryButtonWrap>
                   <ActionButton
-                    borderRadius="50px"
                     data-testid="user-story-save-btn"
                     onClick={() => handleSave(inputValue)}
                   >
                     Save
                   </ActionButton>
-                  <ActionButton borderRadius="50px" color="cancel" onClick={handleClose}>
+                  <ActionButton color="cancel" onClick={handleClose}>
                     Cancel
                   </ActionButton>
                 </StoryButtonWrap>
                 <ActionButton
-                  borderRadius="50px"
                   data-testid="user-story-delete-btn"
                   marginTop="30px"
                   color="cancel"
@@ -432,7 +430,7 @@ const WorkspaceFeature: React.FC = () => {
           <WorkspaceName>{featureData?.name}</WorkspaceName>
         </HeadNameWrap>
       </FeatureHeadWrap>
-      <DataWrap>
+      <FeatureDataWrap>
         <FieldWrap>
           <Label>User Stories</Label>
           <Data>
@@ -525,7 +523,7 @@ const WorkspaceFeature: React.FC = () => {
           onSubmit={() => submitField('architecture', architecture, setEditArchitecture)}
           main={main}
         />
-      </DataWrap>
+      </FeatureDataWrap>
       {toastsEl}
       <UserStoryModal
         open={modalOpen}
