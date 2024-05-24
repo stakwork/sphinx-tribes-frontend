@@ -3,7 +3,6 @@ import { FieldWrap, Label, Data, OptionsWrap, TextArea } from 'pages/tickets/sty
 import { ButtonWrap, ActionButton } from 'people/widgetViews/workspace/style';
 import React from 'react';
 
-
 export type DispatchSetStateAction<T> = React.Dispatch<React.SetStateAction<T>>;
 
 interface WSEditableFieldProps {
@@ -101,5 +100,3 @@ export const WorkspaceEditableField = ({
     </FieldWrap>
   );
 };
-
-
