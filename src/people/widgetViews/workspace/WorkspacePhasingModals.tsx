@@ -130,7 +130,9 @@ export const DeletePhaseModal = (props: ModalProps) => {
       </CenteredText>
       <ModalContainer>
         <CancelButton onClick={onClose}>Cancel</CancelButton>
-        <DeleteButton onClick={onConfirmDelete}>Delete</DeleteButton>
+        <DeleteButton data-testid="confirm-delete-phase" onClick={onConfirmDelete}>
+          Delete
+        </DeleteButton>
       </ModalContainer>
     </ModalWrapper>
   );

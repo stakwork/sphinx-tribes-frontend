@@ -39,7 +39,7 @@ const PhaseOptions = (props: PhaseOptionProps) => {
       {showOptions && (
         <WorkspaceOption>
           <ul>
-            <li data-testid={`$phase-edit-btn`} onClick={close}>
+            <li data-testid={`phase-edit-btn`} onClick={close}>
               Edit
             </li>
           </ul>

@@ -3,7 +3,7 @@ describe('Workspace Phasing Feature Tests', () => {
     cy.login('alice');
     cy.wait(1000);
 
-    const workspaceName = 'Dark Mode';
+    const workspaceName = 'Dark Mode 500';
 
     const workspace = {
       loggedInAs: 'alice',
@@ -53,9 +53,9 @@ describe('Workspace Phasing Feature Tests', () => {
     cy.contains(newPhase).should('exist');
     cy.wait(1000);
 
-    cy.get('.MaterialIcon').click();
+    cy.get('[data-testid="phase-option-btn"]').click();
     cy.wait(500);
-    cy.contains('Edit').click();
+    cy.get('[data-testid="phase-edit-btn"]').click();
     cy.wait(1000);
 
     const editedPhase = 'Super Admin';
@@ -68,11 +68,11 @@ describe('Workspace Phasing Feature Tests', () => {
 
     cy.get('[data-testid="phase-option-btn"]').click();
     cy.wait(500);
-    cy.contains('Edit').click();
+    cy.get('[data-testid="phase-edit-btn"]').click();
     cy.wait(1000);
     cy.contains('Delete').click();
     cy.wait(1000);
-    cy.contains('Delete').click();
+    cy.get('[data-testid="confirm-delete-phase"]').click();
     cy.wait(1000);
 
     cy.contains(editedPhase).should('not.exist');
