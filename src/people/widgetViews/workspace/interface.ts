@@ -88,3 +88,17 @@ export interface Repository {
   name?: string;
   url?: string;
 }
+
+export interface Phase {
+  uuid: string;
+  feature_uuid: string;
+  name: string;
+  priority: number;
+}
+
+export type PhaseOperationType = 'create' | 'edit' | 'delete';
+
+export interface PhaseOperationMessage {
+  title: string;
+  message: string;
+}

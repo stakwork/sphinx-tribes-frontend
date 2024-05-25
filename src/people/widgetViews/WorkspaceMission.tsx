@@ -702,7 +702,7 @@ const WorkspaceMission = () => {
                     <a
                       href={workspaceData?.schematic_url}
                       target="_blank"
-                      rel="noopener"
+                      rel="noopener noreferrer"
                       data-testid="schematic-url"
                       style={{ marginLeft: '0.5rem' }}
                     >
