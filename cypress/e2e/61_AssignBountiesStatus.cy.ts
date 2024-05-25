@@ -21,10 +21,9 @@ describe('Verify Bounty Status Consistency', () => {
     cy.create_bounty(bounty);
     cy.wait(1000);
 
-    cy.contains(activeUser).click();
-    cy.wait(1000);
-
-    cy.get('[data-testid="Bounties-tab"]').click();
+    cy.contains('Filter').click();
+    cy.wait(600);
+    cy.contains('Assigned').click();
     cy.wait(1000);
 
     cy.contains(bounty.title).click();
@@ -38,6 +37,12 @@ describe('Verify Bounty Status Consistency', () => {
     cy.wait(1000);
 
     cy.get('body').click(0, 0);
+
+    cy.contains(activeUser).click();
+    cy.wait(1000);
+
+    cy.get('[data-testid="Bounties-tab"]').click();
+    cy.wait(1000);
 
     // Verify status in list view
     cy.contains(bounty.title).should('exist');
