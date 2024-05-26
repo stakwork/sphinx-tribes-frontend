@@ -86,9 +86,9 @@ const FeatureDataWrap = styled.div`
   gap: 1rem;
 `;
 
-const PriorityButtons = styled.div`  
+const PriorityButtons = styled.div`
   display: flex;
-  flex-direction: row;  
+  flex-direction: row;
 `;
 
 const FeatureCount = styled.div`
@@ -656,36 +656,40 @@ const WorkspaceMission = () => {
                   features
                     .sort((a: Feature, b: Feature) => a.priority - b.priority)
                     .map((feat: Feature, i: number) => (
-                    <FeatureDataWrap key={i}>
-                      <FeatureCount>{i + 1}</FeatureCount>
-                      <FeatureData>                        
-                        <PriorityButtons>
-                          {features.length > 1 && i !== 0 && (
+                      <FeatureDataWrap key={i}>
+                        <FeatureCount>{i + 1}</FeatureCount>
+                        <FeatureData>
+                          <PriorityButtons>
+                            {features.length > 1 && i !== 0 && (
                               <MaterialIcon
-                                  icon={'arrow_upward'}
-                                  className="MaterialIcon"
-                                  onClick={() => handleFeaturePriority(feat, features[i-1])}
-                                  data-testid="priority-arrow-upward"
+                                icon={'arrow_upward'}
+                                className="MaterialIcon"
+                                onClick={() => handleFeaturePriority(feat, features[i - 1])}
+                                data-testid="priority-arrow-upward"
                               />
-                          )}
-                          {features.length > 1 && i !== features.length - 1 && (
+                            )}
+                            {features.length > 1 && i !== features.length - 1 && (
                               <MaterialIcon
-                                  icon={'arrow_downward'}
-                                  className="MaterialIcon"
-                                  onClick={() => handleFeaturePriority(feat, features[i+1])}
-                                  data-testid="priority-arrow-downward"
+                                icon={'arrow_downward'}
+                                className="MaterialIcon"
+                                onClick={() => handleFeaturePriority(feat, features[i + 1])}
+                                data-testid="priority-arrow-downward"
                               />
-                          )}
-                          <FeatureLink href={`/feature/${feat.uuid}`} target="_blank" style={{marginLeft: "1rem"}}>
-                            {feat.name}
-                          </FeatureLink>
-                        </PriorityButtons>
-                        <FeatureDetails>
-                          <FeatureText>Filter Status</FeatureText>
-                        </FeatureDetails>
-                      </FeatureData>
-                    </FeatureDataWrap>
-                  ))}
+                            )}
+                            <FeatureLink
+                              href={`/feature/${feat.uuid}`}
+                              target="_blank"
+                              style={{ marginLeft: '1rem' }}
+                            >
+                              {feat.name}
+                            </FeatureLink>
+                          </PriorityButtons>
+                          <FeatureDetails>
+                            <FeatureText>Filter Status</FeatureText>
+                          </FeatureDetails>
+                        </FeatureData>
+                      </FeatureDataWrap>
+                    ))}
               </FeaturesWrap>
               {featuresCount > featureLimit ? (
                 <PaginatonSection>
