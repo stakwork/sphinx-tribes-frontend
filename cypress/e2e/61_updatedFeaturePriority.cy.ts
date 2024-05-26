@@ -33,37 +33,64 @@ describe('Update Feature Priority', () => {
     cy.contains('No tactics yet');
 
     const features = ['Feature 1', 'Feature 2', 'Feature 3'];
-    features.forEach((feature, index) => {
-      cy.get('[data-testid="new-feature-btn"]').click();
-      cy.wait(1000);
+    console.log('Going to add 1st feature');
 
-      cy.contains('Add New Feature');
-      cy.wait(1000);
+    cy.get('[data-testid="new-feature-btn"]').click();
+    cy.wait(1000);
 
-      cy.get('[data-testid="feature-input"]').type(feature);
-      cy.get('[data-testid="add-feature-btn"]').click();
-      cy.wait(1000);
-      cy.contains(feature).should('exist', { timeout: 3000 });
+    cy.contains('Add New Feature');
+    cy.wait(1000);
 
-      if (index == 0) {
-        cy.contains('priority-arrow-upward-0').should('not.exist', { timeout: 3000 });
-        cy.contains('priority-arrow-downward-0').should('not.exist', { timeout: 3000 });
-      } else if (index == 1) {
-        cy.contains('priority-arrow-upward-0').should('not.exist', { timeout: 3000 });
-        cy.contains('priority-arrow-downward-0').should('exist', { timeout: 3000 });
-        cy.contains('priority-arrow-upward-1').should('exist', { timeout: 3000 });
-        cy.contains('priority-arrow-downward-1').should('not.exist', { timeout: 3000 });
-      } else {
-        cy.contains('priority-arrow-upward-0').should('not.exist', { timeout: 3000 });
-        cy.contains('priority-arrow-downward-0').should('exist', { timeout: 3000 });
-        cy.contains('priority-arrow-upward-1').should('exist', { timeout: 3000 });
-        cy.contains('priority-arrow-downward-1').should('exist', { timeout: 3000 });
-        cy.contains('priority-arrow-upward-2').should('exist', { timeout: 3000 });
-        cy.contains('priority-arrow-downward-2').should('not.exist', { timeout: 3000 });
-      }
+    cy.get('[data-testid="feature-input"]').type(feature);
+    cy.get('[data-testid="add-feature-btn"]').click();
+    cy.wait(1000);
 
-      cy.go('back');
-    });
+    cy.contains(features[0]).should('exist', { timeout: 3000 });
+    cy.contains('priority-arrow-upward-0').should('not.exist', { timeout: 3000 });
+    cy.contains('priority-arrow-downward-0').should('not.exist', { timeout: 3000 });
+
+    cy.go('back');
+    console.log('Going to add 2nd feature');
+
+    cy.get('[data-testid="new-feature-btn"]').click();
+    cy.wait(1000);
+
+    cy.contains('Add New Feature');
+    cy.wait(1000);
+
+    cy.get('[data-testid="feature-input"]').type(feature);
+    cy.get('[data-testid="add-feature-btn"]').click();
+    cy.wait(1000);
+    cy.contains(features[1]).should('exist', { timeout: 3000 });
+
+    cy.contains('priority-arrow-upward-0').should('not.exist', { timeout: 3000 });
+    cy.contains('priority-arrow-downward-0').should('exist', { timeout: 3000 });
+    cy.contains('priority-arrow-upward-1').should('exist', { timeout: 3000 });
+    cy.contains('priority-arrow-downward-1').should('not.exist', { timeout: 3000 });
+
+    cy.go('back');
+    console.log('Going to add 3rd feature');
+
+    cy.get('[data-testid="new-feature-btn"]').click();
+    cy.wait(1000);
+
+    cy.contains('Add New Feature');
+    cy.wait(1000);
+
+    cy.get('[data-testid="feature-input"]').type(feature);
+    cy.get('[data-testid="add-feature-btn"]').click();
+    cy.wait(1000);
+
+    cy.contains(features[1]).should('exist', { timeout: 3000 });
+    cy.contains('priority-arrow-upward-0').should('not.exist', { timeout: 3000 });
+    cy.contains('priority-arrow-downward-0').should('exist', { timeout: 3000 });
+    cy.contains('priority-arrow-upward-1').should('exist', { timeout: 3000 });
+    cy.contains('priority-arrow-downward-1').should('exist', { timeout: 3000 });
+    cy.contains('priority-arrow-upward-2').should('exist', { timeout: 3000 });
+    cy.contains('priority-arrow-downward-2').should('not.exist', { timeout: 3000 });
+
+    cy.go('back');
+    console.log('All features added successfully');
 
     // Assert the initial order of features
     cy.get('[data-testid="feature-item"]').then(($features) => {
