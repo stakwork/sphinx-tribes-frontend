@@ -397,40 +397,6 @@ const WorkspaceDetails = (props: {
           </Link>
         </HeadButtonWrap>
       </HeadWrap>
-      <ActionWrap>
-        <ActionHeader>
-          Balance <BalanceImg src={balanceIcon} />
-        </ActionHeader>
-        <HeadButtonWrap forSmallScreen={true}>
-          <Button
-            disabled={viewReportDisabled}
-            text="History"
-            data-testid="history-button"
-            dataTestId="workspace-view-transaction-history-button"
-            color="white"
-            style={{ borderRadius: '5px' }}
-            onClick={() => setIsOpenHistory(true)}
-          />
-          <Button
-            disabled={addWithdrawDisabled}
-            text="Withdraw"
-            data-testid="withdrawal-button"
-            dataTestId="workspace-withdraw-budget-button"
-            color="withdraw"
-            style={{ borderRadius: '5px' }}
-            onClick={() => setIsOpenWithdrawBudget(true)}
-          />
-          <Button
-            data-testid="deposit-button"
-            disabled={addBudgetDisabled}
-            text="Deposit"
-            dataTestId="workspace-deposit-budget-button"
-            color="success"
-            style={{ borderRadius: '5px' }}
-            onClick={() => setIsOpenBudget(true)}
-          />
-        </HeadButtonWrap>
-      </ActionWrap>
       <BudgetWrapComponent uuid={uuid} org={org} />
       <UserWrap>
         <UsersHeadWrap>

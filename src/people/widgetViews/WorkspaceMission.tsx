@@ -22,6 +22,7 @@ import {
   PageContainer,
   PaginationButtons
 } from 'pages/tickets/style';
+
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useStores } from 'store';
@@ -613,64 +614,6 @@ const WorkspaceMission = () => {
                 </StyledList>
               </DataWrap2>
             </FieldWrap>
-            <BudgetWrapComponent uuid={uuid} org={workspaceData} />
-            <FieldWrap>
-              <RowFlex>
-                <Label>Features</Label>
-                <Button
-                  onClick={toggleFeatureModal}
-                  style={{
-                    borderRadius: '5px',
-                    margin: 0,
-                    marginLeft: 'auto'
-                  }}
-                  dataTestId="new-feature-btn"
-                  text="New Feature"
-                />
-              </RowFlex>
-              <FeaturesWrap>
-                {features &&
-                  features.map((feat: Feature, i: number) => (
-                    <FeatureDataWrap key={i}>
-                      <FeatureCount>{i + 1}</FeatureCount>
-                      <FeatureData>
-                        <FeatureLink href={`/feature/${feat.uuid}`}>{feat.name}</FeatureLink>
-                        <FeatureDetails>
-                          <FeatureText>Filter Status</FeatureText>
-                        </FeatureDetails>
-                      </FeatureData>
-                    </FeatureDataWrap>
-                  ))}
-              </FeaturesWrap>
-              {featuresCount > featureLimit ? (
-                <PaginatonSection>
-                  <FlexDiv>
-                    <PageContainer role="pagination">
-                      <PaginationImg
-                        src={paginationarrow1}
-                        alt="pagination arrow 1"
-                        onClick={() => paginatePrev()}
-                      />
-                      {activeTabs.map((page: number) => (
-                        <PaginationButtons
-                          data-testid={'page'}
-                          key={page}
-                          onClick={() => paginate(page)}
-                          active={page === currentPage}
-                        >
-                          {page}
-                        </PaginationButtons>
-                      ))}
-                      <PaginationImg
-                        src={paginationarrow2}
-                        alt="pagination arrow 2"
-                        onClick={() => paginateNext()}
-                      />
-                    </PageContainer>
-                  </FlexDiv>
-                </PaginatonSection>
-              ) : null}
-            </FieldWrap>
           </LeftSection>
           <RightSection>
             <FieldWrap>
@@ -726,6 +669,71 @@ const WorkspaceMission = () => {
               <AvatarGroup avatarList={avatarList} avatarSize="xl" maxGroupSize={5} />
             </FieldWrap>
           </RightSection>
+        </DataWrap>
+
+        <DataWrap>
+          <FieldWrap>
+            <BudgetWrapComponent uuid={uuid} org={workspaceData} />
+          </FieldWrap>
+        </DataWrap>
+        <DataWrap>
+          <FieldWrap>
+            <RowFlex>
+              <Label>Features</Label>
+              <Button
+                onClick={toggleFeatureModal}
+                style={{
+                  borderRadius: '5px',
+                  margin: 0,
+                  marginLeft: 'auto'
+                }}
+                dataTestId="new-feature-btn"
+                text="New Feature"
+              />
+            </RowFlex>
+            <FeaturesWrap>
+              {features &&
+                features.map((feat: Feature, i: number) => (
+                  <FeatureDataWrap key={i}>
+                    <FeatureCount>{i + 1}</FeatureCount>
+                    <FeatureData>
+                      <FeatureLink href={`/feature/${feat.uuid}`}>{feat.name}</FeatureLink>
+                      <FeatureDetails>
+                        <FeatureText>Filter Status</FeatureText>
+                      </FeatureDetails>
+                    </FeatureData>
+                  </FeatureDataWrap>
+                ))}
+            </FeaturesWrap>
+            {featuresCount > featureLimit ? (
+              <PaginatonSection>
+                <FlexDiv>
+                  <PageContainer role="pagination">
+                    <PaginationImg
+                      src={paginationarrow1}
+                      alt="pagination arrow 1"
+                      onClick={() => paginatePrev()}
+                    />
+                    {activeTabs.map((page: number) => (
+                      <PaginationButtons
+                        data-testid={'page'}
+                        key={page}
+                        onClick={() => paginate(page)}
+                        active={page === currentPage}
+                      >
+                        {page}
+                      </PaginationButtons>
+                    ))}
+                    <PaginationImg
+                      src={paginationarrow2}
+                      alt="pagination arrow 2"
+                      onClick={() => paginateNext()}
+                    />
+                  </PageContainer>
+                </FlexDiv>
+              </PaginatonSection>
+            ) : null}
+          </FieldWrap>
         </DataWrap>
         <Modal
           visible={featureModal}
