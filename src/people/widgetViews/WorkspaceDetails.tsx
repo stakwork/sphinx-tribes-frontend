@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useCallback, useEffect, useState } from 'react';
 import { useStores } from 'store';
-import {
-  EuiGlobalToastList} from '@elastic/eui';
+import { EuiGlobalToastList } from '@elastic/eui';
 import { Button } from 'components/common';
 import {
   BountyRoles,
@@ -39,7 +38,8 @@ import {
   WorkspaceName,
   UserWrap,
   UsersHeadWrap,
-  UsersHeader} from './workspace/style';
+  UsersHeader
+} from './workspace/style';
 import AssignUserRoles from './workspace/AssignUserRole';
 
 let interval;
@@ -80,7 +80,6 @@ const WorkspaceDetails = (props: {
 
   const { org, close, getWorkspaces } = props;
   const uuid = org?.uuid || '';
-
 
   function addToast(title: string, color: 'danger' | 'success') {
     setToasts([
