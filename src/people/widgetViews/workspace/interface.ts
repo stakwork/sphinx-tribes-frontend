@@ -15,6 +15,12 @@ export interface EditWorkspaceModalProps extends ModalProps {
   addToast: (title: string, color: 'danger' | 'success') => void;
 }
 
+export interface ManageWorkspaceUsersModalProps extends ModalProps {
+  org?: Workspace;
+  users: Person[];
+  updateUsers: (users: Person[]) => void;
+}
+
 export interface UserRolesModalProps extends ModalProps {
   submitRoles: (roles: BountyRoles[]) => void;
   addToast: (title: string, color: 'danger' | 'success') => void;
@@ -81,4 +87,18 @@ export interface Repository {
   workspace_uuid?: string;
   name?: string;
   url?: string;
+}
+
+export interface Phase {
+  uuid: string;
+  feature_uuid: string;
+  name: string;
+  priority: number;
+}
+
+export type PhaseOperationType = 'create' | 'edit' | 'delete';
+
+export interface PhaseOperationMessage {
+  title: string;
+  message: string;
 }

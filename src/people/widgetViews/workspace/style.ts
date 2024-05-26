@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { Button } from 'components/common';
+import { EuiTabbedContent } from '@elastic/eui';
 
 interface SmallBtnProps {
   selected: boolean;
@@ -352,8 +353,8 @@ export const UserWrap = styled.div`
   display: flex;
   flex-direction: column;
   background-color: rgb(240, 241, 243);
+  width: 100%;
   @media only screen and (max-width: 700px) {
-    width: 100%;
     padding: 20px 0px;
   }
   @media only screen and (max-width: 500px) {
@@ -1001,7 +1002,7 @@ interface ButtonProps {
 
 export const ActionButton = styled.button<ButtonProps>`
   padding: 5px 20px;
-  width: 120px;
+  width: 124px;
   border-radius: 5px;
   border-radius: ${(p: any) => p.borderRadius ?? '0.375rem'};
   font-family: 'Barlow';
@@ -1179,4 +1180,68 @@ export const ButtonGroup = styled.div`
   align-items: center;
   width: 100%;
   margin-top: 20px;
+`;
+
+export const StyledEuiTabbedContent = styled(EuiTabbedContent as any)`
+  && {
+    .euiTabs {
+      overflow: unset;
+    }
+
+    .euiTab {
+      position: relative;
+      border-radius: 0 14px 0 0;
+      border: 1px solid #dde1e5;
+      margin: 0 5px;
+      text-decoration: none;
+      flex-direction: row-reverse;
+      gap: 10px;
+      max-width: 275px;
+
+      .euiTab__content {
+        color: #000;
+        text-overflow: ellipsis;
+      }
+
+      .euiTab__prepend {
+        color: black;
+        border-radius: 8px;
+        margin-right: 3px;
+        width: 25px;
+      }
+    }
+
+    .euiTab-isSelected {
+      color: black !important;
+      text-decoration: none;
+      box-shadow: unset;
+      border-bottom: unset;
+      background-color: #dde1e5;
+      z-index: 200;
+    }
+
+    .euiTabs--bottomBorder {
+      box-shadow: unset;
+    }
+  }
+`;
+
+export const TabContentOptions = styled.div`
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: absolute;
+  transform: translate(-0%, -45%);
+`;
+
+export const TabContent = styled.div`
+  width: 100%;
+  min-height: 275px;
+  border: 2px solid #dde1e5;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #dde1e5;
 `;

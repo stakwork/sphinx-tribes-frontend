@@ -2,7 +2,7 @@ import { uniqBy } from 'lodash';
 import memo from 'memo-decorator';
 import { action, makeAutoObservable, observable } from 'mobx';
 import { persist } from 'mobx-persist';
-import { Repository } from 'people/widgetViews/workspace/interface';
+import { Phase, Repository } from 'people/widgetViews/workspace/interface';
 import api from '../api';
 import { getHostIncludingDockerHosts } from '../config/host';
 import { TribesURL } from '../config/host';
@@ -3048,6 +3048,83 @@ export class MainStore {
       return data;
     } catch (e) {
       console.log('Error deleteRepository', e);
+      return null;
+    }
+  }
+
+  async getFeaturePhases(feature_uuid: string): Promise<Phase[]> {
+    try {
+      if (!uiStore.meInfo) return [];
+      const info = uiStore.meInfo;
+      const response = await fetch(`${TribesURL}/features/${feature_uuid}/phase`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (e) {
+      console.log('Error getRepositories', e);
+      return [];
+    }
+  }
+
+  async createOrUpdatePhase(phase: Phase): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return [];
+      const info = uiStore.meInfo;
+
+      const url = `${TribesURL}/features/phase`;
+      const method = 'POST';
+      const mode = 'cors';
+      const headers = {
+        'x-jwt': info.tribe_jwt,
+        'Content-Type': 'application/json'
+      };
+      const body = JSON.stringify(phase);
+
+      const response = await fetch(url, { method, mode, headers, body });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (e) {
+      console.log('Error createOrUpdatePhase', e);
+      return null;
+    }
+  }
+
+  async deletePhase(feature_uuid: string, phase_uuid: string): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return [];
+      const info = uiStore.meInfo;
+      const response = await fetch(`${TribesURL}/features/${feature_uuid}/phase/${phase_uuid}`, {
+        method: 'DELETE',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (e) {
+      console.log('Error deletePhase', e);
       return null;
     }
   }

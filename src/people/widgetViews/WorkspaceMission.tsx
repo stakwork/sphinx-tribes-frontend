@@ -1,4 +1,4 @@
-import { EuiGlobalToastList, EuiLoadingSpinner } from '@elastic/eui';
+import { EuiGlobalToastList, EuiLink, EuiLoadingSpinner } from '@elastic/eui';
 import {
   Body,
   WorkspaceBody,
@@ -22,12 +22,12 @@ import {
   PageContainer,
   PaginationButtons
 } from 'pages/tickets/style';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useStores } from 'store';
 import { useDeleteConfirmationModal } from 'components/common';
 import { Box } from '@mui/system';
-import { Feature, featureLimit, Workspace } from 'store/interface';
+import { Feature, featureLimit, Person, Workspace } from 'store/interface';
 import MaterialIcon from '@material/react-material-icon';
 import { Button, Modal } from 'components/common';
 import {
@@ -44,6 +44,7 @@ import websiteIcon from 'pages/tickets/workspace/workspaceHeader/Icons/websiteIc
 import { EuiToolTip } from '@elastic/eui';
 import { useIsMobile } from 'hooks';
 import styled from 'styled-components';
+import { AvatarGroup } from 'components/common/AvatarGroup';
 import avatarIcon from '../../public/static/profile_avatar.svg';
 import threeDotsIcon from '../widgetViews/Icons/threeDotsIcon.svg';
 import { colors } from '../../config/colors';
@@ -60,12 +61,12 @@ import {
   ImgText
 } from './workspace/style';
 import AddRepoModal from './workspace/AddRepoModal';
-
 import EditSchematic from './workspace/EditSchematicModal';
+import ManageWorkspaceUsersModal from './workspace/ManageWorkspaceUsersModal';
 const color = colors['light'];
 
 const PaginatonSection = styled.div`
-  height: 150px;
+  height: 50px;
   flex-shrink: 0;
   align-self: stretch;
   border-radius: 8px;
@@ -147,6 +148,13 @@ export const RowWrap = styled.div`
   margin-top: 1rem; /* Adjust this margin as needed */
 `;
 
+const EuiLinkStyled = styled(EuiLink)<{ isMobile: boolean }>`
+  border: none;
+  text-decoration: underline;
+  margin-left: ${(props: any) => (props.isMobile ? 'auto' : '0')};
+  margin: ${(props: any) => (props.isMobile ? '0' : '0')};
+`;
+
 const WorkspaceMission = () => {
   const { main, ui } = useStores();
   const { uuid } = useParams<{ uuid: string }>();
@@ -171,6 +179,8 @@ const WorkspaceMission = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [featuresCount, setFeaturesCount] = useState(0);
   const [activeTabs, setActiveTabs] = useState<number[]>([]);
+  const [isOpenUserManage, setIsOpenUserManage] = useState<boolean>(false);
+  const [users, setUsers] = useState<Person[]>([]);
 
   const paginationLimit = Math.floor(featuresCount / featureLimit) + 1;
   const visibleTabs = 3;
@@ -249,9 +259,18 @@ const WorkspaceMission = () => {
     setLoading(false);
   }, [uuid, main]);
 
+  const getWorkspaceUsers = useCallback(async () => {
+    if (uuid) {
+      const users = await main.getWorkspaceUsers(uuid);
+      setUsers(users);
+      return users;
+    }
+  }, [main, uuid]);
+
   useEffect(() => {
     getWorkspaceData();
-  }, [getWorkspaceData]);
+    getWorkspaceUsers();
+  }, [getWorkspaceData, getWorkspaceUsers]);
 
   const getFeaturesCount = useCallback(async () => {
     if (!uuid) return;
@@ -423,6 +442,10 @@ const WorkspaceMission = () => {
       toastLifeTimeMs={3000}
     />
   );
+  const avatarList = useMemo(
+    () => users.map((user: Person) => ({ name: user.owner_alias, imageUrl: user.img })),
+    [users]
+  );
 
   if (loading) {
     return (
@@ -431,6 +454,9 @@ const WorkspaceMission = () => {
       </Body>
     );
   }
+
+  const toggleManageUserModal = () => setIsOpenUserManage(!isOpenUserManage);
+  const updateWorkspaceUsers = (updatedUsers: Person[]) => setUsers(updatedUsers);
 
   return (
     !loading && (
@@ -611,6 +637,85 @@ const WorkspaceMission = () => {
                 </StyledList>
               </DataWrap2>
             </FieldWrap>
+            <FieldWrap>
+              <RowFlex>
+                <Label>Features</Label>
+                <Button
+                  onClick={toggleFeatureModal}
+                  style={{
+                    borderRadius: '5px',
+                    margin: 0,
+                    marginLeft: 'auto'
+                  }}
+                  dataTestId="new-feature-btn"
+                  text="New Feature"
+                />
+              </RowFlex>
+              <FeaturesWrap>
+                {features &&
+                  features
+                    .sort((a: Feature, b: Feature) => a.priority - b.priority)
+                    .map((feat: Feature, i: number) => (
+                    <FeatureDataWrap key={i}>
+                      <FeatureCount>{i + 1}</FeatureCount>
+                      <FeatureData>                        
+                        <PriorityButtons>
+                          {features.length > 1 && i !== 0 && (
+                              <MaterialIcon
+                                  icon={'arrow_upward'}
+                                  className="MaterialIcon"
+                                  onClick={() => handleFeaturePriority(feat, features[i-1])}
+                                  data-testid="priority-arrow-upward"
+                              />
+                          )}
+                          {features.length > 1 && i !== features.length - 1 && (
+                              <MaterialIcon
+                                  icon={'arrow_downward'}
+                                  className="MaterialIcon"
+                                  onClick={() => handleFeaturePriority(feat, features[i+1])}
+                                  data-testid="priority-arrow-downward"
+                              />
+                          )}
+                          <FeatureLink href={`/feature/${feat.uuid}`} target="_blank" style={{marginLeft: "1rem"}}>
+                            {feat.name}
+                          </FeatureLink>
+                        </PriorityButtons>
+                        <FeatureDetails>
+                          <FeatureText>Filter Status</FeatureText>
+                        </FeatureDetails>
+                      </FeatureData>
+                    </FeatureDataWrap>
+                  ))}
+              </FeaturesWrap>
+              {featuresCount > featureLimit ? (
+                <PaginatonSection>
+                  <FlexDiv>
+                    <PageContainer role="pagination">
+                      <PaginationImg
+                        src={paginationarrow1}
+                        alt="pagination arrow 1"
+                        onClick={() => paginatePrev()}
+                      />
+                      {activeTabs.map((page: number) => (
+                        <PaginationButtons
+                          data-testid={'page'}
+                          key={page}
+                          onClick={() => paginate(page)}
+                          active={page === currentPage}
+                        >
+                          {page}
+                        </PaginationButtons>
+                      ))}
+                      <PaginationImg
+                        src={paginationarrow2}
+                        alt="pagination arrow 2"
+                        onClick={() => paginateNext()}
+                      />
+                    </PageContainer>
+                  </FlexDiv>
+                </PaginatonSection>
+              ) : null}
+            </FieldWrap>
           </LeftSection>
           <RightSection>
             <FieldWrap>
@@ -644,7 +749,7 @@ const WorkspaceMission = () => {
                     <a
                       href={workspaceData?.schematic_url}
                       target="_blank"
-                      rel="noopener"
+                      rel="noopener noreferrer"
                       data-testid="schematic-url"
                       style={{ marginLeft: '0.5rem' }}
                     >
@@ -656,88 +761,16 @@ const WorkspaceMission = () => {
                 </RowWrap>
               </Data>
             </FieldWrap>
+            <FieldWrap>
+              <RowFlex style={{ gap: '25px', marginBottom: '15px' }}>
+                <Label style={{ margin: 0 }}>People</Label>
+                <EuiLinkStyled isMobile={isMobile} color="primary" onClick={toggleManageUserModal}>
+                  Manage
+                </EuiLinkStyled>
+              </RowFlex>
+              <AvatarGroup avatarList={avatarList} avatarSize="xl" maxGroupSize={5} />
+            </FieldWrap>
           </RightSection>
-        </DataWrap>
-        <DataWrap style={{ padding: '0px 20px' }}>
-          <FieldWrap>
-            <RowFlex>
-              <Label>Features</Label>
-              <Button
-                onClick={toggleFeatureModal}
-                style={{
-                  borderRadius: '5px',
-                  margin: 0,
-                  marginLeft: 'auto'
-                }}
-                dataTestId="new-feature-btn"
-                text="New Feature"
-              />
-            </RowFlex>
-            <FeaturesWrap>
-              {features &&
-                features
-                    .sort((a: Feature, b: Feature) => a.priority - b.priority)
-                    .map((feat: Feature, i: number) => (
-                  <FeatureDataWrap key={i}>
-                    <FeatureCount>{i + 1}</FeatureCount>
-                    <FeatureData>
-                      <PriorityButtons>
-                        {features.length > 1 && i !== 0 && (
-                            <MaterialIcon
-                                icon={'arrow_upward'}
-                                className="MaterialIcon"
-                                onClick={() => handleFeaturePriority(feat, features[i-1])}
-                                data-testid="priority-arrow-upward"
-                            />
-                        )}
-                        {features.length > 1 && i !== features.length - 1 && (
-                            <MaterialIcon
-                                icon={'arrow_downward'}
-                                className="MaterialIcon"
-                                onClick={() => handleFeaturePriority(feat, features[i+1])}
-                                data-testid="priority-arrow-downward"
-                            />
-                        )}
-                        <FeatureLink href={`/feature/${feat.uuid}`} target="_blank" style={{marginLeft: "1rem"}}>
-                          {feat.name}
-                        </FeatureLink>
-                      </PriorityButtons>
-                      <FeatureDetails>
-                        <FeatureText>Filter Status</FeatureText>
-                      </FeatureDetails>
-                    </FeatureData>
-                  </FeatureDataWrap>
-                ))}
-            </FeaturesWrap>
-            <PaginatonSection>
-              <FlexDiv>
-                {featuresCount > featureLimit ? (
-                  <PageContainer role="pagination">
-                    <PaginationImg
-                      src={paginationarrow1}
-                      alt="pagination arrow 1"
-                      onClick={() => paginatePrev()}
-                    />
-                    {activeTabs.map((page: number) => (
-                      <PaginationButtons
-                        data-testid={'page'}
-                        key={page}
-                        onClick={() => paginate(page)}
-                        active={page === currentPage}
-                      >
-                        {page}
-                      </PaginationButtons>
-                    ))}
-                    <PaginationImg
-                      src={paginationarrow2}
-                      alt="pagination arrow 2"
-                      onClick={() => paginateNext()}
-                    />
-                  </PageContainer>
-                ) : null}
-              </FlexDiv>
-            </PaginatonSection>
-          </FieldWrap>
         </DataWrap>
         <Modal
           visible={featureModal}
@@ -838,6 +871,16 @@ const WorkspaceMission = () => {
             schematic_img={workspaceData?.schematic_img ?? ''}
           />
         </Modal>
+        {isOpenUserManage && (
+          <ManageWorkspaceUsersModal
+            isOpen={isOpenUserManage}
+            close={() => setIsOpenUserManage(!isOpenUserManage)}
+            uuid={uuid}
+            org={workspaceData}
+            users={users}
+            updateUsers={updateWorkspaceUsers}
+          />
+        )}
         {toastsEl}
       </WorkspaceBody>
     )
