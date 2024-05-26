@@ -157,6 +157,8 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
   };
 
   const onPanelClick = (person: any, item: any) => {
+    console.log('person: ', person)
+    console.log('item: ', item)
     history.push(`/feature/${props.workspace_uuid}`);
   };
 
