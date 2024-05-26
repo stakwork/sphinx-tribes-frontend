@@ -1,12 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useCallback, useEffect, useState } from 'react';
 import { useStores } from 'store';
 import {
-  EuiFlexGrid,
-  EuiFlexItem,
-  EuiGlobalToastList,
-  useIsWithinBreakpoints,
-  EuiIcon
-} from '@elastic/eui';
+  EuiGlobalToastList} from '@elastic/eui';
 import { Button } from 'components/common';
 import {
   BountyRoles,
@@ -23,7 +19,6 @@ import { BountyModal } from 'people/main/bountyModal';
 import { Link } from 'react-router-dom';
 import history from '../../config/history';
 import avatarIcon from '../../public/static/profile_avatar.svg';
-import balanceIcon from '../../public/static/toll.svg';
 import DeleteTicketModal from './DeleteModal';
 import RolesModal from './workspace/RolesModal';
 import HistoryModal from './workspace/HistoryModal';
@@ -34,7 +29,6 @@ import EditWorkspaceModal from './workspace/EditWorkspaceModal';
 import Users from './workspace/UsersList';
 import { BudgetWrapComponent } from './BudgetWrap';
 import {
-  ActionWrap,
   Container,
   DetailsWrap,
   HeadButton,
@@ -45,10 +39,7 @@ import {
   WorkspaceName,
   UserWrap,
   UsersHeadWrap,
-  UsersHeader,
-  ActionHeader,
-  BalanceImg
-} from './workspace/style';
+  UsersHeader} from './workspace/style';
 import AssignUserRoles from './workspace/AssignUserRole';
 
 let interval;
@@ -86,14 +77,10 @@ const WorkspaceDetails = (props: {
     !isWorkspaceAdmin && !userHasRole(main.bountyRoles, userRoles, 'EDIT ORGANIZATION');
   const viewReportDisabled =
     !isWorkspaceAdmin && !userHasRole(main.bountyRoles, userRoles, 'VIEW REPORT');
-  const addBudgetDisabled =
-    !isWorkspaceAdmin && !userHasRole(main.bountyRoles, userRoles, 'ADD BUDGET');
-  const addWithdrawDisabled =
-    !isWorkspaceAdmin && !userHasRole(main.bountyRoles, userRoles, 'WITHDRAW BUDGET');
 
   const { org, close, getWorkspaces } = props;
   const uuid = org?.uuid || '';
-  const isMobile = useIsWithinBreakpoints(['xs', 's']);
+
 
   function addToast(title: string, color: 'danger' | 'success') {
     setToasts([
