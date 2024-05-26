@@ -672,7 +672,7 @@ const WorkspaceMission = () => {
         </DataWrap>
 
         <DataWrap>
-          <FieldWrap>
+          <FieldWrap style={{ background: 'white' }}>
             <BudgetWrapComponent uuid={uuid} org={workspaceData} />
           </FieldWrap>
         </DataWrap>

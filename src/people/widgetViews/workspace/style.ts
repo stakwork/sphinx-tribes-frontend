@@ -1245,3 +1245,7 @@ export const TabContent = styled.div`
   align-items: center;
   background-color: #dde1e5;
 `;
+
+export const Background = styled.div`
+  color: white;
+`;
