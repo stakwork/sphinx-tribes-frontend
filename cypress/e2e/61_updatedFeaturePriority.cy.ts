@@ -32,13 +32,14 @@ describe('Update Feature Priority', () => {
     cy.contains('No mission yet');
     cy.contains('No tactics yet');
 
-    cy.get('[data-testid="new-feature-btn"]').click();
-    cy.wait(1000);
-
-    cy.contains('Add New Feature');
-
     const features = ['Feature 1', 'Feature 2', 'Feature 3'];
     features.forEach((feature, index) => {
+      cy.get('[data-testid="new-feature-btn"]').click();
+      cy.wait(1000);
+
+      cy.contains('Add New Feature');
+      cy.wait(1000);
+
       cy.get('[data-testid="feature-input"]').type(feature);
       cy.get('[data-testid="add-feature-btn"]').click();
       cy.wait(1000);
@@ -60,6 +61,8 @@ describe('Update Feature Priority', () => {
         cy.contains('priority-arrow-upward-2').should('exist', { timeout: 3000 });
         cy.contains('priority-arrow-downward-2').should('not.exist', { timeout: 3000 });
       }
+
+      cy.go('back');
     });
 
     // Assert the initial order of features
