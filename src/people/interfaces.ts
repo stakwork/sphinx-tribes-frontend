@@ -42,6 +42,7 @@ export interface FocusViewProps {
   setRemoveNextAndPrev?: (boolean) => void;
   setAfterEdit?: (boolean) => void;
   getBounty?: () => Promise<void>;
+  phase_uuid?: string;
 }
 
 export interface PeopleMobileeHeaderProps {
