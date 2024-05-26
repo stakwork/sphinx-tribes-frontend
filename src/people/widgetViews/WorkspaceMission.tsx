@@ -63,6 +63,7 @@ import {
 import AddRepoModal from './workspace/AddRepoModal';
 import EditSchematic from './workspace/EditSchematicModal';
 import ManageWorkspaceUsersModal from './workspace/ManageWorkspaceUsersModal';
+import { BudgetWrapComponent } from './BudgetWrap';
 const color = colors['light'];
 
 const PaginatonSection = styled.div`
@@ -612,6 +613,7 @@ const WorkspaceMission = () => {
                 </StyledList>
               </DataWrap2>
             </FieldWrap>
+            <BudgetWrapComponent uuid={uuid} org={workspaceData} />
             <FieldWrap>
               <RowFlex>
                 <Label>Features</Label>
