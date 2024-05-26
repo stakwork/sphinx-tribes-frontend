@@ -656,7 +656,7 @@ const WorkspaceMission = () => {
                   features
                     .sort((a: Feature, b: Feature) => a.priority - b.priority)
                     .map((feat: Feature, i: number) => (
-                      <FeatureDataWrap key={i}>
+                      <FeatureDataWrap key={i} data-testid="feature-item">
                         <FeatureCount>{i + 1}</FeatureCount>
                         <FeatureData>
                           <PriorityButtons>
@@ -665,7 +665,7 @@ const WorkspaceMission = () => {
                                 icon={'arrow_upward'}
                                 className="MaterialIcon"
                                 onClick={() => handleFeaturePriority(feat, features[i - 1])}
-                                data-testid="priority-arrow-upward"
+                                data-testid={`priority-arrow-upward-${i}`}
                               />
                             )}
                             {features.length > 1 && i !== features.length - 1 && (
@@ -673,7 +673,7 @@ const WorkspaceMission = () => {
                                 icon={'arrow_downward'}
                                 className="MaterialIcon"
                                 onClick={() => handleFeaturePriority(feat, features[i + 1])}
-                                data-testid="priority-arrow-downward"
+                                data-testid={`priority-arrow-downward-${i}`}
                               />
                             )}
                             <FeatureLink
@@ -692,7 +692,11 @@ const WorkspaceMission = () => {
                     ))}
               </FeaturesWrap>
               {featuresCount > featureLimit ? (
-                <PaginatonSection>
+                <PaginatonSection
+                  style={{
+                    marginBottom: '3rem'
+                  }}
+                >
                   <FlexDiv>
                     <PageContainer role="pagination">
                       <PaginationImg
