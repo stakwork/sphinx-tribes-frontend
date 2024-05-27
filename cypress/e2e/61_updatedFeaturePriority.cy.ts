@@ -41,7 +41,7 @@ describe('Update Feature Priority', () => {
     cy.contains('Add New Feature');
     cy.wait(1000);
 
-    cy.get('[data-testid="feature-input"]').type(feature);
+    cy.get('[data-testid="feature-input"]').type(features[0]);
     cy.get('[data-testid="add-feature-btn"]').click();
     cy.wait(1000);
 
@@ -49,7 +49,6 @@ describe('Update Feature Priority', () => {
     cy.contains('priority-arrow-upward-0').should('not.exist', { timeout: 3000 });
     cy.contains('priority-arrow-downward-0').should('not.exist', { timeout: 3000 });
 
-    cy.go('back');
     console.log('Going to add 2nd feature');
 
     cy.get('[data-testid="new-feature-btn"]').click();
@@ -58,7 +57,7 @@ describe('Update Feature Priority', () => {
     cy.contains('Add New Feature');
     cy.wait(1000);
 
-    cy.get('[data-testid="feature-input"]').type(feature);
+    cy.get('[data-testid="feature-input"]').type(features[0]);
     cy.get('[data-testid="add-feature-btn"]').click();
     cy.wait(1000);
     cy.contains(features[1]).should('exist', { timeout: 3000 });
@@ -68,7 +67,6 @@ describe('Update Feature Priority', () => {
     cy.contains('priority-arrow-upward-1').should('exist', { timeout: 3000 });
     cy.contains('priority-arrow-downward-1').should('not.exist', { timeout: 3000 });
 
-    cy.go('back');
     console.log('Going to add 3rd feature');
 
     cy.get('[data-testid="new-feature-btn"]').click();
@@ -77,11 +75,11 @@ describe('Update Feature Priority', () => {
     cy.contains('Add New Feature');
     cy.wait(1000);
 
-    cy.get('[data-testid="feature-input"]').type(feature);
+    cy.get('[data-testid="feature-input"]').type(features[0]);
     cy.get('[data-testid="add-feature-btn"]').click();
     cy.wait(1000);
 
-    cy.contains(features[1]).should('exist', { timeout: 3000 });
+    cy.contains(features[2]).should('exist', { timeout: 3000 });
     cy.contains('priority-arrow-upward-0').should('not.exist', { timeout: 3000 });
     cy.contains('priority-arrow-downward-0').should('exist', { timeout: 3000 });
     cy.contains('priority-arrow-upward-1').should('exist', { timeout: 3000 });
@@ -89,7 +87,6 @@ describe('Update Feature Priority', () => {
     cy.contains('priority-arrow-upward-2').should('exist', { timeout: 3000 });
     cy.contains('priority-arrow-downward-2').should('not.exist', { timeout: 3000 });
 
-    cy.go('back');
     console.log('All features added successfully');
 
     // Assert the initial order of features

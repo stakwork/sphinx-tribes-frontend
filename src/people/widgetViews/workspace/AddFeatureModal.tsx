@@ -107,7 +107,7 @@ const AddFeature = (props: {
           props.closeHandler();
 
           const feature = await res.json();
-          history.push(`/feature/${feature.uuid}`);
+          history.push(`/workspace/${feature.workspace_uuid}`);
         }, 500);
       } else {
         addErrorToast(await res.json());
