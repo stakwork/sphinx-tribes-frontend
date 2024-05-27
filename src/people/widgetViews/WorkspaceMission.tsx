@@ -637,7 +637,7 @@ const WorkspaceMission = () => {
                 </StyledList>
               </DataWrap2>
             </FieldWrap>
-            <FieldWrap>
+            <FieldWrap style={{ marginBottom: '5rem' }}>
               <RowFlex>
                 <Label>Features</Label>
                 <Button
@@ -692,11 +692,7 @@ const WorkspaceMission = () => {
                     ))}
               </FeaturesWrap>
               {featuresCount > featureLimit ? (
-                <PaginatonSection
-                  style={{
-                    marginBottom: '3rem'
-                  }}
-                >
+                <PaginatonSection>
                   <FlexDiv>
                     <PageContainer role="pagination">
                       <PaginationImg
