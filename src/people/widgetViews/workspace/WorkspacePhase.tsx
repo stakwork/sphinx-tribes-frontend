@@ -310,22 +310,26 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
                   overflowY: 'auto'
                 }}
               >
-                <WidgetSwitchViewer
-                  onPanelClick={onPanelClick}
-                  checkboxIdToSelectedMap={checkboxIdToSelectedMap}
-                  checkboxIdToSelectedMapLanguage={checkboxIdToSelectedMapLanguage}
-                  fromBountyPage={true}
-                  selectedWidget={selectedWidget}
-                  loading={loading}
-                  currentItems={currentItems}
-                  setCurrentItems={setCurrentItems}
-                  page={page}
-                  setPage={setPage}
-                  languageString={languageString}
-                  phaseTotalBounties={totalBounties}
-                  featureUuid={phases[selectedIndex].feature_uuid}
-                  phaseUuid={phases[selectedIndex].uuid}
-                />
+                {totalBounties > 0 ? (
+                  <WidgetSwitchViewer
+                    onPanelClick={onPanelClick}
+                    checkboxIdToSelectedMap={checkboxIdToSelectedMap}
+                    checkboxIdToSelectedMapLanguage={checkboxIdToSelectedMapLanguage}
+                    fromBountyPage={true}
+                    selectedWidget={selectedWidget}
+                    loading={loading}
+                    currentItems={currentItems}
+                    setCurrentItems={setCurrentItems}
+                    page={page}
+                    setPage={setPage}
+                    languageString={languageString}
+                    phaseTotalBounties={totalBounties}
+                    featureUuid={phases[selectedIndex].feature_uuid}
+                    phaseUuid={phases[selectedIndex].uuid}
+                  />
+                ) : (
+                  <p>No Bounties Yet!</p>
+                )}
               </div>
             </DisplayBounties>
           </TabContent>
@@ -337,7 +341,7 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
   const selectedTab = useMemo(() => tabs[selectedIndex], [selectedIndex, tabs]);
 
   return (
-    <Container>
+    <Container style={{ marginBottom: '3rem' }}>
       <RowFlex>
         <Label>Phases</Label>
         <Button
