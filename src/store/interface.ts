@@ -369,3 +369,4 @@ export const orgQuerLimit = 500;
 export const paginationQueryLimit = 20;
 export const peopleQueryLimit = 500;
 export const featureLimit = 3;
+export const phaseBountyLimit = 3;

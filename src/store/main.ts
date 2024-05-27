@@ -663,6 +663,135 @@ export class MainStore {
     }
   }
 
+  async getPhaseBounties(
+    feature_uuid: string,
+    phase_uuid: string,
+    params?: QueryParams
+  ): Promise<PersonBounty[] | number> {
+    const queryParams: QueryParams = {
+      limit: queryLimit,
+      sortBy: 'created',
+      search: uiStore.searchText ?? '',
+      page: 1,
+      resetPage: false,
+      ...params
+    };
+
+    if (params) {
+      // save previous params
+      this.getWantedsPrevParams = queryParams;
+    }
+
+    // if we don't pass the params, we should use previous params for invalidate query
+    const query2 = this.appendQueryParams(
+      `features/${feature_uuid}/phase/${phase_uuid}/bounty`,
+      queryLimit,
+      params ? queryParams : this.getWantedsPrevParams
+    );
+
+    try {
+      if (!uiStore.meInfo) return 0;
+      const info = uiStore.meInfo;
+
+      const response = await fetch(`${TribesURL}/${query2}`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        console.log('fetch failed getPhaseBounties: ', response.statusText);
+        return [];
+      }
+
+      const ps2 = await response.json();
+      const ps3: any[] = [];
+
+      if (ps2) {
+        for (let i = 0; i < ps2.length; i++) {
+          const bounty = { ...ps2[i].bounty };
+          let assignee;
+          let organization;
+          const owner = { ...ps2[i].owner };
+
+          if (bounty.assignee) {
+            assignee = { ...ps2[i].assignee };
+          }
+
+          if (bounty.org_uuid) {
+            organization = { ...ps2[i].organization };
+          }
+
+          ps3.push({
+            body: { ...bounty, assignee: assignee || '' },
+            person: { ...owner, wanteds: [] } || { wanteds: [] },
+            organization: { ...organization }
+          });
+        }
+      }
+
+      // for search always reset page
+      if (queryParams && queryParams.resetPage) {
+        this.setPeopleBounties(ps3);
+        uiStore.setPeopleBountiesPageNumber(1);
+      } else {
+        // all other cases, merge
+        const wanteds = this.doPageListMerger(
+          this.peopleBounties,
+          ps3,
+          (n: any) => uiStore.setPeopleBountiesPageNumber(n),
+          queryParams,
+          'bounties'
+        );
+        this.setPeopleBounties(wanteds);
+      }
+
+      return ps3;
+    } catch (e) {
+      console.log('fetch failed getPhaseBounties: ', e);
+      return [];
+    }
+  }
+
+  async getTotalPhaseBountyCount(
+    feature_uuid: string,
+    phase_uuid: string,
+    open: boolean,
+    assigned: boolean,
+    paid: boolean
+  ): Promise<number> {
+    try {
+      if (!uiStore.meInfo) return 0;
+      const info = uiStore.meInfo;
+
+      const query = `features/${feature_uuid}/phase/${phase_uuid}/bounty/count?Open=${open}&Assigned=${assigned}&Paid=${paid}`;
+
+      const response = await fetch(`${TribesURL}/${query}`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        console.log('fetch failed getTotalPhaseBountyCount: ', response.statusText);
+        return 0;
+      }
+
+      const count = await response.json();
+
+      return count;
+    } catch (e) {
+      console.log('fetch failed getTotalPhaseBountyCount: ', e);
+      return 0;
+    }
+  }
+
   personAssignedBounties: PersonBounty[] = [];
 
   @action setPersonBounties(bounties: PersonBounty[]) {
