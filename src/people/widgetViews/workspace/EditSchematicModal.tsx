@@ -116,7 +116,7 @@ const EditSchematic = (props: {
   };
 
   const isValidUrl = (url: string): boolean => {
-    const pattern: RegExp = /^(?:(?:https?|ftp|mailto|tel|sms):\/\/)[^\s/$.?#].[^\s]*$/i;
+    const pattern = /^(?:(?:https?|ftp|mailto|tel|sms):\/\/)[^\s/$.?#].[^\s]*$/i;
     return pattern.test(url);
   };
 

@@ -756,6 +756,42 @@ export class MainStore {
     }
   }
 
+  async getTotalPhaseBountyCount(
+    feature_uuid: string,
+    phase_uuid: string,
+    open: boolean,
+    assigned: boolean,
+    paid: boolean
+  ): Promise<number> {
+    try {
+      if (!uiStore.meInfo) return 0;
+      const info = uiStore.meInfo;
+
+      const query = `features/${feature_uuid}/phase/${phase_uuid}/bounty/count?Open=${open}&Assigned=${assigned}&Paid=${paid}`;
+
+      const response = await fetch(`${TribesURL}/${query}`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        console.log('fetch failed getTotalPhaseBountyCount: ', response.statusText);
+        return 0;
+      }
+
+      const count = await response.json();
+
+      return count;
+    } catch (e) {
+      console.log('fetch failed getTotalPhaseBountyCount: ', e);
+      return 0;
+    }
+  }
+
   personAssignedBounties: PersonBounty[] = [];
 
   @action setPersonBounties(bounties: PersonBounty[]) {
