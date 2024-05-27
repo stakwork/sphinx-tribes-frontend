@@ -38,6 +38,7 @@ const AddFeature = (props: {
   closeHandler: () => void;
   getFeatures: () => void;
   workspace_uuid: string | undefined;
+  priority: number;
 }) => {
   const [featureName, setFeatureName] = useState('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -93,7 +94,8 @@ const AddFeature = (props: {
 
       const body = {
         workspace_uuid: props.workspace_uuid || '',
-        name: normalizeInput(featureName)
+        name: normalizeInput(featureName),
+        priority: props.priority + 1
       };
 
       const res = await main.addWorkspaceFeature(body);

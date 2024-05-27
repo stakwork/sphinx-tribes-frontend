@@ -2670,7 +2670,8 @@ export class MainStore {
 
       const queryParams: QueryParams = {
         limit: featureLimit,
-        sortBy: 'created',
+        sortBy: 'priority',
+        direction: 'asc',
         search: '',
         page: 1,
         resetPage: false,
