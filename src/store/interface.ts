@@ -298,6 +298,7 @@ export interface Feature {
   requirements: string;
   architecture: string;
   url: string;
+  priority: number;
   created: string;
   updated: string;
   created_by: string;
@@ -328,6 +329,7 @@ export interface CreateFeatureInput {
   brief?: string;
   requirements?: string;
   architecture?: string;
+  priority?: number;
 }
 
 // Default data

@@ -86,6 +86,11 @@ const FeatureDataWrap = styled.div`
   gap: 1rem;
 `;
 
+const PriorityButtons = styled.div`
+  display: flex;
+  flex-direction: row;
+`;
+
 const FeatureCount = styled.div`
   padding: 5px;
   width: 42px;
@@ -410,6 +415,26 @@ const WorkspaceMission = () => {
     }
   };
 
+  const handleFeaturePriority = async (curFeature: Feature, otherFeature: Feature) => {
+    const curFeatureBody = {
+      workspace_uuid: curFeature.workspace_uuid || '',
+      uuid: curFeature.uuid,
+      priority: otherFeature.priority
+    };
+
+    await main.addWorkspaceFeature(curFeatureBody);
+
+    const otherFeatureBody = {
+      workspace_uuid: otherFeature.workspace_uuid || '',
+      uuid: otherFeature.uuid,
+      priority: curFeature.priority
+    };
+
+    await main.addWorkspaceFeature(otherFeatureBody);
+
+    window.location.reload();
+  };
+
   const toastsEl = (
     <EuiGlobalToastList
       toasts={ui.toasts}
@@ -612,7 +637,7 @@ const WorkspaceMission = () => {
                 </StyledList>
               </DataWrap2>
             </FieldWrap>
-            <FieldWrap>
+            <FieldWrap style={{ marginBottom: '5rem' }}>
               <RowFlex>
                 <Label>Features</Label>
                 <Button
@@ -628,17 +653,43 @@ const WorkspaceMission = () => {
               </RowFlex>
               <FeaturesWrap>
                 {features &&
-                  features.map((feat: Feature, i: number) => (
-                    <FeatureDataWrap key={i}>
-                      <FeatureCount>{i + 1}</FeatureCount>
-                      <FeatureData>
-                        <FeatureLink href={`/feature/${feat.uuid}`}>{feat.name}</FeatureLink>
-                        <FeatureDetails>
-                          <FeatureText>Filter Status</FeatureText>
-                        </FeatureDetails>
-                      </FeatureData>
-                    </FeatureDataWrap>
-                  ))}
+                  features
+                    .sort((a: Feature, b: Feature) => a.priority - b.priority)
+                    .map((feat: Feature, i: number) => (
+                      <FeatureDataWrap key={i} data-testid="feature-item">
+                        <FeatureCount>{i + 1}</FeatureCount>
+                        <FeatureData>
+                          <PriorityButtons>
+                            {features.length > 1 && i !== 0 && (
+                              <MaterialIcon
+                                icon={'arrow_upward'}
+                                className="MaterialIcon"
+                                onClick={() => handleFeaturePriority(feat, features[i - 1])}
+                                data-testid={`priority-arrow-upward-${i}`}
+                              />
+                            )}
+                            {features.length > 1 && i !== features.length - 1 && (
+                              <MaterialIcon
+                                icon={'arrow_downward'}
+                                className="MaterialIcon"
+                                onClick={() => handleFeaturePriority(feat, features[i + 1])}
+                                data-testid={`priority-arrow-downward-${i}`}
+                              />
+                            )}
+                            <FeatureLink
+                              href={`/feature/${feat.uuid}`}
+                              target="_blank"
+                              style={{ marginLeft: '1rem' }}
+                            >
+                              {feat.name}
+                            </FeatureLink>
+                          </PriorityButtons>
+                          <FeatureDetails>
+                            <FeatureText>Filter Status</FeatureText>
+                          </FeatureDetails>
+                        </FeatureData>
+                      </FeatureDataWrap>
+                    ))}
               </FeaturesWrap>
               {featuresCount > featureLimit ? (
                 <PaginatonSection>
@@ -753,6 +804,7 @@ const WorkspaceMission = () => {
             closeHandler={toggleFeatureModal}
             getFeatures={getFeatures}
             workspace_uuid={uuid}
+            priority={featuresCount}
           />
         </Modal>
         <Modal
