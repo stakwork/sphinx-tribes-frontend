@@ -12,7 +12,7 @@ const Pill = styled.div<PillProps>`
   align-items: center;
   font-size: 12px;
   font-weight: 300;
-  background: ${(p: any) => (p.isOpen ? '#618aff' : p.isClosed ? '#8256D0' : '#49C998')};
+  background: ${(p: any) => (p.isOpen ? '#618aff' : p.isClosed ? '#9B870C' : '#49C998')};
   border-radius: 30px;
   border: 1px solid transparent;
   text-transform: capitalize;
@@ -26,7 +26,7 @@ const Pill = styled.div<PillProps>`
   height: 26px;
   color: #fff;
   margin-right: 10px;
-  width: 58px;
+  width: ${(p: any) => (p.isClosed ? '68px' : '58px')};
   height: 22px;
   left: 19px;
   top: 171px;
@@ -69,7 +69,7 @@ export default function StatusPill(props: StatusPillProps) {
     if (!assignee) {
       setStatus('Open');
     } else if (completed) {
-      setStatus('Complete');
+      setStatus('Completed');
     } else {
       setStatus('Assigned');
     }
@@ -77,7 +77,7 @@ export default function StatusPill(props: StatusPillProps) {
 
   return (
     <div style={{ display: 'flex', ...style }} data-testid="status-pill">
-      <Pill isOpen={status === 'Open'} isClosed={status === 'Complete'}>
+      <Pill isOpen={status === 'Open'} isClosed={status === 'Completed'}>
         <div>{status}</div>
       </Pill>
       <W>
