@@ -1,4 +1,14 @@
-import { EuiGlobalToastList, EuiLoadingSpinner } from '@elastic/eui';
+import {
+  EuiDragDropContext,
+  EuiDraggable,
+  EuiDroppable,
+  EuiFlexGroup,
+  EuiFlexItem,
+  EuiGlobalToastList,
+  EuiIcon,
+  EuiLoadingSpinner,
+  EuiPanel
+} from '@elastic/eui';
 import { DispatchSetStateAction } from 'components/common/WorkspaceEditableFeild';
 import {
   Body,
@@ -31,12 +41,13 @@ import {
   WorkspaceName,
   WorkspaceOption,
   UserStoryField,
-  UserStoryFields,
   UserStoryOption,
   StyledModal,
   ModalBody,
   ButtonGroup,
-  StoryButtonWrap
+  StoryButtonWrap,
+  UserStoryWrapper,
+  UserStoryPanel
 } from './workspace/style';
 import WorkspacePhasingTabs from './workspace/WorkspacePhase';
 import { Phase, Toast } from './workspace/interface';
@@ -265,7 +276,7 @@ const WorkspaceFeature = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [userStory, setUserStory] = useState<string>('');
   const [userStoryPriority, setUserStoryPriority] = useState<number>(0);
-  const [featureStories, setFeatureStories] = useState<FeatureStory[] | undefined>([]);
+  const [featureStories, setFeatureStories] = useState<FeatureStory[]>([]);
   const [brief, setBrief] = useState<string>('');
   const [phases, setPhases] = useState<Phase[]>([]);
   const [architecture, setArchitecture] = useState<string>('');
@@ -309,7 +320,7 @@ const WorkspaceFeature = () => {
 
   const getFeatureStoryData = useCallback(async (): Promise<void> => {
     if (!feature_uuid) return;
-    const data = await main.getFeatureStories(feature_uuid);
+    const data = (await main.getFeatureStories(feature_uuid)) as FeatureStory[];
 
     setUserStoryPriority(data?.length as number);
     setFeatureStories(data);
@@ -385,6 +396,13 @@ const WorkspaceFeature = () => {
     setModalOpen(false);
   };
 
+  const handleReorderUserStories = async (story: FeatureStory, newPriority: number) => {
+    await main.updateFeatureStoryPriority({
+      uuid: story.uuid,
+      priority: newPriority
+    });
+  };
+
   const deleteUserStory = async () => {
     await main.deleteFeatureStory(
       editUserStory?.feature_uuid as string,
@@ -443,6 +461,32 @@ const WorkspaceFeature = () => {
     );
   }
 
+  const onDragEnd = ({ source, destination }: any) => {
+    if (source && destination && source.index !== destination.index) {
+      const promises: Promise<void>[] = [];
+
+      promises.push(handleReorderUserStories(featureStories[source.index], destination.index));
+
+      if (source.index < destination.index) {
+        for (let i = source.index + 1; i <= destination.index; i++) {
+          promises.push(
+            handleReorderUserStories(featureStories[i], featureStories[i].priority - 1)
+          );
+        }
+      } else {
+        for (let i = destination.index + 1; i <= source.index; i++) {
+          promises.push(
+            handleReorderUserStories(featureStories[i], featureStories[i].priority + 1)
+          );
+        }
+      }
+
+      Promise.all(promises).then(() => {
+        getFeatureStoryData();
+      });
+    }
+  };
+
   return (
     <FeatureBody>
       <FeatureHeadWrap>
@@ -459,58 +503,6 @@ const WorkspaceFeature = () => {
         </HeadNameWrap>
       </FeatureHeadWrap>
       <FeatureDataWrap>
-        <FieldWrap>
-          <Label>User Stories</Label>
-          <Data>
-            <InputField>
-              <Input
-                placeholder="Enter Story"
-                onChange={handleChange}
-                value={userStory}
-                data-testid="story-input"
-              />
-
-              <ActionButton
-                marginTop="0"
-                height="30px"
-                color="cancel"
-                onClick={handleUserStorySubmit}
-                data-testid="story-input-update-btn"
-              >
-                Create
-              </ActionButton>
-            </InputField>
-
-            <UserStoryFields>
-              {featureStories
-                ?.sort((a: FeatureStory, b: FeatureStory) => a.priority - b.priority)
-                ?.map((story: FeatureStory) => (
-                  <UserStoryField key={story.id}>
-                    <UserStoryOptionWrap>
-                      <MaterialIcon
-                        icon="more_vert"
-                        onClick={() => handleUserStoryOptionClick(story.id as number)}
-                        data-testid={`${story.priority}-user-story-option-btn`}
-                      />
-                      {displayUserStoryOptions[story?.id as number] && (
-                        <UserStoryOption>
-                          <ul>
-                            <li
-                              data-testid="user-story-edit-btn"
-                              onClick={() => handleUserStoryEdit(story)}
-                            >
-                              Edit
-                            </li>
-                          </ul>
-                        </UserStoryOption>
-                      )}
-                    </UserStoryOptionWrap>
-                    <span>{story.description}</span>
-                  </UserStoryField>
-                ))}
-            </UserStoryFields>
-          </Data>
-        </FieldWrap>
         <WorkspaceEditableField
           label="Feature Brief"
           value={brief}
@@ -524,6 +516,87 @@ const WorkspaceFeature = () => {
           onSubmit={() => submitField('brief', brief, setEditBrief)}
           main={main}
         />
+        <FieldWrap>
+          <Label>User Stories</Label>
+          <UserStoryWrapper>
+            <EuiDragDropContext onDragEnd={onDragEnd}>
+              <EuiDroppable droppableId="user_story_droppable_area" spacing="m">
+                {featureStories
+                  ?.sort((a: FeatureStory, b: FeatureStory) => a.priority - b.priority)
+                  ?.map((story: FeatureStory, idx: number) => (
+                    <EuiDraggable
+                      spacing="m"
+                      key={story.id}
+                      index={idx}
+                      draggableId={story.uuid}
+                      customDragHandle
+                      hasInteractiveChildren
+                    >
+                      {(provided: any) => (
+                        <UserStoryPanel paddingSize="l">
+                          <EuiFlexGroup alignItems="center" gutterSize="s">
+                            <EuiFlexItem grow={false}>
+                              <EuiPanel
+                                color="transparent"
+                                className="drag-handle"
+                                paddingSize="s"
+                                {...provided.dragHandleProps}
+                                aria-label="Drag Handle"
+                              >
+                                <EuiIcon type="grab" />
+                              </EuiPanel>
+                            </EuiFlexItem>
+                            <EuiFlexItem>
+                              <UserStoryField key={story.id}>
+                                index: {idx} - priority - {story.priority} -{story.description}
+                              </UserStoryField>
+                            </EuiFlexItem>
+                          </EuiFlexGroup>
+                          <UserStoryOptionWrap>
+                            <MaterialIcon
+                              icon="more_horiz"
+                              onClick={() => handleUserStoryOptionClick(story.id as number)}
+                              data-testid={`${story.priority}-user-story-option-btn`}
+                            />
+                            {displayUserStoryOptions[story?.id as number] && (
+                              <UserStoryOption>
+                                <ul>
+                                  <li
+                                    data-testid="user-story-edit-btn"
+                                    onClick={() => handleUserStoryEdit(story)}
+                                  >
+                                    Edit
+                                  </li>
+                                </ul>
+                              </UserStoryOption>
+                            )}
+                          </UserStoryOptionWrap>
+                        </UserStoryPanel>
+                      )}
+                    </EuiDraggable>
+                  ))}
+              </EuiDroppable>
+            </EuiDragDropContext>
+            <InputField>
+              <Input
+                placeholder="Enter new user story"
+                onChange={handleChange}
+                value={userStory}
+                data-testid="story-input"
+                style={{ height: '40px', width: '100%', maxHeight: 'unset' }}
+              />
+              <ActionButton
+                marginTop="0"
+                height="40px"
+                color="primary"
+                onClick={handleUserStorySubmit}
+                data-testid="story-input-update-btn"
+              >
+                Create
+              </ActionButton>
+            </InputField>
+          </UserStoryWrapper>
+        </FieldWrap>
         <WorkspaceEditableField
           label="Requirements"
           value={requirements}

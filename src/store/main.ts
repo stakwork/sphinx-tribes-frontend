@@ -42,8 +42,9 @@ import {
   Feature,
   featureLimit,
   CreateFeatureInput,
-  CreateFeatureStoryInput,
-  FeatureStory
+  FeatureStory,
+  UpdateFeatureStoryInput,
+  CreateFeatureStoryInput
 } from './interface';
 
 function makeTorSaveURL(host: string, key: string) {
@@ -2598,6 +2599,27 @@ export class MainStore {
       console.error('addWorkspaceFeature', e);
     }
   }
+
+  async updateFeatureStoryPriority(body: UpdateFeatureStoryInput): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return {};
+      const info = uiStore.meInfo;
+      const r: any = await fetch(`${TribesURL}/features/story`, {
+        method: 'POST',
+        body: JSON.stringify(body),
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      return r;
+    } catch (e) {
+      console.error('updateFeatureStoryPriority', e);
+    }
+  }
+
   async getFeatureStories(uuid: string): Promise<FeatureStory[] | undefined> {
     try {
       if (!uiStore.meInfo) return undefined;
