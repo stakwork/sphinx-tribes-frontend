@@ -189,7 +189,9 @@ export const OptionsWrap = styled.div`
 `;
 
 export const UserStoryOptionWrap = styled.div`
-  position: relative;
+  position: absolute;
+  top: 2px;
+  right: 2px;
   display: inline-block;
   cursor: pointer;
   display: flex;
@@ -339,6 +341,8 @@ export const InputField = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-top: 25px;
+  gap: 25px;
 `;
 
 export const Input = styled.input`

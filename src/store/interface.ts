@@ -322,6 +322,11 @@ export interface CreateFeatureStoryInput {
   priority?: number;
 }
 
+export interface UpdateFeatureStoryInput {
+  uuid: string;
+  priority: number;
+}
+
 export interface CreateFeatureInput {
   uuid?: string;
   workspace_uuid: string;
