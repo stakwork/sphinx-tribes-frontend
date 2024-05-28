@@ -16,9 +16,10 @@ export interface PostModalProps {
   onClose: () => void;
   onSucces?: () => void;
   onGoBack?: () => void;
+  phase_uuid?: string;
 }
 export const PostModal: FC<PostModalProps> = observer(
-  ({ isOpen, onClose, widget, onGoBack, onSucces }: any) => {
+  ({ isOpen, onClose, widget, onGoBack, onSucces, phase_uuid }: any) => {
     const { main, ui } = useStores();
     const isMobile = useIsMobile();
     const [focusIndex, setFocusIndex] = useState(-1);
@@ -80,6 +81,7 @@ export const PostModal: FC<PostModalProps> = observer(
                 config={config}
                 onSuccess={successHandler}
                 goBack={closeHandler}
+                phase_uuid={phase_uuid}
               />
             </Modal>
           )}
@@ -121,6 +123,7 @@ export const PostModal: FC<PostModalProps> = observer(
               config={config}
               onSuccess={successHandler}
               goBack={closeHandler}
+              phase_uuid={phase_uuid}
             />
           </Modal>
         )}

@@ -871,6 +871,7 @@ const WorkspaceMission = () => {
             closeHandler={toggleFeatureModal}
             getFeatures={getFeatures}
             workspace_uuid={uuid}
+            priority={featuresCount}
           />
         </Modal>
         <Modal

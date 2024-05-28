@@ -550,11 +550,6 @@ const WorkspaceFeature = () => {
           onSubmit={() => submitField('architecture', architecture, setEditArchitecture)}
           main={main}
         />
-        <WorkspacePhasingTabs
-          featureId={feature_uuid}
-          phases={phases}
-          updateFeaturePhase={updateFeaturePhase}
-        />
         <UserStoryModal
           open={modalOpen}
           storyDescription={editUserStory?.description as string}
@@ -563,6 +558,12 @@ const WorkspaceFeature = () => {
           handleDelete={handleModalDelete}
         />
       </FeatureDataWrap>
+      <WorkspacePhasingTabs
+        featureId={feature_uuid}
+        phases={phases}
+        updateFeaturePhase={updateFeaturePhase}
+        workspace_uuid={featureData?.workspace_uuid ?? ''}
+      />
       {toastsEl}
     </FeatureBody>
   );

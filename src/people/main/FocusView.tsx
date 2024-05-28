@@ -43,7 +43,8 @@ function FocusedView(props: FocusViewProps) {
     bounty,
     setRemoveNextAndPrev,
     setAfterEdit,
-    getBounty
+    getBounty,
+    phase_uuid
   } = props;
   const { ui, main } = useStores();
 
@@ -271,6 +272,10 @@ function FocusedView(props: FocusViewProps) {
       if (newBody.id && bounty.length) {
         const b = bounty[0];
         newBody.owner_id = b.body.owner_id;
+      }
+
+      if (props.phase_uuid) {
+        newBody.phase_uuid = phase_uuid;
       }
 
       await main.saveBounty(newBody);
