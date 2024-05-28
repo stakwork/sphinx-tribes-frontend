@@ -1190,22 +1190,24 @@ export const StyledEuiTabbedContent = styled(EuiTabbedContent as any)`
 
     .euiTab {
       position: relative;
-      border-radius: 0 14px 0 0;
-      border: 1px solid #dde1e5;
+      border: 0;
       margin: 0 5px;
       text-decoration: none;
       flex-direction: row-reverse;
       gap: 10px;
       max-width: 275px;
+      background-color: white !important;
 
       .euiTab__content {
-        color: #000;
+        color: #292c33;
         text-overflow: ellipsis;
+        size: 15px;
+        font-weight: 600;
+        font-family: 'Barlow';
       }
 
       .euiTab__prepend {
         color: black;
-        border-radius: 8px;
         margin-right: 3px;
         width: 25px;
       }
@@ -1214,10 +1216,23 @@ export const StyledEuiTabbedContent = styled(EuiTabbedContent as any)`
     .euiTab-isSelected {
       color: black !important;
       text-decoration: none;
-      box-shadow: unset;
       border-bottom: unset;
-      background-color: #dde1e5;
       z-index: 200;
+    }
+
+    .euiTab.euiTab-isSelected,
+    .euiTab.euiTab-isSelected .euiTab__content {
+      color: #8e969c !important;
+    }
+
+    .euiTab.euiTab-isSelected {
+      box-shadow: unset;
+      border-bottom: 4px solid #618aff;
+    }
+
+    .euiTab:not(.euiTab-isDisabled):hover .euiTab__content,
+    .euiTab:not(.euiTab-isDisabled):focus .euiTab__content {
+      text-decoration: none;
     }
 
     .euiTabs--bottomBorder {
@@ -1238,12 +1253,22 @@ export const TabContentOptions = styled.div`
 export const TabContent = styled.div`
   width: 100%;
   min-height: 275px;
-  border: 2px solid #dde1e5;
   display: flex;
   flex-direction: column;
+  background-color: white;
+`;
+
+export const PostABounty = styled.div`
+  color: #49c998;
+  radius: 6px;
+  gap: 10px;
+  margin-top: 0.5rem;
+  margin-left: auto;
+`;
+
+export const DisplayBounties = styled.div`
   justify-content: center;
   align-items: center;
-  background-color: #dde1e5;
 `;
 
 export const Background = styled.div`
