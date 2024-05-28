@@ -189,7 +189,7 @@ describe('WorkspaceDetails', () => {
     expect(modal).toBeInTheDocument();
   });
 
-  it('Should render correct number of transaction in history modal', async () => {
+  it('Should render correct numbers of transaction in history modal', async () => {
     await act(async () => {
       const { getByTestId } = render(
         <MemoryRouter>
