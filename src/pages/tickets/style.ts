@@ -57,8 +57,8 @@ export const HeaderWrap = styled.div`
 export const DataWrap = styled.div`
   display: flex;
   justify-content: space-between;
-  padding: 40px 50px;
-  width: 60%;
+  padding: 20px 50px;
+  width: 80%;
   margin: 0 auto;
   align-items: left;
   justify-content: center;

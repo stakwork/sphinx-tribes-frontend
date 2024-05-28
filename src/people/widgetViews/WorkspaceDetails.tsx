@@ -1,12 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useCallback, useEffect, useState } from 'react';
 import { useStores } from 'store';
-import {
-  EuiFlexGrid,
-  EuiFlexItem,
-  EuiGlobalToastList,
-  useIsWithinBreakpoints,
-  EuiIcon
-} from '@elastic/eui';
+import { EuiGlobalToastList } from '@elastic/eui';
 import { Button } from 'components/common';
 import {
   BountyRoles,
@@ -18,13 +13,11 @@ import {
 } from 'store/interface';
 import MaterialIcon from '@material/react-material-icon';
 import { Route, Router, Switch, useRouteMatch } from 'react-router-dom';
-import { satToUsd, userHasRole } from 'helpers';
+import { userHasRole } from 'helpers';
 import { BountyModal } from 'people/main/bountyModal';
 import { Link } from 'react-router-dom';
 import history from '../../config/history';
 import avatarIcon from '../../public/static/profile_avatar.svg';
-import balanceIcon from '../../public/static/toll.svg';
-import balanceVector from '../../public/static/balancevector.svg';
 import DeleteTicketModal from './DeleteModal';
 import RolesModal from './workspace/RolesModal';
 import HistoryModal from './workspace/HistoryModal';
@@ -33,35 +26,19 @@ import AddBudgetModal from './workspace/AddBudgetModal';
 import WithdrawBudgetModal from './workspace/WithdrawBudgetModal';
 import EditWorkspaceModal from './workspace/EditWorkspaceModal';
 import Users from './workspace/UsersList';
-
+import { BudgetWrapComponent } from './BudgetWrap';
 import {
-  ActionWrap,
-  Budget,
-  BudgetSmallHead,
-  BudgetWrap,
   Container,
   DetailsWrap,
-  Grey,
   HeadButton,
   HeadButtonWrap,
   HeadNameWrap,
   HeadWrap,
-  NoBudgetText,
-  NoBudgetWrap,
   WorkspaceImg,
   WorkspaceName,
   UserWrap,
   UsersHeadWrap,
-  UsersHeader,
-  ViewBudgetTextWrap,
-  BudgetData,
-  ActionHeader,
-  BalanceImg,
-  BudgetStatsWrap,
-  BalanceAmountImg,
-  BudgetBountyLink,
-  BudgetCount,
-  BudgetHeaderWrap
+  UsersHeader
 } from './workspace/style';
 import AssignUserRoles from './workspace/AssignUserRole';
 
@@ -100,14 +77,9 @@ const WorkspaceDetails = (props: {
     !isWorkspaceAdmin && !userHasRole(main.bountyRoles, userRoles, 'EDIT ORGANIZATION');
   const viewReportDisabled =
     !isWorkspaceAdmin && !userHasRole(main.bountyRoles, userRoles, 'VIEW REPORT');
-  const addBudgetDisabled =
-    !isWorkspaceAdmin && !userHasRole(main.bountyRoles, userRoles, 'ADD BUDGET');
-  const addWithdrawDisabled =
-    !isWorkspaceAdmin && !userHasRole(main.bountyRoles, userRoles, 'WITHDRAW BUDGET');
 
   const { org, close, getWorkspaces } = props;
   const uuid = org?.uuid || '';
-  const isMobile = useIsWithinBreakpoints(['xs', 's']);
 
   function addToast(title: string, color: 'danger' | 'success') {
     setToasts([
@@ -411,155 +383,7 @@ const WorkspaceDetails = (props: {
           </Link>
         </HeadButtonWrap>
       </HeadWrap>
-      <ActionWrap>
-        <ActionHeader>
-          Balance <BalanceImg src={balanceIcon} />
-        </ActionHeader>
-        <HeadButtonWrap forSmallScreen={true}>
-          <Button
-            disabled={viewReportDisabled}
-            text="History"
-            data-testid="history-button"
-            dataTestId="workspace-view-transaction-history-button"
-            color="white"
-            style={{ borderRadius: '5px' }}
-            onClick={() => setIsOpenHistory(true)}
-          />
-          <Button
-            disabled={addWithdrawDisabled}
-            text="Withdraw"
-            data-testid="withdrawal-button"
-            dataTestId="workspace-withdraw-budget-button"
-            color="withdraw"
-            style={{ borderRadius: '5px' }}
-            onClick={() => setIsOpenWithdrawBudget(true)}
-          />
-          <Button
-            data-testid="deposit-button"
-            disabled={addBudgetDisabled}
-            text="Deposit"
-            dataTestId="workspace-deposit-budget-button"
-            color="success"
-            style={{ borderRadius: '5px' }}
-            onClick={() => setIsOpenBudget(true)}
-          />
-        </HeadButtonWrap>
-      </ActionWrap>
-      <BudgetWrap>
-        {viewReportDisabled ? (
-          <NoBudgetWrap>
-            <MaterialIcon
-              icon={'lock'}
-              style={{
-                fontSize: 30,
-                cursor: 'pointer',
-                color: '#ccc'
-              }}
-            />
-            <NoBudgetText>
-              You have restricted permissions and are unable to view the budget. Reach out to the
-              workspace admin to get them updated.
-            </NoBudgetText>
-          </NoBudgetWrap>
-        ) : (
-          <BudgetStatsWrap>
-            <EuiFlexGrid responsive={false} columns={isMobile ? 2 : 4}>
-              <EuiFlexItem>
-                <BudgetData background="#FAFBFC" borderColor="#DDE1E5">
-                  <BudgetHeaderWrap>
-                    <BudgetSmallHead color="#3C3F41">Current Balance</BudgetSmallHead>
-                  </BudgetHeaderWrap>
-                  <ViewBudgetTextWrap>
-                    <Budget data-testid="current-balance-amount">
-                      {orgBudget.current_budget ? orgBudget.current_budget.toLocaleString() : 0}{' '}
-                      <Grey>SATS</Grey>
-                    </Budget>
-                    <Budget className="budget-small">
-                      <BalanceAmountImg src={balanceVector} />
-                      {satToUsd(orgBudget.current_budget)} <Grey>USD</Grey>
-                    </Budget>
-                  </ViewBudgetTextWrap>
-                </BudgetData>
-              </EuiFlexItem>
-              <EuiFlexItem>
-                <BudgetData background="#9157F612" borderColor="#A76CF34D">
-                  <BudgetBountyLink>
-                    <Link target="_blank" to={'/bounties?status=completed'}>
-                      <EuiIcon type="popout" color="#9157F6" />
-                    </Link>
-                  </BudgetBountyLink>
-                  <BudgetHeaderWrap>
-                    <BudgetSmallHead color="#9157F6">Completed</BudgetSmallHead>
-                    <BudgetCount color="#9157F6">
-                      {orgBudget.completed_count ? orgBudget.completed_count.toLocaleString() : 0}
-                    </BudgetCount>
-                  </BudgetHeaderWrap>
-                  <ViewBudgetTextWrap>
-                    <Budget>
-                      {orgBudget.completed_budget ? orgBudget.completed_budget.toLocaleString() : 0}
-                      <Grey>SATS</Grey>
-                    </Budget>
-                    <Budget className="budget-small">
-                      <BalanceAmountImg src={balanceVector} />
-                      {satToUsd(orgBudget.completed_budget)} <Grey>USD</Grey>
-                    </Budget>
-                  </ViewBudgetTextWrap>
-                </BudgetData>
-              </EuiFlexItem>
-              <EuiFlexItem>
-                <BudgetData background="#49C99812" borderColor="#49C9984D">
-                  <BudgetBountyLink>
-                    <Link target="_blank" to={'/bounties?status=assigned'}>
-                      <EuiIcon type="popout" color="#2FB379" />
-                    </Link>
-                  </BudgetBountyLink>
-                  <BudgetHeaderWrap>
-                    <BudgetSmallHead color="#2FB379">Assigned</BudgetSmallHead>
-                    <BudgetCount color="#2FB379">
-                      {orgBudget.assigned_count ? orgBudget.assigned_count.toLocaleString() : 0}
-                    </BudgetCount>
-                  </BudgetHeaderWrap>
-                  <ViewBudgetTextWrap>
-                    <Budget>
-                      {orgBudget.assigned_budget ? orgBudget.assigned_budget.toLocaleString() : 0}
-                      <Grey>SATS</Grey>
-                    </Budget>
-                    <Budget className="budget-small">
-                      <BalanceAmountImg src={balanceVector} />
-                      {satToUsd(orgBudget.assigned_budget)} <Grey>USD</Grey>
-                    </Budget>
-                  </ViewBudgetTextWrap>
-                </BudgetData>
-              </EuiFlexItem>
-              <EuiFlexItem>
-                <BudgetData background="#618AFF12" borderColor="#618AFF4D">
-                  <BudgetBountyLink>
-                    <Link target="_blank" to={'/bounties?status=open'}>
-                      <EuiIcon type="popout" color="#5078F2" />
-                    </Link>
-                  </BudgetBountyLink>
-                  <BudgetHeaderWrap>
-                    <BudgetSmallHead color="#5078F2">Open</BudgetSmallHead>
-                    <BudgetCount color="#5078F2">
-                      {orgBudget.open_count ? orgBudget.open_count.toLocaleString() : 0}
-                    </BudgetCount>
-                  </BudgetHeaderWrap>
-                  <ViewBudgetTextWrap>
-                    <Budget>
-                      {orgBudget.open_budget ? orgBudget.open_budget.toLocaleString() : 0}
-                      <Grey>SATS</Grey>
-                    </Budget>
-                    <Budget className="budget-small">
-                      <BalanceAmountImg src={balanceVector} />
-                      {satToUsd(orgBudget.open_budget)} <Grey>USD</Grey>
-                    </Budget>
-                  </ViewBudgetTextWrap>
-                </BudgetData>
-              </EuiFlexItem>
-            </EuiFlexGrid>
-          </BudgetStatsWrap>
-        )}
-      </BudgetWrap>
+      <BudgetWrapComponent uuid={uuid} org={org} />
       <UserWrap>
         <UsersHeadWrap>
           <UsersHeader>Users</UsersHeader>
