@@ -56,7 +56,7 @@ describe('Add user stories to features', () => {
       cy.wait(1000);
     }
 
-    cy.get('[data-testid="0-user-story-option-btn"]').click();
+    cy.get('[data-testid="1-user-story-option-btn"]').click();
     cy.get('[data-testid="user-story-edit-btn"]').click();
     cy.wait(1000);
     cy.get('[data-testid="edit-story-input"]').clear();
@@ -67,7 +67,7 @@ describe('Add user stories to features', () => {
 
     cy.contains(updatedUserStory).should('exist', { timeout: 1000 });
 
-    cy.get('[data-testid="1-user-story-option-btn"]').click();
+    cy.get('[data-testid="2-user-story-option-btn"]').click();
     cy.get('[data-testid="user-story-edit-btn"]').click();
     cy.wait(1000);
     cy.get('[data-testid="user-story-delete-btn"]').click();

@@ -68,7 +68,7 @@ describe('Add user stories to features', () => {
     dragUserStory(1, 3);
 
     cy.get('[data-testid^="drag-handle"]').each(($handle: any, index: number) => {
-      expect($handle).to.have.attr('data-testid', `drag-handle-${index}`);
+      expect($handle).to.have.attr('data-testid', `drag-handle-${index + 1}`);
     });
 
     cy.logout('bob');
