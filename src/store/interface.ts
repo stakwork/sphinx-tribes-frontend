@@ -290,6 +290,7 @@ export interface WorkspaceBudget {
 }
 
 export interface Feature {
+  priority: any;
   id: number;
   uuid: string;
   workspace_uuid: string;
