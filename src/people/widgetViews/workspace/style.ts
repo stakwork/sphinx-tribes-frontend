@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { Button } from 'components/common';
-import { EuiTabbedContent } from '@elastic/eui';
+import { EuiPanel, EuiTabbedContent } from '@elastic/eui';
 
 interface SmallBtnProps {
   selected: boolean;
@@ -1146,14 +1146,51 @@ export const UserStoryOption = styled.div`
     }
   }
 `;
-export const UserStoryFields = styled.div`
-  margin-top: 20px;
+
+export const UserStoryPanel = styled(EuiPanel)`
+  && {
+    position: relative;
+    background-color: #fff;
+    box-shadow: 0px 1px 2px 0px #00000026;
+    border: none;
+  }
+
+  .drag-handle {
+    background-color: #fff;
+    border: none;
+  }
+`;
+
+export const UserStoryWrapper = styled.div`
+  background-color: #fff;
+  min-height: 50px;
+  border-radius: 5px;
+  padding: 20px 30px;
+  display: flex;
+  flex-direction: column;
+  white-space: pre-wrap;
+  box-shadow: 0px 1px 2px 0px #00000026;
+
+  .euiDroppable.euiDroppable--isDraggingType:not(
+      .euiDroppable--isDisabled
+    ).euiDroppable--isDraggingOver {
+    background-color: #dee1e1;
+    border-radius: 10px;
+  }
+
+  .euiDroppable--m {
+    padding: unset;
+  }
 `;
 
 export const UserStoryField = styled.div`
-  margin-top: 20px;
   display: flex;
   align-items: center;
+  font-family: Barlow;
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 20px;
+  text-align: left;
 `;
 
 export const StyledModal = styled.div`
