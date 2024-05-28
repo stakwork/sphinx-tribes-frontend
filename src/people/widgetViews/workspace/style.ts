@@ -1270,3 +1270,7 @@ export const DisplayBounties = styled.div`
   justify-content: center;
   align-items: center;
 `;
+
+export const Background = styled.div`
+  color: white;
+`;

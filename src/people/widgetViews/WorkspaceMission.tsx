@@ -22,6 +22,7 @@ import {
   PageContainer,
   PaginationButtons
 } from 'pages/tickets/style';
+
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useStores } from 'store';
@@ -63,6 +64,7 @@ import {
 import AddRepoModal from './workspace/AddRepoModal';
 import EditSchematic from './workspace/EditSchematicModal';
 import ManageWorkspaceUsersModal from './workspace/ManageWorkspaceUsersModal';
+import { BudgetWrapComponent } from './BudgetWrap';
 const color = colors['light'];
 
 const PaginatonSection = styled.div`
@@ -71,6 +73,11 @@ const PaginatonSection = styled.div`
   align-self: stretch;
   border-radius: 8px;
   padding: 1em;
+`;
+
+const PriorityButtons = styled.div`
+  display: flex;
+  flex-direction: row;
 `;
 
 const FeaturesWrap = styled.div`
@@ -84,11 +91,6 @@ const FeatureDataWrap = styled.div`
   border-radius: 5px;
   display: flex;
   gap: 1rem;
-`;
-
-const PriorityButtons = styled.div`
-  display: flex;
-  flex-direction: row;
 `;
 
 const FeatureCount = styled.div`
@@ -637,89 +639,6 @@ const WorkspaceMission = () => {
                 </StyledList>
               </DataWrap2>
             </FieldWrap>
-            <FieldWrap style={{ marginBottom: '5rem' }}>
-              <RowFlex>
-                <Label>Features</Label>
-                <Button
-                  onClick={toggleFeatureModal}
-                  style={{
-                    borderRadius: '5px',
-                    margin: 0,
-                    marginLeft: 'auto'
-                  }}
-                  dataTestId="new-feature-btn"
-                  text="New Feature"
-                />
-              </RowFlex>
-              <FeaturesWrap>
-                {features &&
-                  features
-                    .sort((a: Feature, b: Feature) => a.priority - b.priority)
-                    .map((feat: Feature, i: number) => (
-                      <FeatureDataWrap key={i} data-testid="feature-item">
-                        <FeatureCount>{i + 1}</FeatureCount>
-                        <FeatureData>
-                          <PriorityButtons>
-                            {features.length > 1 && i !== 0 && (
-                              <MaterialIcon
-                                icon={'arrow_upward'}
-                                className="MaterialIcon"
-                                onClick={() => handleFeaturePriority(feat, features[i - 1])}
-                                data-testid={`priority-arrow-upward-${i}`}
-                              />
-                            )}
-                            {features.length > 1 && i !== features.length - 1 && (
-                              <MaterialIcon
-                                icon={'arrow_downward'}
-                                className="MaterialIcon"
-                                onClick={() => handleFeaturePriority(feat, features[i + 1])}
-                                data-testid={`priority-arrow-downward-${i}`}
-                              />
-                            )}
-                            <FeatureLink
-                              href={`/feature/${feat.uuid}`}
-                              target="_blank"
-                              style={{ marginLeft: '1rem' }}
-                            >
-                              {feat.name}
-                            </FeatureLink>
-                          </PriorityButtons>
-                          <FeatureDetails>
-                            <FeatureText>Filter Status</FeatureText>
-                          </FeatureDetails>
-                        </FeatureData>
-                      </FeatureDataWrap>
-                    ))}
-              </FeaturesWrap>
-              {featuresCount > featureLimit ? (
-                <PaginatonSection>
-                  <FlexDiv>
-                    <PageContainer role="pagination">
-                      <PaginationImg
-                        src={paginationarrow1}
-                        alt="pagination arrow 1"
-                        onClick={() => paginatePrev()}
-                      />
-                      {activeTabs.map((page: number) => (
-                        <PaginationButtons
-                          data-testid={'page'}
-                          key={page}
-                          onClick={() => paginate(page)}
-                          active={page === currentPage}
-                        >
-                          {page}
-                        </PaginationButtons>
-                      ))}
-                      <PaginationImg
-                        src={paginationarrow2}
-                        alt="pagination arrow 2"
-                        onClick={() => paginateNext()}
-                      />
-                    </PageContainer>
-                  </FlexDiv>
-                </PaginatonSection>
-              ) : null}
-            </FieldWrap>
           </LeftSection>
           <RightSection>
             <FieldWrap>
@@ -775,6 +694,97 @@ const WorkspaceMission = () => {
               <AvatarGroup avatarList={avatarList} avatarSize="xl" maxGroupSize={5} />
             </FieldWrap>
           </RightSection>
+        </DataWrap>
+
+        <DataWrap>
+          <FieldWrap style={{ background: 'white' }}>
+            <BudgetWrapComponent uuid={uuid} org={workspaceData} />
+          </FieldWrap>
+        </DataWrap>
+        <DataWrap>
+          <FieldWrap style={{ marginBottom: '5rem' }}>
+            <RowFlex>
+              <Label>Features</Label>
+              <Button
+                onClick={toggleFeatureModal}
+                style={{
+                  borderRadius: '5px',
+                  margin: 0,
+                  marginLeft: 'auto'
+                }}
+                dataTestId="new-feature-btn"
+                text="New Feature"
+              />
+            </RowFlex>
+            <FeaturesWrap>
+              {features &&
+                features
+                  .sort((a: Feature, b: Feature) => a.priority - b.priority)
+                  .map((feat: Feature, i: number) => (
+                    <FeatureDataWrap key={i} data-testid="feature-item">
+                      <FeatureCount>{i + 1}</FeatureCount>
+                      <FeatureData>
+                        <PriorityButtons>
+                          {features.length > 1 && i !== 0 && (
+                            <MaterialIcon
+                              icon={'arrow_upward'}
+                              className="MaterialIcon"
+                              onClick={() => handleFeaturePriority(feat, features[i - 1])}
+                              data-testid={`priority-arrow-upward-${i}`}
+                            />
+                          )}
+                          {features.length > 1 && i !== features.length - 1 && (
+                            <MaterialIcon
+                              icon={'arrow_downward'}
+                              className="MaterialIcon"
+                              onClick={() => handleFeaturePriority(feat, features[i + 1])}
+                              data-testid={`priority-arrow-downward-${i}`}
+                            />
+                          )}
+                          <FeatureLink
+                            href={`/feature/${feat.uuid}`}
+                            target="_blank"
+                            style={{ marginLeft: '1rem' }}
+                          >
+                            {feat.name}
+                          </FeatureLink>
+                        </PriorityButtons>
+                        <FeatureDetails>
+                          <FeatureText>Filter Status</FeatureText>
+                        </FeatureDetails>
+                      </FeatureData>
+                    </FeatureDataWrap>
+                  ))}
+            </FeaturesWrap>
+            {featuresCount > featureLimit ? (
+              <PaginatonSection>
+                <FlexDiv>
+                  <PageContainer role="pagination">
+                    <PaginationImg
+                      src={paginationarrow1}
+                      alt="pagination arrow 1"
+                      onClick={() => paginatePrev()}
+                    />
+                    {activeTabs.map((page: number) => (
+                      <PaginationButtons
+                        data-testid={'page'}
+                        key={page}
+                        onClick={() => paginate(page)}
+                        active={page === currentPage}
+                      >
+                        {page}
+                      </PaginationButtons>
+                    ))}
+                    <PaginationImg
+                      src={paginationarrow2}
+                      alt="pagination arrow 2"
+                      onClick={() => paginateNext()}
+                    />
+                  </PageContainer>
+                </FlexDiv>
+              </PaginatonSection>
+            ) : null}
+          </FieldWrap>
         </DataWrap>
         <Modal
           visible={featureModal}

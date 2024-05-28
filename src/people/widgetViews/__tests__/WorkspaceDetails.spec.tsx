@@ -159,39 +159,37 @@ describe('WorkspaceDetails', () => {
   nock(user.url).get('/ask').reply(200, {});
 
   it('Should render history button on workspace page', async () => {
-    await act(async () => {
-      const { getByTestId } = render(
-        <MemoryRouter>
-          <WorkspaceDetails
-            close={closeFn}
-            getWorkspaces={getWorkspaceFn}
-            org={workspace}
-            resetWorkspace={resetWorkspaceFn}
-          />
-        </MemoryRouter>
-      );
-      expect(getByTestId('workspace-view-transaction-history-button')).toBeInTheDocument();
-    });
+    const { getByTestId } = render(
+      <MemoryRouter>
+        <WorkspaceDetails
+          close={closeFn}
+          getWorkspaces={getWorkspaceFn}
+          org={workspace}
+          resetWorkspace={resetWorkspaceFn}
+        />
+      </MemoryRouter>
+    );
+    expect(getByTestId('workspace-view-transaction-history-button')).toBeInTheDocument();
   });
 
-  it('Should open history modal on click button', async () => {
-    await act(async () => {
-      const { getByTestId } = render(
-        <MemoryRouter>
-          <WorkspaceDetails
-            close={closeFn}
-            getWorkspaces={getWorkspaceFn}
-            org={workspace}
-            resetWorkspace={resetWorkspaceFn}
-          />
-        </MemoryRouter>
-      );
-      getByTestId('workspace-view-transaction-history-button').click();
-      await waitFor(() => getByTestId('payment-history-modal'));
-    });
+  it('Should open history modal on click button', () => {
+    const { getByTestId } = render(
+      <MemoryRouter>
+        <WorkspaceDetails
+          close={closeFn}
+          getWorkspaces={getWorkspaceFn}
+          org={workspace}
+          resetWorkspace={resetWorkspaceFn}
+        />
+      </MemoryRouter>
+    );
+
+    fireEvent.click(getByTestId('workspace-view-transaction-history-button'));
+    const modal = getByTestId('payment-history-modal');
+    expect(modal).toBeInTheDocument();
   });
 
-  it('Should render correct number of transaction in history modal', async () => {
+  it('Should render correct numbers of transaction in history modal', async () => {
     await act(async () => {
       const { getByTestId } = render(
         <MemoryRouter>
@@ -203,10 +201,15 @@ describe('WorkspaceDetails', () => {
           />
         </MemoryRouter>
       );
-      getByTestId('workspace-view-transaction-history-button').click();
-      await waitFor(() => getByTestId('payment-history-modal'));
+      fireEvent.click(getByTestId('workspace-view-transaction-history-button'));
+      waitFor(() => {
+        const modal = getByTestId('payment-history-modal');
+        expect(modal).toBeInTheDocument();
+      });
       for (let i = 0; i < invoiceDetails.length; i++) {
-        await waitFor(() => getByTestId(`payment-history-transaction-${i}`));
+        waitFor(() => {
+          getByTestId(`payment-history-transaction-${i}`);
+        });
       }
     });
   });
