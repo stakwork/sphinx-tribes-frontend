@@ -322,7 +322,7 @@ const WorkspaceFeature = () => {
     if (!feature_uuid) return;
     const data = (await main.getFeatureStories(feature_uuid)) as FeatureStory[];
 
-    setUserStoryPriority(data?.length as number);
+    setUserStoryPriority((data?.length + 1) as number);
     setFeatureStories(data);
 
     setLoading(false);
@@ -463,23 +463,14 @@ const WorkspaceFeature = () => {
 
   const onDragEnd = ({ source, destination }: any) => {
     if (source && destination && source.index !== destination.index) {
-      const promises: Promise<void>[] = [];
+      const updatedStories = [...featureStories];
 
-      promises.push(handleReorderUserStories(featureStories[source.index], destination.index));
+      const [movedItem] = updatedStories.splice(source.index, 1);
+      updatedStories.splice(destination.index, 0, movedItem);
 
-      if (source.index < destination.index) {
-        for (let i = source.index + 1; i <= destination.index; i++) {
-          promises.push(
-            handleReorderUserStories(featureStories[i], featureStories[i].priority - 1)
-          );
-        }
-      } else {
-        for (let i = destination.index + 1; i <= source.index; i++) {
-          promises.push(
-            handleReorderUserStories(featureStories[i], featureStories[i].priority + 1)
-          );
-        }
-      }
+      const promises = updatedStories.map((story: FeatureStory, index: number) =>
+        handleReorderUserStories(story, index + 1)
+      );
 
       Promise.all(promises).then(() => {
         getFeatureStoryData();
@@ -541,15 +532,14 @@ const WorkspaceFeature = () => {
                                 className="drag-handle"
                                 paddingSize="s"
                                 {...provided.dragHandleProps}
+                                data-testid={`drag-handle-${story.priority}`}
                                 aria-label="Drag Handle"
                               >
                                 <EuiIcon type="grab" />
                               </EuiPanel>
                             </EuiFlexItem>
                             <EuiFlexItem>
-                              <UserStoryField key={story.id}>
-                                index: {idx} - priority - {story.priority} -{story.description}
-                              </UserStoryField>
+                              <UserStoryField>{story.description}</UserStoryField>
                             </EuiFlexItem>
                           </EuiFlexGroup>
                           <UserStoryOptionWrap>
