@@ -9,6 +9,8 @@ import {
   DataWrap2,
   LeftSection,
   RightSection,
+  VerticalGrayLine,
+  HorizontalGrayLine,
   FieldWrap,
   Label,
   Data,
@@ -499,7 +501,7 @@ const WorkspaceMission = () => {
             </RightHeader>
           </Header>
         </HeaderWrap>
-        <DataWrap style={{ paddingBottom: '0px' }}>
+        <DataWrap style={{ paddingBottom: '0px', background: '#fff', marginTop: '20px', borderRadius: '6px' }}>
           <LeftSection>
             <FieldWrap>
               <Label>Mission</Label>
@@ -605,7 +607,8 @@ const WorkspaceMission = () => {
                 )}
               </Data>
             </FieldWrap>
-            <FieldWrap>
+            <HorizontalGrayLine></HorizontalGrayLine>
+            <FieldWrap style={{ marginTop: '20px'}}>
               <DataWrap2>
                 <RowFlex>
                   <Label>Repositories</Label>
@@ -640,6 +643,7 @@ const WorkspaceMission = () => {
               </DataWrap2>
             </FieldWrap>
           </LeftSection>
+          <VerticalGrayLine></VerticalGrayLine>
           <RightSection>
             <FieldWrap>
               <Label>Schematic</Label>
@@ -684,19 +688,24 @@ const WorkspaceMission = () => {
                 </RowWrap>
               </Data>
             </FieldWrap>
-            <FieldWrap>
+            <HorizontalGrayLine></HorizontalGrayLine>
+            <FieldWrap style={{ marginTop: '20px'}}>
               <RowFlex style={{ gap: '25px', marginBottom: '15px' }}>
                 <Label style={{ margin: 0 }}>People</Label>
-                <EuiLinkStyled isMobile={isMobile} color="primary" onClick={toggleManageUserModal}>
-                  Manage
-                </EuiLinkStyled>
+                <a
+                      href="#"
+                      rel="noopener noreferrer"
+                      data-testid="manage-people-url"
+                      onClick={toggleManageUserModal}
+                      style={{ marginLeft: '0.5rem' }}
+                    >Manage</a>
               </RowFlex>
               <AvatarGroup avatarList={avatarList} avatarSize="xl" maxGroupSize={5} />
             </FieldWrap>
           </RightSection>
         </DataWrap>
 
-        <DataWrap>
+        <DataWrap style={{ background: '#fff', marginTop: '20px', padding: '0px 0px', borderRadius: '6px' }}>
           <FieldWrap style={{ background: 'white' }}>
             <BudgetWrapComponent uuid={uuid} org={workspaceData} />
           </FieldWrap>
