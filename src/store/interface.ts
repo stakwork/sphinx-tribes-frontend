@@ -290,7 +290,6 @@ export interface WorkspaceBudget {
 }
 
 export interface Feature {
-  priority: any;
   id: number;
   uuid: string;
   workspace_uuid: string;
@@ -299,6 +298,7 @@ export interface Feature {
   requirements: string;
   architecture: string;
   url: string;
+  priority: number;
   created: string;
   updated: string;
   created_by: string;
@@ -329,6 +329,7 @@ export interface CreateFeatureInput {
   brief?: string;
   requirements?: string;
   architecture?: string;
+  priority?: number;
 }
 
 // Default data
@@ -370,3 +371,4 @@ export const orgQuerLimit = 500;
 export const paginationQueryLimit = 20;
 export const peopleQueryLimit = 500;
 export const featureLimit = 3;
+export const phaseBountyLimit = 3;
