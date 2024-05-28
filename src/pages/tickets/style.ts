@@ -294,7 +294,10 @@ export const FlexDiv = styled.div`
 
 export const FeatureLink = styled.a`
   text-decoration: none;
-  color: #000;
+  color: #5f6368;
+  padding: 0;
+  margin: 0;
+  margin-top: 15px;
 `;
 
 export const StyledList = styled.ul`

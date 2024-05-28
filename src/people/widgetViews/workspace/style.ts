@@ -986,6 +986,14 @@ export const RowFlex = styled.div`
   align-items: center;
 `;
 
+export const MissionRowFlex = styled.div`
+  display: flex;
+  width: 100%;
+  align-items: center;
+  position: absolute;
+  left: 2px;
+`;
+
 export const ButtonWrap = styled.div`
   margin-left: auto;
   margin-top: 10px;

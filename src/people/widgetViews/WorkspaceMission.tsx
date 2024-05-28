@@ -1,4 +1,4 @@
-import { EuiGlobalToastList, EuiLink, EuiLoadingSpinner } from '@elastic/eui';
+import { EuiGlobalToastList, EuiIcon, EuiLink, EuiLoadingSpinner } from '@elastic/eui';
 import {
   Body,
   WorkspaceBody,
@@ -16,19 +16,15 @@ import {
   TextArea,
   StyledListElement,
   FeatureLink,
-  StyledList,
-  FlexDiv,
-  PaginationImg,
-  PageContainer,
-  PaginationButtons
+  StyledList
 } from 'pages/tickets/style';
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useStores } from 'store';
 import { useDeleteConfirmationModal } from 'components/common';
 import { Box } from '@mui/system';
-import { Feature, featureLimit, Person, Workspace } from 'store/interface';
+import { Feature, Person, Workspace } from 'store/interface';
 import MaterialIcon from '@material/react-material-icon';
 import { Button, Modal } from 'components/common';
 import {
@@ -49,8 +45,7 @@ import { AvatarGroup } from 'components/common/AvatarGroup';
 import avatarIcon from '../../public/static/profile_avatar.svg';
 import threeDotsIcon from '../widgetViews/Icons/threeDotsIcon.svg';
 import { colors } from '../../config/colors';
-import paginationarrow1 from '../../pages/superadmin/header/icons/paginationarrow1.svg';
-import paginationarrow2 from '../../pages/superadmin/header/icons/paginationarrow2.svg';
+import dragIcon from '../../pages/superadmin/header/icons/drag_indicator.svg';
 import AddFeature from './workspace/AddFeatureModal';
 import {
   ActionButton,
@@ -59,72 +54,49 @@ import {
   RepoName,
   RepoEliipsis,
   WorkspaceOption,
-  ImgText
+  ImgText,
+  MissionRowFlex
 } from './workspace/style';
 import AddRepoModal from './workspace/AddRepoModal';
 import EditSchematic from './workspace/EditSchematicModal';
 import ManageWorkspaceUsersModal from './workspace/ManageWorkspaceUsersModal';
 import { BudgetWrapComponent } from './BudgetWrap';
+import { LoadMoreContainer } from './WidgetSwitchViewer';
 const color = colors['light'];
-
-const PaginatonSection = styled.div`
-  height: 50px;
-  flex-shrink: 0;
-  align-self: stretch;
-  border-radius: 8px;
-  padding: 1em;
-`;
-
-const PriorityButtons = styled.div`
-  display: flex;
-  flex-direction: row;
-`;
 
 const FeaturesWrap = styled.div`
   margin-top: 25px;
 `;
 
 const FeatureDataWrap = styled.div`
-  padding: 15px;
+  padding: 8px 5px;
   margin-bottom: 10px;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 10px;
   display: flex;
-  gap: 1rem;
-`;
-
-const FeatureCount = styled.div`
-  padding: 5px;
-  width: 42px;
-  height: 42px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid #ccc;
   font-size: 1rem;
   font-weight: 700;
+  min-width: 100%;
+  flex-direction: column;
+  position: relative;
+  background: #ffffff;
+`;
+
+const FeatureCount = styled.h4`
+  font-size: 1.1rem;
+  font-weight: 400;
+  padding: 0px;
+  color: #5f6368;
+  margin: 0;
 `;
 
 const FeatureData = styled.div`
-  margin-top: 10px;
-  min-width: calc(100% - 52px - 1rem);
+  min-width: calc(100% - 7%);
   font-size: 1rem;
-  font-weight: 700;
-`;
-
-const FeatureDetails = styled.div`
-  border: 1px solid #ccc;
-  margin-top: 10px;
-  min-height: 50px;
-  min-width: 100%;
+  font-weight: 500;
   display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const FeatureText = styled.p`
-  padding: 0px;
-  margin: 0px;
+  margin-left: 7%;
+  color: #5f6368;
 `;
 
 export const ImgContainer = styled.div`
@@ -150,11 +122,92 @@ export const RowWrap = styled.div`
   margin-top: 1rem; /* Adjust this margin as needed */
 `;
 
-const EuiLinkStyled = styled(EuiLink)<{ isMobile: boolean }>`
+const EuiLinkStyled = styled(EuiLink) <{ isMobile: boolean }>`
   border: none;
   text-decoration: underline;
   margin-left: ${(props: any) => (props.isMobile ? 'auto' : '0')};
   margin: ${(props: any) => (props.isMobile ? '0' : '0')};
+`;
+
+const StatusWrap = styled.div`
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+`;
+
+interface StatusType {
+  type: string;
+}
+
+const StatusBox = styled.div<StatusType>`
+  min-width: 155px;
+  min-height: 65px;
+  padding: 10px 5px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  position: relative;
+  background: ${(props: any) => {
+    if (props.type === 'completed') {
+      return '#9157F612';
+    } else if (props.type === 'assigned') {
+      return '#49C99812';
+    } else if (props.type === 'open') {
+      return '#618AFF12';
+    }
+  }};
+  font-weight: 600;
+  border: ${(props: any) => {
+    if (props.type === 'completed') {
+      return ' 0.5px solid #9157F6';
+    } else if (props.type === 'assigned') {
+      return '0.5px solid #2FB379';
+    } else if (props.type === 'open') {
+      return '0.5px solid #5078F2';
+    }
+  }};
+  color: ${(props: any) => {
+    if (props.type === 'completed') {
+      return '#9157F6';
+    } else if (props.type === 'assigned') {
+      return '#2FB379';
+    } else if (props.type === 'open') {
+      return '#5078F2';
+    }
+  }};
+`;
+
+interface BudgetHeaderProps {
+  color: string;
+}
+
+const BudgetCount = styled.span<BudgetHeaderProps>`
+  background: ${(p: any) => p.color};
+  color: #fff;
+  padding: 0.5px 5px;
+  border-radius: 50%;
+  font-size: 0.65rem;
+  font-weight: bolder;
+  display: inline-block;
+  margin-left: 10px;
+`;
+
+const BudgetBountyLink = styled.span`
+  cursor: pointer;
+  position: absolute;
+  right: 8px;
+  top: 4px;
+`;
+
+const DragIcon = styled.img`
+  width: 20px;
+  height: 20px;
+  padding: 0px;
+  margin: 0;
 `;
 
 const WorkspaceMission = () => {
@@ -180,12 +233,9 @@ const WorkspaceMission = () => {
   const [features, setFeatures] = useState<Feature[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [featuresCount, setFeaturesCount] = useState(0);
-  const [activeTabs, setActiveTabs] = useState<number[]>([]);
   const [isOpenUserManage, setIsOpenUserManage] = useState<boolean>(false);
   const [users, setUsers] = useState<Person[]>([]);
 
-  const paginationLimit = Math.floor(featuresCount / featureLimit) + 1;
-  const visibleTabs = 3;
   const isMobile = useIsMobile();
 
   const fetchRepositories = useCallback(async () => {
@@ -289,9 +339,9 @@ const WorkspaceMission = () => {
 
   const getFeatures = useCallback(async () => {
     if (!uuid) return;
-    const features = await main.getWorkspaceFeatures(uuid, { page: currentPage });
-    if (!features) return;
-    setFeatures(features);
+    const featuresRes = await main.getWorkspaceFeatures(uuid, { page: currentPage });
+    if (!featuresRes) return;
+    setFeatures((feats: Feature[]) => [...feats, ...featuresRes]);
     getFeaturesCount();
 
     setLoading(false);
@@ -300,20 +350,6 @@ const WorkspaceMission = () => {
   useEffect(() => {
     getFeatures();
   }, [getFeatures]);
-
-  const getActiveTabs = useCallback(() => {
-    const dataNumber: number[] = [];
-    for (let i = 1; i <= Math.ceil(paginationLimit); i++) {
-      if (i > visibleTabs) break;
-      dataNumber.push(i);
-    }
-
-    setActiveTabs(dataNumber);
-  }, [paginationLimit]);
-
-  useEffect(() => {
-    getActiveTabs();
-  }, [getActiveTabs]);
 
   const handleWebsiteButton = (websiteUrl: string) => {
     window.open(websiteUrl, '_blank');
@@ -375,67 +411,30 @@ const WorkspaceMission = () => {
     setSchematicModal(!schematicModal);
   };
 
-  const paginateNext = () => {
-    const activeTab = paginationLimit > visibleTabs;
-    const activePage = currentPage < featuresCount / featureLimit;
-    if (activePage && activeTab) {
-      const dataNumber: number[] = activeTabs;
-      let nextPage: number;
-      if (currentPage < visibleTabs) {
-        nextPage = visibleTabs + 1;
-        if (setCurrentPage) setCurrentPage(nextPage);
-      } else {
-        nextPage = currentPage + 1;
-        if (setCurrentPage) setCurrentPage(nextPage);
-      }
-      dataNumber.push(nextPage);
-      dataNumber.shift();
-    }
+  const loadMore = () => {
+    const nextPage = currentPage + 1;
+    setCurrentPage(nextPage);
   };
 
-  const paginatePrev = () => {
-    const firtsTab = activeTabs[0];
-    const lastTab = activeTabs[6];
-    if (firtsTab > 1) {
-      const dataNumber: number[] = activeTabs;
-      let nextPage: number;
-      if (lastTab > visibleTabs) {
-        nextPage = lastTab - visibleTabs;
-      } else {
-        nextPage = currentPage - 1;
-      }
-      if (setCurrentPage) setCurrentPage(currentPage - 1);
-      dataNumber.pop();
-      const newActivetabs = [nextPage, ...dataNumber];
-      setActiveTabs(newActivetabs);
-    }
-  };
+  // const handleFeaturePriority = async (curFeature: Feature, otherFeature: Feature) => {
+  //   const curFeatureBody = {
+  //     workspace_uuid: curFeature.workspace_uuid || '',
+  //     uuid: curFeature.uuid,
+  //     priority: otherFeature.priority
+  //   };
 
-  const paginate = (page: number) => {
-    if (setCurrentPage) {
-      setCurrentPage(page);
-    }
-  };
+  //   await main.addWorkspaceFeature(curFeatureBody);
 
-  const handleFeaturePriority = async (curFeature: Feature, otherFeature: Feature) => {
-    const curFeatureBody = {
-      workspace_uuid: curFeature.workspace_uuid || '',
-      uuid: curFeature.uuid,
-      priority: otherFeature.priority
-    };
+  //   const otherFeatureBody = {
+  //     workspace_uuid: otherFeature.workspace_uuid || '',
+  //     uuid: otherFeature.uuid,
+  //     priority: curFeature.priority
+  //   };
 
-    await main.addWorkspaceFeature(curFeatureBody);
+  //   await main.addWorkspaceFeature(otherFeatureBody);
 
-    const otherFeatureBody = {
-      workspace_uuid: otherFeature.workspace_uuid || '',
-      uuid: otherFeature.uuid,
-      priority: curFeature.priority
-    };
-
-    await main.addWorkspaceFeature(otherFeatureBody);
-
-    window.location.reload();
-  };
+  //   window.location.reload();
+  // };
 
   const toastsEl = (
     <EuiGlobalToastList
@@ -722,67 +721,77 @@ const WorkspaceMission = () => {
                   .sort((a: Feature, b: Feature) => a.priority - b.priority)
                   .map((feat: Feature, i: number) => (
                     <FeatureDataWrap key={i} data-testid="feature-item">
-                      <FeatureCount>{i + 1}</FeatureCount>
+                      <MissionRowFlex>
+                        <DragIcon src={dragIcon} />
+                        <FeatureCount>{i + 1}</FeatureCount>
+                      </MissionRowFlex>
                       <FeatureData>
-                        <PriorityButtons>
-                          {features.length > 1 && i !== 0 && (
-                            <MaterialIcon
-                              icon={'arrow_upward'}
-                              className="MaterialIcon"
-                              onClick={() => handleFeaturePriority(feat, features[i - 1])}
-                              data-testid={`priority-arrow-upward-${i}`}
-                            />
-                          )}
-                          {features.length > 1 && i !== features.length - 1 && (
-                            <MaterialIcon
-                              icon={'arrow_downward'}
-                              className="MaterialIcon"
-                              onClick={() => handleFeaturePriority(feat, features[i + 1])}
-                              data-testid={`priority-arrow-downward-${i}`}
-                            />
-                          )}
-                          <FeatureLink
-                            href={`/feature/${feat.uuid}`}
-                            target="_blank"
-                            style={{ marginLeft: '1rem' }}
-                          >
-                            {feat.name}
-                          </FeatureLink>
-                        </PriorityButtons>
-                        <FeatureDetails>
-                          <FeatureText>Filter Status</FeatureText>
-                        </FeatureDetails>
+                        <FeatureLink
+                          href={`/feature/${feat.uuid}`}
+                          target="_blank"
+                          style={{ marginLeft: '1rem' }}
+                        >
+                          {feat.name}
+                        </FeatureLink>
+                        <StatusWrap>
+                          <StatusBox type="completed">
+                            Completed
+                            <BudgetCount color="#9157F6">
+                              {feat.bounties_count_completed
+                                ? feat.bounties_count_completed.toLocaleString()
+                                : 0}
+                            </BudgetCount>
+                            <BudgetBountyLink>
+                              <Link target="_blank" to={''}>
+                                <EuiIcon type="popout" color="#9157F6" />
+                              </Link>
+                            </BudgetBountyLink>
+                          </StatusBox>
+                          <StatusBox type="assigned">
+                            Assigned
+                            <BudgetCount color="#2FB379">
+                              {feat.bounties_count_assigned
+                                ? feat.bounties_count_assigned.toLocaleString()
+                                : 0}
+                            </BudgetCount>
+                            <BudgetBountyLink>
+                              <Link target="_blank" to={''}>
+                                <EuiIcon type="popout" color="#2FB379" />
+                              </Link>
+                            </BudgetBountyLink>
+                          </StatusBox>
+                          <StatusBox type="open">
+                            Open
+                            <BudgetCount color="#5078F2">
+                              {feat.bounties_count_open
+                                ? feat.bounties_count_open.toLocaleString()
+                                : 0}
+                            </BudgetCount>
+                            <BudgetBountyLink>
+                              <Link target="_blank" to={''}>
+                                <EuiIcon size="m" type="popout" color="#5078F2" />
+                              </Link>
+                            </BudgetBountyLink>
+                          </StatusBox>
+                        </StatusWrap>
                       </FeatureData>
                     </FeatureDataWrap>
                   ))}
             </FeaturesWrap>
-            {featuresCount > featureLimit ? (
-              <PaginatonSection>
-                <FlexDiv>
-                  <PageContainer role="pagination">
-                    <PaginationImg
-                      src={paginationarrow1}
-                      alt="pagination arrow 1"
-                      onClick={() => paginatePrev()}
-                    />
-                    {activeTabs.map((page: number) => (
-                      <PaginationButtons
-                        data-testid={'page'}
-                        key={page}
-                        onClick={() => paginate(page)}
-                        active={page === currentPage}
-                      >
-                        {page}
-                      </PaginationButtons>
-                    ))}
-                    <PaginationImg
-                      src={paginationarrow2}
-                      alt="pagination arrow 2"
-                      onClick={() => paginateNext()}
-                    />
-                  </PageContainer>
-                </FlexDiv>
-              </PaginatonSection>
+            {featuresCount > features.length ? (
+              <LoadMoreContainer
+                color={color}
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                }}
+              >
+                <div className="LoadMoreButton" onClick={() => loadMore()}>
+                  Load More
+                </div>
+              </LoadMoreContainer>
             ) : null}
           </FieldWrap>
         </DataWrap>

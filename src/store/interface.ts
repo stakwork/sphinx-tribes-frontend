@@ -299,6 +299,9 @@ export interface Feature {
   architecture: string;
   url: string;
   priority: number;
+  bounties_count_assigned: number;
+  bounties_count_completed: number;
+  bounties_count_open: number;
   created: string;
   updated: string;
   created_by: string;
@@ -375,5 +378,5 @@ export const queryLimit = 10;
 export const orgQuerLimit = 500;
 export const paginationQueryLimit = 20;
 export const peopleQueryLimit = 500;
-export const featureLimit = 3;
+export const featureLimit = 4;
 export const phaseBountyLimit = 3;
