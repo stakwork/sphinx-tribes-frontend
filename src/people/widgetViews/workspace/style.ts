@@ -1257,8 +1257,6 @@ export const StyledEuiTabbedContent = styled(EuiTabbedContent as any)`
       z-index: 200;
     }
 
-    
-
     .euiTab.euiTab-isSelected {
       box-shadow: unset;
       border-bottom: 4px solid #618aff;
