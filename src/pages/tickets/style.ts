@@ -72,6 +72,10 @@ export const DataWrap = styled.div`
   margin: 0 auto;
   align-items: left;
   justify-content: center;
+  padding-bottom: 0px;
+  background: #fff;
+  margintop: 20px;
+  border-radius: 6px;
 
   @media only screen and (max-width: 900px) {
     width: 90%;

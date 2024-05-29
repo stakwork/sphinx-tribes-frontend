@@ -135,7 +135,7 @@ export const RowWrap = styled.div`
   margin-top: 1rem; /* Adjust this margin as needed */
 `;
 
-const EuiLinkStyled = styled(EuiLink) <{ isMobile: boolean }>`
+const EuiLinkStyled = styled(EuiLink)<{ isMobile: boolean }>`
   border: none;
   margin-left: ${(props: any) => (props.isMobile ? 'auto' : '0')};
   margin: ${(props: any) => (props.isMobile ? '0' : '0')};
@@ -468,9 +468,14 @@ const WorkspaceMission = () => {
       updatedFeatures.splice(source.index, 0, dropItem);
       setFeatures(updatedFeatures);
 
-      updatedFeatures.map((feat: Feature, index: number) => {
-        handleReorderFeatures(feat, index + 1);
-      });
+      // get drag feature
+      const dragIndex = updatedFeatures.findIndex((feat: Feature) => feat.uuid === movedItem.uuid);
+      // get drop feature
+      const dropIndex = updatedFeatures.findIndex((feat: Feature) => feat.uuid === dropItem.uuid);
+
+      // update drag and drop items indexes
+      handleReorderFeatures(movedItem, dragIndex + 1);
+      handleReorderFeatures(dropItem, dropIndex + 1);
     }
   };
 
@@ -538,10 +543,7 @@ const WorkspaceMission = () => {
         </HeaderWrap>
         <DataWrap
           style={{
-            paddingBottom: '0px',
-            background: '#fff',
-            marginTop: '20px',
-            borderRadius: '6px'
+            marginTop: '20px'
           }}
         >
           <LeftSection>
@@ -775,14 +777,12 @@ const WorkspaceMission = () => {
           </RightSection>
         </DataWrap>
 
-        <DataWrap
-          style={{ background: '#fff', marginTop: '20px', padding: '0px 0px', borderRadius: '6px' }}
-        >
+        <DataWrap style={{ marginTop: '20px', padding: '0px' }}>
           <FieldWrap style={{ background: 'white' }}>
             <BudgetWrapComponent uuid={uuid} org={workspaceData} />
           </FieldWrap>
         </DataWrap>
-        <DataWrap>
+        <DataWrap style={{ marginTop: '20px' }}>
           <FieldWrap style={{ marginBottom: '5rem' }}>
             <RowFlex>
               <Label>Features</Label>
