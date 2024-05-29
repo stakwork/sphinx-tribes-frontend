@@ -135,7 +135,7 @@ export const RowWrap = styled.div`
   margin-top: 1rem; /* Adjust this margin as needed */
 `;
 
-const EuiLinkStyled = styled(EuiLink)<{ isMobile: boolean }>`
+const EuiLinkStyled = styled(EuiLink) <{ isMobile: boolean }>`
   border: none;
   margin-left: ${(props: any) => (props.isMobile ? 'auto' : '0')};
   margin: ${(props: any) => (props.isMobile ? '0' : '0')};
