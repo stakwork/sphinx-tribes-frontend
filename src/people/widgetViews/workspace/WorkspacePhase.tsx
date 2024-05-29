@@ -115,12 +115,16 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
   const [currentItems, setCurrentItems] = useState<number>(phaseBountyLimit);
   const [totalBounties, setTotalBounties] = useState(0);
 
-  const checkboxIdToSelectedMap: BountyStatus = {
-    Open: true,
-    Assigned: true,
-    Completed: true,
-    Paid: true
-  };
+  const checkboxIdToSelectedMap: BountyStatus = useMemo(
+    () => ({
+      Open: true,
+      Assigned: true,
+      Completed: true,
+      Paid: true
+    }),
+    []
+  );
+
   const checkboxIdToSelectedMapLanguage = {};
   const languageString = '';
 
@@ -241,7 +245,7 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
 
   useEffect(() => {
     getTotalBounties(checkboxIdToSelectedMap);
-  }, [getTotalBounties, phases[selectedIndex]]);
+  }, [getTotalBounties, checkboxIdToSelectedMap]);
 
   useEffect(() => {
     if (page === 1 && phases[selectedIndex]) {
@@ -259,7 +263,7 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
         setLoading(false);
       })();
     }
-  }, [languageString, phases, selectedIndex, main, page]);
+  }, [languageString, phases, selectedIndex, main, page, checkboxIdToSelectedMap]);
 
   useEffect(() => {
     const checkUserPermissions = async () => {
@@ -335,7 +339,17 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
           </TabContent>
         )
       })),
-    [phases, currentItems, totalBounties, canPostBounty, loading, onPanelClick, page, selectedIndex]
+    [
+      phases,
+      currentItems,
+      totalBounties,
+      canPostBounty,
+      checkboxIdToSelectedMap,
+      loading,
+      onPanelClick,
+      page,
+      selectedIndex
+    ]
   );
 
   const selectedTab = useMemo(() => tabs[selectedIndex], [selectedIndex, tabs]);
