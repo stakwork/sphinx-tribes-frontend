@@ -501,7 +501,14 @@ const WorkspaceMission = () => {
             </RightHeader>
           </Header>
         </HeaderWrap>
-        <DataWrap style={{ paddingBottom: '0px', background: '#fff', marginTop: '20px', borderRadius: '6px' }}>
+        <DataWrap
+          style={{
+            paddingBottom: '0px',
+            background: '#fff',
+            marginTop: '20px',
+            borderRadius: '6px'
+          }}
+        >
           <LeftSection>
             <FieldWrap>
               <Label>Mission</Label>
@@ -608,7 +615,7 @@ const WorkspaceMission = () => {
               </Data>
             </FieldWrap>
             <HorizontalGrayLine></HorizontalGrayLine>
-            <FieldWrap style={{ marginTop: '20px'}}>
+            <FieldWrap style={{ marginTop: '20px' }}>
               <DataWrap2>
                 <RowFlex>
                   <Label>Repositories</Label>
@@ -689,23 +696,27 @@ const WorkspaceMission = () => {
               </Data>
             </FieldWrap>
             <HorizontalGrayLine></HorizontalGrayLine>
-            <FieldWrap style={{ marginTop: '20px'}}>
+            <FieldWrap style={{ marginTop: '20px' }}>
               <RowFlex style={{ gap: '25px', marginBottom: '15px' }}>
                 <Label style={{ margin: 0 }}>People</Label>
                 <a
-                      href="#"
-                      rel="noopener noreferrer"
-                      data-testid="manage-people-url"
-                      onClick={toggleManageUserModal}
-                      style={{ marginLeft: '0.5rem' }}
-                    >Manage</a>
+                  href="#"
+                  rel="noopener noreferrer"
+                  data-testid="manage-people-url"
+                  onClick={toggleManageUserModal}
+                  style={{ marginLeft: '0.5rem' }}
+                >
+                  Manage
+                </a>
               </RowFlex>
               <AvatarGroup avatarList={avatarList} avatarSize="xl" maxGroupSize={5} />
             </FieldWrap>
           </RightSection>
         </DataWrap>
 
-        <DataWrap style={{ background: '#fff', marginTop: '20px', padding: '0px 0px', borderRadius: '6px' }}>
+        <DataWrap
+          style={{ background: '#fff', marginTop: '20px', padding: '0px 0px', borderRadius: '6px' }}
+        >
           <FieldWrap style={{ background: 'white' }}>
             <BudgetWrapComponent uuid={uuid} org={workspaceData} />
           </FieldWrap>
