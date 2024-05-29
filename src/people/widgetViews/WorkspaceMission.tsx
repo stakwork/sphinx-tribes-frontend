@@ -462,10 +462,15 @@ const WorkspaceMission = () => {
       const updatedFeatures = [...features];
 
       const [movedItem] = updatedFeatures.splice(source.index, 1);
-      const dropItem = updatedFeatures[destination.index];
+      const dropItem = features[destination.index];
 
-      updatedFeatures.splice(destination.index, 1, movedItem);
-      updatedFeatures.splice(source.index, 0, dropItem);
+      if (destination.index !== updatedFeatures.length) {
+        updatedFeatures.splice(destination.index, 0, movedItem);
+      } else {
+        updatedFeatures[source.index] = dropItem;
+        updatedFeatures.splice(updatedFeatures.length, 1, movedItem);
+      }
+
       setFeatures(updatedFeatures);
 
       // get drag feature

@@ -468,11 +468,28 @@ const WorkspaceFeature = () => {
       const updatedStories = [...featureStories];
 
       const [movedItem] = updatedStories.splice(source.index, 1);
-      updatedStories.splice(destination.index, 0, movedItem);
+      const dropItem = updatedStories[destination.index];
 
-      const promises = updatedStories.map((story: FeatureStory, index: number) =>
-        handleReorderUserStories(story, index + 1)
+      updatedStories.splice(destination.index, 0, movedItem);
+      updatedStories.splice(source.index, 0, dropItem);
+
+      // get drag feature
+      const dragIndex = updatedStories.findIndex(
+        (feat: FeatureStory) => feat.uuid === movedItem.uuid
       );
+      // get drop feature
+      const dropIndex = updatedStories.findIndex(
+        (feat: FeatureStory) => feat.uuid === dropItem.uuid
+      );
+
+      // console.log("Indexes ===", dragIndex, dropIndex);
+      // console.log("Items ===", movedItem, dropItem);
+
+      // update drag and drop items indexes
+      const dragQuery = handleReorderUserStories(movedItem, dragIndex + 1);
+      const dropQuery = handleReorderUserStories(dropItem, dropIndex + 1);
+
+      const promises = [dragQuery, dropQuery];
 
       Promise.all(promises).then(() => {
         getFeatureStoryData();
@@ -515,8 +532,8 @@ const WorkspaceFeature = () => {
             <EuiDragDropContext onDragEnd={onDragEnd}>
               <EuiDroppable droppableId="user_story_droppable_area" spacing="m">
                 {featureStories
-                  ?.sort((a: FeatureStory, b: FeatureStory) => a.priority - b.priority)
-                  ?.map((story: FeatureStory, idx: number) => (
+                  // ?.sort((a: FeatureStory, b: FeatureStory) => a.priority - b.priority)
+                  .map((story: FeatureStory, idx: number) => (
                     <EuiDraggable
                       spacing="m"
                       key={story.id}
