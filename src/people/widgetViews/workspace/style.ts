@@ -1236,7 +1236,7 @@ export const StyledEuiTabbedContent = styled(EuiTabbedContent as any)`
       background-color: white !important;
 
       .euiTab__content {
-        color: #292c33;
+        color: #8e969c;
         text-overflow: ellipsis;
         size: 15px;
         font-weight: 600;
@@ -1250,16 +1250,11 @@ export const StyledEuiTabbedContent = styled(EuiTabbedContent as any)`
       }
     }
 
-    .euiTab-isSelected {
+    .euiTab-isSelected > .euiTab__content {
       color: black !important;
       text-decoration: none;
       border-bottom: unset;
       z-index: 200;
-    }
-
-    .euiTab.euiTab-isSelected,
-    .euiTab.euiTab-isSelected .euiTab__content {
-      color: #8e969c !important;
     }
 
     .euiTab.euiTab-isSelected {

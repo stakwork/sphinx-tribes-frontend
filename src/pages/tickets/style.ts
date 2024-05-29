@@ -58,7 +58,7 @@ export const DataWrap = styled.div`
   display: flex;
   justify-content: space-between;
   padding: 20px 50px;
-  width: 80%;
+  width: 75%;
   margin: 0 auto;
   align-items: left;
   justify-content: center;
@@ -79,7 +79,7 @@ export const FeatureDataWrap = styled.div`
   flex-direction: column;
   justify-content: space-between;
   padding: 40px 50px;
-  width: 60%;
+  width: 85%;
   margin: 0 auto;
   align-items: left;
   justify-content: center;
@@ -141,9 +141,25 @@ export const RightSection = styled.div`
   }
 `;
 
+export const VerticalGrayLine = styled.div`
+  width: 2px;
+  height: 90%;
+  background-color: #edecec;
+  content: '';
+  margin: 10px 20px;
+`;
+
+export const HorizontalGrayLine = styled.div`
+  width: 100%;
+  height: 2px;
+  background-color: #edecec;
+  content: '';
+  margin: 10px 0px;
+`;
+
 export const FieldWrap = styled.div`
   margin-bottom: 30px;
-  width: 95%;
+  width: 98%;
 `;
 
 export const Label = styled.h5`
@@ -152,7 +168,8 @@ export const Label = styled.h5`
 `;
 
 export const Data = styled.div`
-  border: 2px solid #dde1e5;
+  border: 1px solid #dde1e5;
+  background-color: #fff;
   caret-color: #618aff;
   min-height: 50px;
   border-radius: 5px;

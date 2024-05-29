@@ -621,12 +621,14 @@ const WorkspaceFeature = () => {
           handleDelete={handleModalDelete}
         />
       </FeatureDataWrap>
-      <WorkspacePhasingTabs
-        featureId={feature_uuid}
-        phases={phases}
-        updateFeaturePhase={updateFeaturePhase}
-        workspace_uuid={featureData?.workspace_uuid ?? ''}
-      />
+      <FeatureDataWrap>
+        <WorkspacePhasingTabs
+          featureId={feature_uuid}
+          phases={phases}
+          updateFeaturePhase={updateFeaturePhase}
+          workspace_uuid={featureData?.workspace_uuid ?? ''}
+        />
+      </FeatureDataWrap>
       {toastsEl}
     </FeatureBody>
   );
