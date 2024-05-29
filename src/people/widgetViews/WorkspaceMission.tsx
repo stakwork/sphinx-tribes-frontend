@@ -154,9 +154,9 @@ export const RowWrap = styled.div`
 
 const EuiLinkStyled = styled(EuiLink)<{ isMobile: boolean }>`
   border: none;
-  text-decoration: underline;
   margin-left: ${(props: any) => (props.isMobile ? 'auto' : '0')};
   margin: ${(props: any) => (props.isMobile ? '0' : '0')};
+  background-color: #fff;
 `;
 
 const WorkspaceMission = () => {
@@ -614,7 +614,7 @@ const WorkspaceMission = () => {
                 )}
               </Data>
             </FieldWrap>
-            <HorizontalGrayLine></HorizontalGrayLine>
+            <HorizontalGrayLine />
             <FieldWrap style={{ marginTop: '20px' }}>
               <DataWrap2>
                 <RowFlex>
@@ -650,7 +650,7 @@ const WorkspaceMission = () => {
               </DataWrap2>
             </FieldWrap>
           </LeftSection>
-          <VerticalGrayLine></VerticalGrayLine>
+          <VerticalGrayLine />
           <RightSection>
             <FieldWrap>
               <Label>Schematic</Label>
@@ -695,19 +695,13 @@ const WorkspaceMission = () => {
                 </RowWrap>
               </Data>
             </FieldWrap>
-            <HorizontalGrayLine></HorizontalGrayLine>
+            <HorizontalGrayLine />
             <FieldWrap style={{ marginTop: '20px' }}>
               <RowFlex style={{ gap: '25px', marginBottom: '15px' }}>
                 <Label style={{ margin: 0 }}>People</Label>
-                <a
-                  href="#"
-                  rel="noopener noreferrer"
-                  data-testid="manage-people-url"
-                  onClick={toggleManageUserModal}
-                  style={{ marginLeft: '0.5rem' }}
-                >
+                <EuiLinkStyled isMobile={isMobile} onClick={toggleManageUserModal}>
                   Manage
-                </a>
+                </EuiLinkStyled>
               </RowFlex>
               <AvatarGroup avatarList={avatarList} avatarSize="xl" maxGroupSize={5} />
             </FieldWrap>

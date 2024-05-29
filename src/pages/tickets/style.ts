@@ -168,7 +168,7 @@ export const Label = styled.h5`
 `;
 
 export const Data = styled.div`
-  border: 2px solid #dde1e5;
+  border: 1px solid #dde1e5;
   background-color: #fff;
   caret-color: #618aff;
   min-height: 50px;
