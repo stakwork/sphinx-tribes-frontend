@@ -1,4 +1,12 @@
-import { EuiGlobalToastList, EuiIcon, EuiLink, EuiLoadingSpinner } from '@elastic/eui';
+import {
+  EuiDragDropContext,
+  EuiDraggable,
+  EuiDroppable,
+  EuiGlobalToastList,
+  EuiIcon,
+  EuiLink,
+  EuiLoadingSpinner
+} from '@elastic/eui';
 import {
   Body,
   WorkspaceBody,
@@ -70,8 +78,9 @@ const FeaturesWrap = styled.div`
 
 const FeatureDataWrap = styled.div`
   padding: 8px 5px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
+  margin-bottom: 0px;
+  border: 1px solid #fefefe;
+  box-shadow: 0px 1px 2px 2px #00000026;
   border-radius: 10px;
   display: flex;
   font-size: 1rem;
@@ -80,6 +89,7 @@ const FeatureDataWrap = styled.div`
   flex-direction: column;
   position: relative;
   background: #ffffff;
+  margin-bottom: 5px;
 `;
 
 const FeatureCount = styled.h4`
@@ -122,7 +132,7 @@ export const RowWrap = styled.div`
   margin-top: 1rem; /* Adjust this margin as needed */
 `;
 
-const EuiLinkStyled = styled(EuiLink) <{ isMobile: boolean }>`
+const EuiLinkStyled = styled(EuiLink)<{ isMobile: boolean }>`
   border: none;
   text-decoration: underline;
   margin-left: ${(props: any) => (props.isMobile ? 'auto' : '0')};
@@ -337,11 +347,23 @@ const WorkspaceMission = () => {
     getFeaturesCount();
   }, [getFeaturesCount]);
 
+  const updateFeatures = (newFeatures: Feature[]) => {
+    const updatedFeatures: Feature[] = [...features];
+    newFeatures.forEach((newFeat: Feature) => {
+      const featIndex = features.findIndex((feat: Feature) => feat.uuid === newFeat.uuid);
+      if (featIndex === -1) {
+        updatedFeatures.push(newFeat);
+      }
+    });
+    setFeatures(updatedFeatures);
+  };
+
   const getFeatures = useCallback(async () => {
     if (!uuid) return;
     const featuresRes = await main.getWorkspaceFeatures(uuid, { page: currentPage });
     if (!featuresRes) return;
-    setFeatures((feats: Feature[]) => [...feats, ...featuresRes]);
+
+    updateFeatures(featuresRes);
     getFeaturesCount();
 
     setLoading(false);
@@ -416,25 +438,30 @@ const WorkspaceMission = () => {
     setCurrentPage(nextPage);
   };
 
-  // const handleFeaturePriority = async (curFeature: Feature, otherFeature: Feature) => {
-  //   const curFeatureBody = {
-  //     workspace_uuid: curFeature.workspace_uuid || '',
-  //     uuid: curFeature.uuid,
-  //     priority: otherFeature.priority
-  //   };
+  const handleReorderFeatures = async (feat: Feature, priority: number) => {
+    await main.addWorkspaceFeature({
+      workspace_uuid: feat.workspace_uuid,
+      uuid: feat.uuid,
+      priority: priority
+    });
+  };
 
-  //   await main.addWorkspaceFeature(curFeatureBody);
+  const onDragEnd = ({ source, destination }: any) => {
+    if (source && destination && source.index !== destination.index) {
+      const updatedFeatures = [...features];
 
-  //   const otherFeatureBody = {
-  //     workspace_uuid: otherFeature.workspace_uuid || '',
-  //     uuid: otherFeature.uuid,
-  //     priority: curFeature.priority
-  //   };
+      const [movedItem] = updatedFeatures.splice(source.index, 1);
+      const dropItem = updatedFeatures[destination.index];
 
-  //   await main.addWorkspaceFeature(otherFeatureBody);
+      updatedFeatures.splice(destination.index, 1, movedItem);
+      updatedFeatures.splice(source.index, 0, dropItem);
+      setFeatures(updatedFeatures);
 
-  //   window.location.reload();
-  // };
+      updatedFeatures.map((feat: Feature, index: number) => {
+        handleReorderFeatures(feat, index + 1);
+      });
+    }
+  };
 
   const toastsEl = (
     <EuiGlobalToastList
@@ -716,67 +743,90 @@ const WorkspaceMission = () => {
               />
             </RowFlex>
             <FeaturesWrap>
-              {features &&
-                features
-                  .sort((a: Feature, b: Feature) => a.priority - b.priority)
-                  .map((feat: Feature, i: number) => (
-                    <FeatureDataWrap key={i} data-testid="feature-item">
-                      <MissionRowFlex>
-                        <DragIcon src={dragIcon} />
-                        <FeatureCount>{i + 1}</FeatureCount>
-                      </MissionRowFlex>
-                      <FeatureData>
-                        <FeatureLink
-                          href={`/feature/${feat.uuid}`}
-                          target="_blank"
-                          style={{ marginLeft: '1rem' }}
+              <EuiDragDropContext onDragEnd={onDragEnd}>
+                <EuiDroppable droppableId="features_droppable_area" spacing="m">
+                  {features &&
+                    features
+                      // .sort((a: Feature, b: Feature) => a.priority - b.priority)
+                      .map((feat: Feature, i: number) => (
+                        <EuiDraggable
+                          spacing="m"
+                          key={feat.id}
+                          index={i}
+                          draggableId={feat.uuid}
+                          customDragHandle
+                          hasInteractiveChildren
                         >
-                          {feat.name}
-                        </FeatureLink>
-                        <StatusWrap>
-                          <StatusBox type="completed">
-                            Completed
-                            <BudgetCount color="#9157F6">
-                              {feat.bounties_count_completed
-                                ? feat.bounties_count_completed.toLocaleString()
-                                : 0}
-                            </BudgetCount>
-                            <BudgetBountyLink>
-                              <Link target="_blank" to={''}>
-                                <EuiIcon type="popout" color="#9157F6" />
-                              </Link>
-                            </BudgetBountyLink>
-                          </StatusBox>
-                          <StatusBox type="assigned">
-                            Assigned
-                            <BudgetCount color="#2FB379">
-                              {feat.bounties_count_assigned
-                                ? feat.bounties_count_assigned.toLocaleString()
-                                : 0}
-                            </BudgetCount>
-                            <BudgetBountyLink>
-                              <Link target="_blank" to={''}>
-                                <EuiIcon type="popout" color="#2FB379" />
-                              </Link>
-                            </BudgetBountyLink>
-                          </StatusBox>
-                          <StatusBox type="open">
-                            Open
-                            <BudgetCount color="#5078F2">
-                              {feat.bounties_count_open
-                                ? feat.bounties_count_open.toLocaleString()
-                                : 0}
-                            </BudgetCount>
-                            <BudgetBountyLink>
-                              <Link target="_blank" to={''}>
-                                <EuiIcon size="m" type="popout" color="#5078F2" />
-                              </Link>
-                            </BudgetBountyLink>
-                          </StatusBox>
-                        </StatusWrap>
-                      </FeatureData>
-                    </FeatureDataWrap>
-                  ))}
+                          {(provided: any) => (
+                            <FeatureDataWrap key={i} data-testid="feature-item">
+                              <MissionRowFlex>
+                                <DragIcon
+                                  src={dragIcon}
+                                  color="transparent"
+                                  className="drag-handle"
+                                  paddingSize="s"
+                                  {...provided.dragHandleProps}
+                                  data-testid={`drag-handle-${feat.priority}`}
+                                  aria-label="Drag Handle"
+                                />
+                                <FeatureCount>{i + 1}</FeatureCount>
+                              </MissionRowFlex>
+                              <FeatureData>
+                                <FeatureLink
+                                  href={`/feature/${feat.uuid}`}
+                                  target="_blank"
+                                  style={{ marginLeft: '1rem' }}
+                                >
+                                  {feat.name}
+                                </FeatureLink>
+                                <StatusWrap>
+                                  <StatusBox type="completed">
+                                    Completed
+                                    <BudgetCount color="#9157F6">
+                                      {feat.bounties_count_completed
+                                        ? feat.bounties_count_completed.toLocaleString()
+                                        : 0}
+                                    </BudgetCount>
+                                    <BudgetBountyLink>
+                                      <Link target="_blank" to={''}>
+                                        <EuiIcon type="popout" color="#9157F6" />
+                                      </Link>
+                                    </BudgetBountyLink>
+                                  </StatusBox>
+                                  <StatusBox type="assigned">
+                                    Assigned
+                                    <BudgetCount color="#2FB379">
+                                      {feat.bounties_count_assigned
+                                        ? feat.bounties_count_assigned.toLocaleString()
+                                        : 0}
+                                    </BudgetCount>
+                                    <BudgetBountyLink>
+                                      <Link target="_blank" to={''}>
+                                        <EuiIcon type="popout" color="#2FB379" />
+                                      </Link>
+                                    </BudgetBountyLink>
+                                  </StatusBox>
+                                  <StatusBox type="open">
+                                    Open
+                                    <BudgetCount color="#5078F2">
+                                      {feat.bounties_count_open
+                                        ? feat.bounties_count_open.toLocaleString()
+                                        : 0}
+                                    </BudgetCount>
+                                    <BudgetBountyLink>
+                                      <Link target="_blank" to={''}>
+                                        <EuiIcon size="m" type="popout" color="#5078F2" />
+                                      </Link>
+                                    </BudgetBountyLink>
+                                  </StatusBox>
+                                </StatusWrap>
+                              </FeatureData>
+                            </FeatureDataWrap>
+                          )}
+                        </EuiDraggable>
+                      ))}
+                </EuiDroppable>
+              </EuiDragDropContext>
             </FeaturesWrap>
             {featuresCount > features.length ? (
               <LoadMoreContainer
