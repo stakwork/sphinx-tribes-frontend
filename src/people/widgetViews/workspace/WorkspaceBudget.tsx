@@ -17,7 +17,7 @@ const WorkspaceTextWrap = styled.div`
   }
 `;
 
-const WorkspaceText = styled.p<{ hasAccess: boolean }>`
+const WorkspaceText = styled.a<{ hasAccess: boolean }>`
   color: var(--Text-2, var(--Hover-Icon-Color, #3c3f41));
   font-family: 'Barlow';
   font-size: 1.25rem;
@@ -26,6 +26,9 @@ const WorkspaceText = styled.p<{ hasAccess: boolean }>`
   line-height: 1.1875rem; /* 95% */
   margin-bottom: ${(p: any) => (p.hasAccess ? '14px' : '0px')};
   text-transform: capitalize;
+  :hover {
+    text-decoration: none;
+  }
   @media only screen and (max-width: 700px) {
     font-size: 0.85rem;
   }
@@ -74,7 +77,10 @@ const WorkspaceBudget = (props: { user_pubkey: string; org: any }) => {
   const { main, ui } = useStores();
   const { user_pubkey, org } = props;
 
-  const isWorkspaceAdmin = org?.owner_pubkey === ui.meInfo?.owner_pubkey;
+  const isWorkspaceAdmin =
+    org?.owner_pubkey &&
+    ui.meInfo?.owner_pubkey &&
+    props.org?.owner_pubkey === ui.meInfo?.owner_pubkey;
 
   const hasAccess =
     isWorkspaceAdmin ||
@@ -92,7 +98,9 @@ const WorkspaceBudget = (props: { user_pubkey: string; org: any }) => {
 
   return (
     <WorkspaceTextWrap className="org-text-wrap">
-      <WorkspaceText hasAccess={hasAccess}>{org.name}</WorkspaceText>
+      <WorkspaceText href={`/workspace/${org.uuid}`} hasAccess={hasAccess}>
+        {org.name}
+      </WorkspaceText>
       {hasAccess && (
         <WorkspaceBudgetText>
           {DollarConverter(org.budget ?? 0)}

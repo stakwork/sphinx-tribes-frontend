@@ -16,7 +16,7 @@ describe('Create Workspace And Update Mission', () => {
     cy.create_workspace(workspace);
     cy.wait(1000);
 
-    cy.contains(workspace.name).contains('Manage').click();
+    cy.contains(workspace.name).get(`[data-work-name="${workspace.name}"]`).click();
     cy.wait(1000);
 
     cy.get('[data-testid="mission-link"]')

@@ -1,7 +1,7 @@
 describe('View Transaction History', () => {
   const workSpace = {
     loggedInAs: 'alice',
-    name: 'SyedWorkspaceZ',
+    name: 'SyedWorkspace3',
     description: 'We are testing out our workspace',
     website: '',
     github: ''
@@ -14,7 +14,7 @@ describe('View Transaction History', () => {
     cy.create_workspace(workSpace);
     cy.wait(1000);
 
-    cy.contains(workSpace.name).contains('Manage').click();
+    cy.contains(workSpace.name).get(`[data-work-name="${workSpace.name}"]`).click();
     cy.wait(1000);
 
     cy.contains('Add User').click();
@@ -55,7 +55,7 @@ describe('View Transaction History', () => {
     cy.contains(workSpace.name).should('exist');
     cy.wait(1000);
 
-    cy.contains(workSpace.name).contains('Manage').click();
+    cy.contains(workSpace.name).get(`[data-work-name="${workSpace.name}"]`).click();
     cy.wait(1000);
 
     cy.contains('History').should('not.be.disabled');

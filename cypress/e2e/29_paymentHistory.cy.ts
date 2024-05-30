@@ -18,7 +18,7 @@ describe('It Lists all payments in history', () => {
     cy.create_workspace(workSpace);
     cy.wait(1000);
 
-    cy.contains(workSpace.name).contains('Manage').click();
+    cy.contains(workSpace.name).get(`[data-work-name="${workSpace.name}"]`).click();
     cy.wait(1000);
 
     const depositAmount = 10000;
@@ -111,7 +111,7 @@ describe('It Lists all payments in history', () => {
     cy.contains(activeUser).click();
     cy.wait(1000);
 
-    cy.contains(workSpace.name).contains('Manage').click();
+    cy.contains(workSpace.name).get(`[data-work-name="${workSpace.name}"]`).click();
     cy.wait(1000);
 
     cy.contains('History').click({ force: true });

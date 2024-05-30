@@ -23,7 +23,7 @@ describe('Withdraw From Workspace Role Test', () => {
     cy.create_workspace(workspace);
     cy.wait(1000);
 
-    cy.contains(workspace.name).contains('Manage').click();
+    cy.contains(workspace.name).get(`[data-work-name="${workspace.name}"]`).click();
     cy.wait(1000);
 
     cy.contains('Add User').click();
@@ -70,7 +70,7 @@ describe('Withdraw From Workspace Role Test', () => {
     cy.contains(workspace.name).should('exist').and('be.visible');
     cy.wait(1000);
 
-    cy.contains(workspace.name).contains('Manage').click();
+    cy.contains(workspace.name).get(`[data-work-name="${workspace.name}"]`).click();
     cy.wait(1000);
 
     //Assert that the Withdraw button is not disabled

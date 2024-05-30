@@ -56,6 +56,7 @@ import { EuiToolTip } from '@elastic/eui';
 import { useIsMobile } from 'hooks';
 import styled from 'styled-components';
 import { AvatarGroup } from 'components/common/AvatarGroup';
+import { userHasRole } from 'helpers/helpers-extended';
 import avatarIcon from '../../public/static/profile_avatar.svg';
 import { colors } from '../../config/colors';
 import dragIcon from '../../pages/superadmin/header/icons/drag_indicator.svg';
@@ -66,7 +67,9 @@ import {
   ButtonWrap,
   RepoName,
   ImgText,
-  MissionRowFlex
+  MissionRowFlex,
+  FullNoBudgetWrap,
+  FullNoBudgetText
 } from './workspace/style';
 import AddRepoModal from './workspace/AddRepoModal';
 import EditSchematic from './workspace/EditSchematicModal';
@@ -256,8 +259,32 @@ const WorkspaceMission = () => {
       [repositoryId]: !prev[repositoryId]
     }));
   };
+  const [userRoles, setUserRoles] = useState<any[]>([]);
 
   const isMobile = useIsMobile();
+  const isWorkspaceAdmin =
+    workspaceData?.owner_pubkey &&
+    ui.meInfo?.owner_pubkey &&
+    workspaceData?.owner_pubkey === ui.meInfo?.owner_pubkey;
+  const editWorkspaceDisabled =
+    !isWorkspaceAdmin && !userHasRole(main.bountyRoles, userRoles, 'EDIT ORGANIZATION');
+
+  const getUserRoles = useCallback(
+    async (user: any) => {
+      const pubkey = user.owner_pubkey;
+      if (uuid && pubkey) {
+        const userRoles = await main.getUserRoles(uuid, pubkey);
+        setUserRoles(userRoles);
+      }
+    },
+    [uuid, main]
+  );
+
+  useEffect(() => {
+    if (uuid && ui.meInfo) {
+      getUserRoles(ui.meInfo);
+    }
+  }, [getUserRoles]);
 
   const fetchRepositories = useCallback(async () => {
     try {
@@ -462,15 +489,25 @@ const WorkspaceMission = () => {
       const updatedFeatures = [...features];
 
       const [movedItem] = updatedFeatures.splice(source.index, 1);
-      const dropItem = updatedFeatures[destination.index];
+      const dropItem = features[destination.index];
 
-      updatedFeatures.splice(destination.index, 1, movedItem);
-      updatedFeatures.splice(source.index, 0, dropItem);
+      if (destination.index !== updatedFeatures.length) {
+        updatedFeatures.splice(destination.index, 0, movedItem);
+      } else {
+        updatedFeatures[source.index] = dropItem;
+        updatedFeatures.splice(updatedFeatures.length, 1, movedItem);
+      }
+
       setFeatures(updatedFeatures);
 
-      updatedFeatures.map((feat: Feature, index: number) => {
-        handleReorderFeatures(feat, index + 1);
-      });
+      // get drag feature
+      const dragIndex = updatedFeatures.findIndex((feat: Feature) => feat.uuid === movedItem.uuid);
+      // get drop feature
+      const dropIndex = updatedFeatures.findIndex((feat: Feature) => feat.uuid === dropItem.uuid);
+
+      // update drag and drop items indexes
+      handleReorderFeatures(movedItem, dragIndex + 1);
+      handleReorderFeatures(dropItem, dropIndex + 1);
     }
   };
 
@@ -497,8 +534,23 @@ const WorkspaceMission = () => {
   const toggleManageUserModal = () => setIsOpenUserManage(!isOpenUserManage);
   const updateWorkspaceUsers = (updatedUsers: Person[]) => setUsers(updatedUsers);
 
-  return (
-    !loading && (
+  return editWorkspaceDisabled ? (
+    <FullNoBudgetWrap>
+      <MaterialIcon
+        icon={'lock'}
+        style={{
+          fontSize: 30,
+          cursor: 'pointer',
+          color: '#ccc'
+        }}
+      />
+      <FullNoBudgetText>
+        You have restricted permissions and you are unable to view this page. Reach out to the
+        workspace admin to get them updated.
+      </FullNoBudgetText>
+    </FullNoBudgetWrap>
+  ) : (
+    !loading && !editWorkspaceDisabled && (
       <WorkspaceBody>
         <HeaderWrap>
           <Header>
@@ -538,10 +590,7 @@ const WorkspaceMission = () => {
         </HeaderWrap>
         <DataWrap
           style={{
-            paddingBottom: '0px',
-            background: '#fff',
-            marginTop: '20px',
-            borderRadius: '6px'
+            marginTop: '20px'
           }}
         >
           <LeftSection>
@@ -775,14 +824,12 @@ const WorkspaceMission = () => {
           </RightSection>
         </DataWrap>
 
-        <DataWrap
-          style={{ background: '#fff', marginTop: '20px', padding: '0px 0px', borderRadius: '6px' }}
-        >
+        <DataWrap style={{ marginTop: '20px', padding: '0px' }}>
           <FieldWrap style={{ background: 'white' }}>
             <BudgetWrapComponent uuid={uuid} org={workspaceData} />
           </FieldWrap>
         </DataWrap>
-        <DataWrap>
+        <DataWrap style={{ marginTop: '20px' }}>
           <FieldWrap style={{ marginBottom: '5rem' }}>
             <RowFlex>
               <Label>Features</Label>
@@ -829,7 +876,6 @@ const WorkspaceMission = () => {
                               <FeatureData>
                                 <FeatureLink
                                   href={`/feature/${feat.uuid}`}
-                                  target="_blank"
                                   style={{ marginLeft: '1rem' }}
                                 >
                                   {feat.name}

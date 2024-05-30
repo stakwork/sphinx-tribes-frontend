@@ -14,7 +14,7 @@ describe('Alice Create an Workspace and then manage user roles', () => {
     cy.create_workspace(workSpace);
     cy.wait(1000);
 
-    cy.contains(workSpace.name).contains('Manage').click();
+    cy.contains(workSpace.name).get(`[data-work-name="${workSpace.name}"]`).click();
     cy.wait(1000);
 
     cy.contains('Add User').click();

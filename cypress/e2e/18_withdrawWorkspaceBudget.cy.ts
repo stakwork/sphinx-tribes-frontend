@@ -15,7 +15,7 @@ describe('It Withdraws from Workspace budget', () => {
     cy.create_workspace(workspace);
     cy.wait(1000);
 
-    cy.contains('Manage').click();
+    cy.contains(workspace.name).get(`[data-work-name="${workspace.name}"]`).click();
 
     const depositAmount = 10000;
     const withdrawAmount = 2000;

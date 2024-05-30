@@ -71,7 +71,10 @@ const WorkspaceDetails = (props: {
   const { path, url } = useRouteMatch();
   const [isOpenAssignRoles, setIsOpenAssignRoles] = useState<boolean>(false);
 
-  const isWorkspaceAdmin = props.org?.owner_pubkey === ui.meInfo?.owner_pubkey;
+  const isWorkspaceAdmin =
+    props.org?.owner_pubkey &&
+    ui.meInfo?.owner_pubkey &&
+    props.org?.owner_pubkey === ui.meInfo?.owner_pubkey;
 
   const editWorkspaceDisabled =
     !isWorkspaceAdmin && !userHasRole(main.bountyRoles, userRoles, 'EDIT ORGANIZATION');
