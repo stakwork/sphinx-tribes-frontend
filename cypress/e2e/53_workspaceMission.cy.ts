@@ -62,7 +62,8 @@ describe('Create Workspace And Update Mission', () => {
     cy.get('h5').contains('Repositories').should('be.visible');
     cy.contains(repoName).should('exist', { timeout: 1000 });
 
-    cy.get('img[alt="Three dots icon"]').first().click();
+    cy.get('[data-testid="repository-option-btn"]').click();
+    cy.get('[data-testid="repository-edit-btn"]').click();
     cy.wait(500);
 
     const updatedRepoName = 'Updated Repo';
@@ -75,7 +76,8 @@ describe('Create Workspace And Update Mission', () => {
     cy.contains(updatedRepoName).should('be.visible');
     cy.contains('https://github.com/updated/repo').should('be.visible');
 
-    cy.get('img[alt="Three dots icon"]').first().click();
+    cy.get('[data-testid="repository-option-btn"]').click();
+    cy.get('[data-testid="repository-edit-btn"]').click();
     cy.get('button').contains('Delete').click();
     cy.wait(1000);
 

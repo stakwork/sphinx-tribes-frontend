@@ -208,7 +208,7 @@ describe('Header Component', () => {
     expect(screen.getByText(exportCSVText)).toBeInTheDocument();
   });
 
-  test('displays Custom when dates are selected', async () => {
+  test('displays "Custom" when dates are selected', async () => {
     const setStartDateMock = jest.fn();
     const setEndDateMock = jest.fn();
     const setWorkspaceMock = jest.fn();

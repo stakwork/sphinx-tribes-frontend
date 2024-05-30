@@ -673,6 +673,7 @@ const WorkspaceMission = () => {
                           icon={'more_horiz'}
                           onClick={() => handleUserRepoOptionClick(repository?.id as number)}
                           className="MaterialIcon"
+                          data-testid="repository-option-btn"
                           style={{ transform: 'rotate(90deg)' }}
                         />
                         {displayUserRepoOptions[repository?.id as number] && (
@@ -693,7 +694,9 @@ const WorkspaceMission = () => {
                                 icon="edit"
                                 style={{ fontSize: '20px', marginTop: '2px' }}
                               />
-                              <EditPopoverText>Edit</EditPopoverText>
+                              <EditPopoverText data-testid="repository-edit-btn">
+                                Edit
+                              </EditPopoverText>
                             </EditPopoverContent>
                           </EditPopover>
                         )}
