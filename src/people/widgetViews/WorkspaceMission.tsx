@@ -41,6 +41,8 @@ import { Box } from '@mui/system';
 import { Feature, Person, Workspace } from 'store/interface';
 import MaterialIcon from '@material/react-material-icon';
 import { Button, Modal } from 'components/common';
+// For test input
+import TextInputNew from 'components/form/inputs/TextInputNew';
 import {
   ImageContainer,
   CompanyNameAndLink,
@@ -252,6 +254,9 @@ const WorkspaceMission = () => {
   const [isOpenUserManage, setIsOpenUserManage] = useState<boolean>(false);
   const [users, setUsers] = useState<Person[]>([]);
   const [displayUserRepoOptions, setDisplayUserRepoOptions] = useState<Record<number, boolean>>({});
+  // Test Input states
+  const [testValue, setTestValue] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
 
   const handleUserRepoOptionClick = (repositoryId: number) => {
     setDisplayUserRepoOptions((prev: Record<number, boolean>) => ({
@@ -511,6 +516,19 @@ const WorkspaceMission = () => {
     }
   };
 
+  // Test input functions
+  const handleChange = (value: string) => {
+    setTestValue(value);
+  };
+
+  const handleFocus = () => {
+    setIsFocused(true);
+  };
+
+  const handleBlur = () => {
+    setIsFocused(false);
+  };
+
   const toastsEl = (
     <EuiGlobalToastList
       toasts={ui.toasts}
@@ -594,6 +612,18 @@ const WorkspaceMission = () => {
           }}
         >
           <LeftSection>
+            {/** Test input */}
+            <TextInputNew
+              value={testValue}
+              label={'Test'}
+              handleChange={handleChange}
+              handleBlur={handleBlur}
+              handleFocus={handleFocus}
+              readOnly={false}
+              name={'test'}
+              error={''}
+              isFocused={isFocused}
+            />
             <FieldWrap>
               <Label>Mission</Label>
               <Data>
