@@ -3,7 +3,13 @@ import { EuiSpacer, EuiTabbedContentProps, EuiTabbedContentTab } from '@elastic/
 import { Button } from 'components/common';
 import MaterialIcon from '@material/react-material-icon';
 import styled from 'styled-components';
-import { Label } from 'pages/tickets/style';
+import {
+  EditPopover,
+  EditPopoverContent,
+  EditPopoverTail,
+  EditPopoverText,
+  Label
+} from 'pages/tickets/style';
 import { useStores } from 'store';
 import { useHistory } from 'react-router';
 import { observer } from 'mobx-react-lite';
@@ -13,8 +19,7 @@ import {
   TabContent,
   PostABounty,
   DisplayBounties,
-  TabContentOptions,
-  WorkspaceOption
+  TabContentOptions
 } from '../workspace/style';
 import addBounty from '../../../pages/tickets/workspace/workspaceHeader/Icons/addBounty.svg';
 import { userCanManageBounty } from '../../../helpers';
@@ -66,13 +71,15 @@ const PhaseOptions = (props: PhaseOptionProps) => {
         style={{ transform: 'rotate(90deg)' }}
       />
       {showOptions && (
-        <WorkspaceOption>
-          <ul>
-            <li data-testid={`phase-edit-btn`} onClick={close}>
+        <EditPopover>
+          <EditPopoverTail />
+          <EditPopoverContent>
+            <MaterialIcon icon="edit" style={{ fontSize: '20px', marginTop: '2px' }} />
+            <EditPopoverText data-testid={`phase-edit-btn`} onClick={close}>
               Edit
-            </li>
-          </ul>
-        </WorkspaceOption>
+            </EditPopoverText>
+          </EditPopoverContent>
+        </EditPopover>
       )}
     </TabContentOptions>
   );

@@ -26,7 +26,11 @@ import {
   TextArea,
   StyledListElement,
   FeatureLink,
-  StyledList
+  StyledList,
+  EditPopoverTail,
+  EditPopoverContent,
+  EditPopoverText,
+  EditPopover
 } from 'pages/tickets/style';
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -53,7 +57,6 @@ import { useIsMobile } from 'hooks';
 import styled from 'styled-components';
 import { AvatarGroup } from 'components/common/AvatarGroup';
 import avatarIcon from '../../public/static/profile_avatar.svg';
-import threeDotsIcon from '../widgetViews/Icons/threeDotsIcon.svg';
 import { colors } from '../../config/colors';
 import dragIcon from '../../pages/superadmin/header/icons/drag_indicator.svg';
 import AddFeature from './workspace/AddFeatureModal';
@@ -62,8 +65,6 @@ import {
   RowFlex,
   ButtonWrap,
   RepoName,
-  RepoEliipsis,
-  WorkspaceOption,
   ImgText,
   MissionRowFlex
 } from './workspace/style';
@@ -247,6 +248,14 @@ const WorkspaceMission = () => {
   const [featuresCount, setFeaturesCount] = useState(0);
   const [isOpenUserManage, setIsOpenUserManage] = useState<boolean>(false);
   const [users, setUsers] = useState<Person[]>([]);
+  const [displayUserRepoOptions, setDisplayUserRepoOptions] = useState<Record<number, boolean>>({});
+
+  const handleUserRepoOptionClick = (repositoryId: number) => {
+    setDisplayUserRepoOptions((prev: Record<number, boolean>) => ({
+      ...prev,
+      [repositoryId]: !prev[repositoryId]
+    }));
+  };
 
   const isMobile = useIsMobile();
 
@@ -547,13 +556,13 @@ const WorkspaceMission = () => {
                     data-testid="mission-option-btn"
                   />
                   {displayMission && (
-                    <WorkspaceOption>
-                      <ul>
-                        <li data-testid="mission-edit-btn" onClick={editMissionActions}>
-                          Edit
-                        </li>
-                      </ul>
-                    </WorkspaceOption>
+                    <EditPopover>
+                      <EditPopoverTail />
+                      <EditPopoverContent onClick={editMissionActions}>
+                        <MaterialIcon icon="edit" style={{ fontSize: '20px', marginTop: '2px' }} />
+                        <EditPopoverText data-testid="mission-edit-btn">Edit</EditPopoverText>
+                      </EditPopoverContent>
+                    </EditPopover>
                   )}
                 </OptionsWrap>
                 {!editMission && (
@@ -599,13 +608,13 @@ const WorkspaceMission = () => {
                     data-testid="tactics-option-btn"
                   />
                   {displayTactics && (
-                    <WorkspaceOption>
-                      <ul>
-                        <li data-testid="tactics-edit-btn" onClick={editTacticsActions}>
-                          Edit
-                        </li>
-                      </ul>
-                    </WorkspaceOption>
+                    <EditPopover>
+                      <EditPopoverTail />
+                      <EditPopoverContent onClick={editTacticsActions}>
+                        <MaterialIcon icon="edit" style={{ fontSize: '20px', marginTop: '2px' }} />
+                        <EditPopoverText data-testid="tactics-edit-btn">Edit</EditPopoverText>
+                      </EditPopoverContent>
+                    </EditPopover>
                   )}
                 </OptionsWrap>
                 {!editTactics && (
@@ -658,12 +667,37 @@ const WorkspaceMission = () => {
                 </RowFlex>
                 <StyledList>
                   {repositories.map((repository: any) => (
-                    <StyledListElement key={repository.id}>
-                      <RepoEliipsis
-                        src={threeDotsIcon}
-                        alt="Three dots icon"
-                        onClick={() => openModal('edit', repository)}
-                      />
+                    <StyledListElement key={repository?.id}>
+                      <OptionsWrap style={{ position: 'unset', display: 'contents' }}>
+                        <MaterialIcon
+                          icon={'more_horiz'}
+                          onClick={() => handleUserRepoOptionClick(repository?.id as number)}
+                          className="MaterialIcon"
+                          style={{ transform: 'rotate(90deg)' }}
+                        />
+                        {displayUserRepoOptions[repository?.id as number] && (
+                          <EditPopover>
+                            <EditPopoverTail bottom="-30px" left="-27px" />
+                            <EditPopoverContent
+                              onClick={() => {
+                                openModal('edit', repository);
+                                setDisplayUserRepoOptions((prev: Record<number, boolean>) => ({
+                                  ...prev,
+                                  [repository?.id]: !prev[repository?.id]
+                                }));
+                              }}
+                              bottom="-60px"
+                              transform="translateX(-90%)"
+                            >
+                              <MaterialIcon
+                                icon="edit"
+                                style={{ fontSize: '20px', marginTop: '2px' }}
+                              />
+                              <EditPopoverText>Edit</EditPopoverText>
+                            </EditPopoverContent>
+                          </EditPopover>
+                        )}
+                      </OptionsWrap>
                       <RepoName>{repository.name} : </RepoName>
                       <EuiToolTip position="top" content={repository.url}>
                         <a href={repository.url} target="_blank" rel="noreferrer">
@@ -697,13 +731,17 @@ const WorkspaceMission = () => {
                       data-testid="schematic-option-btn"
                       style={{ transform: 'rotate(90deg)' }}
                     />
-                    <button
-                      style={{ display: displaySchematic ? 'block' : 'none' }}
-                      onClick={toggleSchematicModal}
-                      data-testid="schematic-edit-btn"
-                    >
-                      Edit
-                    </button>
+                    <EditPopover style={{ display: displaySchematic ? 'block' : 'none' }}>
+                      <EditPopoverTail bottom="-30px" left="-27px" />
+                      <EditPopoverContent
+                        onClick={toggleSchematicModal}
+                        bottom="-60px"
+                        transform="translateX(-90%)"
+                      >
+                        <MaterialIcon icon="edit" style={{ fontSize: '20px', marginTop: '2px' }} />
+                        <EditPopoverText data-testid="schematic-edit-btn">Edit</EditPopoverText>
+                      </EditPopoverContent>
+                    </EditPopover>
                   </OptionsWrap>
                   {workspaceData?.schematic_url ? (
                     <a
