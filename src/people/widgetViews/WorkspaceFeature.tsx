@@ -587,61 +587,59 @@ const WorkspaceFeature = () => {
           <UserStoryWrapper>
             <EuiDragDropContext onDragEnd={onDragEnd}>
               <EuiDroppable droppableId="user_story_droppable_area" spacing="m">
-                {featureStories
-                  // ?.sort((a: FeatureStory, b: FeatureStory) => a.priority - b.priority)
-                  .map((story: FeatureStory, idx: number) => (
-                    <EuiDraggable
-                      spacing="m"
-                      key={story.id}
-                      index={idx}
-                      draggableId={story.uuid}
-                      customDragHandle
-                      hasInteractiveChildren
-                    >
-                      {(provided: any) => (
-                        <UserStoryPanel paddingSize="l">
-                          <EuiFlexGroup alignItems="center" gutterSize="s">
-                            <EuiFlexItem grow={false}>
-                              <EuiPanel
-                                color="transparent"
-                                className="drag-handle"
-                                paddingSize="s"
-                                {...provided.dragHandleProps}
-                                data-testid={`drag-handle-${story.priority}`}
-                                aria-label="Drag Handle"
-                              >
-                                <EuiIcon type="grab" />
-                              </EuiPanel>
-                            </EuiFlexItem>
-                            <EuiFlexItem>
-                              <UserStoryField>{story.description}</UserStoryField>
-                            </EuiFlexItem>
-                          </EuiFlexGroup>
-                          <UserStoryOptionWrap>
-                            <MaterialIcon
-                              icon="more_horiz"
-                              onClick={() => handleUserStoryOptionClick(story.id as number)}
-                              data-testid={`${story.priority}-user-story-option-btn`}
-                            />
-                            {displayUserStoryOptions[story?.id as number] && (
-                              <EditPopover>
-                                <EditPopoverTail />
-                                <EditPopoverContent onClick={() => handleUserStoryEdit(story)}>
-                                  <MaterialIcon
-                                    icon="edit"
-                                    style={{ fontSize: '20px', marginTop: '2px' }}
-                                  />
-                                  <EditPopoverText data-testid="user-story-edit-btn">
-                                    Edit
-                                  </EditPopoverText>
-                                </EditPopoverContent>
-                              </EditPopover>
-                            )}
-                          </UserStoryOptionWrap>
-                        </UserStoryPanel>
-                      )}
-                    </EuiDraggable>
-                  ))}
+                {featureStories.map((story: FeatureStory, idx: number) => (
+                  <EuiDraggable
+                    spacing="m"
+                    key={story.id}
+                    index={idx}
+                    draggableId={story.uuid}
+                    customDragHandle
+                    hasInteractiveChildren
+                  >
+                    {(provided: any) => (
+                      <UserStoryPanel paddingSize="l">
+                        <EuiFlexGroup alignItems="center" gutterSize="s">
+                          <EuiFlexItem grow={false}>
+                            <EuiPanel
+                              color="transparent"
+                              className="drag-handle"
+                              paddingSize="s"
+                              {...provided.dragHandleProps}
+                              data-testid={`drag-handle-${story.priority}`}
+                              aria-label="Drag Handle"
+                            >
+                              <EuiIcon type="grab" />
+                            </EuiPanel>
+                          </EuiFlexItem>
+                          <EuiFlexItem>
+                            <UserStoryField>{story.description}</UserStoryField>
+                          </EuiFlexItem>
+                        </EuiFlexGroup>
+                        <UserStoryOptionWrap>
+                          <MaterialIcon
+                            icon="more_horiz"
+                            onClick={() => handleUserStoryOptionClick(story.id as number)}
+                            data-testid={`${story.priority}-user-story-option-btn`}
+                          />
+                          {displayUserStoryOptions[story?.id as number] && (
+                            <EditPopover>
+                              <EditPopoverTail />
+                              <EditPopoverContent onClick={() => handleUserStoryEdit(story)}>
+                                <MaterialIcon
+                                  icon="edit"
+                                  style={{ fontSize: '20px', marginTop: '2px' }}
+                                />
+                                <EditPopoverText data-testid="user-story-edit-btn">
+                                  Edit
+                                </EditPopoverText>
+                              </EditPopoverContent>
+                            </EditPopover>
+                          )}
+                        </UserStoryOptionWrap>
+                      </UserStoryPanel>
+                    )}
+                  </EuiDraggable>
+                ))}
               </EuiDroppable>
             </EuiDragDropContext>
             <InputField>
