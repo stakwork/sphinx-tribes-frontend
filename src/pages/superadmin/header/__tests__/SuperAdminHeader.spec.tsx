@@ -255,12 +255,12 @@ describe('Header Component', () => {
     const dropDownButton = screen.getByTestId('DropDown');
     fireEvent.click(dropDownButton);
 
-    const CurrentMonthOption = screen.getByText('Current Month');
-    fireEvent.click(CurrentMonthOption);
+    waitFor(() => {
+      const CurrentMonthOption = screen.getByText('Current Month');
+      fireEvent.click(CurrentMonthOption);
 
-    const expectedTextContent = 'Current Month';
-
-    await waitFor(() => expect(dropDownButton).toHaveTextContent(expectedTextContent));
+      expect(dropDownButton).toHaveTextContent('Current Month');
+    });
 
     const leftWrapperElement = screen.getByTestId('leftWrapper');
     const monthElement = within(leftWrapperElement).getByTestId('month');

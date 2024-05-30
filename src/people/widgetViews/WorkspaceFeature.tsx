@@ -21,7 +21,11 @@ import {
   TextArea,
   InputField,
   Input,
-  UserStoryOptionWrap
+  UserStoryOptionWrap,
+  EditPopover,
+  EditPopoverTail,
+  EditPopoverText,
+  EditPopoverContent
 } from 'pages/tickets/style';
 import React, { useCallback, useEffect, useState } from 'react';
 import history from 'config/history';
@@ -39,9 +43,7 @@ import {
   HeadNameWrap,
   FeatureHeadWrap,
   WorkspaceName,
-  WorkspaceOption,
   UserStoryField,
-  UserStoryOption,
   StyledModal,
   ModalBody,
   ButtonGroup,
@@ -144,13 +146,13 @@ const WorkspaceEditableField = ({
             data-testid={`${dataTestIdPrefix}-option-btn`}
           />
           {displayOptions && (
-            <WorkspaceOption>
-              <ul>
-                <li data-testid={`${dataTestIdPrefix}-edit-btn`} onClick={handleEditClick}>
-                  Edit
-                </li>
-              </ul>
-            </WorkspaceOption>
+            <EditPopover>
+              <EditPopoverTail />
+              <EditPopoverContent onClick={handleEditClick}>
+                <MaterialIcon icon="edit" style={{ fontSize: '20px', marginTop: '2px' }} />
+                <EditPopoverText data-testid={`${dataTestIdPrefix}-edit-btn`}>Edit</EditPopoverText>
+              </EditPopoverContent>
+            </EditPopover>
           )}
         </OptionsWrap>
         {!isEditing ? (
@@ -549,16 +551,18 @@ const WorkspaceFeature = () => {
                               data-testid={`${story.priority}-user-story-option-btn`}
                             />
                             {displayUserStoryOptions[story?.id as number] && (
-                              <UserStoryOption>
-                                <ul>
-                                  <li
-                                    data-testid="user-story-edit-btn"
-                                    onClick={() => handleUserStoryEdit(story)}
-                                  >
+                              <EditPopover>
+                                <EditPopoverTail />
+                                <EditPopoverContent onClick={() => handleUserStoryEdit(story)}>
+                                  <MaterialIcon
+                                    icon="edit"
+                                    style={{ fontSize: '20px', marginTop: '2px' }}
+                                  />
+                                  <EditPopoverText data-testid="user-story-edit-btn">
                                     Edit
-                                  </li>
-                                </ul>
-                              </UserStoryOption>
+                                  </EditPopoverText>
+                                </EditPopoverContent>
+                              </EditPopover>
                             )}
                           </UserStoryOptionWrap>
                         </UserStoryPanel>

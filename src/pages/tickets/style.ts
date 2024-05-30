@@ -1,5 +1,15 @@
 import styled from 'styled-components';
 
+interface EditPopoverContentProps {
+  bottom?: string;
+  transform?: string;
+}
+
+interface EditPopoverTailProps {
+  bottom?: string;
+  left?: string;
+}
+
 export const Body = styled.div`
   flex: 1;
   height: calc(100vh - 60px);
@@ -391,4 +401,43 @@ export const Input = styled.input`
   :focus {
     border: 2px solid #82b4ff;
   }
+`;
+
+export const EditPopover = styled.div`
+  position: relative;
+  display: inline-block;
+`;
+
+export const EditPopoverContent = styled.div<EditPopoverContentProps>`
+  position: absolute;
+  bottom: ${({ bottom }: { bottom?: string }) => bottom ?? '-50px'};
+  left: -30%;
+  transform: ${({ transform }: { transform?: string }) => transform ?? 'translateX(-80%)'};
+  width: 120px;
+  background: #fff;
+  box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.25);
+  border-radius: 6px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+`;
+
+export const EditPopoverTail = styled.div<EditPopoverTailProps>`
+  position: absolute;
+  bottom: ${({ bottom }: { bottom?: string }) => bottom ?? '-16px'};
+  left: ${({ left }: { left?: string }) => left ?? '-20px'};
+  transform: translateX(60%) rotate(45deg);
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  box-shadow: -3px -3px 5px -3px rgba(0, 0, 0, 0.25);
+  z-index: 1;
+`;
+
+export const EditPopoverText = styled.span`
+  font-family: 'Barlow', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
 `;
