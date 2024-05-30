@@ -56,6 +56,7 @@ import { EuiToolTip } from '@elastic/eui';
 import { useIsMobile } from 'hooks';
 import styled from 'styled-components';
 import { AvatarGroup } from 'components/common/AvatarGroup';
+import { userHasRole } from 'helpers/helpers-extended';
 import avatarIcon from '../../public/static/profile_avatar.svg';
 import { colors } from '../../config/colors';
 import dragIcon from '../../pages/superadmin/header/icons/drag_indicator.svg';
@@ -66,7 +67,9 @@ import {
   ButtonWrap,
   RepoName,
   ImgText,
-  MissionRowFlex
+  MissionRowFlex,
+  FullNoBudgetWrap,
+  FullNoBudgetText
 } from './workspace/style';
 import AddRepoModal from './workspace/AddRepoModal';
 import EditSchematic from './workspace/EditSchematicModal';
@@ -135,7 +138,7 @@ export const RowWrap = styled.div`
   margin-top: 1rem; /* Adjust this margin as needed */
 `;
 
-const EuiLinkStyled = styled(EuiLink)<{ isMobile: boolean }>`
+const EuiLinkStyled = styled(EuiLink) <{ isMobile: boolean }>`
   border: none;
   margin-left: ${(props: any) => (props.isMobile ? 'auto' : '0')};
   margin: ${(props: any) => (props.isMobile ? '0' : '0')};
@@ -256,8 +259,32 @@ const WorkspaceMission = () => {
       [repositoryId]: !prev[repositoryId]
     }));
   };
+  const [userRoles, setUserRoles] = useState<any[]>([]);
 
   const isMobile = useIsMobile();
+  const isWorkspaceAdmin =
+    workspaceData?.owner_pubkey &&
+    ui.meInfo?.owner_pubkey &&
+    workspaceData?.owner_pubkey === ui.meInfo?.owner_pubkey;
+  const editWorkspaceDisabled =
+    !isWorkspaceAdmin && !userHasRole(main.bountyRoles, userRoles, 'EDIT ORGANIZATION');
+
+  const getUserRoles = useCallback(
+    async (user: any) => {
+      const pubkey = user.owner_pubkey;
+      if (uuid && pubkey) {
+        const userRoles = await main.getUserRoles(uuid, pubkey);
+        setUserRoles(userRoles);
+      }
+    },
+    [uuid, main]
+  );
+
+  useEffect(() => {
+    if (uuid && ui.meInfo) {
+      getUserRoles(ui.meInfo);
+    }
+  }, [getUserRoles]);
 
   const fetchRepositories = useCallback(async () => {
     try {
@@ -507,8 +534,23 @@ const WorkspaceMission = () => {
   const toggleManageUserModal = () => setIsOpenUserManage(!isOpenUserManage);
   const updateWorkspaceUsers = (updatedUsers: Person[]) => setUsers(updatedUsers);
 
-  return (
-    !loading && (
+  return editWorkspaceDisabled ? (
+    <FullNoBudgetWrap>
+      <MaterialIcon
+        icon={'lock'}
+        style={{
+          fontSize: 30,
+          cursor: 'pointer',
+          color: '#ccc'
+        }}
+      />
+      <FullNoBudgetText>
+        You have restricted permissions and you are unable to view this page. Reach out to the
+        workspace admin to get them updated.
+      </FullNoBudgetText>
+    </FullNoBudgetWrap>
+  ) : (
+    !loading && !editWorkspaceDisabled && (
       <WorkspaceBody>
         <HeaderWrap>
           <Header>
@@ -834,7 +876,6 @@ const WorkspaceMission = () => {
                               <FeatureData>
                                 <FeatureLink
                                   href={`/feature/${feat.uuid}`}
-                                  target="_blank"
                                   style={{ marginLeft: '1rem' }}
                                 >
                                   {feat.name}

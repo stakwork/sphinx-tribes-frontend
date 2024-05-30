@@ -255,6 +255,16 @@ export const NoBudgetWrap = styled.div`
   border: 1px solid #ebedef;
 `;
 
+export const FullNoBudgetWrap = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-width: 100%;
+  min-height: 90%;
+  align-items: center;
+  justify-content: center;
+`;
+
 export const BudgetStatsWrap = styled.div`
   width: 100%;
 `;
@@ -347,6 +357,13 @@ export const NoBudgetText = styled.p`
   color: #8e969c;
   width: 90%;
   margin-left: auto;
+`;
+
+export const FullNoBudgetText = styled.p`
+  font-size: 1.2rem;
+  padding: 0px;
+  margin: 0px;
+  color: #8e969c;
 `;
 
 export const UserWrap = styled.div`
@@ -1244,7 +1261,7 @@ export const StyledEuiTabbedContent = styled(EuiTabbedContent as any)`
       background-color: white !important;
 
       .euiTab__content {
-        color: #8e969c;
+        color: #292c33;
         text-overflow: ellipsis;
         size: 15px;
         font-weight: 600;
@@ -1258,11 +1275,16 @@ export const StyledEuiTabbedContent = styled(EuiTabbedContent as any)`
       }
     }
 
-    .euiTab-isSelected > .euiTab__content {
+    .euiTab-isSelected {
       color: black !important;
       text-decoration: none;
       border-bottom: unset;
       z-index: 200;
+    }
+
+    .euiTab.euiTab-isSelected,
+    .euiTab.euiTab-isSelected .euiTab__content {
+      color: #8e969c !important;
     }
 
     .euiTab.euiTab-isSelected {

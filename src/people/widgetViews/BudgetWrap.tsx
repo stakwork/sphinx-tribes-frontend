@@ -42,7 +42,6 @@ export const BudgetWrapComponent = (props: { org: Workspace | undefined; uuid: s
   const { url } = useRouteMatch();
   const { uuid } = props;
   const { main, ui } = useStores();
-  const isWorkspaceAdmin = props.org?.owner_pubkey === ui.meInfo?.owner_pubkey;
   const [orgBudget, setWorkspaceBudget] = useState<WorkspaceBudget>(defaultWorkspaceBudget);
   const [userRoles, setUserRoles] = useState<any[]>([]);
   const isMobile = useIsWithinBreakpoints(['xs', 's']);
@@ -61,6 +60,11 @@ export const BudgetWrapComponent = (props: { org: Workspace | undefined; uuid: s
   const closeBudgetHandler = () => {
     setIsOpenBudget(false);
   };
+
+  const isWorkspaceAdmin =
+    props.org?.owner_pubkey &&
+    ui.meInfo?.owner_pubkey &&
+    props.org?.owner_pubkey === ui.meInfo?.owner_pubkey;
 
   const addWithdrawDisabled =
     !isWorkspaceAdmin && !userHasRole(main.bountyRoles, userRoles, 'WITHDRAW BUDGET');
@@ -145,6 +149,14 @@ export const BudgetWrapComponent = (props: { org: Workspace | undefined; uuid: s
     }
   }, [getWorkspaceBudget, getPaymentsHistory, getUserRoles, uuid, ui.meInfo]);
 
+  const orgBudgetText = orgBudget && orgBudget.current_budget ? orgBudget.current_budget : 0;
+  const completedCountText = orgBudget && orgBudget.completed_count ? orgBudget.completed_count : 0;
+  const completedBudget = orgBudget && orgBudget.completed_budget ? orgBudget.completed_budget : 0;
+  const assignedCountText = orgBudget && orgBudget.assigned_count ? orgBudget.assigned_count : 0;
+  const assignedBudget = orgBudget && orgBudget.assigned_budget ? orgBudget.assigned_budget : 0;
+  const openCountText = orgBudget && orgBudget.open_count ? orgBudget.open_count : 0;
+  const openBudget = orgBudget && orgBudget.open_budget ? orgBudget.open_budget : 0;
+
   return (
     <>
       <ActionWrap>
@@ -207,12 +219,11 @@ export const BudgetWrapComponent = (props: { org: Workspace | undefined; uuid: s
                   </BudgetHeaderWrap>
                   <ViewBudgetTextWrap>
                     <Budget data-testid="current-balance-amount">
-                      {orgBudget.current_budget ? orgBudget.current_budget.toLocaleString() : 0}{' '}
-                      <Grey>SATS</Grey>
+                      {orgBudgetText.toLocaleString()} <Grey>SATS</Grey>
                     </Budget>
                     <Budget className="budget-small">
                       <BalanceAmountImg src={balanceVector} />
-                      {satToUsd(orgBudget.current_budget)} <Grey>USD</Grey>
+                      {satToUsd(orgBudgetText)} <Grey>USD</Grey>
                     </Budget>
                   </ViewBudgetTextWrap>
                 </BudgetData>
@@ -226,18 +237,16 @@ export const BudgetWrapComponent = (props: { org: Workspace | undefined; uuid: s
                   </BudgetBountyLink>
                   <BudgetHeaderWrap>
                     <BudgetSmallHead color="#9157F6">Completed</BudgetSmallHead>
-                    <BudgetCount color="#9157F6">
-                      {orgBudget.completed_count ? orgBudget.completed_count.toLocaleString() : 0}
-                    </BudgetCount>
+                    <BudgetCount color="#9157F6">{completedCountText.toLocaleString()}</BudgetCount>
                   </BudgetHeaderWrap>
                   <ViewBudgetTextWrap>
                     <Budget>
-                      {orgBudget.completed_budget ? orgBudget.completed_budget.toLocaleString() : 0}
+                      {completedBudget.toLocaleString()}
                       <Grey>SATS</Grey>
                     </Budget>
                     <Budget className="budget-small">
                       <BalanceAmountImg src={balanceVector} />
-                      {satToUsd(orgBudget.completed_budget)} <Grey>USD</Grey>
+                      {satToUsd(completedBudget)} <Grey>USD</Grey>
                     </Budget>
                   </ViewBudgetTextWrap>
                 </BudgetData>
@@ -251,18 +260,16 @@ export const BudgetWrapComponent = (props: { org: Workspace | undefined; uuid: s
                   </BudgetBountyLink>
                   <BudgetHeaderWrap>
                     <BudgetSmallHead color="#2FB379">Assigned</BudgetSmallHead>
-                    <BudgetCount color="#2FB379">
-                      {orgBudget.assigned_count ? orgBudget.assigned_count.toLocaleString() : 0}
-                    </BudgetCount>
+                    <BudgetCount color="#2FB379">{assignedCountText.toLocaleString()}</BudgetCount>
                   </BudgetHeaderWrap>
                   <ViewBudgetTextWrap>
                     <Budget>
-                      {orgBudget.assigned_budget ? orgBudget.assigned_budget.toLocaleString() : 0}
+                      {assignedBudget.toLocaleString()}
                       <Grey>SATS</Grey>
                     </Budget>
                     <Budget className="budget-small">
                       <BalanceAmountImg src={balanceVector} />
-                      {satToUsd(orgBudget.assigned_budget)} <Grey>USD</Grey>
+                      {satToUsd(assignedBudget)} <Grey>USD</Grey>
                     </Budget>
                   </ViewBudgetTextWrap>
                 </BudgetData>
@@ -276,18 +283,16 @@ export const BudgetWrapComponent = (props: { org: Workspace | undefined; uuid: s
                   </BudgetBountyLink>
                   <BudgetHeaderWrap>
                     <BudgetSmallHead color="#5078F2">Open</BudgetSmallHead>
-                    <BudgetCount color="#5078F2">
-                      {orgBudget.open_count ? orgBudget.open_count.toLocaleString() : 0}
-                    </BudgetCount>
+                    <BudgetCount color="#5078F2">{openCountText.toLocaleString()}</BudgetCount>
                   </BudgetHeaderWrap>
                   <ViewBudgetTextWrap>
                     <Budget>
-                      {orgBudget.open_budget ? orgBudget.open_budget.toLocaleString() : 0}
+                      {openBudget.toLocaleString()}
                       <Grey>SATS</Grey>
                     </Budget>
                     <Budget className="budget-small">
                       <BalanceAmountImg src={balanceVector} />
-                      {satToUsd(orgBudget.open_budget)} <Grey>USD</Grey>
+                      {satToUsd(openBudget)} <Grey>USD</Grey>
                     </Budget>
                   </ViewBudgetTextWrap>
                 </BudgetData>
