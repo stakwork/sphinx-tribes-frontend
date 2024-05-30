@@ -1,6 +1,6 @@
 describe('matches workspace description with Carol updated description', () => {
   it('should matches workspace description with Carol updated description', () => {
-    const WorkSpaceName = 'Update Description';
+    const WorkSpaceName = 'Update Description1';
 
     const workSpace: Cypress.Workspace = {
       loggedInAs: 'alice',
@@ -18,7 +18,7 @@ describe('matches workspace description with Carol updated description', () => {
     cy.create_workspace(workSpace);
     cy.wait(1000);
 
-    cy.contains(workSpace.name).contains('Manage').click();
+    cy.contains(workSpace.name).get(`[data-work-name="${workSpace.name}"]`).click();
     cy.wait(1000);
 
     cy.contains('Add User').click();
@@ -59,7 +59,7 @@ describe('matches workspace description with Carol updated description', () => {
     cy.contains('carol').click({ force: true });
     cy.wait(1000);
 
-    cy.contains(WorkSpaceName).contains('Manage').click({ force: true });
+    cy.contains(workSpace.name).get(`[data-work-name="${workSpace.name}"]`).click();
     cy.wait(1000);
 
     cy.contains(/^Edit$/).click();
@@ -91,7 +91,7 @@ describe('matches workspace description with Carol updated description', () => {
     cy.contains(workSpace.loggedInAs).click({ force: true });
     cy.wait(1000);
 
-    cy.contains(WorkSpaceName).contains('Manage').click({ force: true });
+    cy.contains(workSpace.name).get(`[data-work-name="${workSpace.name}"]`).click();
     cy.wait(1000);
 
     cy.contains(/^Edit$/).click();

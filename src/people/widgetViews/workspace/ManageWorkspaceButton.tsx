@@ -48,7 +48,7 @@ const ManageButton = (props: { user_pubkey: string; org: any; action: () => void
   return (
     <>
       {hasAccess && (
-        <Button onClick={action} data-org-name={org.name}>
+        <Button data-testid="workspace-manage-btn" onClick={action} data-work-name={org.name}>
           Manage
         </Button>
       )}

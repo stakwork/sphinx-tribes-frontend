@@ -14,7 +14,7 @@ describe('Add User to Workspace', () => {
     cy.create_workspace(workspace);
     cy.wait(1000);
 
-    cy.contains(workspace.name).contains('Manage').click();
+    cy.contains(workspace.name).get(`[data-work-name="${workspace.name}"]`).click();
     cy.wait(1000);
 
     cy.contains('Add User').click();
