@@ -4,19 +4,10 @@ describe('Alice tries to create 8 bounties and then assert filtered bounties', (
     cy.login(activeUser);
     cy.wait(1000);
 
-    const assignees = ['carol', 'carol', 'carol', '', '', '', 'carol', 'carol'];
-    const languages = [
-      'Typescript',
-      'Lightning',
-      'PHP',
-      'Typescript',
-      'PHP',
-      'Typescript',
-      'Lightning',
-      'Typescript'
-    ];
+    const assignees = ['carol', 'carol', 'carol', 'alice', '', ''];
+    const languages = ['Typescript', 'Lightning', 'PHP', 'Typescript', 'PHP', 'Typescript'];
 
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 6; i++) {
       cy.create_bounty({
         title: `Filter Bounty Title ${i}`,
         category: 'Web development',
@@ -31,29 +22,29 @@ describe('Alice tries to create 8 bounties and then assert filtered bounties', (
       });
       cy.wait(1000);
 
-      if (i > 5) {
-        if (i === 6) {
+      if (i > 2) {
+        if (i === 3) {
           // Unchecked the Open Filter and Checked the Assigned Filter
           cy.contains('Filter').click();
           cy.contains('Open').click();
           cy.contains('Assigned').click();
           cy.wait(1000);
+
+          cy.contains(`Filter Bounty Title ${i}`).click();
+          cy.wait(1000);
+
+          cy.contains('Mark as Paid').click();
+          cy.wait(1000);
+
+          cy.contains('Next').click();
+          cy.wait(1000);
+
+          cy.contains('Skip and Mark Paid').click();
+          cy.wait(1000);
+
+          cy.get('body').click(0, 0);
+          cy.wait(1000);
         }
-
-        cy.contains(`Filter Bounty Title ${i}`).click();
-        cy.wait(1000);
-
-        cy.contains('Mark as Paid').click();
-        cy.wait(1000);
-
-        cy.contains('Next').click();
-        cy.wait(1000);
-
-        cy.contains('Skip and Mark Paid').click();
-        cy.wait(1000);
-
-        cy.get('body').click(0, 0);
-        cy.wait(1000);
       }
     }
 
@@ -67,8 +58,8 @@ describe('Alice tries to create 8 bounties and then assert filtered bounties', (
     cy.contains('Filter').click();
     cy.wait(1000);
 
-    for (let i = 0; i < 8; i++) {
-      if (i < 3) {
+    for (let i = 0; i < 6; i++) {
+      if (i > 3) {
         cy.contains(`Filter Bounty Title ${i}`).should('exist');
       } else {
         cy.contains(`Filter Bounty Title ${i}`).should('not.exist');
@@ -81,8 +72,8 @@ describe('Alice tries to create 8 bounties and then assert filtered bounties', (
     cy.contains('Filter').click();
     cy.wait(1000);
 
-    for (let i = 0; i < 8; i++) {
-      if (i == 0) {
+    for (let i = 0; i < 6; i++) {
+      if (i == 5) {
         cy.contains(`Filter Bounty Title ${i}`).should('exist');
       } else {
         cy.contains(`Filter Bounty Title ${i}`).should('not.exist');
@@ -91,12 +82,16 @@ describe('Alice tries to create 8 bounties and then assert filtered bounties', (
     cy.wait(1000);
 
     cy.contains('Filter').click();
+    // uncheck
+    cy.contains('Open').click();
+    cy.contains('label', 'Typescript').click();
+    // check
+    cy.contains('Assigned').click();
     cy.contains('label', 'Lightning').click();
-    cy.contains('Filter').click();
     cy.wait(1000);
 
-    for (let i = 0; i < 8; i++) {
-      if (i < 2) {
+    for (let i = 0; i < 6; i++) {
+      if (i === 1) {
         cy.contains(`Filter Bounty Title ${i}`).should('exist');
       } else {
         cy.contains(`Filter Bounty Title ${i}`).should('not.exist');

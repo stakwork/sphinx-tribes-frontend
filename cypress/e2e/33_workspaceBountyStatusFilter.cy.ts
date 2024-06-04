@@ -191,13 +191,16 @@ describe('filter by status for org bounty', () => {
     cy.contains(bounty6.title);
     cy.wait(1000);
 
-    cy.contains('label', 'Assigned').click();
-    cy.wait(1000);
-
     cy.create_workspace_bounty(bounty7);
     cy.wait(1000);
 
     cy.create_workspace_bounty(bounty8);
+    cy.wait(1000);
+
+    cy.contains('Status').first().click();
+    cy.wait(1000);
+
+    cy.contains('label', 'Assigned').click();
     cy.wait(1000);
 
     cy.contains(bounty7.title).click();
