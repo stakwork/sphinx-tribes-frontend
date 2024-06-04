@@ -5,7 +5,7 @@ declare namespace Cypress {
     logout(userAlias: string): void;
     create_bounty(bounty: Bounty, clickMethod?: 'contains' | 'testId'): void;
     create_workspace_bounty(workspaceBounty: Bounty): void;
-    lnurl_login(): void;
+    lnurl_login(seed?: string): Chainable<string>;
     create_workspace(Workspace: Workspace): void;
     pay_invoice(details: InvoiceDetail): void;
     add_invoice(details: AddInvoice): Promise<any>;
