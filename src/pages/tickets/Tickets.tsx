@@ -24,7 +24,7 @@ function BodyComponent() {
   const [showDropdown, setShowDropdown] = useState(false);
   const selectedWidget = 'bounties';
   const [scrollValue, setScrollValue] = useState<boolean>(false);
-  const [checkboxIdToSelectedMap, setCheckboxIdToSelectedMap] = useState(defaultBountyStatus);
+  const [checkboxIdToSelectedMap, setCheckboxIdToSelectedMap] = useState(main.bountiesStatus);
   const [checkboxIdToSelectedMapLanguage, setCheckboxIdToSelectedMapLanguage] = useState({});
   const [languageString, setLanguageString] = useState('');
   const [page, setPage] = useState<number>(1);
@@ -41,24 +41,32 @@ function BodyComponent() {
   useEffect(() => {
     const status = searchParams.get('status');
     if (status === 'completed') {
-      setCheckboxIdToSelectedMap({
+      const status = {
         ...defaultBountyStatus,
         Open: false,
         Completed: true
-      });
+      };
+      setCheckboxIdToSelectedMap(status);
+      main.setBountiesStatus(status);
     } else if (status === 'assigned') {
-      setCheckboxIdToSelectedMap({
+      const status = {
         ...defaultBountyStatus,
         Open: false,
         Assigned: true
-      });
+      };
+      setCheckboxIdToSelectedMap(status);
+      main.setBountiesStatus(status);
     } else if (status === 'open') {
-      setCheckboxIdToSelectedMap({
+      const status = {
         ...defaultBountyStatus,
         Open: true
-      });
+      };
+      setCheckboxIdToSelectedMap(status);
+      main.setBountiesStatus(status);
+    } else {
+      setCheckboxIdToSelectedMap(main.bountiesStatus);
     }
-  }, [searchParams, loading]);
+  }, [searchParams, loading, main.bountiesStatus]);
 
   useEffect(() => {
     (async () => {
@@ -104,9 +112,9 @@ function BodyComponent() {
         [optionId]: !checkboxIdToSelectedMap[optionId]
       }
     };
-    setCheckboxIdToSelectedMap(newCheckboxIdToSelectedMap);
     // set the store status, to enable the accurate navigation modal call
     main.setBountiesStatus(newCheckboxIdToSelectedMap);
+    setCheckboxIdToSelectedMap(newCheckboxIdToSelectedMap);
     getTotalBounties(newCheckboxIdToSelectedMap);
     // set data to default
     setCurrentItems(queryLimit);
