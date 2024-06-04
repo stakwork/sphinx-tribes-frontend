@@ -1,5 +1,5 @@
-describe('Alice tries to create 8 bounties and then assert filtered bounties', () => {
-  it('Create 8 bounties and assert filtered bounties', () => {
+describe('Alice tries to create 6 bounties and then assert filtered bounties', () => {
+  it('Create 6 bounties and assert filtered bounties', () => {
     let activeUser = 'alice';
     cy.login(activeUser);
     cy.wait(1000);

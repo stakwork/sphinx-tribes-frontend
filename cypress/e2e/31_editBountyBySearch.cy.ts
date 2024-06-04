@@ -101,7 +101,6 @@ describe('Edit Bounty By Searching, Change Workspace And Assignee', () => {
     cy.wait(600);
 
     cy.contains('Open').click();
-    cy.contains('Assigned').click();
     cy.get('body').click(0, 0);
     cy.wait(1000);
 
