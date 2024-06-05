@@ -3,14 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useStores } from 'store';
 import { EuiGlobalToastList } from '@elastic/eui';
 import { Button } from 'components/common';
-import {
-  BountyRoles,
-  defaultWorkspaceBudget,
-  Workspace,
-  WorkspaceBudget,
-  PaymentHistory,
-  Person
-} from 'store/interface';
+import { BountyRoles, Workspace, PaymentHistory, Person } from 'store/interface';
 import MaterialIcon from '@material/react-material-icon';
 import { Route, Router, Switch, useRouteMatch } from 'react-router-dom';
 import { userHasRole } from 'helpers';
@@ -60,7 +53,6 @@ const WorkspaceDetails = (props: {
   const [isOpenHistory, setIsOpenHistory] = useState<boolean>(false);
   const [isOpenEditWorkspace, setIsOpenEditWorkspace] = useState<boolean>(false);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
-  const [orgBudget, setWorkspaceBudget] = useState<WorkspaceBudget>(defaultWorkspaceBudget);
   const [paymentsHistory, setPaymentsHistory] = useState<PaymentHistory[]>([]);
   const [disableFormButtons, setDisableFormButtons] = useState(false);
   const [users, setUsers] = useState<Person[]>([]);
@@ -145,8 +137,7 @@ const WorkspaceDetails = (props: {
 
   const getWorkspaceBudget = useCallback(async () => {
     if (!viewReportDisabled) {
-      const workspaceBudget = await main.getWorkspaceBudget(uuid);
-      setWorkspaceBudget(workspaceBudget);
+      main.getWorkspaceBudget(uuid);
     }
   }, [main, uuid, viewReportDisabled]);
 

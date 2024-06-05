@@ -2598,11 +2598,49 @@ export class MainStore {
     }
   }
 
+  async pollAllUserWorkspaceBudget(): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return undefined;
+      const info = uiStore.meInfo;
+
+      const r: any = await fetch(`${TribesURL}/workspaces/poll/user/invoices`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
+      });
+      return r;
+    } catch (e) {
+      console.error('Error  pollAllUserWorkspaceBudget', e);
+    }
+  }
+
   async workspaceInvoiceCount(workspace_uuid: string): Promise<any> {
     try {
       if (!uiStore.meInfo) return 0;
       const info = uiStore.meInfo;
       const r: any = await fetch(`${TribesURL}/workspaces/invoices/count/${workspace_uuid}`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      return r.json();
+    } catch (e) {
+      console.error('Error pollInvoice', e);
+    }
+  }
+
+  async allUserWorkspaceInvoiceCount(): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return 0;
+      const info = uiStore.meInfo;
+      const r: any = await fetch(`${TribesURL}/workspaces/user/invoices/count`, {
         method: 'GET',
         mode: 'cors',
         headers: {

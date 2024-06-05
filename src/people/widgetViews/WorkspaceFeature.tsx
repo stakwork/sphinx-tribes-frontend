@@ -378,7 +378,7 @@ const WorkspaceFeature = () => {
     if (featureData?.workspace_uuid && ui.meInfo) {
       getUserRoles(ui.meInfo);
     }
-  }, [getUserRoles]);
+  }, [getUserRoles, ui.meInfo]);
 
   const submitField = async (
     field: string,
