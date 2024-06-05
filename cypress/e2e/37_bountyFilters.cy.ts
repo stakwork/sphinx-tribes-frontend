@@ -44,6 +44,11 @@ describe('Alice tries to create 6 bounties and then assert filtered bounties', (
 
           cy.get('body').click(0, 0);
           cy.wait(1000);
+
+          // open filter
+          cy.contains('Filter').click();
+          cy.contains('Assigned').click();
+          cy.get('body').click(0, 0);
         }
       }
     }
@@ -51,12 +56,12 @@ describe('Alice tries to create 6 bounties and then assert filtered bounties', (
     cy.logout(activeUser);
     cy.wait(1000);
 
-    // Unchecked the Assigned Filter and Checked the Open Filter
-    cy.contains('Filter').click();
-    cy.contains('Assigned').click();
     // check open filter
-    cy.contains('Open').click();
     cy.contains('Filter').click();
+    cy.contains('Open').click();
+    cy.wait(1000);
+    // close filter
+    cy.get('body').click(0, 0);
     cy.wait(1000);
 
     for (let i = 0; i < 6; i++) {
@@ -71,6 +76,8 @@ describe('Alice tries to create 6 bounties and then assert filtered bounties', (
     cy.contains('Filter').click();
     cy.contains('label', 'Typescript').click();
     cy.contains('Filter').click();
+    // close filter
+    cy.get('body').click(0, 0);
     cy.wait(1000);
 
     for (let i = 0; i < 6; i++) {
@@ -86,10 +93,11 @@ describe('Alice tries to create 6 bounties and then assert filtered bounties', (
     // uncheck
     cy.contains('Open').click();
     cy.contains('label', 'Typescript').click();
+    cy.wait(1000);
     // check
     cy.contains('Assigned').click();
     cy.contains('label', 'Lightning').click();
-    cy.wait(1000);
+    cy.wait(2000);
 
     for (let i = 0; i < 6; i++) {
       if (i === 1) {
