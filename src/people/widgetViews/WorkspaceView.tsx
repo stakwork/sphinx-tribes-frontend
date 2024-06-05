@@ -158,6 +158,8 @@ const WorkspaceActionWrap = styled.div`
   }
 `;
 
+let interval;
+
 const Workspaces = (props: { person: Person }) => {
   const [loading, setIsLoading] = useState<boolean>(true);
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -189,6 +191,40 @@ const Workspaces = (props: { person: Person }) => {
   const closeDetails = () => {
     setDetailsOpen(false);
   };
+
+  const pollAllInvoices = useCallback(async () => {
+    let i = 0;
+    interval = setInterval(async () => {
+      try {
+        await main.pollAllUserWorkspaceBudget();
+
+        const count = await main.allUserWorkspaceInvoiceCount();
+        if (count === 0) {
+          getUserWorkspaces();
+          clearInterval(interval);
+        }
+
+        i++;
+        if (i > 15) {
+          if (interval) {
+            getUserWorkspaces();
+            clearInterval(interval);
+          }
+        }
+      } catch (e) {
+        console.warn('Poll invoices error', e);
+      }
+    }, 2000);
+  }, []);
+
+  useEffect(() => {
+    if (!detailsOpen) {
+      pollAllInvoices();
+    }
+    return () => {
+      clearInterval(interval);
+    };
+  }, [pollAllInvoices, detailsOpen]);
 
   // renders org as list item
   const orgUi = (org: any, key: number) => {
