@@ -56,7 +56,7 @@ describe('Alice tries to create 6 bounties and then assert filtered bounties', (
     cy.contains('Open').click();
     cy.contains('Assigned').click();
     cy.contains('Filter').click();
-    cy.wait(1000);
+    cy.wait(2000);
 
     for (let i = 0; i < 6; i++) {
       if (i > 3) {
