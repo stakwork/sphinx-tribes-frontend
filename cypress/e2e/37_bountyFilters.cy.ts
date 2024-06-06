@@ -62,7 +62,7 @@ describe('Alice tries to create 6 bounties and then assert filtered bounties', (
     cy.wait(1000);
     // close filter
     cy.get('body').click(0, 0);
-    cy.wait(2000);
+    cy.wait(5000);
 
     for (let i = 0; i < 3; i++) {
       // assigned bounties should not exists

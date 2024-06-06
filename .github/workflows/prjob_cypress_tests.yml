@@ -70,6 +70,9 @@ jobs:
           sleep 20
           yarn run cypress:run
 
+      - name: Check LS
+        run: ls 
+        
       - name: Upload Cypress logs
         if: failure()
         uses: actions/upload-artifact@v4
