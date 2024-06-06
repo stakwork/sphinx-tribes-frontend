@@ -20,7 +20,7 @@ describe('Alice tries to create 6 bounties and then assert filtered bounties', (
         estimate_session_length: 'Less than 3 hour',
         estimate_completion_date: '09/09/2024'
       });
-      cy.wait(1000);
+      cy.wait(1500);
 
       if (i > 2) {
         if (i === 3) {

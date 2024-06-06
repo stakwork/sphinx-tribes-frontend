@@ -160,7 +160,7 @@ Cypress.Commands.add('logout', (userAlias: string) => {
 
 Cypress.Commands.add('create_bounty', (bounty, clickMethod = 'contains') => {
   if (clickMethod === 'contains') {
-    cy.contains('Bounties').click();
+    cy.contains('Bounties').click({ force: true });
   } else if (clickMethod === 'testId') {
     cy.get('[data-testid="Bounties-tab"]').click();
   } else {
