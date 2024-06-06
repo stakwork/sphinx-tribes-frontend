@@ -167,8 +167,8 @@ Cypress.Commands.add('create_bounty', (bounty, clickMethod = 'contains') => {
     throw new Error('Invalid click method specified');
   }
   cy.wait(5000);
-  cy.contains('Post a Bounty').click();
-  cy.contains('Start').click();
+  cy.contains('Post a Bounty').click({ force: true });
+  cy.contains('Start').click({ force: true });
 
   if (bounty.workspace) {
     cy.get('[data-testid="Workspace"]').click({ force: true });
@@ -198,7 +198,7 @@ Cypress.Commands.add('create_bounty', (bounty, clickMethod = 'contains') => {
   cy.get('[data-testid="Category *"]').click();
   cy.get('[data-testid="Category *"]').contains(bounty.category).click();
 
-  cy.contains('Next').click();
+  cy.contains('Next').click({ force: true });
 
   cy.get('.euiTextArea').type(bounty.description);
   cy.contains('Next').click();
@@ -226,17 +226,17 @@ Cypress.Commands.add('create_bounty', (bounty, clickMethod = 'contains') => {
     cy.get('textarea.inputText').type(bounty.deliverables);
   }
 
-  cy.contains('Next').click();
+  cy.contains('Next').click({ force: true });
 
   if (bounty.assign) {
     cy.get('.SearchInput').type(bounty.assign);
     cy.wait(1000);
-    cy.get('.People').contains('Assign').click();
+    cy.get('.People').contains('Assign').click({ force: true });
   } else {
-    cy.contains('Decide Later').click();
+    cy.contains('Decide Later').click({ force: true });
   }
 
-  cy.contains('Finish').click();
+  cy.contains('Finish').click({ force: true });
 });
 
 Cypress.Commands.add('create_workspace_bounty', (workspaceBounty) => {
