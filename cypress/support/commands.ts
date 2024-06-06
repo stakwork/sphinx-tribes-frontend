@@ -190,7 +190,7 @@ Cypress.Commands.add('create_bounty', (bounty, clickMethod = 'contains') => {
     for (let i = 0; i < bounty.coding_language.length; i++) {
       cy.get('.CheckboxOuter').contains(bounty.coding_language[i]).scrollIntoView().click();
     }
-    cy.contains('Coding Language').click();
+    cy.contains('Coding Language').click({ force: true });
   }
 
   cy.get('[data-testid="Category *"]').click();

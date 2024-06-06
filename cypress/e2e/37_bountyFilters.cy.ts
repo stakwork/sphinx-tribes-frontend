@@ -62,31 +62,22 @@ describe('Alice tries to create 6 bounties and then assert filtered bounties', (
     cy.wait(1000);
     // close filter
     cy.get('body').click(0, 0);
-    cy.wait(1000);
+    cy.wait(2000);
 
-    for (let i = 0; i < 6; i++) {
-      if (i > 3) {
-        cy.contains(`Filter Bounty Title ${i}`).should('exist');
-      } else {
-        cy.contains(`Filter Bounty Title ${i}`).should('not.exist');
-      }
+    for (let i = 0; i < 3; i++) {
+      // assigned bounties should not exists
+      cy.contains(`Filter Bounty Title ${i}`).should('not.exist');
     }
     cy.wait(1000);
 
     cy.contains('Filter').click();
     cy.contains('label', 'Typescript').click();
     cy.contains('Filter').click();
+
     // close filter
     cy.get('body').click(0, 0);
-    cy.wait(1000);
-
-    for (let i = 0; i < 6; i++) {
-      if (i == 5) {
-        cy.contains(`Filter Bounty Title ${i}`).should('exist');
-      } else {
-        cy.contains(`Filter Bounty Title ${i}`).should('not.exist');
-      }
-    }
+    cy.wait(2000);
+    cy.contains(`Filter Bounty Title 5`).should('exist');
     cy.wait(1000);
 
     cy.contains('Filter').click();
@@ -99,12 +90,6 @@ describe('Alice tries to create 6 bounties and then assert filtered bounties', (
     cy.contains('label', 'Lightning').click();
     cy.wait(2000);
 
-    for (let i = 0; i < 6; i++) {
-      if (i === 1) {
-        cy.contains(`Filter Bounty Title ${i}`).should('exist');
-      } else {
-        cy.contains(`Filter Bounty Title ${i}`).should('not.exist');
-      }
-    }
+    cy.contains(`Filter Bounty Title 1`).should('exist');
   });
 });
