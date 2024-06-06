@@ -75,7 +75,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cypress-logs
-          path: cypress/videos
+          path: cypress/screenshots
       
       - name: Stop Stack
         working-directory: ./stack

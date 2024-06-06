@@ -1,16 +1,16 @@
 describe('Alice tries to create 6 bounties and then assert filtered bounties', () => {
   it('Create 6 bounties and assert filtered bounties', () => {
-    let activeUser = 'alice';
+    let activeUser = 'bob';
     cy.login(activeUser);
-    cy.wait(1000);
+    cy.wait(2000);
+
+    const assignees = ['carol', 'carol', 'carol', 'carol', '', ''];
+    const languages = ['Typescript', 'Lightning', 'PHP', 'Typescript', 'PHP', 'Typescript'];
 
     cy.intercept({
       method: 'GET',
       url: 'http://localhost:13000/gobounties/all*'
     }).as('bountyFilter');
-
-    const assignees = ['carol', 'carol', 'carol', 'carol', '', ''];
-    const languages = ['Typescript', 'Lightning', 'PHP', 'Typescript', 'PHP', 'Typescript'];
 
     for (let i = 0; i < 6; i++) {
       cy.create_bounty({
