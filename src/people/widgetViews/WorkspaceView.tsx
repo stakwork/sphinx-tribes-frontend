@@ -166,6 +166,7 @@ const Workspaces = (props: { person: Person }) => {
   const [detailsOpen, setDetailsOpen] = useState<boolean>(false);
   const [workspace, setWorkspace] = useState<Workspace>();
   const { main, ui } = useStores();
+  const [totalInvoicees, setTotalInvoices] = useState(0);
   const isMobile = useIsMobile();
   const config = widgetConfigs['workspaces'];
   const isMyProfile = ui?.meInfo?.pubkey === props?.person?.owner_pubkey;
@@ -217,37 +218,46 @@ const Workspaces = (props: { person: Person }) => {
     }, 2000);
   }, []);
 
+  const getUserInvoicesCount = useCallback(async () => {
+    const count = await main.allUserWorkspaceInvoiceCount();
+    setTotalInvoices(count);
+  }, [main]);
+
   useEffect(() => {
-    if (!detailsOpen) {
+    getUserInvoicesCount();
+  }, [getUserInvoicesCount]);
+
+  useEffect(() => {
+    if (!detailsOpen && !isOpen && totalInvoicees > 0) {
       pollAllInvoices();
     }
     return () => {
       clearInterval(interval);
     };
-  }, [pollAllInvoices, detailsOpen]);
+  }, [pollAllInvoices, detailsOpen, isOpen, totalInvoicees]);
 
   // renders org as list item
-  const orgUi = (org: any, key: number) => {
-    const btnDisabled = (!org.bounty_count && org.bount_count !== 0) || !org.uuid;
+  const workspaceUi = (space: any, key: number) => {
+    const btnDisabled = (!space.bounty_count && space.bount_count !== 0) || !space.uuid;
     return (
       <WorkspaceWrap key={key}>
         <WorkspaceData className="org-data">
-          <WorkspaceImg src={org.img || avatarIcon} />
-          <WorkspaceBudget org={org} user_pubkey={user_pubkey ?? ''} />
+          <WorkspaceImg src={space.img || avatarIcon} />
+          <WorkspaceBudget org={space} user_pubkey={user_pubkey ?? ''} />
           <WorkspaceActionWrap>
             {user_pubkey && (
               <ManageButton
-                org={org}
+                org={space}
                 user_pubkey={user_pubkey ?? ''}
                 action={() => {
-                  setWorkspace(org);
+                  setWorkspace(space);
                   setDetailsOpen(true);
                 }}
               />
             )}
             <ButtonIconLeft
               disabled={btnDisabled}
-              onClick={() => window.open(`/workspace/bounties/${org.uuid}`, '_target')}
+              onClick={() => window.open(`/workspace/bounties/${space.uuid}`, '_target')}
             >
               View Bounties
               <IconImg src="/static/open_in_new_grey.svg" alt="open_in_new_tab" />
@@ -276,7 +286,7 @@ const Workspaces = (props: { person: Person }) => {
             )}
           </WorkspaceHeadWrap>
           <WorkspaceContainer>
-            {main.workspaces.map((org: Workspace, i: number) => orgUi(org, i))}
+            {main.workspaces.map((space: Workspace, i: number) => workspaceUi(space, i))}
           </WorkspaceContainer>
         </div>
       );
