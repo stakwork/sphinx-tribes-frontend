@@ -4,6 +4,11 @@ describe('Alice tries to create 6 bounties and then assert filtered bounties', (
     cy.login(activeUser);
     cy.wait(1000);
 
+    cy.intercept({
+      method: 'GET',
+      url: 'http://localhost:13000/gobounties/all*',
+    }).as('bountyFilter')
+
     const assignees = ['carol', 'carol', 'carol', 'carol', '', ''];
     const languages = ['Typescript', 'Lightning', 'PHP', 'Typescript', 'PHP', 'Typescript'];
 
@@ -62,7 +67,8 @@ describe('Alice tries to create 6 bounties and then assert filtered bounties', (
     cy.wait(1000);
     // close filter
     cy.get('body').click(0, 0);
-    cy.wait(5000);
+
+    cy.wait('@bountyFilter');
 
     for (let i = 0; i < 3; i++) {
       // assigned bounties should not exists
@@ -76,7 +82,8 @@ describe('Alice tries to create 6 bounties and then assert filtered bounties', (
 
     // close filter
     cy.get('body').click(0, 0);
-    cy.wait(2000);
+    cy.wait('@bountyFilter');
+
     cy.contains(`Filter Bounty Title 5`).should('exist');
     cy.wait(1000);
 
@@ -85,10 +92,11 @@ describe('Alice tries to create 6 bounties and then assert filtered bounties', (
     cy.contains('Open').click();
     cy.contains('label', 'Typescript').click();
     cy.wait(1000);
+
     // check
     cy.contains('Assigned').click();
     cy.contains('label', 'Lightning').click();
-    cy.wait(2000);
+    cy.wait('@bountyFilter');
 
     cy.contains(`Filter Bounty Title 1`).should('exist');
   });

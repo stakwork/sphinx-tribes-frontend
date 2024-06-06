@@ -65,14 +65,14 @@ jobs:
       - name: Start Server
         run: yarn run start:cypress &
 
+      - name: Check LS
+        run: ls 
+
       - name: Run Cypress Test
         run: |
           sleep 20
           yarn run cypress:run
 
-      - name: Check LS
-        run: ls 
-        
       - name: Upload Cypress logs
         if: failure()
         uses: actions/upload-artifact@v4
