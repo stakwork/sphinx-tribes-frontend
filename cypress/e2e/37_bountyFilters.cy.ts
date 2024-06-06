@@ -6,8 +6,8 @@ describe('Alice tries to create 6 bounties and then assert filtered bounties', (
 
     cy.intercept({
       method: 'GET',
-      url: 'http://localhost:13000/gobounties/all*',
-    }).as('bountyFilter')
+      url: 'http://localhost:13000/gobounties/all*'
+    }).as('bountyFilter');
 
     const assignees = ['carol', 'carol', 'carol', 'carol', '', ''];
     const languages = ['Typescript', 'Lightning', 'PHP', 'Typescript', 'PHP', 'Typescript'];

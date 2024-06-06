@@ -65,9 +65,6 @@ jobs:
       - name: Start Server
         run: yarn run start:cypress &
 
-      - name: Check LS
-        run: ls 
-
       - name: Run Cypress Test
         run: |
           sleep 20
