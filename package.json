@@ -20,7 +20,7 @@
     "prepare": "husky install .husky",
     "test": "yarn run test-jest",
     "test-jest": "REACT_APP_IS_TEST=true NODE_ENV=test yarn jest --coverage --maxWorkers 2 --no-cache --transformIgnorePatterns \"./svg/\"",
-    "cypress:run": "npx cypress run cypress/e2e/37_bountyFilters.cy.ts"
+    "cypress:run": "npx cypress run --spec cypress/e2e/37_bountyFilters.cy.ts"
   },
   "resolutions": {
     "react-error-overlay": "6.0.9",
