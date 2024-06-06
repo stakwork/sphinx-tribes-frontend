@@ -162,7 +162,7 @@ Cypress.Commands.add('create_bounty', (bounty, clickMethod = 'contains') => {
   if (clickMethod === 'contains') {
     cy.contains('Bounties').click({ force: true });
   } else if (clickMethod === 'testId') {
-    cy.get('[data-testid="Bounties-tab"]').click();
+    cy.get('[data-testid="Bounties-tab"]').click({ force: true });
   } else {
     throw new Error('Invalid click method specified');
   }
@@ -181,14 +181,16 @@ Cypress.Commands.add('create_bounty', (bounty, clickMethod = 'contains') => {
   if (bounty.github_issue_url) {
     cy.get('[data-testid="Github"]').type(bounty.github_issue_url);
   }
-
   cy.wait(1000);
 
   if (bounty.coding_language && bounty.coding_language.length > 0) {
-    cy.contains('Coding Language').click();
+    cy.contains('Coding Language').click({ force: true });
 
     for (let i = 0; i < bounty.coding_language.length; i++) {
-      cy.get('.CheckboxOuter').contains(bounty.coding_language[i]).scrollIntoView().click();
+      cy.get('.CheckboxOuter')
+        .contains(bounty.coding_language[i])
+        .scrollIntoView()
+        .click({ force: true });
     }
     cy.contains('Coding Language').click({ force: true });
   }
