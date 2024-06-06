@@ -4,7 +4,7 @@ describe('Alice tries to create 6 bounties and then assert filtered bounties', (
     cy.login(activeUser);
     cy.wait(1000);
 
-    const assignees = ['carol', 'carol', 'carol', 'alice', '', ''];
+    const assignees = ['carol', 'carol', 'carol', 'carol', '', ''];
     const languages = ['Typescript', 'Lightning', 'PHP', 'Typescript', 'PHP', 'Typescript'];
 
     for (let i = 0; i < 6; i++) {

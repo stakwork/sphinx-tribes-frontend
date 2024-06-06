@@ -69,6 +69,13 @@ jobs:
         run: |
           sleep 20
           yarn run cypress:run
+
+      - name: Upload Cypress logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-logs
+          path: cypress/videos
       
       - name: Stop Stack
         working-directory: ./stack
