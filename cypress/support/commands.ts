@@ -198,7 +198,7 @@ Cypress.Commands.add('create_bounty', (bounty, clickMethod = 'contains') => {
   cy.get('[data-testid="Category *"]').click();
   cy.get('[data-testid="Category *"]').contains(bounty.category).click();
 
-  cy.contains('Next').click({ force: true });
+  cy.contains('Next').click();
 
   cy.get('.euiTextArea').type(bounty.description);
   cy.contains('Next').click();
@@ -226,7 +226,7 @@ Cypress.Commands.add('create_bounty', (bounty, clickMethod = 'contains') => {
     cy.get('textarea.inputText').type(bounty.deliverables);
   }
 
-  cy.contains('Next').click({ force: true });
+  cy.contains('Next').click();
 
   if (bounty.assign) {
     cy.get('.SearchInput').type(bounty.assign);
@@ -236,7 +236,7 @@ Cypress.Commands.add('create_bounty', (bounty, clickMethod = 'contains') => {
     cy.contains('Decide Later').click({ force: true });
   }
 
-  cy.contains('Finish').click({ force: true });
+  cy.contains('Finish').click();
 });
 
 Cypress.Commands.add('create_workspace_bounty', (workspaceBounty) => {
