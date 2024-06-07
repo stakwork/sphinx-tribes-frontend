@@ -15,19 +15,15 @@ import { WorkspaceHeader } from './workspaceHeader';
 
 function WorkspaceBodyComponent() {
   const { main, ui } = useStores();
+  const { uuid } = useParams<{ uuid: string; bountyId: string }>();
   const [loading, setLoading] = useState(true);
   const [showDropdown, setShowDropdown] = useState(false);
   const selectedWidget = 'bounties';
   const [scrollValue, setScrollValue] = useState<boolean>(false);
-
-  const item = localStorage.getItem('workspaceBountyStatus');
-  const savedStatus = item ? JSON.parse(item) : null; // or provide a default value other than null
-
-  const [checkboxIdToSelectedMap, setCheckboxIdToSelectedMap] = useState(savedStatus);
-
+  const [checkboxIdToSelectedMap, setCheckboxIdToSelectedMap] = useState(
+    main.workspaceBountiesStatus
+  );
   const [checkboxIdToSelectedMapLanguage, setCheckboxIdToSelectedMapLanguage] = useState({});
-  const { uuid } = useParams<{ uuid: string; bountyId: string }>();
-
   const [workspaceData, setWorkspaceData] = useState<Workspace>();
   const [languageString, setLanguageString] = useState('');
   const [page, setPage] = useState<number>(1);
@@ -35,9 +31,12 @@ function WorkspaceBodyComponent() {
   const [WorkspaceTotalBounties, setTotalBounties] = useState(0);
 
   const color = colors['light'];
-
   const history = useHistory();
   const isMobile = useIsMobile();
+
+  useEffect(() => {
+    setCheckboxIdToSelectedMap(main.workspaceBountiesStatus);
+  }, [main.workspaceBountiesStatus]);
 
   useEffect(() => {
     (async () => {
@@ -45,14 +44,9 @@ function WorkspaceBodyComponent() {
       const workspaceData = await main.getUserWorkspaceByUuid(uuid);
       if (!workspaceData) return;
       setWorkspaceData(workspaceData);
-
       setLoading(false);
     })();
   }, [main, uuid, checkboxIdToSelectedMap, languageString]);
-
-  useEffect(() => {
-    setCheckboxIdToSelectedMap({ ...savedStatus });
-  }, [loading]);
 
   useEffect(() => {
     if (ui.meInfo) {
@@ -67,7 +61,6 @@ function WorkspaceBodyComponent() {
         ...statusData,
         resetPage: true
       });
-
       setTotalBounties(WorkspaceTotalBounties);
     },
     [main]
@@ -84,10 +77,9 @@ function WorkspaceBodyComponent() {
         [optionId]: !checkboxIdToSelectedMap[optionId]
       }
     };
-    setCheckboxIdToSelectedMap(newCheckboxIdToSelectedMap);
-    localStorage.setItem('orgBountyStatus', JSON.stringify(newCheckboxIdToSelectedMap));
     // set the store status, to enable the accurate navigation modal call
-    main.setBountiesStatus(newCheckboxIdToSelectedMap);
+    main.setWorkspaceBountiesStatus(newCheckboxIdToSelectedMap);
+    setCheckboxIdToSelectedMap(newCheckboxIdToSelectedMap);
     getTotalBounties(uuid, newCheckboxIdToSelectedMap, page);
     // set data to default
     setCurrentItems(queryLimit);

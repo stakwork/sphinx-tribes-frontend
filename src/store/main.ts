@@ -572,26 +572,23 @@ export class MainStore {
 
   @persist('object')
   bountiesStatus: BountyStatus = defaultBountyStatus;
-
   @action setBountiesStatus(status: BountyStatus) {
     this.bountiesStatus = status;
   }
 
+  @persist('object')
   workspaceBountiesStatus: BountyStatus = defaultWorkspaceBountyStatus;
-
   @action setWorkspaceBountiesStatus(status: BountyStatus) {
     this.workspaceBountiesStatus = status;
   }
 
   @persist('object')
   bountyLanguages = '';
-
   @action setBountyLanguages(languages: string) {
     this.bountyLanguages = languages;
   }
 
   getWantedsPrevParams?: QueryParams = {};
-
   async getPeopleBounties(params?: QueryParams): Promise<PersonBounty[]> {
     const queryParams: QueryParams = {
       limit: queryLimit,

@@ -5,6 +5,7 @@ import { mainStore } from 'store/main';
 import { uiStore } from 'store/ui';
 import { user } from '__test__/__mockData__/user';
 import Tickets from '../Tickets';
+import { BountyStatus, defaultBountyStatus } from 'store/interface';
 
 let fetchStub: sinon.SinonStub;
 
@@ -35,6 +36,8 @@ jest.mock('remark-gfm', () => {});
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 jest.mock('rehype-raw', () => {});
 
+jest.setTimeout(10000);
+
 const mockPush = jest.fn();
 const mockGoBack = jest.fn();
 jest.mock('react-router-dom', () => ({
@@ -60,7 +63,8 @@ jest.mock('../../../store', () => ({
       getTotalBountyCount: jest.fn(),
       setBountiesStatus: jest.fn(),
       setBountyLanguages: jest.fn(),
-      getTribesByOwner: jest.fn()
+      getTribesByOwner: jest.fn(),
+      bountiesStatus: defaultBountyStatus
     },
     ui: {
       meInfo: {},

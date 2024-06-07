@@ -96,7 +96,6 @@ function WidgetSwitchViewer(props: any) {
   const WorkspaceBountiesTotal = WorkspaceTotalBounties ?? 0;
   const phaseBountiesTotal = phaseTotalBounties ?? 0;
   const page = propsPage ?? 0;
-
   const panelStyles = isMobile
     ? {
         minHeight: 132
@@ -111,7 +110,6 @@ function WidgetSwitchViewer(props: any) {
       };
 
   const { peoplePosts, peopleBounties, peopleOffers } = main;
-
   const { selectedWidget, onPanelClick, org_uuid } = props;
 
   if (!selectedWidget) {
