@@ -13,8 +13,17 @@ import { modalsVisibilityStore } from './modals';
   }
   const hydrate = create({ storage: localStorage });
 
-  Promise.all([hydrate('main', mainStore), hydrate('ui', uiStore)]).then(() => {
-    uiStore.setReady(true);
+  function hydrateAll() {
+    Promise.all([hydrate('main', mainStore), hydrate('ui', uiStore)]).then(() => {
+      uiStore.setReady(true);
+    });
+  }
+  hydrateAll();
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      hydrateAll();
+    }
   });
 })();
 
