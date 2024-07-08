@@ -238,8 +238,6 @@ const AddWorkspace = (props: {
         website: normalizeInput(websiteName)
       };
 
-      console.log('Body ===', body);
-
       const res = await main.addWorkspace(body);
       if (res.status === 200) {
         addSuccessToast();
