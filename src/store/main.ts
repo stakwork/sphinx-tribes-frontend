@@ -2133,18 +2133,23 @@ export class MainStore {
   }
 
   async uploadFile(body: FormData): Promise<null | Response> {
-    if (!uiStore.meInfo) return null;
-    const info = uiStore.meInfo;
-    const r: any = await fetch(`${TribesURL}/meme_upload`, {
-      method: 'POST',
-      mode: 'cors',
-      body,
-      headers: {
-        'x-jwt': info.tribe_jwt
-      }
-    });
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+      const r: any = await fetch(`${TribesURL}/meme_upload`, {
+        method: 'POST',
+        mode: 'cors',
+        body,
+        headers: {
+          'x-jwt': info.tribe_jwt
+        }
+      });
 
-    return r;
+      return r;
+    } catch (e) {
+      console.log('Error uploading file', e);
+      return null;
+    }
   }
 
   async updateWorkspace(body: Workspace): Promise<any> {

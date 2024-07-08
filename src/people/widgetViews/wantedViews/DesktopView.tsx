@@ -1,6 +1,6 @@
 /* eslint-disable func-style */
 import React from 'react';
-import { EuiButtonIcon, EuiText } from '@elastic/eui';
+import { EuiText } from '@elastic/eui';
 import { observer } from 'mobx-react-lite';
 import { WantedViewsProps } from 'people/interfaces';
 import StatusPill from '../parts/StatusPill';
@@ -9,7 +9,6 @@ import NameTag from '../../utils/NameTag';
 import { useStores } from '../../../store';
 import { formatPrice, satToUsd } from '../../../helpers';
 import { Button, Divider } from '../../../components/common';
-import { getHost } from '../../../config/host';
 import { renderMarkdown } from '../../utils/RenderMarkdown';
 import { Img, P, B, DT, DWrap, DescriptionCodeTask, Pad } from './style';
 
@@ -26,8 +25,6 @@ function DesktopView(props: WantedViewsProps) {
     assignee,
     estimated_session_length,
     loomEmbedUrl,
-    showModal,
-    setDeletePayload,
     key,
     setExtrasPropertyAndSave,
     saving,
@@ -42,7 +39,7 @@ function DesktopView(props: WantedViewsProps) {
     titleString
   } = props;
 
-  const { ui, main } = useStores();
+  const { main } = useStores();
   const color = colors['light'];
 
   return (
@@ -314,27 +311,6 @@ function DesktopView(props: WantedViewsProps) {
                 {estimated_session_length ?? ''}
               </span>
             </EuiText>
-            {ui?.meInfo?.isSuperAdmin && (
-              <EuiButtonIcon
-                onClick={(e: any) => {
-                  e.stopPropagation();
-                  if (showModal) showModal();
-                  if (setDeletePayload)
-                    setDeletePayload({
-                      created: created,
-                      host: getHost(),
-                      pubkey: person.owner_pubkey
-                    });
-                }}
-                iconType="trash"
-                aria-label="Next"
-                size="s"
-                style={{
-                  color: `${color.pureBlack}`,
-                  background: `${color.pureWhite}`
-                }}
-              />
-            )}
           </div>
         </div>
       </DWrap>

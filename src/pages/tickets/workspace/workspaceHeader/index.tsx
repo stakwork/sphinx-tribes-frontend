@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { EuiCheckboxGroup, EuiPopover, EuiText } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
 import { PostModal } from 'people/widgetViews/postBounty/PostModal';
@@ -98,18 +98,14 @@ export const WorkspaceHeader = ({
 
   const closeSortByPopover = () => setIsSortByPopoverOpen(false);
 
-  useEffect(() => {
-    const checkUserPermissions = async () => {
-      const isLoggedIn = !!ui.meInfo;
-      const hasPermission =
-        isLoggedIn && (await userCanManageBounty(workspace_uuid, ui.meInfo?.pubkey, main));
-      setCanPostBounty(hasPermission);
-    };
+  const checkUserPermissions = useCallback(async () => {
+    const hasPermission = await userCanManageBounty(workspace_uuid, ui.meInfo?.pubkey, main);
+    setCanPostBounty(hasPermission);
+  }, [workspace_uuid, ui.meInfo, main]);
 
-    if (ui.meInfo && workspace_uuid) {
-      checkUserPermissions();
-    }
-  }, [ui.meInfo, workspace_uuid, main]);
+  useEffect(() => {
+    checkUserPermissions();
+  }, [checkUserPermissions]);
 
   const selectedWidget = 'bounties';
 
