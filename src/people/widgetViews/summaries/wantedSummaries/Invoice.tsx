@@ -63,8 +63,14 @@ export default function Invoice(props: {
   qrSize?: number;
 }) {
   const decoded = lighningDecoder.decode(props.lnInvoice);
-  const expiry = decoded.sections[8].value;
+
+  let expiry = decoded.sections[8].value;
+  // if it's not v1, do v2
+  if (isNaN(expiry)) {
+    expiry = decoded.sections[10].value;
+  }
   const timeCreated = decoded.sections[4].value;
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const endTime = new Date((timeCreated + expiry) * 1000);
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(endTime, 'hours'));
