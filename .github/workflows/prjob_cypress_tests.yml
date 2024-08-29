@@ -79,4 +79,4 @@ jobs:
       
       - name: Stop Stack
         working-directory: ./stack
-        run: docker-compose down
+        run: docker compose down
