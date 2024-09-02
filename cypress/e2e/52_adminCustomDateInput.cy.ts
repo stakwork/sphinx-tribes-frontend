@@ -82,10 +82,10 @@ describe('Admin Custom Date Input', () => {
 });
 
 const formatSeptemberMonth = (date: string): string => {
-  let newDate = "";
+  let newDate = '';
   if (date.includes('Sept')) {
     newDate = date.replace('Sept', 'Sep');
   }
 
-  return newDate
-}
+  return newDate;
+};
