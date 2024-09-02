@@ -61,8 +61,8 @@ describe('Admin Custom Date Input', () => {
     const date = new Date(startYear, startMonth - 1, startDay);
     const date2 = new Date(endYear, endMonth - 1, endDay);
 
-    const formattedDate = date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
-    const formattedDate2 = date2.toLocaleDateString('en-GB', {
+    const formattedDate = date.toLocaleDateString('en-US', { day: '2-digit', month: 'short' });
+    const formattedDate2 = date2.toLocaleDateString('en-US', {
       day: '2-digit',
       month: 'short',
       year: 'numeric'
