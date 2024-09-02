@@ -50,13 +50,10 @@ declare namespace Cypress {
   };
 
   type InvoiceDetail = {
-    payersName: string;
     invoice: string;
   };
 
   type AddInvoice = {
-    payersName: string;
     amount: number;
-    memo: string;
   };
 }

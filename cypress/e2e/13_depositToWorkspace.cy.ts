@@ -36,7 +36,7 @@ describe('It desposits to a workspace  ', () => {
     cy.get('[data-challenge]')
       .invoke('attr', 'data-challenge')
       .then((value) => {
-        cy.pay_invoice({ payersName: 'carol', invoice: value });
+        cy.pay_invoice({ invoice: value });
         cy.wait(4000);
         cy.contains('Successfully Deposited');
         cy.get('body').click(0, 0);

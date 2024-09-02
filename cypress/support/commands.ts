@@ -40,6 +40,9 @@
 import { bech32 } from 'bech32';
 const EC = require('elliptic').ec;
 
+const v2BobUrl = 'http://localhost:3006/pay_invoice';
+const v2AdminToken = 'xyzxyzxyz';
+
 Cypress.Commands.add('login', (userAlias: string) => {
   let user;
   let challenge;
@@ -412,47 +415,30 @@ Cypress.Commands.add('create_workspace', (workspace) => {
 });
 
 Cypress.Commands.add('pay_invoice', (details) => {
-  let user;
-
-  cy.fixture('nodes.json').then((json) => {
-    for (let i = 0; i < json.length; i++) {
-      if (json[i].alias === details.payersName) {
-        user = json[i];
-      }
+  cy.request({
+    method: 'POST',
+    url: v2BobUrl,
+    headers: {
+      'x-admin-token': `${v2AdminToken}`
+    },
+    body: {
+      bolt11: details.invoice
     }
-    cy.request({
-      method: 'PUT',
-      url: `${user.external_ip}/invoices`,
-      headers: {
-        'x-user-token': `${user.authToken}`
-      },
-      body: {
-        payment_request: details.invoice
-      }
-    }).then((response) => {
-      console.log(response);
-    });
+  }).then((response) => {
+    console.log(response);
   });
 });
 
 Cypress.Commands.add('add_invoice', (details) => {
   let user;
-  cy.fixture('nodes.json').then(async (json) => {
-    for (let i = 0; i < json.length; i++) {
-      if (json[i].alias === details.payersName) {
-        user = json[i];
-      }
+  cy.request({
+    method: 'POST',
+    url: `${user.external_ip}/invoice`,
+    headers: {
+      'x-admin-token': `${v2AdminToken}`
+    },
+    body: {
+      amt_msat: details.amount * 1000
     }
-    cy.request({
-      method: 'POST',
-      url: `${user.external_ip}/invoices`,
-      headers: {
-        'x-user-token': `${user.authToken}`
-      },
-      body: {
-        amount: details.amount,
-        memo: details.memo
-      }
-    });
   });
 });

@@ -38,7 +38,7 @@ describe('It Lists all payments in history', () => {
     cy.get('[data-challenge]')
       .invoke('attr', 'data-challenge')
       .then((value) => {
-        cy.pay_invoice({ payersName: 'carol', invoice: value });
+        cy.pay_invoice({ invoice: value });
         cy.wait(3000);
         cy.contains('Successfully Deposited');
         cy.get('body').click(0, 0);
@@ -49,8 +49,8 @@ describe('It Lists all payments in history', () => {
     cy.wait(1000);
 
     // generate lightning invoice and withdraw from workspace
-    cy.add_invoice({ payersName: 'carol', amount: withdrawAmount, memo: '' }).then((res: any) => {
-      const invoice = res?.body.response.invoice;
+    cy.add_invoice({ amount: withdrawAmount }).then((res: any) => {
+      const invoice = res?.body.bolt11;
       cy.get('[data-testid="withdrawInvoiceInput"]').type(invoice);
       cy.contains('Confirm').click();
       cy.wait(1000);

@@ -32,7 +32,7 @@ describe('It Withdraws from Workspace budget', () => {
     cy.get('[data-challenge]')
       .invoke('attr', 'data-challenge')
       .then((value) => {
-        cy.pay_invoice({ payersName: 'carol', invoice: value });
+        cy.pay_invoice({ invoice: value });
         cy.wait(3000);
         cy.contains('Successfully Deposited');
         cy.get('body').click(0, 0);
@@ -43,7 +43,7 @@ describe('It Withdraws from Workspace budget', () => {
     cy.wait(1000);
 
     // generate lightning invoice and withdraw from workspace
-    cy.add_invoice({ payersName: 'carol', amount: withdrawAmount, memo: '' }).then((res: any) => {
+    cy.add_invoice({ amount: withdrawAmount }).then((res: any) => {
       const invoice = res?.body.response.invoice;
       cy.get('[data-testid="withdrawInvoiceInput"]').type(invoice);
       cy.contains('Confirm').click();
