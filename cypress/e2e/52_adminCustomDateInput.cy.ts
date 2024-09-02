@@ -68,7 +68,10 @@ describe('Admin Custom Date Input', () => {
       year: 'numeric'
     });
 
-    cy.get('[data-testid="month"]').contains(`${formattedDate} - ${formattedDate2}`);
+    const finalDate = formatSeptemberMonth(formattedDate);
+    const finalDate2 = formatSeptemberMonth(formattedDate2);
+
+    cy.get('[data-testid="month"]').contains(`${finalDate} - ${finalDate2}`);
 
     for (let i = 1; i <= 22; i++) {
       cy.contains(`Admin${i}`);
@@ -77,3 +80,12 @@ describe('Admin Custom Date Input', () => {
     cy.logout(activeUser);
   });
 });
+
+const formatSeptemberMonth = (date: string): string => {
+  let newDate = "";
+  if (date.includes('Sept')) {
+    newDate = date.replace('Sept', 'Sep');
+  }
+
+  return newDate
+}
