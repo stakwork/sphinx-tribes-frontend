@@ -25,7 +25,7 @@ describe('It desposits to a workspace  ', () => {
     cy.contains('Deposit').click();
     cy.wait(1000);
 
-    const budgetAmount = 80000;
+    const budgetAmount = 2000;
 
     cy.get('[data-testid="input-amount"]').type(String(budgetAmount));
     cy.get('[data-testid="generate-button"]').click();

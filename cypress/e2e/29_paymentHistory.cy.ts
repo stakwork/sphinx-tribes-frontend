@@ -9,7 +9,7 @@ describe('It Lists all payments in history', () => {
     // create workspace
     const workSpace = {
       loggedInAs: activeUser,
-      name: 'Payment Flow',
+      name: '4 Payment Flow',
       description: 'We are testing out our workspace',
       website: 'https://community.sphinx.chat',
       github: 'https://github.com/stakwork/sphinx-tribes-frontend'
@@ -29,6 +29,7 @@ describe('It Lists all payments in history', () => {
 
     // add workspace budget
     cy.contains('Deposit').click();
+    cy.wait(1000);
     cy.get('[data-testid="input-amount"]').type(String(depositAmount));
     cy.get('[data-testid="generate-button"]').click();
     cy.contains('Invoice Created Successfully');
@@ -77,7 +78,7 @@ describe('It Lists all payments in history', () => {
       coding_language: ['Typescript', 'Javascript', 'Lightning'],
       description: 'This is available',
       amount: String(paymentAmount),
-      assign: 'carol',
+      assign: 'V2bob',
       deliverables: 'We are good to go man',
       workspace: workSpace.name,
       tribe: '',

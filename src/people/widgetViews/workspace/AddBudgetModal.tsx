@@ -128,7 +128,7 @@ const AddBudgetModal = (props: AddBudgetModalProps) => {
   function addSuccessToast() {
     setToasts([
       {
-        id: '1',
+        id: `${Math.random()}`,
         title: 'Create Invoice',
         color: 'success',
         text: 'Invoice Created Successfully'
@@ -139,7 +139,7 @@ const AddBudgetModal = (props: AddBudgetModalProps) => {
   function addErrorToast(text: string) {
     setToasts([
       {
-        id: '2',
+        id: `${Math.random()}`,
         title: 'Create Invoice',
         color: 'danger',
         text

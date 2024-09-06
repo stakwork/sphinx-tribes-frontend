@@ -53,12 +53,19 @@ jobs:
             docker logs dave.sphinx
             docker wait stack_relaysetup_1
             cat stack/relay/NODES.json;
+            cat stack/relay/V2NODES.json;
 
       - name: Copy Node.json
         uses: canastro/copy-file-action@master
         with:
           source: 'stack/relay/NODES.json'
           target: 'cypress/fixtures/nodes.json'
+      
+      - name: Copy V2Node.json
+        uses: canastro/copy-file-action@master
+        with:
+          source: 'stack/relay/V2NODES.json'
+          target: 'cypress/fixtures/v2nodes.json'
       
       - name: Install Frontend Dependencies
         run: yarn install

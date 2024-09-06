@@ -1,0 +1,20 @@
+[
+  {
+    "pubkey": "0259924ce02d1887a19fbc91573b732c2dad9f4e974bccaead61a445e2ffbb927b",
+    "routeHint": "02162c52716637fb8120ab0261e410b185d268d768cc6f6227c58102d194ad0bc2_1099673108482",
+    "alias": "alice",
+    "ip": "http://host.docker.internal:3005",
+    "external_ip": "http://localhost:3005",
+    "adminToken": "xyzxyzxyz",
+    "v2": true
+  },
+  {
+    "pubkey": "03b2205df68d90f8f9913650bc3161761b61d743e615a9faa7ffecea3380a93fc1",
+    "routeHint": "02162c52716637fb8120ab0261e410b185d268d768cc6f6227c58102d194ad0bc2_1099595644932",
+    "alias": "bob",
+    "ip": "http://host.docker.internal:3006",
+    "external_ip": "http://localhost:3006",
+    "adminToken": "xyzxyzxyz",
+    "v2": true
+  }
+]

@@ -40,7 +40,6 @@
 import { bech32 } from 'bech32';
 const EC = require('elliptic').ec;
 
-const v2BobUrl = 'http://localhost:3006/pay_invoice';
 const v2AdminToken = 'xyzxyzxyz';
 
 Cypress.Commands.add('login', (userAlias: string) => {
@@ -415,6 +414,7 @@ Cypress.Commands.add('create_workspace', (workspace) => {
 });
 
 Cypress.Commands.add('pay_invoice', (details) => {
+  const v2BobUrl = 'http://localhost:3006/pay_invoice';
   cy.request({
     method: 'POST',
     url: v2BobUrl,
@@ -430,10 +430,11 @@ Cypress.Commands.add('pay_invoice', (details) => {
 });
 
 Cypress.Commands.add('add_invoice', (details) => {
+  const v2BobUrl = 'http://localhost:3006/invoice';
   let user;
   cy.request({
     method: 'POST',
-    url: `${user.external_ip}/invoice`,
+    url: v2BobUrl,
     headers: {
       'x-admin-token': `${v2AdminToken}`
     },
