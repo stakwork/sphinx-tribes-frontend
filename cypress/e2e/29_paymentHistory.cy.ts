@@ -22,7 +22,7 @@ describe('It Lists all payments in history', () => {
     cy.wait(1000);
 
     const depositAmount = 10000;
-    const withdrawAmount = 2000;
+    const withdrawAmount = 500;
     const paymentAmount = 500;
     const afterWithdrawAmount = depositAmount - withdrawAmount;
     const finalPaymentAmount = depositAmount - withdrawAmount - paymentAmount;
@@ -78,7 +78,7 @@ describe('It Lists all payments in history', () => {
       coding_language: ['Typescript', 'Javascript', 'Lightning'],
       description: 'This is available',
       amount: String(paymentAmount),
-      assign: 'V2_BOB',
+      assign: 'evan',
       deliverables: 'We are good to go man',
       workspace: workSpace.name,
       tribe: '',

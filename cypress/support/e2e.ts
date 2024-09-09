@@ -60,11 +60,17 @@ async function postV2UsersToTribe() {
       const sig = resJson.sig;
       const profileUrl = tribesUrl + `/person?token=${sig}`;
 
+      let node_alias = '';
+      if (node.alias === 'alice') {
+        node_alias = 'raph';
+      } else {
+        node_alias = 'evan';
+      }
       // Insert V2 User
       await fetch(profileUrl, {
         method: 'POST',
         body: JSON.stringify({
-          owner_alias: `V2_${node.alias.toUpperCase()}`,
+          owner_alias: node_alias,
           owner_pubkey: node.pubkey,
           owner_route_hint: node.routeHint,
           owner_contact_key: node.pubkey,
