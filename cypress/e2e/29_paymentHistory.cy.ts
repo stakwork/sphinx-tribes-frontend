@@ -6,6 +6,11 @@ describe('It Lists all payments in history', () => {
     cy.login(activeUser);
     cy.wait(1000);
 
+    cy.intercept({
+      method: 'POST',
+      url: 'http://localhost:13000/budgetinvoices'
+    }).as('createInvoice');
+
     // create workspace
     const workSpace = {
       loggedInAs: activeUser,
@@ -22,7 +27,7 @@ describe('It Lists all payments in history', () => {
     cy.wait(1000);
 
     const depositAmount = 10000;
-    const withdrawAmount = 500;
+    const withdrawAmount = 1000;
     const paymentAmount = 500;
     const afterWithdrawAmount = depositAmount - withdrawAmount;
     const finalPaymentAmount = depositAmount - withdrawAmount - paymentAmount;
@@ -32,6 +37,7 @@ describe('It Lists all payments in history', () => {
     cy.wait(1000);
     cy.get('[data-testid="input-amount"]').type(String(depositAmount));
     cy.get('[data-testid="generate-button"]').click();
+    cy.wait('@createInvoice');
     cy.contains('Invoice Created Successfully');
     cy.wait(4000);
 
