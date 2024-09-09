@@ -78,7 +78,7 @@ describe('It Lists all payments in history', () => {
       coding_language: ['Typescript', 'Javascript', 'Lightning'],
       description: 'This is available',
       amount: String(paymentAmount),
-      assign: 'V2bob',
+      assign: 'V2_BOB',
       deliverables: 'We are good to go man',
       workspace: workSpace.name,
       tribe: '',

@@ -64,7 +64,7 @@ async function postV2UsersToTribe() {
       await fetch(profileUrl, {
         method: 'POST',
         body: JSON.stringify({
-          owner_alias: `V2${node.alias}`,
+          owner_alias: `V2_${node.alias.toUpperCase()}`,
           owner_pubkey: node.pubkey,
           owner_route_hint: node.routeHint,
           owner_contact_key: node.pubkey,
