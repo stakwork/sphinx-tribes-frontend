@@ -4,7 +4,7 @@ import { action, makeAutoObservable, observable } from 'mobx';
 import { persist } from 'mobx-persist';
 import { Phase, Repository } from 'people/widgetViews/workspace/interface';
 import api from '../api';
-import { getHost, getHostIncludingDockerHosts } from '../config/host';
+import { getHostIncludingDockerHosts } from '../config/host';
 import { TribesURL } from '../config/host';
 import { randomString } from '../helpers';
 import { getUserAvatarPlaceholder } from './lib';
@@ -2001,10 +2001,8 @@ export class MainStore {
           'Content-Type': 'application/json'
         }
       );
-      console.log('Request Data ===', data);
       return data;
     } catch (e) {
-      console.log('Could not generate budget invoice ===', e, `${getHost()}/budgetinvoices`);
       return { success: false, response: { invoice: '' } };
     }
   }
