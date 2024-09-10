@@ -14,7 +14,7 @@ describe('It Lists all payments in history', () => {
     // create workspace
     const workSpace = {
       loggedInAs: activeUser,
-      name: 'Payment Flow',
+      name: '3 Payment Flow',
       description: 'We are testing out our workspace',
       website: 'https://community.sphinx.chat',
       github: 'https://github.com/stakwork/sphinx-tribes-frontend'
