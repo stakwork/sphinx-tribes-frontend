@@ -162,7 +162,11 @@ const AddBudgetModal = (props: AddBudgetModalProps) => {
           payment_type: 'deposit'
         });
 
+        console.log('Invoice Data ===', data);
+
         const paymentRequest = data.response.invoice;
+
+        console.log('Invoice Payment Request ===', paymentRequest);
 
         if (paymentRequest) {
           setLnInvoice(paymentRequest);

@@ -2003,6 +2003,7 @@ export class MainStore {
       );
       return data;
     } catch (e) {
+      console.log('Could not generate budget invoice ===', e);
       return { success: false, response: { invoice: '' } };
     }
   }
