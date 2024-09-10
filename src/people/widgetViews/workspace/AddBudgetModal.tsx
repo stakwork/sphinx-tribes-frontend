@@ -162,7 +162,7 @@ const AddBudgetModal = (props: AddBudgetModalProps) => {
           payment_type: 'deposit'
         });
 
-        console.log('Invoice Data ===', data);
+        console.log('Invoice Data ===', data.response, data.success);
 
         const paymentRequest = data.response.invoice;
 
