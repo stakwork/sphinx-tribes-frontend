@@ -6,10 +6,15 @@ describe('It Lists all payments in history', () => {
     cy.login(activeUser);
     cy.wait(1000);
 
+    cy.intercept({
+      method: 'POST',
+      url: 'http://localhost:13000/budgetinvoices'
+    }).as('createInvoice');
+
     // create workspace
     const workSpace = {
       loggedInAs: activeUser,
-      name: 'Payment Flow',
+      name: '3 Payment Flow',
       description: 'We are testing out our workspace',
       website: 'https://community.sphinx.chat',
       github: 'https://github.com/stakwork/sphinx-tribes-frontend'
@@ -22,15 +27,17 @@ describe('It Lists all payments in history', () => {
     cy.wait(1000);
 
     const depositAmount = 10000;
-    const withdrawAmount = 2000;
+    const withdrawAmount = 1000;
     const paymentAmount = 500;
     const afterWithdrawAmount = depositAmount - withdrawAmount;
     const finalPaymentAmount = depositAmount - withdrawAmount - paymentAmount;
 
     // add workspace budget
     cy.contains('Deposit').click();
+    cy.wait(1000);
     cy.get('[data-testid="input-amount"]').type(String(depositAmount));
     cy.get('[data-testid="generate-button"]').click();
+    cy.wait('@createInvoice');
     cy.contains('Invoice Created Successfully');
     cy.wait(4000);
 
@@ -38,7 +45,7 @@ describe('It Lists all payments in history', () => {
     cy.get('[data-challenge]')
       .invoke('attr', 'data-challenge')
       .then((value) => {
-        cy.pay_invoice({ payersName: 'carol', invoice: value });
+        cy.pay_invoice({ invoice: value });
         cy.wait(3000);
         cy.contains('Successfully Deposited');
         cy.get('body').click(0, 0);
@@ -49,8 +56,8 @@ describe('It Lists all payments in history', () => {
     cy.wait(1000);
 
     // generate lightning invoice and withdraw from workspace
-    cy.add_invoice({ payersName: 'carol', amount: withdrawAmount, memo: '' }).then((res: any) => {
-      const invoice = res?.body.response.invoice;
+    cy.add_invoice({ amount: withdrawAmount }).then((res: any) => {
+      const invoice = res?.body.bolt11;
       cy.get('[data-testid="withdrawInvoiceInput"]').type(invoice);
       cy.contains('Confirm').click();
       cy.wait(1000);
@@ -77,7 +84,7 @@ describe('It Lists all payments in history', () => {
       coding_language: ['Typescript', 'Javascript', 'Lightning'],
       description: 'This is available',
       amount: String(paymentAmount),
-      assign: 'carol',
+      assign: 'evan',
       deliverables: 'We are good to go man',
       workspace: workSpace.name,
       tribe: '',
