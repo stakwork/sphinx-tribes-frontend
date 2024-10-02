@@ -13,6 +13,7 @@ declare namespace Cypress {
 
   type Category =
     | 'Web development'
+    | 'Backend development'
     | 'Mobile development'
     | 'Design'
     | 'Desktop app'

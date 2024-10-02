@@ -16,7 +16,8 @@ export const languages = [
   'Ruby',
   'Python',
   'Postgres',
-  'Elastic search'
+  'Elastic search',
+  'Neo4j'
 ];
 
 export const estimation = [
@@ -30,6 +31,7 @@ export const estimated_budget_15_min = ['USD $10', 'USD $20', 'USD $30', 'USD $4
 
 export const help_wanted_coding_task_schema = [
   'Web development',
+  'Backend development',
   'Mobile development',
   'Design',
   'Desktop app',
