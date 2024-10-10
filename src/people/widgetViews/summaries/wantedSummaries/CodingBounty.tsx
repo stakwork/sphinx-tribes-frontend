@@ -1,6 +1,6 @@
 /* eslint-disable func-style */
 import React, { useCallback, useEffect, useState } from 'react';
-import { EuiText, EuiFieldText, EuiGlobalToastList } from '@elastic/eui';
+import { EuiText, EuiFieldText, EuiGlobalToastList, EuiLoadingSpinner } from '@elastic/eui';
 import { observer } from 'mobx-react-lite';
 import moment from 'moment';
 import { isInvoiceExpired, userCanManageBounty } from 'helpers';
@@ -39,13 +39,15 @@ import {
   TitleBox,
   CodingLabels,
   AutoCompleteContainer,
-  AwardBottomContainer
+  AwardBottomContainer,
+  PendingFlex
 } from './style';
 import { getTwitterLink } from './lib';
 import CodingMobile from './CodingMobile';
 import { BountyEstimates } from './Components';
 
 let interval;
+let pendingPaymentInterval;
 
 function MobileView(props: CodingBountiesProps) {
   const {
@@ -114,6 +116,7 @@ function MobileView(props: CodingBountiesProps) {
   const [updatingPayment, setUpdatingPayment] = useState<boolean>(false);
   const [userBountyRole, setUserBountyRole] = useState(false);
   const [enableDelete, setEnableDelete] = useState(false);
+  const [pendingPaymentLoading, setPendingPaymentloading] = useState(false);
 
   const [paidStatus, setPaidStatus] = useState(paid);
 
@@ -141,41 +144,48 @@ function MobileView(props: CodingBountiesProps) {
 
   const toastId = Math.random();
 
-  const addToast = (type: string) => {
-    switch (type) {
-      case SOCKET_MSG.invoice_success: {
-        return setToasts([
-          {
-            id: `${toastId}`,
-            title: 'Invoice has been paid',
-            color: 'success'
-          }
-        ]);
+  const addToast = useCallback(
+    (type: string) => {
+      switch (type) {
+        case SOCKET_MSG.invoice_success: {
+          return setToasts([
+            {
+              id: `${toastId}`,
+              title: 'Invoice has been paid',
+              color: 'success'
+            }
+          ]);
+        }
+        case SOCKET_MSG.keysend_error: {
+          return setToasts([
+            {
+              id: `${toastId}`,
+              title: 'Payment failed',
+              toastLifeTimeMs: 10000,
+              color: 'error'
+            }
+          ]);
+        }
+        case SOCKET_MSG.keysend_success: {
+          return setToasts([
+            {
+              id: `${toastId}`,
+              title: 'Paid successfully',
+              color: 'success'
+            }
+          ]);
+        }
       }
-      case SOCKET_MSG.keysend_error: {
-        return setToasts([
-          {
-            id: `${toastId}`,
-            title: 'Payment failed',
-            toastLifeTimeMs: 10000,
-            color: 'error'
-          }
-        ]);
-      }
-      case SOCKET_MSG.keysend_success: {
-        return setToasts([
-          {
-            id: `${toastId}`,
-            title: 'Paid successfully',
-            color: 'success'
-          }
-        ]);
-      }
-    }
-  };
+    },
+    [toastId]
+  );
 
   const removeToast = () => {
     setToasts([]);
+  };
+
+  const recallBounties = async () => {
+    await main.getPeopleBounties({ resetPage: true, ...main.bountiesStatus });
   };
 
   const startPolling = useCallback(
@@ -206,7 +216,74 @@ function MobileView(props: CodingBountiesProps) {
         }
       }, 5000);
     },
-    [setLocalPaid, main]
+    [setLocalPaid, main, addToast]
+  );
+
+  const getPendingPaymentStatus = async (id: number): Promise<boolean> => {
+    const payment_res = await main.getBountyPenndingPaymentStatus(id);
+    if (payment_res['payment_status'] === 'COMPLETE') {
+      return true;
+    }
+
+    return false;
+  };
+
+  const updatePendingPaymentStatus = async (id: number): Promise<any> => {
+    const bounty = await main.getBountyById(id);
+    if (bounty.length) {
+      const b = bounty[0];
+
+      if (!b.body.paid) {
+        // check for payment status
+        const body = {
+          id: id || 0,
+          websocket_token: ui.meInfo?.websocketToken || ''
+        };
+
+        const payment_res = await main.updateBountyPenndingPaymentStatus(body);
+        return payment_res;
+      }
+    }
+
+    return null;
+  };
+
+  const pollPendingPayment = useCallback(
+    async (bountyId: number) => {
+      let i = 0;
+      const payment_completed = await getPendingPaymentStatus(bountyId);
+      if (!payment_completed) {
+        pendingPaymentInterval = setInterval(async () => {
+          try {
+            const payment_res = await updatePendingPaymentStatus(bountyId);
+            if (payment_res) {
+              if (payment_res['payment_status'] === 'COMPLETE') {
+                setPendingPaymentloading(false);
+
+                addToast(SOCKET_MSG.keysend_success);
+                setLocalPaid('PAID');
+                setKeysendStatus(true);
+                setPaidStatus(true);
+                recallBounties();
+                clearInterval(pendingPaymentInterval);
+              }
+            }
+
+            i++;
+            if (i > 4) {
+              if (pendingPaymentInterval) clearInterval(pendingPaymentInterval);
+            }
+          } catch (e) {
+            console.warn('CodingBounty Pending Payment Polling Error', e);
+          }
+        }, 6000);
+      } else {
+        setLocalPaid('PAID');
+        setPaidStatus(true);
+        setPendingPaymentloading(false);
+      }
+    },
+    [setLocalPaid, main, addToast, getPendingPaymentStatus, recallBounties, setPaymentLoading]
   );
 
   const generateInvoice = async (price: number) => {
@@ -241,14 +318,16 @@ function MobileView(props: CodingBountiesProps) {
       }
     }
 
+    if (completed && !paid && ui.meInfo?.owner_pubkey) {
+      setPendingPaymentloading(true);
+      pollPendingPayment(id ?? 0);
+    }
+
     return () => {
       clearInterval(interval);
+      clearInterval(pendingPaymentInterval);
     };
-  }, [main, startPolling]);
-
-  const recallBounties = async () => {
-    await main.getPeopleBounties({ resetPage: true, ...main.bountiesStatus });
-  };
+  }, [main, completed, startPolling, pollPendingPayment, id, paid, ui]);
 
   const makePayment = async () => {
     setPaymentLoading(true);
@@ -764,6 +843,13 @@ function MobileView(props: CodingBountiesProps) {
                         margin: 0
                       }}
                     />
+
+                    {/** Loader for payment checking  */}
+                    {pendingPaymentLoading && !bountyPaid && (
+                      <PendingFlex>
+                        <EuiLoadingSpinner size="xxl" />
+                      </PendingFlex>
+                    )}
 
                     {lnInvoice && !invoiceStatus && (
                       <Invoice
