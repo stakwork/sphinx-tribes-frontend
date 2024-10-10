@@ -707,3 +707,11 @@ export const BountyTime = styled.p`
   width: 220px;
   margin: 15px 0px;
 `;
+
+export const PendingFlex = styled.div`
+  width: 80%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+`;

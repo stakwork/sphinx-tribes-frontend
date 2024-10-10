@@ -2447,6 +2447,51 @@ export class MainStore {
     }
   }
 
+  async getBountyPenndingPaymentStatus(id: number): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+
+      const r: any = await fetch(`${TribesURL}/gobounties/payment/status/${id}`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
+      });
+      return r.json();
+    } catch (e) {
+      console.log('Error getBountyPenndingPaymentStatus', e);
+      return false;
+    }
+  }
+
+  async updateBountyPenndingPaymentStatus(body: {
+    id: number;
+    websocket_token: string;
+  }): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+
+      const r: any = await fetch(`${TribesURL}/gobounties/payment/status/${body.id}`, {
+        method: 'PUT',
+        mode: 'cors',
+        body: JSON.stringify(body),
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      return r.json();
+    } catch (e) {
+      console.log('Error updateBountyPenndingPaymentStatus', e);
+      return false;
+    }
+  }
+
   async getPaymentHistories(uuid: string, page: number, limit: number): Promise<PaymentHistory[]> {
     try {
       if (!uiStore.meInfo) return [];

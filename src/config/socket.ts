@@ -9,6 +9,7 @@ export const SOCKET_MSG = {
   keysend_error: 'keysend_error',
   keysend_success: 'keysend_success',
   invoice_success: 'invoice_success',
+  payment_success: 'payment_success',
   assign_success: 'assign_success',
   lnauth_success: 'lnauth_success',
   user_connect: 'user_connect',
