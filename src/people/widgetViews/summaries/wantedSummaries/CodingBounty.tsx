@@ -144,38 +144,41 @@ function MobileView(props: CodingBountiesProps) {
 
   const toastId = Math.random();
 
-  const addToast = useCallback((type: string) => {
-    switch (type) {
-      case SOCKET_MSG.invoice_success: {
-        return setToasts([
-          {
-            id: `${toastId}`,
-            title: 'Invoice has been paid',
-            color: 'success'
-          }
-        ]);
+  const addToast = useCallback(
+    (type: string) => {
+      switch (type) {
+        case SOCKET_MSG.invoice_success: {
+          return setToasts([
+            {
+              id: `${toastId}`,
+              title: 'Invoice has been paid',
+              color: 'success'
+            }
+          ]);
+        }
+        case SOCKET_MSG.keysend_error: {
+          return setToasts([
+            {
+              id: `${toastId}`,
+              title: 'Payment failed',
+              toastLifeTimeMs: 10000,
+              color: 'error'
+            }
+          ]);
+        }
+        case SOCKET_MSG.keysend_success: {
+          return setToasts([
+            {
+              id: `${toastId}`,
+              title: 'Paid successfully',
+              color: 'success'
+            }
+          ]);
+        }
       }
-      case SOCKET_MSG.keysend_error: {
-        return setToasts([
-          {
-            id: `${toastId}`,
-            title: 'Payment failed',
-            toastLifeTimeMs: 10000,
-            color: 'error'
-          }
-        ]);
-      }
-      case SOCKET_MSG.keysend_success: {
-        return setToasts([
-          {
-            id: `${toastId}`,
-            title: 'Paid successfully',
-            color: 'success'
-          }
-        ]);
-      }
-    }
-  }, [toastId]);
+    },
+    [toastId]
+  );
 
   const removeToast = () => {
     setToasts([]);
@@ -255,14 +258,14 @@ function MobileView(props: CodingBountiesProps) {
             const payment_res = await updatePendingPaymentStatus(bountyId);
             if (payment_res) {
               if (payment_res['payment_status'] === 'COMPLETE') {
-                clearInterval(pendingPaymentInterval);
+                setPendingPaymentloading(false);
 
                 addToast(SOCKET_MSG.keysend_success);
                 setLocalPaid('PAID');
                 setKeysendStatus(true);
                 setPaidStatus(true);
                 recallBounties();
-                setPendingPaymentloading(false);
+                clearInterval(pendingPaymentInterval);
               }
             }
 
@@ -280,7 +283,7 @@ function MobileView(props: CodingBountiesProps) {
         setPendingPaymentloading(false);
       }
     },
-    [setLocalPaid, main, addToast, getPendingPaymentStatus, recallBounties]
+    [setLocalPaid, main, addToast, getPendingPaymentStatus, recallBounties, setPaymentLoading]
   );
 
   const generateInvoice = async (price: number) => {
@@ -315,7 +318,7 @@ function MobileView(props: CodingBountiesProps) {
       }
     }
 
-    if (completed && !paid) {
+    if (completed && !paid && ui.meInfo?.owner_pubkey) {
       setPendingPaymentloading(true);
       pollPendingPayment(id ?? 0);
     }
@@ -324,7 +327,7 @@ function MobileView(props: CodingBountiesProps) {
       clearInterval(interval);
       clearInterval(pendingPaymentInterval);
     };
-  }, [main, completed, startPolling, pollPendingPayment, id, paid]);
+  }, [main, completed, startPolling, pollPendingPayment, id, paid, ui]);
 
   const makePayment = async () => {
     setPaymentLoading(true);
@@ -743,8 +746,8 @@ function MobileView(props: CodingBountiesProps) {
                             bountyCompleted && !bountyPaid
                               ? 'completed'
                               : bountyPaid
-                                ? 'paid'
-                                : 'assigned'
+                              ? 'paid'
+                              : 'assigned'
                           }
                           canViewProfile={false}
                           statusStyle={{
@@ -754,8 +757,8 @@ function MobileView(props: CodingBountiesProps) {
                               bountyCompleted && !bountyPaid
                                 ? color.statusCompleted
                                 : bountyPaid
-                                  ? color.statusPaid
-                                  : color.statusAssigned
+                                ? color.statusPaid
+                                : color.statusAssigned
                           }}
                           UserProfileContainerStyle={{
                             height: 48,
@@ -841,7 +844,8 @@ function MobileView(props: CodingBountiesProps) {
                       }}
                     />
 
-                    {pendingPaymentLoading && (
+                    {/** Loader for payment checking  */}
+                    {pendingPaymentLoading && !bountyPaid && (
                       <PendingFlex>
                         <EuiLoadingSpinner size="xxl" />
                       </PendingFlex>
