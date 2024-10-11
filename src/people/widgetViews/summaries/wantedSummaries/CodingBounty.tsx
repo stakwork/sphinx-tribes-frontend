@@ -1,5 +1,5 @@
 /* eslint-disable func-style */
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { EuiText, EuiFieldText, EuiGlobalToastList, EuiLoadingSpinner } from '@elastic/eui';
 import { observer } from 'mobx-react-lite';
 import moment from 'moment';
@@ -47,7 +47,6 @@ import CodingMobile from './CodingMobile';
 import { BountyEstimates } from './Components';
 
 let interval;
-let pendingPaymentInterval;
 
 function MobileView(props: CodingBountiesProps) {
   const {
@@ -117,10 +116,10 @@ function MobileView(props: CodingBountiesProps) {
   const [userBountyRole, setUserBountyRole] = useState(false);
   const [enableDelete, setEnableDelete] = useState(false);
   const [pendingPaymentLoading, setPendingPaymentloading] = useState(false);
-
   const [paidStatus, setPaidStatus] = useState(paid);
-
   const [paymentLoading, setPaymentLoading] = useState(false);
+
+  const pendingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const userPubkey = ui.meInfo?.owner_pubkey;
 
@@ -142,43 +141,39 @@ function MobileView(props: CodingBountiesProps) {
 
   const pollMinutes = 2;
 
-  const toastId = Math.random();
-
-  const addToast = useCallback(
-    (type: string) => {
-      switch (type) {
-        case SOCKET_MSG.invoice_success: {
-          return setToasts([
-            {
-              id: `${toastId}`,
-              title: 'Invoice has been paid',
-              color: 'success'
-            }
-          ]);
-        }
-        case SOCKET_MSG.keysend_error: {
-          return setToasts([
-            {
-              id: `${toastId}`,
-              title: 'Payment failed',
-              toastLifeTimeMs: 10000,
-              color: 'error'
-            }
-          ]);
-        }
-        case SOCKET_MSG.keysend_success: {
-          return setToasts([
-            {
-              id: `${toastId}`,
-              title: 'Paid successfully',
-              color: 'success'
-            }
-          ]);
-        }
+  const addToast = useCallback((type: string) => {
+    const toastId = Math.random();
+    switch (type) {
+      case SOCKET_MSG.invoice_success: {
+        return setToasts([
+          {
+            id: `${toastId}`,
+            title: 'Invoice has been paid',
+            color: 'success'
+          }
+        ]);
       }
-    },
-    [toastId]
-  );
+      case SOCKET_MSG.keysend_error: {
+        return setToasts([
+          {
+            id: `${toastId}`,
+            title: 'Payment failed',
+            toastLifeTimeMs: 10000,
+            color: 'error'
+          }
+        ]);
+      }
+      case SOCKET_MSG.keysend_success: {
+        return setToasts([
+          {
+            id: `${toastId}`,
+            title: 'Paid successfully',
+            color: 'success'
+          }
+        ]);
+      }
+    }
+  }, []);
 
   const removeToast = () => {
     setToasts([]);
@@ -219,21 +214,21 @@ function MobileView(props: CodingBountiesProps) {
     [setLocalPaid, main, addToast]
   );
 
-  const getPendingPaymentStatus = async (id: number): Promise<boolean> => {
-    const payment_res = await main.getBountyPenndingPaymentStatus(id);
-    if (payment_res['payment_status'] === 'COMPLETE') {
-      return true;
-    }
+  const getPendingPaymentStatus = useCallback(
+    async (id: number): Promise<boolean> => {
+      const payment_res = await main.getBountyPenndingPaymentStatus(id);
+      if (payment_res['payment_status'] === 'COMPLETE') {
+        return true;
+      }
 
-    return false;
-  };
+      return false;
+    },
+    [main]
+  );
 
-  const updatePendingPaymentStatus = async (id: number): Promise<any> => {
-    const bounty = await main.getBountyById(id);
-    if (bounty.length) {
-      const b = bounty[0];
-
-      if (!b.body.paid) {
+  const updatePendingPaymentStatus = useCallback(
+    async (id: number): Promise<any> => {
+      if (!paid) {
         // check for payment status
         const body = {
           id: id || 0,
@@ -243,17 +238,18 @@ function MobileView(props: CodingBountiesProps) {
         const payment_res = await main.updateBountyPenndingPaymentStatus(body);
         return payment_res;
       }
-    }
 
-    return null;
-  };
+      return null;
+    },
+    [paid, main, ui]
+  );
 
   const pollPendingPayment = useCallback(
     async (bountyId: number) => {
-      let i = 0;
       const payment_completed = await getPendingPaymentStatus(bountyId);
       if (!payment_completed) {
-        pendingPaymentInterval = setInterval(async () => {
+        let counter = 0;
+        pendingIntervalRef.current = setInterval(async () => {
           try {
             const payment_res = await updatePendingPaymentStatus(bountyId);
             if (payment_res) {
@@ -264,14 +260,16 @@ function MobileView(props: CodingBountiesProps) {
                 setLocalPaid('PAID');
                 setKeysendStatus(true);
                 setPaidStatus(true);
-                recallBounties();
-                clearInterval(pendingPaymentInterval);
+                if (pendingIntervalRef.current) clearInterval(pendingIntervalRef.current);
+              } else if (payment_res['payment_status'] === 'NOTPAID') {
+                setPendingPaymentloading(false);
+                if (pendingIntervalRef.current) clearInterval(pendingIntervalRef.current);
               }
             }
 
-            i++;
-            if (i > 4) {
-              if (pendingPaymentInterval) clearInterval(pendingPaymentInterval);
+            counter++;
+            if (counter > 3) {
+              if (pendingIntervalRef.current) clearInterval(pendingIntervalRef.current);
             }
           } catch (e) {
             console.warn('CodingBounty Pending Payment Polling Error', e);
@@ -283,7 +281,7 @@ function MobileView(props: CodingBountiesProps) {
         setPendingPaymentloading(false);
       }
     },
-    [setLocalPaid, main, addToast, getPendingPaymentStatus, recallBounties, setPaymentLoading]
+    [setLocalPaid, updatePendingPaymentStatus, getPendingPaymentStatus, addToast]
   );
 
   const generateInvoice = async (price: number) => {
@@ -318,16 +316,23 @@ function MobileView(props: CodingBountiesProps) {
       }
     }
 
-    if (completed && !paid && ui.meInfo?.owner_pubkey) {
+    return () => {
+      clearInterval(interval);
+    };
+  }, [main, startPolling]);
+
+  useEffect(() => {
+    if (completed && !paid) {
       setPendingPaymentloading(true);
       pollPendingPayment(id ?? 0);
     }
 
     return () => {
-      clearInterval(interval);
-      clearInterval(pendingPaymentInterval);
+      if (pendingIntervalRef.current) {
+        clearInterval(pendingIntervalRef.current);
+      }
     };
-  }, [main, completed, startPolling, pollPendingPayment, id, paid, ui]);
+  }, [completed, id, paid, pollPendingPayment, pendingIntervalRef]);
 
   const makePayment = async () => {
     setPaymentLoading(true);
@@ -458,7 +463,7 @@ function MobileView(props: CodingBountiesProps) {
     socket.onclose = () => {
       console.log('Socket disconnected');
     };
-  }, [setLocalPaid, ui]);
+  }, [setLocalPaid, ui, addToast]);
 
   const checkUserBountyRole = useCallback(async () => {
     const canPayBounty = await userCanManageBounty(org_uuid, userPubkey, main);
@@ -546,7 +551,7 @@ function MobileView(props: CodingBountiesProps) {
             <IconButton
               width={'100%'}
               height={48}
-              disabled={paymentLoading || payBountyDisable}
+              disabled={paymentLoading || payBountyDisable || pendingPaymentLoading}
               style={{
                 bottom: '10px'
               }}
@@ -876,7 +881,7 @@ function MobileView(props: CodingBountiesProps) {
                           />
                         )}
                         <Button
-                          disabled={paymentLoading || payBountyDisable}
+                          disabled={paymentLoading || payBountyDisable || pendingPaymentLoading}
                           iconSize={14}
                           width={220}
                           height={48}
