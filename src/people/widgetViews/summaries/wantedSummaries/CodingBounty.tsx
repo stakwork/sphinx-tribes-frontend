@@ -276,6 +276,7 @@ function MobileView(props: CodingBountiesProps) {
           }
         }, 6000);
       } else {
+        await updatePendingPaymentStatus(bountyId);
         setLocalPaid('PAID');
         setPaidStatus(true);
         setPendingPaymentloading(false);
