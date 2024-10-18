@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useIsMobile } from 'hooks/uiHooks';
 import { InvoiceForm, InvoiceInput, InvoiceLabel } from 'people/utils/style';
 import { useStores } from 'store';
@@ -85,6 +85,7 @@ const WithdrawBudgetModal = (props: WithdrawModalProps) => {
   const [amountInSats, setAmountInSats] = useState(0);
   const [paymentSettled, setPaymentSettled] = useState(false);
   const [paymentError, setPaymentError] = useState('');
+  const [lastWithdrawal, setLastWithdrawal] = useState(0);
 
   const isMobile = useIsMobile();
   const { ui, main } = useStores();
@@ -93,7 +94,7 @@ const WithdrawBudgetModal = (props: WithdrawModalProps) => {
   const withdrawBudget = async () => {
     const token = ui.meInfo?.websocketToken;
     const body = {
-      org_uuid: uuid ?? '',
+      workspace_uuid: uuid ?? '',
       payment_request: paymentRequest,
       websocket_token: token
     };
@@ -118,6 +119,18 @@ const WithdrawBudgetModal = (props: WithdrawModalProps) => {
       console.log(`Cannot decode lightning invoice: ${e}`);
     }
   };
+
+  const getLastWithdrawal = useCallback(
+    async (workspace_uuid: string) => {
+      const response = await main.getLastWithdrawal(workspace_uuid);
+      setLastWithdrawal(response);
+    },
+    [main]
+  );
+
+  useEffect(() => {
+    getLastWithdrawal(uuid ?? '');
+  }, [getLastWithdrawal]);
 
   const displayWuthdraw = !amountInSats && ui.meInfo?.owner_pubkey;
   const displayInvoiceSats =
@@ -211,7 +224,11 @@ const WithdrawBudgetModal = (props: WithdrawModalProps) => {
                   display: 'block'
                 }}
               >
-                Paste your invoice
+                {lastWithdrawal < 1 ? (
+                  <>Cannot withdraw: your last withdrawal is less than an hour</>
+                ) : (
+                  <>Paste your invoice</>
+                )}
               </InvoiceLabel>
               <InvoiceInput
                 data-testid="withdrawInvoiceInput"
@@ -219,6 +236,7 @@ const WithdrawBudgetModal = (props: WithdrawModalProps) => {
                 style={{
                   width: '100%'
                 }}
+                disabled={lastWithdrawal < 1}
                 value={paymentRequest}
                 onChange={(e: any) => setPaymentRequest(e.target.value)}
               />
