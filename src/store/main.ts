@@ -2578,7 +2578,7 @@ export class MainStore {
   async withdrawBountyBudget(body: {
     websocket_token?: string;
     payment_request: string;
-    org_uuid: string;
+    workspace_uuid: string;
   }): Promise<BudgetWithdrawSuccess | InvoiceError> {
     try {
       if (!uiStore.meInfo)
@@ -2604,6 +2604,26 @@ export class MainStore {
         success: false,
         error: 'Error occured while withdrawing budget'
       };
+    }
+  }
+
+  async getLastWithdrawal(workspace_uuid: string): Promise<number> {
+    try {
+      if (!uiStore.meInfo) return 0;
+      const info = uiStore.meInfo;
+
+      const r: any = await fetch(`${TribesURL}/workspaces/${workspace_uuid}/lastwithdrawal`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
+      });
+      return r.json();
+    } catch (e) {
+      console.error('Error getLastWithdrawal', e);
+      return 0;
     }
   }
 
