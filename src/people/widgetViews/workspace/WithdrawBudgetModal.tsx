@@ -130,7 +130,7 @@ const WithdrawBudgetModal = (props: WithdrawModalProps) => {
 
   useEffect(() => {
     getLastWithdrawal(uuid ?? '');
-  }, [getLastWithdrawal]);
+  }, [getLastWithdrawal, uuid]);
 
   const displayWuthdraw = !amountInSats && ui.meInfo?.owner_pubkey;
   const displayInvoiceSats =
