@@ -323,7 +323,7 @@ function MobileView(props: CodingBountiesProps) {
   }, [main, startPolling]);
 
   useEffect(() => {
-    if (completed && !paid) {
+    if (completed && !paid && assignee) {
       setPendingPaymentloading(true);
       pollPendingPayment(id ?? 0);
     }
@@ -333,7 +333,7 @@ function MobileView(props: CodingBountiesProps) {
         clearInterval(pendingIntervalRef.current);
       }
     };
-  }, [completed, id, paid, pollPendingPayment, pendingIntervalRef]);
+  }, [completed, id, paid, assignee, pollPendingPayment, pendingIntervalRef]);
 
   const makePayment = async () => {
     setPaymentLoading(true);
