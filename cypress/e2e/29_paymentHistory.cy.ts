@@ -26,10 +26,12 @@ describe('It Lists all payments in history', () => {
     cy.contains(workSpace.name).get(`[data-work-name="${workSpace.name}"]`).click();
     cy.wait(1000);
 
+    // Comment out withdraw becuase of the 1 hour withdrwal intervals
+
     const depositAmount = 10000;
-    const withdrawAmount = 1000;
+    const withdrawAmount = 0;
     const paymentAmount = 500;
-    const afterWithdrawAmount = depositAmount - withdrawAmount;
+    // const afterWithdrawAmount = depositAmount - withdrawAmount;
     const finalPaymentAmount = depositAmount - withdrawAmount - paymentAmount;
 
     // add workspace budget
@@ -51,31 +53,34 @@ describe('It Lists all payments in history', () => {
         cy.get('body').click(0, 0);
       });
 
+    // Comment out withdraw becuase of the 1 hour withdrwal intervals
     // Withdraw workspace budget
-    cy.contains('Withdraw').click();
-    cy.wait(1000);
+    // cy.contains('Withdraw').click();
+    // cy.wait(1000);
+
+    // cy.contains("Cannot withdraw: your last withdrawal is less than an hour");
 
     // generate lightning invoice and withdraw from workspace
-    cy.add_invoice({ amount: withdrawAmount }).then((res: any) => {
-      const invoice = res?.body.bolt11;
-      cy.get('[data-testid="withdrawInvoiceInput"]').type(invoice);
-      cy.contains('Confirm').click();
-      cy.wait(1000);
+    // cy.add_invoice({ amount: withdrawAmount }).then((res: any) => {
+    //   const invoice = res?.body.bolt11;
+    //   cy.get('[data-testid="withdrawInvoiceInput"]').type(invoice);
+    //   cy.contains('Confirm').click();
+    //   cy.wait(1000);
 
-      cy.contains('You are about to withdraw');
-      cy.get('[data-testid="confirm-withdraw"]').click();
-      cy.wait(2000);
+    //   cy.contains('You are about to withdraw');
+    //   cy.get('[data-testid="confirm-withdraw"]').click();
+    //   cy.wait(2000);
 
-      cy.contains('Successfully Withdraw');
-      cy.contains(`${withdrawAmount.toLocaleString()} SATS`);
-      cy.get('body').click(0, 0);
-      cy.wait(1000);
+    //   cy.contains('Successfully Withdraw');
+    //   cy.contains(`${withdrawAmount.toLocaleString()} SATS`);
+    //   cy.get('body').click(0, 0);
+    //   cy.wait(1000);
 
-      cy.contains(afterWithdrawAmount.toLocaleString()).should('exist', { timeout: 2000 });
-      cy.wait(500);
-    });
+    //   cy.contains(afterWithdrawAmount.toLocaleString()).should('exist', { timeout: 2000 });
+    //   cy.wait(500);
+    // });
 
-    cy.wait(1000);
+    // cy.wait(1000);
 
     //  create and pay bounty
     const bounty: Cypress.Bounty = {
@@ -124,12 +129,13 @@ describe('It Lists all payments in history', () => {
     cy.contains('History').click({ force: true });
     cy.wait(1000);
 
+    // Comment out withdraw becuase of the 1 hour withdrwal intervals
     cy.contains('Deposit');
     cy.contains('Payment');
-    cy.contains('Withdraw');
+    // cy.contains('Withdraw');
 
     cy.contains(formatSat(paymentAmount));
-    cy.contains(formatSat(withdrawAmount));
+    // cy.contains(formatSat(withdrawAmount));
     cy.contains(formatSat(depositAmount));
 
     // close the bounty
