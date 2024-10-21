@@ -200,6 +200,7 @@ const Workspaces = (props: { person: Person }) => {
         await main.pollAllUserWorkspaceBudget();
 
         const count = await main.allUserWorkspaceInvoiceCount();
+
         if (count === 0) {
           getUserWorkspaces();
           clearInterval(interval);

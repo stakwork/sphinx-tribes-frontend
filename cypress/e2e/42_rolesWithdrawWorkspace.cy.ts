@@ -87,7 +87,7 @@ describe('Withdraw From Workspace Role Test', () => {
     cy.wait(1000);
 
     //Assert that 'Past your invoice' is visible
-    cy.contains('Paste your invoice').should('be.visible');
+    cy.contains('Cannot withdraw: your last withdrawal is less than an hour').should('be.visible');
     cy.wait(1000);
 
     cy.get('body').click(0, 0);

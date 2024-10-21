@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ConnectCardProps } from 'people/interfaces';
 import { useStores } from 'store';
 import { EuiGlobalToastList } from '@elastic/eui';
@@ -13,97 +13,25 @@ let interval;
 
 export default function AssignBounty(props: ConnectCardProps) {
   const color = colors['light'];
-  const { person, created, visible } = props;
+  const { visible } = props;
   const { main, ui } = useStores();
 
   const [bountyHours, setBountyHours] = useState(1);
-  const [lnInvoice, setLnInvoice] = useState('');
-  const [invoiceStatus, setInvoiceStatus] = useState(false);
+  const [lnInvoice] = useState('');
+  const [invoiceStatus] = useState(false);
 
   const pollMinutes = 2;
 
   const [toasts, setToasts]: any = useState([]);
 
-  const addToast = () => {
-    setToasts([
-      {
-        id: `${Math.random()}`,
-        title: 'Bounty has been assigned'
-      }
-    ]);
-  };
-
   const removeToast = () => {
     setToasts([]);
-  };
-
-  const startPolling = useCallback(
-    async (paymentRequest: string) => {
-      let i = 0;
-      interval = setInterval(async () => {
-        try {
-          const invoiceData = await main.pollInvoice(paymentRequest);
-          if (invoiceData) {
-            if (invoiceData.success && invoiceData.response.settled) {
-              clearInterval(interval);
-
-              addToast();
-              setLnInvoice('');
-              setInvoiceStatus(true);
-              main.setAssignInvoice('');
-
-              // get new wanted list
-              main.getPeopleBounties({ page: 1, resetPage: true });
-
-              props.dismiss();
-              if (props.dismissConnectModal) props.dismissConnectModal();
-            }
-          }
-
-          i++;
-          if (i > 22) {
-            if (interval) clearInterval(interval);
-          }
-        } catch (e) {
-          console.warn('AssignBounty Modal Invoice Polling Error', e);
-        }
-      }, 5000);
-    },
-    [main, props]
-  );
-
-  const generateInvoice = async () => {
-    if (created) {
-      const data = await main.getLnInvoice({
-        amount: 200 * bountyHours,
-        memo: '',
-        owner_pubkey: person?.owner_pubkey ?? '',
-        user_pubkey: ui.meInfo?.owner_pubkey ?? '',
-        route_hint: person?.route_hint,
-        created: created ? created.toString() : '',
-        type: 'ASSIGN',
-        assigned_hours: bountyHours,
-        commitment_fee: bountyHours * 200,
-        bounty_expires: new Date(
-          moment().add(bountyHours, 'hours').format().toString()
-        ).toUTCString()
-      });
-
-      const paymentRequest = data.response.invoice;
-
-      if (paymentRequest) {
-        setLnInvoice(paymentRequest);
-        main.setAssignInvoice(paymentRequest);
-        startPolling(paymentRequest);
-      }
-    }
   };
 
   useEffect(() => {
     if (main.assignInvoice !== '') {
       const expired = isInvoiceExpired(main.assignInvoice);
       if (!expired) {
-        startPolling(main.assignInvoice);
       } else {
         main.setAssignInvoice('');
       }
@@ -112,7 +40,7 @@ export default function AssignBounty(props: ConnectCardProps) {
     return () => {
       clearInterval(interval);
     };
-  }, [main, startPolling]);
+  }, [main]);
 
   return (
     <div onClick={(e: any) => e.stopPropagation()}>
@@ -150,7 +78,6 @@ export default function AssignBounty(props: ConnectCardProps) {
                   imgSize={27}
                   height={48}
                   width={'100%'}
-                  onClick={generateInvoice}
                 />
               </>
             )}
