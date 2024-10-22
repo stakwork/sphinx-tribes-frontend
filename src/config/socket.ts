@@ -7,6 +7,7 @@ export const URL =
 
 export const SOCKET_MSG = {
   keysend_error: 'keysend_error',
+  keysend_pending: 'keysend_pending',
   keysend_success: 'keysend_success',
   invoice_success: 'invoice_success',
   payment_success: 'payment_success',
