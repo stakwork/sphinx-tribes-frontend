@@ -103,7 +103,9 @@ function MobileView(props: CodingBountiesProps) {
     actionButtons,
     assigneeLabel,
     isEditButtonDisable,
-    completed
+    completed,
+    payment_falied,
+    payment_pending
   } = props;
   const color = colors['light'];
 
@@ -160,6 +162,16 @@ function MobileView(props: CodingBountiesProps) {
             title: 'Payment failed',
             toastLifeTimeMs: 10000,
             color: 'error'
+          }
+        ]);
+      }
+      case SOCKET_MSG.keysend_pending: {
+        return setToasts([
+          {
+            id: `${toastId}`,
+            title: 'Payment is pending',
+            toastLifeTimeMs: 10000,
+            color: 'warning'
           }
         ]);
       }
@@ -323,7 +335,7 @@ function MobileView(props: CodingBountiesProps) {
   }, [main, startPolling]);
 
   useEffect(() => {
-    if (completed && !paid && assignee) {
+    if (completed && !paid && assignee && !payment_falied && payment_pending) {
       setPendingPaymentloading(true);
       pollPendingPayment(id ?? 0);
     }
@@ -333,7 +345,16 @@ function MobileView(props: CodingBountiesProps) {
         clearInterval(pendingIntervalRef.current);
       }
     };
-  }, [completed, id, paid, assignee, pollPendingPayment, pendingIntervalRef]);
+  }, [
+    completed,
+    id,
+    paid,
+    assignee,
+    payment_falied,
+    pollPendingPayment,
+    pendingIntervalRef,
+    payment_pending
+  ]);
 
   const makePayment = async () => {
     setPaymentLoading(true);
@@ -530,6 +551,7 @@ function MobileView(props: CodingBountiesProps) {
                 background: paidStatus ? color.green1 : color.pureWhite,
                 color: paidStatus ? color.white100 : color.borderGreen1
               }}
+              disabled={payment_pending}
               data-testid="paid_btn"
               text={paidStatus ? unpaidString : paidString}
               loading={saving === 'paid' || updatingPayment}
@@ -552,7 +574,9 @@ function MobileView(props: CodingBountiesProps) {
             <IconButton
               width={'100%'}
               height={48}
-              disabled={paymentLoading || payBountyDisable || pendingPaymentLoading}
+              disabled={
+                paymentLoading || payBountyDisable || pendingPaymentLoading || payment_pending
+              }
               style={{
                 bottom: '10px'
               }}
@@ -678,7 +702,7 @@ function MobileView(props: CodingBountiesProps) {
                             buttonTextStyle={{
                               paddingRight: '50px'
                             }}
-                            disabled={isEditButtonDisable}
+                            disabled={isEditButtonDisable || payment_pending}
                           />
                           <ImageButton
                             data-testid="delete-btn"
@@ -691,7 +715,7 @@ function MobileView(props: CodingBountiesProps) {
                             leadingImageContainerStyle={{
                               left: 450
                             }}
-                            disabled={enableDelete}
+                            disabled={enableDelete || payment_pending}
                             buttonAction={props?.deleteAction}
                             buttonTextStyle={{
                               paddingRight: '45px'
@@ -790,7 +814,7 @@ function MobileView(props: CodingBountiesProps) {
                             marginLeft: '12px'
                           }}
                         />
-                        {!bountyPaid && (
+                        {!bountyPaid && !payment_pending && (
                           <div
                             data-testid="edit-btn"
                             className="AssigneeCloseButtonContainer"
@@ -882,7 +906,12 @@ function MobileView(props: CodingBountiesProps) {
                           />
                         )}
                         <Button
-                          disabled={paymentLoading || payBountyDisable || pendingPaymentLoading}
+                          disabled={
+                            paymentLoading ||
+                            payBountyDisable ||
+                            pendingPaymentLoading ||
+                            payment_pending
+                          }
                           iconSize={14}
                           width={220}
                           height={48}
@@ -930,6 +959,7 @@ function MobileView(props: CodingBountiesProps) {
                           background: color.pureWhite,
                           color: color.borderGreen1
                         }}
+                        disabled={payment_pending}
                         text={paidStatus ? unpaidString : paidString}
                         loading={saving === 'paid' || updatingPayment}
                         endingImg={'/static/mark_unpaid.svg'}
@@ -961,6 +991,7 @@ function MobileView(props: CodingBountiesProps) {
                           fontFamily: 'Barlow',
                           marginLeft: '30px'
                         }}
+                        disabled={payment_pending}
                         hovercolor={color.button_primary.hover}
                         activecolor={color.button_primary.active}
                         shadowcolor={color.button_primary.shadow}
@@ -1141,6 +1172,7 @@ function MobileView(props: CodingBountiesProps) {
                   }}
                   text={selectedAward === '' ? 'Skip and Mark Paid' : paidString}
                   loading={isMarkPaidSaved || updatingPayment}
+                  disabled={payment_pending}
                   endingImg={'/static/mark_paid.svg'}
                   textStyle={{
                     width: '130px',
