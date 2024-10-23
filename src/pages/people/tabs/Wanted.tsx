@@ -18,6 +18,7 @@ import PopoverCheckbox from './popoverCheckboxStyles';
 
 const config = widgetConfigs.bounties;
 type BountyType = any;
+
 const Container = styled.div`
   display: flex;
   flex-flow: row wrap;
@@ -28,6 +29,7 @@ const Container = styled.div`
 interface PanelProps {
   isMobile: boolean;
 }
+
 const Panel = styled.a<PanelProps>`
   position: relative;
   overflow: hidden;
@@ -44,6 +46,46 @@ const Panel = styled.a<PanelProps>`
     text-decoration: none !important;
   }
 `;
+
+interface FilterHeaderProps {
+  checkboxIdToSelectedMap: Record<string, boolean>;
+  applyFilters: (id: string) => void;
+  canEdit: boolean;
+  Status: string[];
+}
+
+const FilterHeader: React.FC<FilterHeaderProps> = ({
+  checkboxIdToSelectedMap,
+  applyFilters,
+  canEdit,
+  Status
+}: FilterHeaderProps): JSX.Element => (
+  <div
+    style={{
+      width: '100%',
+      display: 'flex',
+      justifyContent: 'space-between',
+      paddingBottom: '16px',
+      alignItems: 'center'
+    }}
+  >
+    <h4>Bounties </h4>
+    <PopoverCheckbox className="CheckboxOuter" color={colors['light']}>
+      <EuiCheckboxGroup
+        style={{ display: 'flex', alignItems: 'center', gap: 20, marginRight: 50 }}
+        options={Status.map((status: string) => ({
+          label: status,
+          id: status
+        }))}
+        idToSelectedMap={checkboxIdToSelectedMap}
+        onChange={(optionId: any) => {
+          applyFilters(optionId);
+        }}
+      />
+      {canEdit && <PostBounty widget="bounties" />}
+    </PopoverCheckbox>
+  </div>
+);
 
 export const Wanted = observer(() => {
   const { ui, main } = useStores();
@@ -111,60 +153,8 @@ export const Wanted = observer(() => {
     getUserTickets();
   }, [main, checkboxIdToSelectedMap, getUserTickets]);
 
-  if (!main.createdBounties?.length && !loading) {
-    return (
-      <NoneSpace
-        style={{
-          margin: 'auto'
-        }}
-        small
-        Button={
-          canEdit && (
-            <PostBounty
-              title={config.noneSpace.me.buttonText}
-              buttonProps={{
-                leadingIcon: config.noneSpace.me.buttonIcon,
-                color: 'secondary'
-              }}
-              widget={'bounties'}
-              onSucces={() => {
-                window.location.reload();
-              }}
-            />
-          )
-        }
-        {...(canEdit ? config.noneSpace.me : config.noneSpace.otherUser)}
-      />
-    );
-  }
-  return (
-    <Container>
-      <div
-        style={{
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'space-between',
-          paddingBottom: '16px',
-          alignItems: 'center'
-        }}
-      >
-        <h4>Bounties </h4>
-        <PopoverCheckbox className="CheckboxOuter" color={colors['light']}>
-          <EuiCheckboxGroup
-            style={{ display: 'flex', alignItems: 'center', gap: 20, marginRight: 50 }}
-            options={Status.map((status: string) => ({
-              label: status,
-              id: status
-            }))}
-            idToSelectedMap={checkboxIdToSelectedMap}
-            onChange={(optionId: any) => {
-              applyFilters(optionId);
-            }}
-          />
-          {canEdit && <PostBounty widget="bounties" />}
-        </PopoverCheckbox>
-      </div>
-      {loading && <PageLoadSpinner show={loading} />}
+  const renderBounties = () => (
+    <>
       <Switch>
         <Route path={`${path}/:wantedId/:wantedIndex`}>
           <BountyModal basePath={url} />
@@ -204,6 +194,44 @@ export const Wanted = observer(() => {
             Load More
           </div>
         </LoadMoreContainer>
+      )}
+    </>
+  );
+
+  return (
+    <Container>
+      <FilterHeader
+        checkboxIdToSelectedMap={checkboxIdToSelectedMap}
+        applyFilters={applyFilters}
+        canEdit={canEdit}
+        Status={Status}
+      />
+      {loading && <PageLoadSpinner show={loading} />}
+      {!loading && displayedBounties.length === 0 ? (
+        <NoneSpace
+          style={{
+            margin: 'auto'
+          }}
+          small
+          Button={
+            canEdit && (
+              <PostBounty
+                title={config.noneSpace.me.buttonText}
+                buttonProps={{
+                  leadingIcon: config.noneSpace.me.buttonIcon,
+                  color: 'secondary'
+                }}
+                widget={'bounties'}
+                onSucces={() => {
+                  window.location.reload();
+                }}
+              />
+            )
+          }
+          {...(canEdit ? config.noneSpace.me : config.noneSpace.otherUser)}
+        />
+      ) : (
+        renderBounties()
       )}
     </Container>
   );
