@@ -168,6 +168,15 @@ function MobileView(props: CodingBountiesProps) {
           }
         ]);
       }
+      case SOCKET_MSG.keysend_success: {
+        return setToasts([
+          {
+            id: `${toastId}`,
+            title: 'Paid successfully',
+            color: 'success'
+          }
+        ]);
+      }
       case SOCKET_MSG.keysend_pending: {
         setLocalPending(true);
 
@@ -177,15 +186,6 @@ function MobileView(props: CodingBountiesProps) {
             title: 'Payment is pending',
             toastLifeTimeMs: 10000,
             color: 'warning'
-          }
-        ]);
-      }
-      case SOCKET_MSG.keysend_success: {
-        return setToasts([
-          {
-            id: `${toastId}`,
-            title: 'Paid successfully',
-            color: 'success'
           }
         ]);
       }

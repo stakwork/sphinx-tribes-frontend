@@ -2440,7 +2440,7 @@ export class MainStore {
         }
       });
 
-      return r.json();
+      return r;
     } catch (e) {
       console.log('Error makeBountyPayment', e);
       return false;
