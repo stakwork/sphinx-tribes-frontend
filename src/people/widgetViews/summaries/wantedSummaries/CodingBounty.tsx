@@ -383,10 +383,8 @@ function MobileView(props: CodingBountiesProps) {
             websocket_token: ui.meInfo?.websocketToken || ''
           };
 
-          const result = await main.makeBountyPayment(body);
-          if (result && result['msg'] === 'keysend_pending') {
-            setLocalPending(true);
-          }
+          await main.makeBountyPayment(body);
+
           setPaymentLoading(false);
           recallBounties();
         }
