@@ -36,6 +36,8 @@ const palette = {
   background100: '#f0f1f3',
   statusAssigned: '#49C998',
   statusCompleted: '#9B870C',
+  statusPending: '#ADD8E6',
+  statusFailed: '#FF0000',
   statusPaid: '#8256D0',
   button_primary: {
     main: '#49C998',
