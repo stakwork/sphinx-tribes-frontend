@@ -127,7 +127,7 @@ function MobileView(props: CodingBountiesProps) {
   const userPubkey = ui.meInfo?.owner_pubkey;
 
   let bountyPaid = paid || invoiceStatus || keysendStatus;
-  let bountyPending = localPending || payment_pending;
+  const bountyPending = localPending || payment_pending;
   const userAssigned = assignee && assignee.owner_pubkey !== '';
   let bountyCompleted = completed;
 
