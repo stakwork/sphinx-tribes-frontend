@@ -561,6 +561,8 @@ describe('WorkspaceDetails', () => {
   });
 
   it('Test that withdraw modal is rendered', async () => {
+    jest.spyOn(mainStore, 'getLastWithdrawal').mockReturnValue(Promise.resolve(1));
+
     await act(async () => {
       const { getByTestId } = render(
         <MemoryRouter>
@@ -578,7 +580,7 @@ describe('WorkspaceDetails', () => {
 
       fireEvent.click(withdrawBtn);
 
-      await waitFor(() => {
+      waitFor(() => {
         const modal = getByTestId('testid-modal');
         expect(modal).toBeInTheDocument();
 
