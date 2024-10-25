@@ -40,7 +40,9 @@ import {
   CodingLabels,
   AutoCompleteContainer,
   AwardBottomContainer,
-  PendingFlex
+  PendingFlex,
+  ErrorMsgText,
+  ErrorWrapper
 } from './style';
 import { getTwitterLink } from './lib';
 import CodingMobile from './CodingMobile';
@@ -104,7 +106,7 @@ function MobileView(props: CodingBountiesProps) {
     assigneeLabel,
     isEditButtonDisable,
     completed,
-    payment_falied,
+    payment_failed,
     payment_pending
   } = props;
   const color = colors['light'];
@@ -121,6 +123,7 @@ function MobileView(props: CodingBountiesProps) {
   const [paidStatus, setPaidStatus] = useState(paid);
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [localPending, setLocalPending] = useState(false);
+  const [paymentError, setPaymentError] = useState('');
 
   const pendingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -236,6 +239,9 @@ function MobileView(props: CodingBountiesProps) {
       const payment_res = await main.getBountyPenndingPaymentStatus(id);
       if (payment_res['payment_status'] === 'COMPLETE') {
         return true;
+      } else if (payment_res['payment_status'] === 'FAILED') {
+        setPaymentError(payment_res['error']);
+        return false;
       }
 
       return false;
@@ -340,7 +346,7 @@ function MobileView(props: CodingBountiesProps) {
   }, [main, startPolling]);
 
   useEffect(() => {
-    if (completed && !paid && assignee && !payment_falied && bountyPending) {
+    if (completed && !paid && assignee && !payment_failed && bountyPending) {
       setPendingPaymentloading(true);
       pollPendingPayment(id ?? 0);
     }
@@ -355,7 +361,7 @@ function MobileView(props: CodingBountiesProps) {
     id,
     paid,
     assignee,
-    payment_falied,
+    payment_failed,
     pollPendingPayment,
     pendingIntervalRef,
     bountyPending
@@ -608,7 +614,7 @@ function MobileView(props: CodingBountiesProps) {
   }
 
   let pillColor = color.statusAssigned;
-  if (payment_falied) {
+  if (payment_failed) {
     pillColor = color.statusFailed;
   } else if (bountyPending) {
     pillColor = color.statusPending;
@@ -620,7 +626,7 @@ function MobileView(props: CodingBountiesProps) {
 
   let pillText = 'assigned';
 
-  if (payment_falied) {
+  if (payment_failed) {
     pillText = 'failed';
   } else if (bountyPending) {
     pillText = 'pending';
@@ -880,6 +886,12 @@ function MobileView(props: CodingBountiesProps) {
                       </div>
                     )}
                   </UnassignedPersonProfile>
+                  {payment_failed && (
+                    <ErrorWrapper>
+                      <Divider />
+                      <ErrorMsgText>{paymentError}</ErrorMsgText>
+                    </ErrorWrapper>
+                  )}
                   <DividerContainer>
                     <Divider />
                   </DividerContainer>

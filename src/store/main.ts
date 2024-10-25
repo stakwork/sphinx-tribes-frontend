@@ -2555,6 +2555,25 @@ export class MainStore {
     }
   }
 
+  async getBountyPaymentById(bounty_id: number): Promise<PaymentHistory | null> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+      const r: any = await fetch(`${TribesURL}/gobounties/payment/${bounty_id}`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
+      });
+      return r.json();
+    } catch (e) {
+      console.error('Error getBountyPaymentById', e);
+      return null;
+    }
+  }
+
   async getFilterStatusCount(): Promise<FilterStatusCount> {
     try {
       const r: any = await fetch(`${TribesURL}/gobounties/filter/count`, {

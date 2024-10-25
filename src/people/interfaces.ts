@@ -328,7 +328,7 @@ export interface CodingBountiesProps extends WantedSummaryProps {
   id?: number;
   completed?: boolean;
   payment_pending?: boolean;
-  payment_falied?: boolean;
+  payment_failed?: boolean;
   localPaid: LocalPaymeentState;
   setLocalPaid: (state: LocalPaymeentState) => void;
   localCompleted: LocalCompletedState;

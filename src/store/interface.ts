@@ -118,7 +118,9 @@ export interface PersonBounty {
   commitment_fee?: number;
 }
 
-export type WorkspaceTransactionType = 'deposit' | 'payment' | 'withdraw';
+export type WorkspaceTransactionType = 'deposit' | 'payment' | 'withdraw' | 'failed' | 'pending';
+
+export type PaymentStatus = 'COMPLETED' | 'PENDING' | 'FAILED';
 
 export interface PaymentHistory {
   id: number;
@@ -135,6 +137,8 @@ export interface PaymentHistory {
   updated: string;
   payment_type: WorkspaceTransactionType;
   status: boolean;
+  payment_status?: PaymentStatus;
+  error?: string;
 }
 
 export interface BudgetHistory {

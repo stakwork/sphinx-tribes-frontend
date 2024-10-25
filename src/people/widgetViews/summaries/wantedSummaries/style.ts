@@ -715,3 +715,15 @@ export const PendingFlex = styled.div`
   justify-content: center;
   margin-top: 10px;
 `;
+
+export const ErrorWrapper = styled.div`
+  padding: 0px 35px;
+  margin-top: 10px;
+  margin-bottom: 0px;
+`;
+
+export const ErrorMsgText = styled.span`
+  color: red;
+  font-size: 0.85rem;
+  padding-top: 20px;
+`;
