@@ -453,41 +453,41 @@ describe('Wanted Component', () => {
       );
 
       waitFor(async () => {
-        const PostBountyButton = await screen.findByRole('button', {name: /Post a Bounty/i});
+        const PostBountyButton = await screen.findByRole('button', { name: /Post a Bounty/i });
         expect(PostBountyButton).toBeInTheDocument();
         fireEvent.click(PostBountyButton);
-        const StartButton = await screen.findByRole('button', {name: /Start/i});
+        const StartButton = await screen.findByRole('button', { name: /Start/i });
         expect(StartButton).toBeInTheDocument();
-        const bountyTitleInput = await screen.findByRole('input', {name: /Bounty Title /i});
+        const bountyTitleInput = await screen.findByRole('input', { name: /Bounty Title /i });
         expect(bountyTitleInput).toBeInTheDocument();
-        fireEvent.change(bountyTitleInput, {target: {value: 'new text'}});
+        fireEvent.change(bountyTitleInput, { target: { value: 'new text' } });
         const dropdown = screen.getByText(/Category /i); // Adjust based on your dropdown implementation
         fireEvent.click(dropdown);
         const desiredOption = screen.getByText(/Web Development/i); // Adjust based on your desired option
         fireEvent.click(desiredOption);
-        const NextButton = await screen.findByRole('button', {name: /Next/i});
+        const NextButton = await screen.findByRole('button', { name: /Next/i });
         expect(NextButton).toBeInTheDocument();
         fireEvent.click(NextButton);
-        const DescriptionInput = await screen.findByRole('input', {name: /Description /i});
+        const DescriptionInput = await screen.findByRole('input', { name: /Description /i });
         expect(DescriptionInput).toBeInTheDocument();
-        fireEvent.change(DescriptionInput, {target: {value: 'new text'}});
-        const NextButton2 = await screen.findByRole('button', {name: /Next/i});
+        fireEvent.change(DescriptionInput, { target: { value: 'new text' } });
+        const NextButton2 = await screen.findByRole('button', { name: /Next/i });
         expect(NextButton2).toBeInTheDocument();
         fireEvent.click(NextButton2);
-        const SatInput = await screen.findByRole('input', {name: /Price(Sats)/i});
+        const SatInput = await screen.findByRole('input', { name: /Price(Sats)/i });
         expect(SatInput).toBeInTheDocument();
-        fireEvent.change(SatInput, {target: {value: 1}});
-        const NextButton3 = await screen.findByRole('button', {name: /Next/i});
+        fireEvent.change(SatInput, { target: { value: 1 } });
+        const NextButton3 = await screen.findByRole('button', { name: /Next/i });
         expect(NextButton3).toBeInTheDocument();
         fireEvent.click(NextButton3);
-        const DecideLaterButton = await screen.findByRole('button', {name: /Decide Later/i});
+        const DecideLaterButton = await screen.findByRole('button', { name: /Decide Later/i });
         expect(DecideLaterButton).toBeInTheDocument();
         fireEvent.click(DecideLaterButton);
-        const FinishButton = await screen.findByRole('button', {name: /Finish/i});
+        const FinishButton = await screen.findByRole('button', { name: /Finish/i });
         expect(FinishButton).toBeInTheDocument();
         fireEvent.click(FinishButton);
         expect(getByText(userBounty.body.title)).toBeInTheDocument();
-      })
+      });
     });
   });
 
@@ -669,8 +669,7 @@ describe('Wanted Component', () => {
 
         const CompleteText = screen.getByText('Complete');
         expect(CompleteText).toBeInTheDocument();
-      })
+      });
     });
   });
-
 });
