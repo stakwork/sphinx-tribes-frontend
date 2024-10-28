@@ -14,7 +14,7 @@ const UserInfoWrapper = styled.div`
   }
 `;
 
-const ToolTipWrapper = styled.div`
+export const ToolTipWrapper = styled.div`
   visibility: hidden;
   width: 19rem;
   background-color: #eee;
@@ -45,7 +45,7 @@ const Wrapper = styled.div`
   border-radius: 50%;
 `;
 
-const DetailWrapper = styled.div`
+export const DetailWrapper = styled.div`
   display: flex;
   flex-direction: column;
 `;
@@ -86,7 +86,7 @@ const UserInfo = (props: PaymentHistoryUserInfo) => {
     if (name.length <= 30) {
       return name;
     }
-    return `${name.substring(0, 18)}...`;
+    return `${name.substring(0, 12)}...`;
   };
   return (
     <UserInfoWrapper>
@@ -98,7 +98,7 @@ const UserInfo = (props: PaymentHistoryUserInfo) => {
           <ToolTipWrapper className="tooltipText">{props.name}</ToolTipWrapper>
         ) : null}
         <Name>{formatName(props.name)}</Name>
-        <Pubkey> {props && props.pubkey ? `${props.pubkey.substring(0, 17)}...` : ''}</Pubkey>
+        <Pubkey> {props && props.pubkey ? `${props.pubkey.substring(0, 12)}...` : ''}</Pubkey>
       </DetailWrapper>
     </UserInfoWrapper>
   );

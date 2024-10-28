@@ -11,12 +11,23 @@ import { colors } from '../../../config/colors';
 import ArrowRight from '../../../public/static/arrow-right.svg';
 import LinkIcon from '../../../public/static/link.svg';
 import { PaymentHistoryModalProps } from './interface';
-import UserInfo from './UserInfo';
+import UserInfo, { ToolTipWrapper } from './UserInfo';
 
 const HistoryWrapper = styled.div`
   width: 61.125rem;
   height: 100%;
   overflow: hidden;
+`;
+
+const ErrorToolTipWrapper = styled.div`
+  display: flex;
+  position: relative;
+  cursor: pointer;
+
+  :hover .tooltipText {
+    visibility: visible;
+    opacity: 1;
+  }
 `;
 
 const ModalHeaderWrapper = styled.div`
@@ -222,7 +233,13 @@ const color = colors['light'];
 const HistoryModal = (props: PaymentHistoryModalProps) => {
   const isMobile = useIsMobile();
   const { isOpen, close } = props;
-  const [filter, setFilter] = useState({ payment: true, deposit: true, withdraw: true });
+  const [filter, setFilter] = useState({
+    payment: true,
+    deposit: true,
+    withdraw: true,
+    pending: false,
+    failed: false
+  });
   const [currentPaymentsHistory, setCurrentPaymentHistory] = useState(props.paymentsHistory);
 
   const { ui } = useStores();
@@ -241,9 +258,28 @@ const HistoryModal = (props: PaymentHistoryModalProps) => {
 
   useEffect(() => {
     const paymentsHistory = [...props.paymentsHistory];
+
     setCurrentPaymentHistory(
       paymentsHistory.filter((history: PaymentHistory) => filter[history.payment_type])
     );
+
+    if (filter.pending && filter.failed) {
+      setCurrentPaymentHistory(
+        paymentsHistory.filter(
+          (history: PaymentHistory) =>
+            history.payment_status === 'PENDING' || history.payment_status === 'FAILED'
+        )
+      );
+    } else if (filter.pending || filter.failed) {
+      const filterState = filter.pending ? 'PENDING' : 'FAILED';
+      setCurrentPaymentHistory(
+        paymentsHistory.filter((history: PaymentHistory) => history.payment_status === filterState)
+      );
+    } else {
+      setCurrentPaymentHistory(
+        paymentsHistory.filter((history: PaymentHistory) => filter[history.payment_type])
+      );
+    }
   }, [filter, props.paymentsHistory]);
 
   return (
@@ -305,6 +341,24 @@ const HistoryModal = (props: PaymentHistoryModalProps) => {
               />
               <Label htmlFor="withdraw">Withdrawals</Label>
             </PaymentType>
+            <PaymentType data-testid="payment-history-filter-type-pending">
+              <input
+                id="pending"
+                type={'checkbox'}
+                checked={filter.pending}
+                onChange={() => handleFilter('pending')}
+              />
+              <Label htmlFor="withdraw">Pending</Label>
+            </PaymentType>
+            <PaymentType data-testid="payment-history-filter-type-failed">
+              <input
+                id="failed"
+                type={'checkbox'}
+                checked={filter.failed}
+                onChange={() => handleFilter('failed')}
+              />
+              <Label htmlFor="withdraw">failed</Label>
+            </PaymentType>
           </PaymentFilterWrapper>
         </ModalHeaderWrapper>
         <TableWrapper>
@@ -314,6 +368,7 @@ const HistoryModal = (props: PaymentHistoryModalProps) => {
                 <ThLeft>Type</ThLeft>
                 <TH>Date</TH>
                 <TH>Amount</TH>
+                <TH>State</TH>
                 <TH>Sender</TH>
                 <TH />
                 <TH>Receiver</TH>
@@ -333,6 +388,20 @@ const HistoryModal = (props: PaymentHistoryModalProps) => {
                   <TD>{moment(pay.created).format('MM/DD/YY')}</TD>
                   <TD data-testid={`payment-history-transaction-amount`}>
                     <AmountSpan>{formatSat(pay.amount)}</AmountSpan> sats
+                  </TD>
+                  <TD>
+                    <ErrorToolTipWrapper>
+                      <span
+                        style={{
+                          color: pay.payment_status === 'FAILED' ? 'red' : ''
+                        }}
+                      >
+                        {pay.payment_status?.toLowerCase()}
+                      </span>
+                      {pay.payment_status === 'FAILED' && (
+                        <ToolTipWrapper className="tooltipText">{pay.error}</ToolTipWrapper>
+                      )}
+                    </ErrorToolTipWrapper>
                   </TD>
                   <TD data-testid={`payment-history-transaction-sender`}>
                     <UserInfo
