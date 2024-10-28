@@ -2837,7 +2837,7 @@ export class MainStore {
     try {
       if (!uiStore.meInfo) return {};
       const info = uiStore.meInfo;
-      const r: any = await fetch(`${TribesURL}/workpaces/${workspace_uuid}/payments`, {
+      const r: any = await fetch(`${TribesURL}/workspaces/${workspace_uuid}/payments`, {
         method: 'PUT',
         mode: 'cors',
         headers: {
