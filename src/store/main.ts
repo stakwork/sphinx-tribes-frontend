@@ -2833,6 +2833,25 @@ export class MainStore {
     }
   }
 
+  async updateWorkspacePayments(workspace_uuid: string): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return {};
+      const info = uiStore.meInfo;
+      const r: any = await fetch(`${TribesURL}/workpaces/${workspace_uuid}/payments`, {
+        method: 'PUT',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      return r;
+    } catch (e) {
+      console.error('updateWorkspacePayments', e);
+    }
+  }
+
   async addFeatureStory(body: CreateFeatureStoryInput): Promise<any> {
     try {
       if (!uiStore.meInfo) return {};

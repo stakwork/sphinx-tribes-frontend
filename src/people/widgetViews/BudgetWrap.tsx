@@ -109,6 +109,22 @@ export const BudgetWrapComponent = (props: { org: Workspace | undefined; uuid: s
     }
   }, [main, uuid, viewReportDisabled]);
 
+  const updateWorkspaceBudget = useCallback(async () => {
+    main
+      .updateWorkspacePayments(uuid)
+      .then(() => {
+        getPaymentsHistory();
+      })
+      .catch((e: any) => {
+        console.log('Update Payment Histories error', e);
+      });
+  }, [main, getPaymentsHistory]);
+
+  const openPaymentHistory = () => {
+    updateWorkspaceBudget();
+    setIsOpenHistory(true);
+  };
+
   let interval;
 
   const successAction = () => {
@@ -171,7 +187,7 @@ export const BudgetWrapComponent = (props: { org: Workspace | undefined; uuid: s
             dataTestId="workspace-view-transaction-history-button"
             color="white"
             style={{ borderRadius: '5px' }}
-            onClick={() => setIsOpenHistory(true)}
+            onClick={() => openPaymentHistory()}
           />
           <Button
             disabled={addWithdrawDisabled}

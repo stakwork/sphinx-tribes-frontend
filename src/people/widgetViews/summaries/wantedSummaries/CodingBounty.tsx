@@ -331,6 +331,12 @@ function MobileView(props: CodingBountiesProps) {
   };
 
   useEffect(() => {
+    if (payment_failed) {
+      getPendingPaymentStatus(id ?? 0);
+    }
+  }, [payment_failed, getPendingPaymentStatus, id]);
+
+  useEffect(() => {
     if (main.keysendInvoice !== '') {
       const expired = isInvoiceExpired(main.keysendInvoice);
       if (!expired) {
@@ -614,26 +620,27 @@ function MobileView(props: CodingBountiesProps) {
   }
 
   let pillColor = color.statusAssigned;
-  if (payment_failed) {
+
+  if (bountyPaid) {
+    pillColor = color.statusPaid;
+  } else if (payment_failed) {
     pillColor = color.statusFailed;
   } else if (bountyPending) {
     pillColor = color.statusPending;
   } else if (bountyCompleted && !bountyPaid) {
     pillColor = color.statusCompleted;
-  } else if (bountyPaid) {
-    pillColor = color.statusPaid;
   }
 
   let pillText = 'assigned';
 
-  if (payment_failed) {
+  if (bountyPaid) {
+    pillText = 'paid';
+  } else if (payment_failed) {
     pillText = 'failed';
   } else if (bountyPending) {
     pillText = 'pending';
   } else if (bountyCompleted) {
     pillText = 'completed';
-  } else if (bountyPaid) {
-    pillText = 'paid';
   }
 
   return (
