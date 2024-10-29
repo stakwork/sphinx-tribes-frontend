@@ -4,7 +4,8 @@ import {
   estimation,
   estimated_budget_15_min,
   help_wanted_coding_task_schema,
-  help_wanted_other_schema
+  help_wanted_other_schema,
+  github_issue_templates
 } from '../../config/bounties';
 import { FormField } from './utils';
 
@@ -28,6 +29,7 @@ const estimated_time = GetValue(estimation);
 const helpType_wanted_coding_task_schema = GetValue(help_wanted_coding_task_schema);
 const helpType_wanted_other_schema = GetValue(help_wanted_other_schema);
 const estimated_budget_15_min_options = GetValue(estimated_budget_15_min);
+const issue_templates_schema = GetValue(github_issue_templates);
 
 // this is source of truth for widget items!
 export const meSchema: FormField[] = [
@@ -718,6 +720,12 @@ export const wantedCodingTaskSchema: FormField[] = [
     label: 'Loom Video',
     type: 'loom',
     validator: strValidatorNotRequired
+  },
+  {
+    name: 'issue_template',
+    label: 'Issue Template',
+    type: 'select',
+    options: issue_templates_schema
   },
   {
     name: 'price',
