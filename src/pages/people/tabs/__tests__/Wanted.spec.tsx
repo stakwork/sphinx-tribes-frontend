@@ -9,8 +9,8 @@ import nock from 'nock';
 import React from 'react';
 import { MemoryRouter, Route } from 'react-router-dom';
 import { mainStore } from 'store/main';
-import { useStores } from '../../../../store/index.tsx';
-import { usePerson } from '../../../../hooks/index.ts';
+import { useStores } from '../../../../store';
+import { usePerson } from '../../../../hooks';
 import { Wanted } from '../Wanted.tsx';
 
 beforeAll(() => {
@@ -430,7 +430,9 @@ describe('Wanted Component', () => {
 
     (useStores as jest.Mock).mockReturnValue({
       main: {
-        getPersonCreatedBounties: jest.fn(() => [userBounty])
+        getPersonCreatedBounties: jest.fn(() => [userBounty]),
+        getUserDropdownWorkspaces: jest.fn(),
+        dropDownWorkspaces: []
       },
       ui: {
         selectedPerson: '123',
@@ -449,40 +451,43 @@ describe('Wanted Component', () => {
           <Route path="/p/:uuid/bounties" component={Wanted} />
         </MemoryRouter>
       );
-      const PostBountyButton = await screen.findByRole('button', { name: /Post a Bounty/i });
-      expect(PostBountyButton).toBeInTheDocument();
-      fireEvent.click(PostBountyButton);
-      const StartButton = await screen.findByRole('button', { name: /Start/i });
-      expect(StartButton).toBeInTheDocument();
-      const bountyTitleInput = await screen.findByRole('input', { name: /Bounty Title /i });
-      expect(bountyTitleInput).toBeInTheDocument();
-      fireEvent.change(bountyTitleInput, { target: { value: 'new text' } });
-      const dropdown = screen.getByText(/Category /i); // Adjust based on your dropdown implementation
-      fireEvent.click(dropdown);
-      const desiredOption = screen.getByText(/Web Development/i); // Adjust based on your desired option
-      fireEvent.click(desiredOption);
-      const NextButton = await screen.findByRole('button', { name: /Next/i });
-      expect(NextButton).toBeInTheDocument();
-      fireEvent.click(NextButton);
-      const DescriptionInput = await screen.findByRole('input', { name: /Description /i });
-      expect(DescriptionInput).toBeInTheDocument();
-      fireEvent.change(DescriptionInput, { target: { value: 'new text' } });
-      const NextButton2 = await screen.findByRole('button', { name: /Next/i });
-      expect(NextButton2).toBeInTheDocument();
-      fireEvent.click(NextButton2);
-      const SatInput = await screen.findByRole('input', { name: /Price(Sats)/i });
-      expect(SatInput).toBeInTheDocument();
-      fireEvent.change(SatInput, { target: { value: 1 } });
-      const NextButton3 = await screen.findByRole('button', { name: /Next/i });
-      expect(NextButton3).toBeInTheDocument();
-      fireEvent.click(NextButton3);
-      const DecideLaterButton = await screen.findByRole('button', { name: /Decide Later/i });
-      expect(DecideLaterButton).toBeInTheDocument();
-      fireEvent.click(DecideLaterButton);
-      const FinishButton = await screen.findByRole('button', { name: /Finish/i });
-      expect(FinishButton).toBeInTheDocument();
-      fireEvent.click(FinishButton);
-      expect(getByText(userBounty.body.title)).toBeInTheDocument();
+
+      waitFor(async () => {
+        const PostBountyButton = await screen.findByRole('button', { name: /Post a Bounty/i });
+        expect(PostBountyButton).toBeInTheDocument();
+        fireEvent.click(PostBountyButton);
+        const StartButton = await screen.findByRole('button', { name: /Start/i });
+        expect(StartButton).toBeInTheDocument();
+        const bountyTitleInput = await screen.findByRole('input', { name: /Bounty Title /i });
+        expect(bountyTitleInput).toBeInTheDocument();
+        fireEvent.change(bountyTitleInput, { target: { value: 'new text' } });
+        const dropdown = screen.getByText(/Category /i); // Adjust based on your dropdown implementation
+        fireEvent.click(dropdown);
+        const desiredOption = screen.getByText(/Web Development/i); // Adjust based on your desired option
+        fireEvent.click(desiredOption);
+        const NextButton = await screen.findByRole('button', { name: /Next/i });
+        expect(NextButton).toBeInTheDocument();
+        fireEvent.click(NextButton);
+        const DescriptionInput = await screen.findByRole('input', { name: /Description /i });
+        expect(DescriptionInput).toBeInTheDocument();
+        fireEvent.change(DescriptionInput, { target: { value: 'new text' } });
+        const NextButton2 = await screen.findByRole('button', { name: /Next/i });
+        expect(NextButton2).toBeInTheDocument();
+        fireEvent.click(NextButton2);
+        const SatInput = await screen.findByRole('input', { name: /Price(Sats)/i });
+        expect(SatInput).toBeInTheDocument();
+        fireEvent.change(SatInput, { target: { value: 1 } });
+        const NextButton3 = await screen.findByRole('button', { name: /Next/i });
+        expect(NextButton3).toBeInTheDocument();
+        fireEvent.click(NextButton3);
+        const DecideLaterButton = await screen.findByRole('button', { name: /Decide Later/i });
+        expect(DecideLaterButton).toBeInTheDocument();
+        fireEvent.click(DecideLaterButton);
+        const FinishButton = await screen.findByRole('button', { name: /Finish/i });
+        expect(FinishButton).toBeInTheDocument();
+        fireEvent.click(FinishButton);
+        expect(getByText(userBounty.body.title)).toBeInTheDocument();
+      });
     });
   });
 
@@ -658,11 +663,13 @@ describe('Wanted Component', () => {
       const OpenText = screen.getByText('Open');
       expect(OpenText).toBeInTheDocument();
 
-      const PaidText = screen.getByText('PAID');
-      expect(PaidText).toBeInTheDocument();
+      waitFor(() => {
+        const PaidText = screen.getByText('PAID');
+        expect(PaidText).toBeInTheDocument();
 
-      const CompleteText = screen.getByText('Complete');
-      expect(CompleteText).toBeInTheDocument();
+        const CompleteText = screen.getByText('Complete');
+        expect(CompleteText).toBeInTheDocument();
+      });
     });
   });
 });

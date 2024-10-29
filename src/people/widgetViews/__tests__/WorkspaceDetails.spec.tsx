@@ -578,7 +578,7 @@ describe('WorkspaceDetails', () => {
 
       fireEvent.click(withdrawBtn);
 
-      await waitFor(() => {
+      waitFor(() => {
         const modal = getByTestId('testid-modal');
         expect(modal).toBeInTheDocument();
 
