@@ -27,7 +27,7 @@ export const RefineDescriptionModal = () => {
             ...(isMobile
               ? {
                   marginBottom: '16px',
-                  padding: '1rem',
+                  padding: '0 16px',
                   borderRadius: '22px',
                   fontSize: '12px'
                 }

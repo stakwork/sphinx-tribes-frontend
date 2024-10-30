@@ -63,3 +63,10 @@ export function validator(config: FormField[]) {
   });
   return Yup.object().shape(shape);
 }
+
+export const swapElements = <T>(arr: T[], index1: number, index2: number) => {
+  if (arr.length > Math.max(index1, index2)) {
+    [arr[index1], arr[index2]] = [arr[index2], arr[index1]];
+  }
+  return arr;
+};

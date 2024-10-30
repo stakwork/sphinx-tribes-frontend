@@ -24,7 +24,7 @@ import {
   Wrap,
   EditBountyText
 } from '../style';
-import { FormField, validator } from '../utils';
+import { FormField, swapElements, validator } from '../utils';
 import { FormProps } from '../interfaces';
 
 function Form(props: FormProps) {
@@ -164,6 +164,8 @@ function Form(props: FormProps) {
 
   // replace schema with dynamic schema if there is one
   schema = dynamicSchema || schema;
+
+  schema = isMobile ? swapElements([...schema], 7, 8) : schema;
 
   // if no schema, return empty div
   if (loading || !schema) return <div />;
@@ -678,13 +680,12 @@ function Form(props: FormProps) {
                           extraHTML={
                             (props.extraHTML && props.extraHTML[item.name]) || item.extraHTML
                           }
-                          style={
-                            item.name === 'github_description' && !values.ticket_url
-                              ? {
-                                  display: 'none'
-                                }
-                              : undefined
-                          }
+                          style={{
+                            ...(item.name === 'github_description' && !values.ticket_url
+                              ? { display: 'none' }
+                              : {}),
+                            ...(item.name === 'loomEmbedUrl' ? { marginBottom: '1rem' } : {})
+                          }}
                         />
                         {item.name === 'issue_template' ? <RefineDescriptionModal /> : null}
                       </div>
