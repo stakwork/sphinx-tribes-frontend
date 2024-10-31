@@ -280,6 +280,8 @@ export interface BountyStatus {
   Assigned: boolean;
   Completed: boolean;
   Paid: boolean;
+  Pending: boolean;
+  Failed: boolean;
 }
 
 export interface WorkspaceBudget {
@@ -360,21 +362,27 @@ export const defaultWorkspaceBountyStatus: BountyStatus = {
   Open: false,
   Assigned: false,
   Paid: false,
-  Completed: false
+  Completed: false,
+  Pending: false,
+  Failed: false
 };
 
 export const defaultSuperAdminBountyStatus: BountyStatus = {
   Open: false,
   Assigned: false,
   Completed: false,
-  Paid: false
+  Paid: false,
+  Pending: false,
+  Failed: false
 };
 
 export const defaultBountyStatus: BountyStatus = {
   Open: true,
   Assigned: false,
   Completed: false,
-  Paid: false
+  Paid: false,
+  Pending: false,
+  Failed: false
 };
 
 export const queryLimitTribes = 100;

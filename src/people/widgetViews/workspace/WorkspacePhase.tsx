@@ -127,7 +127,9 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
       Open: true,
       Assigned: true,
       Completed: true,
-      Paid: true
+      Paid: true,
+      Pending: true,
+      Failed: true
     }),
     []
   );

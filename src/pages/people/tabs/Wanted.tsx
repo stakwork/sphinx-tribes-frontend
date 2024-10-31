@@ -101,7 +101,9 @@ export const Wanted = observer(() => {
   const defaultStatus: Record<string, boolean> = {
     Open: false,
     Assigned: false,
-    Paid: false
+    Paid: false,
+    Pending: false,
+    Failed: false
   };
 
   const [checkboxIdToSelectedMap, setCheckboxIdToSelectedMap] = useState(defaultStatus);

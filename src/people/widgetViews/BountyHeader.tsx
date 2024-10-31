@@ -357,7 +357,9 @@ const BountyHeader = ({
     open: 0,
     assigned: 0,
     completed: 0,
-    paid: 0
+    paid: 0,
+    pending: 0,
+    failed: 0
   });
 
   useEffect(() => {
@@ -369,7 +371,9 @@ const BountyHeader = ({
           open: response.open || 0,
           assigned: response.assigned || 0,
           completed: response.completed || 0,
-          paid: response.paid || 0
+          paid: response.paid || 0,
+          pending: response.pending || 0,
+          failed: response.failed || 0
         });
       } catch (error) {
         console.error('Error fetching filter counts:', error);

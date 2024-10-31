@@ -237,9 +237,9 @@ function MobileView(props: CodingBountiesProps) {
   const getPendingPaymentStatus = useCallback(
     async (id: number): Promise<boolean> => {
       const payment_res = await main.getBountyPenndingPaymentStatus(id);
-      if (payment_res['payment_status'] === 'COMPLETE') {
+      if (payment_res && payment_res['payment_status'] === 'COMPLETE') {
         return true;
-      } else if (payment_res['payment_status'] === 'FAILED') {
+      } else if (payment_res && payment_res['payment_status'] === 'FAILED') {
         setPaymentError(payment_res['error']);
         return false;
       }

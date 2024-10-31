@@ -94,7 +94,9 @@ function BodyComponent() {
       const totalBounties = await main.getTotalBountyCount(
         statusData.Open,
         statusData.Assigned,
-        statusData.Paid
+        statusData.Paid,
+        statusData.Pending,
+        statusData.Failed
       );
       setTotalBounties(totalBounties);
     },
