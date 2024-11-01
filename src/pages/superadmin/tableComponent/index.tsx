@@ -290,7 +290,7 @@ const ProviderStatusContainer = styled(StatusContainer)<styledProps>`
   margin-top: -3px !important;
 `;
 
-const Status = ['Open', 'Assigned', 'Completed', 'Paid'];
+const Status = ['Open', 'Assigned', 'Completed', 'Paid', 'Pending', 'Failed'];
 
 export const MyTable = ({
   bounties,

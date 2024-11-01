@@ -50,7 +50,7 @@ const color = colors['light'];
 
 const Coding_Languages = GetValue(coding_languages);
 
-const Status = ['Open', 'Assigned', 'Completed', 'Paid'];
+const Status = ['Open', 'Assigned', 'Completed', 'Paid', 'Pending', 'Failed'];
 
 const sortDirectionOptions = [
   {

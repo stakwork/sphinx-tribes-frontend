@@ -65,7 +65,9 @@ const UserTickets = () => {
 
   const defaultStatus: Record<string, boolean> = {
     Assigned: false,
-    Paid: false
+    Paid: false,
+    Pending: false,
+    Failed: false
   };
 
   const [checkboxIdToSelectedMap, setCheckboxIdToSelectedMap] = useState(defaultStatus);
