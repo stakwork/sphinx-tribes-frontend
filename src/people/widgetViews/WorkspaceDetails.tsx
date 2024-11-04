@@ -343,8 +343,7 @@ const WorkspaceDetails = (props: {
             to={`/workspace/${uuid}`}
             style={{
               textDecoration: 'none',
-              color: 'inherit',
-              display: 'none'
+              color: 'inherit'
             }}
             target="_blank"
             data-testid="mission-link"
