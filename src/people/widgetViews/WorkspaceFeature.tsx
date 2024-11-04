@@ -28,8 +28,7 @@ import {
   EditPopoverContent
 } from 'pages/tickets/style';
 import React, { useCallback, useEffect, useState } from 'react';
-import history from 'config/history';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import { useStores } from 'store';
 import { mainStore } from 'store/main';
 import { Feature, FeatureStory, Workspace } from 'store/interface';
@@ -52,7 +51,8 @@ import {
   UserStoryWrapper,
   UserStoryPanel,
   FullNoBudgetText,
-  FullNoBudgetWrap
+  FullNoBudgetWrap,
+  StoriesButtonGroup
 } from './workspace/style';
 import WorkspacePhasingTabs from './workspace/WorkspacePhase';
 import { Phase, Toast } from './workspace/interface';
@@ -300,6 +300,7 @@ const WorkspaceFeature = () => {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [userRoles, setUserRoles] = useState<any[]>([]);
   const [workspaceData, setWorkspaceData] = useState<Workspace>();
+  const history = useHistory();
 
   const isWorkspaceAdmin =
     workspaceData?.owner_pubkey &&
@@ -447,6 +448,10 @@ const WorkspaceFeature = () => {
       uuid: story.uuid,
       priority: newPriority
     });
+  };
+
+  const handleGenerateClick = () => {
+    history.push(`/feature/${feature_uuid}/stories`);
   };
 
   const deleteUserStory = async () => {
@@ -650,15 +655,26 @@ const WorkspaceFeature = () => {
                 data-testid="story-input"
                 style={{ height: '40px', width: '100%', maxHeight: 'unset' }}
               />
-              <ActionButton
-                marginTop="0"
-                height="40px"
-                color="primary"
-                onClick={handleUserStorySubmit}
-                data-testid="story-input-update-btn"
-              >
-                Create
-              </ActionButton>
+              <StoriesButtonGroup>
+                <ActionButton
+                  marginTop="0"
+                  height="40px"
+                  color="primary"
+                  onClick={handleUserStorySubmit}
+                  data-testid="story-input-update-btn"
+                >
+                  Create
+                </ActionButton>
+                <ActionButton
+                  marginTop="0"
+                  height="40px"
+                  color="primary"
+                  onClick={handleGenerateClick}
+                  data-testid="story-generate-btn"
+                >
+                  Generate
+                </ActionButton>
+              </StoriesButtonGroup>
             </InputField>
           </UserStoryWrapper>
         </FieldWrap>
