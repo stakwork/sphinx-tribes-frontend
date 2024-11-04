@@ -262,10 +262,12 @@ const WorkspaceMission = () => {
   const [userRoles, setUserRoles] = useState<any[]>([]);
 
   const isMobile = useIsMobile();
+
   const isWorkspaceAdmin =
     workspaceData?.owner_pubkey &&
     ui.meInfo?.owner_pubkey &&
     workspaceData?.owner_pubkey === ui.meInfo?.owner_pubkey;
+
   const editWorkspaceDisabled =
     !isWorkspaceAdmin && !userHasRole(main.bountyRoles, userRoles, 'EDIT ORGANIZATION');
 
