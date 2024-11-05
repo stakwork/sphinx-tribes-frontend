@@ -1336,3 +1336,102 @@ export const DisplayBounties = styled.div`
 export const Background = styled.div`
   color: white;
 `;
+
+export const StoriesButtonGroup = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+
+  ${ActionButton} {
+    transition: background-color 0.2s ease;
+    width: auto;
+    min-width: 100px;
+
+    &[color='primary'] {
+      background-color: #618aff;
+
+      &:hover {
+        background-color: #7599ff;
+      }
+
+      &:active {
+        background-color: #4b7bff;
+      }
+    }
+  }
+`;
+
+export const GenerateStoriesModal = styled.div`
+  background: #fff;
+  width: 600px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  position: relative;
+  margin: auto;
+  max-width: 90vw;
+  border: none;
+`;
+
+export const GenerateStoriesHeader = styled.div`
+  padding: 24px 32px;
+  border-bottom: 1px solid #ebedef;
+`;
+
+export const GenerateStoriesTitle = styled.h2`
+  font-family: 'Barlow', sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+  color: #3c3f41;
+  margin: 0;
+`;
+
+export const GenerateStoriesContent = styled.div`
+  padding: 40px 32px;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const GenerateStoriesText = styled.p`
+  font-family: 'Barlow', sans-serif;
+  font-size: 18px;
+  color: #5f6368;
+  margin: 0;
+  text-align: center;
+`;
+
+export const GenerateStoriesFooter = styled.div`
+  padding: 24px 32px;
+  border-top: 1px solid #ebedef;
+  display: flex;
+  justify-content: flex-end;
+`;
+
+export const GenerateStoriesButton = styled.button`
+  padding: 5px 20px;
+  border-radius: 5px;
+  font-family: 'Barlow';
+  font-size: 0.9375rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 0rem;
+  letter-spacing: 0.00938rem;
+  border: none;
+  cursor: pointer;
+  background-color: #d3d3d3;
+  color: #000;
+  height: 40px;
+  width: 124px;
+  box-shadow: 0px 2px 10px 0px rgba(97, 138, 255, 0.5);
+
+  &:hover {
+    background-color: #e0e0e0;
+  }
+
+  &:active {
+    background-color: #c0c0c0;
+  }
+`;
