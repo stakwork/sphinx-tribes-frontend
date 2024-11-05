@@ -3,6 +3,7 @@ import { Formik } from 'formik';
 import { observer } from 'mobx-react-lite';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useIsMobile } from 'hooks';
+import { RefineDescriptionModal } from 'components/common/RefineDescriptionModal';
 import api from '../../../api';
 import { colors } from '../../../config/colors';
 import { BountyDetailsCreationData } from '../../../people/utils/BountyCreationConstant';
@@ -23,7 +24,7 @@ import {
   Wrap,
   EditBountyText
 } from '../style';
-import { FormField, validator } from '../utils';
+import { FormField, swapElements, validator } from '../utils';
 import { FormProps } from '../interfaces';
 
 function Form(props: FormProps) {
@@ -163,6 +164,8 @@ function Form(props: FormProps) {
 
   // replace schema with dynamic schema if there is one
   schema = dynamicSchema || schema;
+
+  schema = isMobile ? swapElements([...schema], 7, 8) : schema;
 
   // if no schema, return empty div
   if (loading || !schema) return <div />;
@@ -444,61 +447,72 @@ function Form(props: FormProps) {
                         {schema
                           .filter((item: any) => schemaData.schema.includes(item.name))
                           .map((item: FormField) => (
-                            <Input
-                              {...item}
-                              type={item.type}
+                            <div
                               key={item.name}
-                              newDesign={item.name === 'description' ? false : true}
-                              values={values}
-                              setAssigneefunction={item.name === 'assignee' && setAssigneeName}
-                              peopleList={peopleList}
-                              isFocused={isFocused}
-                              errors={errors}
-                              scrollToTop={scrollToTop}
-                              value={values[item.name]}
-                              error={errors[item.name]}
-                              github_state={github_state}
-                              initialValues={initialValues}
-                              deleteErrors={() => {
-                                if (errors[item.name]) delete errors[item.name];
+                              style={{
+                                display: 'flex',
+                                flexDirection: isMobile ? 'column' : 'row',
+                                alignItems: 'start',
+                                gap: '10px'
                               }}
-                              handleChange={(e: any) => {
-                                setFieldValue(item.name, e);
-                              }}
-                              setFieldValue={(e: any, f: any) => {
-                                setFieldValue(e, f);
-                              }}
-                              setFieldTouched={setFieldTouched}
-                              handleBlur={() => {
-                                setFieldTouched(item.name, false);
-                                setIsFocused({ [item.label]: false });
-                              }}
-                              handleFocus={() => {
-                                setFieldTouched(item.name, true);
-                                setIsFocused({ [item.label]: true });
-                              }}
-                              setDisableFormButtons={setDisableFormButtons}
-                              extraHTML={
-                                (props.extraHTML && props.extraHTML[item.name]) || item.extraHTML
-                              }
-                              style={
-                                item.name === 'github_description' && !values.ticket_url
-                                  ? {
-                                      display: 'none'
-                                    }
-                                  : undefined
-                              }
-                              label={
-                                item.name === 'description' && !values.ticket_url
-                                  ? 'Description *'
-                                  : item.label
-                              }
-                              placeholder={
-                                isDescriptionValid //checks if the description is taken from github. If yes, then the placeholder is empty
-                                  ? ''
-                                  : 'Provide some context and be as detailed as possible. The more information you provide the better. This will allow the hunter to have a fuller picture of the amount of work that is required to complete the task. Screenshots and screen recordings help a lot too!'
-                              }
-                            />
+                            >
+                              <Input
+                                {...item}
+                                type={item.type}
+                                newDesign={item.name === 'description' ? false : true}
+                                values={values}
+                                setAssigneefunction={item.name === 'assignee' && setAssigneeName}
+                                peopleList={peopleList}
+                                isFocused={isFocused}
+                                errors={errors}
+                                scrollToTop={scrollToTop}
+                                value={values[item.name]}
+                                error={errors[item.name]}
+                                github_state={github_state}
+                                initialValues={initialValues}
+                                deleteErrors={() => {
+                                  if (errors[item.name]) delete errors[item.name];
+                                }}
+                                handleChange={(e: any) => {
+                                  setFieldValue(item.name, e);
+                                }}
+                                setFieldValue={(e: any, f: any) => {
+                                  setFieldValue(e, f);
+                                }}
+                                setFieldTouched={setFieldTouched}
+                                handleBlur={() => {
+                                  setFieldTouched(item.name, false);
+                                  setIsFocused({ [item.label]: false });
+                                }}
+                                handleFocus={() => {
+                                  setFieldTouched(item.name, true);
+                                  setIsFocused({ [item.label]: true });
+                                }}
+                                setDisableFormButtons={setDisableFormButtons}
+                                extraHTML={
+                                  (props.extraHTML && props.extraHTML[item.name]) || item.extraHTML
+                                }
+                                style={
+                                  item.name === 'github_description' && !values.ticket_url
+                                    ? {
+                                        display: 'none'
+                                      }
+                                    : undefined
+                                }
+                                label={
+                                  item.name === 'description' && !values.ticket_url
+                                    ? 'Description *'
+                                    : item.label
+                                }
+                                placeholder={
+                                  isDescriptionValid //checks if the description is taken from github. If yes, then the placeholder is empty
+                                    ? ''
+                                    : 'Provide some context and be as detailed as possible. The more information you provide the better. This will allow the hunter to have a fuller picture of the amount of work that is required to complete the task. Screenshots and screen recordings help a lot too!'
+                                }
+                              />
+
+                              {item.name === 'issue_template' ? <RefineDescriptionModal /> : null}
+                            </div>
                           ))}
                       </div>
                       <div className="RightSchema" style={{ width: '292px' }}>
@@ -631,48 +645,50 @@ function Form(props: FormProps) {
                 {isMobile ? (
                   <div className="SchemaInnerContainer">
                     {schema.map((item: FormField) => (
-                      <Input
-                        {...item}
-                        key={item.name}
-                        data-testid={item.name}
-                        values={values}
-                        errors={errors}
-                        scrollToTop={scrollToTop}
-                        value={values[item.name]}
-                        error={errors[item.name]}
-                        github_state={github_state}
-                        initialValues={initialValues}
-                        deleteErrors={() => {
-                          if (errors[item.name]) delete errors[item.name];
-                        }}
-                        handleChange={(e: any) => {
-                          setFieldValue(item.name, e);
-                        }}
-                        setFieldValue={(e: any, f: any) => {
-                          setFieldValue(e, f);
-                        }}
-                        setFieldTouched={setFieldTouched}
-                        isFocused={isFocused}
-                        handleBlur={() => {
-                          setFieldTouched(item.name, false);
-                          setIsFocused({ [item.label]: false });
-                        }}
-                        handleFocus={() => {
-                          setFieldTouched(item.name, true);
-                          setIsFocused({ [item.label]: true });
-                        }}
-                        setDisableFormButtons={setDisableFormButtons}
-                        extraHTML={
-                          (props.extraHTML && props.extraHTML[item.name]) || item.extraHTML
-                        }
-                        style={
-                          item.name === 'github_description' && !values.ticket_url
-                            ? {
-                                display: 'none'
-                              }
-                            : undefined
-                        }
-                      />
+                      <div key={item.name}>
+                        <Input
+                          {...item}
+                          key={item.name}
+                          data-testid={item.name}
+                          values={values}
+                          errors={errors}
+                          scrollToTop={scrollToTop}
+                          value={values[item.name]}
+                          error={errors[item.name]}
+                          github_state={github_state}
+                          initialValues={initialValues}
+                          deleteErrors={() => {
+                            if (errors[item.name]) delete errors[item.name];
+                          }}
+                          handleChange={(e: any) => {
+                            setFieldValue(item.name, e);
+                          }}
+                          setFieldValue={(e: any, f: any) => {
+                            setFieldValue(e, f);
+                          }}
+                          setFieldTouched={setFieldTouched}
+                          isFocused={isFocused}
+                          handleBlur={() => {
+                            setFieldTouched(item.name, false);
+                            setIsFocused({ [item.label]: false });
+                          }}
+                          handleFocus={() => {
+                            setFieldTouched(item.name, true);
+                            setIsFocused({ [item.label]: true });
+                          }}
+                          setDisableFormButtons={setDisableFormButtons}
+                          extraHTML={
+                            (props.extraHTML && props.extraHTML[item.name]) || item.extraHTML
+                          }
+                          style={{
+                            ...(item.name === 'github_description' && !values.ticket_url
+                              ? { display: 'none' }
+                              : {}),
+                            ...(item.name === 'loomEmbedUrl' ? { marginBottom: '1rem' } : {})
+                          }}
+                        />
+                        {item.name === 'issue_template' ? <RefineDescriptionModal /> : null}
+                      </div>
                     ))}
                   </div>
                 ) : (

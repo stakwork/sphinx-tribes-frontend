@@ -1021,13 +1021,14 @@ export const ButtonWrap = styled.div`
 interface ButtonProps {
   color?: string;
   marginTop?: string;
+  width?: string;
   height?: string;
   borderRadius?: string;
 }
 
 export const ActionButton = styled.button<ButtonProps>`
   padding: 5px 20px;
-  width: 124px;
+  width: ${(p: ButtonProps) => p.width ?? '124px'};
   border-radius: 5px;
   border-radius: ${(p: any) => p.borderRadius ?? '0.375rem'};
   font-family: 'Barlow';
@@ -1043,6 +1044,7 @@ export const ActionButton = styled.button<ButtonProps>`
   box-shadow: 0px 2px 10px 0px rgba(97, 138, 255, 0.5);
   border: none;
   color: #fff;
+  white-space: nowrap;
 
   background: ${(p: any) => {
     if (p.color === 'primary') {
