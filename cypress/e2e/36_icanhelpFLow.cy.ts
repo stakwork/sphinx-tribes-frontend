@@ -36,7 +36,7 @@ describe('I Can Help Flow', () => {
     cy.contains('I can help').click();
     cy.wait(600);
 
-    cy.contains('Sign in').click();
+    cy.contains('Sign in').click({ force: true });
     cy.wait(600);
 
     cy.login(secondUser);

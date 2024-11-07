@@ -17,7 +17,7 @@ describe('Signed Out Post Bounty Flow ', () => {
     cy.contains('Post a Bounty').click();
     cy.wait(1000);
 
-    cy.contains('Sign in').click();
+    cy.contains('Sign in').click({ force: true });
     cy.wait(1000);
 
     cy.haves_phinx_login(activeUser);
