@@ -8,8 +8,10 @@ import { useStores } from '../../../store';
 import FocusedView from '../../main/FocusView';
 import { Widget } from '../../main/types';
 import { widgetConfigs } from '../../utils/Constants';
+import { PersonBounty } from '../../../store/interface';
 
 const color = colors['light'];
+
 export interface PostModalProps {
   isOpen: boolean;
   widget: Widget;
@@ -18,6 +20,7 @@ export interface PostModalProps {
   onGoBack?: () => void;
   phase_uuid?: string;
 }
+
 export const PostModal: FC<PostModalProps> = observer(
   ({ isOpen, onClose, widget, onGoBack, onSucces, phase_uuid }: any) => {
     const { main, ui } = useStores();
@@ -48,13 +51,19 @@ export const PostModal: FC<PostModalProps> = observer(
     }, [main]);
 
     const ReCallBounties = async () => {
-      /*
-      TODO : after getting the better way to reload the bounty, this code will be removed.
-      */
-      const number = await getBountyData();
+      const createdBounties = await main.getPersonCreatedBounties(
+        { page: 1, resetPage: true },
+        person?.uuid
+      );
 
-      if (number) {
-        history.push(`/bounty/${number}`);
+      const [mostRecentBounty] = createdBounties.sort(
+        (a: PersonBounty, b: PersonBounty) =>
+          new Date(b.body?.created).getTime() - new Date(a.body?.created).getTime()
+      );
+
+      const bountyId = mostRecentBounty?.body?.id || (await getBountyData());
+      if (bountyId) {
+        history.push(`/bounty/${bountyId}`);
       }
     };
 
@@ -90,7 +99,6 @@ export const PostModal: FC<PostModalProps> = observer(
     }
     return (
       <>
-        {' '}
         {isOpen && (
           <Modal
             visible={isOpen}
