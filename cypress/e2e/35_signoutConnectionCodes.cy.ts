@@ -9,9 +9,6 @@ describe('Sign Out Connection Codes', () => {
     cy.contains('Post a Bounty').click();
     cy.wait(1000);
 
-    cy.get('button.euiButton:contains("Get Sphinx")').click();
-    cy.wait(1000);
-
     cy.contains('Reveal Connection Code').click();
     cy.wait(1000);
 

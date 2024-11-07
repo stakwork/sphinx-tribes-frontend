@@ -152,7 +152,7 @@ describe('AboutView Component', () => {
       );
       fireEvent.click(getByText('Get Sphinx'));
       await waitFor(() => {
-        const iHaveSphinxButton = screen.getByText('I have Sphinx');
+        const iHaveSphinxButton = screen.getByText('Sign in');
         expect(iHaveSphinxButton).toBeInTheDocument();
       });
     });

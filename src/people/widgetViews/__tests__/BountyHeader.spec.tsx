@@ -270,7 +270,7 @@ describe('BountyHeader Component', () => {
     const postBountyButton = screen.getByText('Post a Bounty');
     fireEvent.click(postBountyButton);
 
-    const modalButton = screen.getByText('Get Sphinx');
+    const modalButton = screen.getByText('Sign in');
     expect(modalButton).toBeInTheDocument();
   });
 });
