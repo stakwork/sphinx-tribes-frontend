@@ -65,7 +65,7 @@ const GenerateStoriesView: React.FC = () => {
     <EuiOverlayMask>
       <GenerateStoriesModal>
         <GenerateStoriesHeader>
-          <GenerateStoriesTitle>User Story Automations</GenerateStoriesTitle>
+          <GenerateStoriesTitle>User Story Automation</GenerateStoriesTitle>
         </GenerateStoriesHeader>
         <GenerateStoriesContent>
           <GenerateStoriesText>
