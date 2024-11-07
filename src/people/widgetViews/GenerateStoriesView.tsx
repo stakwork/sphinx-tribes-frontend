@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { EuiOverlayMask } from '@elastic/eui';
 import { useStores } from '../../store';
+import { getHost } from '../../config';
 import {
   GenerateStoriesModal,
   GenerateStoriesHeader,
@@ -49,13 +50,15 @@ const GenerateStoriesView: React.FC = () => {
     history.push(`/feature/${feature_uuid}`);
   };
 
+  const host = getHost();
+
   const postData = {
     postData: {
       productBrief: `Product: ${featureName}. \nProduct Brief: \n* Mission: ${mission}. \n* Objectives: ${tactics}`,
       featureName: featureName ?? '',
       description: featureBrief ?? '',
       examples: [],
-      webhook_url: 'https://webhook.site/8adf917d-d292-47ce-88e8-3994f63bfcce',
+      webhook_url: `${host}/features/stories`,
       featureUUID: feature_uuid
     }
   };
