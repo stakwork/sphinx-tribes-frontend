@@ -61,25 +61,25 @@ const GenerateStoriesView: React.FC = () => {
   };
 
   return (
-      <EuiOverlayMask>
-        <GenerateStoriesModal>
-          <GenerateStoriesHeader>
-            <GenerateStoriesTitle>User Story Automation</GenerateStoriesTitle>
-          </GenerateStoriesHeader>
-          <GenerateStoriesContent>
-            <GenerateStoriesText>
-              {postData ? (
-                  <pre>{JSON.stringify(postData, null, 2)}</pre>
-              ) : (
-                  'Story Generation Coming Soon!'
-              )}
-            </GenerateStoriesText>
-          </GenerateStoriesContent>
-          <GenerateStoriesFooter>
-            <GenerateStoriesButton onClick={handleClose}>Cancel</GenerateStoriesButton>
-          </GenerateStoriesFooter>
-        </GenerateStoriesModal>
-      </EuiOverlayMask>
+    <EuiOverlayMask>
+      <GenerateStoriesModal>
+        <GenerateStoriesHeader>
+          <GenerateStoriesTitle>User Story Automation</GenerateStoriesTitle>
+        </GenerateStoriesHeader>
+        <GenerateStoriesContent>
+          <GenerateStoriesText>
+            {postData ? (
+              <pre>{JSON.stringify(postData, null, 2)}</pre>
+            ) : (
+              'Story Generation Coming Soon!'
+            )}
+          </GenerateStoriesText>
+        </GenerateStoriesContent>
+        <GenerateStoriesFooter>
+          <GenerateStoriesButton onClick={handleClose}>Cancel</GenerateStoriesButton>
+        </GenerateStoriesFooter>
+      </GenerateStoriesModal>
+    </EuiOverlayMask>
   );
 };
 
