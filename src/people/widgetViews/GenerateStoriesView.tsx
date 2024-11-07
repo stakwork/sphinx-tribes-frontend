@@ -53,14 +53,12 @@ const GenerateStoriesView: React.FC = () => {
   const host = getHost();
 
   const postData = {
-    postData: {
-      productBrief: `Product: ${featureName}. \nProduct Brief: \n* Mission: ${mission}. \n* Objectives: ${tactics}`,
-      featureName: featureName ?? '',
-      description: featureBrief ?? '',
-      examples: [],
-      webhook_url: `${host}/features/stories`,
-      featureUUID: feature_uuid
-    }
+    productBrief: `Product: ${featureName}. \nProduct Brief: \n* Mission: ${mission} \n* Objectives: \n${tactics}`,
+    featureName: featureName ?? '',
+    description: featureBrief ?? '',
+    examples: [],
+    webhook_url: `${host}/features/stories`,
+    featureUUID: feature_uuid ?? ''
   };
 
   return (
