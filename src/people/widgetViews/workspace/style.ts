@@ -1402,7 +1402,7 @@ export const GenerateStoriesText = styled.p`
   font-size: 18px;
   color: #5f6368;
   margin: 0;
-  width: 500px;
+  text-align: center;
 `;
 
 export const GenerateStoriesFooter = styled.div`

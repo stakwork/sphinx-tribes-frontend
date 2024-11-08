@@ -3043,6 +3043,42 @@ export class MainStore {
     }
   }
 
+  async sendStories(body: {
+    productBrief: string;
+    featureName: string | undefined;
+    description: string | undefined;
+    examples: any[];
+    webhook_url: string;
+    featureUUID: string;
+  }): Promise<any> {
+    try {
+      const info = uiStore.meInfo;
+      if (!info) return null;
+
+      const response = await fetch(`${TribesURL}/features/stories/send`, {
+        method: 'POST',
+        mode: 'cors',
+        body: JSON.stringify(body),
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        console.error('Error in sendStories API call', response.statusText);
+        return null;
+      }
+
+      const result = await response.json();
+
+      return result;
+    } catch (error) {
+      console.error('Error sending stories:', error);
+      return false;
+    }
+  }
+
   async getBountyMetrics(
     start_date: string,
     end_date: string,
@@ -3429,4 +3465,5 @@ export class MainStore {
     }
   }
 }
+
 export const mainStore = new MainStore();
