@@ -41,7 +41,8 @@ function MobileView(props: any) {
     show,
     paid,
     isMine,
-    titleString
+    titleString,
+    completed
   } = props;
 
   const { ui, main } = useStores();
@@ -107,6 +108,7 @@ function MobileView(props: any) {
                   marginTop: 10
                 }}
                 paid={paid}
+                completed={completed}
               />
             )}
             {{ ...assignee }.owner_alias && (
