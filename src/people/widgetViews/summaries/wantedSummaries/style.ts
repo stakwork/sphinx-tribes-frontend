@@ -727,3 +727,30 @@ export const ErrorMsgText = styled.span`
   font-size: 0.85rem;
   padding-top: 20px;
 `;
+
+export const DeliverablesContainer = styled.div`
+  margin: 10px 0 30px;
+
+  .deliverablesContainer {
+    margin-top: 23px;
+    .deliverablesHeading {
+      font-family: 'Barlow';
+      font-style: normal;
+      font-weight: 700;
+      font-size: 13px;
+      line-height: 25px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: ${(p: any) => p?.color && p.color.black500};
+    }
+    .deliverablesDesc {
+      font-family: 'Barlow';
+      font-style: normal;
+      font-weight: 400;
+      font-size: 15px;
+      line-height: 20px;
+      color: ${(p: any) => p?.color && p.color.black500};
+      white-space: pre-wrap;
+    }
+  }
+`;

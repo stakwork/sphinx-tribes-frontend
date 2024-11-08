@@ -349,12 +349,14 @@ export interface CodingViewProps extends WantedSummaryProps {
   labels?: Array<CodingLanguageLabel>;
   envHeight?: string;
   ticketUrl?: string;
+  deliverables?: string;
   assignee: Person;
   assigneeLabel?: { [key: string]: any };
   nametag?: JSX.Element;
   actionButtons?: boolean | JSX.Element;
   status?: string;
   handleCopyUrl?: () => void;
+  extraModalFunction?: () => void;
   isCopied?: boolean;
   payBounty?: ReactNode;
   markUnpaid?: ReactNode;
