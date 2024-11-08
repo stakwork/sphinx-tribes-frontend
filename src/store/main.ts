@@ -3428,5 +3428,33 @@ export class MainStore {
       return null;
     }
   }
+
+  async createConnectionCodes(users_number: number): Promise<number> {
+    try {
+      if (!uiStore.meInfo) return 406;
+      const info = uiStore.meInfo;
+
+      const data = {
+        number: users_number
+      };
+
+      const body = JSON.stringify(data);
+
+      const response = await fetch(`${TribesURL}/connectioncodes`, {
+        method: 'POST',
+        mode: 'cors',
+        body: body,
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      return response.status;
+    } catch (e) {
+      console.log('Error createConnectionCodes', e);
+      return 406;
+    }
+  }
 }
 export const mainStore = new MainStore();

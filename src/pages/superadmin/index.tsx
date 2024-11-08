@@ -3,7 +3,7 @@
  * To enable colaborations
  */
 import React, { useCallback, useEffect, useState } from 'react';
-import { EuiLoadingSpinner } from '@elastic/eui';
+import { EuiGlobalToastList, EuiLoadingSpinner } from '@elastic/eui';
 import styled from 'styled-components';
 import { BountyMetrics, defaultSuperAdminBountyStatus, Person } from 'store/interface';
 import { useStores } from 'store';
@@ -52,6 +52,7 @@ export const SuperAdmin = () => {
   const [providersCheckboxSelected, setProvidersCheckboxSelected] = useState<Person[]>([]);
   const [selectedProviders, setSelectedProviders] = useState<string>('');
   const [workspace, setWorkspace] = useState<string>('');
+  const [toasts, setToasts]: any = useState([]);
 
   /**
    * Todo use the same date range,
@@ -72,6 +73,20 @@ export const SuperAdmin = () => {
     const isSuperAdmin = await main.getSuperAdmin();
     setIsSuperAdmin(isSuperAdmin);
   }, [main]);
+
+  const addToast = (title: string, color: 'success' | 'error') => {
+    setToasts([
+      {
+        id: `${Math.random()}`,
+        title,
+        color
+      }
+    ]);
+  };
+
+  const removeToast = () => {
+    setToasts([]);
+  };
 
   useEffect(() => {
     getIsSuperAdmin();
@@ -276,6 +291,7 @@ export const SuperAdmin = () => {
       ) : (
         <Container>
           <Header
+            addToast={addToast}
             startDate={startDate}
             endDate={endDate}
             setStartDate={setStartDate}
@@ -314,6 +330,7 @@ export const SuperAdmin = () => {
               providersCurrentPage={providersCurrentPage}
             />
           )}
+          <EuiGlobalToastList toasts={toasts} dismissToast={removeToast} toastLifeTimeMs={5000} />
         </Container>
       )}
     </>

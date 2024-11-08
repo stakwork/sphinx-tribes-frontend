@@ -22,6 +22,7 @@ import arrowback from './icons/arrowback.svg';
 import arrowforward from './icons/arrowforward.svg';
 import expand_more from './icons/expand_more.svg';
 import App from './components/Calendar/App';
+import InviteModal from './InviteModal';
 
 interface HeaderProps {
   startDate?: number;
@@ -30,6 +31,7 @@ interface HeaderProps {
   setEndDate: (newDate: number) => void;
   workspace: string;
   setWorkspace: React.Dispatch<React.SetStateAction<string>>;
+  addToast: (title: string, color: 'success' | 'error') => void;
 }
 export const Header = ({
   startDate,
@@ -37,7 +39,8 @@ export const Header = ({
   endDate,
   setEndDate,
   workspace,
-  setWorkspace
+  setWorkspace,
+  addToast
 }: HeaderProps) => {
   const [showSelector, setShowSelector] = useState(false);
   const [showWorkspace, setShowWorkspace] = useState(false);
@@ -47,6 +50,7 @@ export const Header = ({
   const [dropdownText, setDropdownText] = useState<string>('Last 7 Days');
   const [workspaceText, setWorkspaceText] = useState<string>('Workspaces ...');
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
+  const [openInvite, setOpenInvite] = useState(false);
   const formatUnixDate = (unixDate: number) => {
     const formatString = 'DD MMM YYYY';
     if (startDate !== undefined && endDate !== undefined) {
@@ -79,6 +83,10 @@ export const Header = ({
       setStartDate(newStartDate);
       setEndDate(cappedEndDate);
     }
+  };
+
+  const toggleModal = () => {
+    setOpenInvite(!openInvite);
   };
 
   const exportCsv = async () => {
@@ -200,6 +208,9 @@ export const Header = ({
           ) : null}
         </LeftWrapper>
         <RightWrapper>
+          <ExportButton onClick={() => toggleModal()}>
+            <ExportText>Invite Users</ExportText>
+          </ExportButton>
           <ExportButton disabled={exportLoading} onClick={() => exportCsv()}>
             <ExportText>{exportLoading ? 'Exporting ...' : 'Export CSV'}</ExportText>
           </ExportButton>
@@ -262,6 +273,7 @@ export const Header = ({
           setShowCalendar={setShowCalendar}
         />
       )}
+      <InviteModal addToast={addToast} open={openInvite} close={toggleModal} />
     </Container>
   );
 };
