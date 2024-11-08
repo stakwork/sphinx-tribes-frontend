@@ -31,7 +31,7 @@ interface HeaderProps {
   setEndDate: (newDate: number) => void;
   workspace: string;
   setWorkspace: React.Dispatch<React.SetStateAction<string>>;
-  addToast: (title: string, color: 'success' | 'error') => void;
+  addToast?: (title: string, color: 'success' | 'error') => void;
 }
 export const Header = ({
   startDate,

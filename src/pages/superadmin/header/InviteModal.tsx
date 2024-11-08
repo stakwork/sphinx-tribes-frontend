@@ -10,7 +10,7 @@ import { Modal } from '../../../components/common';
 interface InviteProps {
   open: boolean;
   close: () => void;
-  addToast: (title: string, color: 'success' | 'error') => void;
+  addToast?: (title: string, color: 'success' | 'error') => void;
 }
 
 const WithdrawModalTitle = styled.h3`
@@ -39,11 +39,11 @@ const InviteModal = (props: InviteProps) => {
     const status = await main.createConnectionCodes(inviteNumber);
 
     if (status === 200) {
-      addToast('Users invite code created successfully', 'success');
+      if (addToast) addToast('Users invite code created successfully', 'success');
       setInviteNumber(1);
       close();
     } else {
-      addToast('Could not create users invite code', 'error');
+      if (addToast) addToast('Could not create users invite code', 'error');
     }
     setLoading(false);
   };
