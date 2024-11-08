@@ -44,7 +44,7 @@ const DirectionWrap = styled.div`
   padding: 0px;
   display: flex;
   width: 100%;
-  gap: 0.5rem;
+  justify-content: center;
 `;
 
 const AndroidIosButtonConatiner = styled.div`
@@ -57,9 +57,9 @@ const AndroidIosButtonConatiner = styled.div`
 
 const palette = colors.light;
 
-const StartUpModal = ({ closeModal, dataObject, buttonColor }: StartUpModalProps) => {
+const StartUpModal = ({ closeModal, buttonColor }: StartUpModalProps) => {
   const { ui } = useStores();
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(2);
   const [connection_string, setConnectionString] = useState('');
 
   async function getConnectionCode() {
@@ -104,64 +104,6 @@ const StartUpModal = ({ closeModal, dataObject, buttonColor }: StartUpModalProps
           }}
           color={buttonColor}
         />
-      </ButtonContainer>
-    </>
-  );
-
-  const StepOne = () => (
-    <>
-      <ModalContainer data-testid="step-one">
-        <img
-          src={
-            dataObject === 'getWork'
-              ? '/static/create_profile_blue.gif'
-              : '/static/create_profile_green.gif'
-          }
-          height={'274px'}
-          alt=""
-        />
-      </ModalContainer>
-      <ButtonContainer>
-        <DirectionWrap style={{ justifyContent: 'space-around' }}>
-          <IconButton
-            text={'I have Sphinx'}
-            width={150}
-            height={48}
-            style={{ marginTop: '20px' }}
-            onClick={(e: any) => {
-              e.stopPropagation();
-              closeModal();
-              ui.setShowSignIn(true);
-            }}
-            textStyle={{
-              fontSize: '15px',
-              fontWeight: '500'
-            }}
-            iconStyle={{
-              top: '14px'
-            }}
-            color={buttonColor}
-          />
-
-          <IconButton
-            text={'Get Sphinx'}
-            width={150}
-            height={48}
-            style={{ marginTop: '20px', textDecoration: 'none' }}
-            onClick={(e: any) => {
-              e.stopPropagation();
-              setStep(step + 1);
-            }}
-            textStyle={{
-              fontSize: '15px',
-              fontWeight: '500'
-            }}
-            iconStyle={{
-              top: '14px'
-            }}
-            color={buttonColor}
-          />
-        </DirectionWrap>
       </ButtonContainer>
     </>
   );
@@ -230,26 +172,6 @@ const StartUpModal = ({ closeModal, dataObject, buttonColor }: StartUpModalProps
         />
         <DirectionWrap>
           <IconButton
-            text={'Back'}
-            width={210}
-            height={48}
-            buttonType={'text'}
-            style={{ color: '#83878b', marginTop: '20px', textDecoration: 'none' }}
-            onClick={(e: any) => {
-              e.stopPropagation();
-              setStep(step - 1);
-            }}
-            textStyle={{
-              fontSize: '15px',
-              fontWeight: '500',
-              color: '#5F6368'
-            }}
-            iconStyle={{
-              top: '14px'
-            }}
-            color={buttonColor}
-          />
-          <IconButton
             text={'Sign in'}
             width={210}
             height={48}
@@ -257,7 +179,8 @@ const StartUpModal = ({ closeModal, dataObject, buttonColor }: StartUpModalProps
             style={{ color: '#83878b', marginTop: '20px', textDecoration: 'none' }}
             onClick={(e: any) => {
               e.stopPropagation();
-              setStep(3);
+              closeModal();
+              ui.setShowSignIn(true);
             }}
             textStyle={{
               fontSize: '15px',
@@ -274,62 +197,10 @@ const StartUpModal = ({ closeModal, dataObject, buttonColor }: StartUpModalProps
     </>
   );
 
-  const StepThree = () => (
-    <ButtonContainer>
-      <IconButton
-        text={'Sign in'}
-        endingIcon={'arrow_forward'}
-        width={210}
-        height={48}
-        style={{ marginTop: 0 }}
-        hovercolor={buttonColor === 'primary' ? '#5881F8' : '#3CBE88'}
-        activecolor={buttonColor === 'primary' ? '#5078F2' : '#2FB379'}
-        shadowcolor={
-          buttonColor === 'primary' ? 'rgba(97, 138, 255, 0.5)' : 'rgba(73, 201, 152, 0.5)'
-        }
-        onClick={(e: any) => {
-          e.stopPropagation();
-          closeModal();
-          ui.setShowSignIn(true);
-        }}
-        color={buttonColor}
-      />
-
-      <IconButton
-        text={'Back'}
-        width={210}
-        height={48}
-        buttonType={'text'}
-        style={{ color: '#83878b', marginTop: '20px', textDecoration: 'none' }}
-        onClick={(e: any) => {
-          e.stopPropagation();
-          setStep(step - 1);
-        }}
-        textStyle={{
-          fontSize: '15px',
-          fontWeight: '500',
-          color: '#5F6368'
-        }}
-        iconStyle={{
-          top: '14px'
-        }}
-        color={buttonColor}
-      />
-    </ButtonContainer>
-  );
-
   return (
     <BaseModal data-testid="startup-modal" open onClose={closeModal}>
       <Box p={4} bgcolor={palette.grayish.G950} borderRadius={2} maxWidth={400} minWidth={350}>
-        {step === 1 ? (
-          <StepOne />
-        ) : step === 2 ? (
-          <StepTwo />
-        ) : step === 3 ? (
-          <StepThree />
-        ) : (
-          <DisplayQRCode />
-        )}
+        {step === 2 ? <StepTwo /> : <DisplayQRCode />}
       </Box>
     </BaseModal>
   );
