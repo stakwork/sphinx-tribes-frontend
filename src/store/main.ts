@@ -986,8 +986,8 @@ export class MainStore {
     }
 
     let newParams = {};
-    if (params.Pending === "true" || params.Pending === true) {
-      if (params.Paid === "false" || params.Paid === false) {
+    if (params.Pending === 'true' || params.Pending === true) {
+      if (params.Paid === 'false' || params.Paid === false) {
         newParams = {
           page: 1,
           resetPage: true,
@@ -998,21 +998,20 @@ export class MainStore {
           Pending: false,
           Failed: false,
           pending: true,
-          languageString: "",
-          direction: "desc"
+          languageString: '',
+          direction: 'desc'
         };
       }
     }
 
     // Use newParams if the condition is met; otherwise, fallback to existing params
-    queryParams = (params.Pending === "true" || params.Pending === true) &&
-                        (params.Paid === "false" || params.Paid === false) ? newParams : params;
+    queryParams =
+      (params.Pending === 'true' || params.Pending === true) &&
+      (params.Paid === 'false' || params.Paid === false)
+        ? newParams
+        : params;
 
-    const query2 = this.appendQueryParams(
-      `workspaces/bounties/${uuid}`,
-      queryLimit,
-      queryParams
-    );
+    const query2 = this.appendQueryParams(`workspaces/bounties/${uuid}`, queryLimit, queryParams);
 
     try {
       const ps2 = await api.get(query2);
