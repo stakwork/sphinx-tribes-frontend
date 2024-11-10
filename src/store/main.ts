@@ -971,7 +971,7 @@ export class MainStore {
 
   getWantedsSpecWorkspacePrevParams?: QueryParams = {};
   async getSpecificWorkspaceBounties(uuid: string, params?: any): Promise<PersonBounty[]> {
-    const queryParams: QueryParams = {
+    let queryParams: QueryParams = {
       limit: queryLimit,
       sortBy: 'created',
       search: uiStore.searchText ?? '',
@@ -985,12 +985,35 @@ export class MainStore {
       this.getWantedsSpecWorkspacePrevParams = queryParams;
     }
 
-    // if we don't pass the params, we should use previous params for invalidate query
+    let newParams = {};
+    if (params.Pending === "true" || params.Pending === true) {
+      if (params.Paid === "false" || params.Paid === false) {
+        newParams = {
+          page: 1,
+          resetPage: true,
+          Open: false,
+          Assigned: false,
+          Paid: false,
+          Completed: true,
+          Pending: false,
+          Failed: false,
+          pending: true,
+          languageString: "",
+          direction: "desc"
+        };
+      }
+    }
+
+    // Use newParams if the condition is met; otherwise, fallback to existing params
+    queryParams = (params.Pending === "true" || params.Pending === true) &&
+                        (params.Paid === "false" || params.Paid === false) ? newParams : params;
+
     const query2 = this.appendQueryParams(
       `workspaces/bounties/${uuid}`,
       queryLimit,
-      params ? queryParams : this.getWantedsWorkspacePrevParams
+      queryParams
     );
+
     try {
       const ps2 = await api.get(query2);
       const ps3: any[] = [];
