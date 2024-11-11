@@ -48,6 +48,10 @@ const GenerateStoriesView: React.FC = () => {
   }, [feature_uuid, main]);
 
   useEffect(() => {
+    if (!feature_uuid || !featureName || !featureBrief) {
+      return;
+    }
+
     const submitStories = async () => {
       const postData = {
         productBrief: `Product: ${featureName}. \nProduct Brief: \n* Mission: ${mission} \n* Objectives: \n${tactics}`,
