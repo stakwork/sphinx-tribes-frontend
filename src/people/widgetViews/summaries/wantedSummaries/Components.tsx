@@ -8,6 +8,7 @@ import { colors } from '../../../../config/colors';
 import FavoriteButton from '../../../utils/FavoriteButton';
 import { Button, Divider } from '../../../../components/common';
 import { getSessionValue, sendToRedirect } from '../../../../helpers';
+import IconButton from '../../../../components/common/IconButton2';
 import { getTwitterLink } from './lib';
 import { DividerContainer } from './style';
 
@@ -236,5 +237,38 @@ export const BountyEstimates = (props: BountyEstimatesProp) => {
         )}
       </div>
     </>
+  );
+};
+
+type ICanHelpButtonProps = {
+  onClick: () => void;
+};
+
+export const ICanHelpButton = ({ onClick }: ICanHelpButtonProps) => {
+  const color = colors['light'];
+
+  return (
+    <IconButton
+      text={'I can help'}
+      endingIcon={'arrow_forward'}
+      width={153}
+      height={48}
+      onClick={onClick}
+      color="primary"
+      hovercolor={color.button_secondary.hover}
+      activecolor={color.button_secondary.active}
+      shadowcolor={color.button_secondary.shadow}
+      iconSize={'16px'}
+      iconStyle={{
+        top: '16px',
+        right: '14px'
+      }}
+      textStyle={{
+        width: '106px',
+        display: 'flex',
+        justifyContent: 'flex-start',
+        fontFamily: 'Barlow'
+      }}
+    />
   );
 };

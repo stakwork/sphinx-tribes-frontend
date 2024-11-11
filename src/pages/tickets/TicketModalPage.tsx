@@ -184,6 +184,14 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
                 fromBountyPage={true}
                 goBack={goBack}
                 getBounty={getBounty}
+                extraModalFunction={() => {
+                  if (ui.meInfo) {
+                    setConnectPerson(connectPersonBody);
+                  } else {
+                    goBack();
+                    modals.setStartupModal(true);
+                  }
+                }}
               />
             </Modal>
           )

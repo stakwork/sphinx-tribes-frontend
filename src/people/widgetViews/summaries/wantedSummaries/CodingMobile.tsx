@@ -17,7 +17,20 @@ import {
   ViewGithub,
   BountyEstimates
 } from './Components';
-import { ButtonRow, Pad, Img, GithubIconMobile, T, Y, P, D, B, LoomIconMobile } from './style';
+import {
+  ButtonRow,
+  Pad,
+  Img,
+  GithubIconMobile,
+  T,
+  Y,
+  P,
+  D,
+  B,
+  LoomIconMobile,
+  DeliverablesContainer
+} from './style';
+import { ICanHelpButton } from './Components';
 
 export default function MobileView(props: CodingViewProps) {
   const {
@@ -37,7 +50,9 @@ export default function MobileView(props: CodingViewProps) {
     created,
     markPaidOrUnpaid,
     paid,
-    estimated_completion_date
+    estimated_completion_date,
+    extraModalFunction,
+    deliverables
   } = props;
 
   const color = colors['light'];
@@ -150,6 +165,9 @@ export default function MobileView(props: CodingViewProps) {
 
           <div style={{ height: 10 }} />
           {showPayBounty && payBounty}
+
+          {!assignee && extraModalFunction && <ICanHelpButton onClick={extraModalFunction} />}
+
           <BountyEstimates
             completion_date={estimated_completion_date}
             session_length={estimated_session_length}
@@ -180,6 +198,14 @@ export default function MobileView(props: CodingViewProps) {
           </Y>
           <Divider style={{ marginBottom: 20 }} />
           <D color={color}>{renderMarkdown(description)}</D>
+          {deliverables ? (
+            <DeliverablesContainer>
+              <div className="deliverablesContainer">
+                <EuiText className="deliverablesHeading">Deliverables</EuiText>
+                <EuiText className="deliverablesDesc">{deliverables}</EuiText>
+              </div>
+            </DeliverablesContainer>
+          ) : null}
         </Pad>
       </div>
     </>
