@@ -21,6 +21,7 @@ const GenerateStoriesView: React.FC = () => {
   const [featureBrief, setFeatureBrief] = useState<string | undefined>('');
   const [mission, setMission] = useState<string | undefined>('');
   const [tactics, setTactics] = useState<string | undefined>('');
+  const [response, setResponse] = useState<any>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,19 +47,30 @@ const GenerateStoriesView: React.FC = () => {
     fetchData();
   }, [feature_uuid, main]);
 
+  useEffect(() => {
+    const submitStories = async () => {
+      const postData = {
+        productBrief: `Product: ${featureName}. \nProduct Brief: \n* Mission: ${mission} \n* Objectives: \n${tactics}`,
+        featureName: featureName,
+        description: featureBrief,
+        examples: [],
+        webhook_url: `${getHost()}/features/stories`,
+        featureUUID: feature_uuid ?? ''
+      };
+
+      try {
+        const apiResponse = await main.sendStories(postData);
+        setResponse(apiResponse);
+      } catch (error) {
+        console.error('Error sending stories:', error);
+      }
+    };
+
+    submitStories();
+  }, [featureName, featureBrief, mission, tactics, feature_uuid, main]);
+
   const handleClose = () => {
     history.push(`/feature/${feature_uuid}`);
-  };
-
-  const host = getHost();
-
-  const postData = {
-    productBrief: `Product: ${featureName}. \nProduct Brief: \n* Mission: ${mission} \n* Objectives: \n${tactics}`,
-    featureName: featureName ?? '',
-    description: featureBrief ?? '',
-    examples: [],
-    webhook_url: `${host}/features/stories`,
-    featureUUID: feature_uuid ?? ''
   };
 
   return (
@@ -69,8 +81,8 @@ const GenerateStoriesView: React.FC = () => {
         </GenerateStoriesHeader>
         <GenerateStoriesContent>
           <GenerateStoriesText>
-            {postData ? (
-              <pre>{JSON.stringify(postData, null, 2)}</pre>
+            {response ? (
+              <pre>{JSON.stringify(response, null, 2)}</pre>
             ) : (
               'Story Generation Coming Soon!'
             )}
