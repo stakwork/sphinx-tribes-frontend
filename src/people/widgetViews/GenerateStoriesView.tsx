@@ -10,7 +10,8 @@ import {
   GenerateStoriesContent,
   GenerateStoriesText,
   GenerateStoriesFooter,
-  GenerateStoriesButton
+  GenerateStoriesButton,
+  SendStoriesButton
 } from './workspace/style';
 
 const GenerateStoriesView: React.FC = () => {
@@ -47,31 +48,23 @@ const GenerateStoriesView: React.FC = () => {
     fetchData();
   }, [feature_uuid, main]);
 
-  useEffect(() => {
-    if (!feature_uuid || !featureName || !featureBrief) {
-      return;
+  const postData = {
+    productBrief: `Product: ${featureName}. \nProduct Brief: \n* Mission: ${mission} \n* Objectives: \n${tactics}`,
+    featureName: featureName,
+    description: featureBrief,
+    examples: [],
+    webhook_url: `${getHost()}/features/stories`,
+    featureUUID: feature_uuid ?? ''
+  };
+
+  const submitStories = async () => {
+    try {
+      const apiResponse = await main.sendStories(postData);
+      setResponse(apiResponse);
+    } catch (error) {
+      console.error('Error sending stories:', error);
     }
-
-    const submitStories = async () => {
-      const postData = {
-        productBrief: `Product: ${featureName}. \nProduct Brief: \n* Mission: ${mission} \n* Objectives: \n${tactics}`,
-        featureName: featureName,
-        description: featureBrief,
-        examples: [],
-        webhook_url: `${getHost()}/features/stories`,
-        featureUUID: feature_uuid ?? ''
-      };
-
-      try {
-        const apiResponse = await main.sendStories(postData);
-        setResponse(apiResponse);
-      } catch (error) {
-        console.error('Error sending stories:', error);
-      }
-    };
-
-    submitStories();
-  }, [featureName, featureBrief, mission, tactics, feature_uuid, main]);
+  };
 
   const handleClose = () => {
     history.push(`/feature/${feature_uuid}`);
@@ -87,6 +80,8 @@ const GenerateStoriesView: React.FC = () => {
           <GenerateStoriesText>
             {response ? (
               <pre>{JSON.stringify(response, null, 2)}</pre>
+            ) : postData ? (
+              <pre>{JSON.stringify(postData, null, 2)}</pre>
             ) : (
               'Story Generation Coming Soon!'
             )}
@@ -94,6 +89,7 @@ const GenerateStoriesView: React.FC = () => {
         </GenerateStoriesContent>
         <GenerateStoriesFooter>
           <GenerateStoriesButton onClick={handleClose}>Cancel</GenerateStoriesButton>
+          <SendStoriesButton onClick={submitStories}>Send</SendStoriesButton>
         </GenerateStoriesFooter>
       </GenerateStoriesModal>
     </EuiOverlayMask>

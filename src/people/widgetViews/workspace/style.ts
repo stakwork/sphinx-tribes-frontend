@@ -1402,7 +1402,7 @@ export const GenerateStoriesText = styled.p`
   font-size: 18px;
   color: #5f6368;
   margin: 0;
-  text-align: center;
+  width: 500px;
 `;
 
 export const GenerateStoriesFooter = styled.div`
@@ -1431,6 +1431,33 @@ export const GenerateStoriesButton = styled.button`
 
   &:hover {
     background-color: #e0e0e0;
+  }
+
+  &:active {
+    background-color: #c0c0c0;
+  }
+`;
+
+export const SendStoriesButton = styled.button`
+  padding: 5px 20px;
+  border-radius: 5px;
+  font-family: 'Barlow';
+  font-size: 0.9375rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 0rem;
+  letter-spacing: 0.00938rem;
+  margin-left: 10px;
+  border: none;
+  cursor: pointer;
+  background-color: rgb(97, 138, 255);
+  color: #fff;
+  height: 40px;
+  width: 124px;
+  box-shadow: 0px 2px 10px 0px rgba(97, 138, 255, 0.5);
+
+  &:hover {
+    background-color: rgb(97, 148, 255);
   }
 
   &:active {
