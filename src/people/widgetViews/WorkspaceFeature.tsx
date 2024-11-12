@@ -563,7 +563,7 @@ const WorkspaceFeature = () => {
       <FeatureHeadWrap>
         <HeadNameWrap>
           <MaterialIcon
-            onClick={() => history.goBack()}
+            onClick={() => history.push(`/workspace/${workspaceData?.uuid}`)}
             icon={'arrow_back'}
             style={{
               fontSize: 25,
