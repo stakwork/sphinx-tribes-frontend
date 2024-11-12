@@ -24,7 +24,7 @@ describe('AddUserModal Component', () => {
     };
 
     nock(user.url)
-      .get('/people/search?search=anish&sortBy=owner_alias&limit=4')
+      .get('/people/search?search=anish&sortBy=owner_alias&limit=10')
       .reply(200, [{ owner_pubkey: '...', owner_alias: 'Anish Yadav', img: '...' }]);
 
     const { getByPlaceholderText, getByText } = render(<AddUserModal {...mockProps} />);
