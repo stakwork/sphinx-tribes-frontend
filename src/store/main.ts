@@ -589,8 +589,8 @@ export class MainStore {
   }
 
   getWantedsPrevParams?: QueryParams = {};
-  async getPeopleBounties(params?: QueryParams): Promise<PersonBounty[]> {
-    const queryParams: QueryParams = {
+  async getPeopleBounties(params: any = {}): Promise<PersonBounty[]> {
+    let queryParams: QueryParams = {
       limit: queryLimit,
       sortBy: 'created',
       search: uiStore.searchText ?? '',
@@ -603,6 +603,32 @@ export class MainStore {
       // save previous params
       this.getWantedsPrevParams = queryParams;
     }
+
+    let newParams = {};
+    if (params?.Pending === 'true' || params?.Pending === true) {
+      if (params?.Paid === 'false' || params?.Paid === false) {
+        newParams = {
+          page: 1,
+          resetPage: true,
+          Open: false,
+          Assigned: false,
+          Paid: false,
+          Completed: true,
+          Pending: false,
+          Failed: false,
+          pending: true,
+          languageString: '',
+          direction: 'desc'
+        };
+      }
+    }
+
+    // Use newParams if the condition is met; otherwise, fallback to existing params
+    queryParams =
+      (params.Pending === 'true' || params.Pending === true) &&
+      (params.Paid === 'false' || params.Paid === false)
+        ? newParams
+        : params;
 
     // if we don't pass the params, we should use previous params for invalidate query
     const query2 = this.appendQueryParams(
@@ -853,6 +879,7 @@ export class MainStore {
       direction: 'DESC'
     });
 
+    console.log(queryParams, 'queryParams');
     try {
       const ps2 = await api.get(query);
       const ps3: any[] = [];
@@ -860,23 +887,43 @@ export class MainStore {
       if (ps2 && ps2.length) {
         for (let i = 0; i < ps2.length; i++) {
           const bounty = { ...ps2[i].bounty };
-          let assignee;
-          let organization;
-          const owner = { ...ps2[i].owner };
 
-          if (bounty.assignee) {
-            assignee = { ...ps2[i].assignee };
+          let shouldInclude = false;
+
+          // Determine inclusion based on `Paid` and other criteria
+          if (queryParams.Paid) {
+            // If `Paid` is true in queryParams, include only paid bounties
+            if (bounty.paid) {
+              shouldInclude = true;
+            }
+          } else {
+            // If `Paid` is not true, filter unpaid bounties
+            if (!bounty.paid && !bounty.completed) {
+              shouldInclude = true;
+            } else if (queryParams.Pending && bounty.completed && !bounty.paid) {
+              shouldInclude = true;
+            }
           }
 
-          if (bounty.org_uuid) {
-            organization = { ...ps2[i].organization };
-          }
+          if (shouldInclude) {
+            let assignee;
+            let organization;
+            const owner = { ...ps2[i].owner };
 
-          ps3.push({
-            body: { ...bounty, assignee: assignee || '' },
-            person: { ...owner, wanteds: [] } || { wanteds: [] },
-            organization: { ...organization }
-          });
+            if (bounty.assignee) {
+              assignee = { ...ps2[i].assignee };
+            }
+
+            if (bounty.org_uuid) {
+              organization = { ...ps2[i].organization };
+            }
+
+            ps3.push({
+              body: { ...bounty, assignee: assignee || '' },
+              person: { ...owner, wanteds: [] } || { wanteds: [] },
+              organization: { ...organization }
+            });
+          }
         }
       }
 
