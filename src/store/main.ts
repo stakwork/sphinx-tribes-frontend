@@ -604,6 +604,7 @@ export class MainStore {
       this.getWantedsPrevParams = queryParams;
     }
 
+
     let newParams = {};
     if (params?.Pending === 'true' || params?.Pending === true) {
       if (params?.Paid === 'false' || params?.Paid === false) {
@@ -639,6 +640,7 @@ export class MainStore {
 
     try {
       const ps2 = await api.get(query2);
+      console.log(ps2,"ps2")
       const ps3: any[] = [];
 
       if (ps2) {
