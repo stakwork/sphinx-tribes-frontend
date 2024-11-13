@@ -161,11 +161,21 @@ function MobileView(props: CodingBountiesProps) {
           }
         ]);
       }
+      case SOCKET_MSG.keysend_failed: {
+        return setToasts([
+          {
+            id: `${toastId}`,
+            title: 'Keysend Payment failed',
+            toastLifeTimeMs: 10000,
+            color: 'error'
+          }
+        ]);
+      }
       case SOCKET_MSG.keysend_error: {
         return setToasts([
           {
             id: `${toastId}`,
-            title: 'Payment failed',
+            title: 'Keysend Payment error',
             toastLifeTimeMs: 10000,
             color: 'error'
           }
@@ -488,6 +498,8 @@ function MobileView(props: CodingBountiesProps) {
         addToast(SOCKET_MSG.keysend_success);
       } else if (res.msg === SOCKET_MSG.keysend_pending) {
         addToast(SOCKET_MSG.keysend_pending);
+      } else if (res.msg === SOCKET_MSG.keysend_failed) {
+        addToast(SOCKET_MSG.keysend_failed);
       } else if (res.msg === SOCKET_MSG.keysend_error) {
         addToast(SOCKET_MSG.keysend_error);
       }
