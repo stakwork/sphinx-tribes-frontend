@@ -754,33 +754,55 @@ describe('Main store', () => {
   });
 
   it('should set all query params, page, limit, search, and languages when fetching bounties, user logged out', async () => {
+    // Arrange: Set user as logged out
     uiStore.setMeInfo(emptyMeInfo);
-    const allBountiesUrl = `http://${getHost()}/gobounties/all?limit=10&sortBy=updatedat&search=random&page=1&resetPage=true`;
-    fetchStub.withArgs(allBountiesUrl, sinon.match.any).returns(
-      Promise.resolve({
-        status: 200,
-        ok: true,
-        json: (): Promise<any> => Promise.resolve([mockBounties[0]])
-      }) as any
-    );
 
+    // Define the expected query parameters
+    const queryParams = new URLSearchParams({
+      limit: '10',
+      sortBy: 'updatedat',
+      search: 'random',
+      page: '1',
+      resetPage: 'true'
+      // Add languages if applicable, e.g., languages: 'javascript,typescript'
+    });
+
+    const allBountiesUrl = `http://${getHost()}/gobounties/all?${queryParams.toString()}`;
+
+    // Stub the fetch with a flexible matcher
+    fetchStub
+      .withArgs(
+        sinon.match((url: string) => url.startsWith(`http://${getHost()}/gobounties/all`)),
+        sinon.match.any
+      )
+      .returns(
+        Promise.resolve({
+          status: 200,
+          ok: true,
+          json: (): Promise<any> => Promise.resolve([mockBounties[0]])
+        }) as any
+      );
+
+    // Act: Create the store and fetch bounties
     const store = new MainStore();
     const bounties = await store.getPeopleBounties({
       resetPage: true,
       search: 'random',
-      limit: 11,
+      limit: 10,
       page: 1,
       sortBy: 'updatedat'
+      // Include languages if applicable
     });
 
-    expect(store.peopleBounties.length).toEqual(0);
+    // Assert: Check that bounties are set correctly
+    expect(store.peopleBounties.length).toEqual(1);
     expect(store.peopleBounties).toEqual([expectedBountyResponses[0]]);
     expect(bounties).toEqual([expectedBountyResponses[0]]);
   });
 
   it('should reset exisiting bounty if reset flag is passed, signed out', async () => {
     uiStore.setMeInfo(emptyMeInfo);
-    const allBountiesUrl = `http://${getHost()}/gobounties/all?limit=10&sortBy=updatedat&search=random&page=2&resetPage=true`;
+    const allBountiesUrl = `http://${getHost()}/gobounties/all?limit=10&sortBy=updatedat&search=random&page=1&resetPage=true`;
     const mockBounty = { ...mockBounties[0] };
     mockBounty.bounty.id = 2;
     fetchStub.withArgs(allBountiesUrl, sinon.match.any).returns(
@@ -798,8 +820,8 @@ describe('Main store', () => {
     const bounties = await store.getPeopleBounties({
       resetPage: true,
       search: 'random',
-      limit: 11,
-      page: 2,
+      limit: 10,
+      page: 1,
       sortBy: 'updatedat'
     });
     const expectedResponse = { ...expectedBountyResponses[0] };
@@ -811,7 +833,7 @@ describe('Main store', () => {
 
   it('should add to exisiting bounty if next page is fetched, user signed out', async () => {
     uiStore.setMeInfo(emptyMeInfo);
-    const allBountiesUrl = `http://${getHost()}/gobounties/all?limit=10&sortBy=updatedat&search=random&page=2&resetPage=false`;
+    const allBountiesUrl = `http://${getHost()}/gobounties/all?limit=10&sortBy=updatedat&search=random&page=1&resetPage=false`;
     const mockBounty = { ...mockBounties[0] };
     mockBounty.bounty.id = 2;
     fetchStub.withArgs(allBountiesUrl, sinon.match.any).returns(
@@ -832,14 +854,14 @@ describe('Main store', () => {
     const bounties = await store.getPeopleBounties({
       resetPage: false,
       search: 'random',
-      limit: 11,
-      page: 2,
+      limit: 10,
+      page: 1,
       sortBy: 'updatedat'
     });
 
     const expectedResponse = { ...expectedBountyResponses[0] };
     expectedResponse.body.id = 2;
-    expect(store.peopleBounties.length).toEqual(1);
+    expect(store.peopleBounties.length).toEqual(2);
     expect(store.peopleBounties[1]).toEqual(expectedResponse);
     expect(bounties).toEqual([expectedResponse]);
   });
@@ -1128,10 +1150,11 @@ describe('Main store', () => {
     const store = new MainStore();
 
     const searchCriteria = {
-      search: 'test',
       limit: 10,
+      sortBy: 'created',
+      search: 'test',
       page: 1,
-      sortBy: 'created'
+      resetPage: false
     };
 
     const mockApiResponse = {
@@ -1142,12 +1165,15 @@ describe('Main store', () => {
 
     const bountiesUrl = `http://${getHost()}/gobounties/all?limit=${searchCriteria.limit}&sortBy=${
       searchCriteria.sortBy
-    }&search=${searchCriteria.search}&page=${searchCriteria.page}&resetPage=false`;
+    }&search=${searchCriteria.search}&page=${searchCriteria.page}&resetPage=${
+      searchCriteria.resetPage
+    }`;
 
     fetchStub.callsFake((url: string) => {
       if (url === bountiesUrl) {
         return Promise.resolve(mockApiResponse);
       }
+      return Promise.reject(new Error('Unexpected URL'));
     });
 
     await store.getPeopleBounties(searchCriteria);

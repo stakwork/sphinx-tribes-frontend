@@ -104,7 +104,6 @@ describe('Edit Bounty By Searching, Change Workspace And Assignee', () => {
     cy.get('body').click(0, 0);
     cy.wait(1000);
 
-
     NewCodingLanguages.forEach((language: any) => {
       cy.contains(language).should('exist').and('be.visible');
     });
