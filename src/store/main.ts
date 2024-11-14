@@ -1,3 +1,4 @@
+/* eslint-disable no-dupe-else-if */
 import { uniqBy } from 'lodash';
 import memo from 'memo-decorator';
 import { action, makeAutoObservable, observable } from 'mobx';
@@ -600,10 +601,8 @@ export class MainStore {
     };
 
     if (params) {
-      // save previous params
       this.getWantedsPrevParams = queryParams;
     }
-
 
     let newParams = {};
     if (params?.Pending === 'true' || params?.Pending === true) {
@@ -617,21 +616,18 @@ export class MainStore {
           Completed: true,
           Pending: false,
           Failed: false,
-          pending: true,
           languageString: '',
           direction: 'desc'
         };
       }
     }
 
-    // Use newParams if the condition is met; otherwise, fallback to existing params
     queryParams =
       (params.Pending === 'true' || params.Pending === true) &&
       (params.Paid === 'false' || params.Paid === false)
         ? newParams
         : params;
 
-    // if we don't pass the params, we should use previous params for invalidate query
     const query2 = this.appendQueryParams(
       'gobounties/all',
       queryLimit,
@@ -640,12 +636,21 @@ export class MainStore {
 
     try {
       const ps2 = await api.get(query2);
-      console.log(ps2,"ps2")
+
       const ps3: any[] = [];
 
       if (ps2) {
         for (let i = 0; i < ps2.length; i++) {
           const bounty = { ...ps2[i].bounty };
+
+          // Check if `payment_pending` should be true based on `Pending` query param
+          if (params.Pending && bounty.payment_pending === true) {
+            continue; // Skip this bounty if `payment_pending` is false
+          }
+          if (params.Completed && bounty.payment_pending === false) {
+            continue;
+          }
+
           let assignee;
           let organization;
           const owner = { ...ps2[i].owner };
@@ -666,12 +671,10 @@ export class MainStore {
         }
       }
 
-      // for search always reset page
       if (queryParams && queryParams.resetPage) {
         this.setPeopleBounties(ps3);
         uiStore.setPeopleBountiesPageNumber(1);
       } else {
-        // all other cases, merge
         const wanteds = this.doPageListMerger(
           this.peopleBounties,
           ps3,
@@ -681,13 +684,13 @@ export class MainStore {
         );
         this.setPeopleBounties(wanteds);
       }
-
       return ps3;
     } catch (e) {
       console.log('fetch failed getPeopleBounties: ', e);
       return [];
     }
   }
+
 
   async getPhaseBounties(
     feature_uuid: string,
@@ -881,7 +884,6 @@ export class MainStore {
       direction: 'DESC'
     });
 
-    console.log(queryParams, 'queryParams');
     try {
       const ps2 = await api.get(query);
       const ps3: any[] = [];
@@ -902,7 +904,7 @@ export class MainStore {
             // If `Paid` is not true, filter unpaid bounties
             if (!bounty.paid && !bounty.completed) {
               shouldInclude = true;
-            } else if (queryParams.Pending && bounty.completed && !bounty.paid) {
+            } else if (queryParams.Pending && !bounty.completed && !bounty.paid) {
               shouldInclude = true;
             }
           }
@@ -930,7 +932,7 @@ export class MainStore {
       }
 
       this.setCreatedBounties(ps3);
-
+      console.log(ps3,"ps3")
       return ps3;
     } catch (e) {
       console.log('fetch failed getPersonCreatedBounties: ', e);
@@ -1019,7 +1021,7 @@ export class MainStore {
   }
 
   getWantedsSpecWorkspacePrevParams?: QueryParams = {};
-  async getSpecificWorkspaceBounties(uuid: string, params?: any): Promise<PersonBounty[]> {
+  async getSpecificWorkspaceBounties(uuid: string, params: any = {}): Promise<PersonBounty[]> {
     let queryParams: QueryParams = {
       limit: queryLimit,
       sortBy: 'created',
@@ -1030,13 +1032,12 @@ export class MainStore {
     };
 
     if (params) {
-      // save previous params
       this.getWantedsSpecWorkspacePrevParams = queryParams;
     }
 
     let newParams = {};
-    if (params.Pending === 'true' || params.Pending === true) {
-      if (params.Paid === 'false' || params.Paid === false) {
+    if (params?.Pending === 'true' || params?.Pending === true) {
+      if (params?.Paid === 'false' || params?.Paid === false) {
         newParams = {
           page: 1,
           resetPage: true,
@@ -1046,29 +1047,40 @@ export class MainStore {
           Completed: true,
           Pending: false,
           Failed: false,
-          pending: true,
           languageString: '',
           direction: 'desc'
         };
       }
     }
 
-    // Use newParams if the condition is met; otherwise, fallback to existing params
     queryParams =
       (params.Pending === 'true' || params.Pending === true) &&
       (params.Paid === 'false' || params.Paid === false)
         ? newParams
         : params;
 
-    const query2 = this.appendQueryParams(`workspaces/bounties/${uuid}`, queryLimit, queryParams);
+    const query2 = this.appendQueryParams(
+      `workspaces/bounties/${uuid}`,
+      queryLimit,
+      params ? queryParams : this.getWantedsSpecWorkspacePrevParams
+    );
 
     try {
       const ps2 = await api.get(query2);
       const ps3: any[] = [];
 
-      if (ps2 && ps2.length) {
+      if (ps2) {
         for (let i = 0; i < ps2.length; i++) {
           const bounty = { ...ps2[i].bounty };
+
+          // Check if `payment_pending` should be true based on `Pending` query param
+          if (params.Pending && bounty.payment_pending === true) {
+            continue; // Skip this bounty if `payment_pending` is false
+          }
+          if (params.Completed && bounty.payment_pending === false) {
+            continue;
+          }
+
           let assignee;
           let organization;
           const owner = { ...ps2[i].owner };
@@ -1089,12 +1101,10 @@ export class MainStore {
         }
       }
 
-      // for search always reset page
       if (queryParams && queryParams.resetPage) {
         this.setPeopleBounties(ps3);
         uiStore.setPeopleBountiesPageNumber(1);
       } else {
-        // all other cases, merge
         const wanteds = this.doPageListMerger(
           this.peopleBounties,
           ps3,
@@ -1102,15 +1112,16 @@ export class MainStore {
           queryParams,
           'bounties'
         );
-
         this.setPeopleBounties(wanteds);
       }
+
       return ps3;
     } catch (e) {
-      console.log('fetch failed getSpecificWorkspaceBounti: ', e);
+      console.log('fetch failed getSpecificWorkspaceBounties: ', e);
       return [];
     }
   }
+
 
   async getWorkspaceBounties(uuid: string, queryParams?: any): Promise<PersonBounty[]> {
     queryParams = { ...queryParams, search: uiStore.searchText };
