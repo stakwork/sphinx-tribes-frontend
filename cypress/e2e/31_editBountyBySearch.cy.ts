@@ -1,6 +1,6 @@
 describe('Edit Bounty By Searching, Change Workspace And Assignee', () => {
-  const WorkspaceName1 = 'new';
-  const WorkspaceName2 = 'J2';
+  const WorkspaceName1 = 'jointOrg';
+  const WorkspaceName2 = 'jointOrg';
   const NewAssignee = 'carol';
   const NewAmount = '200';
   const NewCodingLanguages = ['Python', 'Rust'];
@@ -33,7 +33,7 @@ describe('Edit Bounty By Searching, Change Workspace And Assignee', () => {
     cy.contains(workSpace.loggedInAs).click();
     cy.wait(1000);
     for (let i = 1; i <= 2; i++) {
-      const updatedName = `J${i}`;
+      const updatedName = `jointOrg${i}`;
       const updatedWorkspace = { ...workSpace, name: updatedName };
       cy.create_workspace(updatedWorkspace);
       cy.wait(1000);
