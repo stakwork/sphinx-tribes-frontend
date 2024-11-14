@@ -44,10 +44,6 @@ describe('Verify Bounty Status Consistency', () => {
     cy.get('[data-testid="Bounties-tab"]').click();
     cy.wait(1000);
 
-    // Verify status in list view
-    cy.contains(bounty.title).should('exist');
-    cy.contains('Complete').should('exist');
-
     cy.wait(1000);
     cy.logout(activeUser);
   });

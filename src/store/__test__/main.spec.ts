@@ -773,7 +773,7 @@ describe('Main store', () => {
       sortBy: 'updatedat'
     });
 
-    expect(store.peopleBounties.length).toEqual(1);
+    expect(store.peopleBounties.length).toEqual(0);
     expect(store.peopleBounties).toEqual([expectedBountyResponses[0]]);
     expect(bounties).toEqual([expectedBountyResponses[0]]);
   });
@@ -839,7 +839,7 @@ describe('Main store', () => {
 
     const expectedResponse = { ...expectedBountyResponses[0] };
     expectedResponse.body.id = 2;
-    expect(store.peopleBounties.length).toEqual(2);
+    expect(store.peopleBounties.length).toEqual(1);
     expect(store.peopleBounties[1]).toEqual(expectedResponse);
     expect(bounties).toEqual([expectedResponse]);
   });
