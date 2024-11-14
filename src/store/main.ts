@@ -691,7 +691,6 @@ export class MainStore {
     }
   }
 
-
   async getPhaseBounties(
     feature_uuid: string,
     phase_uuid: string,
@@ -932,7 +931,7 @@ export class MainStore {
       }
 
       this.setCreatedBounties(ps3);
-      console.log(ps3,"ps3")
+      console.log(ps3, 'ps3');
       return ps3;
     } catch (e) {
       console.log('fetch failed getPersonCreatedBounties: ', e);
@@ -1121,7 +1120,6 @@ export class MainStore {
       return [];
     }
   }
-
 
   async getWorkspaceBounties(uuid: string, queryParams?: any): Promise<PersonBounty[]> {
     queryParams = { ...queryParams, search: uiStore.searchText };
