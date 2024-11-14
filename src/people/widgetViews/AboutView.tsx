@@ -265,7 +265,7 @@ export const AboutView = observer((props: AboutViewProps) => {
       <Divider />
 
       {owner_pubkey && (
-        <QrBar data-testid="user-pubkey" value={`${owner_pubkey}:${owner_route_hint}`} />
+        <QrBar data-testid="user-pubkey" value={`${owner_pubkey}_${owner_route_hint}`} />
       )}
 
       {tag && (
