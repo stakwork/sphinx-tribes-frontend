@@ -5,7 +5,7 @@ describe('Alice tries to create a bounty', () => {
     cy.wait(1000);
 
     cy.create_workspace({
-      loggedInAs: 'carol',
+      loggedInAs: activeUser,
       name: 'workspace1',
       description: 'We are testing out our workspace',
       website: 'https://community.sphinx.chat',
