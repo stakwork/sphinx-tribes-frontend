@@ -53,7 +53,7 @@ const GenerateStoriesView: React.FC = () => {
     featureName: featureName,
     description: featureBrief,
     examples: [],
-    webhook_url: `${getHost()}/features/stories`,
+    webhook_url: `https://${getHost()}/features/stories`,
     featureUUID: feature_uuid ?? ''
   };
 
