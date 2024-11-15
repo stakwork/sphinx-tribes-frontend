@@ -3,7 +3,7 @@ describe('Alice tries to paid and unpaid a hunter after creating a bounty', () =
 
   const bounty: Cypress.Bounty = {
     title: 'My new Bounty for unapaid user',
-    workspace:'workspace3',
+    workspace:'workspace9',
     category: 'Web development',
     coding_language: ['Typescript', 'Javascript', 'Lightning'],
     description: 'This is available',
@@ -18,6 +18,16 @@ describe('Alice tries to paid and unpaid a hunter after creating a bounty', () =
   it('Create a bounty with an assignee then paid and unpaid the user', () => {
     let activeUser = 'alice';
     cy.login(activeUser);
+    cy.wait(1000);
+
+    cy.create_workspace({
+      loggedInAs: 'carol',
+      name: 'workspace9',
+      description: 'We are testing out our workspace',
+      website: 'https://community.sphinx.chat',
+      github: 'https://github.com/stakwork/sphinx-tribes-frontend'
+    });
+
     cy.wait(1000);
 
     cy.create_bounty(bounty);

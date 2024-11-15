@@ -1,7 +1,7 @@
 describe('Can Delete Bounty From Modal', () => {
   const bounty: Cypress.Bounty = {
     title: 'Ali Bounty',
-    workspace:'workspace1',
+    workspace:'workspace3',
     category: 'Web development',
     coding_language: ['Typescript', 'Javascript', 'Lightning'],
     description: 'This is available',
@@ -15,6 +15,16 @@ describe('Can Delete Bounty From Modal', () => {
   it('Can delete a bounty from modal', () => {
     const activeUser = 'alice';
     cy.login(activeUser);
+    cy.wait(1000);
+
+    cy.create_workspace({
+      loggedInAs: 'carol',
+      name: 'workspace3',
+      description: 'We are testing out our workspace',
+      website: 'https://community.sphinx.chat',
+      github: 'https://github.com/stakwork/sphinx-tribes-frontend'
+    });
+
     cy.wait(1000);
 
     cy.create_bounty(bounty);

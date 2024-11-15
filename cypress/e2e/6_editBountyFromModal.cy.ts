@@ -2,7 +2,7 @@ describe('Edit Bounty From Modal', () => {
   const assignee = 'carol';
   const bounty: Cypress.Bounty = {
     title: 'My new Bounty',
-    workspace:'workspace1',
+    workspace:'workspace4',
     category: 'Web development',
     coding_language: ['Typescript', 'Javascript', 'Lightning'],
     description: 'This is available',
@@ -17,6 +17,16 @@ describe('Edit Bounty From Modal', () => {
   it('Can edit a bounty from modal', () => {
     const activeUser = 'alice';
     cy.login(activeUser);
+    cy.wait(1000);
+
+    cy.create_workspace({
+      loggedInAs: 'carol',
+      name: 'workspace4',
+      description: 'We are testing out our workspace',
+      website: 'https://community.sphinx.chat',
+      github: 'https://github.com/stakwork/sphinx-tribes-frontend'
+    });
+
     cy.wait(1000);
 
     cy.create_bounty(bounty);

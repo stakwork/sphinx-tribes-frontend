@@ -1,7 +1,7 @@
 describe('View Bounty From Modal', () => {
   const bounty: Cypress.Bounty = {
     title: 'Ali Bounty',
-    workspace:'workspace1',
+    workspace:'workspace5',
     category: 'Web development',
     coding_language: ['Typescript', 'Javascript', 'Lightning'],
     description: 'This is available',
@@ -16,6 +16,16 @@ describe('View Bounty From Modal', () => {
   it('Should view the bounty modal after creating', () => {
     const activeUser = 'alice';
     cy.login(activeUser);
+    cy.wait(1000);
+
+    cy.create_workspace({
+      loggedInAs: 'carol',
+      name: 'workspace5',
+      description: 'We are testing out our workspace',
+      website: 'https://community.sphinx.chat',
+      github: 'https://github.com/stakwork/sphinx-tribes-frontend'
+    });
+
     cy.wait(1000);
 
     cy.create_bounty(bounty);

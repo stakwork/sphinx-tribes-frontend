@@ -1,7 +1,7 @@
 describe('Alice tries to assign a hunter after creating a bounty', () => {
   const bounty: Cypress.Bounty = {
     title: 'My new Bounty',
-    workspace:'workspace1',
+    workspace:'workspace6',
     category: 'Web development',
     coding_language: ['Typescript', 'Javascript', 'Lightning'],
     description: 'This is available',
@@ -18,6 +18,16 @@ describe('Alice tries to assign a hunter after creating a bounty', () => {
   it('Creates a bounty without assignee', () => {
     let activeUser = 'alice';
     cy.login(activeUser);
+    cy.wait(1000);
+
+    cy.create_workspace({
+      loggedInAs: 'carol',
+      name: 'workspace6',
+      description: 'We are testing out our workspace',
+      website: 'https://community.sphinx.chat',
+      github: 'https://github.com/stakwork/sphinx-tribes-frontend'
+    });
+
     cy.wait(1000);
 
     cy.create_bounty(bounty);
