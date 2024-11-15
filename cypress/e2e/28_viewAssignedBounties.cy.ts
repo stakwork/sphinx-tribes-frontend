@@ -3,6 +3,7 @@ describe('View User Assigned Bounties', () => {
 
   const bounty: Cypress.Bounty = {
     title: 'Syed Bounty',
+    workspace:'workspace5',
     category: 'Web development',
     coding_language: ['Typescript', 'Javascript', 'Lightning'],
     description: 'This is available',

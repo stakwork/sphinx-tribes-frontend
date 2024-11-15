@@ -11,6 +11,7 @@ describe('Alice tries to create a bounty on the user profile page and view them'
       cy.create_bounty(
         {
           title: `Bounty Title ${i}`,
+            workspace:'workspace4',
           category: 'Web development',
           coding_language: ['Typescript'],
           description: 'Lorem Ipsum Dolor',

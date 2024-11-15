@@ -3,6 +3,7 @@ describe('Super Admin Bounty Filter Status Dropdown ', () => {
 
   const bounty: Cypress.Bounty = {
     title: 'Syed',
+    workspace: 'workspace6',
     category: 'Web development',
     description: 'This is available',
     amount: '123',

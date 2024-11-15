@@ -3,6 +3,7 @@ describe('Load More For Created And Assigned Bounties', () => {
 
   const bounty: Cypress.Bounty = {
     title: 'Syed Bounty',
+    workspace:'workspace5',
     category: 'Web development',
     description: 'This is available',
     amount: '12',

@@ -2,6 +2,7 @@ describe('Verify Bounty Status Consistency', () => {
   const assignee = 'carol';
   const bounty: Cypress.Bounty = {
     title: 'Ali Bounty',
+    workspace: 'workspace6',
     category: 'Web development',
     coding_language: ['Typescript', 'Javascript', 'Lightning'],
     description: 'This is available',

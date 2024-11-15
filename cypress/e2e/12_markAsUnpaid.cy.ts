@@ -3,6 +3,7 @@ describe('Alice tries to paid and unpaid a hunter after creating a bounty', () =
 
   const bounty: Cypress.Bounty = {
     title: 'My new Bounty for unapaid user',
+    workspace:'workspace3',
     category: 'Web development',
     coding_language: ['Typescript', 'Javascript', 'Lightning'],
     description: 'This is available',

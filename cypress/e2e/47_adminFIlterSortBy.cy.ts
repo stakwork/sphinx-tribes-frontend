@@ -3,6 +3,7 @@ describe('Super Admin Bounty Filter SortBy', () => {
 
   const bounty: Cypress.Bounty = {
     title: 'MirzaRef',
+    workspace: 'workspace6',
     category: 'Web development',
     description: 'This is available',
     amount: '123',

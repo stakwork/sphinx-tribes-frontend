@@ -3,6 +3,7 @@ describe('Admin Custom Date Input', () => {
 
   const bounty: Cypress.Bounty = {
     title: 'Admin',
+    workspace: 'workspace6',
     category: 'Web development',
     description: 'This is available',
     amount: '123',

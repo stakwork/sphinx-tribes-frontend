@@ -1,6 +1,7 @@
 describe('Can Delete Bounty From Modal', () => {
   const bounty: Cypress.Bounty = {
     title: 'Ali Bounty',
+    workspace:'workspace1',
     category: 'Web development',
     coding_language: ['Typescript', 'Javascript', 'Lightning'],
     description: 'This is available',

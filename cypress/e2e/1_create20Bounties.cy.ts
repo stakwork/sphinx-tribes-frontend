@@ -7,6 +7,7 @@ describe('Alice tries to create 20 bounties', () => {
     for (let i = 1; i <= 20; i++) {
       cy.create_bounty({
         title: `Title ${i}`,
+        workspace:'workspace2',
         category: 'Web development',
         coding_language: ['Typescript'],
         description: 'Lorem Ipsum Dolor',

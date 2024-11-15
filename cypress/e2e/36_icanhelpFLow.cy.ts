@@ -4,6 +4,7 @@ describe('I Can Help Flow', () => {
 
   const bounty: Cypress.Bounty = {
     title: 'UmerBounty',
+    workspace: 'workspace5',
     category: 'Web development',
     coding_language: ['Typescript', 'Javascript', 'Lightning'],
     description: 'This is available',

@@ -6,6 +6,7 @@ describe('Alice tries to create a bounty', () => {
 
     cy.create_bounty({
       title: 'My new Bounty',
+      workspace:'workspace1',
       category: 'Web development',
       coding_language: ['Typescript', 'Javascript', 'Lightning'],
       description: 'This is available',

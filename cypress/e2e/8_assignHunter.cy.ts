@@ -1,6 +1,7 @@
 describe('Alice tries to assign a hunter after creating a bounty', () => {
   const bounty: Cypress.Bounty = {
     title: 'My new Bounty',
+    workspace:'workspace1',
     category: 'Web development',
     coding_language: ['Typescript', 'Javascript', 'Lightning'],
     description: 'This is available',

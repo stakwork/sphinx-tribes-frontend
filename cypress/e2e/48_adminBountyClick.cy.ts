@@ -3,6 +3,7 @@ describe('Super Admin Bounty Creation and Verification', () => {
 
   const bounty: Cypress.Bounty = {
     title: 'saithsab',
+    workspace: 'workspace6',
     category: 'Web development',
     coding_language: ['Typescript', 'Javascript', 'Lightning'],
     description: 'This is available',

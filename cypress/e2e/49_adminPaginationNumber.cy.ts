@@ -3,6 +3,7 @@ describe('Super Admin Pagination Bounties List', () => {
 
   const bounty: Cypress.Bounty = {
     title: 'Pagination Bounty',
+    workspace: 'workspace6',
     category: 'Web development',
     coding_language: ['Typescript', 'Javascript', 'Lightning'],
     description: 'This is available',

@@ -3,6 +3,7 @@ describe('Admin Statistics Custom Date Range', () => {
 
   const bounty: Cypress.Bounty = {
     title: 'UmerJobs',
+    workspace: 'workspace6',
     category: 'Web development',
     coding_language: ['Typescript', 'Javascript', 'Lightning'],
     description: 'This is available',

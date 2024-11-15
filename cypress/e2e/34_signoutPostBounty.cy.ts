@@ -3,6 +3,7 @@ describe('Signed Out Post Bounty Flow ', () => {
 
   const bounty: Cypress.Bounty = {
     title: 'Syed Bounty',
+    workspace:'workspace5',
     category: 'Web development',
     description: 'This is available',
     amount: '12',

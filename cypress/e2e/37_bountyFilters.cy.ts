@@ -15,6 +15,7 @@ describe('Alice tries to create 6 bounties and then assert filtered bounties', (
     for (let i = 0; i < 6; i++) {
       cy.create_bounty({
         title: `Filter Bounty Title ${i}`,
+        workspace: 'workspace6',
         category: 'Web development',
         coding_language: [languages[i]],
         description: 'Lorem Ipsum Dolor',

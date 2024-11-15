@@ -223,51 +223,57 @@ function Form(props: FormProps) {
             <div className="LeftSchema" style={style}>
               {schema
                 .filter((item: any) => schemaData.schema.includes(item.name))
-                .map((item: FormField) => (
-                  <Input
-                    {...item}
-                    key={item.name}
-                    newDesign={item.name === 'description' ? false : true}
-                    values={values}
-                    testId={item.name}
-                    setAssigneefunction={item.name === 'assignee' && setAssigneeName}
-                    peopleList={peopleList}
-                    isFocused={isFocused}
-                    errors={errors}
-                    scrollToTop={scrollToTop}
-                    github_state={github_state}
-                    value={values[item.name]}
-                    error={errors[item.name]}
-                    initialValues={initialValues}
-                    deleteErrors={() => {
-                      if (errors[item.name]) delete errors[item.name];
-                    }}
-                    handleChange={(e: any) => {
-                      setFieldValue(item.name, e);
-                    }}
-                    setFieldValue={(e: any, f: any) => {
-                      setFieldValue(e, f);
-                    }}
-                    setFieldTouched={setFieldTouched}
-                    handleBlur={() => {
-                      setFieldTouched(item.name, false);
-                      setIsFocused({ [item.label]: false });
-                    }}
-                    handleFocus={() => {
-                      setFieldTouched(item.name, true);
-                      setIsFocused({ [item.label]: true });
-                    }}
-                    setDisableFormButtons={setDisableFormButtons}
-                    extraHTML={(props.extraHTML && props.extraHTML[item.name]) || item.extraHTML}
-                    style={
-                      item.name === 'github_description' && !values.ticket_url
-                        ? {
-                            display: 'none'
-                          }
-                        : undefined
-                    }
-                  />
-                ))}
+                .map((item: FormField) => {
+                  if (item.name === 'org_uuid') {
+                    item.label = 'Workspace *';
+                  }
+
+                  return (
+                    <Input
+                      {...item}
+                      key={item.name}
+                      newDesign={item.name === 'description' ? false : true}
+                      values={values}
+                      testId={item.name}
+                      setAssigneefunction={item.name === 'assignee' && setAssigneeName}
+                      peopleList={peopleList}
+                      isFocused={isFocused}
+                      errors={errors}
+                      scrollToTop={scrollToTop}
+                      github_state={github_state}
+                      value={values[item.name]}
+                      error={errors[item.name]}
+                      initialValues={initialValues}
+                      deleteErrors={() => {
+                        if (errors[item.name]) delete errors[item.name];
+                      }}
+                      handleChange={(e: any) => {
+                        setFieldValue(item.name, e);
+                      }}
+                      setFieldValue={(e: any, f: any) => {
+                        setFieldValue(e, f);
+                      }}
+                      setFieldTouched={setFieldTouched}
+                      handleBlur={() => {
+                        setFieldTouched(item.name, false);
+                        setIsFocused({ [item.label]: false });
+                      }}
+                      handleFocus={() => {
+                        setFieldTouched(item.name, true);
+                        setIsFocused({ [item.label]: true });
+                      }}
+                      setDisableFormButtons={setDisableFormButtons}
+                      extraHTML={(props.extraHTML && props.extraHTML[item.name]) || item.extraHTML}
+                      style={
+                        item.name === 'github_description' && !values.ticket_url
+                          ? {
+                              display: 'none'
+                            }
+                          : undefined
+                      }
+                    />
+                  );
+                })}
             </div>
             {schemaData.step !== 5 && (
               <div className="RightSchema" style={style}>
