@@ -502,6 +502,8 @@ function Form(props: FormProps) {
                                 label={
                                   item.name === 'description' && !values.ticket_url
                                     ? 'Description *'
+                                    : item.name === 'org_uuid' && !values.ticket_url
+                                    ? 'Workspace *'
                                     : item.label
                                 }
                                 placeholder={
