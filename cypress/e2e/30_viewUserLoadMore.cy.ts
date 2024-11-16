@@ -1,9 +1,15 @@
 describe('Load More For Created And Assigned Bounties', () => {
-  let activeUser = 'carol';
+  const workspace: Cypress.Workspace = {
+    loggedInAs: 'carol',
+    name: 'Workspace12',
+    description: 'A workspace focused on amazing projects.',
+    website: 'https://amazing.org',
+    github: 'https://github.com/amazing'
+  };
 
   const bounty: Cypress.Bounty = {
+    workspace:'Workspace12',
     title: 'Syed Bounty',
-    workspace:'workspace5',
     category: 'Web development',
     description: 'This is available',
     amount: '12',
@@ -13,10 +19,13 @@ describe('Load More For Created And Assigned Bounties', () => {
   };
 
   beforeEach(() => {
-    cy.login(activeUser);
+    cy.login(workspace.loggedInAs);
+    cy.wait(1000);
+    cy.create_workspace(workspace);
     cy.wait(1000);
     cy.viewport(1950, 1080);
   });
+
 
   it('Thirty bounties should be created and assigned to a user, and they should be visible on both sides', () => {
     for (let i = 1; i <= 22; i++) {
@@ -48,7 +57,7 @@ describe('Load More For Created And Assigned Bounties', () => {
       cy.contains(`Syed Bounty${i}`, { timeout: 10000 }).should('exist');
     }
 
-    cy.contains(activeUser).click();
+    cy.contains(workspace.loggedInAs).click();
     cy.wait(1000);
 
     cy.get('[data-testid="Bounties-tab"]').click();
@@ -66,6 +75,6 @@ describe('Load More For Created And Assigned Bounties', () => {
     }
 
     cy.get('body').click(0, 0);
-    cy.logout(activeUser);
+    cy.logout(workspace.loggedInAs);
   });
 });

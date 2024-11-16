@@ -1,9 +1,16 @@
 describe('View User Assigned Bounties', () => {
-  let activeUser = 'carol';
+  const workspace: Cypress.Workspace = {
+    loggedInAs: 'carol',
+    name: 'Workspace11',
+    description: 'A workspace focused on amazing projects.',
+    website: 'https://amazing.org',
+    github: 'https://github.com/amazing'
+  };
+
 
   const bounty: Cypress.Bounty = {
+    workspace:'Workspace11',
     title: 'Syed Bounty',
-    workspace:'workspace5',
     category: 'Web development',
     coding_language: ['Typescript', 'Javascript', 'Lightning'],
     description: 'This is available',
@@ -16,7 +23,9 @@ describe('View User Assigned Bounties', () => {
   };
 
   beforeEach(() => {
-    cy.login(activeUser);
+    cy.login(workspace.loggedInAs);
+    cy.wait(1000);
+    cy.create_workspace(workspace);
     cy.wait(1000);
   });
 
@@ -44,6 +53,6 @@ describe('View User Assigned Bounties', () => {
     }
 
     cy.get('body').click(0, 0);
-    cy.logout(activeUser);
+    cy.logout(workspace.loggedInAs);
   });
 });

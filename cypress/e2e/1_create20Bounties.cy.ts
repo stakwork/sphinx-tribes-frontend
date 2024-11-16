@@ -1,23 +1,25 @@
 describe('Alice tries to create 20 bounties', () => {
+  const workspace: Cypress.Workspace = {
+    loggedInAs: 'alice',
+    name: 'Workspace2',
+    description: 'A workspace focused on amazing projects.',
+    website: 'https://amazing.org',
+    github: 'https://github.com/amazing'
+  };
+
+  beforeEach(() => {
+    cy.login(workspace.loggedInAs);
+    cy.wait(1000);
+    cy.create_workspace(workspace);
+    cy.wait(1000);
+  });
+
   it('Create 20 bounties', () => {
-    let activeUser = 'alice';
-    cy.login(activeUser);
-    cy.wait(1000);
-
-    cy.create_workspace({
-      loggedInAs: 'carol',
-      name: 'workspace2',
-      description: 'We are testing out our workspace',
-      website: 'https://community.sphinx.chat',
-      github: 'https://github.com/stakwork/sphinx-tribes-frontend'
-    });
-
-    cy.wait(1000);
 
     for (let i = 1; i <= 20; i++) {
       cy.create_bounty({
+        workspace:'Workspace2',
         title: `Title ${i}`,
-        workspace:'workspace2',
         category: 'Web development',
         coding_language: ['Typescript'],
         description: 'Lorem Ipsum Dolor',
@@ -32,6 +34,6 @@ describe('Alice tries to create 20 bounties', () => {
 
     cy.wait(1000);
 
-    cy.logout(activeUser);
+    cy.logout(workspace.loggedInAs);
   });
 });

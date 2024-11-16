@@ -1,9 +1,15 @@
 describe('Super Admin Bounty Creation and Verification', () => {
-  let activeUser = 'alice';
+  const workspace: Cypress.Workspace = {
+    loggedInAs: 'alice',
+    name: 'Workspace19',
+    description: 'A workspace focused on amazing projects.',
+    website: 'https://amazing.org',
+    github: 'https://github.com/amazing'
+  };
 
   const bounty: Cypress.Bounty = {
+    workspace: 'Workspace19',
     title: 'saithsab',
-    workspace: 'workspace6',
     category: 'Web development',
     coding_language: ['Typescript', 'Javascript', 'Lightning'],
     description: 'This is available',
@@ -15,7 +21,9 @@ describe('Super Admin Bounty Creation and Verification', () => {
   };
 
   beforeEach(() => {
-    cy.login(activeUser);
+    cy.login(workspace.loggedInAs);
+    cy.wait(1000);
+    cy.create_workspace(workspace);
     cy.wait(1000);
   });
 
@@ -32,7 +40,7 @@ describe('Super Admin Bounty Creation and Verification', () => {
     cy.contains(`saithsab2`).invoke('removeAttr', 'target').click({ force: true });
     cy.wait(2000);
 
-    cy.get('[data-testid="owner_name"]').contains(activeUser).should('exist');
+    cy.get('[data-testid="owner_name"]').contains(workspace.loggedInAs).should('exist');
     cy.wait(1000);
 
     cy.contains('saithsab2').should('exist');
@@ -62,6 +70,6 @@ describe('Super Admin Bounty Creation and Verification', () => {
 
     cy.get('body').click(0, 0);
     cy.wait(600);
-    cy.logout(activeUser);
+    cy.logout(workspace.loggedInAs);
   });
 });

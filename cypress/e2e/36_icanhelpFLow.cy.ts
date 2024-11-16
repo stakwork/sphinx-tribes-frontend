@@ -1,10 +1,17 @@
 describe('I Can Help Flow', () => {
-  let activeUser = 'alice';
   let secondUser = 'carol';
 
+  const workspace: Cypress.Workspace = {
+    loggedInAs: 'alice',
+    name: 'Workspace15',
+    description: 'A workspace focused on amazing projects.',
+    website: 'https://amazing.org',
+    github: 'https://github.com/amazing'
+  };
+
   const bounty: Cypress.Bounty = {
+    workspace: 'Workspace15',
     title: 'UmerBounty',
-    workspace: 'workspace5',
     category: 'Web development',
     coding_language: ['Typescript', 'Javascript', 'Lightning'],
     description: 'This is available',
@@ -18,12 +25,13 @@ describe('I Can Help Flow', () => {
 
   beforeEach(() => {
     cy.clearCookies();
+    cy.login(workspace.loggedInAs);
+    cy.wait(1000);
+    cy.create_workspace(workspace);
+    cy.wait(1000);
   });
 
   it('Verify signup and user connection modals for bounties', () => {
-    cy.login(activeUser);
-    cy.wait(1000);
-
     for (let i = 1; i <= 3; i++) {
       const updatedBounty = { ...bounty, title: `UmerBounty${i}` };
       cy.create_bounty(updatedBounty);
@@ -31,7 +39,7 @@ describe('I Can Help Flow', () => {
     }
 
     cy.get('body').click(0, 0);
-    cy.logout(activeUser);
+    cy.logout(workspace.loggedInAs);
     cy.wait(3000);
 
     cy.contains('I can help').click();

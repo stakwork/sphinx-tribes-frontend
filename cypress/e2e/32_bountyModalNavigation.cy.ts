@@ -1,15 +1,28 @@
 describe('Alice tries to create 8 bounties and then assert that he can go to the next and previous bounties', () => {
-  it('Create 8 bounties and assert next and previous bounties', () => {
-    let activeUser = 'alice';
-    cy.login(activeUser);
+
+  const workspace: Cypress.Workspace = {
+    loggedInAs: 'alice',
+    name: 'Workspace13',
+    description: 'A workspace focused on amazing projects.',
+    website: 'https://amazing.org',
+    github: 'https://github.com/amazing'
+  };
+
+  beforeEach(() => {
+    cy.login(workspace.loggedInAs);
     cy.wait(1000);
+    cy.create_workspace(workspace);
+    cy.wait(1000);
+  });
+
+  it('Create 8 bounties and assert next and previous bounties', () => {
 
     const assignees = ['', '', '', 'carol', 'carol', 'carol', 'carol', 'carol'];
 
     for (let i = 0; i < 8; i++) {
       cy.create_bounty({
+        workspace:'Workspace13',
         title: `Navigation Bounty Title ${i}`,
-        workspace:'workspace5',
         category: 'Web development',
         coding_language: ['Typescript'],
         description: 'Lorem Ipsum Dolor',
@@ -112,6 +125,6 @@ describe('Alice tries to create 8 bounties and then assert that he can go to the
     cy.wait(1000);
 
     cy.get('[data-testid="close-btn"]').click(0, 0);
-    cy.logout(activeUser);
+    cy.logout(workspace.loggedInAs);
   });
 });

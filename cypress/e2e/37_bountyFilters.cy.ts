@@ -1,9 +1,20 @@
 describe('Alice tries to create 6 bounties and then assert filtered bounties', () => {
-  it('Create 6 bounties and assert filtered bounties', () => {
-    let activeUser = 'bob';
-    cy.login(activeUser);
-    cy.wait(2000);
+  const workspace: Cypress.Workspace = {
+    loggedInAs: 'bob',
+    name: 'Workspace16',
+    description: 'A workspace focused on amazing projects.',
+    website: 'https://amazing.org',
+    github: 'https://github.com/amazing'
+  };
 
+  beforeEach(() => {
+    cy.login(workspace.loggedInAs);
+    cy.wait(1000);
+    cy.create_workspace(workspace);
+    cy.wait(1000);
+  });
+
+  it('Create 6 bounties and assert filtered bounties', () => {
     const assignees = ['carol', 'carol', 'carol', 'carol', '', ''];
     const languages = ['Typescript', 'Lightning', 'PHP', 'Typescript', 'PHP', 'Typescript'];
 
@@ -14,8 +25,8 @@ describe('Alice tries to create 6 bounties and then assert filtered bounties', (
 
     for (let i = 0; i < 6; i++) {
       cy.create_bounty({
+        workspace: 'Workspace16',
         title: `Filter Bounty Title ${i}`,
-        workspace: 'workspace6',
         category: 'Web development',
         coding_language: [languages[i]],
         description: 'Lorem Ipsum Dolor',
@@ -53,7 +64,7 @@ describe('Alice tries to create 6 bounties and then assert filtered bounties', (
       }
     }
 
-    cy.logout(activeUser);
+    cy.logout(workspace.loggedInAs);
     cy.wait(1000);
 
     // check open filter

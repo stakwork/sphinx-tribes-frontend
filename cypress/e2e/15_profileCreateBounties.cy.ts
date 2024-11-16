@@ -1,17 +1,30 @@
 describe('Alice tries to create a bounty on the user profile page and view them', () => {
-  it('Create view bounties user profile page', () => {
-    let activeUser = 'alice';
-    cy.login(activeUser);
-    cy.wait(1000);
+    const workspace: Cypress.Workspace = {
+        loggedInAs: 'alice',
+        name: 'Workspace10',
+        description: 'A workspace focused on amazing projects.',
+        website: 'https://amazing.org',
+        github: 'https://github.com/amazing'
+    };
 
-    cy.contains(activeUser).click();
+    beforeEach(() => {
+        cy.login(workspace.loggedInAs);
+        cy.wait(1000);
+        cy.create_workspace(workspace);
+        cy.wait(1000);
+    });
+
+
+    it('Create view bounties user profile page', () => {
+
+    cy.contains(workspace.loggedInAs).click();
     cy.wait(1000);
 
     for (let i = 1; i <= 2; i++) {
       cy.create_bounty(
         {
+            workspace:'Workspace10',
           title: `Bounty Title ${i}`,
-            workspace:'workspace4',
           category: 'Web development',
           coding_language: ['Typescript'],
           description: 'Lorem Ipsum Dolor',
@@ -38,6 +51,6 @@ describe('Alice tries to create a bounty on the user profile page and view them'
     // click outside the modal
     cy.get('body').click(0, 0);
 
-    cy.logout(activeUser);
+    cy.logout(workspace.loggedInAs);
   });
 });
