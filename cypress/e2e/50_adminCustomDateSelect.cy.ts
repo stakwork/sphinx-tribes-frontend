@@ -1,14 +1,8 @@
 describe('Admin Statistics Custom Date Range', () => {
-  const workspace: Cypress.Workspace = {
-    loggedInAs: 'alice',
-    name: 'Workspace21',
-    description: 'A workspace focused on amazing projects.',
-    website: 'https://amazing.org',
-    github: 'https://github.com/amazing'
-  };
+  let activeUser = 'alice';
 
   const bounty: Cypress.Bounty = {
-    workspace: 'Workspace21',
+    workspace: 'Workspace1',
     title: 'UmerJobs',
     category: 'Web development',
     coding_language: ['Typescript', 'Javascript', 'Lightning'],
@@ -17,9 +11,7 @@ describe('Admin Statistics Custom Date Range', () => {
   };
 
   beforeEach(() => {
-    cy.login(workspace.loggedInAs);
-    cy.wait(1000);
-    cy.create_workspace(workspace);
+    cy.login(activeUser);
     cy.wait(1000);
   });
 
@@ -80,6 +72,6 @@ describe('Admin Statistics Custom Date Range', () => {
 
     cy.get('[data-testid="month"]').should('have.text', expectedDateRange);
 
-    cy.logout(workspace.loggedInAs);
+    cy.logout(activeUser);
   });
 });

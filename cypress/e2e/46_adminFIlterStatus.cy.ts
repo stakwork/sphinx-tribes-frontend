@@ -1,14 +1,8 @@
 describe('Super Admin Bounty Filter Status Dropdown ', () => {
-  const workspace: Cypress.Workspace = {
-    loggedInAs: 'alice',
-    name: 'Workspace18',
-    description: 'A workspace focused on amazing projects.',
-    website: 'https://amazing.org',
-    github: 'https://github.com/amazing'
-  };
+  let activeUser = 'alice';
 
   const bounty: Cypress.Bounty = {
-    workspace: 'Workspace18',
+    workspace: 'Workspace1',
     title: 'Syed',
     category: 'Web development',
     description: 'This is available',
@@ -18,9 +12,7 @@ describe('Super Admin Bounty Filter Status Dropdown ', () => {
   };
 
   beforeEach(() => {
-    cy.login(workspace.loggedInAs);
-    cy.wait(1000);
-    cy.create_workspace(workspace);
+    cy.login(activeUser);
     cy.wait(1000);
   });
 
@@ -114,6 +106,6 @@ describe('Super Admin Bounty Filter Status Dropdown ', () => {
 
     cy.wait(1000);
 
-    cy.logout(workspace.loggedInAs);
+    cy.logout(activeUser);
   });
 });

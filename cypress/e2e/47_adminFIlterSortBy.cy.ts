@@ -1,14 +1,8 @@
 describe('Super Admin Bounty Filter SortBy', () => {
-  const workspace: Cypress.Workspace = {
-    loggedInAs: 'alice',
-    name: 'Workspace19',
-    description: 'A workspace focused on amazing projects.',
-    website: 'https://amazing.org',
-    github: 'https://github.com/amazing'
-  };
+  let activeUser = 'alice';
 
   const bounty: Cypress.Bounty = {
-    workspace: 'Workspace19',
+    workspace: 'Workspace1',
     title: 'MirzaRef',
     category: 'Web development',
     description: 'This is available',
@@ -17,9 +11,7 @@ describe('Super Admin Bounty Filter SortBy', () => {
   };
 
   beforeEach(() => {
-    cy.login(workspace.loggedInAs);
-    cy.wait(1000);
-    cy.create_workspace(workspace);
+    cy.login(activeUser);
     cy.wait(1000);
   });
 
@@ -46,6 +38,6 @@ describe('Super Admin Bounty Filter SortBy', () => {
     cy.contains('MirzaRef1').should('not.exist');
     cy.contains('MirzaRef2').should('not.exist');
 
-    cy.logout(workspace.loggedInAs);
+    cy.logout(activeUser);
   });
 });

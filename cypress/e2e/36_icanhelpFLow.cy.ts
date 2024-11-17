@@ -25,6 +25,7 @@ describe('I Can Help Flow', () => {
 
   beforeEach(() => {
     cy.clearCookies();
+    cy.wait(1000);
     cy.login(workspace.loggedInAs);
     cy.wait(1000);
     cy.create_workspace(workspace);

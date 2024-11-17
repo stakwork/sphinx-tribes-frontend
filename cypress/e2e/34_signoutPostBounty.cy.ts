@@ -1,7 +1,7 @@
 describe('Signed Out Post Bounty Flow ', () => {
 
   const workspace: Cypress.Workspace = {
-    loggedInAs: 'alice',
+    loggedInAs: 'carol',
     name: 'Workspace14',
     description: 'A workspace focused on amazing projects.',
     website: 'https://amazing.org',
@@ -22,6 +22,8 @@ describe('Signed Out Post Bounty Flow ', () => {
     cy.login(workspace.loggedInAs);
     cy.wait(1000);
     cy.create_workspace(workspace);
+    cy.wait(1000);
+    cy.logout(workspace.loggedInAs);
     cy.wait(1000);
   });
 

@@ -1,14 +1,8 @@
 describe('Super Admin Bounties List', () => {
-  const workspace: Cypress.Workspace = {
-    loggedInAs: 'alice',
-    name: 'Workspace17',
-    description: 'A workspace focused on amazing projects.',
-    website: 'https://amazing.org',
-    github: 'https://github.com/amazing'
-  };
+  let activeUser = 'alice';
 
   const bounty: Cypress.Bounty = {
-    workspace: 'Workspace17',
+    workspace: 'Workspace1',
     title: 'AliRazaTask',
     category: 'Web development',
     coding_language: ['Typescript', 'Javascript', 'Lightning'],
@@ -21,9 +15,7 @@ describe('Super Admin Bounties List', () => {
   };
 
   beforeEach(() => {
-    cy.login(workspace.loggedInAs);
-    cy.wait(1000);
-    cy.create_workspace(workspace);
+    cy.login(activeUser);
     cy.wait(1000);
   });
 
@@ -57,6 +49,6 @@ describe('Super Admin Bounties List', () => {
       cy.contains(`AliRazaTask${i}`, { timeout: 10000 }).should('exist');
     }
 
-    cy.logout(workspace.loggedInAs);
+    cy.logout(activeUser);
   });
 });
