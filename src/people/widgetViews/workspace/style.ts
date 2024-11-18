@@ -1366,7 +1366,7 @@ export const StoriesButtonGroup = styled.div`
 
 export const GenerateStoriesModal = styled.div`
   background: #fff;
-  width: 800px;
+  width: 65%;
   max-height: 80vh;
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
@@ -1380,6 +1380,11 @@ export const GenerateStoriesModal = styled.div`
   display: flex;
   flex-direction: column;
   overflow: hidden;
+
+  @media (max-width: 768px) {
+    width: 90%;
+    padding: 1rem;
+  }
 `;
 
 export const GenerateStoriesHeader = styled.div`
@@ -1406,7 +1411,7 @@ export const GenerateStoriesText = styled.p`
   font-size: 18px;
   color: #5f6368;
   margin: 0;
-  width: 650px;
+  width: 100%;
 `;
 
 export const GenerateStoriesFooter = styled.div`
