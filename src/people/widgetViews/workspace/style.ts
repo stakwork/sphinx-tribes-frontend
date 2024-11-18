@@ -1366,13 +1366,20 @@ export const StoriesButtonGroup = styled.div`
 
 export const GenerateStoriesModal = styled.div`
   background: #fff;
-  width: 600px;
+  width: 800px;
+  max-height: 80vh;
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  position: relative;
-  margin: auto;
-  max-width: 90vw;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 100vw;
   border: none;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 `;
 
 export const GenerateStoriesHeader = styled.div`
@@ -1389,12 +1396,9 @@ export const GenerateStoriesTitle = styled.h2`
 `;
 
 export const GenerateStoriesContent = styled.div`
-  padding: 40px 32px;
-  min-height: 200px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  padding: 40px 70px;
+  flex: 1;
+  overflow-y: auto;
 `;
 
 export const GenerateStoriesText = styled.p`
@@ -1402,7 +1406,7 @@ export const GenerateStoriesText = styled.p`
   font-size: 18px;
   color: #5f6368;
   margin: 0;
-  width: 500px;
+  width: 650px;
 `;
 
 export const GenerateStoriesFooter = styled.div`
