@@ -3,6 +3,9 @@ import { useHistory, useParams } from 'react-router-dom';
 import { EuiOverlayMask } from '@elastic/eui';
 import { useStores } from '../../store';
 import { getHost } from '../../config';
+import { FieldWrap } from '../../pages/tickets/style.ts';
+import { Label } from '../../pages/tickets/style.ts';
+import { UserStoryWrapper } from './workspace/style';
 import {
   GenerateStoriesModal,
   GenerateStoriesHeader,
@@ -11,7 +14,8 @@ import {
   GenerateStoriesText,
   GenerateStoriesFooter,
   GenerateStoriesButton,
-  SendStoriesButton
+  SendStoriesButton,
+  UserStoryField
 } from './workspace/style';
 
 const GenerateStoriesView: React.FC = () => {
@@ -79,17 +83,50 @@ const GenerateStoriesView: React.FC = () => {
         <GenerateStoriesContent>
           <GenerateStoriesText>
             {response ? (
-              <pre>{JSON.stringify(response, null, 2)}</pre>
+              response?.success ? (
+                'Workflow submitted please check back in 5 minutes and refresh the feature screen'
+              ) : (
+                'Workflow failed: Please contact Hive Product Manager'
+              )
             ) : postData ? (
-              <pre>{JSON.stringify(postData, null, 2)}</pre>
+              <>
+                <FieldWrap>
+                  <Label>Product Brief</Label>
+                  <UserStoryWrapper>
+                    <UserStoryField>{postData.productBrief}</UserStoryField>
+                  </UserStoryWrapper>
+                </FieldWrap>
+
+                <FieldWrap>
+                  <Label>Feature Name</Label>
+                  <UserStoryWrapper>
+                    <UserStoryField>{postData.featureName}</UserStoryField>
+                  </UserStoryWrapper>
+                </FieldWrap>
+
+                <FieldWrap>
+                  <Label>Feature Description</Label>
+                  <UserStoryWrapper>
+                    <UserStoryField>{postData.description}</UserStoryField>
+                  </UserStoryWrapper>
+                </FieldWrap>
+              </>
             ) : (
               'Story Generation Coming Soon!'
             )}
           </GenerateStoriesText>
         </GenerateStoriesContent>
         <GenerateStoriesFooter>
-          <GenerateStoriesButton onClick={handleClose}>Cancel</GenerateStoriesButton>
-          <SendStoriesButton onClick={submitStories}>Send</SendStoriesButton>
+          {response ? (
+            <>
+              <SendStoriesButton onClick={handleClose}>Close</SendStoriesButton>
+            </>
+          ) : (
+            <>
+              <GenerateStoriesButton onClick={handleClose}>Cancel</GenerateStoriesButton>
+              <SendStoriesButton onClick={submitStories}>Send</SendStoriesButton>
+            </>
+          )}
         </GenerateStoriesFooter>
       </GenerateStoriesModal>
     </EuiOverlayMask>
