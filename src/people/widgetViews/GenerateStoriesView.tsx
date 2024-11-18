@@ -3,8 +3,8 @@ import { useHistory, useParams } from 'react-router-dom';
 import { EuiOverlayMask } from '@elastic/eui';
 import { useStores } from '../../store';
 import { getHost } from '../../config';
-import { FieldWrap } from '../../pages/tickets/style.ts';
-import { Label } from '../../pages/tickets/style.ts';
+import { FieldWrap } from '../../pages/tickets/style';
+import { Label } from '../../pages/tickets/style';
 import { UserStoryWrapper } from './workspace/style';
 import {
   GenerateStoriesModal,
