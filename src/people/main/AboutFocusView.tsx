@@ -108,7 +108,7 @@ const AboutFocusView = (props: FocusViewProps) => {
 
     if (config && config.name === 'about') {
       const requestData = formatAboutBody(newBody);
-      await main.saveProfile(requestData);
+      await main.updateProfile(requestData);
       if (shouldCloseModal) {
         closeModal();
       }

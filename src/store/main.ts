@@ -1464,39 +1464,68 @@ export class MainStore {
 
     if (body.price_to_meet) body.price_to_meet = parseInt(body.price_to_meet); // must be an int
     try {
-      if (this.lnToken) {
-        const r = await this.saveBountyPerson(body);
-        if (!r) return;
-        // first time profile makers will need this on first login
-        if (r.status === 200) {
-          const p = await r.json();
-          const updateSelf = { ...info, ...p };
-          uiStore.setMeInfo(updateSelf);
-        }
-      } else {
-        const [r, error] = await this.doCallToRelay('POST', 'profile', body);
-        if (error) throw error;
-        if (!r) return;
-        if (!r.ok) {
-          throw new Error('Update failed. Please try again.');
-        }
-
-        // first time profile makers will need this on first login
-        if (!body.id) {
-          const j = await r.json();
-          if (j.response && j.response.id) {
-            body.id = j.response.id;
-          }
-        }
-
-        // save to tribes
-        await this.saveBountyPerson(body);
-        const updateSelf = { ...info, ...body };
-        await this.getSelf(updateSelf);
-
+      const r = await this.saveBountyPerson(body);
+      if (!r) {
         uiStore.setToasts([
           {
             id: '1',
+            title: 'Profile saving failed'
+          }
+        ]);
+        return;
+      }
+      // first time profile makers will need this on first login
+      if (r.status === 200) {
+        const p = await r.json();
+        const updateSelf = { ...info, ...p };
+        uiStore.setMeInfo(updateSelf);
+        this.getSelf(updateSelf);
+
+        uiStore.setToasts([
+          {
+            id: '2',
+            title: 'Saved.'
+          }
+        ]);
+      }
+    } catch (e) {
+      uiStore.setToasts([
+        {
+          id: '1',
+          title: 'Failed to save profile'
+        }
+      ]);
+      console.log('Error saveProfile: ', e);
+    }
+  }
+
+  async updateProfile(body: any) {
+    if (!uiStore.meInfo) return null;
+    const info = uiStore.meInfo;
+    if (!body) return; // avoid saving bad state
+
+    if (body.price_to_meet) body.price_to_meet = parseInt(body.price_to_meet); // must be an int
+    try {
+      const r = await this.updateBountyPerson(body);
+      if (!r) {
+        uiStore.setToasts([
+          {
+            id: '1',
+            title: 'Profile update failed'
+          }
+        ]);
+        return;
+      }
+      // first time profile makers will need this on first login
+      if (r.status === 200) {
+        const p = await r.json();
+        const updateSelf = { ...info, ...p };
+        uiStore.setMeInfo(updateSelf);
+        this.getSelf(updateSelf);
+
+        uiStore.setToasts([
+          {
+            id: '2',
             title: 'Saved.'
           }
         ]);
@@ -1508,7 +1537,7 @@ export class MainStore {
           title: 'Failed to update profile'
         }
       ]);
-      console.log('Error saveProfile: ', e);
+      console.log('Error updateProfile: ', e);
     }
   }
 
@@ -1519,6 +1548,26 @@ export class MainStore {
 
     const r = await fetch(`${TribesURL}/person`, {
       method: 'POST',
+      body: JSON.stringify({
+        ...body
+      }),
+      mode: 'cors',
+      headers: {
+        'x-jwt': info.tribe_jwt,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    return r;
+  }
+
+  async updateBountyPerson(body: any): Promise<Response | undefined> {
+    if (!uiStore.meInfo) return undefined;
+    const info = uiStore.meInfo;
+    if (!body) return; // avoid saving bad state
+
+    const r = await fetch(`${TribesURL}/person`, {
+      method: 'PUT',
       body: JSON.stringify({
         ...body
       }),
