@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { Button } from 'components/common';
-import { EuiPanel, EuiTabbedContent } from '@elastic/eui';
+import { EuiPanel, EuiTabbedContent, EuiModalFooter } from '@elastic/eui';
 
 interface SmallBtnProps {
   selected: boolean;
@@ -1472,4 +1472,53 @@ export const SendStoriesButton = styled.button`
   &:active {
     background-color: #c0c0c0;
   }
+`;
+
+export const FlexContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+
+  ${ActionButton} {
+    transition: background-color 0.2s ease;
+    width: auto;
+    min-width: 100px;
+    margin-top: 0;
+    margin-bottom: 10px;
+
+    &[color='primary'] {
+      background-color: #618aff;
+
+      &:hover {
+        background-color: #7599ff;
+      }
+
+      &:active {
+        background-color: #4b7bff;
+      }
+    }
+  }
+`;
+
+export const AudioButtonWrap = styled.div`
+  margin-left: auto;
+  display: flex;
+  gap: 15px;
+`;
+
+export const AudioButtonGroup = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+`;
+
+export const AudioModalBody = styled.div`
+  margin: 5px 0 0 27px;
+  width: 100%;
+`;
+
+export const StyledEuiModalFooter = styled(EuiModalFooter)`
+  padding: 4px 15px 15px;
 `;

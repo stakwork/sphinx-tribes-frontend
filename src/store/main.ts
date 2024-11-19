@@ -198,6 +198,38 @@ export class MainStore {
     return r;
   }
 
+  async sendAudioData(body: {
+    audioLink: string;
+    featureUUID: string;
+    source: string;
+    examples: string[];
+  }): Promise<any> {
+    try {
+      const info = uiStore.meInfo;
+      if (!info) return null;
+
+      const response = await fetch(`${TribesURL}/features/brief/send`, {
+        method: 'POST',
+        mode: 'cors',
+        body: JSON.stringify(body),
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        console.error('Error in sendAudioData API call', response.statusText);
+        return null;
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error('Error sending audio data:', error);
+      return false;
+    }
+  }
+
   async getTribesByOwner(pubkey: string): Promise<Tribe[]> {
     const ts = await api.get(`tribes_by_owner/${pubkey}?all=true`);
     this.ownerTribes = ts;
