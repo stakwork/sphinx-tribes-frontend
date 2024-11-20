@@ -346,7 +346,7 @@ const WorkspaceDetails = (props: {
               color: 'inherit'
             }}
             target="_blank"
-            data-testid="mission-link"
+            data-testid="mission-link" //test for cypress
           >
             <Button
               disabled={editWorkspaceDisabled}
