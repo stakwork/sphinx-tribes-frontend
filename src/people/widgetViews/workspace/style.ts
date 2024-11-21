@@ -1328,6 +1328,26 @@ export const PostABounty = styled.div`
   gap: 10px;
   margin-top: 0.5rem;
   margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  direction: row;
+
+  button {
+    div {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    img {
+      vertical-align: middle;
+    }
+  }
+
+  button:first-child {
+    margin-right: 10px;
+  }
 `;
 
 export const DisplayBounties = styled.div`

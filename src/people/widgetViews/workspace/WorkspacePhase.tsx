@@ -175,6 +175,13 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
     history.push(`/feature/${props.workspace_uuid}`);
   };
 
+  const handlePhasePlannerClick = () => {
+    if (phases[selectedIndex]) {
+      const phase = phases[selectedIndex];
+      history.push(`/feature/${phase.feature_uuid}/phase/${phase.uuid}/planner`);
+    }
+  };
+
   const handlePhaseNameChange = (name: string) => setPhaseName(name);
 
   const createOrUpdateFeaturePhase = async (op: PhaseOperationType) => {
@@ -297,19 +304,30 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
           <TabContent>
             <PostABounty>
               {canPostBounty && (
-                <Button
-                  onClick={handlePostBountyClick}
-                  style={{
-                    backgroundColor: '#49C998',
-                    borderRadius: '6px',
-                    gap: '10px'
-                  }}
-                >
-                  <div>
-                    <img src={addBounty} alt="" />
-                    Post a Bounty
-                  </div>
-                </Button>
+                <>
+                  <Button
+                    onClick={handlePhasePlannerClick}
+                    style={{
+                      backgroundColor: '#49C998',
+                      borderRadius: '6px',
+                      padding: '15px 20px'
+                    }}
+                  >
+                    <div>Phase Planner</div>
+                  </Button>
+                  <Button
+                    onClick={handlePostBountyClick}
+                    style={{
+                      backgroundColor: '#49C998',
+                      borderRadius: '6px'
+                    }}
+                  >
+                    <div>
+                      <img src={addBounty} alt="" />
+                      Post a Bounty
+                    </div>
+                  </Button>
+                </>
               )}
             </PostABounty>
             <DisplayBounties>
