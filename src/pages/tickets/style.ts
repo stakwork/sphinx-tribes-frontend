@@ -445,3 +445,28 @@ export const EditPopoverText = styled.span`
   font-weight: 600;
   color: #333;
 `;
+
+export const FeatureOptionsWrap = styled.div`
+  right: 6px;
+  top: 4px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  margin-left: auto;
+
+  .MaterialIcon {
+    font-style: normal;
+    font-weight: 900;
+    font-size: 2rem;
+  }
+
+  button {
+    border: 0.5px solid #000000;
+    font-size: 0.8rem;
+    font-weight: 700;
+    border-radius: 5px;
+    padding: 2px 10px;
+  }
+`;

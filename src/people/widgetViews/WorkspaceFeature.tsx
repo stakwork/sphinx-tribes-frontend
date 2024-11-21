@@ -25,7 +25,8 @@ import {
   EditPopover,
   EditPopoverTail,
   EditPopoverText,
-  EditPopoverContent
+  EditPopoverContent,
+  FeatureOptionsWrap
 } from 'pages/tickets/style';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
@@ -40,7 +41,7 @@ import { useDeleteConfirmationModal } from '../../components/common';
 import {
   ActionButton,
   ButtonWrap,
-  HeadNameWrap,
+  FeatureHeadNameWrap,
   FeatureHeadWrap,
   WorkspaceName,
   UserStoryField,
@@ -57,7 +58,9 @@ import {
   AudioButtonWrap,
   AudioButtonGroup,
   AudioModalBody,
-  StyledEuiModalFooter
+  StyledEuiModalFooter,
+  FeatureModalBody,
+  FeatureModalFooter
 } from './workspace/style';
 import WorkspacePhasingTabs from './workspace/WorkspacePhase';
 import { Phase, Toast } from './workspace/interface';
@@ -461,6 +464,10 @@ const WorkspaceFeature = () => {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [userRoles, setUserRoles] = useState<any[]>([]);
   const [workspaceData, setWorkspaceData] = useState<Workspace>();
+  const [editFeatureName, setEditFeatureName] = useState<string>(featureData?.name || '');
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+  const [displayNameOptions, setDisplayNameOptions] = useState<boolean>(false);
+
   const history = useHistory();
 
   const isWorkspaceAdmin =
@@ -704,6 +711,26 @@ const WorkspaceFeature = () => {
     }
   };
 
+  const openEditModal = () => {
+    setEditFeatureName(featureData?.name || '');
+    setIsEditModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+  };
+
+  const handleUpdateFeatureName = async () => {
+    const body = {
+      uuid: featureData?.uuid ?? '',
+      name: editFeatureName,
+      workspace_uuid: featureData?.workspace_uuid ?? ''
+    };
+    await main.addWorkspaceFeature(body);
+    await getFeatureData();
+    setIsEditModalOpen(false);
+  };
+
   return editWorkspaceDisabled ? (
     <FullNoBudgetWrap>
       <MaterialIcon
@@ -722,7 +749,7 @@ const WorkspaceFeature = () => {
   ) : (
     <FeatureBody>
       <FeatureHeadWrap>
-        <HeadNameWrap>
+        <FeatureHeadNameWrap>
           <MaterialIcon
             onClick={() => history.push(`/workspace/${workspaceData?.uuid}`)}
             icon={'arrow_back'}
@@ -732,7 +759,65 @@ const WorkspaceFeature = () => {
             }}
           />
           <WorkspaceName>{featureData?.name}</WorkspaceName>
-        </HeadNameWrap>
+          <FeatureOptionsWrap>
+            <MaterialIcon
+              icon="more_horiz"
+              className="MaterialIcon"
+              onClick={() => setDisplayNameOptions(!displayNameOptions)}
+              data-testid="feature-name-btn"
+            />
+            {displayNameOptions && (
+              <EditPopover>
+                <EditPopoverTail />
+                <EditPopoverContent
+                  onClick={() => {
+                    openEditModal();
+                    setDisplayNameOptions(false);
+                  }}
+                >
+                  <MaterialIcon icon="edit" style={{ fontSize: '20px', marginTop: '2px' }} />
+                  <EditPopoverText data-testid="feature-name-edit-btn">Edit</EditPopoverText>
+                </EditPopoverContent>
+              </EditPopover>
+            )}
+          </FeatureOptionsWrap>
+        </FeatureHeadNameWrap>
+        {isEditModalOpen && (
+          <EuiOverlayMask>
+            <StyledModal>
+              <EuiModalHeader>
+                <EuiText>
+                  <h2>Edit Feature Name</h2>
+                </EuiText>
+              </EuiModalHeader>
+              <FeatureModalBody>
+                <Label>Feature Name</Label>
+                <Input
+                  placeholder="Edit Feature Name"
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setEditFeatureName(e.target.value)
+                  }
+                  value={editFeatureName}
+                  data-testid="edit-feature-name-input"
+                />
+              </FeatureModalBody>
+              <FeatureModalFooter>
+                <StoriesButtonGroup>
+                  <ActionButton color="cancel" onClick={closeEditModal}>
+                    Cancel
+                  </ActionButton>
+                  <ActionButton
+                    data-testid="feature-name-save-btn"
+                    onClick={handleUpdateFeatureName}
+                    color="primary"
+                  >
+                    Update
+                  </ActionButton>
+                </StoriesButtonGroup>
+              </FeatureModalFooter>
+            </StyledModal>
+          </EuiOverlayMask>
+        )}
       </FeatureHeadWrap>
       <FeatureDataWrap>
         <WorkspaceEditableField
