@@ -52,10 +52,122 @@ import {
   UserStoryPanel,
   FullNoBudgetText,
   FullNoBudgetWrap,
-  StoriesButtonGroup
+  StoriesButtonGroup,
+  FlexContainer,
+  AudioButtonWrap,
+  AudioButtonGroup,
+  AudioModalBody,
+  StyledEuiModalFooter
 } from './workspace/style';
 import WorkspacePhasingTabs from './workspace/WorkspacePhase';
 import { Phase, Toast } from './workspace/interface';
+
+interface AudioRecordingModalProps {
+  open: boolean;
+  handleClose: () => void;
+  handleSubmit: (audioLink: string) => Promise<void>;
+  featureUUID: string;
+}
+
+const AudioRecordingModal: React.FC<AudioRecordingModalProps> = ({
+  open,
+  handleClose,
+  handleSubmit
+}: AudioRecordingModalProps) => {
+  const [audioLink, setAudioLink] = useState<string>('');
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [showResultModal, setShowResultModal] = useState<boolean>(false);
+  const [isSuccess, setIsSuccess] = useState<boolean>(false);
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setAudioLink(event.target.value);
+  };
+
+  const onSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      await handleSubmit(audioLink);
+      setIsSuccess(true);
+    } catch (error) {
+      setIsSuccess(false);
+    }
+    setIsSubmitting(false);
+    handleClose();
+    setShowResultModal(true);
+  };
+
+  const handleResultClose = () => {
+    setShowResultModal(false);
+    setAudioLink('');
+  };
+
+  return (
+    <>
+      {open && (
+        <EuiOverlayMask>
+          <StyledModal>
+            <EuiModalHeader>
+              <EuiText>
+                <h2>Enter Audio Recording URL</h2>
+              </EuiText>
+            </EuiModalHeader>
+            <AudioModalBody>
+              <Label>Audio URL</Label>
+              <Input
+                placeholder="Enter public URL for AudioDataWorkflow"
+                onChange={handleInputChange}
+                value={audioLink}
+                data-testid="audio-url-input"
+              />
+            </AudioModalBody>
+            <StyledEuiModalFooter>
+              <AudioButtonGroup>
+                <AudioButtonWrap>
+                  <ActionButton color="cancel" onClick={handleClose}>
+                    Cancel
+                  </ActionButton>
+                  <ActionButton
+                    data-testid="audio-submit-btn"
+                    onClick={onSubmit}
+                    disabled={isSubmitting}
+                  >
+                    Submit
+                  </ActionButton>
+                </AudioButtonWrap>
+              </AudioButtonGroup>
+            </StyledEuiModalFooter>
+          </StyledModal>
+        </EuiOverlayMask>
+      )}
+
+      {showResultModal && (
+        <EuiOverlayMask>
+          <StyledModal>
+            <EuiModalHeader>
+              <EuiText>
+                <h2>Request Submitted</h2>
+              </EuiText>
+            </EuiModalHeader>
+            <AudioModalBody>
+              <div>
+                {isSuccess
+                  ? 'Your request has been submitted and the feature brief will be updated soon.'
+                  : 'Your request has failed please contact the Hive Product Manager.'}
+              </div>
+            </AudioModalBody>
+            <StyledEuiModalFooter>
+              <AudioButtonGroup>
+                <AudioButtonWrap>
+                  <ActionButton onClick={handleResultClose}>Close</ActionButton>
+                </AudioButtonWrap>
+              </AudioButtonGroup>
+            </StyledEuiModalFooter>
+          </StyledModal>
+        </EuiOverlayMask>
+      )}
+    </>
+  );
+};
 
 interface WSEditableFieldProps {
   label: string;
@@ -69,6 +181,8 @@ interface WSEditableFieldProps {
   dataTestIdPrefix: string;
   onSubmit: () => Promise<void>;
   main: typeof mainStore;
+  showAudioButton?: boolean;
+  feature_uuid?: string;
 }
 
 const WorkspaceEditableField = ({
@@ -82,7 +196,9 @@ const WorkspaceEditableField = ({
   placeholder,
   dataTestIdPrefix,
   onSubmit,
-  main
+  main,
+  showAudioButton = false,
+  feature_uuid
 }: WSEditableFieldProps) => {
   const handleEditClick = () => {
     setIsEditing(!isEditing);
@@ -137,9 +253,54 @@ const WorkspaceEditableField = ({
       .replace(/\n/g, '<br/>');
   };
 
+  const [showAudioModal, setShowAudioModal] = useState(false);
+
+  const handleAudioGeneration = () => {
+    setShowAudioModal(true);
+  };
+
+  const handleAudioModalClose = () => {
+    setShowAudioModal(false);
+  };
+
+  const handleAudioModalSubmit = async (audioLink: string) => {
+    const postData = {
+      audioLink,
+      featureUUID: feature_uuid ?? '',
+      source: 'featureBrief',
+      examples: [
+        'Hive Process integrates Stakwork Workflows and LLM based automation into the Hive Development Process. This will reduce workload on Product Managers by streamlining creative tasks and automating the drafting of product artefacts and audit tasks. \nIn this feature we will automate the production of User Stories and Requirements from a Product Brief and Feature Brief. \nThis will leverage a Stakwork workflow which will take the following steps:\n1. Load the product context and specific feature context. \n2. Generate a series of user stories in the workflow as a JSON object. \n3. Iterate through the user stories and score them for relevance against the product and feature context. \n4. Filter out low relevance scores\n5. Return the information to a form in the Hive Process for human review and acceptance.'
+      ]
+    };
+
+    const response = await main.sendAudioData(postData);
+    if (!response || !response.ok) {
+      throw new Error('Failed to submit audio data');
+    }
+  };
+
   return (
     <FieldWrap>
-      <Label>{label}</Label>
+      <FlexContainer>
+        <Label>{label}</Label>
+        {showAudioButton && (
+          <>
+            <ActionButton
+              color="primary"
+              onClick={handleAudioGeneration}
+              data-testid="audio-generation-btn"
+            >
+              Audio Generation
+            </ActionButton>
+            <AudioRecordingModal
+              open={showAudioModal}
+              handleClose={handleAudioModalClose}
+              handleSubmit={handleAudioModalSubmit}
+              featureUUID={feature_uuid ?? ''}
+            />
+          </>
+        )}
+      </FlexContainer>
       <Data>
         <OptionsWrap>
           <MaterialIcon
@@ -586,6 +747,8 @@ const WorkspaceFeature = () => {
           dataTestIdPrefix="brief"
           onSubmit={() => submitField('brief', brief, setEditBrief)}
           main={main}
+          showAudioButton={true}
+          feature_uuid={feature_uuid}
         />
         <FieldWrap>
           <Label>User Stories</Label>
