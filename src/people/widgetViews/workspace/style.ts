@@ -1474,6 +1474,24 @@ export const SendStoriesButton = styled.button`
   }
 `;
 
+export const FeatureModalBody = styled.div`
+  margin: 5px 0 0 27px;
+  width: 100%;
+`;
+
+export const FeatureModalFooter = styled(EuiModalFooter)`
+  padding: 4px 15px 15px;
+`;
+
+export const FeatureHeadNameWrap = styled.div`
+  display: flex;
+  align-items: center;
+  width: 80rem;
+  @media only screen and (max-width: 500px) {
+    margin-bottom: 20px;
+  }
+`;
+
 export const FlexContainer = styled.div`
   display: flex;
   align-items: center;
