@@ -1570,3 +1570,40 @@ export const PhaseFlexContainer = styled.div`
   flex-direction: column;
   gap: 16px;
 `;
+
+export const TicketButtonGroup = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+
+  ${ActionButton} {
+    transition: background-color 0.2s ease;
+    width: auto;
+    min-width: 100px;
+
+    &[color='primary'] {
+      background-color: #618aff;
+
+      &:hover {
+        background-color: #7599ff;
+      }
+
+      &:active {
+        background-color: #4b7bff;
+      }
+    }
+
+    &[color='#49C998'] {
+      background-color: #49c998;
+
+      &:hover {
+        background-color: #5ad3a7;
+      }
+
+      &:active {
+        background-color: #3eb986;
+      }
+    }
+  }
+`;

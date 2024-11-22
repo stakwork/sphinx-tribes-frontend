@@ -480,30 +480,69 @@ export const LabelValue = styled.span`
   font-weight: normal;
 `;
 
-const StyledButton = styled.button`
-  text-decoration: none !important;
-  width: 8%;
-  margin-top: 20px;
-  border-radius: 10px;
-  height: 35px;
+export const AddTicketButton = styled.div`
   display: flex;
   align-items: center;
-  text-align: center;
-  justify-content: center;
-  font-size: 14px;
+  margin-left: auto;
+  margin-bottom: 60px;
+
+  button {
+    transition: background-color 0.2s ease;
+    width: auto;
+    min-width: 100px;
+
+    &[color='primary'] {
+      background-color: #618aff;
+
+      &:hover {
+        background-color: #7599ff;
+      }
+
+      &:active {
+        background-color: #4b7bff;
+      }
+    }
+  }
 `;
 
-export const AddTicket = styled(StyledButton)`
-  background: #608aff;
-  color: #fff;
-  border: none;
-  box-shadow: 0px 2px 10px 0px rgba(97, 138, 255, 0.5);
+export const TicketContainer = styled.div`
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+`;
 
-  &:hover {
-    background: #5881f8;
+export const TicketHeader = styled.div`
+  font-weight: bold;
+  font-size: 20px;
+  margin-bottom: 15px;
+`;
+
+export const TicketTextArea = styled.textarea`
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  border: 2px solid #dde1e5;
+  outline: none;
+  caret-color: #618aff;
+  color: #3c3f41;
+  font-family: 'Barlow';
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  width: 100%;
+  resize: none;
+  min-height: 300px;
+
+  ::placeholder {
+    color: #b0b7bc;
+    font-family: 'Barlow';
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
   }
-
-  &:active {
-    background: #5078f2;
+  :focus {
+    border: 2px solid #82b4ff;
   }
 `;
