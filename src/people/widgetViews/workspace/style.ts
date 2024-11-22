@@ -1332,6 +1332,8 @@ export const PostABounty = styled.div`
   align-items: center;
   justify-content: flex-end;
   direction: row;
+  padding-bottom: 20px;
+  margin-right: 10px;
 
   button {
     div {
@@ -1559,4 +1561,12 @@ export const AudioModalBody = styled.div`
 
 export const StyledEuiModalFooter = styled(EuiModalFooter)`
   padding: 4px 15px 15px;
+`;
+
+export const PhaseFlexContainer = styled.div`
+  display: flex;
+  align-items: left;
+  width: 100%;
+  flex-direction: column;
+  gap: 16px;
 `;

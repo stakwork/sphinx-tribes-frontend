@@ -3515,6 +3515,30 @@ export class MainStore {
     }
   }
 
+  async getFeaturePhaseByUUID(
+    feature_uuid: string,
+    phase_uuid: string
+  ): Promise<Phase | undefined> {
+    try {
+      if (!uiStore.meInfo) return undefined;
+      const info = uiStore.meInfo;
+
+      const r: any = await fetch(`${TribesURL}/features/${feature_uuid}/phase/${phase_uuid}`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      return r.json();
+    } catch (e) {
+      console.error('getFeaturePhaseByUUID', e);
+      return undefined;
+    }
+  }
+
   async createOrUpdatePhase(phase: Phase): Promise<any> {
     try {
       if (!uiStore.meInfo) return [];

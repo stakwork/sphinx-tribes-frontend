@@ -470,3 +470,12 @@ export const FeatureOptionsWrap = styled.div`
     padding: 2px 10px;
   }
 `;
+
+export const PhaseLabel = styled.h5`
+  font-size: 1.1rem;
+  font-weight: bolder;
+`;
+
+export const LabelValue = styled.span`
+  font-weight: normal;
+`;
