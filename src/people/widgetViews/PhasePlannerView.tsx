@@ -8,7 +8,8 @@ import {
   FeatureDataWrap,
   FieldWrap,
   PhaseLabel,
-  LabelValue
+  LabelValue,
+  AddTicket
 } from 'pages/tickets/style';
 import {
   FeatureHeadNameWrap,
@@ -57,6 +58,10 @@ const PhasePlannerView: React.FC = () => {
     history.push(`/feature/${feature_uuid}`);
   };
 
+  const addTicketHandler = () => {
+    console.log('addTicketHandler');
+  };
+
   return (
     <FeatureBody>
       <FeatureHeadWrap>
@@ -81,6 +86,7 @@ const PhasePlannerView: React.FC = () => {
             <PhaseLabel>
               Phase: <LabelValue>{phaseData?.name}</LabelValue>
             </PhaseLabel>
+            <AddTicket onClick={addTicketHandler}>Add Ticket</AddTicket>
           </PhaseFlexContainer>
         </FieldWrap>
       </FeatureDataWrap>
