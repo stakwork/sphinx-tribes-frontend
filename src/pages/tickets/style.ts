@@ -479,3 +479,31 @@ export const PhaseLabel = styled.h5`
 export const LabelValue = styled.span`
   font-weight: normal;
 `;
+
+const StyledButton = styled.button`
+  text-decoration: none !important;
+  width: 8%;
+  margin-top: 20px;
+  border-radius: 10px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  font-size: 14px;
+`;
+
+export const AddTicket = styled(StyledButton)`
+  background: #608aff;
+  color: #fff;
+  border: none;
+  box-shadow: 0px 2px 10px 0px rgba(97, 138, 255, 0.5);
+
+  &:hover {
+    background: #5881f8;
+  }
+
+  &:active {
+    background: #5078f2;
+  }
+`;
