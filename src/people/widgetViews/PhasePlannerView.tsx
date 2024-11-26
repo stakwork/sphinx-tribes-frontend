@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { Feature } from 'store/interface';
 import MaterialIcon from '@material/react-material-icon';
+import TicketEditor from 'components/common/TicketEditor/TicketEditor';
 import { useStores } from 'store';
 import {
   FeatureBody,
@@ -9,13 +10,14 @@ import {
   FieldWrap,
   PhaseLabel,
   LabelValue,
-  AddTicket
+  AddTicketButton
 } from 'pages/tickets/style';
 import {
   FeatureHeadNameWrap,
   FeatureHeadWrap,
   WorkspaceName,
-  PhaseFlexContainer
+  PhaseFlexContainer,
+  ActionButton
 } from './workspace/style';
 import { Phase } from './workspace/interface';
 
@@ -28,6 +30,7 @@ const PhasePlannerView: React.FC = () => {
   const { feature_uuid, phase_uuid } = useParams<PhasePlannerParams>();
   const [featureData, setFeatureData] = useState<Feature | null>(null);
   const [phaseData, setPhaseData] = useState<Phase | null>(null);
+  const [tickets, setTickets] = useState<number[]>([]);
   const { main } = useStores();
   const history = useHistory();
 
@@ -59,7 +62,7 @@ const PhasePlannerView: React.FC = () => {
   };
 
   const addTicketHandler = () => {
-    console.log('addTicketHandler');
+    setTickets((prev: number[]) => [...prev, prev.length + 1]);
   };
 
   return (
@@ -86,7 +89,18 @@ const PhasePlannerView: React.FC = () => {
             <PhaseLabel>
               Phase: <LabelValue>{phaseData?.name}</LabelValue>
             </PhaseLabel>
-            <AddTicket onClick={addTicketHandler}>Add Ticket</AddTicket>
+            {tickets.map((ticketNumber: number) => (
+              <TicketEditor key={ticketNumber} ticketNumber={ticketNumber} />
+            ))}
+            <AddTicketButton>
+              <ActionButton
+                color="primary"
+                onClick={addTicketHandler}
+                data-testid="audio-generation-btn"
+              >
+                Add Ticket
+              </ActionButton>
+            </AddTicketButton>
           </PhaseFlexContainer>
         </FieldWrap>
       </FeatureDataWrap>
