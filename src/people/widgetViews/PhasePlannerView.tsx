@@ -4,6 +4,7 @@ import { Feature } from 'store/interface';
 import MaterialIcon from '@material/react-material-icon';
 import TicketEditor from 'components/common/TicketEditor/TicketEditor';
 import { useStores } from 'store';
+import { v4 as uuidv4 } from 'uuid';
 import {
   FeatureBody,
   FeatureDataWrap,
@@ -26,11 +27,24 @@ interface PhasePlannerParams {
   phase_uuid: string;
 }
 
+interface TicketData {
+  uuid: string;
+  feature_uuid: string;
+  phase_uuid: string;
+  name: string;
+  sequence: number;
+  dependency: string[];
+  description: string;
+  status: string;
+  version: number;
+  number: number;
+}
+
 const PhasePlannerView: React.FC = () => {
   const { feature_uuid, phase_uuid } = useParams<PhasePlannerParams>();
   const [featureData, setFeatureData] = useState<Feature | null>(null);
   const [phaseData, setPhaseData] = useState<Phase | null>(null);
-  const [tickets, setTickets] = useState<number[]>([]);
+  const [ticketData, setTicketData] = useState<TicketData[]>([]);
   const { main } = useStores();
   const history = useHistory();
 
@@ -61,8 +75,40 @@ const PhasePlannerView: React.FC = () => {
     history.push(`/feature/${feature_uuid}`);
   };
 
-  const addTicketHandler = () => {
-    setTickets((prev: number[]) => [...prev, prev.length + 1]);
+  const addTicketHandler = async () => {
+    const newTicketUuid = uuidv4();
+    const initialTicketData = {
+      uuid: newTicketUuid,
+      feature_uuid,
+      phase_uuid,
+      name: '',
+      sequence: 0,
+      dependency: [],
+      description: '',
+      status: 'DRAFT',
+      version: 1
+    };
+
+    try {
+      await main.createUpdateTicket(initialTicketData);
+      setTicketData((prevTickets: TicketData[]) => [
+        ...prevTickets,
+        {
+          uuid: newTicketUuid,
+          feature_uuid,
+          phase_uuid,
+          name: '',
+          sequence: prevTickets.length + 1,
+          dependency: [],
+          description: '',
+          status: 'DRAFT',
+          version: 1,
+          number: prevTickets.length + 1
+        }
+      ]);
+    } catch (error) {
+      console.error('Error registering ticket:', error);
+    }
   };
 
   return (
@@ -89,8 +135,8 @@ const PhasePlannerView: React.FC = () => {
             <PhaseLabel>
               Phase: <LabelValue>{phaseData?.name}</LabelValue>
             </PhaseLabel>
-            {tickets.map((ticketNumber: number) => (
-              <TicketEditor key={ticketNumber} ticketNumber={ticketNumber} />
+            {ticketData.map((ticketData: TicketData) => (
+              <TicketEditor key={ticketData.uuid} ticketData={ticketData} />
             ))}
             <AddTicketButton>
               <ActionButton

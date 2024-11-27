@@ -1,17 +1,46 @@
 import React, { useState } from 'react';
+import { useStores } from 'store';
 import { ActionButton, TicketButtonGroup } from '../../../people/widgetViews/workspace/style';
 
 import { TicketContainer, TicketHeader, TicketTextArea } from '../../../pages/tickets/style';
 
 interface TicketEditorProps {
-  ticketNumber: number;
+  ticketData: {
+    uuid: string;
+    feature_uuid: string;
+    phase_uuid: string;
+    name: string;
+    sequence: number;
+    dependency: string[];
+    description: string;
+    status: string;
+    version: number;
+    number: number;
+  };
 }
 
-const TicketEditor: React.FC<TicketEditorProps> = ({ ticketNumber }: TicketEditorProps) => {
-  const [content, setContent] = useState('');
+const TicketEditor = ({ ticketData }: TicketEditorProps) => {
+  const [description, setDescription] = useState('');
+  const { main } = useStores();
 
-  const handleUpdate = () => {
-    console.log('Update clicked', content);
+  const handleUpdate = async () => {
+    const updateTicketData = {
+      uuid: ticketData.uuid,
+      feature_uuid: ticketData.feature_uuid,
+      phase_uuid: ticketData.phase_uuid,
+      name: '',
+      sequence: ticketData.sequence,
+      dependency: [],
+      description: description,
+      status: 'DRAFT',
+      version: ticketData.version + 1
+    };
+
+    try {
+      await main.createUpdateTicket(updateTicketData);
+    } catch (error) {
+      console.error('Error registering ticket:', error);
+    }
   };
 
   const handleTicketBuilder = () => {
@@ -20,10 +49,10 @@ const TicketEditor: React.FC<TicketEditorProps> = ({ ticketNumber }: TicketEdito
 
   return (
     <TicketContainer>
-      <TicketHeader>Ticket {ticketNumber}:</TicketHeader>
+      <TicketHeader>Ticket {ticketData.number}:</TicketHeader>
       <TicketTextArea
-        value={content}
-        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setContent(e.target.value)}
+        value={description}
+        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
         placeholder="Enter ticket details..."
       />
 
