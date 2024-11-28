@@ -3592,6 +3592,46 @@ export class MainStore {
     }
   }
 
+  async createUpdateTicket(initialTicketData: {
+    uuid: string;
+    feature_uuid: string;
+    phase_uuid: string;
+    name: string;
+    sequence: number;
+    dependency: string[];
+    description: string;
+    status: string;
+    version: number;
+  }): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return [];
+      const info = uiStore.meInfo;
+
+      const response = await fetch(`${TribesURL}/bounty/ticket/${initialTicketData.uuid}`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          action: 'update',
+          ticket: initialTicketData
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create ticket');
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (e) {
+      console.log('Error creating ticket', e);
+      return 406;
+    }
+  }
+
   async createConnectionCodes(users_number: number): Promise<number> {
     try {
       if (!uiStore.meInfo) return 406;
