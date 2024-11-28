@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useStores } from 'store';
 import { ActionButton, TicketButtonGroup } from '../../../people/widgetViews/workspace/style';
-
 import { TicketContainer, TicketHeader, TicketTextArea } from '../../../pages/tickets/style';
+import { TicketStatus } from '../../../store/interface';
 
 interface TicketEditorProps {
   ticketData: {
@@ -32,19 +32,35 @@ const TicketEditor = ({ ticketData }: TicketEditorProps) => {
       sequence: ticketData.sequence,
       dependency: [],
       description: description,
-      status: 'DRAFT',
+      status: 'DRAFT' as TicketStatus,
       version: ticketData.version + 1
     };
 
     try {
       await main.createUpdateTicket(updateTicketData);
     } catch (error) {
-      console.error('Error registering ticket:', error);
+      console.error('Error updating ticket:', error);
     }
   };
 
-  const handleTicketBuilder = () => {
-    console.log('Ticket Builder clicked');
+  const handleTicketBuilder = async () => {
+    try {
+      const ticketForReview = {
+        ...ticketData,
+        description: description || ticketData.description,
+        status: 'DRAFT' as TicketStatus
+      };
+
+      const response = await main.sendTicketForReview(ticketForReview);
+
+      if (response) {
+        console.log('Ticket sent for review successfully');
+      } else {
+        throw new Error('Failed to send ticket for review');
+      }
+    } catch (error) {
+      console.error('Error in ticket builder:', error);
+    }
   };
 
   return (
