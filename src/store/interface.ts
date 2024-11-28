@@ -392,3 +392,46 @@ export const paginationQueryLimit = 20;
 export const peopleQueryLimit = 500;
 export const featureLimit = 4;
 export const phaseBountyLimit = 3;
+
+export type TicketStatus =
+  | 'DRAFT'
+  | 'READY'
+  | 'IN_PROGRESS'
+  | 'TEST'
+  | 'DEPLOY'
+  | 'PAY'
+  | 'COMPLETE';
+
+export interface Ticket {
+  uuid: string;
+  feature_uuid: string;
+  phase_uuid: string;
+  name: string;
+  sequence: number;
+  dependency?: string[];
+  description: string;
+  status: TicketStatus;
+  version: number;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface CreateTicketInput {
+  feature_uuid: string;
+  phase_uuid: string;
+  name: string;
+  description: string;
+  sequence?: number;
+  dependency?: string[];
+  status?: TicketStatus;
+}
+
+export interface UpdateTicketInput {
+  uuid: string;
+  name?: string;
+  description?: string;
+  sequence?: number;
+  dependency?: string[];
+  status?: TicketStatus;
+  version?: number;
+}
