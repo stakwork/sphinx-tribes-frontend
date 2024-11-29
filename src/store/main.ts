@@ -45,7 +45,8 @@ import {
   CreateFeatureInput,
   FeatureStory,
   UpdateFeatureStoryInput,
-  CreateFeatureStoryInput
+  CreateFeatureStoryInput,
+  TicketStatus
 } from './interface';
 
 function makeTorSaveURL(host: string, key: string) {
@@ -3687,6 +3688,45 @@ export class MainStore {
     } catch (e) {
       console.log('Error creating ticket', e);
       return 406;
+    }
+  }
+
+  async sendTicketForReview(ticket: {
+    uuid: string;
+    feature_uuid: string;
+    phase_uuid: string;
+    name: string;
+    sequence: number;
+    dependency: string[];
+    description: string;
+    status: TicketStatus;
+    version: number;
+  }): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+
+      const response = await fetch(`${TribesURL}/bounty/ticket/review/send`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          ticket
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send ticket for review');
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error sending ticket for review:', error);
+      return null;
     }
   }
 
