@@ -3666,7 +3666,7 @@ export class MainStore {
       if (!uiStore.meInfo) return [];
       const info = uiStore.meInfo;
 
-      const response = await fetch(`${TribesURL}/bounty/ticket/${initialTicketData.uuid}`, {
+      const response = await fetch(`${TribesURL}/bounties/ticket/${initialTicketData.uuid}`, {
         method: 'POST',
         mode: 'cors',
         headers: {
@@ -3706,7 +3706,7 @@ export class MainStore {
       if (!uiStore.meInfo) return null;
       const info = uiStore.meInfo;
 
-      const response = await fetch(`${TribesURL}/bounty/ticket/review/send`, {
+      const response = await fetch(`${TribesURL}/bounties/ticket/review/send`, {
         method: 'POST',
         mode: 'cors',
         headers: {
