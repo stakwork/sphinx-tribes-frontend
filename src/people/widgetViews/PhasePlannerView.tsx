@@ -51,25 +51,37 @@ const PhasePlannerView: React.FC = () => {
   const getFeatureData = useCallback(async () => {
     if (!feature_uuid) return;
     const data = await main.getFeaturesByUuid(feature_uuid);
-    if (data) {
-      setFeatureData(data);
-    }
+
     return data;
   }, [feature_uuid, main]);
 
   const getPhaseData = useCallback(async () => {
     if (!feature_uuid || !phase_uuid) return;
     const data = await main.getFeaturePhaseByUUID(feature_uuid, phase_uuid);
-    if (data) {
-      setPhaseData(data);
-    }
+
     return data;
   }, [feature_uuid, phase_uuid, main]);
 
   useEffect(() => {
-    getFeatureData();
-    getPhaseData();
-  }, [getFeatureData, getPhaseData]);
+    const fetchData = async () => {
+      try {
+        const feature = await getFeatureData();
+        const phase = await getPhaseData();
+
+        if (!feature || !phase) {
+          history.push('/');
+        } else {
+          setFeatureData(feature);
+          setPhaseData(phase);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        history.push('/');
+      }
+    };
+
+    fetchData();
+  }, [getFeatureData, getPhaseData, history]);
 
   const handleClose = () => {
     history.push(`/feature/${feature_uuid}`);
