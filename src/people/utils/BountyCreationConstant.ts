@@ -22,7 +22,7 @@ export const BountyDetailsCreationData = {
     sub_heading: ' ',
     schema: ['org_uuid', 'one_sentence_summary', 'ticket_url'],
     schema2: ['wanted_type', 'coding_languages'],
-    required: ['one_sentence_summary', 'wanted_type'],
+    required: ['org_uuid', 'one_sentence_summary', 'wanted_type'],
     outerContainerStyle: {
       minWidth: '712px',
       maxWidth: '712px',

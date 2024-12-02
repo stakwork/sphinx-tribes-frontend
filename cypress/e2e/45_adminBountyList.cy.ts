@@ -2,6 +2,7 @@ describe('Super Admin Bounties List', () => {
   let activeUser = 'alice';
 
   const bounty: Cypress.Bounty = {
+    workspace: 'Workspace1',
     title: 'AliRazaTask',
     category: 'Web development',
     coding_language: ['Typescript', 'Javascript', 'Lightning'],

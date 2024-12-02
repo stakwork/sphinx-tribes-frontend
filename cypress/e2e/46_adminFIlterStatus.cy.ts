@@ -2,6 +2,7 @@ describe('Super Admin Bounty Filter Status Dropdown ', () => {
   let activeUser = 'alice';
 
   const bounty: Cypress.Bounty = {
+    workspace: 'Workspace1',
     title: 'Syed',
     category: 'Web development',
     description: 'This is available',

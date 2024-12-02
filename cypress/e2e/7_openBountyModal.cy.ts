@@ -1,5 +1,15 @@
 describe('View Bounty From Modal', () => {
+
+  const workspace: Cypress.Workspace = {
+    loggedInAs: 'alice',
+    name: 'Workspace5',
+    description: 'A workspace focused on amazing projects.',
+    website: 'https://amazing.org',
+    github: 'https://github.com/amazing'
+  };
+
   const bounty: Cypress.Bounty = {
+    workspace:'Workspace5',
     title: 'Ali Bounty',
     category: 'Web development',
     coding_language: ['Typescript', 'Javascript', 'Lightning'],
@@ -12,11 +22,14 @@ describe('View Bounty From Modal', () => {
     estimate_completion_date: '09/09/2024'
   };
 
-  it('Should view the bounty modal after creating', () => {
-    const activeUser = 'alice';
-    cy.login(activeUser);
+  beforeEach(() => {
+    cy.login(workspace.loggedInAs);
     cy.wait(1000);
+    cy.create_workspace(workspace);
+    cy.wait(1000);
+  });
 
+  it('Should view the bounty modal after creating', () => {
     cy.create_bounty(bounty);
     cy.wait(1000);
 
@@ -29,7 +42,7 @@ describe('View Bounty From Modal', () => {
     cy.contains(bounty.title).click();
     cy.wait(1000);
 
-    cy.get('[data-testid="owner_name"]').contains(activeUser).should('exist');
+    cy.get('[data-testid="owner_name"]').contains(workspace.loggedInAs).should('exist');
     cy.wait(1000);
 
     cy.contains(bounty.title).should('exist');
@@ -64,6 +77,6 @@ describe('View Bounty From Modal', () => {
     cy.wait(1000);
 
     cy.get('body').click(0, 0);
-    cy.logout(activeUser);
+    cy.logout(workspace.loggedInAs);
   });
 });

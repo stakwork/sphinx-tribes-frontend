@@ -1,6 +1,16 @@
 describe('Verify Bounty Status Consistency', () => {
   const assignee = 'carol';
+
+  const workspace: Cypress.Workspace = {
+    loggedInAs: 'alice',
+    name: 'Workspace23',
+    description: 'A workspace focused on amazing projects.',
+    website: 'https://amazing.org',
+    github: 'https://github.com/amazing'
+  };
+
   const bounty: Cypress.Bounty = {
+    workspace: 'Workspace23',
     title: 'Ali Bounty',
     category: 'Web development',
     coding_language: ['Typescript', 'Javascript', 'Lightning'],
@@ -13,11 +23,14 @@ describe('Verify Bounty Status Consistency', () => {
     estimate_completion_date: '09/09/2024'
   };
 
-  it('Should display consistent bounty status in list and details views', () => {
-    const activeUser = 'alice';
-    cy.login(activeUser);
+  beforeEach(() => {
+    cy.login(workspace.loggedInAs);
     cy.wait(1000);
+    cy.create_workspace(workspace);
+    cy.wait(1000);
+  });
 
+  it('Should display consistent bounty status in list and details views', () => {
     cy.create_bounty(bounty);
     cy.wait(1000);
 
@@ -38,13 +51,13 @@ describe('Verify Bounty Status Consistency', () => {
 
     cy.get('body').click(0, 0);
 
-    cy.contains(activeUser).click();
+    cy.contains(workspace.loggedInAs).click();
     cy.wait(1000);
 
     cy.get('[data-testid="Bounties-tab"]').click();
     cy.wait(1000);
 
     cy.wait(1000);
-    cy.logout(activeUser);
+    cy.logout(workspace.loggedInAs);
   });
 });

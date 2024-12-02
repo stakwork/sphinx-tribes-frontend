@@ -2,6 +2,7 @@ describe('Super Admin Pagination Bounties List', () => {
   let activeUser = 'alice';
 
   const bounty: Cypress.Bounty = {
+    workspace: 'Workspace1',
     title: 'Pagination Bounty',
     category: 'Web development',
     coding_language: ['Typescript', 'Javascript', 'Lightning'],

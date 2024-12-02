@@ -1,21 +1,23 @@
 describe('filter by status for org bounty', () => {
-  it('should filter bounties according to the status selected', () => {
-    const workspaceName = 'E2EWorkspace3';
+  const workspaceName = 'E2EWorkspace3';
 
-    const workspace: Cypress.Workspace = {
-      loggedInAs: 'bob',
-      name: workspaceName,
-      description: 'A workspace focused on amazing projects.',
-      website: 'https://amazing.org',
-      github: 'https://github.com/amazing'
-    };
+  const workspace: Cypress.Workspace = {
+    loggedInAs: 'bob',
+    name: workspaceName,
+    description: 'A workspace focused on amazing projects.',
+    website: 'https://amazing.org',
+    github: 'https://github.com/amazing'
+  };
 
+  beforeEach(() => {
     cy.login(workspace.loggedInAs);
     cy.wait(1000);
-
     cy.create_workspace(workspace);
     cy.wait(1000);
+  });
 
+
+  it('should filter bounties according to the status selected', () => {
     const bounty1: Cypress.Bounty = {
       workspace: workspaceName,
       title: 'Bounty1(open)',

@@ -2,6 +2,7 @@ describe('Admin Statistics Custom Date Range', () => {
   let activeUser = 'alice';
 
   const bounty: Cypress.Bounty = {
+    workspace: 'Workspace1',
     title: 'UmerJobs',
     category: 'Web development',
     coding_language: ['Typescript', 'Javascript', 'Lightning'],

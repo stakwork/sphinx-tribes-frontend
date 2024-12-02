@@ -1,7 +1,14 @@
 describe('Admin Custom Date Input', () => {
-  const activeUser = 'alice';
+  const workspace: Cypress.Workspace = {
+    loggedInAs: 'alice',
+    name: 'Workspace22',
+    description: 'A workspace focused on amazing projects.',
+    website: 'https://amazing.org',
+    github: 'https://github.com/amazing'
+  };
 
   const bounty: Cypress.Bounty = {
+    workspace: 'Workspace22',
     title: 'Admin',
     category: 'Web development',
     description: 'This is available',
@@ -25,7 +32,9 @@ describe('Admin Custom Date Input', () => {
     .padStart(2, '0')}/${endDate.getFullYear()}`;
 
   beforeEach(() => {
-    cy.login(activeUser);
+    cy.login(workspace.loggedInAs);
+    cy.wait(1000);
+    cy.create_workspace(workspace);
     cy.wait(1000);
   });
 
@@ -77,7 +86,7 @@ describe('Admin Custom Date Input', () => {
       cy.contains(`Admin${i}`);
     }
 
-    cy.logout(activeUser);
+    cy.logout(workspace.loggedInAs);
   });
 });
 

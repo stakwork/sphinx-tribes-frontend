@@ -1,6 +1,16 @@
 describe('Edit Bounty From Modal', () => {
+
+  const workspace: Cypress.Workspace = {
+    loggedInAs: 'alice',
+    name: 'Workspace4',
+    description: 'A workspace focused on amazing projects.',
+    website: 'https://amazing.org',
+    github: 'https://github.com/amazing'
+  };
+
   const assignee = 'carol';
   const bounty: Cypress.Bounty = {
+    workspace:'Workspace4',
     title: 'My new Bounty',
     category: 'Web development',
     coding_language: ['Typescript', 'Javascript', 'Lightning'],
@@ -13,11 +23,14 @@ describe('Edit Bounty From Modal', () => {
     estimate_completion_date: '09/09/2024'
   };
 
-  it('Can edit a bounty from modal', () => {
-    const activeUser = 'alice';
-    cy.login(activeUser);
+  beforeEach(() => {
+    cy.login(workspace.loggedInAs);
     cy.wait(1000);
+    cy.create_workspace(workspace);
+    cy.wait(1000);
+  });
 
+  it('Can edit a bounty from modal', () => {
     cy.create_bounty(bounty);
     cy.wait(1000);
 
@@ -44,6 +57,6 @@ describe('Edit Bounty From Modal', () => {
     cy.contains(newTitle).should('exist');
     cy.contains(newDescription).should('exist');
     cy.get('body').click(0, 0);
-    cy.logout(activeUser);
+    cy.logout(workspace.loggedInAs);
   });
 });

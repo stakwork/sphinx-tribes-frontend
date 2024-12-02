@@ -1,5 +1,14 @@
 describe('Can Delete Bounty From Modal', () => {
+  const workspace: Cypress.Workspace = {
+    loggedInAs: 'alice',
+    name: 'Workspace3',
+    description: 'A workspace focused on amazing projects.',
+    website: 'https://amazing.org',
+    github: 'https://github.com/amazing'
+  };
+
   const bounty: Cypress.Bounty = {
+    workspace:'Workspace3',
     title: 'Ali Bounty',
     category: 'Web development',
     coding_language: ['Typescript', 'Javascript', 'Lightning'],
@@ -11,10 +20,15 @@ describe('Can Delete Bounty From Modal', () => {
     deliverables: 'We are good to go man'
   };
 
-  it('Can delete a bounty from modal', () => {
-    const activeUser = 'alice';
-    cy.login(activeUser);
+
+  beforeEach(() => {
+    cy.login(workspace.loggedInAs);
     cy.wait(1000);
+    cy.create_workspace(workspace);
+    cy.wait(1000);
+  });
+
+  it('Can delete a bounty from modal', () => {
 
     cy.create_bounty(bounty);
     cy.wait(1000);
@@ -37,6 +51,6 @@ describe('Can Delete Bounty From Modal', () => {
     cy.contains(bounty.title).should('not.exist');
     cy.get('body').click(0, 0);
 
-    cy.logout(activeUser);
+    cy.logout(workspace.loggedInAs);
   });
 });

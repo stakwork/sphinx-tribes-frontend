@@ -1,7 +1,17 @@
 describe('Alice tries to unassign a hunter after creating a bounty', () => {
   const assignee = 'carol';
 
+  const workspace: Cypress.Workspace = {
+    loggedInAs: 'alice',
+    name: 'Workspace7',
+    description: 'A workspace focused on amazing projects.',
+    website: 'https://amazing.org',
+    github: 'https://github.com/amazing'
+  };
+
+
   const bounty: Cypress.Bounty = {
+    workspace:'Workspace7',
     title: 'My new Bounty',
     category: 'Web development',
     coding_language: ['Typescript', 'Javascript', 'Lightning'],
@@ -14,11 +24,15 @@ describe('Alice tries to unassign a hunter after creating a bounty', () => {
     estimate_completion_date: '09/09/2024'
   };
 
-  it('Create a bounty with an assignee then unassign the user', () => {
-    let activeUser = 'alice';
-    cy.login(activeUser);
+  beforeEach(() => {
+    cy.login(workspace.loggedInAs);
     cy.wait(1000);
+    cy.create_workspace(workspace);
+    cy.wait(1000);
+  });
 
+
+  it('Create a bounty with an assignee then unassign the user', () => {
     cy.create_bounty(bounty);
     cy.wait(1000);
 
@@ -39,6 +53,6 @@ describe('Alice tries to unassign a hunter after creating a bounty', () => {
     // click outside the modal
     cy.get('body').click(0, 0);
 
-    cy.logout(activeUser);
+    cy.logout(workspace.loggedInAs);
   });
 });
