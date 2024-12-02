@@ -3582,14 +3582,17 @@ export class MainStore {
       if (!uiStore.meInfo) return undefined;
       const info = uiStore.meInfo;
 
-      const r: any = await fetch(`${TribesURL}/bounties/ticket/feature/${feature_uuid}/phase/${phase_uuid}`, {
-        method: 'GET',
-        mode: 'cors',
-        headers: {
-          'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+      const r: any = await fetch(
+        `${TribesURL}/bounties/ticket/feature/${feature_uuid}/phase/${phase_uuid}`,
+        {
+          method: 'GET',
+          mode: 'cors',
+          headers: {
+            'x-jwt': info.tribe_jwt,
+            'Content-Type': 'application/json'
+          }
         }
-      });
+      );
 
       return r.json();
     } catch (e) {
