@@ -3582,7 +3582,7 @@ export class MainStore {
       if (!uiStore.meInfo) return undefined;
       const info = uiStore.meInfo;
 
-      const r: any = await fetch(`${TribesURL}/features/${feature_uuid}/phase/${phase_uuid}`, {
+      const r: any = await fetch(`${TribesURL}/bounties/ticket/feature/${feature_uuid}/phase/${phase_uuid}`, {
         method: 'GET',
         mode: 'cors',
         headers: {
