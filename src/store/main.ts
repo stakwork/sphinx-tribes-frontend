@@ -3673,10 +3673,7 @@ export class MainStore {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          action: 'update',
-          ticket: initialTicketData
-        })
+        body: JSON.stringify(initialTicketData)
       });
 
       if (!response.ok) {
