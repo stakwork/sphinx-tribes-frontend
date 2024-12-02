@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useStores } from 'store';
+import { EuiGlobalToastList } from '@elastic/eui';
 import { ActionButton, TicketButtonGroup } from '../../../people/widgetViews/workspace/style';
 import { TicketContainer, TicketHeader, TicketTextArea } from '../../../pages/tickets/style';
 import { TicketStatus } from '../../../store/interface';
+import { Toast } from '../../../people/widgetViews/workspace/interface';
 
 interface TicketEditorProps {
   ticketData: {
@@ -21,6 +23,7 @@ interface TicketEditorProps {
 
 const TicketEditor = ({ ticketData }: TicketEditorProps) => {
   const [description, setDescription] = useState('');
+  const [toasts, setToasts] = useState<Toast[]>([]);
   const { main } = useStores();
 
   useEffect(() => {
@@ -58,6 +61,28 @@ const TicketEditor = ({ ticketData }: TicketEditorProps) => {
     }
   };
 
+  const addSuccessToast = () => {
+    setToasts([
+      {
+        id: '1',
+        title: 'Ticket Builder',
+        color: 'success',
+        text: "Success, I'll rewrite your ticket now!"
+      }
+    ]);
+  };
+
+  const addErrorToast = () => {
+    setToasts([
+      {
+        id: '2',
+        title: 'Ticket Builder',
+        color: 'danger',
+        text: 'Sorry, there appears to be a problem'
+      }
+    ]);
+  };
+
   const handleTicketBuilder = async () => {
     try {
       const ticketForReview = {
@@ -69,12 +94,13 @@ const TicketEditor = ({ ticketData }: TicketEditorProps) => {
       const response = await main.sendTicketForReview(ticketForReview);
 
       if (response) {
-        console.log('Ticket sent for review successfully');
+        addSuccessToast();
       } else {
         throw new Error('Failed to send ticket for review');
       }
     } catch (error) {
       console.error('Error in ticket builder:', error);
+      addErrorToast();
     }
   };
 
@@ -99,6 +125,11 @@ const TicketEditor = ({ ticketData }: TicketEditorProps) => {
           Ticket Builder
         </ActionButton>
       </TicketButtonGroup>
+      <EuiGlobalToastList
+        toasts={toasts}
+        dismissToast={() => setToasts([])}
+        toastLifeTimeMs={3000}
+      />
     </TicketContainer>
   );
 };
