@@ -3727,6 +3727,32 @@ export class MainStore {
     }
   }
 
+  async getTicketDetails(uuid: string): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+
+      const response = await fetch(`${TribesURL}/bounties/ticket/${uuid}`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch ticket details');
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching ticket details:', error);
+      return null;
+    }
+  }
+
   async createConnectionCodes(users_number: number): Promise<number> {
     try {
       if (!uiStore.meInfo) return 406;

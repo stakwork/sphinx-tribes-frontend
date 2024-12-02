@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useStores } from 'store';
 import { ActionButton, TicketButtonGroup } from '../../../people/widgetViews/workspace/style';
 import { TicketContainer, TicketHeader, TicketTextArea } from '../../../pages/tickets/style';
@@ -22,6 +22,21 @@ interface TicketEditorProps {
 const TicketEditor = ({ ticketData }: TicketEditorProps) => {
   const [description, setDescription] = useState('');
   const { main } = useStores();
+
+  useEffect(() => {
+    const fetchTicketDetails = async () => {
+      try {
+        const ticket = await main.getTicketDetails(ticketData.uuid);
+        if (ticket) {
+          setDescription(ticket.description || '');
+        }
+      } catch (error) {
+        console.error('Error fetching ticket details:', error);
+      }
+    };
+
+    fetchTicketDetails();
+  }, [ticketData.uuid, main]);
 
   const handleUpdate = async () => {
     const updateTicketData = {
