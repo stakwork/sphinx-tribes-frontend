@@ -62,17 +62,34 @@ const PhasePlannerView: React.FC = () => {
     return data;
   }, [feature_uuid, phase_uuid, main]);
 
+  const getPhaseTickets = useCallback(async () => {
+    if (!feature_uuid || !phase_uuid) return;
+    const data = await main.getTicketDataByPhase(feature_uuid, phase_uuid);
+
+    return data;
+  }, [feature_uuid, phase_uuid, main]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const feature = await getFeatureData();
         const phase = await getPhaseData();
+        const phaseTickets = await getPhaseTickets();
 
-        if (!feature || !phase) {
+        if (!feature || !phase || !Array.isArray(phaseTickets)) {
           history.push('/');
         } else {
+          const parsedTicketData: TicketData[] = [];
+          for (let i = 0; i < phaseTickets.length; i++) {
+            const ticket = phaseTickets[i];
+            if (ticket.UUID) {
+              ticket.uuid = ticket.UUID;
+            }
+            parsedTicketData.push({ ...ticket });
+          }
           setFeatureData(feature);
           setPhaseData(phase);
+          setTicketData(parsedTicketData);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -81,7 +98,7 @@ const PhasePlannerView: React.FC = () => {
     };
 
     fetchData();
-  }, [getFeatureData, getPhaseData, history]);
+  }, [getFeatureData, getPhaseData, history, getPhaseTickets]);
 
   const handleClose = () => {
     history.push(`/feature/${feature_uuid}`);
