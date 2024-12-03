@@ -13,6 +13,8 @@ import {
   LabelValue,
   AddTicketButton
 } from 'pages/tickets/style';
+import { SOCKET_MSG } from 'config/socket';
+import { createSocketInstance } from 'config/socket';
 import {
   FeatureHeadNameWrap,
   FeatureHeadWrap,
@@ -47,6 +49,32 @@ const PhasePlannerView: React.FC = () => {
   const [ticketData, setTicketData] = useState<TicketData[]>([]);
   const { main } = useStores();
   const history = useHistory();
+
+  useEffect(() => {
+    const socket = createSocketInstance();
+
+    socket.onopen = () => {
+      console.log('Socket connected in Phase Planner');
+    };
+
+    socket.onmessage = (event: MessageEvent) => {
+      const res = JSON.parse(event.data);
+      if (res.msg === SOCKET_MSG.user_connect) {
+        const sessionId = res.body;
+        console.log(`Websocket Session ID: ${sessionId}`);
+      }
+    };
+
+    socket.onclose = () => {
+      console.log('Socket disconnected in Phase Planner');
+    };
+
+    return () => {
+      if (socket.readyState === WebSocket.OPEN) {
+        socket.close();
+      }
+    };
+  }, []);
 
   const getFeatureData = useCallback(async () => {
     if (!feature_uuid) return;
