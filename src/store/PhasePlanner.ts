@@ -6,6 +6,7 @@ export interface IPhasePlannerStore {
   addTicket: (ticket: Ticket) => void;
   updateTicket: (uuid: string, ticket: Partial<Ticket>) => void;
   getTicket: (uuid: string) => Ticket | undefined;
+  setTickets: (tickets: Ticket[]) => void;
 }
 
 export class PhasePlannerStore implements IPhasePlannerStore {
