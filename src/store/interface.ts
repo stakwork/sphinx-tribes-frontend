@@ -412,8 +412,8 @@ export interface Ticket {
   description: string;
   status: TicketStatus;
   version: number;
-  created_at: Date;
-  updated_at: Date;
+  created_at?: Date;
+  updated_at?: Date;
 }
 
 export interface CreateTicketInput {

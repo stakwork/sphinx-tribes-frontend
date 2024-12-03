@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useStores } from 'store';
 import { EuiGlobalToastList } from '@elastic/eui';
+import { phasePlannerStore } from 'store/phasePlannerStore';
 import { ActionButton, TicketButtonGroup } from '../../../people/widgetViews/workspace/style';
 import {
   TicketContainer,
@@ -86,6 +87,7 @@ const TicketEditor = ({ ticketData }: TicketEditorProps) => {
       if (response === 406 || !response) {
         throw new Error('Failed to update ticket');
       }
+      phasePlannerStore.updateTicket(ticketData.uuid, updateTicketData);
       addUpdateSuccessToast();
     } catch (error) {
       console.error('Error updating ticket:', error);

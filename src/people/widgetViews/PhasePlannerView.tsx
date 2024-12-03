@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
-import { Feature } from 'store/interface';
+import { Feature, Ticket } from 'store/interface';
 import MaterialIcon from '@material/react-material-icon';
 import TicketEditor from 'components/common/TicketEditor/TicketEditor';
 import { useStores } from 'store';
@@ -15,6 +15,7 @@ import {
 } from 'pages/tickets/style';
 import { SOCKET_MSG } from 'config/socket';
 import { createSocketInstance } from 'config/socket';
+import { phasePlannerStore } from 'store/phasePlannerStore';
 import {
   FeatureHeadNameWrap,
   FeatureHeadWrap,
@@ -62,6 +63,17 @@ const PhasePlannerView: React.FC = () => {
       if (res.msg === SOCKET_MSG.user_connect) {
         const sessionId = res.body;
         console.log(`Websocket Session ID: ${sessionId}`);
+      }
+
+      if (res.msg === SOCKET_MSG.ticket_update && res.body) {
+        const updatedTicket = res.body;
+
+        setTicketData((prevTickets: TicketData[]) =>
+          prevTickets.map((ticket: TicketData) =>
+            ticket.uuid === updatedTicket.uuid ? { ...ticket, ...updatedTicket } : ticket
+          )
+        );
+        phasePlannerStore.updateTicket(updatedTicket.uuid, updatedTicket);
       }
     };
 
@@ -118,6 +130,7 @@ const PhasePlannerView: React.FC = () => {
           setFeatureData(feature);
           setPhaseData(phase);
           setTicketData(parsedTicketData);
+          phasePlannerStore.setTickets(parsedTicketData as Ticket[]);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
