@@ -6,7 +6,6 @@ export interface IPhasePlannerStore {
   addTicket: (ticket: Ticket) => void;
   updateTicket: (uuid: string, ticket: Partial<Ticket>) => void;
   getTicket: (uuid: string) => Ticket | undefined;
-  setTickets: (tickets: Ticket[]) => void;
 }
 
 export class PhasePlannerStore implements IPhasePlannerStore {
@@ -29,11 +28,6 @@ export class PhasePlannerStore implements IPhasePlannerStore {
 
   getTicket(uuid: string): Ticket | undefined {
     return this.tickets.get(uuid);
-  }
-
-  setTickets(tickets: Ticket[]) {
-    this.tickets.clear();
-    tickets.forEach((ticket: Ticket) => this.tickets.set(ticket.uuid, ticket));
   }
 }
 
