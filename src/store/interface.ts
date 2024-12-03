@@ -435,3 +435,11 @@ export interface UpdateTicketInput {
   status?: TicketStatus;
   version?: number;
 }
+
+export interface TicketMessage {
+  broadcastType: 'pool' | 'direct';
+  sourceSessionID: string;
+  message: string;
+  action: 'process' | 'message';
+  ticketDetails: Ticket;
+}
