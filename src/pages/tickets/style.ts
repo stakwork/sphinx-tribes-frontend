@@ -546,3 +546,24 @@ export const TicketTextArea = styled.textarea`
     border: 2px solid #82b4ff;
   }
 `;
+
+export const TicketInput = styled.input`
+  width: 30%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #333;
+
+  &:focus {
+    outline: none;
+    border-color: #49c998;
+  }
+`;
+
+export const TicketHeaderInputWrap = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
