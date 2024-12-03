@@ -2,7 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useStores } from 'store';
 import { EuiGlobalToastList } from '@elastic/eui';
 import { ActionButton, TicketButtonGroup } from '../../../people/widgetViews/workspace/style';
-import { TicketContainer, TicketHeader, TicketTextArea } from '../../../pages/tickets/style';
+import {
+  TicketContainer,
+  TicketHeader,
+  TicketTextArea,
+  TicketInput,
+  TicketHeaderInputWrap
+} from '../../../pages/tickets/style';
 import { TicketStatus } from '../../../store/interface';
 import { Toast } from '../../../people/widgetViews/workspace/interface';
 
@@ -22,7 +28,8 @@ interface TicketEditorProps {
 }
 
 const TicketEditor = ({ ticketData }: TicketEditorProps) => {
-  const [description, setDescription] = useState('');
+  const [name, setName] = useState(ticketData.name || 'Ticket');
+  const [description, setDescription] = useState(ticketData.description || '');
   const [toasts, setToasts] = useState<Toast[]>([]);
   const { main } = useStores();
 
@@ -32,6 +39,7 @@ const TicketEditor = ({ ticketData }: TicketEditorProps) => {
         const ticket = await main.getTicketDetails(ticketData.uuid);
         if (ticket) {
           setDescription(ticket.description || '');
+          setName(ticket.name || 'Ticket');
         }
       } catch (error) {
         console.error('Error fetching ticket details:', error);
@@ -43,13 +51,9 @@ const TicketEditor = ({ ticketData }: TicketEditorProps) => {
 
   const handleUpdate = async () => {
     const updateTicketData = {
-      uuid: ticketData.uuid,
-      feature_uuid: ticketData.feature_uuid,
-      phase_uuid: ticketData.phase_uuid,
-      name: '',
-      sequence: ticketData.sequence,
-      dependency: [],
-      description: description,
+      ...ticketData,
+      name,
+      description,
       status: 'DRAFT' as TicketStatus,
       version: ticketData.version + 1
     };
@@ -87,7 +91,8 @@ const TicketEditor = ({ ticketData }: TicketEditorProps) => {
     try {
       const ticketForReview = {
         ...ticketData,
-        description: description || ticketData.description,
+        name,
+        description,
         status: 'DRAFT' as TicketStatus
       };
 
@@ -106,13 +111,19 @@ const TicketEditor = ({ ticketData }: TicketEditorProps) => {
 
   return (
     <TicketContainer>
-      <TicketHeader>Ticket {ticketData.number}:</TicketHeader>
+      <TicketHeaderInputWrap>
+        <TicketHeader>Ticket:</TicketHeader>
+        <TicketInput
+          value={name}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
+          placeholder="Enter ticket name..."
+        />
+      </TicketHeaderInputWrap>
       <TicketTextArea
         value={description}
         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
         placeholder="Enter ticket details..."
       />
-
       <TicketButtonGroup>
         <ActionButton color="primary" onClick={handleUpdate} data-testid="story-input-update-btn">
           Update
