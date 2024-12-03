@@ -49,6 +49,28 @@ const TicketEditor = ({ ticketData }: TicketEditorProps) => {
     fetchTicketDetails();
   }, [ticketData.uuid, main]);
 
+  const addUpdateSuccessToast = () => {
+    setToasts([
+      {
+        id: '3',
+        title: 'Hive',
+        color: 'success',
+        text: 'Updates Saved!'
+      }
+    ]);
+  };
+
+  const addUpdateErrorToast = () => {
+    setToasts([
+      {
+        id: '4',
+        title: 'Hive',
+        color: 'danger',
+        text: 'We had an issue, try again!'
+      }
+    ]);
+  };
+
   const handleUpdate = async () => {
     const updateTicketData = {
       ...ticketData,
@@ -59,9 +81,15 @@ const TicketEditor = ({ ticketData }: TicketEditorProps) => {
     };
 
     try {
-      await main.createUpdateTicket(updateTicketData);
+      const response = await main.createUpdateTicket(updateTicketData);
+
+      if (response === 406 || !response) {
+        throw new Error('Failed to update ticket');
+      }
+      addUpdateSuccessToast();
     } catch (error) {
       console.error('Error updating ticket:', error);
+      addUpdateErrorToast();
     }
   };
 
