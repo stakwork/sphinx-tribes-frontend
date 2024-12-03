@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useStores } from 'store';
 import { EuiGlobalToastList } from '@elastic/eui';
-import { phasePlannerStore } from 'store/phasePlannerStore';
+import { phasePlannerStore } from 'store/PhasePlanner';
 import { ActionButton, TicketButtonGroup } from '../../../people/widgetViews/workspace/style';
 import {
   TicketContainer,

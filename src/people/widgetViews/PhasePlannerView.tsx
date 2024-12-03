@@ -15,7 +15,7 @@ import {
 } from 'pages/tickets/style';
 import { SOCKET_MSG } from 'config/socket';
 import { createSocketInstance } from 'config/socket';
-import { phasePlannerStore } from 'store/phasePlannerStore';
+import { phasePlannerStore } from 'store/PhasePlanner';
 import {
   FeatureHeadNameWrap,
   FeatureHeadWrap,

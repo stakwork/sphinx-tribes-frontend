@@ -1,7 +1,14 @@
 import { makeAutoObservable } from 'mobx';
 import { Ticket } from './interface';
 
-export class PhasePlannerStore {
+export interface IPhasePlannerStore {
+  tickets: Map<string, Ticket>;
+  addTicket: (ticket: Ticket) => void;
+  updateTicket: (uuid: string, ticket: Partial<Ticket>) => void;
+  getTicket: (uuid: string) => Ticket | undefined;
+}
+
+export class PhasePlannerStore implements IPhasePlannerStore {
   tickets: Map<string, Ticket> = new Map();
 
   constructor() {
