@@ -52,7 +52,7 @@ const TicketEditor = ({ ticketData }: TicketEditorProps) => {
   const addUpdateSuccessToast = () => {
     setToasts([
       {
-        id: '3',
+        id: `${Date.now()}-success`,
         title: 'Hive',
         color: 'success',
         text: 'Updates Saved!'
@@ -63,7 +63,7 @@ const TicketEditor = ({ ticketData }: TicketEditorProps) => {
   const addUpdateErrorToast = () => {
     setToasts([
       {
-        id: '4',
+        id: `${Date.now()}-error`,
         title: 'Hive',
         color: 'danger',
         text: 'We had an issue, try again!'
@@ -96,7 +96,7 @@ const TicketEditor = ({ ticketData }: TicketEditorProps) => {
   const addSuccessToast = () => {
     setToasts([
       {
-        id: '1',
+        id: `${Date.now()}-ticket-success`,
         title: 'Ticket Builder',
         color: 'success',
         text: "Success, I'll rewrite your ticket now!"
@@ -107,7 +107,7 @@ const TicketEditor = ({ ticketData }: TicketEditorProps) => {
   const addErrorToast = () => {
     setToasts([
       {
-        id: '2',
+        id: `${Date.now()}-ticket-error`,
         title: 'Ticket Builder',
         color: 'danger',
         text: 'Sorry, there appears to be a problem'
