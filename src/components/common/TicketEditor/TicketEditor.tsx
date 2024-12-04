@@ -119,14 +119,20 @@ const TicketEditor = ({ ticketData }: TicketEditorProps) => {
 
   const handleTicketBuilder = async () => {
     try {
-      const ticketForReview = {
-        ...ticketData,
-        name,
-        description,
-        status: 'DRAFT' as TicketStatus
+      const ticketPayload = {
+        metadata: {
+          source: 'websocket',
+          id: ticketData.uuid
+        },
+        ticket: {
+          ...ticketData,
+          name,
+          description,
+          status: 'DRAFT' as TicketStatus
+        }
       };
 
-      const response = await main.sendTicketForReview(ticketForReview);
+      const response = await main.sendTicketForReview(ticketPayload);
 
       if (response) {
         addSuccessToast();
