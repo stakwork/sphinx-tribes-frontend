@@ -64,17 +64,6 @@ const PhasePlannerView: React.FC = () => {
         const sessionId = res.body;
         console.log(`Websocket Session ID: ${sessionId}`);
       }
-
-      if (res.msg === SOCKET_MSG.ticket_update && res.body) {
-        const updatedTicket = res.body;
-
-        setTicketData((prevTickets: TicketData[]) =>
-          prevTickets.map((ticket: TicketData) =>
-            ticket.uuid === updatedTicket.uuid ? { ...ticket, ...updatedTicket } : ticket
-          )
-        );
-        phasePlannerStore.updateTicket(updatedTicket.uuid, updatedTicket);
-      }
     };
 
     socket.onclose = () => {
