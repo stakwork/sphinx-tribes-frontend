@@ -147,8 +147,16 @@ const PhasePlannerView: React.FC = () => {
       version: 1
     };
 
+    const ticketPayload = {
+      metadata: {
+        source: 'websocket',
+        id: initialTicketData.uuid
+      },
+      ticket: initialTicketData
+    };
+
     try {
-      await main.createUpdateTicket(initialTicketData);
+      await main.createUpdateTicket(ticketPayload);
       phaseTicketStore.addTicket(initialTicketData as Ticket);
       setTicketData((prevTickets: TicketData[]) => [
         ...prevTickets,
