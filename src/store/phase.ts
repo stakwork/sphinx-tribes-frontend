@@ -5,7 +5,7 @@ interface PhaseTickets {
   [phase_uuid: string]: Ticket[];
 }
 
-export interface ITicketStore {
+export interface TicketStore {
   tickets: Map<string, Ticket>;
   phaseTickets: PhaseTickets;
 
@@ -15,7 +15,7 @@ export interface ITicketStore {
   getPhaseTickets: (phase_uuid: string) => Ticket[];
 }
 
-export class PhaseTicketStore implements ITicketStore {
+export class PhaseTicketStore implements TicketStore {
   tickets: Map<string, Ticket> = new Map();
   phaseTickets: PhaseTickets = {};
 
