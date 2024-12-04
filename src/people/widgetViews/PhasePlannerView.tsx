@@ -15,7 +15,7 @@ import {
 } from 'pages/tickets/style';
 import { SOCKET_MSG } from 'config/socket';
 import { createSocketInstance } from 'config/socket';
-import { phasePlannerStore } from '../../store/phase';
+import { phaseTicketStore } from '../../store/phase';
 import {
   FeatureHeadNameWrap,
   FeatureHeadWrap,
@@ -149,7 +149,7 @@ const PhasePlannerView: React.FC = () => {
 
     try {
       await main.createUpdateTicket(initialTicketData);
-      phasePlannerStore.addTicket(initialTicketData as Ticket);
+      phaseTicketStore.addTicket(initialTicketData as Ticket);
       setTicketData((prevTickets: TicketData[]) => [
         ...prevTickets,
         {
