@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
-import { Feature } from 'store/interface';
+import { Feature, Ticket } from 'store/interface';
 import MaterialIcon from '@material/react-material-icon';
 import TicketEditor from 'components/common/TicketEditor/TicketEditor';
 import { useStores } from 'store';
@@ -15,6 +15,7 @@ import {
 } from 'pages/tickets/style';
 import { SOCKET_MSG } from 'config/socket';
 import { createSocketInstance } from 'config/socket';
+import { phasePlannerStore } from '../../store/phase';
 import {
   FeatureHeadNameWrap,
   FeatureHeadWrap,
@@ -148,6 +149,7 @@ const PhasePlannerView: React.FC = () => {
 
     try {
       await main.createUpdateTicket(initialTicketData);
+      phasePlannerStore.addTicket(initialTicketData as Ticket);
       setTicketData((prevTickets: TicketData[]) => [
         ...prevTickets,
         {
