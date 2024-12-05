@@ -152,7 +152,7 @@ const PhasePlannerView: React.FC = () => {
     const ticketPayload = {
       metadata: {
         source: 'websocket',
-        id: initialTicketData.uuid
+        id: websocketSessionId
       },
       ticket: initialTicketData
     };

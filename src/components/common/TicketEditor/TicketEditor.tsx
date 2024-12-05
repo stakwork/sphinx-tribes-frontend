@@ -78,7 +78,7 @@ const TicketEditor = ({ ticketData, websocketSessionId }: TicketEditorProps) => 
       const ticketPayload = {
         metadata: {
           source: 'websocket',
-          id: ticketData.uuid
+          id: websocketSessionId
         },
         ticket: {
           ...ticketData,
