@@ -3738,6 +3738,7 @@ export class MainStore {
       return null;
     }
   }
+
   async getTicketDetails(uuid: string): Promise<any> {
     try {
       if (!uiStore.meInfo) return null;

@@ -26,9 +26,10 @@ interface TicketEditorProps {
     version: number;
     number: number;
   };
+  websocketSessionId: string;
 }
 
-const TicketEditor = ({ ticketData }: TicketEditorProps) => {
+const TicketEditor = ({ ticketData, websocketSessionId }: TicketEditorProps) => {
   const [name, setName] = useState(ticketData.name || 'Ticket');
   const [description, setDescription] = useState(ticketData.description || '');
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -122,7 +123,7 @@ const TicketEditor = ({ ticketData }: TicketEditorProps) => {
       const ticketPayload = {
         metadata: {
           source: 'websocket',
-          id: ticketData.uuid
+          id: websocketSessionId
         },
         ticket: {
           ...ticketData,
