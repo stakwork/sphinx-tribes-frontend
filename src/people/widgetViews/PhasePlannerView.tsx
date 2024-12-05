@@ -65,7 +65,7 @@ const PhasePlannerView: React.FC = () => {
 
         phaseTicketStore.updateTicket(ticket.uuid, ticket);
       } catch (error) {
-        console.error('Error refreshing ticket:', error);
+        console.error('Error on refreshing ticket:', error);
       }
     };
 
