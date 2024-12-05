@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
-import { Feature, Ticket } from 'store/interface';
+import { Feature, Ticket, TicketMessage } from 'store/interface';
 import MaterialIcon from '@material/react-material-icon';
 import TicketEditor from 'components/common/TicketEditor/TicketEditor';
 import { useStores } from 'store';
@@ -60,11 +60,28 @@ const PhasePlannerView: React.FC = () => {
     };
 
     socket.onmessage = (event: MessageEvent) => {
-      const res = JSON.parse(event.data);
-      if (res.msg === SOCKET_MSG.user_connect) {
-        const sessionId = res.body;
-        setWebsocketSessionId(sessionId);
-        console.log(`Websocket Session ID: ${sessionId}`);
+      try {
+        const data = JSON.parse(event.data);
+
+        if (data.msg === SOCKET_MSG.user_connect) {
+          const sessionId = data.body;
+          setWebsocketSessionId(sessionId);
+          console.log(`Websocket Session ID: ${sessionId}`);
+          return;
+        }
+
+        const ticketMessage = data as TicketMessage;
+        if (ticketMessage.action === 'message') {
+          console.log('Received ticket message:', ticketMessage.message);
+          console.log('Ticket details:', {
+            broadcastType: ticketMessage.broadcastType,
+            sourceSessionID: ticketMessage.sourceSessionID,
+            action: ticketMessage.action,
+            ticketDetails: ticketMessage.ticketDetails
+          });
+        }
+      } catch (error) {
+        console.error('Error processing websocket message:', error);
       }
     };
 
