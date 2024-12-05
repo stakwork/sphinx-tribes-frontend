@@ -1,6 +1,7 @@
 import { toJS } from 'mobx';
 import sinon from 'sinon';
 import moment from 'moment';
+import { waitFor } from '@testing-library/react';
 import { people } from '../../__test__/__mockData__/persons';
 import { user } from '../../__test__/__mockData__/user';
 import { MeInfo, emptyMeInfo, uiStore } from '../ui';
@@ -1146,6 +1147,7 @@ describe('Main store', () => {
     );
     expect(res).toBeTruthy();
   });
+
   it('should accept search query and return results based on query ', async () => {
     const store = new MainStore();
 
@@ -1178,10 +1180,12 @@ describe('Main store', () => {
 
     await store.getPeopleBounties(searchCriteria);
 
-    sinon.assert.calledWithMatch(fetchStub, bountiesUrl);
-    expect(fetchStub.calledOnce).toBe(true);
-    expect(store.peopleBounties).toHaveLength(1);
-    expect(store.peopleBounties[0].body.title).toEqual(searchCriteria.search);
+    waitFor(() => {
+      sinon.assert.calledWithMatch(fetchStub, bountiesUrl);
+      expect(fetchStub.calledOnce).toBe(true);
+      expect(store.peopleBounties).toHaveLength(1);
+      expect(store.peopleBounties[0].body.title).toEqual(searchCriteria.search);
+    });
   });
 
   it('should return filter by languages, status response', async () => {
