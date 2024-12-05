@@ -443,3 +443,11 @@ export interface TicketMessage {
   action: 'process' | 'message';
   ticketDetails: Ticket;
 }
+
+export interface TicketPayload {
+  metadata: {
+    source: string;
+    id: string;
+  };
+  ticket: Ticket;
+}

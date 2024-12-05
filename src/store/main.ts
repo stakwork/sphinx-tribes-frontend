@@ -46,7 +46,7 @@ import {
   FeatureStory,
   UpdateFeatureStoryInput,
   CreateFeatureStoryInput,
-  TicketStatus
+  TicketPayload
 } from './interface';
 
 function makeTorSaveURL(host: string, key: string) {
@@ -3718,17 +3718,7 @@ export class MainStore {
     }
   }
 
-  async sendTicketForReview(ticket: {
-    uuid: string;
-    feature_uuid: string;
-    phase_uuid: string;
-    name: string;
-    sequence: number;
-    dependency: string[];
-    description: string;
-    status: TicketStatus;
-    version: number;
-  }): Promise<any> {
+  async sendTicketForReview(payload: TicketPayload): Promise<any> {
     try {
       if (!uiStore.meInfo) return null;
       const info = uiStore.meInfo;
@@ -3740,7 +3730,7 @@ export class MainStore {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(ticket)
+        body: JSON.stringify(payload)
       });
 
       if (!response.ok) {
