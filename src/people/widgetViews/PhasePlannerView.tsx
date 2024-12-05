@@ -59,6 +59,16 @@ const PhasePlannerView: React.FC = () => {
       console.log('Socket connected in Phase Planner');
     };
 
+    const refreshSingleTicket = async (ticketUuid: string) => {
+      try {
+        const ticket = await main.getTicketDetails(ticketUuid);
+
+        phaseTicketStore.updateTicket(ticket.uuid, ticket);
+      } catch (error) {
+        console.error('Error on refreshing ticket:', error);
+      }
+    };
+
     socket.onmessage = (event: MessageEvent) => {
       try {
         const data = JSON.parse(event.data);
@@ -71,14 +81,21 @@ const PhasePlannerView: React.FC = () => {
         }
 
         const ticketMessage = data as TicketMessage;
-        if (ticketMessage.action === 'message') {
-          console.log('Received ticket message:', ticketMessage.message);
-          console.log('Ticket details:', {
-            broadcastType: ticketMessage.broadcastType,
-            sourceSessionID: ticketMessage.sourceSessionID,
-            action: ticketMessage.action,
-            ticketDetails: ticketMessage.ticketDetails
-          });
+        switch (ticketMessage.action) {
+          case 'message':
+            console.log('Received ticket message:', ticketMessage.message);
+            console.log('Ticket details:', {
+              broadcastType: ticketMessage.broadcastType,
+              sourceSessionID: ticketMessage.sourceSessionID,
+              action: ticketMessage.action,
+              ticketDetails: ticketMessage.ticketDetails
+            });
+            break;
+
+          case 'process':
+            console.log('Processing ticket update:', ticketMessage.ticketDetails.uuid);
+            refreshSingleTicket(ticketMessage.ticketDetails.uuid);
+            break;
         }
       } catch (error) {
         console.error('Error processing websocket message:', error);
@@ -94,7 +111,7 @@ const PhasePlannerView: React.FC = () => {
         socket.close();
       }
     };
-  }, []);
+  }, [main]);
 
   const getFeatureData = useCallback(async () => {
     if (!feature_uuid) return;
