@@ -81,6 +81,9 @@ const PhasePlannerView: React.FC = () => {
         }
 
         const ticketMessage = data as TicketMessage;
+
+        console.log('Ticket Message', ticketMessage);
+
         switch (ticketMessage.action) {
           case 'message':
             console.log('Received ticket message:', ticketMessage.message);
