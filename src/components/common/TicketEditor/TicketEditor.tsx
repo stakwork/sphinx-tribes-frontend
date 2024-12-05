@@ -74,21 +74,28 @@ const TicketEditor = ({ ticketData, websocketSessionId }: TicketEditorProps) => 
   };
 
   const handleUpdate = async () => {
-    const updateTicketData = {
-      ...ticketData,
-      name,
-      description,
-      status: 'DRAFT' as TicketStatus,
-      version: ticketData.version + 1
-    };
-
     try {
-      const response = await main.createUpdateTicket(updateTicketData);
+      const ticketPayload = {
+        metadata: {
+          source: 'websocket',
+          id: websocketSessionId
+        },
+        ticket: {
+          ...ticketData,
+          name,
+          description,
+          status: 'DRAFT' as TicketStatus,
+          version: ticketData.version + 1
+        }
+      };
+
+      const response = await main.createUpdateTicket(ticketPayload);
 
       if (response === 406 || !response) {
         throw new Error('Failed to update ticket');
       }
-      phaseTicketStore.updateTicket(ticketData.uuid, updateTicketData);
+
+      phaseTicketStore.updateTicket(ticketData.uuid, ticketPayload.ticket);
       addUpdateSuccessToast();
     } catch (error) {
       console.error('Error updating ticket:', error);

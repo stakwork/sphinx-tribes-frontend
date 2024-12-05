@@ -3675,29 +3675,35 @@ export class MainStore {
     }
   }
 
-  async createUpdateTicket(initialTicketData: {
-    uuid: string;
-    feature_uuid: string;
-    phase_uuid: string;
-    name: string;
-    sequence: number;
-    dependency: string[];
-    description: string;
-    status: string;
-    version: number;
+  async createUpdateTicket(ticketPayload: {
+    metadata: {
+      source: string;
+      id: string;
+    };
+    ticket: {
+      uuid: string;
+      feature_uuid: string;
+      phase_uuid: string;
+      name: string;
+      sequence: number;
+      dependency: string[];
+      description: string;
+      status: string;
+      version: number;
+    };
   }): Promise<any> {
     try {
       if (!uiStore.meInfo) return [];
       const info = uiStore.meInfo;
 
-      const response = await fetch(`${TribesURL}/bounties/ticket/${initialTicketData.uuid}`, {
+      const response = await fetch(`${TribesURL}/bounties/ticket/${ticketPayload.ticket.uuid}`, {
         method: 'POST',
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(initialTicketData)
+        body: JSON.stringify(ticketPayload)
       });
 
       if (!response.ok) {
