@@ -26,9 +26,10 @@ interface TicketEditorProps {
     version: number;
     number: number;
   };
+  websocketSessionId: string;
 }
 
-const TicketEditor = ({ ticketData }: TicketEditorProps) => {
+const TicketEditor = ({ ticketData, websocketSessionId }: TicketEditorProps) => {
   const [name, setName] = useState(ticketData.name || 'Ticket');
   const [description, setDescription] = useState(ticketData.description || '');
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -119,14 +120,20 @@ const TicketEditor = ({ ticketData }: TicketEditorProps) => {
 
   const handleTicketBuilder = async () => {
     try {
-      const ticketForReview = {
-        ...ticketData,
-        name,
-        description,
-        status: 'DRAFT' as TicketStatus
+      const ticketPayload = {
+        metadata: {
+          source: 'websocket',
+          id: websocketSessionId
+        },
+        ticket: {
+          ...ticketData,
+          name,
+          description,
+          status: 'DRAFT' as TicketStatus
+        }
       };
 
-      const response = await main.sendTicketForReview(ticketForReview);
+      const response = await main.sendTicketForReview(ticketPayload);
 
       if (response) {
         addSuccessToast();

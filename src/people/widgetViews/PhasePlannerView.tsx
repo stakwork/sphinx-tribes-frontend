@@ -48,6 +48,7 @@ const PhasePlannerView: React.FC = () => {
   const [featureData, setFeatureData] = useState<Feature | null>(null);
   const [phaseData, setPhaseData] = useState<Phase | null>(null);
   const [ticketData, setTicketData] = useState<TicketData[]>([]);
+  const [websocketSessionId, setWebsocketSessionId] = useState<string>('');
   const { main } = useStores();
   const history = useHistory();
 
@@ -64,6 +65,7 @@ const PhasePlannerView: React.FC = () => {
 
         if (data.msg === SOCKET_MSG.user_connect) {
           const sessionId = data.body;
+          setWebsocketSessionId(sessionId);
           console.log(`Websocket Session ID: ${sessionId}`);
           return;
         }
@@ -212,7 +214,11 @@ const PhasePlannerView: React.FC = () => {
               Phase: <LabelValue>{phaseData?.name}</LabelValue>
             </PhaseLabel>
             {ticketData.map((ticketData: TicketData) => (
-              <TicketEditor key={ticketData.uuid} ticketData={ticketData} />
+              <TicketEditor
+                key={ticketData.uuid}
+                ticketData={ticketData}
+                websocketSessionId={websocketSessionId}
+              />
             ))}
             <AddTicketButton>
               <ActionButton
