@@ -650,16 +650,19 @@ export class MainStore {
           Pending: false,
           Failed: false,
           languageString: '',
-          direction: 'desc'
+          direction: 'desc',
+          search: uiStore.searchText ?? ''
         };
       }
     }
 
-    queryParams =
-      (params.Pending === 'true' || params.Pending === true) &&
+    queryParams = {
+      ...((params.Pending === 'true' || params.Pending === true) &&
       (params.Paid === 'false' || params.Paid === false)
         ? newParams
-        : params;
+        : params),
+      search: uiStore.searchText ?? ''
+    };
 
     const query2 = this.appendQueryParams(
       'gobounties/all',
