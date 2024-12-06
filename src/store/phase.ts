@@ -13,6 +13,7 @@ export interface TicketStore {
   updateTicket: (uuid: string, ticket: Partial<Ticket>) => void;
   getTicket: (uuid: string) => Ticket | undefined;
   getPhaseTickets: (phase_uuid: string) => Ticket[];
+  clearPhaseTickets: (phase_uuid: string) => void;
 }
 
 export class PhaseTicketStore implements TicketStore {
@@ -50,6 +51,14 @@ export class PhaseTicketStore implements TicketStore {
 
   getPhaseTickets(phase_uuid: string): Ticket[] {
     return this.phaseTickets[phase_uuid] || [];
+  }
+
+  clearPhaseTickets(phase_uuid: string) {
+    const phaseTickets = this.phaseTickets[phase_uuid] || [];
+    phaseTickets.forEach((ticket: Ticket) => {
+      this.tickets.delete(ticket.uuid);
+    });
+    this.phaseTickets[phase_uuid] = [];
   }
 }
 

@@ -46,7 +46,8 @@ import {
   FeatureStory,
   UpdateFeatureStoryInput,
   CreateFeatureStoryInput,
-  TicketPayload
+  TicketPayload,
+  Ticket
 } from './interface';
 
 function makeTorSaveURL(host: string, key: string) {
@@ -3683,17 +3684,7 @@ export class MainStore {
       source: string;
       id: string;
     };
-    ticket: {
-      uuid: string;
-      feature_uuid: string;
-      phase_uuid: string;
-      name: string;
-      sequence: number;
-      dependency: string[];
-      description: string;
-      status: string;
-      version: number;
-    };
+    ticket: Ticket;
   }): Promise<any> {
     try {
       if (!uiStore.meInfo) return [];
