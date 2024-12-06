@@ -69,7 +69,7 @@ const PhasePlannerView: React.FC = () => {
       }
     };
 
-    socket.onmessage = (event: MessageEvent) => {
+    socket.onmessage = async (event: MessageEvent) => {
       try {
         const data = JSON.parse(event.data);
 
@@ -81,8 +81,6 @@ const PhasePlannerView: React.FC = () => {
         }
 
         const ticketMessage = data as TicketMessage;
-
-        console.log('Ticket Message', ticketMessage);
 
         switch (ticketMessage.action) {
           case 'message':
@@ -96,8 +94,8 @@ const PhasePlannerView: React.FC = () => {
             break;
 
           case 'process':
-            console.log('Processing ticket update:', ticketMessage.ticketDetails.uuid);
-            refreshSingleTicket(ticketMessage.ticketDetails.uuid);
+            console.log('Processing ticket update:', ticketMessage.ticketDetails.ticketUUID);
+            await refreshSingleTicket(ticketMessage.ticketDetails.ticketUUID as string);
             break;
         }
       } catch (error) {
