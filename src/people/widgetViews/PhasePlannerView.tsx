@@ -151,6 +151,8 @@ const PhasePlannerView: React.FC = () => {
             if (ticket.UUID) {
               ticket.uuid = ticket.UUID;
             }
+
+            phaseTicketStore.addTicket(ticket);
             parsedTicketData.push({ ...ticket });
           }
           setFeatureData(feature);

@@ -36,20 +36,12 @@ const TicketEditor = ({ ticketData, websocketSessionId }: TicketEditorProps) => 
   const { main } = useStores();
 
   useEffect(() => {
-    const fetchTicketDetails = async () => {
-      try {
-        const ticket = await main.getTicketDetails(ticketData.uuid);
-        if (ticket) {
-          setDescription(ticket.description || '');
-          setName(ticket.name || 'Ticket');
-        }
-      } catch (error) {
-        console.error('Error fetching ticket details:', error);
-      }
-    };
-
-    fetchTicketDetails();
-  }, [ticketData.uuid, main]);
+    const storedTicket = phaseTicketStore.getTicket(ticketData.uuid);
+    if (storedTicket) {
+      setDescription(storedTicket.description || '');
+      setName(storedTicket.name || 'Ticket');
+    }
+  }, [ticketData.uuid]);
 
   const addUpdateSuccessToast = () => {
     setToasts([
