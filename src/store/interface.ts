@@ -404,6 +404,7 @@ export type TicketStatus =
 
 export interface Ticket {
   uuid: string;
+  ticketUUID?: string;
   feature_uuid: string;
   phase_uuid: string;
   name: string;
