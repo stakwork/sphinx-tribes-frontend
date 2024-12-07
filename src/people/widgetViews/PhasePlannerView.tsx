@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { observer } from 'mobx-react-lite';
 import { useParams, useHistory } from 'react-router-dom';
-import { Feature, Ticket, TicketMessage } from 'store/interface';
+import { Feature, Ticket, TicketMessage, TicketStatus } from 'store/interface';
 import MaterialIcon from '@material/react-material-icon';
 import TicketEditor from 'components/common/TicketEditor/TicketEditor';
 import { useStores } from 'store';
@@ -30,27 +31,14 @@ interface PhasePlannerParams {
   phase_uuid: string;
 }
 
-interface TicketData {
-  uuid: string;
-  feature_uuid: string;
-  phase_uuid: string;
-  name: string;
-  sequence: number;
-  dependency: string[];
-  description: string;
-  status: string;
-  version: number;
-  number: number;
-}
-
-const PhasePlannerView: React.FC = () => {
+const PhasePlannerView: React.FC = observer(() => {
   const { feature_uuid, phase_uuid } = useParams<PhasePlannerParams>();
   const [featureData, setFeatureData] = useState<Feature | null>(null);
   const [phaseData, setPhaseData] = useState<Phase | null>(null);
-  const [ticketData, setTicketData] = useState<TicketData[]>([]);
   const [websocketSessionId, setWebsocketSessionId] = useState<string>('');
   const { main } = useStores();
   const history = useHistory();
+  const tickets = phaseTicketStore.getPhaseTickets(phase_uuid);
 
   useEffect(() => {
     const socket = createSocketInstance();
@@ -62,7 +50,6 @@ const PhasePlannerView: React.FC = () => {
     const refreshSingleTicket = async (ticketUuid: string) => {
       try {
         const ticket = await main.getTicketDetails(ticketUuid);
-
         phaseTicketStore.updateTicket(ticket.uuid, ticket);
       } catch (error) {
         console.error('Error on refreshing ticket:', error);
@@ -117,21 +104,18 @@ const PhasePlannerView: React.FC = () => {
   const getFeatureData = useCallback(async () => {
     if (!feature_uuid) return;
     const data = await main.getFeaturesByUuid(feature_uuid);
-
     return data;
   }, [feature_uuid, main]);
 
   const getPhaseData = useCallback(async () => {
     if (!feature_uuid || !phase_uuid) return;
     const data = await main.getFeaturePhaseByUUID(feature_uuid, phase_uuid);
-
     return data;
   }, [feature_uuid, phase_uuid, main]);
 
   const getPhaseTickets = useCallback(async () => {
     if (!feature_uuid || !phase_uuid) return;
     const data = await main.getTicketDataByPhase(feature_uuid, phase_uuid);
-
     return data;
   }, [feature_uuid, phase_uuid, main]);
 
@@ -145,19 +129,18 @@ const PhasePlannerView: React.FC = () => {
         if (!feature || !phase || !Array.isArray(phaseTickets)) {
           history.push('/');
         } else {
-          const parsedTicketData: TicketData[] = [];
-          for (let i = 0; i < phaseTickets.length; i++) {
-            const ticket = phaseTickets[i];
+          // Clear existing tickets for this phase before adding new ones
+          phaseTicketStore.clearPhaseTickets(phase_uuid);
+
+          // Add fetched tickets
+          for (const ticket of phaseTickets) {
             if (ticket.UUID) {
               ticket.uuid = ticket.UUID;
             }
-
             phaseTicketStore.addTicket(ticket);
-            parsedTicketData.push({ ...ticket });
           }
           setFeatureData(feature);
           setPhaseData(phase);
-          setTicketData(parsedTicketData);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -166,7 +149,7 @@ const PhasePlannerView: React.FC = () => {
     };
 
     fetchData();
-  }, [getFeatureData, getPhaseData, history, getPhaseTickets]);
+  }, [getFeatureData, getPhaseData, history, getPhaseTickets, phase_uuid]);
 
   const handleClose = () => {
     history.push(`/feature/${feature_uuid}`);
@@ -179,11 +162,12 @@ const PhasePlannerView: React.FC = () => {
       feature_uuid,
       phase_uuid,
       name: '',
-      sequence: 0,
+      sequence: tickets.length + 1,
       dependency: [],
       description: '',
-      status: 'DRAFT',
-      version: 1
+      status: 'DRAFT' as TicketStatus,
+      version: 1,
+      number: tickets.length + 1
     };
 
     const ticketPayload = {
@@ -197,21 +181,6 @@ const PhasePlannerView: React.FC = () => {
     try {
       await main.createUpdateTicket(ticketPayload);
       phaseTicketStore.addTicket(initialTicketData as Ticket);
-      setTicketData((prevTickets: TicketData[]) => [
-        ...prevTickets,
-        {
-          uuid: newTicketUuid,
-          feature_uuid,
-          phase_uuid,
-          name: '',
-          sequence: prevTickets.length + 1,
-          dependency: [],
-          description: '',
-          status: 'DRAFT',
-          version: 1,
-          number: prevTickets.length + 1
-        }
-      ]);
     } catch (error) {
       console.error('Error registering ticket:', error);
     }
@@ -241,10 +210,10 @@ const PhasePlannerView: React.FC = () => {
             <PhaseLabel>
               Phase: <LabelValue>{phaseData?.name}</LabelValue>
             </PhaseLabel>
-            {ticketData.map((ticketData: TicketData) => (
+            {tickets.map((ticket: Ticket) => (
               <TicketEditor
-                key={ticketData.uuid}
-                ticketData={ticketData}
+                key={ticket.uuid}
+                ticketData={ticket}
                 websocketSessionId={websocketSessionId}
               />
             ))}
@@ -262,6 +231,6 @@ const PhasePlannerView: React.FC = () => {
       </FeatureDataWrap>
     </FeatureBody>
   );
-};
+});
 
 export default PhasePlannerView;

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { observer } from 'mobx-react-lite';
 import { useStores } from 'store';
 import { EuiGlobalToastList } from '@elastic/eui';
 import { phaseTicketStore } from '../../../store/phase';
@@ -10,38 +11,20 @@ import {
   TicketInput,
   TicketHeaderInputWrap
 } from '../../../pages/tickets/style';
-import { TicketStatus } from '../../../store/interface';
+import { TicketStatus, Ticket } from '../../../store/interface';
 import { Toast } from '../../../people/widgetViews/workspace/interface';
 
 interface TicketEditorProps {
-  ticketData: {
-    uuid: string;
-    feature_uuid: string;
-    phase_uuid: string;
-    name: string;
-    sequence: number;
-    dependency: string[];
-    description: string;
-    status: string;
-    version: number;
-    number: number;
-  };
+  ticketData: Ticket;
   websocketSessionId: string;
 }
 
-const TicketEditor = ({ ticketData, websocketSessionId }: TicketEditorProps) => {
-  const [name, setName] = useState(ticketData.name || 'Ticket');
-  const [description, setDescription] = useState(ticketData.description || '');
+const TicketEditor = observer(({ ticketData, websocketSessionId }: TicketEditorProps) => {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const { main } = useStores();
-
-  useEffect(() => {
-    const storedTicket = phaseTicketStore.getTicket(ticketData.uuid);
-    if (storedTicket) {
-      setDescription(storedTicket.description || '');
-      setName(storedTicket.name || 'Ticket');
-    }
-  }, [ticketData.uuid]);
+  const currentTicket = phaseTicketStore.getTicket(ticketData.uuid);
+  const name = currentTicket?.name || 'Ticket';
+  const description = currentTicket?.description || '';
 
   const addUpdateSuccessToast = () => {
     setToasts([
@@ -151,13 +134,17 @@ const TicketEditor = ({ ticketData, websocketSessionId }: TicketEditorProps) => 
         <TicketHeader>Ticket:</TicketHeader>
         <TicketInput
           value={name}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            phaseTicketStore.updateTicket(ticketData.uuid, { name: e.target.value })
+          }
           placeholder="Enter ticket name..."
         />
       </TicketHeaderInputWrap>
       <TicketTextArea
         value={description}
-        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
+        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+          phaseTicketStore.updateTicket(ticketData.uuid, { description: e.target.value })
+        }
         placeholder="Enter ticket details..."
       />
       <TicketButtonGroup>
@@ -179,6 +166,6 @@ const TicketEditor = ({ ticketData, websocketSessionId }: TicketEditorProps) => 
       />
     </TicketContainer>
   );
-};
+});
 
 export default TicketEditor;
