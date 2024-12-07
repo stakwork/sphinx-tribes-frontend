@@ -50,7 +50,7 @@ const PhasePlannerView: React.FC = observer(() => {
     const refreshSingleTicket = async (ticketUuid: string) => {
       try {
         const ticket = await main.getTicketDetails(ticketUuid);
-        
+
         // TODO: Backend needs to send this as uuid and not UUID
         phaseTicketStore.updateTicket(ticket.uuid || ticket.UUID, ticket);
       } catch (error) {
