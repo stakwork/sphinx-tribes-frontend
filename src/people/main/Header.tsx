@@ -139,7 +139,7 @@ const MTab = styled(Link)<TagProps>`
   text-decoration: none !important;
 
   &:hover {
-    color: "#6B7A8D";
+    color: '#6B7A8D';
   }
 `;
 
@@ -270,7 +270,7 @@ function Header() {
     }
   ];
 
-  const resolveTabsToBounties = ["b", "t"]
+  const resolveTabsToBounties = ['b', 't'];
 
   if (isAdmin) {
     tabs.unshift({
@@ -417,11 +417,13 @@ function Header() {
               {tabs &&
                 tabs.map((t: any, i: number) => {
                   const { label } = t;
-                  const locationPath = location.pathname.split('/')[1]
-                  let selected = resolveTabsToBounties.includes(locationPath) ? false : locationPath === t.path.split('/')[1];
-                 
-                  if(resolveTabsToBounties.includes(locationPath) && label === "Bounties") {
-                    selected = true
+                  const locationPath = location.pathname.split('/')[1];
+                  let selected = resolveTabsToBounties.includes(locationPath)
+                    ? false
+                    : locationPath === t.path.split('/')[1];
+
+                  if (resolveTabsToBounties.includes(locationPath) && label === 'Bounties') {
+                    selected = true;
                   }
 
                   return (
@@ -479,11 +481,13 @@ function Header() {
               {tabs &&
                 tabs.map((t: any, i: number) => {
                   const { label } = t;
-                  const locationPath = location.pathname.split('/')[1]
-                  let selected = resolveTabsToBounties.includes(locationPath) ? false : locationPath === t.path.split('/')[1];
-                 
-                  if(resolveTabsToBounties.includes(locationPath) && label === "Bounties") {
-                    selected = true
+                  const locationPath = location.pathname.split('/')[1];
+                  let selected = resolveTabsToBounties.includes(locationPath)
+                    ? false
+                    : locationPath === t.path.split('/')[1];
+
+                  if (resolveTabsToBounties.includes(locationPath) && label === 'Bounties') {
+                    selected = true;
                   }
 
                   return (
