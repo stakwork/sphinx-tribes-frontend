@@ -249,11 +249,6 @@ function Header() {
 
   const tabs = [
     {
-      label: 'Tribes',
-      name: 'tribes',
-      path: '/t'
-    },
-    {
       label: 'People',
       name: 'people',
       path: '/p'
@@ -262,11 +257,6 @@ function Header() {
       label: 'Bounties',
       name: 'bounties',
       path: '/bounties'
-    },
-    {
-      label: 'Bots',
-      name: 'bots',
-      path: '/b'
     }
   ];
 
