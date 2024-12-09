@@ -39,8 +39,13 @@ export class PhaseTicketStore implements TicketStore {
       this.tickets.set(uuid, updatedTicket);
 
       const phaseTickets = this.phaseTickets[existingTicket.phase_uuid] || [];
-      this.phaseTickets[existingTicket.phase_uuid] = phaseTickets.map((t: Ticket) =>
+
+      const updatedPhaseTickets = phaseTickets.map((t: Ticket) =>
         t.uuid === uuid ? updatedTicket : t
+      );
+
+      this.phaseTickets[existingTicket.phase_uuid] = updatedPhaseTickets.sort(
+        (a: Ticket, b: Ticket) => a.sequence - b.sequence
       );
     }
   }
