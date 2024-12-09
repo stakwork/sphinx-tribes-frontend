@@ -531,7 +531,7 @@ export const TicketTextArea = styled.textarea`
   font-weight: 500;
   line-height: 20px;
   width: 100%;
-  resize: none;
+  resize: vertical;
   min-height: 300px;
 
   ::placeholder {
