@@ -10,7 +10,6 @@ import PeopleHeader from '../people/main/Header';
 import TokenRefresh from '../people/utils/TokenRefresh';
 import GenerateStoriesView from '../people/widgetViews/GenerateStoriesView';
 import PhasePlannerView from '../people/widgetViews/PhasePlannerView';
-import BotsBody from './bots/Body';
 import Body from './tribes/Body';
 import Header from './tribes/Header';
 import { MainLayout } from './MainLayout';
@@ -27,23 +26,11 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
       <TokenRefresh />
       <MainLayout header={<PeopleHeader />}>
         <Switch>
-          <Route path="/t/">
-            <Body />
-          </Route>
-          <Route path="/b/">
-            <BotsBody />
+          <Route path={['/bounties', '/t/', '/tickets', '/bounty/:bountyId', '/b/']}>
+            <TicketsPage />
           </Route>
           <Route path="/p/">
             <People />
-          </Route>
-          <Route path="/bounties/">
-            <TicketsPage />
-          </Route>
-          <Route path="/tickets/">
-            <TicketsPage />
-          </Route>
-          <Route path="/bounty/:bountyId">
-            <TicketsPage />
           </Route>
           <Route path="/workspace/bounties/:uuid">
             <WorkspaceTicketsPage />
@@ -67,7 +54,7 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
             <SuperAdmin />
           </Route>
           <Route path="*">
-            <Body />
+            <TicketsPage />
           </Route>
         </Switch>
       </MainLayout>

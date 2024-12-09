@@ -127,7 +127,7 @@ const Tab = styled(Link)<TagProps>`
 const MTab = styled(Link)<TagProps>`
   display: flex;
   margin: 25px 5px 0;
-  color: ${(p: any) => (p.selected ? '#fff' : '#ffffff99')};
+  color: ${(p: any) => (p.selected ? '#fff' : '#6B7A8D')};
   cursor: pointer;
   height: 30px;
   min-width: 65px;
@@ -137,6 +137,10 @@ const MTab = styled(Link)<TagProps>`
   justify-content: center;
   border-bottom: ${(p: any) => (p.selected ? '3px solid #618AFF' : 'none')};
   text-decoration: none !important;
+
+  &:hover {
+    color: '#6B7A8D';
+  }
 `;
 
 const LoggedInBtn = styled.div`
@@ -255,6 +259,8 @@ function Header() {
       path: '/bounties'
     }
   ];
+
+  const resolveTabsToBounties = ['b', 't'];
 
   if (isAdmin) {
     tabs.unshift({
@@ -397,7 +403,14 @@ function Header() {
               {tabs &&
                 tabs.map((t: any, i: number) => {
                   const { label } = t;
-                  const selected = location.pathname.split('/')[1] === t.path.split('/')[1];
+                  const locationPath = location.pathname.split('/')[1];
+                  let selected = resolveTabsToBounties.includes(locationPath)
+                    ? false
+                    : locationPath === t.path.split('/')[1];
+
+                  if (resolveTabsToBounties.includes(locationPath) && label === 'Bounties') {
+                    selected = true;
+                  }
 
                   return (
                     <MTab
@@ -454,7 +467,14 @@ function Header() {
               {tabs &&
                 tabs.map((t: any, i: number) => {
                   const { label } = t;
-                  const selected = location.pathname.split('/')[1] === t.path.split('/')[1];
+                  const locationPath = location.pathname.split('/')[1];
+                  let selected = resolveTabsToBounties.includes(locationPath)
+                    ? false
+                    : locationPath === t.path.split('/')[1];
+
+                  if (resolveTabsToBounties.includes(locationPath) && label === 'Bounties') {
+                    selected = true;
+                  }
 
                   return (
                     <Tab
