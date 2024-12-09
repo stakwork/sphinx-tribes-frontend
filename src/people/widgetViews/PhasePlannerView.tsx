@@ -5,6 +5,7 @@ import { Feature, Ticket, TicketMessage, TicketStatus } from 'store/interface';
 import MaterialIcon from '@material/react-material-icon';
 import TicketEditor from 'components/common/TicketEditor/TicketEditor';
 import { useStores } from 'store';
+import { EuiDragDropContext, EuiDroppable, EuiDraggable } from '@elastic/eui';
 import { v4 as uuidv4 } from 'uuid';
 import {
   FeatureBody,
@@ -188,6 +189,44 @@ const PhasePlannerView: React.FC = observer(() => {
     }
   };
 
+  const onDragEnd = async ({ source, destination }: any) => {
+    if (!source || !destination) {
+      console.warn('Invalid drag event: missing source or destination');
+      return;
+    }
+    if (source.index === destination.index) {
+      console.log('No movement detected in drag');
+      return;
+    }
+
+    const reorderedTickets = Array.from(tickets);
+    const [movedTicket] = reorderedTickets.splice(source.index, 1);
+    reorderedTickets.splice(destination.index, 0, movedTicket);
+
+    reorderedTickets.forEach((ticket: Ticket, idx: number) => {
+      phaseTicketStore.updateTicket(ticket.uuid, { ...ticket, sequence: idx + 1 });
+    });
+
+    try {
+      await Promise.all(
+        reorderedTickets.map((ticket: Ticket, index: number) => {
+          const updatedTicket = { ...ticket, sequence: index + 1 };
+          return main.createUpdateTicket({
+            metadata: {
+              source: 'websocket',
+              id: websocketSessionId
+            },
+            ticket: updatedTicket
+          });
+        })
+      );
+
+      console.log('Ticket order updated successfully');
+    } catch (error) {
+      console.error('Error updating ticket order:', error);
+    }
+  };
+
   return (
     <FeatureBody>
       <FeatureHeadWrap>
@@ -212,13 +251,33 @@ const PhasePlannerView: React.FC = observer(() => {
             <PhaseLabel>
               Phase: <LabelValue>{phaseData?.name}</LabelValue>
             </PhaseLabel>
-            {tickets.map((ticket: Ticket) => (
-              <TicketEditor
-                key={ticket.uuid}
-                ticketData={ticket}
-                websocketSessionId={websocketSessionId}
-              />
-            ))}
+            <EuiDragDropContext onDragEnd={onDragEnd}>
+              <EuiDroppable droppableId="ticketDroppable" spacing="m">
+                {tickets.map((ticket: Ticket, index: number) => (
+                  <EuiDraggable
+                    spacing="m"
+                    key={ticket.uuid}
+                    index={index}
+                    draggableId={ticket.uuid}
+                    customDragHandle
+                    hasInteractiveChildren
+                  >
+                    {(provided: any) => (
+                      <div {...provided.dragHandleProps} ref={provided.innerRef}>
+                        <TicketEditor
+                          index={index}
+                          ticketData={ticket}
+                          websocketSessionId={websocketSessionId}
+                          draggableId={ticket.uuid}
+                          hasInteractiveChildren
+                          dragHandleProps={provided.dragHandleProps}
+                        />
+                      </div>
+                    )}
+                  </EuiDraggable>
+                ))}
+              </EuiDroppable>
+            </EuiDragDropContext>
             <AddTicketButton>
               <ActionButton
                 color="primary"
