@@ -295,11 +295,7 @@ function Header() {
   };
 
   const clickHandler = () => {
-    if (ui.meInfo && ui.meInfo?.owner_alias) {
-      window.open('https://buy.sphinx.chat/');
-    } else {
-      showSignIn();
-    }
+    showSignIn();
   };
 
   useEffect(() => {

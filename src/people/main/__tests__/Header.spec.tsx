@@ -158,24 +158,6 @@ describe('AboutView Component', () => {
     });
   });
 
-  it('redirects to https://buy.sphinx.chat/ when clicking Get Sphinx on the modal', async () => {
-    jest.spyOn(mainStore, 'getIsAdmin').mockReturnValue(Promise.resolve(false));
-    jest.spyOn(mainStore, 'getPersonById').mockReturnValue(Promise.resolve(person));
-    jest.spyOn(mainStore, 'getSelf').mockReturnValue(Promise.resolve());
-
-    const history = createMemoryHistory();
-    history.push('/buy.sphinx.chat');
-    const { findByRole } = render(
-      <Router history={history}>
-        <Header />
-      </Router>
-    );
-
-    const getSphinxButton = await findByRole('button', { name: /Get Sphinx/i });
-    fireEvent.click(getSphinxButton);
-    expect(history.location.pathname).toEqual('/buy.sphinx.chat');
-  });
-
   it(' Test that clicking on "sign-in button", the sign-in component is rendered', async () => {
     jest.spyOn(mainStore, 'getIsAdmin').mockReturnValue(Promise.resolve(false));
     jest.spyOn(mainStore, 'getPersonById').mockReturnValue(Promise.resolve(person));
