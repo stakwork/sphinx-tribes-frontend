@@ -393,7 +393,7 @@ Cypress.Commands.add('lnurl_login', (seed: string): Cypress.Chainable<string> =>
 });
 
 Cypress.Commands.add('create_workspace', (workspace) => {
-  cy.contains(workspace.loggedInAs).click({ force: true });
+  cy.get('[data-testid="loggedInUser"]').click();
 
   cy.wait(1000);
   cy.contains('Add Workspace').click();
