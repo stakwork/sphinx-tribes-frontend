@@ -77,14 +77,14 @@ jobs:
       - name: Run Cypress Test
         run: |
           sleep 20
-          yarn run cypress:run --spec "cypress/e2e/19_manageUserRoles.cy.ts"
+          yarn run cypress:run
 
       - name: Upload Cypress logs
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: cypress-logs
-          path: cypress/videos
+          path: cypress/screenshots
       
       - name: Stop Stack
         working-directory: ./stack
