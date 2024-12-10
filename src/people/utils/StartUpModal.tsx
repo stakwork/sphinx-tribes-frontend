@@ -121,7 +121,7 @@ const StartUpModal = ({ closeModal, buttonColor }: StartUpModalProps) => {
               height={48}
               style={{ marginTop: '20px', textDecoration: 'none' }}
               onClick={() =>
-                window.open('https://play.google.com/store/apps/details?id=chat.sphinx', '_blank')
+                window.open('https://play.google.com/store/apps/details?id=chat.sphinx.v2&hl=en_US', '_blank')
               }
               textStyle={{
                 fontSize: '15px',
@@ -137,7 +137,7 @@ const StartUpModal = ({ closeModal, buttonColor }: StartUpModalProps) => {
               width={100}
               height={48}
               style={{ marginTop: '20px', textDecoration: 'none' }}
-              onClick={() => window.open('https://testflight.apple.com/join/QoaCkJn6', '_blank')}
+              onClick={() => window.open('https://testflight.apple.com/join/p721ALD9', '_blank')}
               textStyle={{
                 fontSize: '15px',
                 fontWeight: '500'
