@@ -528,6 +528,7 @@ function Header() {
             )}
             {ui.meInfo ? (
               <LoggedInBtn
+                data-testid="loggedInUser"
                 onClick={() => {
                   goToEditSelf();
                 }}
