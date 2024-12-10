@@ -77,7 +77,7 @@ jobs:
       - name: Run Cypress Test
         run: |
           sleep 20
-          yarn run cypress:run --spec "cypress/e2e/16_errorCreatingWorkspace.cy.ts"
+          yarn run cypress:run --spec "cypress/e2e/03_lnurlLogin.cy.ts"
 
       - name: Upload Cypress logs
         if: failure()
