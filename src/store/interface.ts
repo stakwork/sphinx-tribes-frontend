@@ -402,6 +402,8 @@ export type TicketStatus =
   | 'PAY'
   | 'COMPLETE';
 
+export type Author = 'HUMAN' | 'AGENT';
+
 export interface Ticket {
   uuid: string;
   ticketUUID?: string;
@@ -413,6 +415,9 @@ export interface Ticket {
   description: string;
   status: TicketStatus;
   version: number;
+  ticket_group?: string;
+  author?: Author;
+  author_id?: string;
   created_at?: Date;
   updated_at?: Date;
 }
