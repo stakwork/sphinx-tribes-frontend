@@ -346,6 +346,8 @@ Cypress.Commands.add('lnurl_login', (seed: string): Cypress.Chainable<string> =>
 
   cy.contains('Login with LNAUTH').click();
 
+  cy.wait(30000);
+
   return cy
     .get('[data-challenge]')
     .invoke('attr', 'data-challenge')
