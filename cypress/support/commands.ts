@@ -383,6 +383,7 @@ Cypress.Commands.add('lnurl_login', (seed: string): Cypress.Chainable<string> =>
 
           resolve(pubkey);
         } catch (error) {
+          cy.log(error);
           reject('error getting pubkey');
         }
       });
