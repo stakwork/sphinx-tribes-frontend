@@ -121,7 +121,10 @@ const StartUpModal = ({ closeModal, buttonColor }: StartUpModalProps) => {
               height={48}
               style={{ marginTop: '20px', textDecoration: 'none' }}
               onClick={() =>
-                window.open('https://play.google.com/store/apps/details?id=chat.sphinx.v2&hl=en_US', '_blank')
+                window.open(
+                  'https://play.google.com/store/apps/details?id=chat.sphinx.v2&hl=en_US',
+                  '_blank'
+                )
               }
               textStyle={{
                 fontSize: '15px',

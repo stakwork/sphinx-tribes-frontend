@@ -62,7 +62,7 @@ describe('carol manage workspace bounties', () => {
     cy.login('carol');
     cy.wait(1000);
 
-    cy.contains('carol').click({ force: true });
+    cy.clickAlias('carol');
     cy.wait(1000);
 
     cy.contains(WorkSpaceName)
