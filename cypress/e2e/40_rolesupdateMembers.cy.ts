@@ -52,8 +52,8 @@ describe('filter by status for workspace bounty', () => {
     cy.wait(1000);
 
     cy.login('carol');
-
-    cy.contains('carol').click({ force: true });
+    cy.wait(1000);
+    cy.clickAlias('carol');
     cy.wait(1000);
 
     cy.contains(workSpace.name).get(`[data-work-name="${workSpace.name}"]`).click();

@@ -56,7 +56,7 @@ describe('matches workspace description with Carol updated description', () => {
     cy.login('carol');
     cy.wait(1000);
 
-    cy.contains('carol').click({ force: true });
+    cy.clickAlias('carol');
     cy.wait(1000);
 
     cy.contains(workSpace.name).get(`[data-work-name="${workSpace.name}"]`).click();
@@ -88,7 +88,7 @@ describe('matches workspace description with Carol updated description', () => {
     cy.login(workSpace.loggedInAs);
     cy.wait(1000);
 
-    cy.contains(workSpace.loggedInAs).click({ force: true });
+    cy.clickAlias(workSpace.loggedInAs);
     cy.wait(1000);
 
     cy.contains(workSpace.name).get(`[data-work-name="${workSpace.name}"]`).click();

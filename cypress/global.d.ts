@@ -9,6 +9,7 @@ declare namespace Cypress {
     create_workspace(Workspace: Workspace): void;
     pay_invoice(details: InvoiceDetail): void;
     add_invoice(details: AddInvoice): Promise<any>;
+    clickAlias(userAlias: string): void;
   }
 
   type Category =

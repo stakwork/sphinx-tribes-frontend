@@ -63,7 +63,7 @@ describe('Withdraw From Workspace Role Test', () => {
     cy.login(activeUser);
     cy.wait(1000);
 
-    cy.contains(activeUser).click();
+    cy.clickAlias(activeUser);
     cy.wait(1000);
 
     //Assert that the new workspace is on Carol's list
