@@ -477,6 +477,7 @@ export interface ChatMessage {
   context_tags?: ContextTag[];
   status: ChatStatus;
   source: ChatSource;
+  sourceWebsocketID: string;
 }
 
 export interface Chat {
