@@ -16,13 +16,15 @@ import {
   Option,
   CustomButton,
   WorkspaceOption,
-  WorkspaceText
+  WorkspaceText,
+  FeaturedButton
 } from './HeaderStyles';
 import arrowback from './icons/arrowback.svg';
 import arrowforward from './icons/arrowforward.svg';
 import expand_more from './icons/expand_more.svg';
 import App from './components/Calendar/App';
 import InviteModal from './InviteModal';
+import FeatureBountyModal from './FeatureBountyModal';
 
 interface HeaderProps {
   startDate?: number;
@@ -51,6 +53,8 @@ export const Header = ({
   const [workspaceText, setWorkspaceText] = useState<string>('Workspaces ...');
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [openInvite, setOpenInvite] = useState(false);
+  const [openFeatureBounty, setOpenFeatureBounty] = useState(false);
+
   const formatUnixDate = (unixDate: number) => {
     const formatString = 'DD MMM YYYY';
     if (startDate !== undefined && endDate !== undefined) {
@@ -83,6 +87,10 @@ export const Header = ({
       setStartDate(newStartDate);
       setEndDate(cappedEndDate);
     }
+  };
+
+  const toggleFeatureBountyModal = () => {
+    setOpenFeatureBounty(!openFeatureBounty);
   };
 
   const toggleModal = () => {
@@ -208,6 +216,9 @@ export const Header = ({
           ) : null}
         </LeftWrapper>
         <RightWrapper>
+          <FeaturedButton onClick={() => toggleFeatureBountyModal()}>
+            <ExportText>Featured Bounty</ExportText>
+          </FeaturedButton>
           <ExportButton onClick={() => toggleModal()}>
             <ExportText>Invite Users</ExportText>
           </ExportButton>
@@ -274,6 +285,11 @@ export const Header = ({
         />
       )}
       <InviteModal addToast={addToast} open={openInvite} close={toggleModal} />
+      <FeatureBountyModal
+        addToast={addToast}
+        open={openFeatureBounty}
+        close={toggleFeatureBountyModal}
+      />
     </Container>
   );
 };
