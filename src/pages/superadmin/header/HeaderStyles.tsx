@@ -87,6 +87,22 @@ export const ExportButton = styled.button`
   box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.06);
   margin-right: 10px;
 `;
+
+export const FeaturedButton = styled.button`
+  width: auto;
+  padding: 8px 16px;
+  height: 40px;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  border-radius: 6px;
+  border: 1px solid var(--Input-Outline-1, #d0d5d8);
+  background: var(--White, #fff);
+  box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.06);
+  margin-right: 10px;
+  margin-top: 1px;
+`;
+
 export const ExportText = styled.p`
   color: var(--Main-bottom-icons, #5f6368);
   text-align: center;
