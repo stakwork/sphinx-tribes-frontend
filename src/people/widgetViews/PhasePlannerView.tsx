@@ -59,18 +59,25 @@ const PhasePlannerView: React.FC = observer(() => {
     };
 
     socket.onmessage = async (event: MessageEvent) => {
+      // Log raw message data
+      console.log('Raw websocket message received:', event.data);
+    
       try {
         const data = JSON.parse(event.data);
-
+        // Log parsed data
+        console.log('Parsed websocket message:', data);
+    
         if (data.msg === SOCKET_MSG.user_connect) {
           const sessionId = data.body;
           setWebsocketSessionId(sessionId);
           console.log(`Websocket Session ID: ${sessionId}`);
           return;
         }
-
+    
         const ticketMessage = data as TicketMessage;
-
+        // Log ticket message before processing
+        console.log('Ticket message before processing:', ticketMessage);
+    
         switch (ticketMessage.action) {
           case 'message':
             console.log('Received ticket message:', ticketMessage.message);
@@ -81,7 +88,7 @@ const PhasePlannerView: React.FC = observer(() => {
               ticketDetails: ticketMessage.ticketDetails
             });
             break;
-
+    
           case 'process':
             console.log('Processing ticket update:', ticketMessage.ticketDetails.ticketUUID);
             await refreshSingleTicket(ticketMessage.ticketDetails.ticketUUID as string);
