@@ -487,3 +487,13 @@ export interface Chat {
   created: string;
   updated: string;
 }
+
+export interface CodeGraph {
+  id?: number;
+  uuid: string;
+  workspace_uuid: string;
+  name: string;
+  url: string;
+  created?: string;
+  updated?: string;
+}

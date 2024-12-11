@@ -47,7 +47,8 @@ import {
   UpdateFeatureStoryInput,
   CreateFeatureStoryInput,
   TicketPayload,
-  Ticket
+  Ticket,
+  CodeGraph
 } from './interface';
 
 function makeTorSaveURL(host: string, key: string) {
@@ -3790,6 +3791,82 @@ export class MainStore {
     } catch (e) {
       console.log('Error createConnectionCodes', e);
       return 406;
+    }
+  }
+
+  async getWorkspaceCodeGraph(workspace_uuid: string): Promise<CodeGraph | null> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+      const response = await fetch(`${TribesURL}/workspaces/${workspace_uuid}/codegraph`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return response.json();
+    } catch (e) {
+      console.log('Error getWorkspaceCodeGraph', e);
+      return null;
+    }
+  }
+
+  async createOrUpdateCodeGraph(codeGraph: CodeGraph): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+      const response = await fetch(`${TribesURL}/workspaces/codegraph`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(codeGraph)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return response.json();
+    } catch (e) {
+      console.log('Error createOrUpdateCodeGraph', e);
+      return null;
+    }
+  }
+
+  async deleteCodeGraph(workspace_uuid: string, codegraph_uuid: string): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+      const response = await fetch(
+        `${TribesURL}/workspaces/${workspace_uuid}/codegraph/${codegraph_uuid}`,
+        {
+          method: 'DELETE',
+          mode: 'cors',
+          headers: {
+            'x-jwt': info.tribe_jwt,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return response.json();
+    } catch (e) {
+      console.log('Error deleteCodeGraph', e);
+      return null;
     }
   }
 }
