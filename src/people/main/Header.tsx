@@ -127,7 +127,7 @@ const Tab = styled(Link)<TagProps>`
 const MTab = styled(Link)<TagProps>`
   display: flex;
   margin: 25px 5px 0;
-  color: ${(p: any) => (p.selected ? '#fff' : '#ffffff99')};
+  color: ${(p: any) => (p.selected ? '#fff' : '#6B7A8D')};
   cursor: pointer;
   height: 30px;
   min-width: 65px;
@@ -137,6 +137,10 @@ const MTab = styled(Link)<TagProps>`
   justify-content: center;
   border-bottom: ${(p: any) => (p.selected ? '3px solid #618AFF' : 'none')};
   text-decoration: none !important;
+
+  &:hover {
+    color: '#6B7A8D';
+  }
 `;
 
 const LoggedInBtn = styled.div`
@@ -245,11 +249,6 @@ function Header() {
 
   const tabs = [
     {
-      label: 'Tribes',
-      name: 'tribes',
-      path: '/t'
-    },
-    {
       label: 'People',
       name: 'people',
       path: '/p'
@@ -258,13 +257,10 @@ function Header() {
       label: 'Bounties',
       name: 'bounties',
       path: '/bounties'
-    },
-    {
-      label: 'Bots',
-      name: 'bots',
-      path: '/b'
     }
   ];
+
+  const resolveTabsToBounties = ['b', 't'];
 
   if (isAdmin) {
     tabs.unshift({
@@ -305,11 +301,7 @@ function Header() {
   };
 
   const clickHandler = () => {
-    if (ui.meInfo && ui.meInfo?.owner_alias) {
-      window.open('https://buy.sphinx.chat/');
-    } else {
-      showSignIn();
-    }
+    showSignIn();
   };
 
   useEffect(() => {
@@ -411,7 +403,14 @@ function Header() {
               {tabs &&
                 tabs.map((t: any, i: number) => {
                   const { label } = t;
-                  const selected = location.pathname.split('/')[1] === t.path.split('/')[1];
+                  const locationPath = location.pathname.split('/')[1];
+                  let selected = resolveTabsToBounties.includes(locationPath)
+                    ? false
+                    : locationPath === t.path.split('/')[1];
+
+                  if (resolveTabsToBounties.includes(locationPath) && label === 'Bounties') {
+                    selected = true;
+                  }
 
                   return (
                     <MTab
@@ -468,7 +467,14 @@ function Header() {
               {tabs &&
                 tabs.map((t: any, i: number) => {
                   const { label } = t;
-                  const selected = location.pathname.split('/')[1] === t.path.split('/')[1];
+                  const locationPath = location.pathname.split('/')[1];
+                  let selected = resolveTabsToBounties.includes(locationPath)
+                    ? false
+                    : locationPath === t.path.split('/')[1];
+
+                  if (resolveTabsToBounties.includes(locationPath) && label === 'Bounties') {
+                    selected = true;
+                  }
 
                   return (
                     <Tab
@@ -522,6 +528,7 @@ function Header() {
             )}
             {ui.meInfo ? (
               <LoggedInBtn
+                data-testid="loggedInUser"
                 onClick={() => {
                   goToEditSelf();
                 }}
@@ -530,7 +537,7 @@ function Header() {
                   data-testid="userImg"
                   src={ui.meInfo?.img || '/static/person_placeholder.png'}
                 />
-                <Alias> {ui.meInfo?.owner_alias}</Alias>
+                <Alias data-testid="alias"> {ui.meInfo?.owner_alias}</Alias>
               </LoggedInBtn>
             ) : (
               <LoginBtn onClick={() => ui.setShowSignIn(true)}>

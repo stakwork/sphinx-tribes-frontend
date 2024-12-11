@@ -402,6 +402,8 @@ export type TicketStatus =
   | 'PAY'
   | 'COMPLETE';
 
+export type Author = 'HUMAN' | 'AGENT';
+
 export interface Ticket {
   uuid: string;
   ticketUUID?: string;
@@ -413,6 +415,9 @@ export interface Ticket {
   description: string;
   status: TicketStatus;
   version: number;
+  ticket_group?: string;
+  author?: Author;
+  author_id?: string;
   created_at?: Date;
   updated_at?: Date;
 }
@@ -451,4 +456,44 @@ export interface TicketPayload {
     id: string;
   };
   ticket: Ticket;
+}
+
+export type ChatRole = 'user' | 'assistant';
+export type ChatStatus = 'sending' | 'sent' | 'error';
+export type ContextTagType = 'productBrief' | 'featureBrief' | 'schematic';
+export type ChatSource = 'user' | 'agent';
+
+export interface ContextTag {
+  type: ContextTagType;
+  id: string;
+}
+
+export interface ChatMessage {
+  id: string;
+  chat_id: string;
+  message: string;
+  role: ChatRole;
+  timestamp: Date;
+  context_tags?: ContextTag[];
+  status: ChatStatus;
+  source: ChatSource;
+  sourceWebsocketID: string;
+}
+
+export interface Chat {
+  id: string;
+  workspace_uuid: string;
+  title: string;
+  created: string;
+  updated: string;
+}
+
+export interface CodeGraph {
+  id?: number;
+  uuid: string;
+  workspace_uuid: string;
+  name: string;
+  url: string;
+  created?: string;
+  updated?: string;
 }

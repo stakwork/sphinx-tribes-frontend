@@ -57,9 +57,11 @@ import { useIsMobile } from 'hooks';
 import styled from 'styled-components';
 import { AvatarGroup } from 'components/common/AvatarGroup';
 import { userHasRole } from 'helpers/helpers-extended';
+import { CodeGraph } from 'store/interface';
 import avatarIcon from '../../public/static/profile_avatar.svg';
 import { colors } from '../../config/colors';
 import dragIcon from '../../pages/superadmin/header/icons/drag_indicator.svg';
+import AddCodeGraph from './workspace/AddCodeGraphModal';
 import AddFeature from './workspace/AddFeatureModal';
 import {
   ActionButton,
@@ -252,6 +254,47 @@ const WorkspaceMission = () => {
   const [isOpenUserManage, setIsOpenUserManage] = useState<boolean>(false);
   const [users, setUsers] = useState<Person[]>([]);
   const [displayUserRepoOptions, setDisplayUserRepoOptions] = useState<Record<number, boolean>>({});
+  const [codeGraphModal, setCodeGraphModal] = useState(false);
+  const [codeGraph, setCodeGraph] = useState<CodeGraph | null>(null);
+  const [codeGraphModalType, setCodeGraphModalType] = useState<'add' | 'edit'>('add');
+  const [currentCodeGraphUuid, setCurrentCodeGraphUuid] = useState('');
+
+  const fetchCodeGraph = useCallback(async () => {
+    try {
+      const data = await main.getWorkspaceCodeGraph(uuid);
+      setCodeGraph(data);
+    } catch (error) {
+      console.error(error);
+    }
+  }, [main, uuid]);
+
+  useEffect(() => {
+    fetchCodeGraph();
+  }, [fetchCodeGraph]);
+
+  const openCodeGraphModal = (type: 'add' | 'edit', graph?: CodeGraph) => {
+    if (type === 'edit' && graph) {
+      setCurrentCodeGraphUuid(graph.uuid);
+    } else {
+      setCurrentCodeGraphUuid('');
+    }
+    setCodeGraphModalType(type);
+    setCodeGraphModal(true);
+  };
+
+  const closeCodeGraphModal = () => {
+    setCodeGraphModal(false);
+  };
+
+  const handleDeleteCodeGraph = async () => {
+    try {
+      await main.deleteCodeGraph(uuid, currentCodeGraphUuid);
+      closeCodeGraphModal();
+      fetchCodeGraph();
+    } catch (error) {
+      console.error('Error deleteCodeGraph', error);
+    }
+  };
 
   const handleUserRepoOptionClick = (repositoryId: number) => {
     setDisplayUserRepoOptions((prev: Record<number, boolean>) => ({
@@ -763,6 +806,71 @@ const WorkspaceMission = () => {
                 </StyledList>
               </DataWrap2>
             </FieldWrap>
+
+            <FieldWrap style={{ marginTop: '20px' }}>
+              <DataWrap2>
+                <RowFlex>
+                  <Label>Code Graph</Label>
+                  {!codeGraph && (
+                    <Button
+                      onClick={() => openCodeGraphModal('add')}
+                      style={{
+                        borderRadius: '5px',
+                        margin: 0,
+                        marginLeft: 'auto'
+                      }}
+                      dataTestId="new-codegraph-btn"
+                      text="Add Code Graph"
+                    />
+                  )}
+                </RowFlex>
+                {codeGraph && (
+                  <StyledList>
+                    <StyledListElement>
+                      <OptionsWrap style={{ position: 'unset', display: 'contents' }}>
+                        <MaterialIcon
+                          icon={'more_horiz'}
+                          onClick={() => handleUserRepoOptionClick(codeGraph.id as number)}
+                          className="MaterialIcon"
+                          data-testid="codegraph-option-btn"
+                          style={{ transform: 'rotate(90deg)' }}
+                        />
+                        {displayUserRepoOptions[codeGraph.id as number] && (
+                          <EditPopover>
+                            <EditPopoverTail bottom="-30px" left="-27px" />
+                            <EditPopoverContent
+                              onClick={() => {
+                                openCodeGraphModal('edit', codeGraph);
+                                setDisplayUserRepoOptions((prev: Record<number, boolean>) => ({
+                                  ...prev,
+                                  [codeGraph.id as number]: !prev[codeGraph.id as number]
+                                }));
+                              }}
+                              bottom="-60px"
+                              transform="translateX(-90%)"
+                            >
+                              <MaterialIcon
+                                icon="edit"
+                                style={{ fontSize: '20px', marginTop: '2px' }}
+                              />
+                              <EditPopoverText data-testid="codegraph-edit-btn">
+                                Edit
+                              </EditPopoverText>
+                            </EditPopoverContent>
+                          </EditPopover>
+                        )}
+                      </OptionsWrap>
+                      <RepoName>{codeGraph.name} : </RepoName>
+                      <EuiToolTip position="top" content={codeGraph.url}>
+                        <a href={codeGraph.url} target="_blank" rel="noreferrer">
+                          {codeGraph.url}
+                        </a>
+                      </EuiToolTip>
+                    </StyledListElement>
+                  </StyledList>
+                )}
+              </DataWrap2>
+            </FieldWrap>
           </LeftSection>
           <VerticalGrayLine />
           <RightSection>
@@ -1045,6 +1153,41 @@ const WorkspaceMission = () => {
             owner_pubkey={ui.meInfo?.owner_pubkey}
             schematic_url={workspaceData?.schematic_url ?? ''}
             schematic_img={workspaceData?.schematic_img ?? ''}
+          />
+        </Modal>
+        <Modal
+          visible={codeGraphModal}
+          style={{
+            height: '100%',
+            flexDirection: 'column'
+          }}
+          envStyle={{
+            marginTop: isMobile ? 64 : 0,
+            background: color.pureWhite,
+            zIndex: 20,
+            maxHeight: '100%',
+            borderRadius: '10px',
+            minWidth: isMobile ? '100%' : '25%',
+            minHeight: isMobile ? '100%' : '20%'
+          }}
+          overlayClick={closeCodeGraphModal}
+          bigCloseImage={closeCodeGraphModal}
+          bigCloseImageStyle={{
+            top: '-18px',
+            right: '-18px',
+            background: '#000',
+            borderRadius: '50%'
+          }}
+        >
+          <AddCodeGraph
+            closeHandler={closeCodeGraphModal}
+            getCodeGraph={fetchCodeGraph}
+            workspace_uuid={uuid}
+            modalType={codeGraphModalType}
+            currentUuid={currentCodeGraphUuid}
+            handleDelete={handleDeleteCodeGraph}
+            name={codeGraph?.name}
+            url={codeGraph?.url}
           />
         </Modal>
         {isOpenUserManage && (
