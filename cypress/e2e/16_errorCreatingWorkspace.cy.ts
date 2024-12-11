@@ -12,7 +12,7 @@ describe('Workspace creation error handling', () => {
   });
 
   it('should not allow adding a workspace with excessive character limits', () => {
-    cy.get('[data-testid="loggedInUser"]').click();
+    cy.clickAlias(workspaceExceedingLimits.loggedInAs);
     cy.wait(1000);
 
     cy.contains('Workspaces').click();

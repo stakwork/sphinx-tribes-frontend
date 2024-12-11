@@ -537,7 +537,7 @@ function Header() {
                   data-testid="userImg"
                   src={ui.meInfo?.img || '/static/person_placeholder.png'}
                 />
-                <Alias> {ui.meInfo?.owner_alias}</Alias>
+                <Alias data-testid="alias"> {ui.meInfo?.owner_alias}</Alias>
               </LoggedInBtn>
             ) : (
               <LoginBtn onClick={() => ui.setShowSignIn(true)}>

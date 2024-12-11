@@ -395,8 +395,20 @@ Cypress.Commands.add('lnurl_login', (seed: string): Cypress.Chainable<string> =>
     });
 });
 
+Cypress.Commands.add('clickAlias', (expectedAlias) => {
+  cy.get('[data-testid="loggedInUser"]').within(() => {
+    cy.get('[data-testid="alias"]')
+      .should(($el) => {
+        const text = $el.text().trim(); // Trim the text to remove extra spaces or &nbsp;
+        expect(text).to.eq(expectedAlias); // Assert the text matches
+      })
+      .parent()
+      .click(); // Perform the click
+  });
+});
+
 Cypress.Commands.add('create_workspace', (workspace) => {
-  cy.get('[data-testid="loggedInUser"]').click();
+  cy.clickAlias(workspace.loggedInAs);
 
   cy.wait(1000);
   cy.contains('Add Workspace').click();
