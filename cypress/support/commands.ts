@@ -396,6 +396,7 @@ Cypress.Commands.add('lnurl_login', (seed: string): Cypress.Chainable<string> =>
 });
 
 Cypress.Commands.add('clickAlias', (expectedAlias) => {
+  cy.wait(2000);
   cy.get('[data-testid="loggedInUser"]').within(() => {
     cy.get('[data-testid="alias"]')
       .should(($el) => {
