@@ -255,9 +255,13 @@ const WorkspaceMission = () => {
   const [users, setUsers] = useState<Person[]>([]);
   const [displayUserRepoOptions, setDisplayUserRepoOptions] = useState<Record<number, boolean>>({});
   const [codeGraphModal, setCodeGraphModal] = useState(false);
-  const [codeGraph, setCodeGraph] = useState<CodeGraph | null>(null);
+  const [codeGraph, setCodeGraph] = useState<CodeGraph[] | null>(null);
   const [codeGraphModalType, setCodeGraphModalType] = useState<'add' | 'edit'>('add');
   const [currentCodeGraphUuid, setCurrentCodeGraphUuid] = useState('');
+  const [selectedCodeGraph, setSelectedCodeGraph] = useState<{
+    name: string;
+    url: string;
+  }>();
 
   const fetchCodeGraph = useCallback(async () => {
     try {
@@ -274,6 +278,12 @@ const WorkspaceMission = () => {
 
   const openCodeGraphModal = (type: 'add' | 'edit', graph?: CodeGraph) => {
     if (type === 'edit' && graph) {
+      if (graph) {
+        setSelectedCodeGraph({
+          name: graph.name,
+          url: graph.url
+        });
+      }
       setCurrentCodeGraphUuid(graph.uuid);
     } else {
       setCurrentCodeGraphUuid('');
@@ -283,6 +293,11 @@ const WorkspaceMission = () => {
   };
 
   const closeCodeGraphModal = () => {
+    setSelectedCodeGraph({
+      name: '',
+      url: ''
+    });
+    setCurrentCodeGraphUuid('');
     setCodeGraphModal(false);
   };
 
@@ -811,62 +826,70 @@ const WorkspaceMission = () => {
               <DataWrap2>
                 <RowFlex>
                   <Label>Code Graph</Label>
-                  {!codeGraph && (
-                    <Button
-                      onClick={() => openCodeGraphModal('add')}
-                      style={{
-                        borderRadius: '5px',
-                        margin: 0,
-                        marginLeft: 'auto'
-                      }}
-                      dataTestId="new-codegraph-btn"
-                      text="Add Code Graph"
-                    />
-                  )}
+
+                  <Button
+                    onClick={() => openCodeGraphModal('add')}
+                    style={{
+                      borderRadius: '5px',
+                      margin: 0,
+                      marginLeft: 'auto'
+                    }}
+                    dataTestId="new-codegraph-btn"
+                    text="Add Code Graph"
+                  />
                 </RowFlex>
-                {codeGraph && (
+                {codeGraph && codeGraph?.length > 0 && (
                   <StyledList>
-                    <StyledListElement>
-                      <OptionsWrap style={{ position: 'unset', display: 'contents' }}>
-                        <MaterialIcon
-                          icon={'more_horiz'}
-                          onClick={() => handleUserRepoOptionClick(codeGraph.id as number)}
-                          className="MaterialIcon"
-                          data-testid="codegraph-option-btn"
-                          style={{ transform: 'rotate(90deg)' }}
-                        />
-                        {displayUserRepoOptions[codeGraph.id as number] && (
-                          <EditPopover>
-                            <EditPopoverTail bottom="-30px" left="-27px" />
-                            <EditPopoverContent
-                              onClick={() => {
-                                openCodeGraphModal('edit', codeGraph);
-                                setDisplayUserRepoOptions((prev: Record<number, boolean>) => ({
-                                  ...prev,
-                                  [codeGraph.id as number]: !prev[codeGraph.id as number]
-                                }));
-                              }}
-                              bottom="-60px"
-                              transform="translateX(-90%)"
-                            >
-                              <MaterialIcon
-                                icon="edit"
-                                style={{ fontSize: '20px', marginTop: '2px' }}
-                              />
-                              <EditPopoverText data-testid="codegraph-edit-btn">
-                                Edit
-                              </EditPopoverText>
-                            </EditPopoverContent>
-                          </EditPopover>
-                        )}
-                      </OptionsWrap>
-                      <RepoName>{codeGraph.name} : </RepoName>
-                      <EuiToolTip position="top" content={codeGraph.url}>
-                        <a href={codeGraph.url} target="_blank" rel="noreferrer">
-                          {codeGraph.url}
-                        </a>
-                      </EuiToolTip>
-                    </StyledListElement>
+                    {codeGraph
+                      ?.slice()
+                      .sort(
+                        (a: CodeGraph, b: CodeGraph) =>
+                          new Date(a.created as string).getTime() -
+                          new Date(b.created as string).getTime()
+                      )
+                      .map((graph: CodeGraph) => (
+                        <StyledListElement key={graph.id}>
+                          <OptionsWrap style={{ position: 'unset', display: 'contents' }}>
+                            <MaterialIcon
+                              icon={'more_horiz'}
+                              onClick={() => handleUserRepoOptionClick(graph.id as number)}
+                              className="MaterialIcon"
+                              data-testid={`codegraph-option-btn-${graph.id}`}
+                              style={{ transform: 'rotate(90deg)' }}
+                            />
+                            {displayUserRepoOptions[graph.id as number] && (
+                              <EditPopover>
+                                <EditPopoverTail bottom="-30px" left="-27px" />
+                                <EditPopoverContent
+                                  onClick={() => {
+                                    openCodeGraphModal('edit', graph);
+                                    setDisplayUserRepoOptions((prev: Record<number, boolean>) => ({
+                                      ...prev,
+                                      [graph.id as number]: !prev[graph.id as number]
+                                    }));
+                                  }}
+                                  bottom="-60px"
+                                  transform="translateX(-90%)"
+                                >
+                                  <MaterialIcon
+                                    icon="edit"
+                                    style={{ fontSize: '20px', marginTop: '2px' }}
+                                  />
+                                  <EditPopoverText data-testid={`codegraph-edit-btn-${graph.id}`}>
+                                    Edit
+                                  </EditPopoverText>
+                                </EditPopoverContent>
+                              </EditPopover>
+                            )}
+                          </OptionsWrap>
+                          <RepoName>{graph.name} :</RepoName>
+                          <EuiToolTip position="top" content={graph.url}>
+                            <a href={graph.url} target="_blank" rel="noreferrer">
+                              {graph.url}
+                            </a>
+                          </EuiToolTip>
+                        </StyledListElement>
+                      ))}
                   </StyledList>
                 )}
               </DataWrap2>
@@ -1186,8 +1209,8 @@ const WorkspaceMission = () => {
             modalType={codeGraphModalType}
             currentUuid={currentCodeGraphUuid}
             handleDelete={handleDeleteCodeGraph}
-            name={codeGraph?.name}
-            url={codeGraph?.url}
+            name={selectedCodeGraph?.name}
+            url={selectedCodeGraph?.url}
           />
         </Modal>
         {isOpenUserManage && (
