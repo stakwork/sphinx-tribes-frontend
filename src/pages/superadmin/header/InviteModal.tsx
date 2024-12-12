@@ -72,6 +72,8 @@ const InviteModal = (props: InviteProps) => {
     if (status === 200) {
       if (addToast) addToast('Users invite code created successfully', 'success');
       setInviteNumber(1);
+      setPubkey('');
+      setSatAmount(1);
       close();
     } else {
       if (addToast) addToast('Could not create users invite code', 'error');
