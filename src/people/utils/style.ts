@@ -46,6 +46,11 @@ export const InvoiceInput = styled.input`
   border-radius: 8px;
   border: 0.5px solid black;
 `;
+export const InvoiceInputContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+`;
 export const WorkspaceWrap = styled.div`
   display: flex;
   justify-content: space-between;

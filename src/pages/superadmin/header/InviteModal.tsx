@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { nonWidgetConfigs } from 'people/utils/Constants';
 import { useIsMobile } from 'hooks/uiHooks';
-import { InvoiceForm, InvoiceInput, InvoiceLabel } from 'people/utils/style';
+import { InvoiceForm, InvoiceInput, InvoiceInputContainer, InvoiceLabel } from 'people/utils/style';
 import styled from 'styled-components';
 import { BudgetButton } from 'people/widgetViews/workspace/style';
 import { useStores } from 'store';
@@ -32,11 +32,41 @@ const InviteModal = (props: InviteProps) => {
   const { open, close, addToast } = props;
   const [loading, setLoading] = useState(false);
   const [inviteNumber, setInviteNumber] = useState(1);
+  const [satAmount, setSatAmount] = useState(1);
+  const [pubkey, setPubkey] = useState('');
   const config = nonWidgetConfigs['workspaceusers'];
+
+  const parsePubkey = (pubkey: string): { parsedPubkey: string; routeHint: string } => {
+    if (pubkey) {
+      const result = pubkey.split('_');
+      if (result.length === 3) {
+        return { parsedPubkey: result[0], routeHint: `${result[1]}_${result[2]}` };
+      }
+    }
+    return { parsedPubkey: '', routeHint: '' };
+  };
 
   const createConnectionCode = async () => {
     setLoading(true);
-    const status = await main.createConnectionCodes(inviteNumber);
+    let extractedPubkey = '';
+    let parsedRouteHint = '';
+
+    if (pubkey) {
+      const {parsedPubkey, routeHint} = parsePubkey(pubkey);
+      if (!parsedPubkey && !routeHint) {
+        setLoading(false);
+        if (addToast) addToast('Invalid Pubkey', 'error');
+        return;
+      }
+      extractedPubkey = parsedPubkey;
+      parsedRouteHint = routeHint;
+    }
+
+    const status = await main.createConnectionCodes({
+      users_number: inviteNumber,
+      sats_amount: satAmount,
+      ...(extractedPubkey && parsedRouteHint && { pubkey: extractedPubkey, route_hint: parsedRouteHint })
+    });
 
     if (status === 200) {
       if (addToast) addToast('Users invite code created successfully', 'success');
@@ -80,22 +110,61 @@ const InviteModal = (props: InviteProps) => {
         <Wrapper>
           <WithdrawModalTitle className="withdraw-title">Invite Users</WithdrawModalTitle>
           <InvoiceForm>
-            <InvoiceLabel
-              style={{
-                display: 'block'
-              }}
-            >
-              Number of users
-            </InvoiceLabel>
-            <InvoiceInput
-              data-testid="withdrawInvoiceInput"
-              type="text"
-              style={{
-                width: '100%'
-              }}
-              value={inviteNumber}
-              onChange={(e: any) => setInviteNumber(Number(e.target.value))}
-            />
+            <InvoiceInputContainer>
+              <InvoiceLabel
+                style={{
+                  display: 'block'
+                }}
+              >
+                Number of users
+              </InvoiceLabel>
+              <InvoiceInput
+                data-testid="withdrawInvoiceInput"
+                type="text"
+                style={{
+                  width: '100%'
+                }}
+                value={inviteNumber}
+                onChange={(e: any) => setInviteNumber(Number(e.target.value))}
+              />
+            </InvoiceInputContainer>
+
+            <InvoiceInputContainer>
+              <InvoiceLabel
+                style={{
+                  display: 'block'
+                }}
+              >
+                Pubkey
+              </InvoiceLabel>
+              <InvoiceInput
+                data-testid="withdrawInvoiceInput"
+                type="text"
+                style={{
+                  width: '100%'
+                }}
+                value={pubkey}
+                onChange={(e: any) => setPubkey(e.target.value)}
+              />
+            </InvoiceInputContainer>
+            <InvoiceInputContainer>
+              <InvoiceLabel
+                style={{
+                  display: 'block'
+                }}
+              >
+                Sats Amount
+              </InvoiceLabel>
+              <InvoiceInput
+                data-testid="withdrawInvoiceInput"
+                type="number"
+                style={{
+                  width: '100%'
+                }}
+                value={satAmount}
+                onChange={(e: any) => setSatAmount(Number(e.target.value))}
+              />
+            </InvoiceInputContainer>
           </InvoiceForm>
           <BudgetButton
             disabled={false}
