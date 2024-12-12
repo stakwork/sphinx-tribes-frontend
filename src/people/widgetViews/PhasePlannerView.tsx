@@ -60,8 +60,13 @@ const PhasePlannerView: React.FC = observer(() => {
     };
 
     socket.onmessage = async (event: MessageEvent) => {
+      // Log raw message data
+      console.log('Raw websocket message received:', event.data);
+
       try {
         const data = JSON.parse(event.data);
+        // Log parsed data
+        console.log('Parsed websocket message:', data);
 
         if (data.msg === SOCKET_MSG.user_connect) {
           const sessionId = data.body;
@@ -71,6 +76,8 @@ const PhasePlannerView: React.FC = observer(() => {
         }
 
         const ticketMessage = data as TicketMessage;
+        // Log ticket message before processing
+        console.log('Ticket message before processing:', ticketMessage);
 
         switch (ticketMessage.action) {
           case 'message':
