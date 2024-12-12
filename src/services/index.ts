@@ -3,18 +3,22 @@ import { Chat, ChatMessage, ContextTag } from '../store/interface';
 import { uiStore } from '../store/ui';
 
 export class ChatService {
-  async getChat(chat_id: string): Promise<Chat | undefined> {
+  async createChat(workspace_uuid: string, title: string): Promise<Chat | undefined> {
     try {
       if (!uiStore.meInfo) return undefined;
       const info = uiStore.meInfo;
 
-      const response = await fetch(`${TribesURL}/chat/${chat_id}`, {
-        method: 'GET',
+      const response = await fetch(`${TribesURL}/hivechat`, {
+        method: 'POST',
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json'
-        }
+        },
+        body: JSON.stringify({
+          workspace_uuid,
+          title
+        })
       });
 
       if (!response.ok) {
@@ -23,7 +27,7 @@ export class ChatService {
 
       return response.json();
     } catch (e) {
-      console.error('Error getting chat:', e);
+      console.error('Error creating chat:', e);
       return undefined;
     }
   }
@@ -33,7 +37,7 @@ export class ChatService {
       if (!uiStore.meInfo) return undefined;
       const info = uiStore.meInfo;
 
-      const response = await fetch(`${TribesURL}/chat/${chat_id}/messages`, {
+      const response = await fetch(`${TribesURL}/hivechat/history/${chat_id}`, {
         method: 'GET',
         mode: 'cors',
         headers: {
@@ -62,7 +66,7 @@ export class ChatService {
       if (!uiStore.meInfo) return undefined;
       const info = uiStore.meInfo;
 
-      const response = await fetch(`${TribesURL}/chat/${chat_id}/messages`, {
+      const response = await fetch(`${TribesURL}/hivechat/send`, {
         method: 'POST',
         mode: 'cors',
         headers: {
@@ -70,6 +74,7 @@ export class ChatService {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
+          chat_id,
           message,
           context_tags: contextTags
         })

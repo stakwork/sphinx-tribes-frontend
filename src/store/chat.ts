@@ -11,6 +11,7 @@ export interface ChatStore {
   chatMessages: ChatMessages;
   currentChatId: string | null;
 
+  createChat: (workspace_uuid: string, title: string) => Promise<Chat | undefined>;
   addChat: (chat: Chat) => void;
   updateChat: (id: string, chat: Partial<Chat>) => void;
   getChat: (id: string) => Chat | undefined;
@@ -26,6 +27,14 @@ export class ChatHistoryStore implements ChatStore {
 
   constructor() {
     makeAutoObservable(this);
+  }
+
+  async createChat(workspace_uuid: string, title: string): Promise<Chat | undefined> {
+    const chat = await chatService.createChat(workspace_uuid, title);
+    if (chat) {
+      this.addChat(chat);
+    }
+    return chat;
   }
 
   addChat(chat: Chat) {
@@ -63,10 +72,10 @@ export class ChatHistoryStore implements ChatStore {
     });
   }
 
-  async loadChat(chat_id: string): Promise<Chat | undefined> {
-    const chat = await chatService.getChat(chat_id);
+  async loadChat(chat_id: string): Promise<ChatMessage[] | undefined> {
+    const chat = await chatService.getChatHistory(chat_id);
     if (chat) {
-      this.addChat(chat);
+      this.chatMessages[chat_id] = chat;
     }
     return chat;
   }
