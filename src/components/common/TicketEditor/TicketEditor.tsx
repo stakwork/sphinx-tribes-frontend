@@ -21,10 +21,11 @@ interface TicketEditorProps {
   draggableId: string;
   hasInteractiveChildren: boolean;
   dragHandleProps?: Record<string, any>;
+  swwfLink?: string;
 }
 
 const TicketEditor = observer(
-  ({ ticketData, websocketSessionId, dragHandleProps }: TicketEditorProps) => {
+  ({ ticketData, websocketSessionId, dragHandleProps, swwfLink }: TicketEditorProps) => {
     const [toasts, setToasts] = useState<Toast[]>([]);
     const { main } = useStores();
     const currentTicket = phaseTicketStore.getTicket(ticketData.uuid);
@@ -176,6 +177,18 @@ const TicketEditor = observer(
               >
                 Update
               </ActionButton>
+              {swwfLink && (
+                <ActionButton
+                  as="a"
+                  href={`https://jobs.stakwork.com/admin/projects/${swwfLink}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ textDecoration: 'none' }}
+                  color="#49C998"
+                >
+                  SW Run: {swwfLink}
+                </ActionButton>
+              )}
               <ActionButton
                 color="#49C998"
                 onClick={handleTicketBuilder}

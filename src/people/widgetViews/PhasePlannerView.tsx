@@ -37,6 +37,7 @@ const PhasePlannerView: React.FC = observer(() => {
   const [featureData, setFeatureData] = useState<Feature | null>(null);
   const [phaseData, setPhaseData] = useState<Phase | null>(null);
   const [websocketSessionId, setWebsocketSessionId] = useState<string>('');
+  const [swwfLinks, setSwwfLinks] = useState<Record<string, string>>({});
   const { main } = useStores();
   const history = useHistory();
   const tickets = phaseTicketStore.getPhaseTickets(phase_uuid);
@@ -72,6 +73,14 @@ const PhasePlannerView: React.FC = observer(() => {
           const sessionId = data.body;
           setWebsocketSessionId(sessionId);
           console.log(`Websocket Session ID: ${sessionId}`);
+          return;
+        }
+
+        if (data.ticket_uuid && data.swwf_id) {
+          setSwwfLinks((prev: Record<string, string>) => ({
+            ...prev,
+            [data.ticket_uuid]: data.swwf_id
+          }));
           return;
         }
 
@@ -278,6 +287,7 @@ const PhasePlannerView: React.FC = observer(() => {
                           draggableId={ticket.uuid}
                           hasInteractiveChildren
                           dragHandleProps={provided.dragHandleProps}
+                          swwfLink={swwfLinks[ticket.uuid]}
                         />
                       </div>
                     )}
