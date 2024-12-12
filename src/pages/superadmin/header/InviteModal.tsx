@@ -52,7 +52,7 @@ const InviteModal = (props: InviteProps) => {
     let parsedRouteHint = '';
 
     if (pubkey) {
-      const {parsedPubkey, routeHint} = parsePubkey(pubkey);
+      const { parsedPubkey, routeHint } = parsePubkey(pubkey);
       if (!parsedPubkey && !routeHint) {
         setLoading(false);
         if (addToast) addToast('Invalid Pubkey', 'error');
@@ -65,7 +65,8 @@ const InviteModal = (props: InviteProps) => {
     const status = await main.createConnectionCodes({
       users_number: inviteNumber,
       sats_amount: satAmount,
-      ...(extractedPubkey && parsedRouteHint && { pubkey: extractedPubkey, route_hint: parsedRouteHint })
+      ...(extractedPubkey &&
+        parsedRouteHint && { pubkey: extractedPubkey, route_hint: parsedRouteHint })
     });
 
     if (status === 200) {
