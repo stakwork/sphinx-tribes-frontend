@@ -9,6 +9,7 @@ import { uiStore } from '../../store/ui';
 import { colors } from '../../config/colors';
 import { useStores } from '../../store';
 import { widgetConfigs } from '../utils/Constants';
+import { bountyStore } from '../../store/bountyStore';
 import OfferView from './OfferView';
 import WantedView from './WantedView';
 import PostView from './PostView';
@@ -75,6 +76,7 @@ function WidgetSwitchViewer(props: any) {
   const [deletePayload, setDeletePayload] = useState<object>({});
   const closeModal = () => setShowDeleteModal(false);
   const showModal = () => setShowDeleteModal(true);
+
   const {
     currentItems,
     setCurrentItems,
@@ -96,6 +98,7 @@ function WidgetSwitchViewer(props: any) {
   const WorkspaceBountiesTotal = WorkspaceTotalBounties ?? 0;
   const phaseBountiesTotal = phaseTotalBounties ?? 0;
   const page = propsPage ?? 0;
+
   const panelStyles = isMobile
     ? {
         minHeight: 132
@@ -112,13 +115,26 @@ function WidgetSwitchViewer(props: any) {
   const { peoplePosts, peopleBounties, peopleOffers } = main;
   const { selectedWidget, onPanelClick, org_uuid } = props;
 
-  if (!selectedWidget) {
-    return <div style={{ height: 200 }} />;
-  }
+  const featuredBountyIds = bountyStore.getFeaturedBounties().map((b: any) => b.bountyId);
+
+  const sortBounties = (bounties: any[]) => {
+    const featured: any[] = [];
+    const regular: any[] = [];
+
+    bounties.forEach((item: any) => {
+      if (featuredBountyIds.includes(item.body.id.toString())) {
+        featured.push(item);
+      } else {
+        regular.push(item);
+      }
+    });
+
+    return [...featured, ...regular];
+  };
 
   const listSource = {
     post: peoplePosts,
-    bounties: peopleBounties,
+    bounties: selectedWidget === 'bounties' ? sortBounties(peopleBounties) : peopleBounties,
     offer: peopleOffers
   };
 
@@ -186,6 +202,7 @@ function WidgetSwitchViewer(props: any) {
       ...props.checkboxIdToSelectedMap
     });
   };
+
   const nextWorkspaceBounties = async () => {
     const currentPage = page + 1;
     if (setPage) {
@@ -223,10 +240,18 @@ function WidgetSwitchViewer(props: any) {
       activeList.slice(0, currentItems).map((item: any, i: number) => {
         const { person, body, organization } = item;
         person.img = person.img || main.getUserAvatarPlaceholder(person.owner_pubkey);
+
+        const isFeatured = featuredBountyIds.includes(body.id.toString());
+
         const conditionalStyles = body?.paid
           ? {
               border: isMobile ? `2px 0 0 0 solid ${color.grayish.G600}` : '',
               boxShadow: 'none'
+            }
+          : isFeatured
+          ? {
+              border: `2px solid #F7931A`,
+              borderRadius: '12px'
             }
           : {};
 
@@ -241,7 +266,7 @@ function WidgetSwitchViewer(props: any) {
               ...panelStyles,
               ...conditionalStyles,
               cursor: 'pointer',
-              padding: 0,
+              padding: isFeatured ? '2px' : 0,
               overflow: 'hidden',
               background: 'transparent',
               minHeight: !isMobile ? '160px' : '',
@@ -284,9 +309,11 @@ function WidgetSwitchViewer(props: any) {
     ) : (
       <NoResults loaded={!!languageString} />
     );
+
   const showLoadMore = bountiesTotal > items && activeList.length >= queryLimit;
   const WorkspaceLoadMore = WorkspaceBountiesTotal > items && activeList.length >= orgQueryLimit;
   const PhaseLoadMore = phaseBountiesTotal > items && activeList.length >= phaseBountyLimit;
+
   return (
     <>
       {listItems}
@@ -343,4 +370,5 @@ function WidgetSwitchViewer(props: any) {
     </>
   );
 }
+
 export default observer(WidgetSwitchViewer);
