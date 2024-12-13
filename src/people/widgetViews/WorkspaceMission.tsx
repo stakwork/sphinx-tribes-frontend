@@ -57,7 +57,8 @@ import { useIsMobile } from 'hooks';
 import styled from 'styled-components';
 import { AvatarGroup } from 'components/common/AvatarGroup';
 import { userHasRole } from 'helpers/helpers-extended';
-import { CodeGraph } from 'store/interface';
+import { CodeGraph, Chat } from 'store/interface';
+import { useHistory } from 'react-router-dom';
 import avatarIcon from '../../public/static/profile_avatar.svg';
 import { colors } from '../../config/colors';
 import dragIcon from '../../pages/superadmin/header/icons/drag_indicator.svg';
@@ -78,6 +79,7 @@ import EditSchematic from './workspace/EditSchematicModal';
 import ManageWorkspaceUsersModal from './workspace/ManageWorkspaceUsersModal';
 import { BudgetWrapComponent } from './BudgetWrap';
 import { LoadMoreContainer } from './WidgetSwitchViewer';
+
 const color = colors['light'];
 
 const FeaturesWrap = styled.div`
@@ -199,6 +201,69 @@ const StatusBox = styled.div<StatusType>`
   }};
 `;
 
+const ChatListContainer = styled.div`
+  margin-top: 13px;
+  height: 300px;
+  overflow-y: auto;
+  border: 3px solid #848484;
+  border-radius: 5px;
+  background-color: #ffffff;
+  padding: 10px;
+`;
+
+const LoadingContainer = styled.div`
+  text-align: center;
+  padding: 20px;
+`;
+
+const LoadingText = styled.div`
+  margin-top: 10px;
+`;
+
+const EmptyStateMessage = styled.div`
+  text-align: center;
+  padding: 20px;
+  color: #666;
+`;
+
+const ChatListItem = styled(StyledListElement)`
+  padding: 12px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid #ebedf1;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #f5f7fa;
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+const ChatItemContent = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+`;
+
+const ChatTitle = styled.div`
+  font-size: 14px;
+  font-weight: 500;
+  color: #2c3e50;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+const ChatTimestamp = styled.div`
+  font-size: 12px;
+  color: #8c9196;
+  white-space: nowrap;
+`;
+
 interface BudgetHeaderProps {
   color: string;
 }
@@ -262,6 +327,10 @@ const WorkspaceMission = () => {
     name: string;
     url: string;
   }>();
+  const history = useHistory();
+  const { chat } = useStores();
+  const [chats, setChats] = React.useState<Chat[]>([]);
+  const [isLoadingChats, setIsLoadingChats] = useState(true);
 
   const fetchCodeGraph = useCallback(async () => {
     try {
@@ -309,6 +378,61 @@ const WorkspaceMission = () => {
     } catch (error) {
       console.error('Error deleteCodeGraph', error);
     }
+  };
+
+  useEffect(() => {
+    const loadChats = async () => {
+      setIsLoadingChats(true);
+      try {
+        const workspaceChats = await chat.getWorkspaceChats(uuid);
+        if (workspaceChats && workspaceChats.length > 0) {
+          const sortedChats = workspaceChats.sort(
+            (a: Chat, b: Chat) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+          );
+          setChats(sortedChats);
+        }
+      } catch (error) {
+        ui.setToasts([
+          {
+            title: 'Error',
+            color: 'danger',
+            text: 'Failed to load chats.'
+          }
+        ]);
+      } finally {
+        setIsLoadingChats(false);
+      }
+    };
+    loadChats();
+  }, [uuid, chat, ui]);
+
+  const handleNewChat = async () => {
+    try {
+      const newChat = await chat.createChat(uuid, 'New Chat');
+      if (newChat && newChat.id) {
+        history.push(`/workspace/${uuid}/hivechat/${newChat.id}`);
+      } else {
+        ui.setToasts([
+          {
+            title: 'Error',
+            color: 'danger',
+            text: 'Failed to create new chat. Please try again.'
+          }
+        ]);
+      }
+    } catch (error) {
+      ui.setToasts([
+        {
+          title: 'Error',
+          color: 'danger',
+          text: 'An error occurred while creating the chat.'
+        }
+      ]);
+    }
+  };
+
+  const handleChatClick = (chatId: string) => {
+    history.push(`/workspace/${uuid}/hivechat/${chatId}`);
   };
 
   const handleUserRepoOptionClick = (repositoryId: number) => {
@@ -953,6 +1077,50 @@ const WorkspaceMission = () => {
                 </EuiLinkStyled>
               </RowFlex>
               <AvatarGroup avatarList={avatarList} avatarSize="xl" maxGroupSize={5} />
+            </FieldWrap>
+            <HorizontalGrayLine />
+            <FieldWrap style={{ marginTop: '10px' }}>
+              <Label>Talk to Hive</Label>
+              <Button
+                style={{
+                  borderRadius: '5px',
+                  margin: 0,
+                  padding: '10px 20px',
+                  width: '100%',
+                  backgroundColor: '#4285f4',
+                  color: 'white',
+                  textAlign: 'center',
+                  border: 'none',
+                  fontSize: '16px',
+                  cursor: 'pointer'
+                }}
+                onClick={handleNewChat}
+                dataTestId="new-chat-btn"
+                text="New Chat"
+              />
+              <ChatListContainer>
+                {isLoadingChats ? (
+                  <LoadingContainer>
+                    <EuiLoadingSpinner size="m" />
+                    <LoadingText>Loading chats...</LoadingText>
+                  </LoadingContainer>
+                ) : chats.length > 0 ? (
+                  <StyledList>
+                    {chats.map((chat: Chat) => (
+                      <ChatListItem key={chat.id} onClick={() => handleChatClick(chat.id)}>
+                        <ChatItemContent>
+                          <ChatTitle>{chat.title || 'Untitled Chat'}</ChatTitle>
+                          <ChatTimestamp>{new Date(chat.updatedAt).toLocaleString()}</ChatTimestamp>
+                        </ChatItemContent>
+                      </ChatListItem>
+                    ))}
+                  </StyledList>
+                ) : (
+                  <EmptyStateMessage>
+                    No chats yet. Click &ldquo;New Chat&rdquo; to start a conversation.
+                  </EmptyStateMessage>
+                )}
+              </ChatListContainer>
             </FieldWrap>
           </RightSection>
         </DataWrap>

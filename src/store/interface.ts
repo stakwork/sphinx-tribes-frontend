@@ -483,10 +483,10 @@ export interface ChatMessage {
 
 export interface Chat {
   id: string;
-  workspace_uuid: string;
+  workspaceId: string;
   title: string;
-  created: string;
-  updated: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CodeGraph {

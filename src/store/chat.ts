@@ -18,6 +18,7 @@ export interface ChatStore {
   getChatMessages: (chat_id: string) => ChatMessage[];
   addMessage: (message: ChatMessage) => void;
   updateMessage: (id: string, message: Partial<ChatMessage>) => void;
+  getWorkspaceChats: (workspace_uuid: string) => Promise<Chat[]>;
 }
 
 export class ChatHistoryStore implements ChatStore {
@@ -57,6 +58,19 @@ export class ChatHistoryStore implements ChatStore {
 
   getChatMessages(chat_id: string): ChatMessage[] {
     return this.chatMessages[chat_id] || [];
+  }
+
+  async getWorkspaceChats(workspace_uuid: string): Promise<Chat[]> {
+    try {
+      const chats = await chatService.getWorkspaceChats(workspace_uuid);
+      if (chats) {
+        chats.forEach((chat: Chat) => this.addChat(chat));
+      }
+      return chats || [];
+    } catch (error) {
+      console.error('Error getting workspace chats:', error);
+      return [];
+    }
   }
 
   addMessage(message: ChatMessage) {

@@ -25,7 +25,14 @@ export class ChatService {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      return response.json();
+      const result = await response.json();
+      console.log('Create chat response:', result);
+
+      if (!result.data || !result.data.id) {
+        throw new Error('Invalid chat response: missing data or id');
+      }
+
+      return result.data;
     } catch (e) {
       console.error('Error creating chat:', e);
       return undefined;
@@ -53,6 +60,31 @@ export class ChatService {
       return response.json();
     } catch (e) {
       console.error('Error loading chat history:', e);
+      return undefined;
+    }
+  }
+
+  async getWorkspaceChats(workspace_uuid: string): Promise<Chat[] | undefined> {
+    try {
+      if (!uiStore.meInfo) return undefined;
+      const info = uiStore.meInfo;
+
+      const response = await fetch(`${TribesURL}/hivechat/history/${workspace_uuid}`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return response.json();
+    } catch (e) {
+      console.error('Error loading workspace chats:', e);
       return undefined;
     }
   }

@@ -6,6 +6,7 @@ import { appEnv } from '../config/env';
 import { uiStore } from './ui';
 import { mainStore } from './main';
 import { modalsVisibilityStore } from './modals';
+import { chatHistoryStore } from './chat';
 
 (() => {
   if (appEnv.isTests) {
@@ -32,7 +33,8 @@ const Context = React.createContext({
   ui: uiStore,
   main: mainStore,
   modals: modalsVisibilityStore,
-  leaderboard: leaderboardStore
+  leaderboard: leaderboardStore,
+  chat: chatHistoryStore
 });
 
 export const WithStores = ({ children }: any) => (
@@ -41,7 +43,8 @@ export const WithStores = ({ children }: any) => (
       ui: uiStore,
       main: mainStore,
       modals: modalsVisibilityStore,
-      leaderboard: leaderboardStore
+      leaderboard: leaderboardStore,
+      chat: chatHistoryStore
     }}
   >
     {children}
@@ -59,7 +62,8 @@ export function withStores<T extends Object>(Component: FC<T>) {
           ui: uiStore,
           main: mainStore,
           modals: modalsVisibilityStore,
-          leaderboard: leaderboardStore
+          leaderboard: leaderboardStore,
+          chat: chatHistoryStore
         }}
       >
         <Component {...props} />
