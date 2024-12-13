@@ -3766,13 +3766,26 @@ export class MainStore {
     }
   }
 
-  async createConnectionCodes(users_number: number): Promise<number> {
+  async createConnectionCodes({
+    users_number,
+    sats_amount,
+    pubkey,
+    route_hint
+  }: {
+    users_number: number;
+    sats_amount?: number;
+    pubkey?: string;
+    route_hint?: string;
+  }): Promise<number> {
     try {
       if (!uiStore.meInfo) return 406;
       const info = uiStore.meInfo;
 
       const data = {
-        number: users_number
+        number: users_number,
+        pubkey: pubkey,
+        route_hint,
+        sats_amount
       };
 
       const body = JSON.stringify(data);
