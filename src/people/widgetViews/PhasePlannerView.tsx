@@ -53,8 +53,11 @@ const PhasePlannerView: React.FC = observer(() => {
       try {
         const ticket = await main.getTicketDetails(ticketUuid);
 
-        // TODO: Backend needs to send this as uuid and not UUID
-        phaseTicketStore.updateTicket(ticket.uuid || ticket.UUID, ticket);
+        const groupId = ticket.ticket_group || ticket.uuid;
+
+        const latestTicket = phaseTicketStore.getLatestVersionFromGroup(groupId);
+
+        phaseTicketStore.updateTicket(latestTicket?.uuid as string, latestTicket as Ticket);
       } catch (error) {
         console.error('Error on refreshing ticket:', error);
       }
@@ -158,11 +161,11 @@ const PhasePlannerView: React.FC = observer(() => {
         if (!feature || !phase || !Array.isArray(phaseTickets)) {
           history.push('/');
         } else {
-          // Clear existing tickets for this phase before adding new ones
           phaseTicketStore.clearPhaseTickets(phase_uuid);
 
-          // Add fetched tickets
-          for (const ticket of phaseTickets) {
+          const latestVersionTickets = phaseTicketStore.organizeTicketsByGroup(phaseTickets);
+
+          for (const ticket of latestVersionTickets) {
             if (ticket.UUID) {
               ticket.uuid = ticket.UUID;
             }

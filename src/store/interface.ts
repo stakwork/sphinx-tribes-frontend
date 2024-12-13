@@ -406,6 +406,7 @@ export type Author = 'HUMAN' | 'AGENT';
 
 export interface Ticket {
   uuid: string;
+  UUID?: string;
   ticketUUID?: string;
   feature_uuid: string;
   phase_uuid: string;

@@ -14,6 +14,8 @@ export interface TicketStore {
   getTicket: (uuid: string) => Ticket | undefined;
   getPhaseTickets: (phase_uuid: string) => Ticket[];
   clearPhaseTickets: (phase_uuid: string) => void;
+  organizeTicketsByGroup: (tickets: Ticket[]) => Ticket[];
+  getLatestVersionFromGroup: (groupId: string) => Ticket | undefined;
 }
 
 export class PhaseTicketStore implements TicketStore {
@@ -64,6 +66,37 @@ export class PhaseTicketStore implements TicketStore {
       this.tickets.delete(ticket.uuid);
     });
     this.phaseTickets[phase_uuid] = [];
+  }
+
+  organizeTicketsByGroup(tickets: Ticket[]): Ticket[] {
+    const groupedTickets = tickets.reduce(
+      (groups: Record<string, Ticket[]>, ticket: Ticket) => {
+        const group = ticket.ticket_group || ticket.uuid;
+        if (!groups[group]) {
+          groups[group] = [];
+        }
+        groups[group].push(ticket);
+        return groups;
+      },
+      {} as Record<string, Ticket[]>
+    );
+
+    return Object.values(groupedTickets).map((groupTickets: Ticket[]) =>
+      groupTickets.reduce((latest: Ticket, current: Ticket) =>
+        current.version > latest.version ? current : latest
+      )
+    );
+  }
+
+  getLatestVersionFromGroup(groupId: string): Ticket | undefined {
+    const ticketsInGroup = Array.from(this.tickets.values()).filter(
+      (ticket: Ticket) => ticket.ticket_group === groupId
+    );
+    if (ticketsInGroup.length === 0) return undefined;
+
+    return ticketsInGroup.reduce((latest: Ticket, current: Ticket) =>
+      current.version > latest.version ? current : latest
+    );
   }
 }
 
