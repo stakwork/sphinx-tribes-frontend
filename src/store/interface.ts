@@ -478,6 +478,7 @@ export interface ChatMessage {
   status: ChatStatus;
   source: ChatSource;
   sourceWebsocketID: string;
+  workspaceUUID: string;
 }
 
 export interface Chat {
