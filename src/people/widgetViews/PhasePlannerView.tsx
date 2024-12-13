@@ -76,11 +76,21 @@ const PhasePlannerView: React.FC = observer(() => {
           return;
         }
 
-        if (data.ticket_uuid && data.swwf_id) {
-          setSwwfLinks((prev: Record<string, string>) => ({
-            ...prev,
-            [data.ticket_uuid]: data.swwf_id
-          }));
+        if (data.action === 'swrun' && data.message && data.ticketDetails?.ticketUUID) {
+          try {
+            const stakworkId = data.message.replace(
+              'https://jobs.stakwork.com/admin/projects/',
+              ''
+            );
+            if (stakworkId) {
+              setSwwfLinks((prev: Record<string, string>) => ({
+                ...prev,
+                [data.ticketDetails.ticketUUID]: stakworkId
+              }));
+            }
+          } catch (error) {
+            console.error('Error processing Stakwork URL:', error);
+          }
           return;
         }
 
