@@ -60,6 +60,8 @@ export class ChatService {
   async sendMessage(
     chat_id: string,
     message: string,
+    sourceWebsocketID: string,
+    workspaceUUID: string,
     contextTags?: ContextTag[]
   ): Promise<ChatMessage | undefined> {
     try {
@@ -76,7 +78,9 @@ export class ChatService {
         body: JSON.stringify({
           chat_id,
           message,
-          context_tags: contextTags
+          context_tags: contextTags,
+          sourceWebsocketID,
+          workspaceUUID
         })
       });
 

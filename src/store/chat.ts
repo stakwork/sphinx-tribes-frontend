@@ -91,9 +91,17 @@ export class ChatHistoryStore implements ChatStore {
   async sendMessage(
     chat_id: string,
     message: string,
+    sourceWebsocketID: string,
+    workspaceUUID: string,
     contextTags?: ContextTag[]
   ): Promise<ChatMessage | undefined> {
-    const newMessage = await chatService.sendMessage(chat_id, message, contextTags);
+    const newMessage = await chatService.sendMessage(
+      chat_id,
+      message,
+      sourceWebsocketID,
+      workspaceUUID,
+      contextTags
+    );
     if (newMessage) {
       this.addMessage(newMessage);
     }
