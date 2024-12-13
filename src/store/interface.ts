@@ -446,7 +446,7 @@ export interface TicketMessage {
   broadcastType: 'pool' | 'direct';
   sourceSessionID: string;
   message: string;
-  action: 'process' | 'message';
+  action: 'process' | 'message' | 'run-link';
   ticketDetails: Ticket;
 }
 
