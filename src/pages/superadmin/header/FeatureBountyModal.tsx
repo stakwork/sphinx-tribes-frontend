@@ -30,7 +30,7 @@ const FeatureBountyModal = (props: FeatureBountyProps) => {
   const isMobile = useIsMobile();
   const { open, close, addToast } = props;
   const [loading, setLoading] = useState(false);
-  const [bountyUrl, setBountyUrl] = useState('');
+  const [bountyUrl, setBountyUrl] = useState(bountyStore.getFeaturedBounty()?.url || '');
   const config = nonWidgetConfigs['workspaceusers'];
 
   const handleAddFeaturedBounty = async () => {
@@ -48,7 +48,7 @@ const FeatureBountyModal = (props: FeatureBountyProps) => {
         return;
       }
 
-      bountyStore.addFeaturedBounty(bountyId);
+      bountyStore.addFeaturedBounty(bountyUrl);
 
       if (addToast) addToast('Bounty added to featured list', 'success');
       setBountyUrl('');
@@ -58,6 +58,13 @@ const FeatureBountyModal = (props: FeatureBountyProps) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleRemoveFeaturedBounty = () => {
+    bountyStore.removeFeaturedBounty();
+    setBountyUrl('');
+    if (addToast) addToast('Featured bounty deleted', 'success');
+    close();
   };
 
   return (
@@ -120,6 +127,18 @@ const FeatureBountyModal = (props: FeatureBountyProps) => {
             onClick={handleAddFeaturedBounty}
           >
             Confirm
+          </BudgetButton>
+          <BudgetButton
+            disabled={!bountyUrl}
+            style={{
+              borderRadius: '8px',
+              marginTop: '12px',
+              color: !bountyUrl ? 'rgba(142, 150, 156, 0.85)' : '#FFF',
+              background: !bountyUrl ? 'rgba(0, 0, 0, 0.04)' : '#FF4D4F'
+            }}
+            onClick={handleRemoveFeaturedBounty}
+          >
+            Delete
           </BudgetButton>
         </Wrapper>
       </Modal>
