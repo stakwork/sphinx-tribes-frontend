@@ -63,10 +63,15 @@ export class ChatHistoryStore implements ChatStore {
   async getWorkspaceChats(workspace_uuid: string): Promise<Chat[]> {
     try {
       const chats = await chatService.getWorkspaceChats(workspace_uuid);
-      if (chats) {
-        chats.forEach((chat: Chat) => this.addChat(chat));
+      if (Array.isArray(chats)) {
+        chats.forEach((chat: Chat) => {
+          if (chat && chat.id) {
+            this.addChat(chat);
+          }
+        });
+        return chats;
       }
-      return chats || [];
+      return [];
     } catch (error) {
       console.error('Error getting workspace chats:', error);
       return [];

@@ -82,7 +82,9 @@ export class ChatService {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      return response.json();
+      const data = await response.json();
+      console.log('API Response:', data);
+      return Array.isArray(data) ? data : [];
     } catch (e) {
       console.error('Error loading workspace chats:', e);
       return undefined;

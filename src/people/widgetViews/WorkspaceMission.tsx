@@ -386,12 +386,17 @@ const WorkspaceMission = () => {
       try {
         const workspaceChats = await chat.getWorkspaceChats(uuid);
         if (workspaceChats && workspaceChats.length > 0) {
-          const sortedChats = workspaceChats.sort(
-            (a: Chat, b: Chat) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-          );
+          const sortedChats = workspaceChats
+            .filter((chat: Chat) => chat && chat.id)
+            .sort((a: Chat, b: Chat) => {
+              const dateA = new Date(a.updatedAt || a.createdAt || 0).getTime();
+              const dateB = new Date(b.updatedAt || b.createdAt || 0).getTime();
+              return dateB - dateA;
+            });
           setChats(sortedChats);
         }
       } catch (error) {
+        console.error('Error loading chats:', error);
         ui.setToasts([
           {
             title: 'Error',
@@ -1110,7 +1115,11 @@ const WorkspaceMission = () => {
                       <ChatListItem key={chat.id} onClick={() => handleChatClick(chat.id)}>
                         <ChatItemContent>
                           <ChatTitle>{chat.title || 'Untitled Chat'}</ChatTitle>
-                          <ChatTimestamp>{new Date(chat.updatedAt).toLocaleString()}</ChatTimestamp>
+                          <ChatTimestamp>
+                            {chat.updatedAt || chat.createdAt
+                              ? new Date(chat.updatedAt || chat.createdAt).toLocaleString()
+                              : 'No date'}
+                          </ChatTimestamp>
                         </ChatItemContent>
                       </ChatListItem>
                     ))}
