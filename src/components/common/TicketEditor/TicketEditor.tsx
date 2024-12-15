@@ -18,8 +18,9 @@ import {
   TicketInput,
   TicketHeaderInputWrap
 } from '../../../pages/tickets/style';
-import { TicketStatus, Ticket } from '../../../store/interface';
+import { TicketStatus, Ticket, Author } from '../../../store/interface';
 import { Toast } from '../../../people/widgetViews/workspace/interface';
+import { uiStore } from '../../../store/ui';
 
 interface TicketEditorProps {
   ticketData: Ticket;
@@ -73,7 +74,10 @@ const TicketEditor = observer(
             name,
             description,
             status: 'DRAFT' as TicketStatus,
-            version: ticketData.version + 1
+            version: ticketData.version + 1,
+            author: 'HUMAN' as Author,
+            author_id: uiStore.meInfo?.pubkey,
+            ticket_group: ticketData.ticket_group || ticketData.uuid
           }
         };
 
@@ -124,7 +128,10 @@ const TicketEditor = observer(
             ...ticketData,
             name,
             description,
-            status: 'DRAFT' as TicketStatus
+            status: 'DRAFT' as TicketStatus,
+            author: 'AGENT' as Author,
+            author_id: 'TICKET_BUILDER',
+            ticket_group: ticketData.ticket_group || ticketData.uuid
           }
         };
 
