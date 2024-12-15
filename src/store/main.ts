@@ -3603,7 +3603,10 @@ export class MainStore {
     }
   }
 
-  async getTicketDataByPhase(feature_uuid: string, phase_uuid: string): Promise<Phase | undefined> {
+  async getTicketDataByPhase(
+    feature_uuid: string,
+    phase_uuid: string
+  ): Promise<Ticket[] | undefined> {
     try {
       if (!uiStore.meInfo) return undefined;
       const info = uiStore.meInfo;

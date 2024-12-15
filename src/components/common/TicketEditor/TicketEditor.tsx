@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStores } from 'store';
-import { EuiGlobalToastList, EuiFlexGroup, EuiFlexItem, EuiPanel, EuiIcon } from '@elastic/eui';
+import {
+  EuiGlobalToastList,
+  EuiFlexGroup,
+  EuiFlexItem,
+  EuiPanel,
+  EuiIcon,
+  EuiBadge
+} from '@elastic/eui';
 import { phaseTicketStore } from '../../../store/phase';
 import { ActionButton, TicketButtonGroup } from '../../../people/widgetViews/workspace/style';
 import {
@@ -161,6 +168,9 @@ const TicketEditor = observer(
                 }
                 placeholder="Enter ticket name..."
               />
+              <EuiBadge color="success" style={{ marginBottom: '12px' }}>
+                Version {ticketData.version}
+              </EuiBadge>
             </TicketHeaderInputWrap>
             <TicketTextArea
               value={description}
