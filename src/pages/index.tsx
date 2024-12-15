@@ -10,6 +10,7 @@ import PeopleHeader from '../people/main/Header';
 import TokenRefresh from '../people/utils/TokenRefresh';
 import GenerateStoriesView from '../people/widgetViews/GenerateStoriesView';
 import PhasePlannerView from '../people/widgetViews/PhasePlannerView';
+import { HiveChatView } from '../people/hiveChat/index';
 import Body from './tribes/Body';
 import Header from './tribes/Header';
 import { MainLayout } from './MainLayout';
@@ -34,6 +35,9 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
           </Route>
           <Route path="/workspace/bounties/:uuid">
             <WorkspaceTicketsPage />
+          </Route>
+          <Route path="/workspace/:uuid/hivechat/:chatId">
+            <HiveChatView />
           </Route>
           <Route path="/workspace/:uuid">
             <WorkspaceMission />
