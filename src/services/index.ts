@@ -57,7 +57,8 @@ export class ChatService {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      return response.json();
+      const data = await response.json();
+      return Array.isArray(data) ? data : [];
     } catch (e) {
       console.error('Error loading chat history:', e);
       return undefined;

@@ -192,6 +192,27 @@ export const HiveChatView: React.FC = observer(() => {
   }, [chat, chatId, ui]);
 
   useEffect(() => {
+    const initializeChat = async () => {
+      setLoading(true);
+      try {
+        if (chatId) {
+          const messages = await chat.loadChatHistory(chatId);
+          if (messages) {
+            await refreshChatHistory();
+          }
+        }
+      } catch (err) {
+        console.error('Error initializing chat:', err);
+        setError('Failed to load chat history');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initializeChat();
+  }, [chatId, chat, refreshChatHistory]);
+
+  useEffect(() => {
     const socket = createSocketInstance();
     socketRef.current = socket;
 
@@ -210,7 +231,7 @@ export const HiveChatView: React.FC = observer(() => {
           const sessionId = data.body;
           setWebsocketSessionId(sessionId);
           console.log(`Websocket Session ID: ${sessionId}`);
-        } else if (data.type === 'chat_update') {
+        } else if (data.type === 'chat_update' && data.chatId === chatId) {
           await refreshChatHistory();
         }
       } catch (error) {
@@ -238,7 +259,7 @@ export const HiveChatView: React.FC = observer(() => {
         socketRef.current.close();
       }
     };
-  }, [ui, refreshChatHistory]);
+  }, [ui, refreshChatHistory, chatId]);
 
   useEffect(() => {
     const loadInitialChat = async () => {
@@ -274,11 +295,14 @@ export const HiveChatView: React.FC = observer(() => {
 
     setIsSending(true);
     try {
-      await chat.sendMessage(chatId, message, websocketSessionId, uuid);
-      setMessage('');
-      const textarea = document.querySelector('textarea');
-      if (textarea) {
-        textarea.style.height = '60px';
+      const sentMessage = await chat.sendMessage(chatId, message, websocketSessionId, uuid);
+      if (sentMessage) {
+        await refreshChatHistory();
+        setMessage('');
+        const textarea = document.querySelector('textarea');
+        if (textarea) {
+          textarea.style.height = '60px';
+        }
       }
     } catch (error) {
       console.error('Error sending message:', error);
