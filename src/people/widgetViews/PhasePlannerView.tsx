@@ -163,9 +163,7 @@ const PhasePlannerView: React.FC = observer(() => {
         } else {
           phaseTicketStore.clearPhaseTickets(phase_uuid);
 
-          const latestVersionTickets = phaseTicketStore.organizeTicketsByGroup(phaseTickets);
-
-          for (const ticket of latestVersionTickets) {
+          for (const ticket of phaseTickets) {
             if (ticket.UUID) {
               ticket.uuid = ticket.UUID;
             }
@@ -282,30 +280,33 @@ const PhasePlannerView: React.FC = observer(() => {
             </PhaseLabel>
             <EuiDragDropContext onDragEnd={onDragEnd}>
               <EuiDroppable droppableId="ticketDroppable" spacing="m">
-                {tickets.map((ticket: Ticket, index: number) => (
-                  <EuiDraggable
-                    spacing="m"
-                    key={ticket.uuid}
-                    index={index}
-                    draggableId={ticket.uuid}
-                    customDragHandle
-                    hasInteractiveChildren
-                  >
-                    {(provided: any) => (
-                      <div {...provided.dragHandleProps} ref={provided.innerRef}>
-                        <TicketEditor
-                          index={index}
-                          ticketData={ticket}
-                          websocketSessionId={websocketSessionId}
-                          draggableId={ticket.uuid}
-                          hasInteractiveChildren
-                          dragHandleProps={provided.dragHandleProps}
-                          swwfLink={swwfLinks[ticket.uuid]}
-                        />
-                      </div>
-                    )}
-                  </EuiDraggable>
-                ))}
+                {phaseTicketStore
+                  .organizeTicketsByGroup(tickets)
+                  .map((ticket: Ticket, index: number) => (
+                    <EuiDraggable
+                      spacing="m"
+                      key={ticket.uuid}
+                      index={index}
+                      draggableId={ticket.uuid}
+                      customDragHandle
+                      hasInteractiveChildren
+                    >
+                      {(provided: any) => (
+                        <div {...provided.dragHandleProps} ref={provided.innerRef}>
+                          <TicketEditor
+                            index={index}
+                            ticketData={ticket}
+                            websocketSessionId={websocketSessionId}
+                            draggableId={ticket.uuid}
+                            hasInteractiveChildren
+                            dragHandleProps={provided.dragHandleProps}
+                            swwfLink={swwfLinks[ticket.uuid]}
+                            getPhaseTickets={getPhaseTickets}
+                          />
+                        </div>
+                      )}
+                    </EuiDraggable>
+                  ))}
               </EuiDroppable>
             </EuiDragDropContext>
             <AddTicketButton>

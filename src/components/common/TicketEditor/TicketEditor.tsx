@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStores } from 'store';
 import {
@@ -21,6 +21,7 @@ import {
 import { TicketStatus, Ticket, Author } from '../../../store/interface';
 import { Toast } from '../../../people/widgetViews/workspace/interface';
 import { uiStore } from '../../../store/ui';
+import { Select, Option } from '../../../people/widgetViews/workspace/style.ts';
 
 interface TicketEditorProps {
   ticketData: Ticket;
@@ -30,15 +31,40 @@ interface TicketEditorProps {
   hasInteractiveChildren: boolean;
   dragHandleProps?: Record<string, any>;
   swwfLink?: string;
+  getPhaseTickets: () => Promise<Ticket[] | undefined>;
 }
 
 const TicketEditor = observer(
-  ({ ticketData, websocketSessionId, dragHandleProps, swwfLink }: TicketEditorProps) => {
+  ({
+    ticketData,
+    websocketSessionId,
+    dragHandleProps,
+    swwfLink,
+    getPhaseTickets
+  }: TicketEditorProps) => {
     const [toasts, setToasts] = useState<Toast[]>([]);
+    const [versions, setVersions] = useState<number[]>([]);
+    const latestTicket = phaseTicketStore.getLatestVersionFromGroup(
+      ticketData.ticket_group as string
+    );
+    const [selectedVersion, setSelectedVersion] = useState<number>(latestTicket?.version as number);
+    const [versionTicketData, setVersionTicketData] = useState<Ticket>(latestTicket as Ticket);
     const { main } = useStores();
-    const currentTicket = phaseTicketStore.getTicket(ticketData.uuid);
-    const name = currentTicket?.name || 'Ticket';
-    const description = currentTicket?.description || '';
+
+    const groupTickets = useMemo(
+      () => phaseTicketStore.getTicketsByGroup(ticketData.ticket_group as string),
+      [ticketData.ticket_group]
+    );
+
+    useEffect(() => {
+      const maxLimit = 21;
+      const latestVersion = latestTicket?.version as number;
+      const versionsArray = Array.from(
+        { length: Math.min(latestVersion, maxLimit) },
+        (_: number, index: number) => latestVersion - index
+      );
+      setVersions(versionsArray);
+    }, [groupTickets, latestTicket?.version]);
 
     const addUpdateSuccessToast = () => {
       setToasts([
@@ -71,8 +97,8 @@ const TicketEditor = observer(
           },
           ticket: {
             ...ticketData,
-            name,
-            description,
+            name: versionTicketData.name,
+            description: versionTicketData.description,
             status: 'DRAFT' as TicketStatus,
             version: ticketData.version + 1,
             author: 'HUMAN' as Author,
@@ -87,7 +113,24 @@ const TicketEditor = observer(
           throw new Error('Failed to update ticket');
         }
 
-        phaseTicketStore.updateTicket(ticketData.uuid, ticketPayload.ticket);
+        setSelectedVersion(ticketData.version + 1);
+
+        const phaseTickets = await getPhaseTickets();
+
+        if (!Array.isArray(phaseTickets)) {
+          console.error('Error: phaseTickets is not an array');
+          return;
+        }
+
+        // Update phase ticket store with the latest tickets
+        phaseTicketStore.clearPhaseTickets(ticketData.phase_uuid);
+        for (const updatedTicket of phaseTickets) {
+          if (updatedTicket.UUID) {
+            updatedTicket.uuid = updatedTicket.UUID;
+          }
+          phaseTicketStore.addTicket(updatedTicket);
+        }
+
         addUpdateSuccessToast();
       } catch (error) {
         console.error('Error updating ticket:', error);
@@ -126,8 +169,8 @@ const TicketEditor = observer(
           },
           ticket: {
             ...ticketData,
-            name,
-            description,
+            name: versionTicketData.name,
+            description: versionTicketData.description,
             status: 'DRAFT' as TicketStatus,
             author: 'AGENT' as Author,
             author_id: 'TICKET_BUILDER',
@@ -145,6 +188,23 @@ const TicketEditor = observer(
       } catch (error) {
         console.error('Error in ticket builder:', error);
         addErrorToast();
+      }
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const version = Number(e.target.value);
+      if (version !== selectedVersion) {
+        setSelectedVersion(version);
+
+        const selectedVerionTicket = groupTickets.find(
+          (ticket: Ticket) => ticket.version === version
+        );
+
+        if (selectedVerionTicket) {
+          setVersionTicketData({
+            ...selectedVerionTicket
+          });
+        }
       }
     };
 
@@ -169,24 +229,42 @@ const TicketEditor = observer(
             <TicketHeaderInputWrap>
               <TicketHeader>Ticket:</TicketHeader>
               <TicketInput
-                value={name}
+                value={versionTicketData.name}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  phaseTicketStore.updateTicket(ticketData.uuid, { name: e.target.value })
+                  setVersionTicketData({ ...versionTicketData, name: e.target.value })
                 }
                 placeholder="Enter ticket name..."
               />
               <EuiBadge color="success" style={{ marginBottom: '12px' }}>
-                Version {ticketData.version}
+                Version {selectedVersion}
               </EuiBadge>
             </TicketHeaderInputWrap>
             <TicketTextArea
-              value={description}
+              value={versionTicketData.description}
               onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                phaseTicketStore.updateTicket(ticketData.uuid, { description: e.target.value })
+                setVersionTicketData({ ...versionTicketData, description: e.target.value })
               }
               placeholder="Enter ticket details..."
             />
             <TicketButtonGroup>
+              <Select
+                value={selectedVersion}
+                onChange={handleChange}
+                style={{
+                  padding: '5px 10px',
+                  borderRadius: '4px',
+                  border: '1px solid #ccc',
+                  marginRight: '10px',
+                  backgroundColor: 'white',
+                  cursor: 'pointer'
+                }}
+              >
+                {Array.from(new Set(versions)).map((version: number) => (
+                  <Option key={version} value={version}>
+                    Version {version}
+                  </Option>
+                ))}
+              </Select>
               <ActionButton
                 color="primary"
                 onClick={handleUpdate}
