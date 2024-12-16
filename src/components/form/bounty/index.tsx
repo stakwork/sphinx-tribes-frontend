@@ -442,8 +442,8 @@ function Form(props: FormProps) {
 
                 {schemaData.step !== 1 && (
                   <>
-                    <SchemaTagsContainer>
-                      <div className="LeftSchema" style={{ width: '292px' }}>
+                    <SchemaTagsContainer style={{ display: 'flex', gap: '20px' }}>
+                      <div className="LeftSchema" style={{ width: '100%' }}>
                         {schema
                           .filter((item: any) => schemaData.schema.includes(item.name))
                           .map((item: FormField) => (
@@ -515,7 +515,7 @@ function Form(props: FormProps) {
                             </div>
                           ))}
                       </div>
-                      <div className="RightSchema" style={{ width: '292px' }}>
+                      <div className="RightSchema" style={{ width: '100%' }}>
                         {schema
                           .filter((item: any) => schemaData.schema2.includes(item.name))
                           .map((item: FormField) => (
@@ -571,7 +571,7 @@ function Form(props: FormProps) {
                       <div
                         className="ButtonContainer"
                         style={{
-                          width: stepTracker < 5 ? '45%' : '100%',
+                          width: stepTracker < 5 ? '20%' : '100%',
                           height: stepTracker < 5 ? '48px' : '48px',
                           marginTop: stepTracker === 5 || stepTracker === 3 ? '20px' : ''
                         }}
