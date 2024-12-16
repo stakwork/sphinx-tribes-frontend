@@ -80,7 +80,9 @@ export class ChatHistoryStore implements ChatStore {
 
   addMessage(message: ChatMessage) {
     const chatMessages = this.chatMessages[message.chat_id] || [];
-    this.chatMessages[message.chat_id] = [...chatMessages, message];
+    if (!chatMessages.some((msg: ChatMessage) => msg.id === message.id)) {
+      this.chatMessages[message.chat_id] = [...chatMessages, message];
+    }
   }
 
   updateMessage(id: string, messageUpdate: Partial<ChatMessage>) {
@@ -100,11 +102,17 @@ export class ChatHistoryStore implements ChatStore {
   }
 
   async loadChatHistory(chat_id: string): Promise<ChatMessage[] | undefined> {
-    const messages = await chatService.getChatHistory(chat_id);
-    if (messages) {
-      this.chatMessages[chat_id] = messages;
+    try {
+      const messages = await chatService.getChatHistory(chat_id);
+      if (messages) {
+        this.chatMessages[chat_id] = messages;
+        return messages;
+      }
+      return undefined;
+    } catch (error) {
+      console.error('Error loading chat history:', error);
+      return undefined;
     }
-    return messages;
   }
 
   async sendMessage(
@@ -114,17 +122,26 @@ export class ChatHistoryStore implements ChatStore {
     workspaceUUID: string,
     contextTags?: ContextTag[]
   ): Promise<ChatMessage | undefined> {
-    const newMessage = await chatService.sendMessage(
-      chat_id,
-      message,
-      sourceWebsocketID,
-      workspaceUUID,
-      contextTags
-    );
-    if (newMessage) {
-      this.addMessage(newMessage);
+    try {
+      const newMessage = await chatService.sendMessage(
+        chat_id,
+        message,
+        sourceWebsocketID,
+        workspaceUUID,
+        contextTags
+      );
+      if (newMessage) {
+        if (!this.chatMessages[chat_id]) {
+          this.chatMessages[chat_id] = [];
+        }
+        this.addMessage(newMessage);
+        return newMessage;
+      }
+      return undefined;
+    } catch (error) {
+      console.error('Error sending message:', error);
+      return undefined;
     }
-    return newMessage;
   }
 }
 
