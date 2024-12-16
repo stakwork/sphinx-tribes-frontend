@@ -153,6 +153,20 @@ export const Statistics = ({ freezeHeaderRef, metrics }: StatisticsProps) => (
               <Title>{convertToLocaleString(metrics?.new_hunters_paid || 0)}</Title>
               <Subheading width="120px">First Bounty Paid</Subheading>
             </div>
+            <VerticaGrayLine />
+          </DivWrapper>
+          <DivWrapper>
+            <div>
+              <Title>{convertToLocaleString(metrics?.new_hunters_by_period || 0)}</Title>
+              <Subheading width="120px">Hunters At Start Of Period</Subheading>
+            </div>
+            <VerticaGrayLine />
+          </DivWrapper>
+          <DivWrapper>
+            <div>
+              <Title>{convertToLocaleString(metrics?.new_hunters || 0)}</Title>
+              <Subheading width="120px">New Hunters</Subheading>
+            </div>
           </DivWrapper>
         </BelowCardWrapper>
       </CardHunter>

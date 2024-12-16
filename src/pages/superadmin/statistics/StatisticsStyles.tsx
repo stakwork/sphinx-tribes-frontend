@@ -84,7 +84,7 @@ export const UpperCardWrapper = styled.div`
 export const BelowCardWrapper = styled.div`
   flex: 1;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 2em;
 `;
 

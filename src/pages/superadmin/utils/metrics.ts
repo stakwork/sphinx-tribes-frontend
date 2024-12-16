@@ -11,5 +11,7 @@ export const normalizeMetrics = (data: any): BountyMetrics => ({
   average_paid: data.average_paid || data.AveragePaid,
   average_completed: data.average_completed || data.AverageCompleted,
   unique_hunters_paid: data.unique_hunters_paid || data.uniqueHuntersPaid,
-  new_hunters_paid: data.new_hunters_paid || data.newHuntersPaid
+  new_hunters_paid: data.new_hunters_paid || data.newHuntersPaid,
+  new_hunters: data.new_hunters || data.newHunters,
+  new_hunters_by_period: data.new_hunters_by_period || data.newHuntersByPeriod
 });
