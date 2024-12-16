@@ -1607,3 +1607,31 @@ export const TicketButtonGroup = styled.div`
     }
   }
 `;
+
+export const Select = styled.select`
+  padding: 5px 10px;
+  border-radius: 4px;
+  width: 300px;
+  height: 38px;
+  border: 1px solid #ccc;
+  margin-right: 10px;
+  margin-top: 25px;
+  background-color: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+
+  &:hover {
+    border-color: #49c998;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: #618aff;
+    box-shadow: 0 0 5px rgba(97, 138, 255, 0.5);
+  }
+`;
+
+export const Option = styled.option`
+  font-size: 14px;
+`;

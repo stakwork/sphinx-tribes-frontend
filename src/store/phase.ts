@@ -88,6 +88,12 @@ export class PhaseTicketStore implements TicketStore {
     );
   }
 
+  getTicketsByGroup(groupId: string): Ticket[] {
+    return Array.from(this.tickets.values()).filter(
+      (ticket: Ticket) => ticket.ticket_group === groupId || ticket.uuid === groupId
+    );
+  }
+
   getLatestVersionFromGroup(groupId: string): Ticket | undefined {
     const ticketsInGroup = Array.from(this.tickets.values()).filter(
       (ticket: Ticket) => ticket.ticket_group === groupId
