@@ -81,6 +81,14 @@ const InviteModal = (props: InviteProps) => {
     setLoading(false);
   };
 
+  function handleNumberChange(e: any, updateState: (value: number) => void) {
+    const { value } = e.target;
+
+    // Validate: Allow only numbers
+    if (/^\d*$/.test(value)) {
+      updateState(Number(value));
+    }
+  }
   return (
     <>
       <Modal
@@ -128,7 +136,7 @@ const InviteModal = (props: InviteProps) => {
                   width: '100%'
                 }}
                 value={inviteNumber}
-                onChange={(e: any) => setInviteNumber(Number(e.target.value))}
+                onChange={(e: any) => handleNumberChange(e, setInviteNumber)}
               />
             </InvoiceInputContainer>
 
@@ -160,12 +168,12 @@ const InviteModal = (props: InviteProps) => {
               </InvoiceLabel>
               <InvoiceInput
                 data-testid="withdrawInvoiceInput"
-                type="number"
+                type="text"
                 style={{
                   width: '100%'
                 }}
                 value={satAmount}
-                onChange={(e: any) => setSatAmount(Number(e.target.value))}
+                onChange={(e: any) => handleNumberChange(e, setSatAmount)}
               />
             </InvoiceInputContainer>
           </InvoiceForm>
