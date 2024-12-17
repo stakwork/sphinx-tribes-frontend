@@ -79,17 +79,36 @@ export class ChatHistoryStore implements ChatStore {
   }
 
   addMessage(message: ChatMessage) {
-    const chatMessages = this.chatMessages[message.chat_id] || [];
-    if (!chatMessages.some((msg: ChatMessage) => msg.id === message.id)) {
-      this.chatMessages[message.chat_id] = [...chatMessages, message];
+    const chatId = message.chatId || message.chat_id;
+    if (!chatId) return;
+
+    if (!this.chatMessages[chatId]) {
+      this.chatMessages[chatId] = [];
+    }
+
+    const isDuplicate = this.chatMessages[chatId].some((msg: ChatMessage) => msg.id === message.id);
+    if (!isDuplicate) {
+      this.chatMessages = {
+        ...this.chatMessages,
+        [chatId]: [...this.chatMessages[chatId], message]
+      };
     }
   }
 
   updateMessage(id: string, messageUpdate: Partial<ChatMessage>) {
     Object.keys(this.chatMessages).forEach((chatId: string) => {
-      this.chatMessages[chatId] = this.chatMessages[chatId].map((msg: ChatMessage) =>
-        msg.id === id ? { ...msg, ...messageUpdate } : msg
-      );
+      const messages = this.chatMessages[chatId];
+      const messageIndex = messages.findIndex((msg: ChatMessage) => msg.id === id);
+
+      if (messageIndex !== -1) {
+        const updatedMessages = [...messages];
+        updatedMessages[messageIndex] = { ...messages[messageIndex], ...messageUpdate };
+
+        this.chatMessages = {
+          ...this.chatMessages,
+          [chatId]: updatedMessages
+        };
+      }
     });
   }
 
@@ -105,8 +124,14 @@ export class ChatHistoryStore implements ChatStore {
     try {
       const messages = await chatService.getChatHistory(chat_id);
       if (messages) {
-        this.chatMessages[chat_id] = messages;
-        return messages;
+        const normalizedMessages = messages.map((msg: ChatMessage) => ({
+          ...msg,
+          chat_id: msg.chat_id || msg.chatId || chat_id,
+          context_tags: msg.context_tags || msg.contextTags
+        }));
+
+        this.chatMessages[chat_id] = normalizedMessages;
+        return normalizedMessages;
       }
       return undefined;
     } catch (error) {
