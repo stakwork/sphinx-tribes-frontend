@@ -53,6 +53,12 @@ const PhasePlannerView: React.FC = observer(() => {
       try {
         const ticket = await main.getTicketDetails(ticketUuid);
 
+        if (ticket.UUID) {
+          ticket.uuid = ticket.UUID;
+        }
+
+        phaseTicketStore.addTicket(ticket);
+
         const groupId = ticket.ticket_group || ticket.uuid;
 
         const latestTicket = phaseTicketStore.getLatestVersionFromGroup(groupId);
