@@ -16,7 +16,7 @@ export class ChatService {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          workspace_uuid,
+          workspaceId: workspace_uuid,
           title
         })
       });
