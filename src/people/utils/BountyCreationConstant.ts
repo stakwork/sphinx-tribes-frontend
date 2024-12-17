@@ -8,9 +8,10 @@ export const BountyDetailsCreationData = {
     schema2: [''],
     required: [''],
     outerContainerStyle: {
-      minWidth: '712px',
-      maxWidth: '712px',
-      height: '560px'
+      minWidth: '712px', // Retains the current minimum width
+      maxWidth: 'min(75vw, calc(712px * 2.5))', // 2.5x the minimum width (712 * 2.5 = 1780)
+      width: '75vw', // Retains the fixed height
+      margin: '0 auto' // Ensures modal is centered horizontally
     },
     headingStyle: {},
     extraText: ''
@@ -24,9 +25,10 @@ export const BountyDetailsCreationData = {
     schema2: ['wanted_type', 'coding_languages'],
     required: ['one_sentence_summary', 'wanted_type'],
     outerContainerStyle: {
-      minWidth: '712px',
-      maxWidth: '712px',
-      height: 'auto'
+      minWidth: '712px', // Retains the current minimum width
+      maxWidth: 'min(75vw, calc(712px * 2.5))', // 2.5x the minimum width (712 * 2.5 = 1780)
+      width: '75vw', // Retains the fixed height
+      margin: '0 auto' // Ensures modal is centered horizontally
     },
     headingStyle: {},
     extraText: '* Required fields'
@@ -40,9 +42,10 @@ export const BountyDetailsCreationData = {
     schema2: [' ', 'loomEmbedUrl'],
     required: [''],
     outerContainerStyle: {
-      minWidth: '712px',
-      maxWidth: '712px',
-      height: 'auto'
+      minWidth: '712px', // Retains the current minimum width
+      maxWidth: 'min(75vw, calc(712px * 2.5))', // 2.5x the minimum width (712 * 2.5 = 1780)
+      width: '75vw', // Retains the fixed height
+      margin: '0 auto' // Ensures modal is centered horizontally
     },
     headingStyle: {},
     extraText: '* Required fields'
@@ -56,9 +59,10 @@ export const BountyDetailsCreationData = {
     schema2: ['tribe', 'deliverables', 'show'],
     required: ['price'],
     outerContainerStyle: {
-      minWidth: '712px',
-      maxWidth: '712px',
-      height: 'auto'
+      minWidth: '712px', // Retains the current minimum width
+      maxWidth: 'min(75vw, calc(712px * 2.5))', // 2.5x the minimum width (712 * 2.5 = 1780)
+      width: '75vw', // Retains the fixed height
+      margin: '0 auto' // Ensures modal is centered horizontally
     },
     headingStyle: {},
     extraText: '* Required fields'
@@ -74,7 +78,8 @@ export const BountyDetailsCreationData = {
     outerContainerStyle: {
       minWidth: '388px',
       maxWidth: '388px',
-      height: 'auto'
+      width: '388px',
+      margin: '0 auto'
     },
     headingStyle: {},
     extraText: ''

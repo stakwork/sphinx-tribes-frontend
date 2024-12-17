@@ -11,11 +11,11 @@ interface styleProps {
 }
 
 const LoomVideoContainer = styled.div<styleProps>`
-  width: 292px;
   height: 175px;
-  left: 698px;
-  top: 313px;
   background: ${(p: any) => !p.isVideo && "url('/static/loom_video_outer_border.svg')"};
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: center;
   border-radius: 4px;
   display: flex;
   flex-direction: column;
