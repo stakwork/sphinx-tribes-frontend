@@ -473,15 +473,17 @@ export interface ContextTag {
 
 export interface ChatMessage {
   id: string;
-  chat_id: string;
+  chat_id?: string;
+  chatId?: string;
   message: string;
   role: ChatRole;
-  timestamp: Date;
+  timestamp: string | Date;
   context_tags?: ContextTag[];
+  contextTags?: ContextTag[];
   status: ChatStatus;
   source: ChatSource;
-  sourceWebsocketID: string;
-  workspaceUUID: string;
+  sourceWebsocketID?: string;
+  workspaceUUID?: string;
 }
 
 export interface Chat {

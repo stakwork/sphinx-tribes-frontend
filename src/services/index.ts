@@ -59,11 +59,23 @@ export class ChatService {
 
       const result = await response.json();
 
-      if (!result.success || !result.data) {
-        throw new Error('Invalid chat history response');
+      let messages: ChatMessage[] = [];
+
+      if (Array.isArray(result)) {
+        messages = result;
+      } else if (result.success && Array.isArray(result.data)) {
+        messages = result.data;
+      } else if (result.data) {
+        messages = Array.isArray(result.data) ? result.data : [result.data];
+      } else {
+        messages = [];
       }
 
-      return result.data;
+      return messages.map((msg: ChatMessage) => ({
+        ...msg,
+        chat_id: msg.chat_id || msg.chatId || chat_id,
+        context_tags: msg.context_tags || msg.contextTags
+      }));
     } catch (e) {
       console.error('Error loading chat history:', e);
       return undefined;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useHistory, useParams } from 'react-router-dom';
 import { ChatMessage } from 'store/interface';
@@ -196,10 +196,7 @@ export const HiveChatView: React.FC = observer(() => {
       setLoading(true);
       try {
         if (chatId) {
-          const messages = await chat.loadChatHistory(chatId);
-          if (messages) {
-            await refreshChatHistory();
-          }
+          await chat.loadChatHistory(chatId);
         }
       } catch (err) {
         console.error('Error initializing chat:', err);
@@ -210,7 +207,7 @@ export const HiveChatView: React.FC = observer(() => {
     };
 
     initializeChat();
-  }, [chatId, chat, refreshChatHistory]);
+  }, [chatId, chat]);
 
   useEffect(() => {
     const socket = createSocketInstance();
@@ -236,6 +233,7 @@ export const HiveChatView: React.FC = observer(() => {
           await refreshChatHistory();
         } else if (data.action === 'process' && data.chatMessage) {
           chat.updateMessage(data.chatMessage.id, data.chatMessage);
+          await refreshChatHistory();
         }
       } catch (error) {
         console.error('Error processing websocket message:', error);
@@ -282,10 +280,7 @@ export const HiveChatView: React.FC = observer(() => {
     }
   }, [chatId, refreshChatHistory]);
 
-  const messages = useMemo(() => {
-    const chatMessages = chat.getChatMessages(chatId);
-    return Array.isArray(chatMessages) ? chatMessages : [];
-  }, [chat, chatId]);
+  const messages = chat.chatMessages[chatId];
 
   useEffect(() => {
     if (chatHistoryRef.current) {
@@ -300,11 +295,14 @@ export const HiveChatView: React.FC = observer(() => {
     try {
       const sentMessage = await chat.sendMessage(chatId, message, websocketSessionId, uuid);
       if (sentMessage) {
-        await refreshChatHistory();
+        chat.addMessage(sentMessage);
         setMessage('');
         const textarea = document.querySelector('textarea');
         if (textarea) {
           textarea.style.height = '60px';
+        }
+        if (chatHistoryRef.current) {
+          chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
         }
       }
     } catch (error) {
