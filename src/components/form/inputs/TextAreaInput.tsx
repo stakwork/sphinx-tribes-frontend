@@ -8,7 +8,7 @@ import { FieldEnv, FieldTextArea, Note } from './index';
 const StyleOnText = {
   'Description *': {
     height: '172px',
-    width: '292px'
+    width: '100%'
   },
   Deliverables: {
     height: '135px',

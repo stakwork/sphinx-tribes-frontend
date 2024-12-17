@@ -46,7 +46,7 @@ interface BProps {
 export const B = styled.div<BProps>`
   display: ${(p: any) => (p.hide ? 'none' : 'flex')};
   justify-content: ${(p: any) => (p.hide ? 'none' : 'center')};
-  height: 100%;
+  height: 100vh;
   width: 100%;
   overflow-y: auto;
   box-sizing: border-box;

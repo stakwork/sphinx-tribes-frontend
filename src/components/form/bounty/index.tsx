@@ -698,7 +698,10 @@ function Form(props: FormProps) {
                       flexDirection: 'column',
                       alignItems: 'center',
                       color: '#3C3D3F',
-                      minWidth: '650px'
+                      width: '100%',
+                      padding: '0px 40px 0px 40px',
+                      paddingTop: '0px',
+                      height: '100vh'
                     }}
                   >
                     {/* mapping each bounty creation step to the appropriate
