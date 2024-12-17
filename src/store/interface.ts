@@ -273,6 +273,8 @@ export interface BountyMetrics {
   average_completed: number;
   unique_hunters_paid: number;
   new_hunters_paid: number;
+  new_hunters: number;
+  new_hunters_by_period: number;
 }
 
 export interface BountyStatus {

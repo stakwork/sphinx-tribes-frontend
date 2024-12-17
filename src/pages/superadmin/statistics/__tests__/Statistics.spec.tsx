@@ -6,7 +6,6 @@ import { setupStore } from '../../../../__test__/__mockData__/setupStore';
 import { user } from '../../../../__test__/__mockData__/user';
 import { mockUsehistory } from '../../../../__test__/__mockFn__/useHistory';
 import { Statistics } from '../';
-import { bounties } from 'pages/superadmin/tableComponent/mockBountyData';
 
 beforeAll(() => {
   nock.disableNetConnect();
@@ -29,7 +28,9 @@ const mockMetrics = {
   average_paid: 10,
   average_completed: 1,
   unique_hunters_paid: 7,
-  new_hunters_paid: 2
+  new_hunters_paid: 2,
+  new_hunters: 4,
+  new_hunters_by_period: 10
 };
 
 describe('Statistics Component', () => {
@@ -82,7 +83,9 @@ describe('Statistics Component', () => {
       average_paid: 10,
       average_completed: 1,
       unique_hunters_paid: 7,
-      new_hunters_paid: 2
+      new_hunters_paid: 2,
+      new_hunters: 4,
+      new_hunters_by_period: 10
     };
 
     const { getByText } = render(<Statistics metrics={lowPercentageMetrics} />);
@@ -100,7 +103,9 @@ describe('Statistics Component', () => {
       average_paid: 10,
       average_completed: 1,
       unique_hunters_paid: 7,
-      new_hunters_paid: 2
+      new_hunters_paid: 2,
+      new_hunters: 4,
+      new_hunters_by_period: 10
     };
 
     const { getByText } = render(<Statistics metrics={lowPercentageMetrics} />);
