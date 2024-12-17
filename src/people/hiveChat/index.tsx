@@ -231,8 +231,11 @@ export const HiveChatView: React.FC = observer(() => {
           const sessionId = data.body;
           setWebsocketSessionId(sessionId);
           console.log(`Websocket Session ID: ${sessionId}`);
-        } else if (data.type === 'chat_update' && data.chatId === chatId) {
+        } else if (data.action === 'message' && data.chatMessage) {
+          chat.addMessage(data.chatMessage);
           await refreshChatHistory();
+        } else if (data.action === 'process' && data.chatMessage) {
+          chat.updateMessage(data.chatMessage.id, data.chatMessage);
         }
       } catch (error) {
         console.error('Error processing websocket message:', error);
@@ -259,7 +262,7 @@ export const HiveChatView: React.FC = observer(() => {
         socketRef.current.close();
       }
     };
-  }, [ui, refreshChatHistory, chatId]);
+  }, [ui, refreshChatHistory, chatId, chat]);
 
   useEffect(() => {
     const loadInitialChat = async () => {
