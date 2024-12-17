@@ -28,8 +28,8 @@ export class ChatService {
       const result = await response.json();
       console.log('Create chat response:', result);
 
-      if (!result.data || !result.data.id) {
-        throw new Error('Invalid chat response: missing data or id');
+      if (!result.success || !result.data) {
+        throw new Error('Invalid chat response');
       }
 
       return result.data;
@@ -57,8 +57,13 @@ export class ChatService {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
-      return Array.isArray(data) ? data : [];
+      const result = await response.json();
+
+      if (!result.success || !result.data) {
+        throw new Error('Invalid chat history response');
+      }
+
+      return result.data;
     } catch (e) {
       console.error('Error loading chat history:', e);
       return undefined;
@@ -70,7 +75,7 @@ export class ChatService {
       if (!uiStore.meInfo) return undefined;
       const info = uiStore.meInfo;
 
-      const response = await fetch(`${TribesURL}/hivechat/history/${workspace_uuid}`, {
+      const response = await fetch(`${TribesURL}/hivechat?workspace_id=${workspace_uuid}`, {
         method: 'GET',
         mode: 'cors',
         headers: {
@@ -83,9 +88,13 @@ export class ChatService {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
-      console.log('API Response:', data);
-      return Array.isArray(data) ? data : [];
+      const result = await response.json();
+      console.log('Workspace chats response:', result);
+      if (!result.success || !result.data) {
+        throw new Error('Invalid workspace chats response');
+      }
+
+      return result.data;
     } catch (e) {
       console.error('Error loading workspace chats:', e);
       return undefined;
@@ -123,7 +132,13 @@ export class ChatService {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      return response.json();
+      const result = await response.json();
+
+      if (!result.success || !result.data) {
+        throw new Error('Invalid send message response');
+      }
+
+      return result.data;
     } catch (e) {
       console.error('Error sending message:', e);
       return undefined;
