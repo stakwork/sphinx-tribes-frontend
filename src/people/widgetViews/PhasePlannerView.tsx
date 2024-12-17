@@ -42,12 +42,6 @@ const PhasePlannerView: React.FC = observer(() => {
   const history = useHistory();
   const tickets = phaseTicketStore.getPhaseTickets(phase_uuid);
 
-  const getPhaseTickets = useCallback(async () => {
-    if (!feature_uuid || !phase_uuid) return;
-    const data = await main.getTicketDataByPhase(feature_uuid, phase_uuid);
-    return data;
-  }, [feature_uuid, phase_uuid, main]);
-
   useEffect(() => {
     const socket = createSocketInstance();
 
@@ -154,6 +148,12 @@ const PhasePlannerView: React.FC = observer(() => {
   const getPhaseData = useCallback(async () => {
     if (!feature_uuid || !phase_uuid) return;
     const data = await main.getFeaturePhaseByUUID(feature_uuid, phase_uuid);
+    return data;
+  }, [feature_uuid, phase_uuid, main]);
+
+  const getPhaseTickets = useCallback(async () => {
+    if (!feature_uuid || !phase_uuid) return;
+    const data = await main.getTicketDataByPhase(feature_uuid, phase_uuid);
     return data;
   }, [feature_uuid, phase_uuid, main]);
 
