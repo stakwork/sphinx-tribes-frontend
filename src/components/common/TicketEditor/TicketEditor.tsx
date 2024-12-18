@@ -10,7 +10,11 @@ import {
   EuiBadge
 } from '@elastic/eui';
 import { phaseTicketStore } from '../../../store/phase';
-import { ActionButton, TicketButtonGroup } from '../../../people/widgetViews/workspace/style';
+import {
+  ActionButton,
+  CopyButtonGroup,
+  TicketButtonGroup
+} from '../../../people/widgetViews/workspace/style';
 import {
   TicketContainer,
   TicketHeader,
@@ -49,6 +53,7 @@ const TicketEditor = observer(
     );
     const [selectedVersion, setSelectedVersion] = useState<number>(latestTicket?.version as number);
     const [versionTicketData, setVersionTicketData] = useState<Ticket>(latestTicket as Ticket);
+    const [isCopying, setIsCopying] = useState(false);
     const { main } = useStores();
 
     const groupTickets = useMemo(
@@ -207,6 +212,33 @@ const TicketEditor = observer(
         }
       }
     };
+    const handleCopy = async () => {
+      if (isCopying) return;
+
+      setIsCopying(true);
+      try {
+        await navigator.clipboard.writeText(versionTicketData.description);
+        setToasts([
+          {
+            id: `${Date.now()}-copy-success`,
+            title: 'Hive',
+            color: 'success',
+            text: 'Description copied to clipboard!'
+          }
+        ]);
+      } catch (err) {
+        setToasts([
+          {
+            id: `${Date.now()}-copy-error`,
+            title: 'Hive',
+            color: 'danger',
+            text: 'Failed to copy description'
+          }
+        ]);
+      } finally {
+        setIsCopying(false);
+      }
+    };
 
     return (
       <TicketContainer>
@@ -238,6 +270,16 @@ const TicketEditor = observer(
               <EuiBadge color="success" style={{ marginBottom: '12px' }}>
                 Version {selectedVersion}
               </EuiBadge>
+              <CopyButtonGroup>
+                <ActionButton
+                  color="primary"
+                  onClick={handleCopy}
+                  disabled={isCopying}
+                  data-testid="copy-description-btn"
+                >
+                  Copy
+                </ActionButton>
+              </CopyButtonGroup>
             </TicketHeaderInputWrap>
             <TicketTextArea
               value={versionTicketData.description}
