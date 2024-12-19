@@ -198,6 +198,11 @@ export const HiveChatView: React.FC = observer(() => {
       try {
         if (chatId) {
           await chat.loadChatHistory(chatId);
+
+          const currentChat = chat.getChat(chatId);
+          if (currentChat?.title) {
+            setTitle(currentChat.title);
+          }
         }
       } catch (err) {
         console.error('Error initializing chat:', err);
@@ -229,6 +234,7 @@ export const HiveChatView: React.FC = observer(() => {
           const sessionId = data.body;
           setWebsocketSessionId(sessionId);
           console.log(`Websocket Session ID: ${sessionId}`);
+          await refreshChatHistory();
         } else if (data.action === 'message' && data.chatMessage) {
           chat.addMessage(data.chatMessage);
           await refreshChatHistory();
@@ -333,6 +339,37 @@ export const HiveChatView: React.FC = observer(() => {
     }
   };
 
+  const handleTitleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newTitle = e.target.value;
+    setTitle(newTitle);
+  };
+
+  const handleTitleBlur = async () => {
+    try {
+      const updatedChat = await chat.updateChat(chatId, title);
+      if (updatedChat) {
+        ui.setToasts([
+          {
+            title: 'Success',
+            color: 'success',
+            text: 'Chat title updated successfully'
+          }
+        ]);
+      } else {
+        throw new Error('Failed to update chat title');
+      }
+    } catch (error) {
+      console.error('Error updating chat title:', error);
+      ui.setToasts([
+        {
+          title: 'Error',
+          color: 'danger',
+          text: 'Failed to update chat title'
+        }
+      ]);
+    }
+  };
+
   if (loading) {
     return (
       <Container>
@@ -365,7 +402,8 @@ export const HiveChatView: React.FC = observer(() => {
         />
         <TitleInput
           value={title}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)}
+          onChange={handleTitleChange}
+          onBlur={handleTitleBlur}
           placeholder="Enter chat title..."
         />
       </Header>

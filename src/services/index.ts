@@ -156,6 +156,41 @@ export class ChatService {
       return undefined;
     }
   }
+
+  async updateChat(chat_id: string, title: string): Promise<Chat | undefined> {
+    try {
+      if (!uiStore.meInfo) return undefined;
+      const info = uiStore.meInfo;
+
+      const response = await fetch(`${TribesURL}/hivechat/${chat_id}`, {
+        method: 'PUT',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          title
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log('Update chat response:', result);
+
+      if (!result.success || !result.data) {
+        throw new Error('Invalid chat response');
+      }
+
+      return result.data;
+    } catch (e) {
+      console.error('Error updating chat:', e);
+      return undefined;
+    }
+  }
 }
 
 export const chatService = new ChatService();

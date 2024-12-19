@@ -13,7 +13,7 @@ export interface ChatStore {
 
   createChat: (workspace_uuid: string, title: string) => Promise<Chat | undefined>;
   addChat: (chat: Chat) => void;
-  updateChat: (id: string, chat: Partial<Chat>) => void;
+  updateChat: (chat_id: string, title: string) => Promise<Chat | undefined>;
   getChat: (id: string) => Chat | undefined;
   getChatMessages: (chat_id: string) => ChatMessage[];
   addMessage: (message: ChatMessage) => void;
@@ -45,10 +45,16 @@ export class ChatHistoryStore implements ChatStore {
     }
   }
 
-  updateChat(id: string, chatUpdate: Partial<Chat>) {
-    const existingChat = this.chats.get(id);
-    if (existingChat) {
-      this.chats.set(id, { ...existingChat, ...chatUpdate });
+  async updateChat(chat_id: string, title: string): Promise<Chat | undefined> {
+    try {
+      const updatedChat = await chatService.updateChat(chat_id, title);
+      if (updatedChat) {
+        this.chats.set(chat_id, updatedChat);
+      }
+      return updatedChat;
+    } catch (error) {
+      console.error('Error updating chat:', error);
+      return undefined;
     }
   }
 
