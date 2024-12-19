@@ -120,6 +120,16 @@ export class ChatHistoryStore implements ChatStore {
     return chat;
   }
 
+  async updateChatTitle(chat_id: string, newTitle: string): Promise<void> {
+    try {
+      await chatService.updateChatTitle(chat_id, newTitle);
+      this.updateChat(chat_id, { title: newTitle });
+    } catch (error) {
+      console.error('Error updating chat title in store:', error);
+      throw error;
+    }
+  }
+
   async loadChatHistory(chat_id: string): Promise<ChatMessage[] | undefined> {
     try {
       const messages = await chatService.getChatHistory(chat_id);

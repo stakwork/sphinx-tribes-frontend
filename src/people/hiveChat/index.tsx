@@ -8,6 +8,7 @@ import { SOCKET_MSG } from 'config/socket';
 import styled from 'styled-components';
 import { EuiLoadingSpinner } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
+import { chatHistoryStore } from 'store/chat.ts';
 import { renderMarkdown } from '../utils/RenderMarkdown.tsx';
 
 interface RouteParams {
@@ -169,6 +170,7 @@ export const HiveChatView: React.FC = observer(() => {
   const [title, setTitle] = useState('Talk to Hive - Chat');
   const history = useHistory();
   const socketRef = useRef<WebSocket | null>(null);
+  const [isUpdatingTitle, setIsUpdatingTitle] = useState(false);
 
   const handleBackClick = () => {
     history.push(`/workspace/${uuid}`);
@@ -177,6 +179,10 @@ export const HiveChatView: React.FC = observer(() => {
   const refreshChatHistory = useCallback(async () => {
     try {
       await chat.loadChatHistory(chatId);
+      const selectedChat = chat.getChat(chatId);
+      if (selectedChat?.title) {
+        setTitle(selectedChat.title);
+      }
       if (chatHistoryRef.current) {
         chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
       }
@@ -191,6 +197,37 @@ export const HiveChatView: React.FC = observer(() => {
       ]);
     }
   }, [chat, chatId, ui]);
+
+  const updateChatTitle = async (
+    chatId: string,
+    uuid: string,
+    newTitle: string,
+    setIsUpdatingTitle: (status: boolean) => void
+  ): Promise<void> => {
+    if (!chatId || !uuid || !newTitle.trim()) return;
+
+    setIsUpdatingTitle(true);
+    try {
+      chatHistoryStore.updateChatTitle(chatId, newTitle);
+      ui.setToasts([
+        {
+          title: 'Success',
+          text: 'Chat Title Updated'
+        }
+      ]);
+    } catch (error) {
+      console.error('Error updating chat title:', error);
+      ui.setToasts([
+        {
+          title: 'Error',
+          color: 'danger',
+          text: 'Failed to update chat title'
+        }
+      ]);
+    } finally {
+      setIsUpdatingTitle(false);
+    }
+  };
 
   useEffect(() => {
     const initializeChat = async () => {
@@ -209,6 +246,26 @@ export const HiveChatView: React.FC = observer(() => {
 
     initializeChat();
   }, [chatId, chat]);
+
+  let debounceUpdateTitle: ReturnType<typeof setTimeout>;
+  const handleTitleChange = (
+    chatId: string,
+    uuid: string,
+    title: string,
+    setIsUpdatingTitle: (status: boolean) => void
+  ) => {
+    clearTimeout(debounceUpdateTitle);
+
+    debounceUpdateTitle = setTimeout(() => {
+      updateChatTitle(chatId, uuid, title, setIsUpdatingTitle);
+    }, 500);
+  };
+
+  const onTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newTitle = event.target.value;
+    setTitle(newTitle);
+    handleTitleChange(chatId, uuid, newTitle, setIsUpdatingTitle);
+  };
 
   useEffect(() => {
     const socket = createSocketInstance();
@@ -365,8 +422,12 @@ export const HiveChatView: React.FC = observer(() => {
         />
         <TitleInput
           value={title}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)}
+          onChange={onTitleChange}
           placeholder="Enter chat title..."
+          disabled={isUpdatingTitle}
+          style={{
+            cursor: isUpdatingTitle ? 'not-allowed' : 'text'
+          }}
         />
       </Header>
       <ChatBody>
