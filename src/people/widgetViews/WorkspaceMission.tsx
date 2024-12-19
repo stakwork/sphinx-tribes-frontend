@@ -30,7 +30,8 @@ import {
   EditPopoverTail,
   EditPopoverContent,
   EditPopoverText,
-  EditPopover
+  EditPopover,
+  WorkspaceFieldWrap
 } from 'pages/tickets/style';
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -438,6 +439,10 @@ const WorkspaceMission = () => {
 
   const handleChatClick = (chatId: string) => {
     history.push(`/workspace/${uuid}/hivechat/${chatId}`);
+  };
+
+  const handleWorkspacePlanner = () => {
+    history.push(`/workspace/${uuid}/planner`);
   };
 
   const handleUserRepoOptionClick = (repositoryId: number) => {
@@ -1083,6 +1088,29 @@ const WorkspaceMission = () => {
               </RowFlex>
               <AvatarGroup avatarList={avatarList} avatarSize="xl" maxGroupSize={5} />
             </FieldWrap>
+
+            <HorizontalGrayLine />
+            {uuid && (
+              <WorkspaceFieldWrap>
+                <Button
+                  style={{
+                    borderRadius: '5px',
+                    margin: 0,
+                    padding: '10px 20px',
+                    width: '100%',
+                    backgroundColor: '#4285f4',
+                    color: 'white',
+                    textAlign: 'center',
+                    border: 'none',
+                    fontSize: '16px',
+                    cursor: 'pointer'
+                  }}
+                  onClick={handleWorkspacePlanner}
+                  dataTestId="workspace-planner-btn"
+                  text="Workspace Planner"
+                />
+              </WorkspaceFieldWrap>
+            )}
             <HorizontalGrayLine />
             <FieldWrap style={{ marginTop: '10px' }}>
               <Label>Talk to Hive</Label>
