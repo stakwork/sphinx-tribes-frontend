@@ -1635,3 +1635,29 @@ export const Select = styled.select`
 export const Option = styled.option`
   font-size: 14px;
 `;
+
+export const CopyButtonGroup = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-left: auto;
+  margin-top: calc(100px - 134px);
+
+  ${ActionButton} {
+    transition: background-color 0.2s ease;
+    width: auto;
+    min-width: 100px;
+
+    &[color='primary'] {
+      background-color: #618aff;
+
+      &:hover {
+        background-color: #7599ff;
+      }
+
+      &:active {
+        background-color: #4b7bff;
+      }
+    }
+  }
+`;
