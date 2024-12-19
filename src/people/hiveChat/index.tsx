@@ -194,18 +194,22 @@ export const HiveChatView: React.FC = observer(() => {
     }
   }, [chat, chatId, ui]);
 
-  const updateChatTitle = async (chatId: string, uuid: string, newTitle: string, setIsUpdatingTitle: (status: boolean) => void): Promise<void> => {
+  const updateChatTitle = async (
+    chatId: string,
+    uuid: string,
+    newTitle: string,
+    setIsUpdatingTitle: (status: boolean) => void
+  ): Promise<void> => {
     if (!chatId || !uuid || !newTitle.trim()) return;
-  
+
     setIsUpdatingTitle(true);
     try {
-      console.log(newTitle);
       chatHistoryStore.updateChatTitle(chatId, newTitle);
       ui.setToasts([
         {
           title: 'Success',
-          text: 'Chat Title Updated',
-        },
+          text: 'Chat Title Updated'
+        }
       ]);
     } catch (error) {
       console.error('Error updating chat title:', error);
@@ -213,8 +217,8 @@ export const HiveChatView: React.FC = observer(() => {
         {
           title: 'Error',
           color: 'danger',
-          text: 'Failed to update chat title',
-        },
+          text: 'Failed to update chat title'
+        }
       ]);
     } finally {
       setIsUpdatingTitle(false);
@@ -240,7 +244,12 @@ export const HiveChatView: React.FC = observer(() => {
   }, [chatId, chat]);
 
   let debounceUpdateTitle: ReturnType<typeof setTimeout>;
-  const handleTitleChange = (chatId: string, uuid: string, title: string, setIsUpdatingTitle: (status: boolean) => void) => {
+  const handleTitleChange = (
+    chatId: string,
+    uuid: string,
+    title: string,
+    setIsUpdatingTitle: (status: boolean) => void
+  ) => {
     clearTimeout(debounceUpdateTitle);
 
     debounceUpdateTitle = setTimeout(() => {
@@ -413,7 +422,7 @@ export const HiveChatView: React.FC = observer(() => {
           placeholder="Enter chat title..."
           disabled={isUpdatingTitle}
           style={{
-            cursor: isUpdatingTitle ? 'not-allowed' : 'text',
+            cursor: isUpdatingTitle ? 'not-allowed' : 'text'
           }}
         />
       </Header>

@@ -118,18 +118,17 @@ export class ChatService {
       if (!uiStore.meInfo) return undefined;
       const info = uiStore.meInfo;
 
-     const response = await fetch(`${TribesURL}/hivechat/${chat_id}`, {
+      const response = await fetch(`${TribesURL}/hivechat/${chat_id}`, {
         method: 'PUT',
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ title }),
+        body: JSON.stringify({ title })
       });
 
       if (!response.ok) {
-        console.log(response)
         throw new Error(`HTTP error! status: ${response.text}`);
       }
 
