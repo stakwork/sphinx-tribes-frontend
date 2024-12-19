@@ -8,6 +8,7 @@ import { SOCKET_MSG } from 'config/socket';
 import styled from 'styled-components';
 import { EuiLoadingSpinner } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
+import { renderMarkdown } from '../utils/RenderMarkdown.tsx';
 
 interface RouteParams {
   uuid: string;
@@ -92,7 +93,7 @@ const MessageBubble = styled.div<{ isUser: boolean }>`
   margin: 12px 0;
   padding: 12px 16px;
   border-radius: 12px;
-  background-color: ${(props: MessageBubbleProps) => (props.isUser ? '#34A853' : '#4285f4')};
+  background-color: ${(props: MessageBubbleProps) => (props.isUser ? '#808080' : '#F2F3F5')};
   color: ${(props: MessageBubbleProps) => (props.isUser ? 'white' : '#202124')};
   align-self: ${(props: MessageBubbleProps) => (props.isUser ? 'flex-end' : 'flex-start')};
   word-wrap: break-word;
@@ -372,7 +373,12 @@ export const HiveChatView: React.FC = observer(() => {
         <ChatHistory ref={chatHistoryRef}>
           {messages.map((msg: ChatMessage) => (
             <MessageBubble key={msg.id} isUser={msg.role === 'user'}>
-              {msg.message}
+              {renderMarkdown(msg.message, {
+                codeBlockBackground: '#282c34',
+                textColor: '#abb2bf',
+                borderColor: '#444',
+                codeBlockFont: 'Courier New'
+              })}
             </MessageBubble>
           ))}
         </ChatHistory>
