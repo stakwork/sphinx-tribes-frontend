@@ -113,6 +113,38 @@ export class ChatService {
     }
   }
 
+  async updateChatTitle(chat_id: string, title: string): Promise<void> {
+    try {
+      if (!uiStore.meInfo) return undefined;
+      const info = uiStore.meInfo;
+
+      const response = await fetch(`${TribesURL}/hivechat/${chat_id}`, {
+        method: 'PUT',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ title })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.text}`);
+      }
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error('Invalid chat title update response');
+      }
+
+      return result.data;
+    } catch (error) {
+      console.error('Error updating chat title:', error);
+      throw error;
+    }
+  }
+
   async sendMessage(
     chat_id: string,
     message: string,
