@@ -68,7 +68,7 @@ function WorkspaceBodyComponent() {
 
   useEffect(() => {
     getTotalBounties(uuid, checkboxIdToSelectedMap, page);
-  }, [getTotalBounties]);
+  }, [checkboxIdToSelectedMap, getTotalBounties, page, uuid]);
 
   const onChangeStatus = (optionId: any) => {
     const newCheckboxIdToSelectedMap = {
