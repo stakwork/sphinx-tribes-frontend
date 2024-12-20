@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { observer } from 'mobx-react-lite';
 import { BountiesProps } from 'people/interfaces';
@@ -137,22 +137,19 @@ const Bounties = (props: BountiesProps) => {
   const [openConnectModal, setConnectModal] = useState<boolean>(false);
   const closeConnectModal = () => setConnectModal(false);
   const showConnectModal = () => setConnectModal(true);
-  const [canAssignHunter, setCanAssignHunter] = useState(false);
 
   const { ui, main } = useStores();
   const userPubkey = ui.meInfo?.owner_pubkey;
 
-  const checkUserRoles = useCallback(async () => {
-    const canAssignHunter = await userCanManageBounty(org_uuid, userPubkey, main);
-    const bountyOwner = ui.meInfo?.owner_pubkey === person.owner_pubkey;
+  const canAssignHunter = useMemo(() => {
+    if (!org_uuid || !userPubkey) return false;
 
-    const canAssign = canAssignHunter || bountyOwner;
-    setCanAssignHunter(canAssign);
-  }, [main, org_uuid, userPubkey]);
+    const isBountyOwner = ui.meInfo?.owner_pubkey === person.owner_pubkey;
 
-  useEffect(() => {
-    checkUserRoles();
-  }, [checkUserRoles]);
+    const canManage = userCanManageBounty(org_uuid, userPubkey, main);
+
+    return isBountyOwner || canManage;
+  }, [org_uuid, userPubkey, person.owner_pubkey, main]);
 
   return (
     <>
