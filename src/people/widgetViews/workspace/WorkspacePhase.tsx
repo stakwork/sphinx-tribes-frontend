@@ -171,8 +171,12 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
     setIsPostBountyModalOpen(true);
   };
 
-  const onPanelClick = () => {
-    history.push(`/feature/${props.workspace_uuid}`);
+  const onPanelClick = (activeWorkspace?: string, bounty?: any) => {
+    if (bounty?.id) {
+      history.push(`/bounty/${bounty.id}`);
+    } else {
+      history.push(`/feature/${props.workspace_uuid}`);
+    }
   };
 
   const handlePhasePlannerClick = () => {
@@ -260,12 +264,10 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
   );
 
   useEffect(() => {
-    getTotalBounties(checkboxIdToSelectedMap);
-  }, [getTotalBounties, checkboxIdToSelectedMap]);
-
-  useEffect(() => {
-    if (page === 1 && phases[selectedIndex]) {
+    if (phases[selectedIndex]) {
       (async () => {
+        setLoading(true);
+
         await main.getPhaseBounties(
           phases[selectedIndex].feature_uuid,
           phases[selectedIndex].uuid,
@@ -276,10 +278,13 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
             languages: languageString
           }
         );
+
+        await getTotalBounties(checkboxIdToSelectedMap);
+
         setLoading(false);
       })();
     }
-  }, [languageString, phases, selectedIndex, main, page, checkboxIdToSelectedMap]);
+  }, [phases, selectedIndex, main, checkboxIdToSelectedMap, languageString, getTotalBounties]);
 
   useEffect(() => {
     const checkUserPermissions = async () => {
