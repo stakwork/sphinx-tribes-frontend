@@ -567,3 +567,9 @@ export const TicketHeaderInputWrap = styled.div`
   align-items: center;
   gap: 10px;
 `;
+
+export const WorkspaceFieldWrap = styled.div`
+  margin-bottom: 10px;
+  margin-top: 10px;
+  width: 98%;
+`;
