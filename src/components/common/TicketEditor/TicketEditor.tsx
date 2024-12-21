@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/typedef */
 import React, { useEffect, useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStores } from 'store';
@@ -9,6 +10,7 @@ import {
   EuiIcon,
   EuiBadge
 } from '@elastic/eui';
+import { renderMarkdown } from 'people/utils/RenderMarkdown.tsx';
 import { phaseTicketStore } from '../../../store/phase';
 import {
   ActionButton,
@@ -18,7 +20,6 @@ import {
 import {
   TicketContainer,
   TicketHeader,
-  TicketTextArea,
   TicketInput,
   TicketHeaderInputWrap
 } from '../../../pages/tickets/style';
@@ -26,6 +27,7 @@ import { TicketStatus, Ticket, Author } from '../../../store/interface';
 import { Toast } from '../../../people/widgetViews/workspace/interface';
 import { uiStore } from '../../../store/ui';
 import { Select, Option } from '../../../people/widgetViews/workspace/style.ts';
+import { TicketTextAreaComp } from './TicketTextArea.tsx';
 
 interface TicketEditorProps {
   ticketData: Ticket;
@@ -54,7 +56,9 @@ const TicketEditor = observer(
     const [selectedVersion, setSelectedVersion] = useState<number>(latestTicket?.version as number);
     const [versionTicketData, setVersionTicketData] = useState<Ticket>(latestTicket as Ticket);
     const [isCopying, setIsCopying] = useState(false);
+    const [isPreview, setIsPreview] = useState(false);
     const { main } = useStores();
+    const ui = uiStore;
 
     const groupTickets = useMemo(
       () => phaseTicketStore.getTicketsByGroup(ticketData.ticket_group as string),
@@ -240,6 +244,9 @@ const TicketEditor = observer(
       }
     };
 
+    const handlePreview = () => {
+      setIsPreview(!isPreview);
+    };
     return (
       <TicketContainer>
         <EuiFlexGroup alignItems="center" gutterSize="s">
@@ -279,15 +286,30 @@ const TicketEditor = observer(
                 >
                   Copy
                 </ActionButton>
+                <ActionButton
+                  color="primary"
+                  onClick={handlePreview}
+                  disabled={isCopying}
+                  data-testid="copy-description-btn"
+                >
+                  {isPreview ? 'Preview' : 'Edit'}
+                </ActionButton>
               </CopyButtonGroup>
             </TicketHeaderInputWrap>
-            <TicketTextArea
-              value={versionTicketData.description}
-              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                setVersionTicketData({ ...versionTicketData, description: e.target.value })
-              }
-              placeholder="Enter ticket details..."
-            />
+            {!isPreview ? (
+              <TicketTextAreaComp
+                value={versionTicketData.description}
+                onChange={(value: string) =>
+                  setVersionTicketData({ ...versionTicketData, description: value })
+                }
+                placeholder="Enter ticket details..."
+                ui={ui}
+              />
+            ) : (
+              <div className="p-4 border rounded-md">
+                {renderMarkdown(versionTicketData.description)}
+              </div>
+            )}
             <TicketButtonGroup>
               <Select
                 value={selectedVersion}
