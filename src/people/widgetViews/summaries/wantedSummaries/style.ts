@@ -135,8 +135,7 @@ export const Creator = styled.div`
 `;
 
 export const NormalUser = styled.div`
-  min-width: 892px;
-  max-width: 892px;
+  min-width: 50vw;
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
@@ -145,8 +144,7 @@ export const NormalUser = styled.div`
 `;
 
 export const CreatorDescription = styled.div<styleProps>`
-  min-width: 600px;
-  max-width: 600px;
+  min-width: 38vw;
   overflow: auto;
   height: 100vh;
   border-right: ${(p: any) =>
@@ -186,6 +184,7 @@ export const TitleBox = styled.div<colorProps>`
 `;
 
 export const DescriptionBox = styled.div<colorProps>`
+  min-width: 30vw;
   padding-right: 44px;
   margin-right: 5px;
   max-height: calc(100% - 160px);

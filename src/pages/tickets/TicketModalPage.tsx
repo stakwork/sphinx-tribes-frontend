@@ -223,6 +223,8 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
               background: color.pureWhite,
               ...focusedDesktopModalStyles,
               maxHeight: '100vh',
+              minWidth: '55vw',
+              borderRadius: 0,
               zIndex: 20
             }}
             style={{
