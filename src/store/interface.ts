@@ -503,3 +503,16 @@ export interface CodeGraph {
   created?: string;
   updated?: string;
 }
+
+export interface ImageLoadingState {
+  status: 'idle' | 'loading' | 'loaded' | 'error';
+  url: string | null;
+  error?: Error;
+}
+
+export interface SchematicImageProps {
+  src?: string | null;
+  alt: string;
+  onLoad?: () => void;
+  onError?: (error: Error) => void;
+}
