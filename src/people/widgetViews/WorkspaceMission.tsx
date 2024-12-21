@@ -39,7 +39,13 @@ import { Link, useParams } from 'react-router-dom';
 import { useStores } from 'store';
 import { useDeleteConfirmationModal } from 'components/common';
 import { Box } from '@mui/system';
-import { Feature, Person, Workspace } from 'store/interface';
+import {
+  Feature,
+  Person,
+  Workspace,
+  ImageLoadingState,
+  SchematicImageProps
+} from 'store/interface';
 import MaterialIcon from '@material/react-material-icon';
 import { Button, Modal } from 'components/common';
 import {
@@ -63,6 +69,7 @@ import { useHistory } from 'react-router-dom';
 import avatarIcon from '../../public/static/profile_avatar.svg';
 import { colors } from '../../config/colors';
 import dragIcon from '../../pages/superadmin/header/icons/drag_indicator.svg';
+import errorIcon from '../../public/static/error.svg';
 import AddCodeGraph from './workspace/AddCodeGraphModal';
 import AddFeature from './workspace/AddFeatureModal';
 import {
@@ -73,7 +80,11 @@ import {
   ImgText,
   MissionRowFlex,
   FullNoBudgetWrap,
-  FullNoBudgetText
+  FullNoBudgetText,
+  LoadingSkeleton,
+  ErrorContainer,
+  ErrorIcon,
+  ErrorText
 } from './workspace/style';
 import AddRepoModal from './workspace/AddRepoModal';
 import EditSchematic from './workspace/EditSchematicModal';
@@ -479,6 +490,56 @@ const WorkspaceMission = () => {
       getUserRoles(ui.meInfo);
     }
   }, [getUserRoles]);
+
+  const SchematicImage: React.FC<SchematicImageProps> = ({
+    src,
+    alt,
+    onLoad,
+    onError
+  }: SchematicImageProps) => {
+    const [loadingState, setLoadingState] = useState<ImageLoadingState>({
+      status: 'idle',
+      url: null
+    });
+    useEffect(() => {
+      if (!src) {
+        setLoadingState({ status: 'idle', url: null });
+        return;
+      }
+      setLoadingState({ status: 'loading', url: src });
+      const img = new Image();
+
+      img.onload = () => {
+        setLoadingState({ status: 'loaded', url: src });
+        onLoad?.();
+      };
+      img.onerror = () => {
+        const error = new Error('Failed to load image');
+        setLoadingState({
+          status: 'error',
+          url: null,
+          error
+        });
+        onError?.(error);
+      };
+      img.src = src;
+    }, [src, onLoad, onError]);
+    if (loadingState.status === 'loading') {
+      return <LoadingSkeleton />;
+    }
+    if (loadingState.status === 'error') {
+      return (
+        <ErrorContainer role="alert">
+          <ErrorIcon src={errorIcon} alt="Error" />
+          <ErrorText>Failed to load image</ErrorText>
+        </ErrorContainer>
+      );
+    }
+    if (loadingState.status === 'loaded' && loadingState.url) {
+      return <SelectedImg src={loadingState.url} alt={alt} />;
+    }
+    return <ImgText>Image</ImgText>;
+  };
 
   const fetchRepositories = useCallback(async () => {
     try {
@@ -1035,11 +1096,10 @@ const WorkspaceMission = () => {
               <Label>Schematic</Label>
               <Data style={{ border: 'none', paddingLeft: '0px', padding: '5px 5px' }}>
                 <ImgContainer>
-                  {workspaceData?.schematic_img ? (
-                    <SelectedImg src={workspaceData?.schematic_img} alt="schematic image" />
-                  ) : (
-                    <ImgText>Image</ImgText>
-                  )}
+                  <SchematicImage
+                    src={workspaceData?.schematic_img || workspaceData?.schematic_url}
+                    alt="schematic image"
+                  />
                 </ImgContainer>
                 <RowWrap>
                   <OptionsWrap style={{ position: 'unset', display: 'contents' }}>
