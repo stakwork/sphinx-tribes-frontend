@@ -1,9 +1,16 @@
-/* eslint-disable no-use-before-define */
 import React from 'react';
 import MaterialIcon from '@material/react-material-icon';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import styled from 'styled-components';
+import { EuiLoadingSpinner } from '@elastic/eui';
 import { ImageState, SchematicPreviewProps } from './interfaces';
+import {
+  ErrorContainer,
+  ErrorText,
+  ImgText,
+  SchematicImgContainer,
+  Skeleton,
+  StyledImage
+} from './widgetViews/workspace/style';
 
 const IMAGE_LOAD_TIMEOUT = 30000;
 const DEFAULT_ALT_TEXT = 'Schematic preview';
@@ -70,12 +77,16 @@ export const SchematicPreview = memo(function ({
 
   const renderContent = () => {
     if (!imageSource) {
-      return <NoImageText>No image available</NoImageText>;
+      return <ImgText>Image</ImgText>;
     }
 
     return (
       <>
-        {imageState === 'loading' && <Skeleton />}
+        {imageState === 'loading' && (
+          <Skeleton>
+            <EuiLoadingSpinner size="xl" />
+          </Skeleton>
+        )}
 
         {imageState === 'error' && (
           <ErrorContainer>
@@ -96,72 +107,15 @@ export const SchematicPreview = memo(function ({
   };
 
   return (
-    <Container className={className} data-testid={testId} role="img" aria-label={DEFAULT_ALT_TEXT}>
+    <SchematicImgContainer
+      className={className}
+      data-testid={testId}
+      role="img"
+      aria-label={DEFAULT_ALT_TEXT}
+    >
       {renderContent()}
-    </Container>
+    </SchematicImgContainer>
   );
 });
 
 SchematicPreview.displayName = 'SchematicPreview';
-
-const Container = styled.div`
-  position: relative;
-  aspect-ratio: 16/9;
-  width: 100%;
-  border-radius: 10px;
-  overflow: hidden;
-  background-color: var(--background-secondary);
-`;
-
-const Skeleton = styled.div`
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, #ebedf1 0%, #f2f3f5 50%, #ebedf1 100%);
-  background-size: 200% 100%;
-  animation: pulse 2s ease-in-out infinite;
-
-  @keyframes pulse {
-    0% {
-      background-position: 100% 0;
-    }
-    100% {
-      background-position: -100% 0;
-    }
-  }
-`;
-
-const ErrorContainer = styled.div`
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 16px;
-  background-color: var(--background-error);
-  color: var(--text-error);
-`;
-
-const ErrorText = styled.span`
-  font-size: 14px;
-  font-weight: 500;
-  text-align: center;
-`;
-
-const NoImageText = styled.span`
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-secondary);
-  font-size: 14px;
-`;
-
-const StyledImage = styled.img<{ isVisible: boolean }>`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: ${(props: { isVisible: boolean }) => (props.isVisible ? 1 : 0)};
-`;

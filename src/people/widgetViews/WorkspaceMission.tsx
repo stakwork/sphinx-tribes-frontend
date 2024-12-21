@@ -119,23 +119,6 @@ const FeatureData = styled.div`
   color: #5f6368;
 `;
 
-export const ImgContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 9rem;
-  border-radius: 10px;
-  overflow: hidden;
-  background-color: #ebedf1;
-`;
-
-export const SelectedImg = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-`;
-
 export const RowWrap = styled.div`
   display: flex;
   align-items: center;
