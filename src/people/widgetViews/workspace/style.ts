@@ -1661,3 +1661,59 @@ export const CopyButtonGroup = styled.div`
     }
   }
 `;
+
+export const Skeleton = styled.div`
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(90deg, #ebedf1 0%, #f2f3f5 50%, #ebedf1 100%);
+  background-size: 200% 100%;
+  animation: pulse 2s ease-in-out infinite;
+
+  @keyframes pulse {
+    0% {
+      background-position: 100% 0;
+    }
+    100% {
+      background-position: -100% 0;
+    }
+  }
+`;
+
+export const ErrorContainer = styled.div`
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+`;
+
+export const ErrorText = styled.span`
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  color: red;
+`;
+
+export const StyledImage = styled.img<{ isVisible: boolean }>`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: ${(props: { isVisible: boolean }) => (props.isVisible ? 1 : 0)};
+`;
+
+export const SchematicImgContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 9rem;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #ebedf1;
+`;

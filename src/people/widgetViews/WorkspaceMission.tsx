@@ -60,6 +60,7 @@ import { AvatarGroup } from 'components/common/AvatarGroup';
 import { userHasRole } from 'helpers/helpers-extended';
 import { CodeGraph, Chat } from 'store/interface';
 import { useHistory } from 'react-router-dom';
+import { SchematicPreview } from 'people/SchematicPreviewer';
 import avatarIcon from '../../public/static/profile_avatar.svg';
 import { colors } from '../../config/colors';
 import dragIcon from '../../pages/superadmin/header/icons/drag_indicator.svg';
@@ -70,7 +71,6 @@ import {
   RowFlex,
   ButtonWrap,
   RepoName,
-  ImgText,
   MissionRowFlex,
   FullNoBudgetWrap,
   FullNoBudgetText
@@ -118,23 +118,6 @@ const FeatureData = styled.div`
   display: flex;
   margin-left: 7%;
   color: #5f6368;
-`;
-
-export const ImgContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 9rem;
-  border-radius: 10px;
-  overflow: hidden;
-  background-color: #ebedf1;
-`;
-
-export const SelectedImg = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 `;
 
 export const RowWrap = styled.div`
@@ -1034,13 +1017,10 @@ const WorkspaceMission = () => {
             <FieldWrap>
               <Label>Schematic</Label>
               <Data style={{ border: 'none', paddingLeft: '0px', padding: '5px 5px' }}>
-                <ImgContainer>
-                  {workspaceData?.schematic_img ? (
-                    <SelectedImg src={workspaceData?.schematic_img} alt="schematic image" />
-                  ) : (
-                    <ImgText>Image</ImgText>
-                  )}
-                </ImgContainer>
+                <SchematicPreview
+                  schematicImg={workspaceData?.schematic_img || ''}
+                  schematicUrl={workspaceData?.schematic_url || ''}
+                />
                 <RowWrap>
                   <OptionsWrap style={{ position: 'unset', display: 'contents' }}>
                     <MaterialIcon
