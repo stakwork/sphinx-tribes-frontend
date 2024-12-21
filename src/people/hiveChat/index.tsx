@@ -80,6 +80,7 @@ const TitleInput = styled.input`
 
 const ChatHistory = styled.div`
   flex-grow: 1;
+  height: 400vh;
   overflow-y: auto;
   padding: 20px;
   display: flex;
