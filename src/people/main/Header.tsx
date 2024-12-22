@@ -257,11 +257,6 @@ function Header() {
       label: 'Bounties',
       name: 'bounties',
       path: '/bounties'
-    },
-    {
-      label: 'Daily Bounty',
-      name: 'dailyBounty',
-      path: '/dailyBounty'
     }
   ];
 
