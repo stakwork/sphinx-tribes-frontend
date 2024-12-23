@@ -739,7 +739,7 @@ export class MainStore {
       sortBy: 'created',
       search: uiStore.searchText ?? '',
       page: 1,
-      resetPage: false,
+      resetPage: true,
       ...params
     };
 
@@ -752,7 +752,7 @@ export class MainStore {
     const query2 = this.appendQueryParams(
       `features/${feature_uuid}/phase/${phase_uuid}/bounty`,
       queryLimit,
-      params ? queryParams : this.getWantedsPrevParams
+      queryParams
     );
 
     try {
