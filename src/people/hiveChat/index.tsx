@@ -27,18 +27,18 @@ interface SendButtonProps {
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 40px);
-  padding: 20px;
-  overflow-y: scroll;
-  overflow-x: hidden;
+  height: 100vh;
+  padding: 0 20px;
+  overflow: hidden;
   background: var(--Search-bar-background, #f2f3f5);
 `;
 
 const ChatBody = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 15px 60px !important;
-  height: calc(100vh - 40px);
+  padding: 3px 60px 75px !important;
+  flex: 1;
+  overflow: hidden;
 `;
 
 const Header = styled.div`
@@ -87,6 +87,7 @@ const ChatHistory = styled.div`
   background: white;
   margin: 1px 0;
   border-radius: 8px;
+  min-height: 0;
 `;
 
 const MessageBubble = styled.div<{ isUser: boolean }>`
@@ -108,7 +109,9 @@ const InputContainer = styled.div`
   gap: 12px;
   padding: 16px 0;
   border-radius: 0 0 8px 8px;
-  margin-top: 15px;
+  position: sticky;
+  bottom: 0;
+  margin: 0;
 `;
 
 const TextArea = styled.textarea`
@@ -122,6 +125,7 @@ const TextArea = styled.textarea`
   font-family: inherit;
   font-size: 14px;
   line-height: 1.4;
+  margin-bottom: 0;
   transition: border-color 0.2s ease;
 
   &:hover {
@@ -142,9 +146,11 @@ const SendButton = styled.button<{ disabled: boolean }>`
   border-radius: 8px;
   cursor: ${(props: SendButtonProps) => (props.disabled ? 'not-allowed' : 'pointer')};
   font-weight: 500;
-  align-self: flex-end;
+  align-self: center;
+  height: fit-content;
   transition: background-color 0.2s;
   margin-bottom: 13px;
+  margin: 0;
 
   &:hover:not(:disabled) {
     background-color: #3367d6;
