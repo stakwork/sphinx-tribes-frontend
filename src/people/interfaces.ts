@@ -479,3 +479,14 @@ export interface OfferViewProps {
 export interface RenderWidgetsProps {
   widget: any;
 }
+
+export type ImageState = 'initial' | 'loading' | 'loaded' | 'error';
+
+export interface SchematicPreviewProps {
+  schematicUrl?: string;
+  schematicImg?: string;
+  onLoadSuccess?: () => void;
+  onLoadError?: (error: Error) => void;
+  className?: string;
+  testId?: string;
+}
