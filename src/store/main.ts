@@ -2093,6 +2093,25 @@ export class MainStore {
     }
   }
 
+  @observable
+  sessionId = '';
+
+  @action setSessionId(id: string) {
+    this.sessionId = id;
+  }
+
+  initializeSessionId() {
+    let sessionId = sessionStorage.getItem('sphinx_session_id');
+
+    if (!sessionId) {
+      sessionId = randomString(32);
+      sessionStorage.setItem('sphinx_session_id', sessionId);
+    }
+
+    this.setSessionId(sessionId);
+    return sessionId;
+  }
+
   @persist('object')
   @observable
   keysendInvoice = '';
