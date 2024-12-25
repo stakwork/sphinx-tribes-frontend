@@ -1,3 +1,4 @@
+import { Phase } from 'people/widgetViews/workspace/interface';
 import { Extras } from '../components/form/inputs/widgets/interfaces';
 
 export interface Tribe {
@@ -502,4 +503,12 @@ export interface CodeGraph {
   url: string;
   created?: string;
   updated?: string;
+}
+
+export interface BountyCard {
+  id: string;
+  title: string;
+  features: Feature;
+  phase: Phase;
+  workspace: Workspace;
 }
