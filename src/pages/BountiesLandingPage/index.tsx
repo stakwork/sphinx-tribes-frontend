@@ -3,7 +3,8 @@ import React from 'react';
 import styled from 'styled-components';
 import { useIsMobile } from '../../hooks';
 import { colors } from '../../config/colors';
-import { HeaderWrap, Leftheader } from '../tickets/style.ts';
+import { BountiesHeader, HeaderWrap, Leftheader } from '../tickets/style.ts';
+import { BountyHeaderContent } from '../tickets/workspace/workspaceHeader/WorkspaceHeaderStyles.tsx';
 
 const BountiesLandingPage: React.FC = () => {
   const isMobile = useIsMobile();
@@ -22,13 +23,92 @@ const BountiesLandingPage: React.FC = () => {
     flex-direction: column;
   `;
 
+  const ContentWrapper = styled.div`
+    max-width: 1200px;
+    min-height: 500px;
+    margin: 30px auto;
+    width: 100%;
+    padding: 40px 30px;
+    background: white;
+  `;
+
+  const ContentGrid = styled.div`
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 60px;
+    height: 100%;
+    position: relative;
+
+    &:after {
+      content: '';
+      position: absolute;
+      left: 66.66%;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background-color: ${color.grayish.G900};
+      transform: translateX(-50%);
+    }
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      gap: 40px;
+
+      &:after {
+        display: none;
+      }
+    }
+  `;
+
+  const Column = styled.div`
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    padding: 0 20px;
+
+    h1 {
+      font-size: 24px;
+      font-family: Barlow;
+      color: ${color.text1};
+      margin-bottom: 32px;
+      font-weight: 500;
+    }
+
+    p {
+      font-family: Barlow;
+      margin-bottom: 16px;
+      line-height: 1.6;
+      word-wrap: break-word;
+      max-width: 550px;
+      color: ${color.text2};
+      font-size: 15px;
+    }
+  `;
+
   return (
     <Body isMobile={isMobile}>
       <HeaderWrap>
-        <Leftheader>
-          <div>Bounties</div>
-        </Leftheader>
+        <BountiesHeader>
+          <Leftheader>
+            <BountyHeaderContent>Bounties</BountyHeaderContent>
+          </Leftheader>
+        </BountiesHeader>
       </HeaderWrap>
+      <ContentWrapper>
+        <ContentGrid>
+          <Column>
+            <h1>Welcome to Bounties</h1>
+            <p>
+              Building the modern marketplace for work. Complete a bounty and get paid in Bitcoin
+              instantly! ⚡
+            </p>
+          </Column>
+          <Column>
+            <h1>Freedom to Earn!</h1>
+            <p>Second column with content</p>
+          </Column>
+        </ContentGrid>
+      </ContentWrapper>
     </Body>
   );
 };

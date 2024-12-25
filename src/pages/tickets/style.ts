@@ -573,3 +573,12 @@ export const WorkspaceFieldWrap = styled.div`
   margin-top: 10px;
   width: 98%;
 `;
+
+export const BountiesHeader = styled.div`
+  height: 80px;
+  width: 72%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+`;
