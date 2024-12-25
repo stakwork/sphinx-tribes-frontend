@@ -22,6 +22,7 @@ import { TicketsPage } from './tickets';
 import { WorkspaceTicketsPage } from './tickets/workspace';
 import { LeaderboardPage } from './leaderboard';
 import { SuperAdmin } from './superadmin/index';
+import { BountiesLandingPage } from './landingPage';
 
 const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
   community: () => (
@@ -31,6 +32,9 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
         <Switch>
           <Route path="/dailyBounty">
             <DailyBountyPage />
+          </Route>
+          <Route path="/h">
+          <BountiesLandingPage />
           </Route>
           <Route path={['/bounties', '/t/', '/tickets', '/bounty/:bountyId', '/b/']}>
             <TicketsPage />
