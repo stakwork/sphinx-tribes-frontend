@@ -5,6 +5,7 @@ import { useIsMobile } from '../../hooks';
 import { colors } from '../../config/colors';
 import { BountiesHeader, HeaderWrap, Leftheader } from '../tickets/style.ts';
 import { BountyHeaderContent } from '../tickets/workspace/workspaceHeader/WorkspaceHeaderStyles.tsx';
+import TopEarners from '../../components/common/TopEarners/index.tsx';
 
 const BountiesLandingPage: React.FC = () => {
   const isMobile = useIsMobile();
@@ -106,6 +107,7 @@ const BountiesLandingPage: React.FC = () => {
           <Column>
             <h1>Freedom to Earn!</h1>
             <p>Second column with content</p>
+            <TopEarners />
           </Column>
         </ContentGrid>
       </ContentWrapper>
