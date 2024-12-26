@@ -22,6 +22,7 @@ import { TicketsPage } from './tickets';
 import { WorkspaceTicketsPage } from './tickets/workspace';
 import { LeaderboardPage } from './leaderboard';
 import { SuperAdmin } from './superadmin/index';
+import BountiesLandingPage from './BountiesLandingPage';
 
 const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
   community: () => (
@@ -29,6 +30,9 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
       <TokenRefresh />
       <MainLayout header={<PeopleHeader />}>
         <Switch>
+          <Route path="/h">
+            <BountiesLandingPage />
+          </Route>
           <Route path="/dailyBounty">
             <DailyBountyPage />
           </Route>

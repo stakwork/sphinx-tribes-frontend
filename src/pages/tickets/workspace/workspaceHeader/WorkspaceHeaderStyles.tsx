@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { colors } from 'config/colors';
 import checkboxImage from './Icons/checkboxImage.svg';
 
 interface styledProps {
@@ -496,4 +497,16 @@ export const SkillTextContainer = styled.div<styledProps>`
       color: ${(p: any) => p.color && p.color.grayish.G10};
     }
   }
+`;
+
+export const BountyHeaderContent = styled.div`
+  max-width: 403px;
+  text-align: right;
+  color: ${colors.dark.pureBlack};
+  font-family: Barlow;
+  font-size: 30px;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  line-height: 20px;
 `;
