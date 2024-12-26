@@ -9,7 +9,7 @@ import { UserInfo } from '../../../../pages/leaderboard/userInfo';
 
 const ItemContainer = styled.div`
   --position-gutter: 3rem;
-  position: relative;
+  position: sticky;
   display: flex;
   flex-direction: row;
   align-items: center;

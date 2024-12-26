@@ -52,6 +52,10 @@ export class LeaderboardStore {
   get others() {
     return this.sortedBySats.slice(3);
   }
+
+  get topEarners() {
+    return this.sortedBySats;
+  }
 }
 
 export const leaderboardStore = new LeaderboardStore();

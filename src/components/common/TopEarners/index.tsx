@@ -1,15 +1,21 @@
-import { EuiLoadingSpinner } from '@elastic/eui';
+import { EuiLoadingSpinner, EuiText } from '@elastic/eui';
 import { colors, mobileBreakpoint } from 'config';
 import { observer } from 'mobx-react-lite';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useStores } from 'store';
 import styled from 'styled-components';
 import { LeaerboardItem } from './leaderboardItem';
 
+interface TopEarnersProps {
+  limit?: number;
+  className?: string;
+  style?: React.CSSProperties;
+  onError?: (error: Error) => void;
+}
+
 const Container = styled.div`
-  height: calc(100% - 4rem);
-  padding: 2rem;
-  background-color: ${colors.light.background100};
+  height: 100%;
+  min-height: 100%;
   overflow: auto;
   align-items: center;
   justify-content: center;
@@ -53,11 +59,40 @@ const LoaderContainer = styled.div`
   height: 100%;
 `;
 
-const TopEarners = observer(() => {
+const ErrorContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 1rem;
+  color: ${colors.light.red1};
+`;
+
+const TopEarners = observer(({ limit = 5, className, style, onError }: TopEarnersProps) => {
   const { leaderboard } = useStores();
+  const [error, setError] = useState<Error | null>(null);
+
   useEffect(() => {
-    leaderboard.fetchLeaders();
-  }, [leaderboard]);
+    const fetchData = async () => {
+      try {
+        await leaderboard.fetchLeaders();
+      } catch (err) {
+        const error = err instanceof Error ? err : new Error('Failed to fetch leaderboard data');
+        setError(error);
+        onError?.(error);
+      }
+    };
+
+    fetchData();
+  }, [leaderboard, onError]);
+
+  if (error) {
+    return (
+      <ErrorContainer>
+        <EuiText color="danger">Failed to load top earners</EuiText>
+      </ErrorContainer>
+    );
+  }
 
   if (leaderboard.isLoading) {
     return (
@@ -66,12 +101,15 @@ const TopEarners = observer(() => {
       </LoaderContainer>
     );
   }
+
   return (
-    <Container data-testId={'main'}>
+    <Container data-testId={'main'} className={className} style={style}>
       <div className="inner">
-        {leaderboard?.top3.map((item: any, index: number) => (
-          <LeaerboardItem position={index + 4} key={item.owner_pubkey} {...item} />
-        ))}
+        {leaderboard?.topEarners
+          .slice(0, limit)
+          .map((item: any, index: number) => (
+            <LeaerboardItem position={index + 1} key={item.owner_pubkey} {...item} />
+          ))}
       </div>
     </Container>
   );
