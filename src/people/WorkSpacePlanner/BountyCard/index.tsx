@@ -60,16 +60,27 @@ const AssignerPic = styled.div`
   }
 `;
 
-const Rows = styled.div`
+const RowT = styled.div`
   display: flex;
   justify-content: flex-start;
   margin-bottom: 8px;
   font-size: 14px;
   color: ${colors.light.text2};
+  gap: 1.5rem;
 
-  span {
-    margin-right: 20%;
+  .last-span {
+    margin-left: auto;
+    margin-right: 0;
   }
+`;
+
+const RowB = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: ${colors.light.text2};
+  gap: 4rem;
 
   .last-span {
     margin-left: auto;
@@ -102,19 +113,19 @@ const BountyCardComponent: React.FC<BountyCardProps> = ({
       <AssignerPic>{assignee_img ? <img src={assignee_img} alt="Assigner" /> : 'Pic'}</AssignerPic>
     </CardHeader>
 
-    <Rows>
+    <RowT>
       <span title={features?.name ?? 'No Feature'}>
-        {truncate(features?.name ?? 'No Feature', 4)}
+        {truncate(features?.name ?? 'No Feature', 10)}
       </span>
       <span title={phase?.name ?? 'No Phase'}>{truncate(phase?.name ?? 'No Phase', 20)}</span>
-    </Rows>
-    <Rows>
+    </RowT>
+    <RowB>
       <span title={id}>{id}</span>
       <span title={workspace?.name ?? 'No Workspace'}>
         {truncate(workspace?.name ?? 'No Workspace', 20)}
       </span>
       <span className="last-span">Paid?</span>
-    </Rows>
+    </RowB>
   </CardContainer>
 );
 
