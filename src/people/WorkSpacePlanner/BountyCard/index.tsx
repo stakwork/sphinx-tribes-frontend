@@ -12,10 +12,6 @@ const Card = styled.div`
   display: flex;
   flex-direction: column;
   background-color: ${colors.light.grayish.G950};
-  transition:
-    box-shadow 0.3s ease,
-    border 0.3s ease;
-
   &:hover {
     border: 1px solid ${colors.light.light_blue100};
     box-shadow: 0 0 5px 1px ${colors.light.light_blue200};
