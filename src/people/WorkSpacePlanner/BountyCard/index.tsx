@@ -110,7 +110,9 @@ const BountyCardComponent: React.FC<BountyCardProps> = ({
     </Rows>
     <Rows>
       <span title={id}>{id}</span>
-      <span title={workspace?.name ?? 'No Workspace'}>{truncate(workspace?.name ?? 'No Workspace', 20)}</span>
+      <span title={workspace?.name ?? 'No Workspace'}>
+        {truncate(workspace?.name ?? 'No Workspace', 20)}
+      </span>
       <span className="last-span">Paid?</span>
     </Rows>
   </CardContainer>
