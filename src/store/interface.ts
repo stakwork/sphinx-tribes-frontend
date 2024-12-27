@@ -508,7 +508,7 @@ export interface CodeGraph {
 export interface BountyCard {
   id: string;
   title: string;
-  assigneePic?: string;
+  assignee_img?: string;
   features: Feature;
   phase: Phase;
   workspace: Workspace;

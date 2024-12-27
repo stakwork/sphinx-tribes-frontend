@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
+import { useHistory } from 'react-router';
 import { useParams } from 'react-router-dom';
 import { EuiLoadingSpinner } from '@elastic/eui';
 import styled from 'styled-components';
@@ -8,6 +9,7 @@ import { BountyCard } from 'store/interface';
 import { useStores } from '../../store';
 import { colors } from '../../config';
 import { WorkspacePlannerHeader } from './WorkspacePlannerHeader';
+import BountyCardComponent from './BountyCards/index';
 
 const PlannerContainer = styled.div`
   padding: 0;
@@ -29,7 +31,7 @@ const ContentArea = styled.div`
 const BountyCardList = styled.ul`
   list-style: none;
   padding: 0;
-  margin: 20px 0;
+  margin: 30px;
 
   li {
     background: ${colors.light.grayish.G800};
@@ -46,6 +48,11 @@ const WorkspacePlanner = () => {
   const [loading, setLoading] = useState(true);
   const [workspaceData, setWorkspaceData] = useState<any>(null);
   const bountyCardStore = useBountyCardStore(uuid);
+  const history = useHistory();
+
+  const onTitleClick = (bountyId: string) => {
+    history.push(`/bounty/${bountyId}`);
+  };
 
   useEffect(() => {
     const fetchWorkspaceData = async () => {
@@ -58,12 +65,6 @@ const WorkspacePlanner = () => {
 
     fetchWorkspaceData();
   }, [main, uuid, bountyCardStore]);
-
-  useEffect(() => {
-    if (!bountyCardStore.loading && !bountyCardStore.error) {
-      console.log('Bounty Cards:', JSON.stringify(bountyCardStore.bountyCards));
-    }
-  }, [bountyCardStore.loading, bountyCardStore.error, bountyCardStore.bountyCards]);
 
   if (loading) {
     return (
@@ -78,7 +79,6 @@ const WorkspacePlanner = () => {
       <WorkspacePlannerHeader workspace_uuid={uuid} workspaceData={workspaceData} />
       <ContentArea>
         <h1>Welcome to the new Workspace Planner</h1>
-        <h2>Bounty Cards</h2>
         {bountyCardStore.loading ? (
           <EuiLoadingSpinner size="m" />
         ) : bountyCardStore.error ? (
@@ -86,14 +86,7 @@ const WorkspacePlanner = () => {
         ) : (
           <BountyCardList>
             {bountyCardStore.bountyCards.map((card: BountyCard) => (
-              <li key={card.id}>
-                <p>BountyID: {card.id}</p>
-                <p>Title: {card.title}</p>
-                <p>Feature: {card.features.name}</p>
-                <p>Phase: {card.phase.name}</p>
-                <p>Workspace: {card.workspace.name}</p>
-                <p>Assignee Pic: {card.assigneePic}</p>
-              </li>
+              <BountyCardComponent key={card.id} {...card} onTitleClick={onTitleClick} />
             ))}
           </BountyCardList>
         )}
