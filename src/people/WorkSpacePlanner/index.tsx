@@ -78,7 +78,6 @@ const WorkspacePlanner = () => {
       <WorkspacePlannerHeader workspace_uuid={uuid} workspaceData={workspaceData} />
       <ContentArea>
         <h1>Welcome to the new Workspace Planner</h1>
-        <h2>Bounty Cards</h2>
         {bountyCardStore.loading ? (
           <EuiLoadingSpinner size="m" />
         ) : bountyCardStore.error ? (
