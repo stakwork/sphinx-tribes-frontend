@@ -511,4 +511,5 @@ export interface BountyCard {
   features: Feature;
   phase: Phase;
   workspace: Workspace;
+  assigneePic: string;
 }

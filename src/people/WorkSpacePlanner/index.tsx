@@ -5,9 +5,11 @@ import { EuiLoadingSpinner } from '@elastic/eui';
 import styled from 'styled-components';
 import { useBountyCardStore } from 'store/bountyCard';
 import { BountyCard } from 'store/interface';
+import history from 'config/history';
 import { useStores } from '../../store';
 import { colors } from '../../config';
 import { WorkspacePlannerHeader } from './WorkspacePlannerHeader';
+import BountyCardComp from './BountyCard';
 
 const PlannerContainer = styled.div`
   padding: 0;
@@ -67,6 +69,10 @@ const WorkspacePlanner = () => {
     );
   }
 
+  const onclick = (bountyId: string) => {
+    history.push(`/bounty/${bountyId}`);
+  };
+
   return (
     <PlannerContainer>
       <WorkspacePlannerHeader workspace_uuid={uuid} workspaceData={workspaceData} />
@@ -80,9 +86,7 @@ const WorkspacePlanner = () => {
         ) : (
           <BountyCardList>
             {bountyCardStore.bountyCards.map((card: BountyCard) => (
-              <li key={card.id}>
-                <strong>{card.title}</strong>
-              </li>
+              <BountyCardComp key={card.id} {...card} onclick={onclick} />
             ))}
           </BountyCardList>
         )}
