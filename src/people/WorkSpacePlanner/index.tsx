@@ -59,6 +59,12 @@ const WorkspacePlanner = () => {
     fetchWorkspaceData();
   }, [main, uuid, bountyCardStore]);
 
+  useEffect(() => {
+    if (!bountyCardStore.loading && !bountyCardStore.error) {
+      console.log('Bounty Cards:', JSON.stringify(bountyCardStore.bountyCards));
+    }
+  }, [bountyCardStore.loading, bountyCardStore.error, bountyCardStore.bountyCards]);
+
   if (loading) {
     return (
       <PlannerContainer style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -81,7 +87,12 @@ const WorkspacePlanner = () => {
           <BountyCardList>
             {bountyCardStore.bountyCards.map((card: BountyCard) => (
               <li key={card.id}>
-                <strong>{card.title}</strong>
+                <p>BountyID: {card.id}</p>
+                <p>Title: {card.title}</p>
+                <p>Feature: {card.features.name}</p>
+                <p>Phase: {card.phase.name}</p>
+                <p>Workspace: {card.workspace.name}</p>
+                <p>Assignee Pic: {card.assigneePic}</p>
               </li>
             ))}
           </BountyCardList>
