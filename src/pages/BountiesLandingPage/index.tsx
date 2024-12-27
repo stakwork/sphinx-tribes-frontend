@@ -5,6 +5,7 @@ import { useIsMobile } from '../../hooks';
 import { colors } from '../../config/colors';
 import { BountiesHeader, HeaderWrap, Leftheader } from '../tickets/style.ts';
 import { BountyHeaderContent } from '../tickets/workspace/workspaceHeader/WorkspaceHeaderStyles.tsx';
+import TopEarners from '../../components/common/TopEarners/index.tsx';
 
 const BountiesLandingPage: React.FC = () => {
   const isMobile = useIsMobile();
@@ -28,7 +29,7 @@ const BountiesLandingPage: React.FC = () => {
     min-height: 500px;
     margin: 30px auto;
     width: 100%;
-    padding: 40px 30px;
+    padding: 40px 20px 20px 30px;
     background: white;
   `;
 
@@ -42,7 +43,7 @@ const BountiesLandingPage: React.FC = () => {
     &:after {
       content: '';
       position: absolute;
-      left: 66.66%;
+      left: 63%;
       top: 0;
       bottom: 0;
       width: 1px;
@@ -70,7 +71,7 @@ const BountiesLandingPage: React.FC = () => {
       font-size: 24px;
       font-family: Barlow;
       color: ${color.text1};
-      margin-bottom: 32px;
+      margin-bottom: 24px;
       font-weight: 500;
     }
 
@@ -105,7 +106,7 @@ const BountiesLandingPage: React.FC = () => {
           </Column>
           <Column>
             <h1>Freedom to Earn!</h1>
-            <p>Second column with content</p>
+            <TopEarners limit={5} />
           </Column>
         </ContentGrid>
       </ContentWrapper>
