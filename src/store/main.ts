@@ -218,7 +218,8 @@ export class MainStore {
         body: JSON.stringify(body),
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -334,7 +335,8 @@ export class MainStore {
 
     const headers = {
       'x-jwt': info.jwt,
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      session_id: this.sessionId
     };
 
     try {
@@ -425,7 +427,7 @@ export class MainStore {
 
   async postToCache(payload: any): Promise<void> {
     await api.post('save', payload, {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     });
     return;
   }
@@ -764,7 +766,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -840,7 +843,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -2066,7 +2070,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -2164,7 +2169,8 @@ export class MainStore {
           route_hint: body.route_hint
         },
         {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       );
       return data;
@@ -2190,7 +2196,8 @@ export class MainStore {
           payment_type: body.payment_type
         },
         {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       );
       return data;
@@ -2214,7 +2221,8 @@ export class MainStore {
         }),
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -2248,7 +2256,8 @@ export class MainStore {
         method: 'GET',
         mode: 'cors',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -2270,7 +2279,8 @@ export class MainStore {
         method: 'GET',
         mode: 'cors',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -2289,7 +2299,8 @@ export class MainStore {
         method: 'GET',
         mode: 'cors',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -2313,7 +2324,8 @@ export class MainStore {
         }),
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -2357,7 +2369,8 @@ export class MainStore {
         }),
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -2405,7 +2418,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -2426,7 +2440,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -2453,7 +2468,8 @@ export class MainStore {
         }),
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -2476,7 +2492,8 @@ export class MainStore {
         }),
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -2503,7 +2520,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -2526,7 +2544,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -2547,7 +2566,8 @@ export class MainStore {
         body: JSON.stringify(body),
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -2567,7 +2587,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -2587,7 +2608,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -2607,7 +2629,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
       return r.json();
@@ -2628,7 +2651,8 @@ export class MainStore {
         body: JSON.stringify(body),
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -2649,7 +2673,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
       return r.json();
@@ -2673,7 +2698,8 @@ export class MainStore {
         body: JSON.stringify(body),
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -2695,7 +2721,8 @@ export class MainStore {
           mode: 'cors',
           headers: {
             'x-jwt': info.tribe_jwt,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            session_id: this.sessionId
           }
         }
       );
@@ -2717,7 +2744,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -2734,7 +2762,8 @@ export class MainStore {
         method: 'GET',
         mode: 'cors',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
       return r.json();
@@ -2756,7 +2785,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
       return r.json();
@@ -2772,7 +2802,8 @@ export class MainStore {
         method: 'GET',
         mode: 'cors',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
       return r.json();
@@ -2805,7 +2836,8 @@ export class MainStore {
         body: JSON.stringify(body),
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
       return r.json();
@@ -2828,7 +2860,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
       return r.json();
@@ -2848,7 +2881,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
       return r.json();
@@ -2867,7 +2901,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
       return r;
@@ -2886,7 +2921,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
       return r;
@@ -2904,7 +2940,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -2923,7 +2960,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -2942,7 +2980,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -2966,7 +3005,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -2991,7 +3031,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -3015,7 +3056,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -3034,7 +3076,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -3054,7 +3097,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -3074,7 +3118,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -3094,7 +3139,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -3118,7 +3164,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -3139,7 +3186,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -3176,7 +3224,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -3197,7 +3246,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -3218,7 +3268,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -3247,7 +3298,8 @@ export class MainStore {
         body: JSON.stringify(body),
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -3285,7 +3337,8 @@ export class MainStore {
         body: JSON.stringify(body),
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -3324,7 +3377,8 @@ export class MainStore {
         body: JSON.stringify(body),
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -3364,7 +3418,8 @@ export class MainStore {
         body: JSON.stringify(body),
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -3399,7 +3454,8 @@ export class MainStore {
         body: JSON.stringify(body),
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -3432,7 +3488,8 @@ export class MainStore {
         body: JSON.stringify(body),
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -3452,7 +3509,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -3474,7 +3532,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
       if (!response.ok) {
@@ -3497,7 +3556,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         },
         body: JSON.stringify(repo)
       });
@@ -3524,7 +3584,8 @@ export class MainStore {
       const mode = 'cors';
       const headers = {
         'x-jwt': info.tribe_jwt,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        session_id: this.sessionId
       };
       const body = JSON.stringify(repo);
 
@@ -3556,7 +3617,8 @@ export class MainStore {
           mode: 'cors',
           headers: {
             'x-jwt': info.tribe_jwt,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            session_id: this.sessionId
           }
         }
       );
@@ -3583,7 +3645,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
       if (!response.ok) {
@@ -3611,7 +3674,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -3637,7 +3701,8 @@ export class MainStore {
           mode: 'cors',
           headers: {
             'x-jwt': info.tribe_jwt,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            session_id: this.sessionId
           }
         }
       );
@@ -3659,7 +3724,8 @@ export class MainStore {
       const mode = 'cors';
       const headers = {
         'x-jwt': info.tribe_jwt,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        session_id: this.sessionId
       };
       const body = JSON.stringify(phase);
 
@@ -3686,7 +3752,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -3718,7 +3785,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         },
         body: JSON.stringify(ticketPayload)
       });
@@ -3745,7 +3813,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         },
         body: JSON.stringify(payload)
       });
@@ -3772,7 +3841,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -3818,7 +3888,8 @@ export class MainStore {
         body: body,
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -3838,7 +3909,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -3862,7 +3934,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         },
         body: JSON.stringify(codeGraph)
       });
@@ -3889,7 +3962,8 @@ export class MainStore {
           mode: 'cors',
           headers: {
             'x-jwt': info.tribe_jwt,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            session_id: this.sessionId
           }
         }
       );
