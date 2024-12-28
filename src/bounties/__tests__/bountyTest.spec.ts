@@ -17,6 +17,15 @@ const mockedApi = api as jest.Mocked<typeof api>;
 describe('Bounty Tests', () => {
   beforeAll(() => {
     Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+    const Crypto = {
+      getRandomValues: (arr: Uint8Array) => {
+        for (let i = 0; i < arr.length; i++) {
+          arr[i] = Math.floor(Math.random() * 256);
+        }
+        return arr;
+      }
+    };
+    global.crypto = Crypto as any;
   });
 
   beforeEach(() => {
@@ -37,6 +46,10 @@ describe('Bounty Tests', () => {
   it('should save a new bounty and persist to localStorage', async () => {
     global.fetch = jest.fn();
     mockedApi.post = jest.fn().mockResolvedValue(newBounty);
+
+    mainStore.initializeSessionId();
+    const { sessionId } = mainStore;
+
     await mainStore.saveBounty(newBounty);
     expect(mockedApi.post).toHaveBeenCalledTimes(0);
     expect(global.fetch).toHaveBeenCalledTimes(1);
@@ -45,7 +58,11 @@ describe('Bounty Tests', () => {
       'http://localhost:5002/gobounties?token=undefined',
       {
         body: JSON.stringify(newBounty),
-        headers: { 'Content-Type': 'application/json', 'x-jwt': undefined },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-jwt': undefined,
+          session_id: sessionId
+        },
         method: 'POST',
         mode: 'cors'
       }
@@ -68,11 +85,14 @@ describe('Bounty Tests', () => {
     mockedApi.del = jest.fn().mockResolvedValue({});
     await mainStore.deleteBounty(bountyIdToDelete, publicKeyToDelete);
 
+    mainStore.initializeSessionId();
+    const { sessionId } = mainStore;
+
     const deleteRequestContent = [
       'http://localhost:5002/gobounties?token=undefined',
       {
         body: JSON.stringify(newBounty),
-        headers: { 'Content-Type': 'application/json', 'x-jwt': undefined },
+        headers: { 'Content-Type': 'application/json', 'x-jwt': undefined, session_id: sessionId },
         method: 'POST',
         mode: 'cors'
       }
@@ -89,11 +109,14 @@ describe('Bounty Tests', () => {
   it('should fetch and persist people bounties to localStorage', async () => {
     await mainStore.getPeopleBounties();
 
+    mainStore.initializeSessionId();
+    const { sessionId } = mainStore;
+
     const peopleRequestContent = [
       'http://localhost:5002/gobounties?token=undefined',
       {
         body: JSON.stringify(newBounty),
-        headers: { 'Content-Type': 'application/json', 'x-jwt': undefined },
+        headers: { 'Content-Type': 'application/json', 'x-jwt': undefined, session_id: sessionId },
         method: 'POST',
         mode: 'cors'
       }
