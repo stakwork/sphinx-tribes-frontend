@@ -17,9 +17,13 @@
 import './commands';
 import nodes from '../fixtures/nodes.json';
 import nodesv2 from '../fixtures/v2nodes.json';
+import { randomString } from '../../src/helpers/helpers-extended';
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
+
+const sessionId = randomString(32);
+sessionStorage.setItem('sphinx_session_id', sessionId);
 
 async function postAllUsersToTribe() {
   for (let i = 0; i < nodes.length; i++) {
@@ -33,7 +37,7 @@ async function postAllUsersToTribe() {
           owner_alias: `${node.alias}`,
           img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQR9dAUM-b34F_a6DMw8D6fQ_Y0LUIAVzvfCw&usqp=CAU'
         }),
-        headers: { 'x-user-token': `${node.authToken}` }
+        headers: { 'x-user-token': `${node.authToken}`, session_id: sessionId }
       });
     } catch (error) {
       console.log(`Error creating user on bounty platform: ${JSON.stringify(error)}`);
@@ -53,7 +57,7 @@ async function postV2UsersToTribe() {
       const res = await fetch(botUrl, {
         method: 'POST',
         body: JSON.stringify({}),
-        headers: { 'x-admin-token': `${adminToken}` }
+        headers: { 'x-admin-token': `${adminToken}`, session_id: sessionId }
       });
 
       const resJson = await res.json();
@@ -80,7 +84,11 @@ async function postV2UsersToTribe() {
           price_to_meet: 0,
           extras: {},
           new_ticket_time: 0
-        })
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+          session_id: sessionId // Add session ID
+        }
       });
     } catch (error) {
       console.log(`Error creating user on bounty platform: ${JSON.stringify(error)}`);

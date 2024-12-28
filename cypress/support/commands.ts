@@ -38,9 +38,14 @@
 //   }
 // }
 import { bech32 } from 'bech32';
+import { randomString } from '../../src/helpers/helpers-extended';
+
 const EC = require('elliptic').ec;
 
 const v2AdminToken = 'xyzxyzxyz';
+
+const sessionId = randomString(32);
+sessionStorage.setItem('sphinx_session_id', sessionId);
 
 Cypress.Commands.add('login', (userAlias: string) => {
   let user;
@@ -71,7 +76,8 @@ Cypress.Commands.add('login', (userAlias: string) => {
       method: 'POST',
       url: `${user.external_ip}/verify_external`,
       headers: {
-        'x-user-token': `${user.authToken}`
+        'x-user-token': `${user.authToken}`,
+        session_id: sessionId
       }
     }).then((response) => {
       token = response.body.response.token;
@@ -82,7 +88,8 @@ Cypress.Commands.add('login', (userAlias: string) => {
       method: 'GET',
       url: `${user.external_ip}/signer/U98BoaW54IFZlcmlmaWNhdGlvbg==`,
       headers: {
-        'x-user-token': `${user.authToken}`
+        'x-user-token': `${user.authToken}`,
+        session_id: sessionId
       }
     }).then((response) => {
       info.url = `${user.external_ip}`;
@@ -91,7 +98,11 @@ Cypress.Commands.add('login', (userAlias: string) => {
       cy.request({
         method: 'POST',
         url: `http://localhost:13000/verify/${challenge}?token=${token}`,
-        body: info
+        body: info,
+        headers: {
+          'Content-Type': 'application/json',
+          session_id: sessionId
+        }
       }).then((response) => {});
     });
 
@@ -125,7 +136,8 @@ Cypress.Commands.add('haves_phinx_login', (userAlias: string) => {
       method: 'POST',
       url: `${user.external_ip}/verify_external`,
       headers: {
-        'x-user-token': `${user.authToken}`
+        'x-user-token': `${user.authToken}`,
+        session_id: sessionId
       }
     }).then((response) => {
       token = response.body.response.token;
@@ -136,7 +148,8 @@ Cypress.Commands.add('haves_phinx_login', (userAlias: string) => {
       method: 'GET',
       url: `${user.external_ip}/signer/U98BoaW54IFZlcmlmaWNhdGlvbg==`,
       headers: {
-        'x-user-token': `${user.authToken}`
+        'x-user-token': `${user.authToken}`,
+        session_id: sessionId
       }
     }).then((response) => {
       info.url = `${user.external_ip}`;
@@ -435,7 +448,8 @@ Cypress.Commands.add('pay_invoice', (details) => {
     method: 'POST',
     url: v2BobUrl,
     headers: {
-      'x-admin-token': `${v2AdminToken}`
+      'x-admin-token': `${v2AdminToken}`,
+      session_id: sessionId
     },
     body: {
       bolt11: details.invoice
@@ -452,7 +466,8 @@ Cypress.Commands.add('add_invoice', (details) => {
     method: 'POST',
     url: v2BobUrl,
     headers: {
-      'x-admin-token': `${v2AdminToken}`
+      'x-admin-token': `${v2AdminToken}`,
+      session_id: sessionId
     },
     body: {
       amt_msat: details.amount * 1000
