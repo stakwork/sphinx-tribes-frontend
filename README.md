@@ -8,7 +8,7 @@ Additionally, a subset of **Sphinx Tribes** is the Bounties Platform - a global 
 
 ## How it Works 🚀
 
-### Sphinx Tribes
+### Sphinx Tribess
 **Sphinx Tribes** operates as an MQTT broker that any node can subscribe to. Message topics always consist of two parts: `{receiverPubKey}/{groupUUID}`. Only the group owner has the privilege to publish messages, and all messages from group members are required to be submitted to the owner as a Lightning keysend payment. The group `uuid` is essentially a timestamp signed by the owner.
 
 ![Tribes](https://github.com/stakwork/sphinx-tribes/raw/master/img/tribes.jpg)
