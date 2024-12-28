@@ -428,6 +428,7 @@ export class MainStore {
   async postToCache(payload: any): Promise<void> {
     await api.post('save', payload, {
       'Content-Type': 'application/json',
+      session_id: this.sessionId
     });
     return;
   }
@@ -1675,7 +1676,7 @@ export class MainStore {
       headers: {
         'x-jwt': info.tribe_jwt,
         'Content-Type': 'application/json'
-      }
+            }
     });
 
     return r;
@@ -1711,7 +1712,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info?.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -1742,7 +1744,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info?.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
       if (response.status) {
@@ -1779,7 +1782,8 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'x-jwt': info.jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -1800,7 +1804,8 @@ export class MainStore {
         }),
         headers: {
           'x-jwt': info.jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
@@ -1890,7 +1895,8 @@ export class MainStore {
         }),
         headers: {
           'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          session_id: this.sessionId
         }
       });
 
