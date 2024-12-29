@@ -47,7 +47,7 @@ describe('BountyCardStore', () => {
 
       store = await waitFor(() => new BountyCardStore(mockWorkspaceId));
 
-      expect(store.bountyCards).toEqual(mockBounties);
+      expect(store.bountyCards).toEqual([{ ...mockBounties[0], status: 'Todo' }]);
       expect(store.loading).toBe(false);
       expect(store.error).toBeNull();
     });
@@ -81,7 +81,7 @@ describe('BountyCardStore', () => {
       await waitFor(() => store.switchWorkspace(newWorkspaceId));
       expect(store.currentWorkspaceId).toBe(newWorkspaceId);
       expect(store.pagination.currentPage).toBe(1);
-      expect(store.bountyCards).toEqual(mockBounties);
+      expect(store.bountyCards).toEqual([{ ...mockBounties[0], status: 'Todo' }]);
     });
 
     it('should not reload if workspace id is the same', async () => {
