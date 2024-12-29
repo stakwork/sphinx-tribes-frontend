@@ -8,14 +8,20 @@ import history from 'config/history';
 import { useStores } from '../../store';
 import { colors } from '../../config';
 import { useBountyCardStore } from '../../store/bountyCard';
+import { useIsMobile } from '../../hooks';
 import { WorkspacePlannerHeader } from './WorkspacePlannerHeader';
 import BountyCardComp from './BountyCard';
 
+// Add these interfaces at the top of the file
+interface MobileProps {
+  isMobile: boolean;
+}
+
 // Styled Components
-const PlannerContainer = styled.div`
+const PlannerContainer = styled.div<MobileProps>`
   padding: 0;
-  height: calc(100vh - 65px);
-  background: ${colors.light.grayish.G950};
+  height: ${(props: MobileProps) => (props.isMobile ? 'calc(100% - 105px)' : 'calc(100vh - 65px)')};
+  background: ${(props: MobileProps) => (props.isMobile ? 'white' : colors.light.grayish.G950)};
   overflow-y: auto;
   overflow-x: hidden;
 `;
@@ -27,21 +33,23 @@ const LoadingContainer = styled.div`
   height: 100%;
 `;
 
-const BoardContent = styled.div`
-  width: 90%;
-  margin: 20px auto;
+const BoardContent = styled.div<MobileProps>`
+  width: ${(props: MobileProps) => (props.isMobile ? '100%' : '90%')};
+  margin: ${(props: MobileProps) => (props.isMobile ? '0' : '20px auto')};
   background: white;
-  border-radius: 8px;
+  border-radius: ${(props: MobileProps) => (props.isMobile ? '0' : '8px')};
   text-align: center;
-  padding: 20px;
+  padding: ${(props: MobileProps) => (props.isMobile ? '10px' : '20px')};
 `;
 
-const BoardLayout = styled.div`
+const BoardLayout = styled.div<MobileProps>`
   display: flex;
+  flex-direction: ${(props: MobileProps) => (props.isMobile ? 'column' : 'row')};
   gap: 1rem;
   padding: 1rem;
-  overflow-x: auto;
-  height: calc(100% - 60px);
+  overflow-x: ${(props: MobileProps) => (props.isMobile ? 'hidden' : 'auto')};
+  overflow-y: ${(props: MobileProps) => (props.isMobile ? 'auto' : 'hidden')};
+  height: ${(props: MobileProps) => (props.isMobile ? 'auto' : 'calc(100% - 60px)')};
   background: white;
 
   &::-webkit-scrollbar {
@@ -58,12 +66,13 @@ const BoardLayout = styled.div`
   }
 `;
 
-const BoardColumn = styled.div`
-  flex: 0 0 320px;
+const BoardColumn = styled.div<MobileProps>`
+  flex: ${(props: MobileProps) => (props.isMobile ? '1' : '0 0 320px')};
   border-radius: 8px;
   display: flex;
   flex-direction: column;
-  max-height: 100%;
+  max-height: ${(props: MobileProps) => (props.isMobile ? 'none' : '100%')};
+  margin-bottom: ${(props: MobileProps) => (props.isMobile ? '1rem' : '0')};
 `;
 
 const BoardColumnHeader = styled.div`
@@ -143,6 +152,7 @@ const WorkspacePlanner: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [workspaceData, setWorkspaceData] = useState<any>(null);
   const bountyCardStore = useBountyCardStore(uuid);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const fetchWorkspaceData = async () => {
@@ -157,7 +167,7 @@ const WorkspacePlanner: React.FC = () => {
 
   if (loading) {
     return (
-      <PlannerContainer>
+      <PlannerContainer isMobile={isMobile}>
         <LoadingContainer>
           <EuiLoadingSpinner size="xl" />
         </LoadingContainer>
@@ -177,13 +187,13 @@ const WorkspacePlanner: React.FC = () => {
   };
 
   return (
-    <PlannerContainer>
+    <PlannerContainer isMobile={isMobile}>
       <WorkspacePlannerHeader workspace_uuid={uuid} workspaceData={workspaceData} />
-      <BoardContent>
+      <BoardContent isMobile={isMobile}>
         <h1>Welcome to the new Workspace Planner</h1>
-        <BoardLayout>
+        <BoardLayout isMobile={isMobile}>
           {BOARD_COLUMNS.map(({ key, label }: { key: string; label: string }) => (
-            <BoardColumn key={key}>
+            <BoardColumn key={key} isMobile={isMobile}>
               <BoardColumnHeader>
                 <ColumnHeading>
                   {label}
@@ -199,7 +209,7 @@ const WorkspacePlanner: React.FC = () => {
                 ) : bountyCardStore.error ? (
                   <ErrorMessage>{bountyCardStore.error}</ErrorMessage>
                 ) : (
-                  bountyCardStore.bountyCards?.map((bounty: BountyCard) => (
+                  boardSections[key]?.map((bounty: BountyCard) => (
                     <BountyCardComp
                       key={bounty.id}
                       {...bounty}
