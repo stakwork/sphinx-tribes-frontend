@@ -466,6 +466,7 @@ export type ChatRole = 'user' | 'assistant';
 export type ChatStatus = 'sending' | 'sent' | 'error';
 export type ContextTagType = 'productBrief' | 'featureBrief' | 'schematic';
 export type ChatSource = 'user' | 'agent';
+export type BountyCardStatus = 'Todo' | 'Assigned' | 'Complete' | 'Paid';
 
 export interface ContextTag {
   type: ContextTagType;
@@ -512,4 +513,18 @@ export interface BountyCard {
   phase: Phase;
   workspace: Workspace;
   assignee_img?: string;
+}
+
+export interface BountyCard {
+  id: string;
+  title: string;
+  features: Feature;
+  phase: Phase;
+  workspace: Workspace;
+  assignee_img?: string;
+  status?: BountyCardStatus;
+  paid?: boolean;
+  completed?: boolean;
+  payment_pending?: boolean;
+  assignee?: string;
 }

@@ -1,7 +1,7 @@
-import { makeAutoObservable, runInAction } from 'mobx';
+import { makeAutoObservable, runInAction, computed } from 'mobx';
 import { TribesURL } from 'config';
 import { useMemo } from 'react';
-import { BountyCard } from './interface';
+import { BountyCard, BountyCardStatus } from './interface';
 import { uiStore } from './ui';
 
 export class BountyCardStore {
@@ -27,6 +27,19 @@ export class BountyCardStore {
       page: currentPage.toString(),
       limit: pageSize.toString()
     }).toString();
+  }
+
+  private calculateBountyStatus(bounty: BountyCard): BountyCardStatus {
+    if (bounty.paid) {
+      return 'Paid';
+    }
+    if (bounty.completed || bounty.payment_pending) {
+      return 'Complete';
+    }
+    if (bounty.assignee_img) {
+      return 'Assigned';
+    }
+    return 'Todo';
   }
 
   loadWorkspaceBounties = async (): Promise<void> => {
@@ -63,9 +76,18 @@ export class BountyCardStore {
 
       runInAction(() => {
         if (this.pagination.currentPage === 1) {
-          this.bountyCards = data || [];
+          this.bountyCards = (data || []).map((bounty: BountyCard) => ({
+            ...bounty,
+            status: this.calculateBountyStatus(bounty)
+          }));
         } else {
-          this.bountyCards = [...this.bountyCards, ...(data || [])];
+          this.bountyCards = [
+            ...this.bountyCards,
+            ...(data || []).map((bounty: BountyCard) => ({
+              ...bounty,
+              status: this.calculateBountyStatus(bounty)
+            }))
+          ];
         }
         this.pagination.total = data?.length || 0;
       });
@@ -106,6 +128,22 @@ export class BountyCardStore {
 
     await this.loadWorkspaceBounties();
   };
+
+  @computed get todoItems() {
+    return this.bountyCards.filter((card: BountyCard) => card.status === 'Todo');
+  }
+
+  @computed get assignedItems() {
+    return this.bountyCards.filter((card: BountyCard) => card.status === 'Assigned');
+  }
+
+  @computed get completedItems() {
+    return this.bountyCards.filter((card: BountyCard) => card.status === 'Complete');
+  }
+
+  @computed get paidItems() {
+    return this.bountyCards.filter((card: BountyCard) => card.status === 'Paid');
+  }
 }
 
 export const useBountyCardStore = (workspaceId: string) =>
