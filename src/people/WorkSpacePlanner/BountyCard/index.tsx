@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { BountyCard } from '../../../store/interface';
+import { BountyCard, BountyCardStatus } from '../../../store/interface';
 import { colors } from '../../../config';
 
 const truncate = (str: string, n: number) => (str.length > n ? `${str.substr(0, n - 1)}...` : str);
@@ -88,6 +88,22 @@ const RowB = styled.div`
   }
 `;
 
+const StatusText = styled.span<{ status?: BountyCardStatus }>`
+  color: ${({ status }: { status?: BountyCardStatus }): string => {
+    switch (status) {
+      case 'Paid':
+        return colors.light.statusPaid;
+      case 'Complete':
+        return colors.light.statusCompleted;
+      case 'Assigned':
+        return colors.light.statusAssigned;
+      default:
+        return colors.light.pureBlack;
+    }
+  }};
+  font-weight: 500;
+`;
+
 interface BountyCardProps extends BountyCard {
   onclick: (bountyId: string) => void;
 }
@@ -99,6 +115,7 @@ const BountyCardComponent: React.FC<BountyCardProps> = ({
   phase,
   assignee_img,
   workspace,
+  status,
   onclick
 }: BountyCardProps) => (
   <CardContainer onClick={() => onclick(id)}>
@@ -124,7 +141,9 @@ const BountyCardComponent: React.FC<BountyCardProps> = ({
       <span title={workspace?.name ?? 'No Workspace'}>
         {truncate(workspace?.name ?? 'No Workspace', 20)}
       </span>
-      <span className="last-span">Paid?</span>
+      <StatusText className="last-span" status={status}>
+        {status}
+      </StatusText>
     </RowB>
   </CardContainer>
 );
@@ -142,6 +161,7 @@ BountyCardComponent.propTypes = {
   workspace: PropTypes.shape({
     name: PropTypes.string
   }) as PropTypes.Validator<BountyCard['workspace']>,
+  status: PropTypes.oneOf(['Todo', 'Assigned', 'Complete', 'Paid'] as BountyCardStatus[]),
   onclick: PropTypes.func.isRequired
 };
 
