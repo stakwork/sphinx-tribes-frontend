@@ -113,4 +113,130 @@ describe('BountyCardStore', () => {
       await waitFor(() => store.loadNextPage());
     });
   });
+
+  describe('calculateBountyStatus', () => {
+    let store: BountyCardStore;
+
+    beforeEach(async () => {
+      store = await waitFor(() => new BountyCardStore(mockWorkspaceId));
+    });
+
+    it('should return "Paid" when bounty is paid', async () => {
+      const mockBounty = {
+        id: '1',
+        title: 'Test Bounty',
+        paid: true,
+        completed: true,
+        payment_pending: false,
+        assignee_img: 'test.jpg'
+      };
+
+      fetchStub.resolves({
+        ok: true,
+        json: async () => [mockBounty]
+      } as Response);
+
+      await store.loadWorkspaceBounties();
+      expect(store.bountyCards[0].status).toBe('Paid');
+    });
+
+    it('should return "Complete" when bounty is completed but not paid', async () => {
+      const mockBounty = {
+        id: '1',
+        title: 'Test Bounty',
+        paid: false,
+        completed: true,
+        payment_pending: false,
+        assignee_img: 'test.jpg'
+      };
+
+      fetchStub.resolves({
+        ok: true,
+        json: async () => [mockBounty]
+      } as Response);
+
+      await store.loadWorkspaceBounties();
+      expect(store.bountyCards[0].status).toBe('Complete');
+    });
+
+    it('should return "Complete" when payment is pending', async () => {
+      const mockBounty = {
+        id: '1',
+        title: 'Test Bounty',
+        paid: false,
+        completed: false,
+        payment_pending: true,
+        assignee_img: 'test.jpg'
+      };
+
+      fetchStub.resolves({
+        ok: true,
+        json: async () => [mockBounty]
+      } as Response);
+
+      await store.loadWorkspaceBounties();
+      expect(store.bountyCards[0].status).toBe('Complete');
+    });
+
+    it('should return "Assigned" when bounty has assignee but not completed or paid', async () => {
+      const mockBounty = {
+        id: '1',
+        title: 'Test Bounty',
+        paid: false,
+        completed: false,
+        payment_pending: false,
+        assignee_img: 'test.jpg'
+      };
+
+      fetchStub.resolves({
+        ok: true,
+        json: async () => [mockBounty]
+      } as Response);
+
+      await store.loadWorkspaceBounties();
+      expect(store.bountyCards[0].status).toBe('Assigned');
+    });
+
+    it('should return "Todo" when bounty has no assignee and is not completed or paid', async () => {
+      const mockBounty = {
+        id: '1',
+        title: 'Test Bounty',
+        paid: false,
+        completed: false,
+        payment_pending: false,
+        assignee_img: undefined
+      };
+
+      fetchStub.resolves({
+        ok: true,
+        json: async () => [mockBounty]
+      } as Response);
+
+      await store.loadWorkspaceBounties();
+      expect(store.bountyCards[0].status).toBe('Todo');
+    });
+
+    describe('computed status lists', () => {
+      it('should correctly filter bounties by status', async () => {
+        const mockBounties = [
+          { id: '1', title: 'Bounty 1', paid: true, completed: true, assignee_img: 'test.jpg' },
+          { id: '2', title: 'Bounty 2', completed: true, assignee_img: 'test.jpg' },
+          { id: '3', title: 'Bounty 3', assignee_img: 'test.jpg' },
+          { id: '4', title: 'Bounty 4' }
+        ];
+
+        fetchStub.resolves({
+          ok: true,
+          json: async () => mockBounties
+        } as Response);
+
+        await store.loadWorkspaceBounties();
+
+        expect(store.paidItems.length).toBe(1);
+        expect(store.completedItems.length).toBe(1);
+        expect(store.assignedItems.length).toBe(1);
+        expect(store.todoItems.length).toBe(1);
+      });
+    });
+  });
 });

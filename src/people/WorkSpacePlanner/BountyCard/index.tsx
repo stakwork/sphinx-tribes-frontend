@@ -142,7 +142,7 @@ const BountyCardComponent: React.FC<BountyCardProps> = ({
         {truncate(workspace?.name ?? 'No Workspace', 20)}
       </span>
       <StatusText className="last-span" status={status}>
-        {status || 'Todo'}
+        {status}
       </StatusText>
     </RowB>
   </CardContainer>
