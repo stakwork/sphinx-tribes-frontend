@@ -12,18 +12,16 @@ import { useIsMobile } from '../../hooks';
 import { WorkspacePlannerHeader } from './WorkspacePlannerHeader';
 import BountyCardComp from './BountyCard';
 
-// Add these interfaces at the top of the file
 interface MobileProps {
   isMobile: boolean;
 }
 
-// Styled Components
 const PlannerContainer = styled.div<MobileProps>`
   padding: 0;
   height: ${(props: MobileProps) => (props.isMobile ? 'calc(100% - 105px)' : 'calc(100vh - 65px)')};
   background: ${(props: MobileProps) => (props.isMobile ? 'white' : colors.light.grayish.G950)};
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow-y: ${(props: MobileProps) => (props.isMobile ? 'auto' : 'hidden')};
+  overflow-x: ${(props: MobileProps) => (props.isMobile ? 'hidden' : 'hidden')};
 `;
 
 const LoadingContainer = styled.div`
@@ -101,19 +99,26 @@ const ItemCounter = styled.span`
 
 const BoardColumnContent = styled.div`
   padding: 0.5rem;
+  padding-bottom: 2.5rem;
   overflow-y: auto;
   flex: 1;
+  max-height: calc(100vh - 200px);
+  min-height: 200px;
+
+  & > *:last-child {
+    margin-bottom: 13rem;
+  }
 
   &::-webkit-scrollbar {
-    width: 6px;
+    width: 3px;
   }
 
   &::-webkit-scrollbar-track {
-    background: ${colors.light.grayish.G900};
+    background: transparent;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: ${colors.light.grayish.G800};
+    background: ${colors.light.black90};
     border-radius: 3px;
   }
 `;
