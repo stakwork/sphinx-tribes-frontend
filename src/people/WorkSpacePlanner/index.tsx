@@ -32,8 +32,8 @@ const ColumnsContainer = styled.div`
   gap: 1rem;
   padding: 1rem;
   overflow-x: auto;
-  height: calc(100% - 60px);
-  background: white;
+  background: whote;
+  height: 800px !important;
 
   &::-webkit-scrollbar {
     height: 8px;
@@ -83,7 +83,7 @@ const CardCount = styled.span`
 
 const ColumnContent = styled.div`
   padding: 0.5rem;
-  overflow-y: auto;
+  overflow-y: scroll;
   flex: 1;
 
   &::-webkit-scrollbar {
