@@ -144,6 +144,10 @@ export class BountyCardStore {
   @computed get paidItems() {
     return this.bountyCards.filter((card: BountyCard) => card.status === 'Paid');
   }
+
+  @computed get hasMorePages(): boolean {
+    return this.pagination.currentPage * this.pagination.pageSize < this.pagination.total;
+  }
 }
 
 export const useBountyCardStore = (workspaceId: string) =>
