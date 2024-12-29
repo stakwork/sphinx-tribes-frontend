@@ -36,7 +36,7 @@ const ColumnsContainer = styled.div`
   height: 800px !important;
 
   &::-webkit-scrollbar {
-    height: 8px;
+    height: 7px;
   }
 
   &::-webkit-scrollbar-track {
