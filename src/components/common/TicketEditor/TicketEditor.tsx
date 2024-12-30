@@ -90,7 +90,7 @@ const TicketEditor = observer(
     const [selectedVersion, setSelectedVersion] = useState<number>(latestTicket?.version as number);
     const [versionTicketData, setVersionTicketData] = useState<Ticket>(latestTicket as Ticket);
     const [isCopying, setIsCopying] = useState(false);
-    const [activeMode, setActiveMode] = useState<'preview' | 'edit'>('preview');
+    const [activeMode, setActiveMode] = useState<'preview' | 'edit'>('edit');
     const { main } = useStores();
     const ui = uiStore;
 
