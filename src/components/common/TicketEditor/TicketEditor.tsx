@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/typedef */
 import React, { useEffect, useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStores } from 'store';
@@ -9,6 +10,8 @@ import {
   EuiIcon,
   EuiBadge
 } from '@elastic/eui';
+import { renderMarkdown } from 'people/utils/RenderMarkdown.tsx';
+import styled from 'styled-components';
 import { phaseTicketStore } from '../../../store/phase';
 import {
   ActionButton,
@@ -18,7 +21,6 @@ import {
 import {
   TicketContainer,
   TicketHeader,
-  TicketTextArea,
   TicketInput,
   TicketHeaderInputWrap
 } from '../../../pages/tickets/style';
@@ -26,6 +28,7 @@ import { TicketStatus, Ticket, Author } from '../../../store/interface';
 import { Toast } from '../../../people/widgetViews/workspace/interface';
 import { uiStore } from '../../../store/ui';
 import { Select, Option } from '../../../people/widgetViews/workspace/style.ts';
+import { TicketTextAreaComp } from './TicketTextArea.tsx';
 
 interface TicketEditorProps {
   ticketData: Ticket;
@@ -37,6 +40,39 @@ interface TicketEditorProps {
   swwfLink?: string;
   getPhaseTickets: () => Promise<Ticket[] | undefined>;
 }
+
+const SwitcherContainer = styled.div`
+  display: flex;
+  background-color: white;
+  border-radius: 20px;
+  padding: 4px;
+  width: fit-content;
+`;
+
+const SwitcherButton = styled.button<{ isActive: boolean }>`
+  padding: 8px 16px;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+
+  ${({ isActive }) =>
+    isActive
+      ? `
+    background-color: #007bff;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+  `
+      : `
+    background-color: transparent;
+    color: #333;
+    &:hover {
+      background-color: rgba(0, 123, 255, 0.1);
+    }
+  `}
+`;
 
 const TicketEditor = observer(
   ({
@@ -54,7 +90,9 @@ const TicketEditor = observer(
     const [selectedVersion, setSelectedVersion] = useState<number>(latestTicket?.version as number);
     const [versionTicketData, setVersionTicketData] = useState<Ticket>(latestTicket as Ticket);
     const [isCopying, setIsCopying] = useState(false);
+    const [activeMode, setActiveMode] = useState<'preview' | 'edit'>('edit');
     const { main } = useStores();
+    const ui = uiStore;
 
     const groupTickets = useMemo(
       () => phaseTicketStore.getTicketsByGroup(ticketData.ticket_group as string),
@@ -239,7 +277,6 @@ const TicketEditor = observer(
         setIsCopying(false);
       }
     };
-
     return (
       <TicketContainer>
         <EuiFlexGroup alignItems="center" gutterSize="s">
@@ -271,6 +308,20 @@ const TicketEditor = observer(
                 Version {selectedVersion}
               </EuiBadge>
               <CopyButtonGroup>
+                <SwitcherContainer>
+                  <SwitcherButton
+                    isActive={activeMode === 'preview'}
+                    onClick={() => setActiveMode('preview')}
+                  >
+                    Preview
+                  </SwitcherButton>
+                  <SwitcherButton
+                    isActive={activeMode === 'edit'}
+                    onClick={() => setActiveMode('edit')}
+                  >
+                    Edit
+                  </SwitcherButton>
+                </SwitcherContainer>
                 <ActionButton
                   color="primary"
                   onClick={handleCopy}
@@ -281,13 +332,20 @@ const TicketEditor = observer(
                 </ActionButton>
               </CopyButtonGroup>
             </TicketHeaderInputWrap>
-            <TicketTextArea
-              value={versionTicketData.description}
-              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                setVersionTicketData({ ...versionTicketData, description: e.target.value })
-              }
-              placeholder="Enter ticket details..."
-            />
+            {activeMode === 'edit' ? (
+              <TicketTextAreaComp
+                value={versionTicketData.description}
+                onChange={(value: string) =>
+                  setVersionTicketData({ ...versionTicketData, description: value })
+                }
+                placeholder="Enter ticket details..."
+                ui={ui}
+              />
+            ) : (
+              <div className="p-4 border rounded-md">
+                {renderMarkdown(versionTicketData.description)}
+              </div>
+            )}
             <TicketButtonGroup>
               <Select
                 value={selectedVersion}
