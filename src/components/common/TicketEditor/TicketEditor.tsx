@@ -11,6 +11,7 @@ import {
   EuiBadge
 } from '@elastic/eui';
 import { renderMarkdown } from 'people/utils/RenderMarkdown.tsx';
+import styled from 'styled-components';
 import { phaseTicketStore } from '../../../store/phase';
 import {
   ActionButton,
@@ -40,6 +41,39 @@ interface TicketEditorProps {
   getPhaseTickets: () => Promise<Ticket[] | undefined>;
 }
 
+const SwitcherContainer = styled.div`
+  display: flex;
+  background-color: white;
+  border-radius: 20px;
+  padding: 4px;
+  width: fit-content;
+`;
+
+const SwitcherButton = styled.button<{ isActive: boolean }>`
+  padding: 8px 16px;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+
+  ${({ isActive }) =>
+    isActive
+      ? `
+    background-color: #007bff;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+  `
+      : `
+    background-color: transparent;
+    color: #333;
+    &:hover {
+      background-color: rgba(0, 123, 255, 0.1);
+    }
+  `}
+`;
+
 const TicketEditor = observer(
   ({
     ticketData,
@@ -56,7 +90,7 @@ const TicketEditor = observer(
     const [selectedVersion, setSelectedVersion] = useState<number>(latestTicket?.version as number);
     const [versionTicketData, setVersionTicketData] = useState<Ticket>(latestTicket as Ticket);
     const [isCopying, setIsCopying] = useState(false);
-    const [isPreview, setIsPreview] = useState(false);
+    const [activeMode, setActiveMode] = useState<'preview' | 'edit'>('edit');
     const { main } = useStores();
     const ui = uiStore;
 
@@ -243,10 +277,6 @@ const TicketEditor = observer(
         setIsCopying(false);
       }
     };
-
-    const handlePreview = () => {
-      setIsPreview(!isPreview);
-    };
     return (
       <TicketContainer>
         <EuiFlexGroup alignItems="center" gutterSize="s">
@@ -278,6 +308,20 @@ const TicketEditor = observer(
                 Version {selectedVersion}
               </EuiBadge>
               <CopyButtonGroup>
+                <SwitcherContainer>
+                  <SwitcherButton
+                    isActive={activeMode === 'preview'}
+                    onClick={() => setActiveMode('preview')}
+                  >
+                    Preview
+                  </SwitcherButton>
+                  <SwitcherButton
+                    isActive={activeMode === 'edit'}
+                    onClick={() => setActiveMode('edit')}
+                  >
+                    Edit
+                  </SwitcherButton>
+                </SwitcherContainer>
                 <ActionButton
                   color="primary"
                   onClick={handleCopy}
@@ -286,17 +330,9 @@ const TicketEditor = observer(
                 >
                   Copy
                 </ActionButton>
-                <ActionButton
-                  color="primary"
-                  onClick={handlePreview}
-                  disabled={isCopying}
-                  data-testid="copy-description-btn"
-                >
-                  {isPreview ? 'Preview' : 'Edit'}
-                </ActionButton>
               </CopyButtonGroup>
             </TicketHeaderInputWrap>
-            {!isPreview ? (
+            {activeMode === 'edit' ? (
               <TicketTextAreaComp
                 value={versionTicketData.description}
                 onChange={(value: string) =>

@@ -33,7 +33,7 @@ const ColumnsContainer = styled.div`
   padding: 1rem;
   overflow-x: auto;
   background: whote;
-  height: 800px !important;
+  height: 600px !important;
 
   &::-webkit-scrollbar {
     height: 7px;

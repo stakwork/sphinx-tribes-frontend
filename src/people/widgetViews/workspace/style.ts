@@ -1639,7 +1639,7 @@ export const Option = styled.option`
 export const CopyButtonGroup = styled.div`
   display: flex;
   gap: 10px;
-  align-items: center;
+  align-items: baseline;
   justify-content: flex-end;
   margin-left: auto;
   margin-top: calc(100px - 134px);
