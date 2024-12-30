@@ -528,3 +528,21 @@ export interface BountyCard {
   payment_pending?: boolean;
   assignee?: string;
 }
+
+export type BountyReviewStatus = 'New' | 'Accepted' | 'Rejected' | 'Change Requested';
+
+export interface ProofOfWork {
+  id: string;
+  bountyId: string;
+  description: string;
+  status: BountyReviewStatus;
+  submittedAt: string;
+}
+
+export interface BountyTiming {
+  totalWorkTimeSeconds: number;
+  totalAttempts: number;
+  firstAssignedAt: string | null;
+  lastPoWAt: string | null;
+  closedAt: string | null;
+}
