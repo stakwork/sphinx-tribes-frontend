@@ -568,7 +568,7 @@ describe('Main store', () => {
       headers: {
         'x-jwt': user.tribe_jwt,
         'Content-Type': 'application/json',
-        session_id: store.sessionId
+        'x-session-id': store.sessionId
       }
     };
 
@@ -605,7 +605,7 @@ describe('Main store', () => {
       headers: {
         'x-jwt': user.tribe_jwt,
         'Content-Type': 'application/json',
-        session_id: store.sessionId
+        'x-session-id': store.sessionId
       }
     };
     fetchStub.withArgs(url, expectedRequestOptions).throwsException();
@@ -632,7 +632,7 @@ describe('Main store', () => {
       headers: {
         'x-jwt': user.tribe_jwt,
         'Content-Type': 'application/json',
-        session_id: store.sessionId
+        'x-session-id': store.sessionId
       }
     };
     fetchStub.withArgs(url, expectedRequestOptions).returns(
@@ -663,7 +663,7 @@ describe('Main store', () => {
       headers: {
         'x-jwt': user.tribe_jwt,
         'Content-Type': 'application/json',
-        session_id: store.sessionId
+        'x-session-id': store.sessionId
       }
     };
     fetchStub.withArgs(url, expectedRequestOptions).throwsException();
@@ -686,7 +686,7 @@ describe('Main store', () => {
       headers: {
         'x-jwt': user.tribe_jwt,
         'Content-Type': 'application/json',
-        session_id: store.sessionId
+        'x-session-id': store.sessionId
       }
     };
     fetchStub.withArgs(url, expectedRequestOptions).returns(
@@ -713,7 +713,7 @@ describe('Main store', () => {
       headers: {
         'x-jwt': user.tribe_jwt,
         'Content-Type': 'application/json',
-        session_id: store.sessionId
+        'x-session-id': store.sessionId
       }
     };
     fetchStub.withArgs(url, expectedRequestOptions).throwsException();

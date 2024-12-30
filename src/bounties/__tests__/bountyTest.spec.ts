@@ -61,7 +61,7 @@ describe('Bounty Tests', () => {
         headers: {
           'Content-Type': 'application/json',
           'x-jwt': undefined,
-          session_id: sessionId
+          'x-session-id': sessionId
         },
         method: 'POST',
         mode: 'cors'
@@ -92,7 +92,11 @@ describe('Bounty Tests', () => {
       'http://localhost:5002/gobounties?token=undefined',
       {
         body: JSON.stringify(newBounty),
-        headers: { 'Content-Type': 'application/json', 'x-jwt': undefined, session_id: sessionId },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-jwt': undefined,
+          'x-session-id': sessionId
+        },
         method: 'POST',
         mode: 'cors'
       }
@@ -116,7 +120,11 @@ describe('Bounty Tests', () => {
       'http://localhost:5002/gobounties?token=undefined',
       {
         body: JSON.stringify(newBounty),
-        headers: { 'Content-Type': 'application/json', 'x-jwt': undefined, session_id: sessionId },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-jwt': undefined,
+          'x-session-id': sessionId
+        },
         method: 'POST',
         mode: 'cors'
       }

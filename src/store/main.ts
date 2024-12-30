@@ -195,7 +195,8 @@ export class MainStore {
       headers: {
         'x-jwt': info.jwt,
         'Content-Type': 'application/json',
-        Accept: 'application/json'
+        Accept: 'application/json',
+        'x-session-id': this.sessionId
       }
     });
 
@@ -219,7 +220,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -336,7 +337,7 @@ export class MainStore {
     const headers = {
       'x-jwt': info.jwt,
       'Content-Type': 'application/json',
-      'session_id':  this.sessionId
+      'x-session-id': this.sessionId
     };
 
     try {
@@ -428,7 +429,7 @@ export class MainStore {
   async postToCache(payload: any): Promise<void> {
     await api.post('save', payload, {
       'Content-Type': 'application/json',
-      'session_id':  this.sessionId
+      'x-session-id': this.sessionId
     });
     return;
   }
@@ -768,7 +769,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -845,7 +846,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -1495,8 +1496,8 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId,
-          Accept: 'application/json'
+          Accept: 'application/json',
+          'x-session-id': this.sessionId
         }
       });
 
@@ -1657,7 +1658,7 @@ export class MainStore {
       headers: {
         'x-jwt': info.tribe_jwt,
         'Content-Type': 'application/json',
-        'session_id':  this.sessionId
+        'x-session-id': this.sessionId
       }
     });
 
@@ -1678,7 +1679,7 @@ export class MainStore {
       headers: {
         'x-jwt': info.tribe_jwt,
         'Content-Type': 'application/json',
-        'session_id':  this.sessionId
+        'x-session-id': this.sessionId
       }
     });
 
@@ -1716,7 +1717,7 @@ export class MainStore {
         headers: {
           'x-jwt': info?.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -1748,7 +1749,7 @@ export class MainStore {
         headers: {
           'x-jwt': info?.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
       if (response.status) {
@@ -1786,7 +1787,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -1808,7 +1809,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -1899,7 +1900,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -2080,7 +2081,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -2179,7 +2180,7 @@ export class MainStore {
         },
         {
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       );
       return data;
@@ -2206,7 +2207,7 @@ export class MainStore {
         },
         {
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       );
       return data;
@@ -2231,7 +2232,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -2266,7 +2267,7 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -2289,7 +2290,7 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -2309,7 +2310,7 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -2334,7 +2335,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -2379,7 +2380,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -2428,7 +2429,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -2450,7 +2451,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -2478,7 +2479,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -2502,7 +2503,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -2530,7 +2531,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -2554,7 +2555,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -2576,7 +2577,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -2597,7 +2598,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -2618,7 +2619,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -2639,7 +2640,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
       return r.json();
@@ -2661,7 +2662,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -2683,7 +2684,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
       return r.json();
@@ -2708,7 +2709,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -2731,7 +2732,7 @@ export class MainStore {
           headers: {
             'x-jwt': info.tribe_jwt,
             'Content-Type': 'application/json',
-            'session_id':  this.sessionId
+            'x-session-id': this.sessionId
           }
         }
       );
@@ -2754,7 +2755,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -2772,7 +2773,7 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
       return r.json();
@@ -2795,7 +2796,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
       return r.json();
@@ -2812,7 +2813,7 @@ export class MainStore {
         mode: 'cors',
         headers: {
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
       return r.json();
@@ -2846,7 +2847,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
       return r.json();
@@ -2870,7 +2871,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
       return r.json();
@@ -2891,7 +2892,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
       return r.json();
@@ -2911,7 +2912,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
       return r;
@@ -2931,7 +2932,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
       return r;
@@ -2950,7 +2951,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -2970,7 +2971,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -2990,7 +2991,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -3015,7 +3016,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -3041,7 +3042,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -3066,7 +3067,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -3086,7 +3087,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -3107,7 +3108,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -3128,7 +3129,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -3149,7 +3150,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -3174,7 +3175,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -3196,7 +3197,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -3234,7 +3235,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -3256,7 +3257,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -3278,7 +3279,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -3308,7 +3309,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -3347,7 +3348,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -3387,7 +3388,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -3428,7 +3429,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -3464,7 +3465,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -3498,7 +3499,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -3519,7 +3520,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -3542,7 +3543,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
       if (!response.ok) {
@@ -3566,7 +3567,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         },
         body: JSON.stringify(repo)
       });
@@ -3594,7 +3595,7 @@ export class MainStore {
       const headers = {
         'x-jwt': info.tribe_jwt,
         'Content-Type': 'application/json',
-        'session_id':  this.sessionId
+        'x-session-id': this.sessionId
       };
       const body = JSON.stringify(repo);
 
@@ -3627,7 +3628,7 @@ export class MainStore {
           headers: {
             'x-jwt': info.tribe_jwt,
             'Content-Type': 'application/json',
-            'session_id':  this.sessionId
+            'x-session-id': this.sessionId
           }
         }
       );
@@ -3655,7 +3656,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
       if (!response.ok) {
@@ -3684,7 +3685,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -3711,7 +3712,7 @@ export class MainStore {
           headers: {
             'x-jwt': info.tribe_jwt,
             'Content-Type': 'application/json',
-            'session_id':  this.sessionId
+            'x-session-id': this.sessionId
           }
         }
       );
@@ -3734,7 +3735,7 @@ export class MainStore {
       const headers = {
         'x-jwt': info.tribe_jwt,
         'Content-Type': 'application/json',
-        'session_id':  this.sessionId
+        'x-session-id': this.sessionId
       };
       const body = JSON.stringify(phase);
 
@@ -3762,7 +3763,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -3795,7 +3796,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         },
         body: JSON.stringify(ticketPayload)
       });
@@ -3823,7 +3824,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         },
         body: JSON.stringify(payload)
       });
@@ -3851,7 +3852,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -3898,7 +3899,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -3919,7 +3920,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         }
       });
 
@@ -3944,7 +3945,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          'session_id':  this.sessionId
+          'x-session-id': this.sessionId
         },
         body: JSON.stringify(codeGraph)
       });
@@ -3972,7 +3973,7 @@ export class MainStore {
           headers: {
             'x-jwt': info.tribe_jwt,
             'Content-Type': 'application/json',
-            'session_id':  this.sessionId
+            'x-session-id': this.sessionId
           }
         }
       );
