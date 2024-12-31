@@ -187,6 +187,7 @@ export class BountyCardStore {
   clearAllFilters() {
     this.selectedFeatures = [];
     sessionStorage.removeItem('bountyFilterState');
+    this.saveFilterState();
   }
 
   @computed

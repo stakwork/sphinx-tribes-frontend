@@ -264,6 +264,7 @@ export const WorkspacePlannerHeader = observer(
                             onClick={(e: React.MouseEvent): void => {
                               e.stopPropagation();
                               bountyCardStore.clearAllFilters();
+                              setFilterToggle(!filterToggle);
                             }}
                           >
                             Clear All
