@@ -9,7 +9,7 @@ import { uiStore } from '../../store/ui';
 import { colors } from '../../config/colors';
 import { useStores } from '../../store';
 import { widgetConfigs } from '../utils/Constants';
-import { bountyStore } from '../../store/bountyStore';
+import { bountyStore, FeaturedBounty } from '../../store/bountyStore';
 import OfferView from './OfferView';
 import WantedView from './WantedView';
 import PostView from './PostView';
@@ -115,9 +115,9 @@ function WidgetSwitchViewer(props: any) {
   const { peoplePosts, peopleBounties, peopleOffers } = main;
   const { selectedWidget, onPanelClick, org_uuid } = props;
 
-  const featuredBountyIds = bountyStore.getFeaturedBounty()?.bountyId
-    ? [bountyStore.getFeaturedBounty()?.bountyId]
-    : [];
+  const featuredBountyIds = bountyStore
+    .getFeaturedBounties()
+    .map((b: FeaturedBounty) => b.bountyId);
 
   const sortBounties = (bounties: any[]) => {
     const featured: any[] = [];

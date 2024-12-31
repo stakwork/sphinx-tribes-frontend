@@ -30,7 +30,7 @@ const FeatureBountyModal = (props: FeatureBountyProps) => {
   const isMobile = useIsMobile();
   const { open, close, addToast } = props;
   const [loading, setLoading] = useState(false);
-  const [bountyUrl, setBountyUrl] = useState(bountyStore.getFeaturedBounty()?.url || '');
+  const [bountyUrl, setBountyUrl] = useState(bountyStore.getFeaturedBounties()[0]?.url || '');
   const config = nonWidgetConfigs['workspaceusers'];
 
   const handleAddFeaturedBounty = async () => {
@@ -61,10 +61,13 @@ const FeatureBountyModal = (props: FeatureBountyProps) => {
   };
 
   const handleRemoveFeaturedBounty = () => {
-    bountyStore.removeFeaturedBounty();
-    setBountyUrl('');
-    if (addToast) addToast('Featured bounty deleted', 'success');
-    close();
+    const bountyId = bountyStore.getBountyIdFromURL(bountyUrl);
+    if (bountyId) {
+      bountyStore.removeFeaturedBounty(bountyId);
+      setBountyUrl('');
+      if (addToast) addToast('Featured bounty deleted', 'success');
+      close();
+    }
   };
 
   return (
