@@ -1,8 +1,13 @@
-import { makeAutoObservable, runInAction, computed } from 'mobx';
+import { makeAutoObservable, runInAction, computed, observable, action } from 'mobx';
 import { TribesURL } from 'config';
 import { useMemo } from 'react';
 import { BountyCard, BountyCardStatus } from './interface';
 import { uiStore } from './ui';
+
+interface FilterState {
+  selectedFeatures: string[];
+  timestamp: number;
+}
 
 export class BountyCardStore {
   bountyCards: BountyCard[] = [];
@@ -14,6 +19,7 @@ export class BountyCardStore {
     pageSize: 10,
     total: 0
   };
+  @observable selectedFeatures: string[] = [];
 
   constructor(workspaceId: string) {
     this.currentWorkspaceId = workspaceId;
@@ -143,6 +149,73 @@ export class BountyCardStore {
 
   @computed get paidItems() {
     return this.bountyCards.filter((card: BountyCard) => card.status === 'Paid');
+  }
+
+  @action
+  saveFilterState() {
+    sessionStorage.setItem(
+      'bountyFilterState',
+      JSON.stringify({
+        selectedFeatures: this.selectedFeatures,
+        timestamp: Date.now()
+      })
+    );
+  }
+
+  @action
+  restoreFilterState() {
+    const saved = sessionStorage.getItem('bountyFilterState');
+    if (saved) {
+      const state = JSON.parse(saved) as FilterState;
+      runInAction(() => {
+        this.selectedFeatures = state.selectedFeatures;
+      });
+    }
+  }
+
+  @action
+  toggleFeature(featureId: string) {
+    if (this.selectedFeatures.includes(featureId)) {
+      this.selectedFeatures = this.selectedFeatures.filter((id: string) => id !== featureId);
+    } else {
+      this.selectedFeatures.push(featureId);
+    }
+    this.saveFilterState();
+  }
+
+  @action
+  clearAllFilters() {
+    this.selectedFeatures = [];
+    sessionStorage.removeItem('bountyFilterState');
+  }
+
+  @computed
+  get filteredBountyCards() {
+    if (this.selectedFeatures.length === 0) {
+      return this.bountyCards;
+    }
+
+    return this.bountyCards.filter((card: BountyCard) => {
+      const hasNoFeature = !card.features?.uuid;
+      const isNoFeatureSelected = this.selectedFeatures.includes('no-feature');
+      const hasSelectedFeature =
+        card.features?.uuid && this.selectedFeatures.includes(card.features.uuid);
+
+      if (hasNoFeature && isNoFeatureSelected) {
+        return true;
+      }
+
+      if (hasSelectedFeature) {
+        return true;
+      }
+
+      return false;
+    });
+  }
+
+  @computed
+  get hasCardsWithoutFeatures() {
+    return this.bountyCards.some((card: BountyCard) => !card.features?.uuid);
   }
 }
 
