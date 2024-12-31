@@ -771,7 +771,6 @@ function MobileView(props: CodingBountiesProps) {
                       <div
                         className="ExtraBadgeInfo"
                         style={{
-                          picsrc,
                           opacity: isPaidStatusBadgeInfo ? 1 : 0,
                           transition: 'all ease 1s'
                         }}
