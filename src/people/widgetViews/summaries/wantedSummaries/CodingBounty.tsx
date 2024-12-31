@@ -113,7 +113,7 @@ function MobileView(props: CodingBountiesProps) {
     isEditButtonDisable,
     completed,
     payment_failed,
-    payment_pending,
+    payment_pending
   } = props;
   const color = colors['light'];
 
@@ -131,11 +131,11 @@ function MobileView(props: CodingBountiesProps) {
   const [localPending, setLocalPending] = useState(false);
   const [paymentError, setPaymentError] = useState('');
   const [isOpenProofModal, setIsOpenProofModal] = useState(false);
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState('');
   const [timingStats, setTimingStats] = useState(null);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const bountyID = id?.toString() || ''
+  const bountyID = id?.toString() || '';
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -481,7 +481,7 @@ function MobileView(props: CodingBountiesProps) {
       if (proofTiming !== undefined) {
         setTimingStats(proofTiming);
       } else {
-        console.log("Failed to get proof status")
+        console.log('Failed to get proof status');
       }
     });
 
@@ -605,11 +605,11 @@ function MobileView(props: CodingBountiesProps) {
 
   const openModal = () => {
     setIsOpenProofModal(true);
-  }
+  };
 
   const proofHandler = () => {
     openModal();
-  }
+  };
 
   useEffect(() => {
     setPaidStatus(paid);
@@ -770,7 +770,8 @@ function MobileView(props: CodingBountiesProps) {
                       </div>
                       <div
                         className="ExtraBadgeInfo"
-                        style={{picsrc, 
+                        style={{
+                          picsrc,
                           opacity: isPaidStatusBadgeInfo ? 1 : 0,
                           transition: 'all ease 1s'
                         }}
@@ -870,7 +871,10 @@ function MobileView(props: CodingBountiesProps) {
                         {proofs[bountyID]?.length ? (
                           <ul>
                             {proofs[bountyID].map((proof: any, index: any) => (
-                              <li key={index} dangerouslySetInnerHTML={{ __html: proof.description }} />
+                              <li
+                                key={index}
+                                dangerouslySetInnerHTML={{ __html: proof.description }}
+                              />
                             ))}
                           </ul>
                         ) : (
@@ -880,11 +884,13 @@ function MobileView(props: CodingBountiesProps) {
                     </Section>
                     <Section style={{ flex: 0.3, textAlign: 'right' }}>
                       <Title>Status</Title>
-                      <Status> {timingStats ? (
-                        <pre>{JSON.stringify(timingStats, null, 2)}</pre>
-                      ) : (
-                        <p>---</p>
-                      )}
+                      <Status>
+                        {' '}
+                        {timingStats ? (
+                          <pre>{JSON.stringify(timingStats, null, 2)}</pre>
+                        ) : (
+                          <p>---</p>
+                        )}
                       </Status>
                     </Section>
                   </ProofContainer>
