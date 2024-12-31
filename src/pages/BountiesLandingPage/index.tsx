@@ -1,6 +1,8 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
 import styled from 'styled-components';
+// import { FeaturedBounties } from 'bounties/components/FeaturedBounty.tsx';
+import { BountySteps } from 'bounties/components/BountySteps.tsx';
 import { useIsMobile } from '../../hooks';
 import { colors } from '../../config/colors';
 import { BountiesHeader, HeaderWrap, Leftheader } from '../tickets/style.ts';
@@ -103,6 +105,37 @@ const BountiesLandingPage: React.FC = () => {
               Building the modern marketplace for work. Complete a bounty and get paid in Bitcoin
               instantly! ⚡
             </p>
+            <BountySteps />
+            {/* <FeaturedBounties 
+              price={0} 
+              sessionLength={''} 
+              priceMin={0} 
+              priceMax={0} 
+              codingLanguage={[]} 
+              title={''} 
+              person={{
+                id: 0,
+                unique_name: '',
+                owner_pubkey: '',
+                uuid: '',
+                alias: '',
+                description: '',
+                tags: [],
+                price_to_meet: 0,
+                public_key: '',
+                img: '',
+                contact: '',
+                created: '',
+                owner_route_hint: '',
+                owner_alias: '',
+                owner_contact_key: '',
+                verification_signature: ''
+              }}
+              onPanelClick={function (): void {
+                throw new Error('Function not implemented.');
+              }} 
+              isPaid={false} 
+            /> */}
           </Column>
           <Column>
             <h1>Freedom to Earn!</h1>
