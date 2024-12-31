@@ -315,6 +315,45 @@ interface containerProps {
   grayish_G200?: string;
 }
 
+export const ProofContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-right: 30px;
+`;
+
+export const Section = styled.div`
+  flex: 1;
+`;
+
+export const Title = styled.h2`
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20px;
+`;
+
+export const Description = styled.span`
+  font-size: 14px;
+  line-height: 1.5;
+  resize: vertical;
+  margin-bottom: 16px;
+`;
+
+export const Link = styled.a`
+  color: #0070f3;
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+export const Status = styled.div`
+  padding: 8px 16px;
+  font-weight: 500;
+`;
+
 export const UnassignedPersonProfile = styled.div<containerProps>`
   min-width: 228px;
   min-height: 57.6px;
