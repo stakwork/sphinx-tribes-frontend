@@ -20,6 +20,7 @@ interface containerProps {
   unassigned_border?: string;
   grayish_G200?: string;
   color?: any;
+  isBountyLandingPage?: boolean;
 }
 
 const BountyContainer = styled.div<containerProps>`
@@ -70,7 +71,7 @@ const DescriptionPriceContainer = styled.div<containerProps>`
 `;
 
 const UnassignedPersonProfile = styled.div<containerProps>`
-  min-width: 336px;
+  min-width: ${(props: any) => (props.isBountyLandingPage ? '282px' : '336px')};
   min-height: 160px;
   max-height: auto;
   background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='10' ry='10' stroke='%23B0B7BCFF' stroke-width='3' stroke-dasharray='4' stroke-dashoffset='0' stroke-linecap='butt'/%3e%3c/svg%3e");
@@ -127,7 +128,8 @@ const Bounties = (props: BountiesProps) => {
     widget,
     created,
     org_uuid,
-    activeWorkspace
+    activeWorkspace,
+    isBountyLandingPage
   } = props;
 
   const color = colors['light'];
@@ -176,6 +178,7 @@ const Bounties = (props: BountiesProps) => {
                 org_img={props.img}
                 codingLanguage={codingLanguage}
                 created={created}
+                isBountyLandingPage={isBountyLandingPage}
               />
             </div>
             <div className="BountyPriceContainer">
@@ -199,6 +202,7 @@ const Bounties = (props: BountiesProps) => {
                   height: '16px',
                   background: color.statusAssigned
                 }}
+                isBountyLandingPage={isBountyLandingPage}
               />
             </div>
           </BountyContainer>
@@ -236,6 +240,7 @@ const Bounties = (props: BountiesProps) => {
                     maxWidth: '245px',
                     minWidth: '245px'
                   }}
+                  isBountyLandingPage={isBountyLandingPage}
                 />
               </div>
             </BountyLink>
@@ -243,6 +248,7 @@ const Bounties = (props: BountiesProps) => {
             <UnassignedPersonProfile
               unassigned_border={color.grayish.G300}
               grayish_G200={color.grayish.G200}
+              isBountyLandingPage={isBountyLandingPage}
             >
               <div className="UnassignedPersonContainer">
                 <img src="/static/unassigned_profile.svg" alt="" height={'100%'} width={'100%'} />

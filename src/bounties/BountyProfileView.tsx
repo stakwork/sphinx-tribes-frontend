@@ -14,11 +14,17 @@ interface BountyProfileViewProps {
   View_profile_icon_color?: string;
 }
 
-const UserProfileContainer = styled.div`
+interface IUserProfileContainer {
+  isBountyLandingPage?: boolean;
+}
+
+const UserProfileContainer = styled.div<IUserProfileContainer>`
   min-width: 336px;
   max-width: 336px;
   display: flex;
-  padding: 40px 0px 0px 37px;
+  padding: ${(props: any) =>
+    props.isBountyLandingPage ? '40px 0px 0px 20px' : '40px 0px 0px 37px'};
+  margin-left: ${(props: any) => (props.isBountyLandingPage ? '-10px' : '0')};
 `;
 
 const UserImage = styled.div`
@@ -127,6 +133,7 @@ const BountyProfileView = (props: BountiesProfileProps) => {
         style={{
           ...props?.UserProfileContainerStyle
         }}
+        isBountyLandingPage={props.isBountyLandingPage}
       >
         <UserImage
           style={{
