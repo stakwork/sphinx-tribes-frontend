@@ -25,6 +25,7 @@ export class BountyCardStore {
     this.currentWorkspaceId = workspaceId;
     makeAutoObservable(this);
     this.loadWorkspaceBounties();
+    this.restoreFilterState();
   }
 
   private constructQueryParams(): string {
