@@ -1496,8 +1496,7 @@ export class MainStore {
         headers: {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
-          Accept: 'application/json',
-          'x-session-id': this.sessionId
+          Accept: 'application/json'
         }
       });
 
