@@ -20,7 +20,7 @@ const PriceContainer = styled.div<PriceContainerProps>`
   padding: 0px 24px;
   color: #909baa;
   margin-left: ${(props: any) => (props.isBountyLandingPage ? '200px' : '0')};
-  padding-top: 41px;
+  padding-top: ${(props: any) => (props.isBountyLandingPage ? '50px' : '41px')};
   .PriceStaticTextContainer {
     width: 28px;
     height: 33px;
