@@ -42,43 +42,43 @@ interface TicketTextAreaProps {
   ui: UiStore;
 }
 
-export const TicketTextAreaComp = ({ value, onChange, placeholder}: TicketTextAreaProps) => {
+export const TicketTextAreaComp = ({ value, onChange, placeholder }: TicketTextAreaProps) => {
   const { main } = useStores();
 
   const textareaValue = () => {
     const textArea = document.querySelector('textarea');
-    return textArea?.value || ""
-  }
+    return textArea?.value || '';
+  };
 
   const handleFailurePlaceHolder = (placeholder: string) => {
     const failurePlaceholder = `![Upload failed]()\n`;
     const updatedValue = textareaValue().replace(placeholder, failurePlaceholder);
 
     onChange(updatedValue);
-  }
+  };
 
   const uploadImage = async (file: File, placeholder: string) => {
     try {
       const formData = new FormData();
-      
+
       formData.append('file', file);
       const uploadedFile = await main.uploadFile(formData);
-      let image_url = ""
+      let image_url = '';
       if (uploadedFile && uploadedFile.ok) {
-        image_url = await uploadedFile.json()
+        image_url = await uploadedFile.json();
       }
-  
+
       if (image_url) {
         const finalMarkdown = `![image](${image_url})\n`;
         const updatedValue = textareaValue().replace(placeholder, finalMarkdown);
 
         onChange(updatedValue);
       } else {
-        handleFailurePlaceHolder(placeholder)
+        handleFailurePlaceHolder(placeholder);
       }
     } catch (e) {
       console.error('ERROR UPLOADING IMAGE', e);
-      handleFailurePlaceHolder(placeholder)
+      handleFailurePlaceHolder(placeholder);
     }
   };
 
@@ -88,13 +88,15 @@ export const TicketTextAreaComp = ({ value, onChange, placeholder}: TicketTextAr
 
     const textArea = document.querySelector('textarea');
 
-    const cursorPosition = textArea?.selectionStart || textArea?.value.length ||value.length;
-    const newValue = textareaValue().slice(0, cursorPosition) + placeholder + textareaValue().slice(cursorPosition);
+    const cursorPosition = textArea?.selectionStart || textArea?.value.length || value.length;
+    const newValue =
+      textareaValue().slice(0, cursorPosition) +
+      placeholder +
+      textareaValue().slice(cursorPosition);
     onChange(newValue);
 
     try {
-      uploadImage(file, placeholder)
-      
+      uploadImage(file, placeholder);
     } catch (error) {
       const failurePlaceholder = `![Failed to upload ${uniqueId}...]()\n`;
       const updatedValue = textareaValue().replace(placeholder, failurePlaceholder);
