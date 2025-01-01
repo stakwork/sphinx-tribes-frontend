@@ -112,7 +112,7 @@ const FeatureBountyModal = (props: FeatureBountyProps) => {
 
   const handleRemoveAll = () => {
     bountyStore.removeAllFeaturedBounties();
-    if (addToast) addToast('All featured bounties deleted', 'success');
+    if (addToast) addToast('All featured bounties deleted!', 'success');
   };
 
   const handleRemoveFeaturedBounty = (bountyId: string) => {
