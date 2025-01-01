@@ -6,6 +6,7 @@ import { colors } from '../../config/colors';
 import { BountiesHeader, HeaderWrap, Leftheader } from '../tickets/style.ts';
 import { BountyHeaderContent } from '../tickets/workspace/workspaceHeader/WorkspaceHeaderStyles.tsx';
 import TopEarners from '../../components/common/TopEarners/index.tsx';
+import { BountyComponents } from '../../components/BountyComponents';
 
 const BountiesLandingPage: React.FC = () => {
   const isMobile = useIsMobile();
@@ -25,8 +26,8 @@ const BountiesLandingPage: React.FC = () => {
   `;
 
   const ContentWrapper = styled.div`
-    max-width: 1200px;
-    min-height: 500px;
+    max-width: 1500px;
+    min-height: 650px;
     margin: 30px auto;
     width: 100%;
     padding: 40px 20px 20px 30px;
@@ -43,7 +44,7 @@ const BountiesLandingPage: React.FC = () => {
     &:after {
       content: '';
       position: absolute;
-      left: 63%;
+      left: 68%;
       top: 0;
       bottom: 0;
       width: 1px;
@@ -103,6 +104,7 @@ const BountiesLandingPage: React.FC = () => {
               Building the modern marketplace for work. Complete a bounty and get paid in Bitcoin
               instantly! ⚡
             </p>
+            <BountyComponents />
           </Column>
           <Column>
             <h1>Freedom to Earn!</h1>

@@ -17,6 +17,7 @@ export interface BountiesDescriptionProps {
   uuid?: string;
   org_uuid?: string;
   org_img?: string;
+  isBountyLandingPage?: boolean;
 }
 
 export interface BountiesPriceProps {
@@ -25,6 +26,7 @@ export interface BountiesPriceProps {
   price: number;
   style?: React.CSSProperties;
   priceMax?: number;
+  isBountyLandingPage?: boolean;
 }
 
 export interface BountiesProfileProps {
@@ -42,4 +44,5 @@ export interface BountiesProfileProps {
     height: string;
     background: string;
   };
+  isBountyLandingPage?: boolean;
 }

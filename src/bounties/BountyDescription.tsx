@@ -19,27 +19,35 @@ interface codingLangProps {
 interface bounty_description_props {
   isPaid?: any;
   color?: any;
+  isBountyLandingPage?: boolean;
 }
 
 const BountyDescriptionContainer = styled.div<bounty_description_props>`
   display: flex;
   flex-direction: column;
   height: 100%;
-  min-width: 519px;
-  max-width: 519px;
+  min-width: ${(props: any) => (props.isBountyLandingPage ? '270px' : '519px')};
+  max-width: ${(props: any) => (props.isBountyLandingPage ? '270px' : '519px')};
   padding-left: 17px;
   padding-right: 17px;
 `;
 
-const Header = styled.div`
+interface bounty_header_props {
+  isBountyLandingPage?: boolean;
+}
+
+const Header = styled.div<bounty_header_props>`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   height: 32px;
   margin-top: 16px;
+  margin-left: 0;
+
   .NameContainer {
     display: flex;
     flex-direction: column;
+    width: ${(props: any) => (props.isBountyLandingPage ? '320px' : '')};
   }
 `;
 
@@ -75,11 +83,16 @@ const Description = styled.div<bounty_description_props>`
   }
 `;
 
-const LanguageContainer = styled.div`
+interface LanguageContainerProps {
+  isBountyLandingPage?: boolean;
+}
+
+const LanguageContainer = styled.div<LanguageContainerProps>`
   display: flex;
   flex-wrap: wrap;
   width: 80%;
   margin-top: 10px;
+  margin-left: ${(p: any) => (p.isBountyLandingPage ? '95px' : '0px')};
 `;
 
 const CodingLabels = styled.div<codingLangProps>`
@@ -121,6 +134,8 @@ const BountyDescription = (props: BountiesDescriptionProps) => {
   const [replitLink, setReplitLink] = useState('');
   const [descriptionImage, setDescriptionImage] = useState('');
 
+  const { isBountyLandingPage } = props;
+
   useEffect(() => {
     if (props.description) {
       const found = props?.description.match(/(https?:\/\/.*\.(?:png|jpg|jpeg|gif))(?![^`]*`)/);
@@ -147,8 +162,11 @@ const BountyDescription = (props: BountiesDescriptionProps) => {
 
   return (
     <>
-      <BountyDescriptionContainer style={{ ...props.style }}>
-        <Header>
+      <BountyDescriptionContainer
+        style={{ ...props.style }}
+        isBountyLandingPage={isBountyLandingPage}
+      >
+        <Header isBountyLandingPage={isBountyLandingPage}>
           <div className="NameContainer">
             <NameTag
               {...props}
@@ -200,7 +218,8 @@ const BountyDescription = (props: BountiesDescriptionProps) => {
             <EuiText
               className="DescriptionTitle"
               style={{
-                color: props.isPaid ? color.grayish.G50 : color.grayish.G10
+                color: props.isPaid ? color.grayish.G50 : color.grayish.G10,
+                marginLeft: isBountyLandingPage ? '95px' : '0px'
               }}
             >
               {props.title?.slice(0, descriptionImage ? 80 : 120)}
@@ -208,7 +227,7 @@ const BountyDescription = (props: BountiesDescriptionProps) => {
             </EuiText>
           </div>
         </Description>
-        <LanguageContainer>
+        <LanguageContainer isBountyLandingPage={isBountyLandingPage}>
           {replitLink && (
             <div onClick={() => window.open(replitLink[0])} style={{ display: 'flex' }}>
               <CodingLabels
