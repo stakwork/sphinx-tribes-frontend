@@ -215,7 +215,7 @@ const FeatureBountyModal = ({ open, close, addToast }: FeatureBountyProps) => {
       if (addToast) addToast('Bounty added to featured list', 'success');
       setBountyUrl('');
     } catch (error) {
-      if (addToast) addToast('Could not add bounty to featured list', 'error');
+      if (addToast) addToast('Could not add bounty to featured list!', 'error');
     } finally {
       setLoading(false);
     }
