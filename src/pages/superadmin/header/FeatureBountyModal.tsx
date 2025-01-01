@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/typedef */
 import React, { useState } from 'react';
 import { nonWidgetConfigs } from 'people/utils/Constants';
 import { useIsMobile } from 'hooks/uiHooks';
@@ -17,6 +18,16 @@ const ModalTitle = styled.h3`
   font-size: 1.9rem;
   font-weight: bolder;
   margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const BountyCount = styled.h3`
+  font-size: 1rem;
+  font-weight: bolder;
+  margin-bottom: 20px;
+  color: gray;
 `;
 
 const Wrapper = styled.div`
@@ -26,14 +37,54 @@ const Wrapper = styled.div`
   padding: 40px 50px;
 `;
 
+const FeaturedList = styled.div`
+  margin: 20px 0;
+`;
+
+const FeaturedItem = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+`;
+
+const CloseBtn = styled.button`
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 15px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: darkred;
+  }
+`;
+
+const ClearAll = styled.span`
+  color: grey;
+  cursor: pointer;
+  margin-bottom: 30px;
+  flex: 1;
+  padding: 10px;
+`;
+
 const FeatureBountyModal = (props: FeatureBountyProps) => {
   const isMobile = useIsMobile();
   const { open, close, addToast } = props;
   const [loading, setLoading] = useState(false);
-  const [bountyUrl, setBountyUrl] = useState(bountyStore.getFeaturedBounty()?.url || '');
-  const config = nonWidgetConfigs['workspaceusers'];
+  const [bountyUrl, setBountyUrl] = useState('');
+  const featuredBounties = bountyStore.getFeaturedBounties();
 
-  const handleAddFeaturedBounty = async () => {
+  const handleAddFeaturedBounty = () => {
     setLoading(true);
     try {
       const bountyId = bountyStore.getBountyIdFromURL(bountyUrl);
@@ -52,7 +103,6 @@ const FeatureBountyModal = (props: FeatureBountyProps) => {
 
       if (addToast) addToast('Bounty added to featured list', 'success');
       setBountyUrl('');
-      close();
     } catch (error) {
       if (addToast) addToast('Could not add bounty to featured list', 'error');
     } finally {
@@ -60,11 +110,14 @@ const FeatureBountyModal = (props: FeatureBountyProps) => {
     }
   };
 
-  const handleRemoveFeaturedBounty = () => {
-    bountyStore.removeFeaturedBounty();
-    setBountyUrl('');
+  const handleRemoveAll = () => {
+    bountyStore.removeAllFeaturedBounties();
+    if (addToast) addToast('All featured bounties deleted', 'success');
+  };
+
+  const handleRemoveFeaturedBounty = (bountyId: string) => {
+    bountyStore.removeFeaturedBounty(bountyId);
     if (addToast) addToast('Featured bounty deleted', 'success');
-    close();
   };
 
   return (
@@ -83,7 +136,7 @@ const FeatureBountyModal = (props: FeatureBountyProps) => {
           marginTop: isMobile ? 64 : 0,
           background: 'white',
           zIndex: 20,
-          ...(config?.modalStyle ?? {}),
+          ...(nonWidgetConfigs['workspaceusers']?.modalStyle ?? {}),
           maxHeight: '100%',
           borderRadius: '10px'
         }}
@@ -97,7 +150,27 @@ const FeatureBountyModal = (props: FeatureBountyProps) => {
         }}
       >
         <Wrapper>
-          <ModalTitle>Featured Bounties</ModalTitle>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <ModalTitle>Featured Bounties</ModalTitle>
+            <BountyCount>({featuredBounties.length}/3)</BountyCount>
+          </div>
+          <FeaturedList>
+            {featuredBounties.map((bounty, index) => (
+              <div
+                key={bounty.bountyId}
+                style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
+              >
+                <span>{index + 1}</span>
+                <FeaturedItem>
+                  <span>{bounty.url}</span>
+                </FeaturedItem>
+                <CloseBtn onClick={() => handleRemoveFeaturedBounty(bounty.bountyId)}>x</CloseBtn>
+              </div>
+            ))}
+            {featuredBounties.length > 0 && (
+              <ClearAll onClick={() => handleRemoveAll()}>Clear All</ClearAll>
+            )}
+          </FeaturedList>
           <InvoiceForm>
             <InvoiceLabel
               style={{
@@ -117,7 +190,7 @@ const FeatureBountyModal = (props: FeatureBountyProps) => {
             />
           </InvoiceForm>
           <BudgetButton
-            disabled={!bountyUrl}
+            disabled={!bountyUrl || featuredBounties.length >= 3}
             style={{
               borderRadius: '8px',
               marginTop: '12px',
@@ -126,19 +199,7 @@ const FeatureBountyModal = (props: FeatureBountyProps) => {
             }}
             onClick={handleAddFeaturedBounty}
           >
-            Confirm
-          </BudgetButton>
-          <BudgetButton
-            disabled={!bountyUrl}
-            style={{
-              borderRadius: '8px',
-              marginTop: '12px',
-              color: !bountyUrl ? 'rgba(142, 150, 156, 0.85)' : '#FFF',
-              background: !bountyUrl ? 'rgba(0, 0, 0, 0.04)' : '#FF4D4F'
-            }}
-            onClick={handleRemoveFeaturedBounty}
-          >
-            Delete
+            {featuredBounties.length >= 3 ? 'Max Bounties Added' : 'Add Bounty'}
           </BudgetButton>
         </Wrapper>
       </Modal>

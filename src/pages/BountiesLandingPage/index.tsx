@@ -27,7 +27,6 @@ const BountiesLandingPage: React.FC = () => {
 
   const ContentWrapper = styled.div`
     max-width: 1500px;
-    min-height: 650px;
     margin: 30px auto;
     width: 100%;
     padding: 40px 20px 20px 30px;

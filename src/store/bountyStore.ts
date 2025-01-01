@@ -1,12 +1,12 @@
 import { makeAutoObservable } from 'mobx';
 
+/* eslint-disable @typescript-eslint/typedef */
 interface FeaturedBounty {
   bountyId: string;
   url: string;
 }
-
 class BountyStore {
-  featuredBounty: FeaturedBounty | null = null;
+  featuredBounties: FeaturedBounty[] = [];
 
   constructor() {
     makeAutoObservable(this);
@@ -15,9 +15,9 @@ class BountyStore {
 
   private loadFromStorage(): void {
     try {
-      const saved = localStorage.getItem('featuredBounty');
+      const saved = localStorage.getItem('featuredBounties');
       if (saved) {
-        this.featuredBounty = JSON.parse(saved);
+        this.featuredBounties = JSON.parse(saved);
       }
     } catch (error) {
       console.error('Error loading from storage:', error);
@@ -26,7 +26,7 @@ class BountyStore {
 
   private saveToStorage(): void {
     try {
-      localStorage.setItem('featuredBounty', JSON.stringify(this.featuredBounty));
+      localStorage.setItem('featuredBounties', JSON.stringify(this.featuredBounties));
     } catch (error) {
       console.error('Error saving to storage:', error);
     }
@@ -39,23 +39,28 @@ class BountyStore {
 
   addFeaturedBounty(url: string): void {
     const bountyId = this.getBountyIdFromURL(url);
-    if (bountyId) {
-      this.featuredBounty = { bountyId, url };
+    if (bountyId && !this.hasBounty(bountyId)) {
+      this.featuredBounties.push({ bountyId, url });
       this.saveToStorage();
     }
   }
 
-  removeFeaturedBounty(): void {
-    this.featuredBounty = null;
+  removeFeaturedBounty(bountyId: string): void {
+    this.featuredBounties = this.featuredBounties.filter((bounty) => bounty.bountyId !== bountyId);
+    this.saveToStorage();
+  }
+
+  removeAllFeaturedBounties(): void {
+    this.featuredBounties = [];
     this.saveToStorage();
   }
 
   hasBounty(bountyId: string): boolean {
-    return this.featuredBounty?.bountyId === bountyId;
+    return this.featuredBounties.some((bounty) => bounty.bountyId === bountyId);
   }
 
-  getFeaturedBounty(): FeaturedBounty | null {
-    return this.featuredBounty;
+  getFeaturedBounties(): FeaturedBounty[] {
+    return this.featuredBounties;
   }
 }
 

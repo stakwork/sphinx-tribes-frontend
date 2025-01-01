@@ -116,8 +116,10 @@ function WidgetSwitchViewer(props: any) {
   const { peoplePosts, peopleBounties, peopleOffers } = main;
   const { selectedWidget, onPanelClick, org_uuid } = props;
 
-  const featuredBountyIds = bountyStore.getFeaturedBounty()?.bountyId
-    ? [bountyStore.getFeaturedBounty()?.bountyId]
+  const featuredBountyIds = bountyStore
+    .getFeaturedBounties()
+    .map((bounty: { url: string }) => bounty.url)
+    ? [bountyStore.getFeaturedBounties().map((bounty: { url: string }) => bounty.url)]
     : [];
 
   const sortBounties = (bounties: any[]) => {
