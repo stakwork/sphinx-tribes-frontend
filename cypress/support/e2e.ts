@@ -19,15 +19,10 @@ import nodes from '../fixtures/nodes.json';
 import nodesv2 from '../fixtures/v2nodes.json';
 import { randomString } from '../../src/helpers/helpers-extended';
 
-// Alternatively you can use CommonJS syntax:
-// require('./commands')
-
-// Generate session ID once
 const sessionId = randomString(32);
 
 before(() => {
   sessionStorage.clear();
-
   sessionStorage.setItem('sphinx_session_id', sessionId);
 });
 
@@ -38,43 +33,15 @@ beforeEach(() => {
   }
 
   cy.intercept('**/*', (req: any) => {
-    const retryCount = 3;
-    let attempt = 0;
+    req.headers['x-session-id'] = sessionStorage.getItem('sphinx_session_id');
 
-    const makeRequest = () => {
-      req.headers['x-session-id'] = sessionStorage.getItem('sphinx_session_id');
-
-      if (req.url.includes('?')) {
-        req.url += `&_t=${Date.now()}`;
-      } else {
-        req.url += `?_t=${Date.now()}`;
-      }
-
-      return req.continue((res: any) => {
-        if (res.statusCode >= 400 && attempt < retryCount) {
-          attempt++;
-          cy.wait(1000 * attempt);
-          return makeRequest();
-        }
-      });
-    };
-
-    return makeRequest();
+    const timestamp = Date.now();
+    req.url = req.url.includes('?') ? `${req.url}&_t=${timestamp}` : `${req.url}?_t=${timestamp}`;
   });
 
-  cy.window().then(
-    (win: any) =>
-      new Cypress.Promise((resolve: any) => {
-        const checkSession = () => {
-          if (win.sessionStorage.getItem('sphinx_session_id') === sessionId) {
-            resolve();
-          } else {
-            setTimeout(checkSession, 100);
-          }
-        };
-        checkSession();
-      })
-  );
+  cy.window().then((win: any) => {
+    expect(win.sessionStorage.getItem('sphinx_session_id')).to.equal(sessionId);
+  });
 });
 
 afterEach(() => {
