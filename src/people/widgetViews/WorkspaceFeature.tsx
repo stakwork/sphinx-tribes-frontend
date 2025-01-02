@@ -290,6 +290,7 @@ const WorkspaceEditableField = ({
           previewMode={previewMode}
           setPreviewMode={setPreviewMode}
           placeholder={placeholder}
+          dataTestIdPrefix={dataTestIdPrefix}
         />
 
         {isEditing && (

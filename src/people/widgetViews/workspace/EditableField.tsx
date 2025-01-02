@@ -12,6 +12,7 @@ interface EditableFieldProps {
   previewMode: 'preview' | 'edit';
   setPreviewMode: (mode: 'preview' | 'edit') => void;
   placeholder?: string;
+  dataTestIdPrefix?: string;
 }
 
 export const EditableField: React.FC<EditableFieldProps> = ({
@@ -20,7 +21,8 @@ export const EditableField: React.FC<EditableFieldProps> = ({
   isEditing,
   previewMode,
   setPreviewMode,
-  placeholder
+  placeholder,
+  dataTestIdPrefix
 }: EditableFieldProps) => {
   const { ui } = useStores();
 
@@ -47,7 +49,13 @@ export const EditableField: React.FC<EditableFieldProps> = ({
         </SwitcherContainer>
       </PreviewButtonGroup>
       {previewMode === 'edit' ? (
-        <TicketTextAreaComp value={value} onChange={setValue} placeholder={placeholder} ui={ui} />
+        <TicketTextAreaComp
+          value={value}
+          onChange={setValue}
+          placeholder={placeholder}
+          ui={ui}
+          data-testid={`${dataTestIdPrefix}-textarea`}
+        />
       ) : (
         <div className="p-4 border rounded-md">
           {value?.trim()
