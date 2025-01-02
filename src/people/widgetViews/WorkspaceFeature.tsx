@@ -190,6 +190,8 @@ interface WSEditableFieldProps {
   main: typeof mainStore;
   showAudioButton?: boolean;
   feature_uuid?: string;
+  previewMode: 'preview' | 'edit';
+  setPreviewMode: DispatchSetStateAction<'preview' | 'edit'>;
 }
 
 const WorkspaceEditableField = ({
@@ -494,6 +496,13 @@ const WorkspaceFeature = () => {
   const [editFeatureName, setEditFeatureName] = useState<string>(featureData?.name || '');
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [displayNameOptions, setDisplayNameOptions] = useState<boolean>(false);
+  const [briefPreviewMode, setBriefPreviewMode] = useState<'preview' | 'edit'>('edit');
+  const [architecturePreviewMode, setArchitecturePreviewMode] = useState<'preview' | 'edit'>(
+    'edit'
+  );
+  const [requirementsPreviewMode, setRequirementsPreviewMode] = useState<'preview' | 'edit'>(
+    'edit'
+  );
 
   const history = useHistory();
 
@@ -861,6 +870,8 @@ const WorkspaceFeature = () => {
           main={main}
           showAudioButton={true}
           feature_uuid={feature_uuid}
+          previewMode={briefPreviewMode}
+          setPreviewMode={setBriefPreviewMode}
         />
         <FieldWrap>
           <Label>User Stories</Label>
@@ -965,6 +976,8 @@ const WorkspaceFeature = () => {
           dataTestIdPrefix="requirements"
           onSubmit={() => submitField('requirements', requirements, setEditRequirements)}
           main={main}
+          previewMode={requirementsPreviewMode}
+          setPreviewMode={setRequirementsPreviewMode}
         />
         <WorkspaceEditableField
           label="Architecture"
@@ -978,6 +991,8 @@ const WorkspaceFeature = () => {
           dataTestIdPrefix="architecture"
           onSubmit={() => submitField('architecture', architecture, setEditArchitecture)}
           main={main}
+          previewMode={architecturePreviewMode}
+          setPreviewMode={setArchitecturePreviewMode}
         />
         <UserStoryModal
           open={modalOpen}
