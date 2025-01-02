@@ -1,12 +1,15 @@
 import { makeAutoObservable } from 'mobx';
 
-interface FeaturedBounty {
+export interface FeaturedBounty {
   bountyId: string;
   url: string;
+  addedAt: number;
+  title?: string;
 }
 
-class BountyStore {
-  featuredBounty: FeaturedBounty | null = null;
+export class BountyStore {
+  featuredBounties: FeaturedBounty[] = [];
+  maxFeaturedBounties = 3;
 
   constructor() {
     makeAutoObservable(this);
@@ -15,9 +18,23 @@ class BountyStore {
 
   private loadFromStorage(): void {
     try {
-      const saved = localStorage.getItem('featuredBounty');
+      const saved = localStorage.getItem('featuredBounties');
       if (saved) {
-        this.featuredBounty = JSON.parse(saved);
+        this.featuredBounties = JSON.parse(saved);
+        return;
+      }
+
+      const oldSaved = localStorage.getItem('featuredBounty');
+      if (oldSaved) {
+        const oldBounty = JSON.parse(oldSaved);
+        this.featuredBounties = [
+          {
+            ...oldBounty,
+            addedAt: Date.now()
+          }
+        ];
+        this.saveToStorage();
+        localStorage.removeItem('featuredBounty');
       }
     } catch (error) {
       console.error('Error loading from storage:', error);
@@ -26,7 +43,7 @@ class BountyStore {
 
   private saveToStorage(): void {
     try {
-      localStorage.setItem('featuredBounty', JSON.stringify(this.featuredBounty));
+      localStorage.setItem('featuredBounties', JSON.stringify(this.featuredBounties));
     } catch (error) {
       console.error('Error saving to storage:', error);
     }
@@ -37,25 +54,43 @@ class BountyStore {
     return match ? match[1] : null;
   }
 
-  addFeaturedBounty(url: string): void {
+  addFeaturedBounty(url: string, title?: string): void {
     const bountyId = this.getBountyIdFromURL(url);
-    if (bountyId) {
-      this.featuredBounty = { bountyId, url };
-      this.saveToStorage();
-    }
+    if (!bountyId || this.hasBounty(bountyId)) return;
+
+    const newBounty: FeaturedBounty = {
+      bountyId,
+      url,
+      title,
+      addedAt: Date.now()
+    };
+
+    this.featuredBounties = [newBounty, ...this.featuredBounties].slice(
+      0,
+      this.maxFeaturedBounties
+    );
+
+    this.saveToStorage();
   }
 
-  removeFeaturedBounty(): void {
-    this.featuredBounty = null;
+  removeFeaturedBounty(bountyId: string): void {
+    this.featuredBounties = this.featuredBounties.filter(
+      (b: FeaturedBounty) => b.bountyId !== bountyId
+    );
     this.saveToStorage();
   }
 
   hasBounty(bountyId: string): boolean {
-    return this.featuredBounty?.bountyId === bountyId;
+    return this.featuredBounties.some((b: FeaturedBounty) => b.bountyId === bountyId);
   }
 
-  getFeaturedBounty(): FeaturedBounty | null {
-    return this.featuredBounty;
+  getFeaturedBounties(): FeaturedBounty[] {
+    return this.featuredBounties;
+  }
+
+  clearFeaturedBounties(): void {
+    this.featuredBounties = [];
+    this.saveToStorage();
   }
 }
 

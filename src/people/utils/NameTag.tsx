@@ -57,6 +57,7 @@ const Date = styled.div`
 `;
 interface WrapProps {
   readonly isSelected: boolean;
+  isBountyLandingPage?: boolean;
 }
 
 const Wrap = styled.div<WrapProps>`
@@ -65,6 +66,7 @@ const Wrap = styled.div<WrapProps>`
   cursor: ${(p: any) => !p.isSelected && 'pointer'};
   width: fit-content;
   margin-bottom: 10px;
+  margin-left: ${(p: any) => (p.isBountyLandingPage ? '95px' : '0px')};
   color: #8e969c;
   // &:hover {
   //   color: ${(p: any) => !p.isSelected && '#618AFF'};
@@ -83,7 +85,8 @@ function NameTag(props: NameTagProps) {
     widget,
     iconSize,
     textSize,
-    isPaid
+    isPaid,
+    isBountyLandingPage
   } = props;
   const { ui, main } = useStores();
   const color = colors['light'];
@@ -153,7 +156,7 @@ function NameTag(props: NameTagProps) {
   }
 
   return (
-    <Wrap isSelected={isSelected} style={style}>
+    <Wrap isSelected={isSelected} style={style} isBountyLandingPage={isBountyLandingPage}>
       <div
         style={{
           display: 'flex',

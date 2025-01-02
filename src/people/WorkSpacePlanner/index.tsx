@@ -15,7 +15,8 @@ const PlannerContainer = styled.div`
   padding: 0;
   height: calc(100vh - 65px);
   background: ${colors.light.grayish.G950};
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 `;
 
 const ContentArea = styled.div`
@@ -54,7 +55,8 @@ const Column = styled.div`
   border-radius: 8px;
   display: flex;
   flex-direction: column;
-  max-height: 100%;
+  height: auto;
+  min-height: 500px;
 `;
 
 const ColumnHeader = styled.div`
@@ -143,12 +145,17 @@ const getCardStatus = (card: BountyCard) => {
   return 'Todo';
 };
 
-const WorkspacePlanner = () => {
+const WorkspacePlanner = observer(() => {
   const { uuid } = useParams<{ uuid: string }>();
   const { main } = useStores();
   const [loading, setLoading] = useState(true);
   const [workspaceData, setWorkspaceData] = useState<any>(null);
+  const [filterToggle, setFilterToggle] = useState(false);
   const bountyCardStore = useBountyCardStore(uuid);
+
+  useEffect(() => {
+    bountyCardStore.restoreFilterState();
+  }, [bountyCardStore, filterToggle]);
 
   useEffect(() => {
     const fetchWorkspaceData = async () => {
@@ -171,7 +178,7 @@ const WorkspacePlanner = () => {
     );
   }
 
-  const groupedBounties = bountyCardStore.bountyCards.reduce(
+  const groupedBounties = bountyCardStore.filteredBountyCards.reduce(
     (acc: { [key: string]: BountyCard[] }, card: BountyCard) => {
       const status = getCardStatus(card);
       if (!acc[status]) acc[status] = [];
@@ -182,12 +189,18 @@ const WorkspacePlanner = () => {
   );
 
   const handleCardClick = (bountyId: string) => {
+    bountyCardStore.saveFilterState();
     history.push(`/bounty/${bountyId}`);
   };
 
   return (
     <PlannerContainer>
-      <WorkspacePlannerHeader workspace_uuid={uuid} workspaceData={workspaceData} />
+      <WorkspacePlannerHeader
+        workspace_uuid={uuid}
+        workspaceData={workspaceData}
+        filterToggle={filterToggle}
+        setFilterToggle={setFilterToggle}
+      />
       <ContentArea>
         <h1>Welcome to the new Workspace Planner</h1>
         <ColumnsContainer>
@@ -231,6 +244,6 @@ const WorkspacePlanner = () => {
       </ContentArea>
     </PlannerContainer>
   );
-};
+});
 
-export default observer(WorkspacePlanner);
+export default WorkspacePlanner;

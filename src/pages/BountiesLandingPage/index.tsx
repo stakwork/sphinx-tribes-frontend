@@ -3,9 +3,8 @@ import React from 'react';
 import styled from 'styled-components';
 import { useIsMobile } from '../../hooks';
 import { colors } from '../../config/colors';
-import { BountiesHeader, HeaderWrap, Leftheader } from '../tickets/style.ts';
-import { BountyHeaderContent } from '../tickets/workspace/workspaceHeader/WorkspaceHeaderStyles.tsx';
 import TopEarners from '../../components/common/TopEarners/index.tsx';
+import { BountyComponents } from '../../components/BountyComponents';
 
 const BountiesLandingPage: React.FC = () => {
   const isMobile = useIsMobile();
@@ -13,24 +12,29 @@ const BountiesLandingPage: React.FC = () => {
   const color = colors['light'];
 
   const Body = styled.div<{ isMobile: boolean }>`
-    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
     height: ${(p: { isMobile: boolean }) =>
       p.isMobile ? 'calc(100% - 105px)' : 'calc(100vh - 60px)'};
     background: ${(p: { isMobile: boolean }) => (p.isMobile ? undefined : color.grayish.G950)};
     width: 100%;
     overflow-x: hidden;
     overflow-y: auto;
-    display: flex;
-    flex-direction: column;
   `;
 
   const ContentWrapper = styled.div`
-    max-width: 1200px;
-    min-height: 500px;
-    margin: 30px auto;
+    max-width: 1400px;
     width: 100%;
-    padding: 40px 20px 20px 30px;
+    padding: 40px;
     background: white;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   `;
 
   const ContentGrid = styled.div`
@@ -43,7 +47,7 @@ const BountiesLandingPage: React.FC = () => {
     &:after {
       content: '';
       position: absolute;
-      left: 63%;
+      left: 68%;
       top: 0;
       bottom: 0;
       width: 1px;
@@ -65,7 +69,7 @@ const BountiesLandingPage: React.FC = () => {
     display: flex;
     flex-direction: column;
     min-height: 100%;
-    padding: 0 20px;
+    margin-right: -20px;
 
     h1 {
       font-size: 24px;
@@ -76,25 +80,16 @@ const BountiesLandingPage: React.FC = () => {
     }
 
     p {
-      font-family: Barlow;
       margin-bottom: 16px;
+      font-weight: 500;
       line-height: 1.6;
       word-wrap: break-word;
-      max-width: 550px;
-      color: ${color.text2};
-      font-size: 15px;
+      max-width: 560px;
     }
   `;
 
   return (
     <Body isMobile={isMobile}>
-      <HeaderWrap>
-        <BountiesHeader>
-          <Leftheader>
-            <BountyHeaderContent>Bounties</BountyHeaderContent>
-          </Leftheader>
-        </BountiesHeader>
-      </HeaderWrap>
       <ContentWrapper>
         <ContentGrid>
           <Column>
@@ -103,6 +98,7 @@ const BountiesLandingPage: React.FC = () => {
               Building the modern marketplace for work. Complete a bounty and get paid in Bitcoin
               instantly! ⚡
             </p>
+            <BountyComponents />
           </Column>
           <Column>
             <h1>Freedom to Earn!</h1>

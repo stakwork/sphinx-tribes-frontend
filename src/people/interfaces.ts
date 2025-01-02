@@ -82,6 +82,7 @@ export interface BountiesProps {
   img?: string;
   id?: number;
   activeWorkspace?: string;
+  isBountyLandingPage?: boolean;
 }
 
 export interface BadgesProps {
@@ -127,6 +128,7 @@ export interface NameTagProps {
   org_name?: string;
   org_uuid?: string;
   uuid?: string;
+  isBountyLandingPage?: boolean;
 }
 
 export interface NoneSpaceProps {
@@ -413,6 +415,7 @@ export interface WantedViews2Props extends WantedViewsProps {
   coding_languages?: any;
   fromBountyPage?: boolean;
   activeWorkspace?: string;
+  isBountyLandingPage?: boolean;
 }
 
 export interface AboutViewProps {

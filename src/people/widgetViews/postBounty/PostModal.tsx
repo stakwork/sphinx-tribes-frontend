@@ -51,19 +51,30 @@ export const PostModal: FC<PostModalProps> = observer(
     }, [main]);
 
     const ReCallBounties = async () => {
-      const createdBounties = await main.getPersonCreatedBounties(
-        { page: 1, resetPage: true },
-        person?.uuid
-      );
+      try {
+        const UserUuid = ui.meInfo?.uuid;
 
-      const [mostRecentBounty] = createdBounties.sort(
-        (a: PersonBounty, b: PersonBounty) =>
-          new Date(b.body?.created).getTime() - new Date(a.body?.created).getTime()
-      );
+        if (!UserUuid) {
+          console.error('No user UUID found');
+          return;
+        }
 
-      const bountyId = mostRecentBounty?.body?.id || (await getBountyData());
-      if (bountyId) {
-        history.push(`/bounty/${bountyId}`);
+        const createdBounties = await main.getPersonCreatedBounties(
+          { page: 1, resetPage: true },
+          UserUuid
+        );
+
+        const [mostRecentBounty] = createdBounties.sort(
+          (a: PersonBounty, b: PersonBounty) =>
+            new Date(b.body?.created).getTime() - new Date(a.body?.created).getTime()
+        );
+
+        const bountyId = mostRecentBounty?.body?.id || (await getBountyData());
+        if (bountyId) {
+          history.push(`/bounty/${bountyId}`);
+        }
+      } catch (error) {
+        console.error('Failed to fetch bounties:', error);
       }
     };
 

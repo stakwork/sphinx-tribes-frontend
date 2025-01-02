@@ -68,6 +68,31 @@ const ErrorContainer = styled.div`
   color: ${colors.light.red1};
 `;
 
+const ViewBountiesButton = styled.button`
+  margin-top: 60px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  background-color: ${colors.light.blue1};
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+
+  &:hover {
+    background-color: ${colors.light.blue2};
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px ${colors.light.blue2};
+  }
+`;
+
 const TopEarners = observer(({ limit = 5, className, style, onError }: TopEarnersProps) => {
   const { leaderboard } = useStores();
   const [error, setError] = useState<Error | null>(null);
@@ -85,6 +110,10 @@ const TopEarners = observer(({ limit = 5, className, style, onError }: TopEarner
 
     fetchData();
   }, [leaderboard, onError]);
+
+  const handleViewBountiesClick = () => {
+    window.open('https://community.sphinx.chat/bounties', '_blank');
+  };
 
   if (error) {
     return (
@@ -111,6 +140,7 @@ const TopEarners = observer(({ limit = 5, className, style, onError }: TopEarner
             <LeaerboardItem position={index + 1} key={item.owner_pubkey} {...item} />
           ))}
       </div>
+      <ViewBountiesButton onClick={handleViewBountiesClick}>View Open Bounties</ViewBountiesButton>
     </Container>
   );
 });

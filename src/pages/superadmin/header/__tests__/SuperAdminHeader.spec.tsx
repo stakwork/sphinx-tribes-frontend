@@ -4,20 +4,20 @@ import { render, screen, within, act, fireEvent } from '@testing-library/react';
 import moment from 'moment';
 import nock from 'nock';
 import React from 'react';
-import { setupStore } from '../../../../__test__/__mockData__/setupStore';
 import { user } from '../../../../__test__/__mockData__/user';
-import { mockUsehistory } from '../../../../__test__/__mockFn__/useHistory';
 import { Header } from '../';
 
-// beforeAll(() => {
-//   nock.disableNetConnect();
-//   setupStore();
-//   mockUsehistory();
-// });
+Object.defineProperty(global, 'crypto', {
+  value: {
+    getRandomValues: (arr: any) => {
+      for (let i = 0; i < arr.length; i++) {
+        arr[i] = Math.floor(Math.random() * 256);
+      }
+      return arr;
+    }
+  }
+});
 
-/**
- * @jest-environment jsdom
- */
 describe('Header Component', () => {
   beforeEach(() => {
     nock.cleanAll();
@@ -52,9 +52,9 @@ describe('Header Component', () => {
 
     expect(monthElement).toBeInTheDocument();
     const actualTextContent = monthElement.textContent?.trim();
-    const expectedTextContent = `${expectedStartDate.format('DD MMM')} - ${expectedEndDate.format(
+    const expectedTextContent = `${expectedStartDate.format(
       'DD MMM YYYY'
-    )}`;
+    )} - ${expectedEndDate.format('DD MMM YYYY')}`;
     expect(actualTextContent).toBe(expectedTextContent);
 
     expect(screen.getByText(exportCSVText)).toBeInTheDocument();
@@ -74,7 +74,7 @@ describe('Header Component', () => {
 
     const StartDate30 = today.clone().subtract(30, 'days');
     expect(monthElement).toHaveTextContent(
-      `${StartDate30.format('DD MMM')} - ${expectedEndDate.format('DD MMM YYYY')}`
+      `${StartDate30.format('DD MMM YYYY')} - ${expectedEndDate.format('DD MMM YYYY')}`
     );
 
     act(() => {
@@ -92,19 +92,20 @@ describe('Header Component', () => {
 
     const StartDate90 = today.clone().subtract(90, 'days');
     expect(monthElement).toHaveTextContent(
-      `${StartDate90.format('DD MMM')} - ${expectedEndDate.format('DD MMM YYYY')}`
+      `${StartDate90.format('DD MMM YYYY')} - ${expectedEndDate.format('DD MMM YYYY')}`
     );
   });
+
   test('displays same year for startDate and endDate', () => {
     const setStartDateMock = jest.fn();
     const setEndDateMock = jest.fn();
     const setWorkspaceMock = jest.fn();
     const exportCSVText = 'Export CSV';
 
-    const { rerender } = render(
+    render(
       <Header
         startDate={moment().subtract(7, 'days').startOf('day').unix()}
-        endDate={moment().subtract('days').startOf('day').unix()} // Same year as startDate
+        endDate={moment().subtract('days').startOf('day').unix()}
         setStartDate={setStartDateMock}
         setEndDate={setEndDateMock}
         workspace={''}
@@ -125,7 +126,7 @@ describe('Header Component', () => {
     //console.log('Formatted Start Date:', formatUnixDate(expectedStartDate.unix()));
     //console.log('Formatted End Date:', formatUnixDate(expectedEndDate.unix()));
 
-    const formattedStartDate = moment.unix(expectedStartDate.unix()).format('DD MMM');
+    const formattedStartDate = moment.unix(expectedStartDate.unix()).format('DD MMM YYYY');
     const formattedEndDate = moment.unix(expectedEndDate.unix()).format('DD MMM YYYY');
 
     expect(monthElement).toHaveTextContent(`${formattedStartDate} - ${formattedEndDate}`);
@@ -140,10 +141,10 @@ describe('Header Component', () => {
     const setWorkspaceMock = jest.fn();
     const exportCSVText = 'Export CSV';
 
-    const { rerender } = render(
+    render(
       <Header
         startDate={moment().subtract(1, 'year').startOf('day').unix()}
-        endDate={moment().subtract('days').startOf('day').unix()} // Same year as startDate
+        endDate={moment().subtract('days').startOf('day').unix()}
         setStartDate={setStartDateMock}
         setEndDate={setEndDateMock}
         workspace={''}
@@ -200,9 +201,9 @@ describe('Header Component', () => {
 
     expect(monthElement).toBeInTheDocument();
 
-    const expectedTextContent = `${expectedStartDate.format('DD MMM')} - ${expectedEndDate.format(
+    const expectedTextContent = `${expectedStartDate.format(
       'DD MMM YYYY'
-    )}`;
+    )} - ${expectedEndDate.format('DD MMM YYYY')}`;
     expect(monthElement).toHaveTextContent(expectedTextContent);
 
     expect(screen.getByText(exportCSVText)).toBeInTheDocument();
