@@ -18,7 +18,6 @@ import {
   Label,
   Data,
   OptionsWrap,
-  TextArea,
   InputField,
   Input,
   UserStoryOptionWrap,
@@ -37,7 +36,6 @@ import MaterialIcon from '@material/react-material-icon';
 import { EuiOverlayMask, EuiModalHeader, EuiModalFooter, EuiText } from '@elastic/eui';
 import { Box } from '@mui/system';
 import { userHasRole } from 'helpers/helpers-extended';
-import { renderMarkdown } from 'people/utils/RenderMarkdown.tsx';
 import { useDeleteConfirmationModal } from '../../components/common';
 import {
   ActionButton,
@@ -61,13 +59,11 @@ import {
   AudioModalBody,
   StyledEuiModalFooter,
   FeatureModalBody,
-  FeatureModalFooter,
-  CopyButtonGroup,
-  SwitcherButton,
-  SwitcherContainer
+  FeatureModalFooter
 } from './workspace/style';
 import WorkspacePhasingTabs from './workspace/WorkspacePhase';
 import { Phase, Toast } from './workspace/interface';
+import { EditableField } from './workspace/EditableField';
 
 interface AudioRecordingModalProps {
   open: boolean;
@@ -207,61 +203,17 @@ const WorkspaceEditableField = ({
   onSubmit,
   main,
   showAudioButton = false,
-  feature_uuid
+  feature_uuid,
+  previewMode,
+  setPreviewMode
 }: WSEditableFieldProps) => {
-  const [activeMode, setActiveMode] = useState<'preview' | 'edit'>('edit');
-
   const handleEditClick = () => {
     setIsEditing(!isEditing);
     setDisplayOptions(false);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setValue(e.target.value);
-  };
-
   const handleCancelClick = () => {
     setIsEditing(false);
-  };
-
-  const handlePaste = async (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
-    e.persist();
-
-    const clipboardItems: DataTransferItemList = e.clipboardData?.items as DataTransferItemList;
-    const itemsArray: DataTransferItem[] = Array.from(clipboardItems);
-    for (const item of itemsArray) {
-      if (item.type.startsWith('image/')) {
-        const imageFile = item.getAsFile();
-        if (imageFile) {
-          const formData = new FormData();
-          formData.append('file', imageFile);
-          const file = await main.uploadFile(formData);
-          let img_url = '';
-          if (file && file.ok) {
-            img_url = await file.json();
-          }
-          setValue((prevValue: string) => `${prevValue}\n![Uploaded Image](${img_url})`);
-        }
-        e.preventDefault();
-      }
-    }
-  };
-
-  const parseValue = (input: string | null): string => {
-    if (!input) {
-      return `No ${label.toLowerCase()} yet`;
-    }
-
-    // Regex to detect markdown image syntax ![alt text](url)
-    const imageMarkdownRegex = /!\[.*?\]\((.*?)\)/g;
-
-    // Replace the markdown image syntax with HTML <img> tag
-    return input
-      .replace(
-        imageMarkdownRegex,
-        (match: string, p1: string) => `<img src="${p1}" alt="Uploaded Image" />`
-      )
-      .replace(/\n/g, '<br/>');
   };
 
   const [showAudioModal, setShowAudioModal] = useState(false);
@@ -330,64 +282,33 @@ const WorkspaceEditableField = ({
             </EditPopover>
           )}
         </OptionsWrap>
-        {!isEditing ? (
-          <div
-            style={{
-              overflowY: 'auto'
-            }}
-            dangerouslySetInnerHTML={{
-              __html: parseValue(value)
-            }}
-          />
-        ) : (
-          <>
-            <CopyButtonGroup>
-              <SwitcherContainer>
-                <SwitcherButton
-                  isActive={activeMode === 'preview'}
-                  onClick={() => setActiveMode('preview')}
-                >
-                  Preview
-                </SwitcherButton>
-                <SwitcherButton
-                  isActive={activeMode === 'edit'}
-                  onClick={() => setActiveMode('edit')}
-                >
-                  Edit
-                </SwitcherButton>
-              </SwitcherContainer>
-            </CopyButtonGroup>
-            {activeMode === 'edit' ? (
-              <TextArea
-                placeholder={`Enter ${placeholder}`}
-                onChange={handleChange}
-                onPaste={handlePaste}
-                value={value}
-                data-testid={`${dataTestIdPrefix}-textarea`}
-                rows={10}
-                cols={50}
-                style={{ resize: 'vertical', overflow: 'auto' }}
-              />
-            ) : (
-              <div className="p-4 border rounded-md">{renderMarkdown(value)}</div>
-            )}
-            <ButtonWrap>
-              <ActionButton
-                onClick={handleCancelClick}
-                data-testid={`${dataTestIdPrefix}-cancel-btn`}
-                color="cancel"
-              >
-                Cancel
-              </ActionButton>
-              <ActionButton
-                color="primary"
-                onClick={onSubmit}
-                data-testid={`${dataTestIdPrefix}-update-btn`}
-              >
-                Update
-              </ActionButton>
-            </ButtonWrap>
-          </>
+
+        <EditableField
+          value={value}
+          setValue={setValue}
+          isEditing={isEditing}
+          previewMode={previewMode}
+          setPreviewMode={setPreviewMode}
+          placeholder={placeholder}
+        />
+
+        {isEditing && (
+          <ButtonWrap>
+            <ActionButton
+              onClick={handleCancelClick}
+              data-testid={`${dataTestIdPrefix}-cancel-btn`}
+              color="cancel"
+            >
+              Cancel
+            </ActionButton>
+            <ActionButton
+              color="primary"
+              onClick={onSubmit}
+              data-testid={`${dataTestIdPrefix}-update-btn`}
+            >
+              Update
+            </ActionButton>
+          </ButtonWrap>
         )}
       </Data>
     </FieldWrap>

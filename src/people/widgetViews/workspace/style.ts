@@ -1753,3 +1753,31 @@ export const SwitcherButton = styled.button<{ isActive: boolean }>`
     }
   `}
 `;
+
+export const PreviewButtonGroup = styled.div`
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  justify-content: flex-end;
+  margin-left: auto;
+  margin-top: calc(100px - 110px);
+  margin-right: 3px;
+
+  ${ActionButton} {
+    transition: background-color 0.2s ease;
+    width: auto;
+    min-width: 100px;
+
+    &[color='primary'] {
+      background-color: #618aff;
+
+      &:hover {
+        background-color: #7599ff;
+      }
+
+      &:active {
+        background-color: #4b7bff;
+      }
+    }
+  }
+`;

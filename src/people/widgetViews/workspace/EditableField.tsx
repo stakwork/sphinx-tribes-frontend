@@ -2,7 +2,7 @@ import React from 'react';
 import { renderMarkdown } from 'people/utils/RenderMarkdown';
 import { TicketTextAreaComp } from 'components/common/TicketEditor/TicketTextArea';
 import { useStores } from 'store';
-import { CopyButtonGroup } from './style';
+import { PreviewButtonGroup } from './style';
 import { SwitcherContainer, SwitcherButton } from './style';
 
 interface EditableFieldProps {
@@ -30,7 +30,7 @@ export const EditableField: React.FC<EditableFieldProps> = ({
 
   return (
     <>
-      <CopyButtonGroup>
+      <PreviewButtonGroup>
         <SwitcherContainer>
           <SwitcherButton
             isActive={previewMode === 'preview'}
@@ -42,7 +42,7 @@ export const EditableField: React.FC<EditableFieldProps> = ({
             Edit
           </SwitcherButton>
         </SwitcherContainer>
-      </CopyButtonGroup>
+      </PreviewButtonGroup>
       {previewMode === 'edit' ? (
         <TicketTextAreaComp value={value} onChange={setValue} placeholder={placeholder} ui={ui} />
       ) : (
