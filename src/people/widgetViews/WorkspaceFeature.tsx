@@ -37,6 +37,7 @@ import MaterialIcon from '@material/react-material-icon';
 import { EuiOverlayMask, EuiModalHeader, EuiModalFooter, EuiText } from '@elastic/eui';
 import { Box } from '@mui/system';
 import { userHasRole } from 'helpers/helpers-extended';
+import { renderMarkdown } from 'people/utils/RenderMarkdown.tsx';
 import { useDeleteConfirmationModal } from '../../components/common';
 import {
   ActionButton,
@@ -60,7 +61,10 @@ import {
   AudioModalBody,
   StyledEuiModalFooter,
   FeatureModalBody,
-  FeatureModalFooter
+  FeatureModalFooter,
+  CopyButtonGroup,
+  SwitcherButton,
+  SwitcherContainer
 } from './workspace/style';
 import WorkspacePhasingTabs from './workspace/WorkspacePhase';
 import { Phase, Toast } from './workspace/interface';
@@ -203,6 +207,8 @@ const WorkspaceEditableField = ({
   showAudioButton = false,
   feature_uuid
 }: WSEditableFieldProps) => {
+  const [activeMode, setActiveMode] = useState<'preview' | 'edit'>('edit');
+
   const handleEditClick = () => {
     setIsEditing(!isEditing);
     setDisplayOptions(false);
@@ -333,16 +339,36 @@ const WorkspaceEditableField = ({
           />
         ) : (
           <>
-            <TextArea
-              placeholder={`Enter ${placeholder}`}
-              onChange={handleChange}
-              onPaste={handlePaste}
-              value={value}
-              data-testid={`${dataTestIdPrefix}-textarea`}
-              rows={10}
-              cols={50}
-              style={{ resize: 'vertical', overflow: 'auto' }}
-            />
+            <CopyButtonGroup>
+              <SwitcherContainer>
+                <SwitcherButton
+                  isActive={activeMode === 'preview'}
+                  onClick={() => setActiveMode('preview')}
+                >
+                  Preview
+                </SwitcherButton>
+                <SwitcherButton
+                  isActive={activeMode === 'edit'}
+                  onClick={() => setActiveMode('edit')}
+                >
+                  Edit
+                </SwitcherButton>
+              </SwitcherContainer>
+            </CopyButtonGroup>
+            {activeMode === 'edit' ? (
+              <TextArea
+                placeholder={`Enter ${placeholder}`}
+                onChange={handleChange}
+                onPaste={handlePaste}
+                value={value}
+                data-testid={`${dataTestIdPrefix}-textarea`}
+                rows={10}
+                cols={50}
+                style={{ resize: 'vertical', overflow: 'auto' }}
+              />
+            ) : (
+              <div className="p-4 border rounded-md">{renderMarkdown(value)}</div>
+            )}
             <ButtonWrap>
               <ActionButton
                 onClick={handleCancelClick}

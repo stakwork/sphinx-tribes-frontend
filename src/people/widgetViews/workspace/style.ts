@@ -1718,3 +1718,38 @@ export const SchematicImgContainer = styled.div`
   overflow: hidden;
   background-color: #ebedf1;
 `;
+
+export const SwitcherContainer = styled.div`
+  display: flex;
+  background-color: rgb(238, 231, 231);
+  border-radius: 20px;
+  padding: 4px;
+  width: fit-content;
+  margin-bottom: 12px;
+  align-self: flex-end;
+`;
+
+export const SwitcherButton = styled.button<{ isActive: boolean }>`
+  padding: 8px 16px;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+
+  ${(props: { isActive: boolean }) =>
+    props.isActive
+      ? `
+    background-color: #007bff;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+  `
+      : `
+    background-color: transparent;
+    color: #333;
+    &:hover {
+      background-color: rgba(0, 123, 255, 0.1);
+    }
+  `}
+`;
