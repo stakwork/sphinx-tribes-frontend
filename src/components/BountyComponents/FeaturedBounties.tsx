@@ -25,14 +25,14 @@ const FeaturedHeader = styled.div`
 `;
 
 export const FeaturedBounties: React.FC = observer(() => {
-  const featuredBounty = bountyStore.getFeaturedBounty();
+  const featuredBounty = bountyStore.getFeaturedBounties();
   const [currentItems, setCurrentItems] = useState<number>(1);
   const [page, setPage] = useState<number>(1);
 
   const widgetViewerProps = {
     onPanelClick: (activeWorkspace?: string, bounty?: any) => {
       if (bounty?.id) {
-        window.location.href = featuredBounty?.url || '';
+        window.location.href = featuredBounty[0]?.url || '';
       }
     },
     checkboxIdToSelectedMap: {},
@@ -51,7 +51,7 @@ export const FeaturedBounties: React.FC = observer(() => {
       ? [
           {
             body: {
-              id: featuredBounty.bountyId
+              id: featuredBounty[0]?.bountyId
             },
             person: {
               wanteds: []
