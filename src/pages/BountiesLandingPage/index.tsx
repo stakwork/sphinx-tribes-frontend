@@ -3,8 +3,6 @@ import React from 'react';
 import styled from 'styled-components';
 import { useIsMobile } from '../../hooks';
 import { colors } from '../../config/colors';
-import { BountiesHeader, HeaderWrap, Leftheader } from '../tickets/style.ts';
-import { BountyHeaderContent } from '../tickets/workspace/workspaceHeader/WorkspaceHeaderStyles.tsx';
 import TopEarners from '../../components/common/TopEarners/index.tsx';
 import { BountyComponents } from '../../components/BountyComponents';
 
@@ -14,24 +12,29 @@ const BountiesLandingPage: React.FC = () => {
   const color = colors['light'];
 
   const Body = styled.div<{ isMobile: boolean }>`
-    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
     height: ${(p: { isMobile: boolean }) =>
       p.isMobile ? 'calc(100% - 105px)' : 'calc(100vh - 60px)'};
     background: ${(p: { isMobile: boolean }) => (p.isMobile ? undefined : color.grayish.G950)};
     width: 100%;
     overflow-x: hidden;
     overflow-y: auto;
-    display: flex;
-    flex-direction: column;
   `;
 
   const ContentWrapper = styled.div`
     max-width: 1400px;
-    min-height: 650px;
-    margin: 30px auto;
     width: 100%;
-    padding: 40px 40px 40px 30px;
+    padding: 40px;
     background: white;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   `;
 
   const ContentGrid = styled.div`
@@ -89,13 +92,6 @@ const BountiesLandingPage: React.FC = () => {
 
   return (
     <Body isMobile={isMobile}>
-      <HeaderWrap>
-        <BountiesHeader>
-          <Leftheader>
-            <BountyHeaderContent>Bounties</BountyHeaderContent>
-          </Leftheader>
-        </BountiesHeader>
-      </HeaderWrap>
       <ContentWrapper>
         <ContentGrid>
           <Column>
