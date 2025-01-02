@@ -264,7 +264,7 @@ export const HiveChatView: React.FC = observer(() => {
 
     debounceUpdateTitle = setTimeout(() => {
       updateChatTitle(chatId, uuid, title, setIsUpdatingTitle);
-    }, 500);
+    }, 1500);
   };
 
   const onTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
