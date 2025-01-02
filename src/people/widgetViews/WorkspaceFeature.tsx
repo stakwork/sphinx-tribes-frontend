@@ -341,6 +341,7 @@ const WorkspaceEditableField = ({
               data-testid={`${dataTestIdPrefix}-textarea`}
               rows={10}
               cols={50}
+              style={{ resize: "vertical", overflow: "auto" }}
             />
             <ButtonWrap>
               <ActionButton
