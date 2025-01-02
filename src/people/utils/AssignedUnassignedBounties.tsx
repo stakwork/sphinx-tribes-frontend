@@ -64,9 +64,13 @@ const DescriptionPriceContainer = styled.div<containerProps>`
   background-size: cover;
 
   :hover {
-    background: url('/static/unassigned_bounty_hover_bg.svg');
+    background: ${(p: any) =>
+      p.isBountyLandingPage
+        ? "url('/static/small_unassigned_bounty_hover_bg.svg')"
+        : "url('/static/unassigned_bounty_hover_bg.svg')"};
     background-repeat: no-repeat;
-    background-size: cover;
+    background-size: ${(p: any) => (p.isBountyLandingPage ? '160% 100%' : 'cover')};
+    background-position: ${(p: any) => (p.isBountyLandingPage ? '-125px 0' : '0 0')};
   }
 `;
 
@@ -78,7 +82,8 @@ const UnassignedPersonProfile = styled.div<containerProps>`
   border-radius: 10px;
   display: flex;
   padding-top: 32px;
-  padding-left: 37px;
+  padding-left: ${(props: any) => (props.isBountyLandingPage ? '10px' : '37px')};
+  padding-right: ${(props: any) => (props.isBountyLandingPage ? '10px' : '0')};
   .UnassignedPersonContainer {
     display: flex;
     justify-content: center;
@@ -212,6 +217,7 @@ const Bounties = (props: BountiesProps) => {
           <DescriptionPriceContainer
             data-testid="description-price-container"
             unAssignedBackgroundImage={'url("/static/unassigned_bounty_bg.svg")'}
+            isBountyLandingPage={isBountyLandingPage}
           >
             <BountyLink
               to={{
@@ -237,8 +243,8 @@ const Bounties = (props: BountiesProps) => {
                   sessionLength={sessionLength}
                   style={{
                     borderLeft: `1px solid ${color.grayish.G700}`,
-                    maxWidth: '245px',
-                    minWidth: '245px'
+                    maxWidth: isBountyLandingPage ? '220px' : '245px',
+                    minWidth: isBountyLandingPage ? '220px' : '245px'
                   }}
                   isBountyLandingPage={isBountyLandingPage}
                 />

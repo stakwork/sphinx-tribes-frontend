@@ -26,11 +26,11 @@ const BountiesLandingPage: React.FC = () => {
   `;
 
   const ContentWrapper = styled.div`
-    max-width: 1500px;
+    max-width: 1400px;
     min-height: 650px;
     margin: 30px auto;
     width: 100%;
-    padding: 40px 20px 20px 30px;
+    padding: 40px 40px 40px 30px;
     background: white;
   `;
 
@@ -66,7 +66,7 @@ const BountiesLandingPage: React.FC = () => {
     display: flex;
     flex-direction: column;
     min-height: 100%;
-    padding: 0 20px;
+    margin-right: -20px;
 
     h1 {
       font-size: 24px;
