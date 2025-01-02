@@ -27,6 +27,17 @@ const StepText = styled.span`
   font-weight: 500;
 `;
 
+const StepLink = styled.a`
+  color: ${colors.light.text1};
+  font-weight: 500;
+  text-decoration: none;
+  color: ${colors.light.blue1};
+  &:hover {
+    color: ${colors.light.blue2};
+    text-decoration: none;
+  }
+`;
+
 const StepTitle = styled.h6`
   font-size: 20px;
   font-family: 'Barlow';
@@ -37,6 +48,7 @@ const StepTitle = styled.h6`
 
 interface Step {
   text: string;
+  link?: string;
 }
 
 const steps: Step[] = [
@@ -44,7 +56,8 @@ const steps: Step[] = [
     text: 'Sign up for a Sphinx by clicking the Get Sphinx button!'
   },
   {
-    text: 'Check out the open bounties, by clicking bounties!'
+    text: 'Check out the',
+    link: 'https://community.sphinx.chat/bounties'
   },
   {
     text: 'Reach out to the bounty provider by clicking "I can help!"'
@@ -53,7 +66,7 @@ const steps: Step[] = [
     text: 'Introduce yourself and get assigned'
   },
   {
-    text: 'Compelte the work and get paid directly to your Sphinx Wallet!'
+    text: 'Complete the work and get paid directly to your Sphinx Wallet!'
   }
 ];
 
@@ -63,7 +76,19 @@ export const BountySteps: React.FC = () => (
     {steps.map((step: Step, index: number) => (
       <StepItem key={index}>
         <StepLabel>{`Step ${index + 1}:`}</StepLabel>
-        <StepText>{step.text}</StepText>
+        <StepText>
+          {step.link ? (
+            <>
+              {step.text}{' '}
+              <StepLink href={step.link} target="_blank" rel="noopener noreferrer">
+                open bounties, by clicking bounties
+              </StepLink>
+              !
+            </>
+          ) : (
+            step.text
+          )}
+        </StepText>
       </StepItem>
     ))}
   </StepsContainer>
