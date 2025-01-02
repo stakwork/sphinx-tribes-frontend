@@ -15,7 +15,8 @@ const PlannerContainer = styled.div`
   padding: 0;
   height: calc(100vh - 65px);
   background: ${colors.light.grayish.G950};
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 `;
 
 const ContentArea = styled.div`
@@ -54,7 +55,8 @@ const Column = styled.div`
   border-radius: 8px;
   display: flex;
   flex-direction: column;
-  max-height: 100%;
+  height: auto;
+  min-height: 500px;
 `;
 
 const ColumnHeader = styled.div`
