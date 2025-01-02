@@ -102,10 +102,10 @@ describe('Header Component', () => {
     const setWorkspaceMock = jest.fn();
     const exportCSVText = 'Export CSV';
 
-    const { rerender } = render(
+    render(
       <Header
         startDate={moment().subtract(7, 'days').startOf('day').unix()}
-        endDate={moment().subtract('days').startOf('day').unix()} // Same year as startDate
+        endDate={moment().subtract('days').startOf('day').unix()}
         setStartDate={setStartDateMock}
         setEndDate={setEndDateMock}
         workspace={''}
@@ -141,10 +141,10 @@ describe('Header Component', () => {
     const setWorkspaceMock = jest.fn();
     const exportCSVText = 'Export CSV';
 
-    const { rerender } = render(
+    render(
       <Header
         startDate={moment().subtract(1, 'year').startOf('day').unix()}
-        endDate={moment().subtract('days').startOf('day').unix()} // Same year as startDate
+        endDate={moment().subtract('days').startOf('day').unix()}
         setStartDate={setStartDateMock}
         setEndDate={setEndDateMock}
         workspace={''}
@@ -268,7 +268,7 @@ describe('Header Component', () => {
 
     expect(monthElement).toBeInTheDocument();
 
-    const expectedDateRange = `${moment.unix(startDate).format('DD MMM YYYY')} - ${moment
+    const expectedDateRange = `${moment.unix(startDate).format('DD MMM')} - ${moment
       .unix(endDate)
       .format('DD MMM YYYY')}`;
     expect(monthElement).toHaveTextContent(expectedDateRange);
