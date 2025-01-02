@@ -48,7 +48,8 @@ function WantedView(props: WantedViews2Props) {
     show = true,
     paid = false,
     id,
-    activeWorkspace
+    activeWorkspace,
+    isBountyLandingPage
   } = props;
 
   const titleString = one_sentence_summary || title || '';
@@ -186,6 +187,7 @@ function WantedView(props: WantedViews2Props) {
                 img={img}
                 id={id}
                 activeWorkspace={activeWorkspace}
+                isBountyLandingPage={isBountyLandingPage}
               />
             </BountyBox>
           )}

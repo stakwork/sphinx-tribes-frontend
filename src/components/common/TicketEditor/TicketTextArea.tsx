@@ -1,8 +1,9 @@
 import styled from 'styled-components';
 import { v4 as uuidv4 } from 'uuid';
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent } from 'react';
 import { UiStore } from 'store/ui';
 import { useDropzone } from 'react-dropzone';
+import { useStores } from 'store';
 
 const StyledTextArea = styled.textarea`
   padding: 0.5rem 1rem;
@@ -41,53 +42,43 @@ interface TicketTextAreaProps {
   ui: UiStore;
 }
 
-export const TicketTextAreaComp = ({ value, onChange, placeholder, ui }: TicketTextAreaProps) => {
-  // eslint-disable-next-line no-unused-vars
-  const [picsrc, setPicsrc] = useState<string>('');
+export const TicketTextAreaComp = ({ value, onChange, placeholder }: TicketTextAreaProps) => {
+  const { main } = useStores();
 
-  const uploadBase64Pic = async (img_base64: string, img_type: string, placeholder: string) => {
+  const textareaValue = () => {
+    const textArea = document.querySelector('textarea');
+    return textArea?.value || '';
+  };
+
+  const handleFailurePlaceHolder = (placeholder: string) => {
+    const failurePlaceholder = `![Upload failed]()\n`;
+    const updatedValue = textareaValue().replace(placeholder, failurePlaceholder);
+
+    onChange(updatedValue);
+  };
+
+  const uploadImage = async (file: File, placeholder: string) => {
     try {
-      const info = ui.meInfo;
-      if (!info) {
-        alert('You are not logged in.');
-        return;
+      const formData = new FormData();
+
+      formData.append('file', file);
+      const uploadedFile = await main.uploadFile(formData);
+      let image_url = '';
+      if (uploadedFile && uploadedFile.ok) {
+        image_url = await uploadedFile.json();
       }
 
-      console.log('User info:', ui.meInfo);
-      const URL = 'https://people.sphinx.chat';
-      const response = await fetch(`${URL}/public_pic`, {
-        method: 'POST',
-        body: JSON.stringify({ img_base64, img_type }),
-        headers: {
-          'x-jwt': info.jwt,
-          'Content-Type': 'application/json'
-        }
-      });
+      if (image_url) {
+        const finalMarkdown = `![image](${image_url})\n`;
+        const updatedValue = textareaValue().replace(placeholder, finalMarkdown);
 
-      const text = await response.text();
-      console.log('Raw server response:', text);
-
-      let j: { success: boolean; response?: { img: string }; error?: string };
-      try {
-        j = JSON.parse(text);
-      } catch (e) {
-        console.error('Failed to parse JSON:', text);
-        throw new Error('Server returned invalid JSON');
-      }
-
-      if (j.success && j.response && j.response.img) {
-        setPicsrc(img_base64);
-        const finalMarkdown = `![image](${j.response.img})\n`;
-        const updatedValue = value.replace(placeholder, finalMarkdown);
         onChange(updatedValue);
       } else {
-        throw new Error(j.error || 'Image upload failed');
+        handleFailurePlaceHolder(placeholder);
       }
     } catch (e) {
       console.error('ERROR UPLOADING IMAGE', e);
-      const failurePlaceholder = `![Upload failed]()\n`;
-      const updatedValue = value.replace(placeholder, failurePlaceholder);
-      onChange(updatedValue);
+      handleFailurePlaceHolder(placeholder);
     }
   };
 
@@ -96,21 +87,19 @@ export const TicketTextAreaComp = ({ value, onChange, placeholder, ui }: TicketT
     const placeholder = `![Uploading ${uniqueId}...]()\n`;
 
     const textArea = document.querySelector('textarea');
-    const cursorPosition = textArea?.selectionStart || value.length;
-    const newValue = value.slice(0, cursorPosition) + placeholder + value.slice(cursorPosition);
+
+    const cursorPosition = textArea?.selectionStart || textArea?.value.length || value.length;
+    const newValue =
+      textareaValue().slice(0, cursorPosition) +
+      placeholder +
+      textareaValue().slice(cursorPosition);
     onChange(newValue);
 
     try {
-      const reader = new FileReader();
-      reader.onload = async (event: ProgressEvent<FileReader>) => {
-        const base64String = event.target?.result as string;
-        const base64Data = base64String.split(',')[1];
-        await uploadBase64Pic(base64Data, file.type, placeholder);
-      };
-      reader.readAsDataURL(file);
+      uploadImage(file, placeholder);
     } catch (error) {
       const failurePlaceholder = `![Failed to upload ${uniqueId}...]()\n`;
-      const updatedValue = value.replace(placeholder, failurePlaceholder);
+      const updatedValue = textareaValue().replace(placeholder, failurePlaceholder);
       onChange(updatedValue);
     }
   };

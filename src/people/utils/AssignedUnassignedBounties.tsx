@@ -20,6 +20,7 @@ interface containerProps {
   unassigned_border?: string;
   grayish_G200?: string;
   color?: any;
+  isBountyLandingPage?: boolean;
 }
 
 const BountyContainer = styled.div<containerProps>`
@@ -63,21 +64,26 @@ const DescriptionPriceContainer = styled.div<containerProps>`
   background-size: cover;
 
   :hover {
-    background: url('/static/unassigned_bounty_hover_bg.svg');
+    background: ${(p: any) =>
+      p.isBountyLandingPage
+        ? "url('/static/small_unassigned_bounty_hover_bg.svg')"
+        : "url('/static/unassigned_bounty_hover_bg.svg')"};
     background-repeat: no-repeat;
-    background-size: cover;
+    background-size: ${(p: any) => (p.isBountyLandingPage ? '160% 100%' : 'cover')};
+    background-position: ${(p: any) => (p.isBountyLandingPage ? '-125px 0' : '0 0')};
   }
 `;
 
 const UnassignedPersonProfile = styled.div<containerProps>`
-  min-width: 336px;
+  min-width: ${(props: any) => (props.isBountyLandingPage ? '282px' : '336px')};
   min-height: 160px;
   max-height: auto;
   background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='10' ry='10' stroke='%23B0B7BCFF' stroke-width='3' stroke-dasharray='4' stroke-dashoffset='0' stroke-linecap='butt'/%3e%3c/svg%3e");
   border-radius: 10px;
   display: flex;
   padding-top: 32px;
-  padding-left: 37px;
+  padding-left: ${(props: any) => (props.isBountyLandingPage ? '10px' : '37px')};
+  padding-right: ${(props: any) => (props.isBountyLandingPage ? '10px' : '0')};
   .UnassignedPersonContainer {
     display: flex;
     justify-content: center;
@@ -127,7 +133,8 @@ const Bounties = (props: BountiesProps) => {
     widget,
     created,
     org_uuid,
-    activeWorkspace
+    activeWorkspace,
+    isBountyLandingPage
   } = props;
 
   const color = colors['light'];
@@ -176,6 +183,7 @@ const Bounties = (props: BountiesProps) => {
                 org_img={props.img}
                 codingLanguage={codingLanguage}
                 created={created}
+                isBountyLandingPage={isBountyLandingPage}
               />
             </div>
             <div className="BountyPriceContainer">
@@ -199,6 +207,7 @@ const Bounties = (props: BountiesProps) => {
                   height: '16px',
                   background: color.statusAssigned
                 }}
+                isBountyLandingPage={isBountyLandingPage}
               />
             </div>
           </BountyContainer>
@@ -208,6 +217,7 @@ const Bounties = (props: BountiesProps) => {
           <DescriptionPriceContainer
             data-testid="description-price-container"
             unAssignedBackgroundImage={'url("/static/unassigned_bounty_bg.svg")'}
+            isBountyLandingPage={isBountyLandingPage}
           >
             <BountyLink
               to={{
@@ -233,9 +243,10 @@ const Bounties = (props: BountiesProps) => {
                   sessionLength={sessionLength}
                   style={{
                     borderLeft: `1px solid ${color.grayish.G700}`,
-                    maxWidth: '245px',
-                    minWidth: '245px'
+                    maxWidth: isBountyLandingPage ? '220px' : '245px',
+                    minWidth: isBountyLandingPage ? '220px' : '245px'
                   }}
+                  isBountyLandingPage={isBountyLandingPage}
                 />
               </div>
             </BountyLink>
@@ -243,6 +254,7 @@ const Bounties = (props: BountiesProps) => {
             <UnassignedPersonProfile
               unassigned_border={color.grayish.G300}
               grayish_G200={color.grayish.G200}
+              isBountyLandingPage={isBountyLandingPage}
             >
               <div className="UnassignedPersonContainer">
                 <img src="/static/unassigned_profile.svg" alt="" height={'100%'} width={'100%'} />

@@ -10,6 +10,7 @@ interface PriceContainerProps {
   price_Text_Color?: string;
   priceBackground?: string;
   session_text_color?: string;
+  isBountyLandingPage?: boolean;
 }
 
 const PriceContainer = styled.div<PriceContainerProps>`
@@ -18,7 +19,8 @@ const PriceContainer = styled.div<PriceContainerProps>`
   align-items: flex-start;
   padding: 0px 24px;
   color: #909baa;
-  padding-top: 41px;
+  margin-left: ${(props: any) => (props.isBountyLandingPage ? '200px' : '0')};
+  padding-top: ${(props: any) => (props.isBountyLandingPage ? '50px' : '41px')};
   .PriceStaticTextContainer {
     width: 28px;
     height: 33px;
@@ -101,6 +103,7 @@ const BountyPrice = (props: BountiesPriceProps) => {
         style={{
           ...props.style
         }}
+        isBountyLandingPage={props.isBountyLandingPage}
       >
         <div
           style={{

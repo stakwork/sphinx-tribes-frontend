@@ -1,11 +1,12 @@
 /* eslint-disable func-style */
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { EuiText, EuiFieldText, EuiGlobalToastList, EuiLoadingSpinner } from '@elastic/eui';
 import { observer } from 'mobx-react-lite';
 import moment from 'moment';
 import { isInvoiceExpired, userCanManageBounty } from 'helpers';
 import { SOCKET_MSG, createSocketInstance } from 'config/socket';
 import { Box } from '@mui/system';
+import { bountyReviewStore } from 'store/bountyReviewStore';
 import { Button, Divider, Modal, usePaymentConfirmationModal } from '../../../../components/common';
 import { colors } from '../../../../config/colors';
 import { renderMarkdown } from '../../../utils/RenderMarkdown';
@@ -42,12 +43,17 @@ import {
   AwardBottomContainer,
   PendingFlex,
   ErrorMsgText,
-  ErrorWrapper
+  ErrorWrapper,
+  ProofContainer,
+  Section,
+  Title,
+  Description,
+  Status
 } from './style';
 import { getTwitterLink } from './lib';
 import CodingMobile from './CodingMobile';
 import { BountyEstimates } from './Components';
-
+import CodingBountyProofModal from './CodingBountyProofModal';
 let interval;
 
 function MobileView(props: CodingBountiesProps) {
@@ -124,6 +130,18 @@ function MobileView(props: CodingBountiesProps) {
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [localPending, setLocalPending] = useState(false);
   const [paymentError, setPaymentError] = useState('');
+  const [isOpenProofModal, setIsOpenProofModal] = useState(false);
+  const [value, setValue] = useState('');
+  const [timingStats, setTimingStats] = useState(null);
+
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const bountyID = id?.toString() || '';
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  }, [value]);
 
   const pendingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -439,6 +457,37 @@ function MobileView(props: CodingBountiesProps) {
     recallBounties();
   };
 
+  const submitProof = async (bountyId: string, description: string): Promise<boolean> => {
+    try {
+      await bountyReviewStore.submitProof(bountyId, description);
+      setToasts([[{ title: 'Proof submitted', color: 'success' }]]);
+      setValue('');
+      return true;
+    } catch (error) {
+      console.error('Error submitting proof:', error);
+      setToasts([[{ title: 'Error submitting proof', color: 'danger' }]]);
+      return false;
+    }
+  };
+
+  const { proofs } = bountyReviewStore;
+
+  useEffect(() => {
+    const fetchProofs = async () => {
+      await bountyReviewStore.getProofs(bountyID);
+    };
+
+    bountyReviewStore.getTiming(bountyID).then((proofTiming: any) => {
+      if (proofTiming !== undefined) {
+        setTimingStats(proofTiming);
+      } else {
+        console.log('Failed to get proof status');
+      }
+    });
+
+    fetchProofs();
+  }, [bountyID]);
+
   const handleSetAsPaid = async (e: any) => {
     e.stopPropagation();
     setUpdatingPayment(true);
@@ -552,6 +601,14 @@ function MobileView(props: CodingBountiesProps) {
         </Box>
       )
     });
+  };
+
+  const openModal = () => {
+    setIsOpenProofModal(true);
+  };
+
+  const proofHandler = () => {
+    openModal();
   };
 
   useEffect(() => {
@@ -806,6 +863,36 @@ function MobileView(props: CodingBountiesProps) {
                       </div>
                     ) : null}
                   </DescriptionBox>
+                  <ProofContainer>
+                    <Section>
+                      <Title>Proof of Work</Title>
+                      <Description>
+                        {proofs[bountyID]?.length ? (
+                          <ul>
+                            {proofs[bountyID].map((proof: any, index: any) => (
+                              <li
+                                key={index}
+                                dangerouslySetInnerHTML={{ __html: proof.description }}
+                              />
+                            ))}
+                          </ul>
+                        ) : (
+                          <p>No proofs available</p>
+                        )}
+                      </Description>
+                    </Section>
+                    <Section style={{ flex: 0.3, textAlign: 'right' }}>
+                      <Title>Status</Title>
+                      <Status>
+                        {' '}
+                        {timingStats ? (
+                          <pre>{JSON.stringify(timingStats, null, 2)}</pre>
+                        ) : (
+                          <p>---</p>
+                        )}
+                      </Status>
+                    </Section>
+                  </ProofContainer>
                 </CreatorDescription>
                 <AssigneeProfile color={color}>
                   <UnassignedPersonProfile
@@ -996,8 +1083,20 @@ function MobileView(props: CodingBountiesProps) {
                         sendToRedirect(profileUrl);
                       }}
                       showGithubBtn={!!ticket_url}
+                      showProof={userAssigned}
+                      showProofAction={proofHandler}
                     />
                   </div>
+                  {isOpenProofModal && (
+                    <CodingBountyProofModal
+                      closeModal={() => setIsOpenProofModal(false)}
+                      value={value}
+                      onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setValue(e.target.value)}
+                      placeholder="Enter proof here"
+                      bountyId={id?.toString() || ''}
+                      submitProof={submitProof}
+                    />
+                  )}
                   <BottomButtonContainer>
                     {bountyPaid ? (
                       <IconButton

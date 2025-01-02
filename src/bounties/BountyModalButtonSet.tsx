@@ -1,7 +1,7 @@
 import { EuiText } from '@elastic/eui';
 import React from 'react';
 import styled from 'styled-components';
-import { ButtonContainer } from 'components/common';
+import { Button, ButtonContainer, Divider } from 'components/common';
 import { colors } from '../config/colors';
 
 const ButtonSetContainer = styled.div`
@@ -173,6 +173,18 @@ const ButtonSet = ({ showGithubBtn, ...props }: any) => {
         </div>
         <EuiText className="ButtonText">Share to Twitter</EuiText>
       </ButtonContainer>
+      <Divider style={{ marginTop: 20 }} />
+      {props.showProof && (
+        <Button
+          iconSize={14}
+          width={220}
+          height={48}
+          color="withdraw"
+          onClick={props.showProofAction}
+          style={{ marginTop: '30px', marginBottom: '-20px', textAlign: 'left' }}
+          text="Submit Proof"
+        />
+      )}
     </ButtonSetContainer>
   );
 };
