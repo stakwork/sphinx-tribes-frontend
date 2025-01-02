@@ -34,10 +34,11 @@ beforeEach(() => {
     sessionStorage.setItem('sphinx_session_id', sessionId);
   }
 
-  cy.intercept('**/*', (req: any) => {
+  cy.intercept('**/*', (req) => {
     req.headers['x-session-id'] = sessionStorage.getItem('sphinx_session_id');
-    cy.wait(1000);
-  });
+  }).as('requests');
+
+  cy.wait('@requests');
 });
 
 afterEach(() => {
