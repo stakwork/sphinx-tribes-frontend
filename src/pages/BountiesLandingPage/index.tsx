@@ -80,13 +80,11 @@ const BountiesLandingPage: React.FC = () => {
     }
 
     p {
-      font-family: Barlow;
       margin-bottom: 16px;
+      font-weight: 500;
       line-height: 1.6;
       word-wrap: break-word;
-      max-width: 550px;
-      color: ${color.text2};
-      font-size: 15px;
+      max-width: 560px;
     }
   `;
 
