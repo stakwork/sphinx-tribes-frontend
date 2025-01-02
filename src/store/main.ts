@@ -2115,11 +2115,11 @@ export class MainStore {
   }
 
   initializeSessionId() {
-    let sessionId = localStorage.getItem('sphinx_session_id');
+    let sessionId = sessionStorage.getItem('sphinx_session_id');
 
     if (!sessionId) {
       sessionId = randomString(32);
-      localStorage.setItem('sphinx_session_id', sessionId);
+      sessionStorage.setItem('sphinx_session_id', sessionId);
     }
 
     this.setSessionId(sessionId);

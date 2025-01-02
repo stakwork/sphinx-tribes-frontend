@@ -25,16 +25,16 @@ import { randomString } from '../../src/helpers/helpers-extended';
 const sessionId = randomString(32);
 
 before(() => {
-  localStorage.setItem('sphinx_session_id', sessionId);
+  sessionStorage.setItem('sphinx_session_id', sessionId);
 });
 
 beforeEach(() => {
-  if (!localStorage.getItem('sphinx_session_id')) {
-    localStorage.setItem('sphinx_session_id', sessionId);
+  if (!sessionStorage.getItem('sphinx_session_id')) {
+    sessionStorage.setItem('sphinx_session_id', sessionId);
   }
 
   cy.intercept('**/*', (req: any) => {
-    req.headers['x-session-id'] = localStorage.getItem('sphinx_session_id');
+    req.headers['x-session-id'] = sessionStorage.getItem('sphinx_session_id');
   });
 });
 
