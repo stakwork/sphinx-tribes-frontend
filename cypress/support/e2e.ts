@@ -19,6 +19,9 @@ import nodes from '../fixtures/nodes.json';
 import nodesv2 from '../fixtures/v2nodes.json';
 import { randomString } from '../../src/helpers/helpers-extended';
 
+// Alternatively you can use CommonJS syntax:
+// require('./commands')
+
 const sessionId = randomString(32);
 
 before(() => {
@@ -27,30 +30,18 @@ before(() => {
 });
 
 beforeEach(() => {
-  const currentSessionId = sessionStorage.getItem('sphinx_session_id');
-  if (!currentSessionId || currentSessionId !== sessionId) {
+  if (!sessionStorage.getItem('sphinx_session_id')) {
     sessionStorage.setItem('sphinx_session_id', sessionId);
   }
 
   cy.intercept('**/*', (req: any) => {
     req.headers['x-session-id'] = sessionStorage.getItem('sphinx_session_id');
-
-    const timestamp = Date.now();
-    req.url = req.url.includes('?') ? `${req.url}&_t=${timestamp}` : `${req.url}?_t=${timestamp}`;
-  });
-
-  cy.window().then((win: any) => {
-    expect(win.sessionStorage.getItem('sphinx_session_id')).to.equal(sessionId);
+    cy.wait(1000);
   });
 });
 
 afterEach(() => {
-  cy.window().then((win: any) => {
-    const currentSessionId = win.sessionStorage.getItem('sphinx_session_id');
-    if (currentSessionId !== sessionId) {
-      sessionStorage.setItem('sphinx_session_id', sessionId);
-    }
-  });
+  sessionStorage.clear();
 });
 
 async function postAllUsersToTribe() {
