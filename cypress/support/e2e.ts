@@ -17,9 +17,26 @@
 import './commands';
 import nodes from '../fixtures/nodes.json';
 import nodesv2 from '../fixtures/v2nodes.json';
+import { randomString } from '../../src/helpers/helpers-extended';
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
+
+const sessionId = randomString(32);
+
+before(() => {
+  localStorage.setItem('sphinx_session_id', sessionId);
+});
+
+beforeEach(() => {
+  if (!localStorage.getItem('sphinx_session_id')) {
+    localStorage.setItem('sphinx_session_id', sessionId);
+  }
+
+  cy.intercept('**/*', (req: any) => {
+    req.headers['x-session-id'] = localStorage.getItem('sphinx_session_id');
+  });
+});
 
 async function postAllUsersToTribe() {
   for (let i = 0; i < nodes.length; i++) {
