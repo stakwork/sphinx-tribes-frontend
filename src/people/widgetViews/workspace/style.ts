@@ -1781,3 +1781,11 @@ export const PreviewButtonGroup = styled.div`
     }
   }
 `;
+
+export const EmptyState = styled.div`
+  border-radius: 4px;
+  font-size: 18px;
+  font-family: 'Barlow';
+  font-weight: 500;
+  color: #000;
+`;
