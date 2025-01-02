@@ -29,11 +29,6 @@ describe('BountyCardStore', () => {
       expect(store.bountyCards).toEqual([]);
       expect(store.currentWorkspaceId).toBe(mockWorkspaceId);
       expect(store.loading).toBeFalsy();
-      expect(store.pagination).toEqual({
-        currentPage: 1,
-        pageSize: 10,
-        total: 0
-      });
     });
   });
 
@@ -80,7 +75,6 @@ describe('BountyCardStore', () => {
 
       await waitFor(() => store.switchWorkspace(newWorkspaceId));
       expect(store.currentWorkspaceId).toBe(newWorkspaceId);
-      expect(store.pagination.currentPage).toBe(1);
       expect(store.bountyCards).toEqual([{ ...mockBounties[0], status: 'Todo' }]);
     });
 
@@ -91,26 +85,6 @@ describe('BountyCardStore', () => {
       await waitFor(() => store.switchWorkspace(mockWorkspaceId));
 
       expect(fetchStub.callCount).toBe(initialFetchCount);
-    });
-  });
-
-  describe('loadNextPage', () => {
-    it('should not load next page if already loading', async () => {
-      store = await waitFor(() => new BountyCardStore(mockWorkspaceId));
-
-      store.loading = true;
-
-      await waitFor(() => store.loadNextPage());
-    });
-
-    it('should not load next page if all items are loaded', async () => {
-      store = await waitFor(() => new BountyCardStore(mockWorkspaceId));
-
-      store.pagination.total = 10;
-      store.pagination.currentPage = 1;
-      store.pagination.pageSize = 10;
-
-      await waitFor(() => store.loadNextPage());
     });
   });
 

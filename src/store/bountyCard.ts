@@ -14,11 +14,6 @@ export class BountyCardStore {
   currentWorkspaceId: string;
   loading = false;
   error: string | null = null;
-  pagination = {
-    currentPage: 1,
-    pageSize: 10,
-    total: 0
-  };
   @observable selectedFeatures: string[] = [];
 
   constructor(workspaceId: string) {
@@ -26,14 +21,6 @@ export class BountyCardStore {
     makeAutoObservable(this);
     this.loadWorkspaceBounties();
     this.restoreFilterState();
-  }
-
-  private constructQueryParams(): string {
-    const { currentPage, pageSize } = this.pagination;
-    return new URLSearchParams({
-      page: currentPage.toString(),
-      limit: pageSize.toString()
-    }).toString();
   }
 
   private calculateBountyStatus(bounty: BountyCard): BountyCardStatus {
@@ -63,9 +50,8 @@ export class BountyCardStore {
         this.error = null;
       });
 
-      const queryParams = this.constructQueryParams();
       const response = await fetch(
-        `${TribesURL}/gobounties/bounty-cards?workspace_uuid=${this.currentWorkspaceId}&${queryParams}`,
+        `${TribesURL}/gobounties/bounty-cards?workspace_uuid=${this.currentWorkspaceId}`,
         {
           method: 'GET',
           headers: {
@@ -82,21 +68,10 @@ export class BountyCardStore {
       const data = (await response.json()) as BountyCard[] | null;
 
       runInAction(() => {
-        if (this.pagination.currentPage === 1) {
-          this.bountyCards = (data || []).map((bounty: BountyCard) => ({
-            ...bounty,
-            status: this.calculateBountyStatus(bounty)
-          }));
-        } else {
-          this.bountyCards = [
-            ...this.bountyCards,
-            ...(data || []).map((bounty: BountyCard) => ({
-              ...bounty,
-              status: this.calculateBountyStatus(bounty)
-            }))
-          ];
-        }
-        this.pagination.total = data?.length || 0;
+        this.bountyCards = (data || []).map((bounty: BountyCard) => ({
+          ...bounty,
+          status: this.calculateBountyStatus(bounty)
+        }));
       });
     } catch (error) {
       runInAction(() => {
@@ -114,23 +89,7 @@ export class BountyCardStore {
 
     runInAction(() => {
       this.currentWorkspaceId = newWorkspaceId;
-      this.pagination.currentPage = 1;
       this.bountyCards = [];
-    });
-
-    await this.loadWorkspaceBounties();
-  };
-
-  loadNextPage = async (): Promise<void> => {
-    if (
-      this.loading ||
-      this.pagination.currentPage * this.pagination.pageSize >= this.pagination.total
-    ) {
-      return;
-    }
-
-    runInAction(() => {
-      this.pagination.currentPage += 1;
     });
 
     await this.loadWorkspaceBounties();
