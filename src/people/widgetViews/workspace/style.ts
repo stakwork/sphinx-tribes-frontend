@@ -1063,7 +1063,7 @@ export const ActionButton = styled.button<ButtonProps>`
 
   &:hover {
     text-decoration: none;
-    color:white;
+    color: white;
   }
 
   :disabled {
