@@ -429,7 +429,7 @@ const WorkspaceMission = () => {
   };
 
   const handleViewBounties = () => {
-    window.open('https://community.sphinx.chat/workspace/bounties', '_blank');
+    window.open(`/workspace/bounties/${uuid}`, '_target');
   };
 
   const handleUserRepoOptionClick = (repositoryId: number) => {
