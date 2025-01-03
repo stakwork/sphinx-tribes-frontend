@@ -1,6 +1,7 @@
 import { makeAutoObservable } from 'mobx';
 import { TribesURL } from 'config';
 import { ProofOfWork, BountyTiming } from './interface';
+import { uiStore } from './ui';
 
 export class BountyReviewStore {
   proofs: Record<string, ProofOfWork[]> = {};
@@ -30,11 +31,15 @@ export class BountyReviewStore {
 
   async getProofs(bountyId: string) {
     try {
+      if (!uiStore._meInfo) return null;
+      const info = uiStore.meInfo;
+
       this.setLoading(true);
-      const response = await fetch(`${TribesURL}/bounties/${bountyId}/proofs`, {
+      const response = await fetch(`${TribesURL}/gobounties/${bountyId}/proofs`, {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'x-jwt': info?.tribe_jwt || ''
         }
       });
 
@@ -53,16 +58,21 @@ export class BountyReviewStore {
 
   async submitProof(bountyId: string, description: string) {
     try {
+      if (!uiStore._meInfo) return null;
+      const info = uiStore.meInfo;
       this.setLoading(true);
 
       // Submit proof
-      let response = await fetch(`${TribesURL}/bounties/${bountyId}/proof`, {
+      let response = await fetch(`${TribesURL}/gobounties/${bountyId}/proof`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'x-jwt': info?.tribe_jwt || ''
         },
         body: JSON.stringify({ description })
       });
+
+      console.log(info?.tribe_jwt);
 
       if (!response.ok) {
         throw new Error(`Failed to submit proof: ${response.statusText}`);
@@ -71,10 +81,11 @@ export class BountyReviewStore {
       const proof = (await response.json()) as ProofOfWork;
 
       // Pause timer
-      response = await fetch(`${TribesURL}/bounties/${bountyId}/timing/close`, {
+      response = await fetch(`${TribesURL}/gobounties/${bountyId}/timing/close`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'x-jwt': info?.tribe_jwt || ''
         }
       });
 
@@ -94,11 +105,14 @@ export class BountyReviewStore {
 
   async getTiming(bountyId: string) {
     try {
+      if (!uiStore._meInfo) return null;
+      const info = uiStore.meInfo;
       this.setLoading(true);
-      const response = await fetch(`${TribesURL}/bounties/${bountyId}/timing-stats`, {
+      const response = await fetch(`${TribesURL}/gobounties/${bountyId}/timing`, {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'x-jwt': info?.tribe_jwt || ''
         }
       });
 
