@@ -12,6 +12,7 @@ import {
 } from '@elastic/eui';
 import { renderMarkdown } from 'people/utils/RenderMarkdown.tsx';
 import styled from 'styled-components';
+import history from 'config/history';
 import { phaseTicketStore } from '../../../store/phase';
 import {
   ActionButton,
@@ -39,6 +40,12 @@ interface TicketEditorProps {
   dragHandleProps?: Record<string, any>;
   swwfLink?: string;
   getPhaseTickets: () => Promise<Ticket[] | undefined>;
+}
+
+export interface CreateBountyResponse {
+  bounty_id: number;
+  success: boolean;
+  message?: string;
 }
 
 const SwitcherContainer = styled.div`
@@ -91,6 +98,7 @@ const TicketEditor = observer(
     const [versionTicketData, setVersionTicketData] = useState<Ticket>(latestTicket as Ticket);
     const [isCopying, setIsCopying] = useState(false);
     const [activeMode, setActiveMode] = useState<'preview' | 'edit'>('edit');
+    const [isCreatingBounty, setIsCreatingBounty] = useState(false);
     const { main } = useStores();
     const ui = uiStore;
 
@@ -277,6 +285,43 @@ const TicketEditor = observer(
         setIsCopying(false);
       }
     };
+
+    const handleCreateBounty = async () => {
+      if (isCreatingBounty) return;
+
+      setIsCreatingBounty(true);
+      try {
+        const data = await main.createBountyFromTicket(ticketData.uuid);
+
+        if (data?.success) {
+          setToasts([
+            {
+              id: `${Date.now()}-bounty-success`,
+              title: 'Bounty Created',
+              color: 'success',
+              text: 'Bounty created successfully!'
+            }
+          ]);
+
+          history.push(`/bounty/${data.bounty_id}`);
+        } else {
+          throw new Error('Failed to create bounty');
+        }
+      } catch (error) {
+        console.error('Error creating bounty:', error);
+        setToasts([
+          {
+            id: `${Date.now()}-bounty-error`,
+            title: 'Error',
+            color: 'danger',
+            text: 'Failed to create bounty'
+          }
+        ]);
+      } finally {
+        setIsCreatingBounty(false);
+      }
+    };
+
     return (
       <TicketContainer>
         <EuiFlexGroup alignItems="center" gutterSize="s">
@@ -371,6 +416,14 @@ const TicketEditor = observer(
                 data-testid="story-input-update-btn"
               >
                 Update
+              </ActionButton>
+              <ActionButton
+                color="#FF6B6B"
+                onClick={handleCreateBounty}
+                disabled={isCreatingBounty}
+                data-testid="create-bounty-btn"
+              >
+                {isCreatingBounty ? 'Creating Bounty...' : 'Create Bounty'}
               </ActionButton>
               {swwfLink && (
                 <ActionButton
