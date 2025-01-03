@@ -579,7 +579,10 @@ const WorkspaceMission = () => {
 
   const getFeatures = useCallback(async () => {
     if (!uuid) return;
-    const featuresRes = await main.getWorkspaceFeatures(uuid, { page: currentPage });
+    const featuresRes = await main.getWorkspaceFeatures(uuid, {
+      page: currentPage,
+      status: 'active'
+    });
     if (!featuresRes) return;
 
     updateFeatures(featuresRes);
