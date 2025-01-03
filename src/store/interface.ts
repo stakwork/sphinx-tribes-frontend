@@ -176,7 +176,7 @@ export interface QueryParams {
   org_uuid?: string;
   provider?: string;
   workspace?: string;
-  status?:string;
+  status?: string;
 }
 
 export interface ClaimOnLiquid {
@@ -316,7 +316,7 @@ export interface Feature {
   updated: string;
   created_by: string;
   updated_by: string;
-  feat_status?:string;
+  feat_status?: string;
 }
 
 export interface FeatureStory {
