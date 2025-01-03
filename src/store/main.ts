@@ -48,7 +48,8 @@ import {
   CreateFeatureStoryInput,
   TicketPayload,
   Ticket,
-  CodeGraph
+  CodeGraph,
+  CreateBountyResponse
 } from './interface';
 
 function makeTorSaveURL(host: string, key: string) {
@@ -3927,6 +3928,31 @@ export class MainStore {
       return response.json();
     } catch (e) {
       console.log('Error deleteCodeGraph', e);
+      return null;
+    }
+  }
+
+  async createBountyFromTicket(ticketUuid: string): Promise<CreateBountyResponse | null> {
+    try {
+      const info = uiStore.meInfo;
+      if (!info) return null;
+
+      const response = await fetch(`${TribesURL}/bounties/ticket/${ticketUuid}/bounty`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create bounty');
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error('Error creating bounty:', error);
       return null;
     }
   }
