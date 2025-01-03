@@ -12,16 +12,16 @@ describe('Edit Workspace Details', () => {
     website: 'https://updated.org'
   };
 
-  before(() => {
+  it('should edit workspace details successfully', () => {
     cy.login(workspace.loggedInAs);
     cy.wait(1000);
+
     cy.contains(workspace.loggedInAs).click();
     cy.wait(1000);
+
     cy.create_workspace(workspace);
     cy.wait(1000);
-  });
 
-  it('should edit workspace details successfully', () => {
     cy.contains(workspace.name).get(`[data-work-name="${workspace.name}"]`).click();
     cy.wait(1000);
 

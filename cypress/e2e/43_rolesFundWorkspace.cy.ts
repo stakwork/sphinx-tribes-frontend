@@ -9,10 +9,6 @@ describe('Fund Workspace Role Test', () => {
     github: 'https://github.com/amazing'
   };
 
-  beforeEach(() => {
-    cy.clearCookies();
-  });
-
   it('Should allow a user with a Fund Workspave role to deposit into the workspace', () => {
     cy.login(workspace.loggedInAs);
     cy.wait(1000);
