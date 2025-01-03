@@ -161,10 +161,6 @@ export interface PersonOffer {
   created: number;
 }
 
-export interface Jwt {
-  jwt: string;
-}
-
 export interface QueryParams {
   page?: number;
   limit?: number;
@@ -426,26 +422,6 @@ export interface Ticket {
   author_id?: string;
   created_at?: Date;
   updated_at?: Date;
-}
-
-export interface CreateTicketInput {
-  feature_uuid: string;
-  phase_uuid: string;
-  name: string;
-  description: string;
-  sequence?: number;
-  dependency?: string[];
-  status?: TicketStatus;
-}
-
-export interface UpdateTicketInput {
-  uuid: string;
-  name?: string;
-  description?: string;
-  sequence?: number;
-  dependency?: string[];
-  status?: TicketStatus;
-  version?: number;
 }
 
 export interface TicketMessage {
