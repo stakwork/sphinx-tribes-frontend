@@ -190,7 +190,9 @@ const WorkspacePlanner = observer(() => {
 
   const handleCardClick = (bountyId: string) => {
     bountyCardStore.saveFilterState();
-    history.push(`/bounty/${bountyId}`);
+    history.push(`/bounty/${bountyId}`, {
+      from: `/workspace/${uuid}/planner`
+    });
   };
 
   return (
