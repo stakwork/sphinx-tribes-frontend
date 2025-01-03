@@ -3465,6 +3465,32 @@ export class MainStore {
     }
   }
 
+  async archiveFeature(uuid: string): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+      const response = await fetch(`${TribesURL}/features/${uuid}/status`, {
+        method: 'PUT',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status: 'archived' })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (e) {
+      console.log('Error archiveFeature', e);
+      return null;
+    }
+  }
+
   async getRepositories(workspace_uuid: string): Promise<any> {
     try {
       if (!uiStore.meInfo) return [];

@@ -135,6 +135,7 @@ const EuiLinkStyled = styled(EuiLink)<{ isMobile: boolean }>`
 
 const StatusWrap = styled.div`
   margin-left: auto;
+  margin-right: 120px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -283,6 +284,7 @@ const WorkspaceMission = () => {
   const [workspaceData, setWorkspaceData] = useState<Workspace>();
   const [loading, setLoading] = useState(true);
   const [displayMission, setDidplayMission] = useState(false);
+  const [visibleFeatureStatus, setVisibleFeatureStatus] = useState<{ [key: string]: boolean }>({});
   const [editMission, setEditMission] = useState(false);
   const [displaySchematic, setDidplaySchematic] = useState(false);
   const [editTactics, setEditTactics] = useState(false);
@@ -611,6 +613,30 @@ const WorkspaceMission = () => {
   const editMissionActions = () => {
     setEditMission(!editMission);
     setDidplayMission(false);
+  };
+
+  const toggleFeatureStatus = (uuid: string) => {
+    setVisibleFeatureStatus((prevState: { [key: string]: boolean }) => ({
+      ...prevState,
+      [uuid]: !prevState[uuid]
+    }));
+  };
+
+  const closeAllFeatureStatus = () => {
+    setVisibleFeatureStatus({});
+  };
+
+  const archiveFeatureStatus = async (uuid: string) => {
+    await main.archiveFeature(uuid);
+    ui.setToasts([
+      {
+        title: 'Archived',
+        color: 'success',
+        text: 'Feature is successfully archived'
+      }
+    ]);
+    getFeatures();
+    closeAllFeatureStatus();
   };
 
   const missionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -1224,6 +1250,26 @@ const WorkspaceMission = () => {
                                 >
                                   {feat.name}
                                 </FeatureLink>
+                                <OptionsWrap>
+                                  <MaterialIcon
+                                    icon={'more_horiz'}
+                                    className="MaterialIcon"
+                                    onClick={() => toggleFeatureStatus(feat.uuid)}
+                                    data-testid="mission-option-btn"
+                                  />
+                                  {visibleFeatureStatus[feat.uuid] && (
+                                    <EditPopover>
+                                      <EditPopoverTail />
+                                      <EditPopoverContent
+                                        onClick={() => archiveFeatureStatus(feat.uuid)}
+                                      >
+                                        <EditPopoverText data-testid="mission-edit-btn">
+                                          Archive
+                                        </EditPopoverText>
+                                      </EditPopoverContent>
+                                    </EditPopover>
+                                  )}
+                                </OptionsWrap>
                                 <StatusWrap>
                                   <StatusBox type="completed">
                                     Completed
