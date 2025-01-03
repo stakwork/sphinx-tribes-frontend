@@ -378,8 +378,14 @@ const TicketEditor = observer(
                   href={`https://jobs.stakwork.com/admin/projects/${swwfLink}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ textDecoration: 'none' }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    textDecoration: 'none'
+                  }}
                   color="#49C998"
+                  className="no-underline"
                 >
                   SW Run: {swwfLink}
                 </ActionButton>
