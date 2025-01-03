@@ -18,7 +18,6 @@ import {
   Label,
   Data,
   OptionsWrap,
-  TextArea,
   InputField,
   Input,
   UserStoryOptionWrap,
@@ -64,6 +63,7 @@ import {
 } from './workspace/style';
 import WorkspacePhasingTabs from './workspace/WorkspacePhase';
 import { Phase, Toast } from './workspace/interface';
+import { EditableField } from './workspace/EditableField';
 
 interface AudioRecordingModalProps {
   open: boolean;
@@ -186,6 +186,8 @@ interface WSEditableFieldProps {
   main: typeof mainStore;
   showAudioButton?: boolean;
   feature_uuid?: string;
+  previewMode: 'preview' | 'edit';
+  setPreviewMode: DispatchSetStateAction<'preview' | 'edit'>;
 }
 
 const WorkspaceEditableField = ({
@@ -201,59 +203,17 @@ const WorkspaceEditableField = ({
   onSubmit,
   main,
   showAudioButton = false,
-  feature_uuid
+  feature_uuid,
+  previewMode,
+  setPreviewMode
 }: WSEditableFieldProps) => {
   const handleEditClick = () => {
     setIsEditing(!isEditing);
     setDisplayOptions(false);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setValue(e.target.value);
-  };
-
   const handleCancelClick = () => {
     setIsEditing(false);
-  };
-
-  const handlePaste = async (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
-    e.persist();
-
-    const clipboardItems: DataTransferItemList = e.clipboardData?.items as DataTransferItemList;
-    const itemsArray: DataTransferItem[] = Array.from(clipboardItems);
-    for (const item of itemsArray) {
-      if (item.type.startsWith('image/')) {
-        const imageFile = item.getAsFile();
-        if (imageFile) {
-          const formData = new FormData();
-          formData.append('file', imageFile);
-          const file = await main.uploadFile(formData);
-          let img_url = '';
-          if (file && file.ok) {
-            img_url = await file.json();
-          }
-          setValue((prevValue: string) => `${prevValue}\n![Uploaded Image](${img_url})`);
-        }
-        e.preventDefault();
-      }
-    }
-  };
-
-  const parseValue = (input: string | null): string => {
-    if (!input) {
-      return `No ${label.toLowerCase()} yet`;
-    }
-
-    // Regex to detect markdown image syntax ![alt text](url)
-    const imageMarkdownRegex = /!\[.*?\]\((.*?)\)/g;
-
-    // Replace the markdown image syntax with HTML <img> tag
-    return input
-      .replace(
-        imageMarkdownRegex,
-        (match: string, p1: string) => `<img src="${p1}" alt="Uploaded Image" />`
-      )
-      .replace(/\n/g, '<br/>');
   };
 
   const [showAudioModal, setShowAudioModal] = useState(false);
@@ -322,44 +282,34 @@ const WorkspaceEditableField = ({
             </EditPopover>
           )}
         </OptionsWrap>
-        {!isEditing ? (
-          <div
-            style={{
-              overflowY: 'auto'
-            }}
-            dangerouslySetInnerHTML={{
-              __html: parseValue(value)
-            }}
-          />
-        ) : (
-          <>
-            <TextArea
-              placeholder={`Enter ${placeholder}`}
-              onChange={handleChange}
-              onPaste={handlePaste}
-              value={value}
-              data-testid={`${dataTestIdPrefix}-textarea`}
-              rows={10}
-              cols={50}
-              style={{ resize: 'vertical', overflow: 'auto' }}
-            />
-            <ButtonWrap>
-              <ActionButton
-                onClick={handleCancelClick}
-                data-testid={`${dataTestIdPrefix}-cancel-btn`}
-                color="cancel"
-              >
-                Cancel
-              </ActionButton>
-              <ActionButton
-                color="primary"
-                onClick={onSubmit}
-                data-testid={`${dataTestIdPrefix}-update-btn`}
-              >
-                Update
-              </ActionButton>
-            </ButtonWrap>
-          </>
+
+        <EditableField
+          value={value}
+          setValue={setValue}
+          isEditing={isEditing}
+          previewMode={previewMode}
+          setPreviewMode={setPreviewMode}
+          placeholder={placeholder}
+          dataTestIdPrefix={dataTestIdPrefix}
+        />
+
+        {isEditing && (
+          <ButtonWrap>
+            <ActionButton
+              onClick={handleCancelClick}
+              data-testid={`${dataTestIdPrefix}-cancel-btn`}
+              color="cancel"
+            >
+              Cancel
+            </ActionButton>
+            <ActionButton
+              color="primary"
+              onClick={onSubmit}
+              data-testid={`${dataTestIdPrefix}-update-btn`}
+            >
+              Update
+            </ActionButton>
+          </ButtonWrap>
         )}
       </Data>
     </FieldWrap>
@@ -468,6 +418,13 @@ const WorkspaceFeature = () => {
   const [editFeatureName, setEditFeatureName] = useState<string>(featureData?.name || '');
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [displayNameOptions, setDisplayNameOptions] = useState<boolean>(false);
+  const [briefPreviewMode, setBriefPreviewMode] = useState<'preview' | 'edit'>('edit');
+  const [architecturePreviewMode, setArchitecturePreviewMode] = useState<'preview' | 'edit'>(
+    'edit'
+  );
+  const [requirementsPreviewMode, setRequirementsPreviewMode] = useState<'preview' | 'edit'>(
+    'edit'
+  );
 
   const history = useHistory();
 
@@ -835,6 +792,8 @@ const WorkspaceFeature = () => {
           main={main}
           showAudioButton={true}
           feature_uuid={feature_uuid}
+          previewMode={briefPreviewMode}
+          setPreviewMode={setBriefPreviewMode}
         />
         <FieldWrap>
           <Label>User Stories</Label>
@@ -939,6 +898,8 @@ const WorkspaceFeature = () => {
           dataTestIdPrefix="requirements"
           onSubmit={() => submitField('requirements', requirements, setEditRequirements)}
           main={main}
+          previewMode={requirementsPreviewMode}
+          setPreviewMode={setRequirementsPreviewMode}
         />
         <WorkspaceEditableField
           label="Architecture"
@@ -952,6 +913,8 @@ const WorkspaceFeature = () => {
           dataTestIdPrefix="architecture"
           onSubmit={() => submitField('architecture', architecture, setEditArchitecture)}
           main={main}
+          previewMode={architecturePreviewMode}
+          setPreviewMode={setArchitecturePreviewMode}
         />
         <UserStoryModal
           open={modalOpen}

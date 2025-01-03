@@ -40,9 +40,15 @@ interface TicketTextAreaProps {
   onChange: (value: string) => void;
   placeholder?: string;
   ui: UiStore;
+  'data-testid'?: string;
 }
 
-export const TicketTextAreaComp = ({ value, onChange, placeholder }: TicketTextAreaProps) => {
+export const TicketTextAreaComp = ({
+  value,
+  onChange,
+  placeholder,
+  'data-testid': dataTestId
+}: TicketTextAreaProps) => {
   const { main } = useStores();
 
   const textareaValue = () => {
@@ -140,6 +146,7 @@ export const TicketTextAreaComp = ({ value, onChange, placeholder }: TicketTextA
         onChange={(e: ChangeEvent<HTMLTextAreaElement>) => onChange(e.target.value)}
         onPaste={handlePaste}
         placeholder={placeholder}
+        data-testid={dataTestId}
       />
     </div>
   );
