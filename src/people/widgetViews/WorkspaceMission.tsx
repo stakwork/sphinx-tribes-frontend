@@ -428,6 +428,10 @@ const WorkspaceMission = () => {
     history.push(`/workspace/${uuid}/planner`);
   };
 
+  const handleViewBounties = () => {
+    window.open(`/workspace/bounties/${uuid}`, '_target');
+  };
+
   const handleUserRepoOptionClick = (repositoryId: number) => {
     setDisplayUserRepoOptions((prev: Record<number, boolean>) => ({
       ...prev,
@@ -1091,6 +1095,25 @@ const WorkspaceMission = () => {
                 />
               </WorkspaceFieldWrap>
             )}
+            <WorkspaceFieldWrap>
+              <Button
+                style={{
+                  borderRadius: '5px',
+                  margin: 0,
+                  padding: '10px 20px',
+                  width: '100%',
+                  backgroundColor: '#4285f4',
+                  color: 'white',
+                  textAlign: 'center',
+                  border: 'none',
+                  fontSize: '16px',
+                  cursor: 'pointer'
+                }}
+                onClick={handleViewBounties}
+                dataTestId="workspace-planner-btn"
+                text="View Bounties"
+              />
+            </WorkspaceFieldWrap>
             <HorizontalGrayLine />
             <FieldWrap style={{ marginTop: '10px' }}>
               <Label>Talk to Hive</Label>
