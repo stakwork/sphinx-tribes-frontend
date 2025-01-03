@@ -548,3 +548,4 @@ export interface BountyTiming {
   lastPoWAt: string | null;
   closedAt: string | null;
 }
+
