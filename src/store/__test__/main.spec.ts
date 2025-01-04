@@ -1191,7 +1191,7 @@ describe('Main store', () => {
   it('should return filter by languages, status response', async () => {
     const store = new MainStore();
     const filterCriteria = {
-      limit: 10,
+      limit: 25,
       page: 1,
       sortBy: 'created',
       coding_languages: 'Typescript',
