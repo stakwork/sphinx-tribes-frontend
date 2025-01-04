@@ -111,14 +111,14 @@ export interface PersonBounty {
   show?: boolean;
   assignee?: any;
   wanted_type: string;
-  feature_id?: string;
-  phase_id?: string;
   type?: string;
   price?: string;
   codingLanguage: string;
   estimated_session_length: string;
   bounty_expires?: string;
   commitment_fee?: number;
+  feature_id?: string;
+  phase_id?: string;
 }
 
 export type WorkspaceTransactionType = 'deposit' | 'payment' | 'withdraw' | 'failed' | 'pending';

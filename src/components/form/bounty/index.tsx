@@ -50,6 +50,12 @@ function Form(props: FormProps) {
   const { main, ui } = useStores();
   const color = colors['light'];
   const [isFocused, setIsFocused] = useState({});
+  const [workspaceid, setWorskspaceid] = useState('');
+  const [featureid, setFeatureid] = useState('');
+  const [workspaceFeature, setWorkspaceFeatures] = useState<
+    Array<{ value: string; label: string }>
+  >([]);
+  const [featurePhase, setFeaturedPhase] = useState<Array<{ value: string; label: string }>>([]);
 
   const [schemaData, setSchemaData] = useState(BountyDetailsCreationData.step_1);
   const [stepTracker, setStepTracker] = useState<number>(1);
@@ -162,8 +168,64 @@ function Form(props: FormProps) {
 
   let schema = props.paged ? props.schema?.filter((f: any) => f.page === page) : props.schema;
 
+  useEffect(() => {
+    (async () => {
+      try {
+        const features = await main.getWorkspaceFeatures(workspaceid, {
+          page: 1,
+          status: 'active'
+        });
+
+        if (Array.isArray(features)) {
+          const filteredFeatures = features.map(
+            ({ uuid, name }: { uuid: string; name: string }) => ({
+              value: uuid,
+              label: name
+            })
+          );
+
+          setWorkspaceFeatures(filteredFeatures);
+        } else {
+          console.log('Features object:', features);
+        }
+      } catch (error) {
+        console.error('Error fetching or parsing features:', error);
+      }
+    })();
+  }, [main, featureid, workspaceFeature, workspaceid]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const phase = await main.getFeaturePhases(featureid);
+
+        if (Array.isArray(phase)) {
+          const filteredPhase = phase.map(({ uuid, name }: { uuid: string; name: string }) => ({
+            value: uuid,
+            label: name
+          }));
+          setFeaturedPhase(filteredPhase);
+        } else {
+          console.log('Features object:', phase);
+        }
+      } catch (error) {
+        console.error('Error fetching or parsing features:', error);
+      }
+    })();
+  }, [featureid, main]);
+
   // replace schema with dynamic schema if there is one
   schema = dynamicSchema || schema;
+  if (schema && Array.isArray(schema)) {
+    const featureFieldIndex = schema.findIndex((field: FormField) => field.name === 'feature_id');
+    if (featureFieldIndex !== -1) {
+      schema[featureFieldIndex].options = workspaceFeature;
+    }
+    const phaseFieldIndex = schema.findIndex((field: FormField) => field.name === 'phase_id');
+    if (phaseFieldIndex !== -1) {
+      schema[phaseFieldIndex].options = featurePhase;
+    }
+  }
 
   schema = isMobile ? swapElements([...schema], 7, 8) : schema;
 
@@ -213,6 +275,11 @@ function Form(props: FormProps) {
         const valid = schemaData.required.every((key: string) =>
           key === '' ? true : values?.[key]
         );
+
+        if (values.org_uuid !== '') {
+          setFeatureid(values.feature_id);
+          setWorskspaceid(values.org_uuid);
+        }
 
         const isBtnDisabled = (stepTracker === 3 && !isDescriptionValid) || !valid;
 
