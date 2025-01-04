@@ -1188,7 +1188,7 @@ describe('Main store', () => {
     });
   });
 
-  it('should return filter by languages, status response', async () => {
+  it('should return filter by the languages, status, and other criteria', async () => {
     const store = new MainStore();
     const filterCriteria = {
       limit: 25,
