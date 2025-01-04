@@ -20,7 +20,8 @@
     "prepare": "husky install .husky",
     "test": "yarn run test-jest",
     "test-jest": "REACT_APP_IS_TEST=true NODE_ENV=test yarn jest --coverage --maxWorkers 2 --no-cache --transformIgnorePatterns \"./svg/\"",
-    "cypress:run": "npx cypress run"
+    "cypress:run": "npx cypress run",
+    "fix-line-endings": "git rm --cached -r . && git reset --hard && yarn prettier"
   },
   "resolutions": {
     "react-error-overlay": "6.0.9",
