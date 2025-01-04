@@ -12,6 +12,7 @@ import {
 } from '@elastic/eui';
 import { renderMarkdown } from 'people/utils/RenderMarkdown.tsx';
 import styled from 'styled-components';
+import history from 'config/history.ts';
 import { phaseTicketStore } from '../../../store/phase';
 import {
   ActionButton,
@@ -92,6 +93,7 @@ const TicketEditor = observer(
     const [isCopying, setIsCopying] = useState(false);
     const [activeMode, setActiveMode] = useState<'preview' | 'edit'>('edit');
     const { main } = useStores();
+    const [isCreatingBounty, setIsCreatingBounty] = useState(false);
     const ui = uiStore;
 
     const groupTickets = useMemo(
@@ -277,6 +279,43 @@ const TicketEditor = observer(
         setIsCopying(false);
       }
     };
+
+    const handleCreateBounty = async () => {
+      if (isCreatingBounty) return;
+
+      setIsCreatingBounty(true);
+      try {
+        const data = await main.createBountyFromTicket(ticketData.uuid);
+
+        if (data?.success) {
+          setToasts([
+            {
+              id: `${Date.now()}-bounty-success`,
+              title: 'Bounty Created',
+              color: 'success',
+              text: 'Bounty created successfully!'
+            }
+          ]);
+
+          history.push(`/bounty/${data.bounty_id}`);
+        } else {
+          throw new Error('Failed to create bounty');
+        }
+      } catch (error) {
+        console.error('Error creating bounty:', error);
+        setToasts([
+          {
+            id: `${Date.now()}-bounty-error`,
+            title: 'Error',
+            color: 'danger',
+            text: 'Failed to create bounty'
+          }
+        ]);
+      } finally {
+        setIsCreatingBounty(false);
+      }
+    };
+
     return (
       <TicketContainer>
         <EuiFlexGroup alignItems="center" gutterSize="s">
@@ -372,14 +411,28 @@ const TicketEditor = observer(
               >
                 Update
               </ActionButton>
+              <ActionButton
+                color="primary"
+                onClick={handleCreateBounty}
+                disabled={isCreatingBounty}
+                data-testid="create-bounty-from-ticket-btn"
+              >
+                {isCreatingBounty ? 'Creating Bounty...' : 'Create Bounty'}
+              </ActionButton>
               {swwfLink && (
                 <ActionButton
                   as="a"
                   href={`https://jobs.stakwork.com/admin/projects/${swwfLink}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ textDecoration: 'none' }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    textDecoration: 'none'
+                  }}
                   color="#49C998"
+                  className="no-underline"
                 >
                   SW Run: {swwfLink}
                 </ActionButton>

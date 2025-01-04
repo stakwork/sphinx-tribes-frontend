@@ -460,12 +460,26 @@ function MobileView(props: CodingBountiesProps) {
   const submitProof = async (bountyId: string, description: string): Promise<boolean> => {
     try {
       await bountyReviewStore.submitProof(bountyId, description);
-      setToasts([[{ title: 'Proof submitted', color: 'success' }]]);
+      setToasts([
+        {
+          id: `${Math.random()}`,
+          title: 'Proof of Work',
+          color: 'success',
+          text: 'Proof of work submitted successfully'
+        }
+      ]);
       setValue('');
       return true;
     } catch (error) {
+      setToasts([
+        {
+          id: `${Math.random()}`,
+          title: 'Something Went Wrong!',
+          color: 'danger',
+          text: 'Error submitting Proof of work please try again'
+        }
+      ]);
       console.error('Error submitting proof:', error);
-      setToasts([[{ title: 'Error submitting proof', color: 'danger' }]]);
       return false;
     }
   };
@@ -477,14 +491,11 @@ function MobileView(props: CodingBountiesProps) {
       await bountyReviewStore.getProofs(bountyID);
     };
 
-    bountyReviewStore.getTiming(bountyID).then((proofTiming: any) => {
-      if (proofTiming !== undefined) {
-        setTimingStats(proofTiming);
-      } else {
-        console.log('Failed to get proof status');
-      }
-    });
+    const fetchTiming = async () => {
+      await bountyReviewStore.getProofs(bountyID);
+    };
 
+    fetchTiming();
     fetchProofs();
   }, [bountyID]);
 

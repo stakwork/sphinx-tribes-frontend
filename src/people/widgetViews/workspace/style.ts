@@ -1061,6 +1061,11 @@ export const ActionButton = styled.button<ButtonProps>`
     }
   }};
 
+  &:hover {
+    text-decoration: none;
+    color: white;
+  }
+
   :disabled {
     border: 1px solid rgba(0, 0, 0, 0.07);
     background: rgba(0, 0, 0, 0.04);
@@ -1717,4 +1722,75 @@ export const SchematicImgContainer = styled.div`
   border-radius: 10px;
   overflow: hidden;
   background-color: #ebedf1;
+`;
+
+export const SwitcherContainer = styled.div`
+  display: flex;
+  background-color: rgb(238, 231, 231);
+  border-radius: 20px;
+  padding: 4px;
+  width: fit-content;
+  margin-bottom: 12px;
+  align-self: flex-end;
+`;
+
+export const SwitcherButton = styled.button<{ isActive: boolean }>`
+  padding: 8px 16px;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+
+  ${(props: { isActive: boolean }) =>
+    props.isActive
+      ? `
+    background-color: #007bff;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+  `
+      : `
+    background-color: transparent;
+    color: #333;
+    &:hover {
+      background-color: rgba(0, 123, 255, 0.1);
+    }
+  `}
+`;
+
+export const PreviewButtonGroup = styled.div`
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  justify-content: flex-end;
+  margin-left: auto;
+  margin-top: calc(100px - 110px);
+  margin-right: 3px;
+
+  ${ActionButton} {
+    transition: background-color 0.2s ease;
+    width: auto;
+    min-width: 100px;
+
+    &[color='primary'] {
+      background-color: #618aff;
+
+      &:hover {
+        background-color: #7599ff;
+      }
+
+      &:active {
+        background-color: #4b7bff;
+      }
+    }
+  }
+`;
+
+export const EmptyState = styled.div`
+  border-radius: 4px;
+  font-size: 18px;
+  font-family: 'Barlow';
+  font-weight: 500;
+  color: #000;
 `;

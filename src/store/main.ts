@@ -48,7 +48,8 @@ import {
   CreateFeatureStoryInput,
   TicketPayload,
   Ticket,
-  CodeGraph
+  CodeGraph,
+  CreateBountyResponse
 } from './interface';
 
 function makeTorSaveURL(host: string, key: string) {
@@ -3465,6 +3466,32 @@ export class MainStore {
     }
   }
 
+  async archiveFeature(uuid: string): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+      const response = await fetch(`${TribesURL}/features/${uuid}/status`, {
+        method: 'PUT',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status: 'archived' })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (e) {
+      console.log('Error archiveFeature', e);
+      return null;
+    }
+  }
+
   async getRepositories(workspace_uuid: string): Promise<any> {
     try {
       if (!uiStore.meInfo) return [];
@@ -3901,6 +3928,31 @@ export class MainStore {
       return response.json();
     } catch (e) {
       console.log('Error deleteCodeGraph', e);
+      return null;
+    }
+  }
+
+  async createBountyFromTicket(ticketUuid: string): Promise<CreateBountyResponse | null> {
+    try {
+      const info = uiStore.meInfo;
+      if (!info) return null;
+
+      const response = await fetch(`${TribesURL}/bounties/ticket/${ticketUuid}/bounty`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create bounty');
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error('Error creating bounty:', error);
       return null;
     }
   }

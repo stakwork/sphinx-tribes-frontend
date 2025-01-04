@@ -15,7 +15,8 @@ const PlannerContainer = styled.div`
   padding: 0;
   height: calc(100vh - 65px);
   background: ${colors.light.grayish.G950};
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 `;
 
 const ContentArea = styled.div`
@@ -32,8 +33,8 @@ const ColumnsContainer = styled.div`
   gap: 1rem;
   padding: 1rem;
   overflow-x: auto;
-  background: white;
-  height: 600px !important;
+  background: whote;
+  height: calc(100vh - 200px) !important;
 
   &::-webkit-scrollbar {
     height: 7px;
@@ -54,7 +55,8 @@ const Column = styled.div`
   border-radius: 8px;
   display: flex;
   flex-direction: column;
-  max-height: 100%;
+  height: auto;
+  min-height: 500px;
 `;
 
 const ColumnHeader = styled.div`
@@ -173,7 +175,9 @@ const WorkspacePlanner = observer(() => {
 
   const handleCardClick = (bountyId: string) => {
     bountyCardStore.saveFilterState();
-    history.push(`/bounty/${bountyId}`);
+    history.push(`/bounty/${bountyId}`, {
+      from: `/workspace/${uuid}/planner`
+    });
   };
 
   return (
@@ -185,7 +189,6 @@ const WorkspacePlanner = observer(() => {
         setFilterToggle={setFilterToggle}
       />
       <ContentArea>
-        <h1>Welcome to the new Workspace Planner</h1>
         <ColumnsContainer>
           {COLUMN_CONFIGS.map(({ id, title }: { id: string; title: string }) => (
             <Column key={id}>
