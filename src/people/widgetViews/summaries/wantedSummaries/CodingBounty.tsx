@@ -881,10 +881,25 @@ function MobileView(props: CodingBountiesProps) {
                         {proofs[bountyID]?.length ? (
                           <ul>
                             {proofs[bountyID].map((proof: any, index: any) => (
-                              <li
-                                key={index}
-                                dangerouslySetInnerHTML={{ __html: proof.description }}
-                              />
+                              <li key={index}>
+                                {proof.description
+                                  .split(/(https?:\/\/[^\s]+)/)
+                                  .map((part: string, i: number) => {
+                                    if (part.match(/https?:\/\/[^\s]+/)) {
+                                      return (
+                                        <a
+                                          key={i}
+                                          href={part}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                        >
+                                          {part}
+                                        </a>
+                                      );
+                                    }
+                                    return part;
+                                  })}
+                              </li>
                             ))}
                           </ul>
                         ) : (
