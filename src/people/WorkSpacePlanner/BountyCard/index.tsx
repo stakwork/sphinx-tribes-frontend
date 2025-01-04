@@ -46,7 +46,6 @@ const AssignerPic = styled.div`
   height: 40px;
   border-radius: 50%;
   overflow: hidden;
-  background-color: ${colors.light.red1};
   display: flex;
   justify-content: center;
   align-items: center;
@@ -127,7 +126,11 @@ const BountyCardComponent: React.FC<BountyCardProps> = ({
       >
         {title}
       </CardTitle>
-      <AssignerPic>{assignee_img ? <img src={assignee_img} alt="Assigner" /> : 'Pic'}</AssignerPic>
+      {assignee_img && (
+        <AssignerPic>
+          <img src={assignee_img} alt="Assigner" />
+        </AssignerPic>
+      )}
     </CardHeader>
 
     <RowT>
