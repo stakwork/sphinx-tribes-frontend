@@ -33,7 +33,7 @@ const ColumnsContainer = styled.div`
   gap: 1rem;
   padding: 1rem;
   overflow-x: auto;
-  background: whote;
+  background: white;
   height: calc(100vh - 200px) !important;
 
   &::-webkit-scrollbar {
