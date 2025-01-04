@@ -111,6 +111,8 @@ export interface PersonBounty {
   show?: boolean;
   assignee?: any;
   wanted_type: string;
+  feature_id?: string;
+  phase_id?: string;
   type?: string;
   price?: string;
   codingLanguage: string;
