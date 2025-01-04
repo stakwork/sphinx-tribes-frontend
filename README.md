@@ -46,29 +46,6 @@ If you wish to run only the frontend, follow these steps:
 - `yarn install` to install the dependencies
 - `yarn start` to run the frontend locally
 
-## Fix Line Endings for Windows Development 🛠️
-
-If you're developing on Windows and encounter line-ending issues with Prettier, you have two options:
-
-## Option 1: Fix Specific Files
-
-### Reset the Git index
-    git rm --cached -r .
-    git reset --hard
-
-### Configure Git to handle line endings
-    git config --global core.autocrlf false
-    git config --global core.eol lf
-
-### Run Prettier to fix formatting
-      - Example:  
-          npx prettier --config .prettierrc.json -w src/store/interface.ts
-
-### Option 2: Fix All Files (Full Reset)
-If you want to reset and fix all files in the project, you can use the provided script:
-
-    yarn fix-line-endings
-
 ## Contributing Guidelines 🤝
 
 All code contributions, including those of people having commit access, must go through a pull request and be approved by a core developer before being merged. This is to ensure a proper review of all the code.
@@ -109,10 +86,6 @@ If you wish to run only the frontend, follow these steps:
 
 - `yarn install` to install the dependencies
 - `yarn start` to run the frontend locally
-
-## Fix Line Endings for Windows Development 🛠️
-
-If you're developing on Windows and encounter line-ending issues with Prettier, run these commands:
 
 ## Contributing Guidelines 🤝
 
