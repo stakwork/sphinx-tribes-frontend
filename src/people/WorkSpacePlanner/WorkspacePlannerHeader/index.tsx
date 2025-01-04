@@ -151,7 +151,7 @@ export const WorkspacePlannerHeader = observer(
         <FillContainer>
           <Header>
             <Leftheader>
-              <ImageContainer src={img} width="72px" height="72px" alt="workspace icon" />
+              {img && <ImageContainer src={img} width="72px" height="72px" alt="workspace icon" />}
               <CompanyNameAndLink>
                 <CompanyLabel>{name}</CompanyLabel>
                 <UrlButtonContainer data-testid="url-button-container">

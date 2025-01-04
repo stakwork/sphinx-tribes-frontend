@@ -34,7 +34,7 @@ const ColumnsContainer = styled.div`
   padding: 1rem;
   overflow-x: auto;
   background: whote;
-  height: 600px !important;
+  height: calc(100vh - 200px) !important;
 
   &::-webkit-scrollbar {
     height: 7px;
@@ -204,7 +204,6 @@ const WorkspacePlanner = observer(() => {
         setFilterToggle={setFilterToggle}
       />
       <ContentArea>
-        <h1>Welcome to the new Workspace Planner</h1>
         <ColumnsContainer>
           {COLUMN_CONFIGS.map(({ id, title }: { id: string; title: string }) => (
             <Column key={id}>
