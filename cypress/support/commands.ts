@@ -56,6 +56,7 @@ Cypress.Commands.add('login', (userAlias: string) => {
     }
 
     cy.visit('http://localhost:3007');
+    cy.wait(2000);
     cy.contains('Sign in').click();
 
     cy.get('[data-challenge]')
@@ -342,6 +343,7 @@ Cypress.Commands.add('lnurl_login', (seed: string): Cypress.Chainable<string> =>
   }
 
   cy.visit('http://localhost:3007');
+  cy.wait(2000);
   cy.contains('Sign in').click();
 
   cy.contains('Login with LNAUTH').click();
@@ -396,7 +398,7 @@ Cypress.Commands.add('lnurl_login', (seed: string): Cypress.Chainable<string> =>
 });
 
 Cypress.Commands.add('clickAlias', (expectedAlias) => {
-  cy.wait(2000);
+  cy.wait(3000);
   cy.get('[data-testid="loggedInUser"]').within(() => {
     cy.get('[data-testid="alias"]')
       .should(($el) => {
