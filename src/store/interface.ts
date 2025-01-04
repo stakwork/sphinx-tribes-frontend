@@ -550,3 +550,9 @@ export interface BountyTiming {
   lastPoWAt: string | null;
   closedAt: string | null;
 }
+
+export interface CreateBountyResponse {
+  bounty_id: number;
+  success: boolean;
+  message?: string;
+}
