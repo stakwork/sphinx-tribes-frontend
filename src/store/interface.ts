@@ -391,9 +391,9 @@ export const defaultBountyStatus: BountyStatus = {
 };
 
 export const queryLimitTribes = 100;
-export const queryLimit = 10;
+export const queryLimit = 25;
 export const orgQuerLimit = 500;
-export const paginationQueryLimit = 20;
+export const paginationQueryLimit = 25;
 export const peopleQueryLimit = 500;
 export const featureLimit = 4;
 export const phaseBountyLimit = 3;
