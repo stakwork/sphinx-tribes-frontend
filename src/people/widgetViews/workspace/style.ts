@@ -1061,6 +1061,11 @@ export const ActionButton = styled.button<ButtonProps>`
     }
   }};
 
+  &:hover {
+    text-decoration: none;
+    color: white;
+  }
+
   :disabled {
     border: 1px solid rgba(0, 0, 0, 0.07);
     background: rgba(0, 0, 0, 0.04);
