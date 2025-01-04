@@ -8,6 +8,7 @@ import api from '../api';
 import { getHostIncludingDockerHosts } from '../config/host';
 import { TribesURL } from '../config/host';
 import { randomString } from '../helpers';
+import { CreateBountyResponse } from '../components/common/TicketEditor/TicketEditor';
 import { getUserAvatarPlaceholder } from './lib';
 import { uiStore } from './ui';
 import {
@@ -3900,6 +3901,31 @@ export class MainStore {
       return response.json();
     } catch (e) {
       console.log('Error createOrUpdateCodeGraph', e);
+      return null;
+    }
+  }
+
+  async createBountyFromTicket(ticketUuid: string): Promise<CreateBountyResponse | null> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+
+      const response = await fetch(`${TribesURL}/bounties/ticket/${ticketUuid}/bounty`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create bounty');
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error('Error creating bounty:', error);
       return null;
     }
   }
