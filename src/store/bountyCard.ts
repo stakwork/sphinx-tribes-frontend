@@ -14,6 +14,7 @@ export class BountyCardStore {
   currentWorkspaceId: string;
   loading = false;
   error: string | null = null;
+
   @observable selectedFeatures: string[] = [];
 
   constructor(workspaceId: string) {
@@ -30,6 +31,9 @@ export class BountyCardStore {
     if (bounty.completed || bounty.payment_pending) {
       return 'Complete';
     }
+    if (typeof bounty.pow === 'number' && bounty.pow > 0) {
+      return 'Review';
+    }
     if (bounty.assignee_img) {
       return 'Assigned';
     }
@@ -37,7 +41,9 @@ export class BountyCardStore {
   }
 
   loadWorkspaceBounties = async (): Promise<void> => {
-    if (!this.currentWorkspaceId || !uiStore.meInfo?.tribe_jwt) {
+    const jwt = uiStore.meInfo?.tribe_jwt;
+
+    if (!this.currentWorkspaceId || !jwt) {
       runInAction(() => {
         this.error = 'Missing workspace ID or authentication';
       });
@@ -50,16 +56,15 @@ export class BountyCardStore {
         this.error = null;
       });
 
-      const response = await fetch(
-        `${TribesURL}/gobounties/bounty-cards?workspace_uuid=${this.currentWorkspaceId}`,
-        {
-          method: 'GET',
-          headers: {
-            'x-jwt': uiStore.meInfo.tribe_jwt,
-            'Content-Type': 'application/json'
-          }
+      const url = `${TribesURL}/gobounties/bounty-cards?workspace_uuid=${this.currentWorkspaceId}`;
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'x-jwt': jwt,
+          'Content-Type': 'application/json'
         }
-      );
+      });
 
       if (!response.ok) {
         throw new Error(`Failed to load bounties: ${response.statusText}`);
@@ -67,13 +72,43 @@ export class BountyCardStore {
 
       const data = (await response.json()) as BountyCard[] | null;
 
+      // Fetch proof counts for each bounty
+      const bountyCardsWithProofs = await Promise.all(
+        (data || []).map(async (bounty: BountyCard) => {
+          try {
+            const proofsUrl = `${TribesURL}/gobounties/${bounty.id}/proofs`;
+            const proofsResponse = await fetch(proofsUrl, {
+              method: 'GET',
+              headers: {
+                'x-jwt': jwt,
+                'Content-Type': 'application/json'
+              }
+            });
+
+            if (!proofsResponse.ok) {
+              return { ...bounty, pow: 0 };
+            }
+
+            const proofs = await proofsResponse.json();
+            return {
+              ...bounty,
+              pow: Array.isArray(proofs) ? proofs.length : 0
+            };
+          } catch (error) {
+            console.error(`Error fetching proofs for bounty ${bounty.id}:`, error);
+            return { ...bounty, pow: 0 };
+          }
+        })
+      );
+
       runInAction(() => {
-        this.bountyCards = (data || []).map((bounty: BountyCard) => ({
+        this.bountyCards = bountyCardsWithProofs.map((bounty: BountyCard) => ({
           ...bounty,
           status: this.calculateBountyStatus(bounty)
         }));
       });
     } catch (error) {
+      console.error('Error loading bounties:', error);
       runInAction(() => {
         this.error = error instanceof Error ? error.message : 'An unknown error occurred';
       });
@@ -109,6 +144,10 @@ export class BountyCardStore {
 
   @computed get paidItems() {
     return this.bountyCards.filter((card: BountyCard) => card.status === 'Paid');
+  }
+
+  @computed get reviewItems() {
+    return this.bountyCards.filter((card: BountyCard) => card.status === 'Review');
   }
 
   @action
