@@ -33,7 +33,7 @@ const ColumnsContainer = styled.div`
   gap: 1rem;
   padding: 1rem;
   overflow-x: auto;
-  background: whote;
+  background: white;
   height: calc(100vh - 200px) !important;
 
   &::-webkit-scrollbar {
@@ -99,21 +99,6 @@ const ColumnContent = styled.div`
   &::-webkit-scrollbar-thumb {
     background: ${colors.light.grayish.G800};
     border-radius: 3px;
-  }
-`;
-
-const LoadMoreButton = styled.button`
-  width: 100%;
-  padding: 0.5rem;
-  background: ${colors.light.grayish.G800};
-  color: white;
-  border: none;
-  border-top: 1px solid ${colors.light.grayish.G700};
-  cursor: pointer;
-  transition: background 0.2s;
-
-  &:hover {
-    background: ${colors.light.grayish.G700};
   }
 `;
 
@@ -231,14 +216,6 @@ const WorkspacePlanner = observer(() => {
                   ))
                 )}
               </ColumnContent>
-
-              {id === 'Todo' &&
-                bountyCardStore.pagination.currentPage * bountyCardStore.pagination.pageSize <
-                  bountyCardStore.pagination.total && (
-                  <LoadMoreButton onClick={() => bountyCardStore.loadNextPage()}>
-                    Load More
-                  </LoadMoreButton>
-                )}
             </Column>
           ))}
         </ColumnsContainer>
