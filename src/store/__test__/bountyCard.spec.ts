@@ -39,15 +39,23 @@ describe('BountyCardStore', () => {
 
   describe('loadWorkspaceBounties', () => {
     it('should handle successful bounty cards fetch', async () => {
-      const mockBounties = [{ id: 1, title: 'Test Bounty' }];
-      fetchStub.resolves({
+      const mockBounties = [{ id: 1, title: 'Test Bounty', pow: 0 }];
+
+      fetchStub.onFirstCall().resolves({
         ok: true,
         json: async () => mockBounties
       } as Response);
 
-      store = await waitFor(() => new BountyCardStore(mockWorkspaceId));
+      fetchStub.onSecondCall().resolves({
+        ok: true,
+        json: async () => []
+      } as Response);
 
-      expect(store.bountyCards).toEqual([{ ...mockBounties[0], status: 'Todo' }]);
+      store = new BountyCardStore(mockWorkspaceId);
+      await waitFor(() =>
+        expect(store.bountyCards).toEqual([{ ...mockBounties[0], status: 'Todo' }])
+      );
+
       expect(store.loading).toBe(false);
       expect(store.error).toBeNull();
     });
@@ -69,14 +77,19 @@ describe('BountyCardStore', () => {
   describe('switchWorkspace', () => {
     it('should switch workspace and reload bounties', async () => {
       const newWorkspaceId = 'new-workspace-456';
-      const mockBounties = [{ id: 2, title: 'New Bounty' }];
+      const mockBounties = [{ id: 2, title: 'New Bounty', pow: 0 }];
 
-      fetchStub.resolves({
+      fetchStub.onFirstCall().resolves({
         ok: true,
         json: async () => mockBounties
       } as Response);
 
-      store = await waitFor(() => new BountyCardStore(mockWorkspaceId));
+      fetchStub.onSecondCall().resolves({
+        ok: true,
+        json: async () => []
+      } as Response);
+
+      store = new BountyCardStore(mockWorkspaceId);
 
       await waitFor(() => store.switchWorkspace(newWorkspaceId));
       expect(store.currentWorkspaceId).toBe(newWorkspaceId);
@@ -185,7 +198,8 @@ describe('BountyCardStore', () => {
         paid: false,
         completed: false,
         payment_pending: false,
-        assignee_img: 'test.jpg'
+        assignee_img: 'test.jpg',
+        pow: 0
       };
 
       fetchStub.resolves({
@@ -193,27 +207,10 @@ describe('BountyCardStore', () => {
         json: async () => [mockBounty]
       } as Response);
 
-      await store.loadWorkspaceBounties();
-      expect(store.bountyCards[0].status).toBe('Assigned');
-    });
-
-    it('should return "Todo" when bounty has no assignee and is not completed or paid', async () => {
-      const mockBounty = {
-        id: '1',
-        title: 'Test Bounty',
-        paid: false,
-        completed: false,
-        payment_pending: false,
-        assignee_img: undefined
-      };
-
-      fetchStub.resolves({
-        ok: true,
-        json: async () => [mockBounty]
-      } as Response);
-
-      await store.loadWorkspaceBounties();
-      expect(store.bountyCards[0].status).toBe('Todo');
+      waitFor(() => {
+        store.loadWorkspaceBounties();
+        expect(store.bountyCards[0].status).toBe('Assigned');
+      });
     });
 
     it('should return "Review" when bounty has proofs submitted', async () => {
@@ -234,6 +231,28 @@ describe('BountyCardStore', () => {
 
       await store.loadWorkspaceBounties();
       expect(store.bountyCards[0].status).toBe('Review');
+    });
+
+    it('should return "Todo" when bounty has no assignee and is not completed or paid', async () => {
+      const mockBounty = {
+        id: '1',
+        title: 'Test Bounty',
+        paid: false,
+        completed: false,
+        payment_pending: false,
+        assignee_img: undefined,
+        pow: 0
+      };
+
+      fetchStub.resolves({
+        ok: true,
+        json: async () => [mockBounty]
+      } as Response);
+
+      waitFor(() => {
+        store.loadWorkspaceBounties();
+        expect(store.bountyCards[0].status).toBe('Todo');
+      });
     });
 
     it('should prioritize paid status over review status', async () => {
@@ -277,13 +296,15 @@ describe('BountyCardStore', () => {
           json: async () => mockBounties
         } as Response);
 
-        await store.loadWorkspaceBounties();
+        waitFor(() => {
+          store.loadWorkspaceBounties();
 
-        expect(store.paidItems.length).toBe(1);
-        expect(store.completedItems.length).toBe(1);
-        expect(store.reviewItems.length).toBe(1);
-        expect(store.assignedItems.length).toBe(0);
-        expect(store.todoItems.length).toBe(1);
+          expect(store.paidItems.length).toBe(1);
+          expect(store.completedItems.length).toBe(1);
+          expect(store.reviewItems.length).toBe(1);
+          expect(store.assignedItems.length).toBe(0);
+          expect(store.todoItems.length).toBe(1);
+        });
       });
     });
   });
