@@ -48,7 +48,7 @@ describe('Edit Bounty By Searching, Change Workspace And Assignee', () => {
 
   it('should be able to edit a bounty by searching, changing workspace, amount, coding languages, and assignee', () => {
     cy.create_bounty(bounty);
-    cy.wait(1000);
+    cy.wait(2000);
 
     // Search for the bounty
     cy.get('input').type(bounty.title);
@@ -78,7 +78,7 @@ describe('Edit Bounty By Searching, Change Workspace And Assignee', () => {
     cy.get('[data-testid="org_uuid"]').should('exist').click({ force: true }).wait(5000);
     cy.wait(1000);
     cy.contains(bounty.workspace).should('exist').click({ force: true });
-
+    cy.wait(1000);
     // Assign a new assignee
     cy.get('.SearchInput').type(NewAssignee);
     cy.wait(1000);
@@ -106,7 +106,7 @@ describe('Edit Bounty By Searching, Change Workspace And Assignee', () => {
 
     cy.get('[data-testid="close-btn"]').click(0, 0);
     cy.visit('http://localhost:3007/bounties');
-    cy.wait(1000);
+    cy.wait(5000);
 
     // Verify the bounty changes
     cy.get('input').type(bounty.title);

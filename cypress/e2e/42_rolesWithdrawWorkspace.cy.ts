@@ -9,10 +9,6 @@ describe('Withdraw From Workspace Role Test', () => {
     github: 'https://github.com/amazing'
   };
 
-  beforeEach(() => {
-    cy.clearCookies();
-  });
-
   it('should allow a user with a Withdraw From Workspace role to withdraw from the workspace', () => {
     cy.login(workspace.loggedInAs);
     cy.wait(1000);
