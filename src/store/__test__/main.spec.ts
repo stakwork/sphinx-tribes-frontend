@@ -18,6 +18,15 @@ let mockApiResponseData: any[];
 
 const origFetch = global.fetch;
 
+const Crypto = {
+  getRandomValues: (arr: Uint8Array) => {
+    for (let i = 0; i < arr.length; i++) {
+      arr[i] = Math.floor(Math.random() * 256);
+    }
+    return arr;
+  }
+};
+
 beforeAll(() => {
   fetchStub = sinon.stub(global, 'fetch');
   fetchStub.returns(Promise.resolve({ status: 200, json: () => Promise.resolve({}) })); // Mock a default behavior
@@ -26,6 +35,7 @@ beforeAll(() => {
     { uuid: 'cldl1g04nncmf23du7kg' },
     { orgUUID: 'cmas9gatu2rvqiev4ur0' }
   ];
+  global.crypto = Crypto as any;
 });
 
 afterAll(() => {
@@ -548,19 +558,26 @@ describe('Main store', () => {
   it('should send request delete request with correct body and url', async () => {
     const url = `${TribesURL}/gobounties/pub_key/1111`;
     const allBountiesUrl = `http://${getHost()}/gobounties/all?limit=10&sortBy=created&search=&page=1&resetPage=true&Open=true&Assigned=false&Paid=false`;
+
+    const store = new MainStore();
+    store.initializeSessionId();
+
     const expectedRequestOptions: RequestInit = {
       method: 'DELETE',
       mode: 'cors',
       headers: {
         'x-jwt': user.tribe_jwt,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'x-session-id': store.sessionId
       }
     };
+
     fetchStub.withArgs(url, expectedRequestOptions).returns(
       Promise.resolve({
         status: 200
       }) as any
     );
+
     fetchStub.withArgs(allBountiesUrl, sinon.match.any).returns(
       Promise.resolve({
         status: 200,
@@ -569,7 +586,6 @@ describe('Main store', () => {
       }) as any
     );
 
-    const store = new MainStore();
     await store.deleteBounty(1111, 'pub_key');
 
     expect(fetchStub.withArgs(url, expectedRequestOptions).calledOnce).toEqual(true);
@@ -579,17 +595,21 @@ describe('Main store', () => {
 
   it('should not panic if failed to delete bounty', async () => {
     const url = `${TribesURL}/gobounties/pub_key/1111`;
+
+    const store = new MainStore();
+    store.initializeSessionId();
+
     const expectedRequestOptions: RequestInit = {
       method: 'DELETE',
       mode: 'cors',
       headers: {
         'x-jwt': user.tribe_jwt,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'x-session-id': store.sessionId
       }
     };
     fetchStub.withArgs(url, expectedRequestOptions).throwsException();
 
-    const store = new MainStore();
     await store.deleteBounty(1111, 'pub_key');
 
     expect(fetchStub.withArgs(url, expectedRequestOptions).calledOnce).toEqual(true);
@@ -598,6 +618,10 @@ describe('Main store', () => {
 
   it('should not return false if asignee removed successfully', async () => {
     const url = `${TribesURL}/gobounties/assignee`;
+
+    const store = new MainStore();
+    store.initializeSessionId();
+
     const expectedRequestOptions: RequestInit = {
       method: 'DELETE',
       mode: 'cors',
@@ -607,7 +631,8 @@ describe('Main store', () => {
       }),
       headers: {
         'x-jwt': user.tribe_jwt,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'x-session-id': store.sessionId
       }
     };
     fetchStub.withArgs(url, expectedRequestOptions).returns(
@@ -616,7 +641,6 @@ describe('Main store', () => {
       }) as any
     );
 
-    const store = new MainStore();
     const res = await store.deleteBountyAssignee({ owner_pubkey: 'pub_key', created: '1111' });
 
     expect(fetchStub.withArgs(url, expectedRequestOptions).calledOnce).toEqual(true);
@@ -625,6 +649,10 @@ describe('Main store', () => {
 
   it('should  return false if failed to remove asignee ', async () => {
     const url = `${TribesURL}/gobounties/assignee`;
+
+    const store = new MainStore();
+    store.initializeSessionId();
+
     const expectedRequestOptions: RequestInit = {
       method: 'DELETE',
       mode: 'cors',
@@ -634,12 +662,12 @@ describe('Main store', () => {
       }),
       headers: {
         'x-jwt': user.tribe_jwt,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'x-session-id': store.sessionId
       }
     };
     fetchStub.withArgs(url, expectedRequestOptions).throwsException();
 
-    const store = new MainStore();
     const res = await store.deleteBountyAssignee({ owner_pubkey: 'pub_key', created: '1111' });
 
     expect(fetchStub.withArgs(url, expectedRequestOptions).calledOnce).toEqual(true);
@@ -648,12 +676,17 @@ describe('Main store', () => {
 
   it('should successfully update bounty payment status', async () => {
     const url = `${TribesURL}/gobounties/paymentstatus/1111`;
+
+    const store = new MainStore();
+    store.initializeSessionId();
+
     const expectedRequestOptions: RequestInit = {
       method: 'POST',
       mode: 'cors',
       headers: {
         'x-jwt': user.tribe_jwt,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'x-session-id': store.sessionId
       }
     };
     fetchStub.withArgs(url, expectedRequestOptions).returns(
@@ -662,7 +695,6 @@ describe('Main store', () => {
       }) as any
     );
 
-    const store = new MainStore();
     const res = await store.updateBountyPaymentStatus(1111);
 
     expect(fetchStub.withArgs(url, expectedRequestOptions).calledOnce).toEqual(true);
@@ -671,17 +703,21 @@ describe('Main store', () => {
 
   it('should return false if failed to update bounty status', async () => {
     const url = `${TribesURL}/gobounties/paymentstatus/1111`;
+
+    const store = new MainStore();
+    store.initializeSessionId();
+
     const expectedRequestOptions: RequestInit = {
       method: 'POST',
       mode: 'cors',
       headers: {
         'x-jwt': user.tribe_jwt,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'x-session-id': store.sessionId
       }
     };
     fetchStub.withArgs(url, expectedRequestOptions).throwsException();
 
-    const store = new MainStore();
     const res = await store.updateBountyPaymentStatus(1111);
 
     expect(fetchStub.withArgs(url, expectedRequestOptions).calledOnce).toEqual(true);
@@ -757,18 +793,6 @@ describe('Main store', () => {
   it('should set all query params, page, limit, search, and languages when fetching bounties, user logged out', async () => {
     // Arrange: Set user as logged out
     uiStore.setMeInfo(emptyMeInfo);
-
-    // Define the expected query parameters
-    const queryParams = new URLSearchParams({
-      limit: '10',
-      sortBy: 'updatedat',
-      search: 'random',
-      page: '1',
-      resetPage: 'true'
-      // Add languages if applicable, e.g., languages: 'javascript,typescript'
-    });
-
-    const allBountiesUrl = `http://${getHost()}/gobounties/all?${queryParams.toString()}`;
 
     // Stub the fetch with a flexible matcher
     fetchStub
