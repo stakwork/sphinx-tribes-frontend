@@ -117,6 +117,8 @@ export interface PersonBounty {
   estimated_session_length: string;
   bounty_expires?: string;
   commitment_fee?: number;
+  feature_id?: string;
+  phase_id?: string;
 }
 
 export type WorkspaceTransactionType = 'deposit' | 'payment' | 'withdraw' | 'failed' | 'pending';

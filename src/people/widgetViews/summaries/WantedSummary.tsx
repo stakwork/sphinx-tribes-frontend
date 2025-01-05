@@ -56,6 +56,8 @@ function WantedSummary(props: WantedSummaryProps) {
     formSubmit,
     title,
     org_uuid,
+    feature_id,
+    phase_id,
     id,
     isEditButtonDisable
   } = props;
@@ -161,7 +163,9 @@ function WantedSummary(props: WantedSummaryProps) {
         show: show,
         type: type,
         created: created,
-        org_uuid
+        org_uuid,
+        phase_id,
+        feature_id
       };
 
       formSubmit && formSubmit(newValue, true);
@@ -181,7 +185,9 @@ function WantedSummary(props: WantedSummaryProps) {
       ticket_url,
       titleString,
       type,
-      wanted_type
+      wanted_type,
+      phase_id,
+      feature_id
     ]
   );
 
@@ -204,7 +210,9 @@ function WantedSummary(props: WantedSummaryProps) {
       show: show,
       type: type,
       created: created,
-      org_uuid
+      org_uuid,
+      phase_id,
+      feature_id
     };
     formSubmit && formSubmit(newValue, true);
   }, [
@@ -222,7 +230,9 @@ function WantedSummary(props: WantedSummaryProps) {
     ticket_url,
     titleString,
     type,
-    wanted_type
+    wanted_type,
+    phase_id,
+    feature_id
   ]);
 
   useEffect(() => {
@@ -600,6 +610,8 @@ function WantedSummary(props: WantedSummaryProps) {
           actionButtons={actionButtons}
           assigneeLabel={assigneeLabel}
           isEditButtonDisable={isEditButtonDisable}
+          phase_id={phase_id}
+          feature_id={feature_id}
         />
       );
     }

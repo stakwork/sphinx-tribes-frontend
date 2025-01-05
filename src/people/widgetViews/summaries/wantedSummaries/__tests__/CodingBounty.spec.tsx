@@ -106,6 +106,8 @@ describe('MobileView component', () => {
     badgeRecipient: '',
     fromBountyPage: '',
     wanted_type: '',
+    phase_id: '',
+    feature_id: '',
     one_sentence_summary: '',
     github_description: '',
     show: false,
