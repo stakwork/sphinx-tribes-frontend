@@ -325,6 +325,7 @@ export const ProofContainer = styled.div`
 
 export const Section = styled.div`
   flex: 1;
+  margin-top: 60px;
 `;
 
 export const Title = styled.h2`
@@ -339,6 +340,7 @@ export const Description = styled.span`
   line-height: 1.5;
   resize: vertical;
   margin-bottom: 16px;
+  max-width: 70%;
 `;
 
 export const Link = styled.a`
