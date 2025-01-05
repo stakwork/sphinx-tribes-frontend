@@ -39,6 +39,7 @@ const palette = {
   statusPending: '#ADD8E6',
   statusFailed: '#FF0000',
   statusPaid: '#8256D0',
+  statusReview: '#ff9248',
   button_primary: {
     main: '#49C998',
     hover: '#3CBE88',

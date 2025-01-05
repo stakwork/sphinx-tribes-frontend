@@ -216,13 +216,60 @@ describe('BountyCardStore', () => {
       expect(store.bountyCards[0].status).toBe('Todo');
     });
 
+    it('should return "Review" when bounty has proofs submitted', async () => {
+      const mockBounty = {
+        id: '1',
+        title: 'Test Bounty',
+        paid: false,
+        completed: false,
+        payment_pending: false,
+        assignee_img: 'test.jpg',
+        pow: 2
+      };
+
+      fetchStub.resolves({
+        ok: true,
+        json: async () => [mockBounty]
+      } as Response);
+
+      await store.loadWorkspaceBounties();
+      expect(store.bountyCards[0].status).toBe('Review');
+    });
+
+    it('should prioritize paid status over review status', async () => {
+      const mockBounty = {
+        id: '1',
+        title: 'Test Bounty',
+        paid: true,
+        completed: true,
+        payment_pending: false,
+        assignee_img: 'test.jpg',
+        pow: 2
+      };
+
+      fetchStub.resolves({
+        ok: true,
+        json: async () => [mockBounty]
+      } as Response);
+
+      await store.loadWorkspaceBounties();
+      expect(store.bountyCards[0].status).toBe('Paid');
+    });
+
     describe('computed status lists', () => {
-      it('should correctly filter bounties by status', async () => {
+      it('should correctly filter bounties by status including review', async () => {
         const mockBounties = [
-          { id: '1', title: 'Bounty 1', paid: true, completed: true, assignee_img: 'test.jpg' },
-          { id: '2', title: 'Bounty 2', completed: true, assignee_img: 'test.jpg' },
-          { id: '3', title: 'Bounty 3', assignee_img: 'test.jpg' },
-          { id: '4', title: 'Bounty 4' }
+          {
+            id: '1',
+            title: 'Bounty 1',
+            paid: true,
+            completed: true,
+            assignee_img: 'test.jpg',
+            pow: 0
+          },
+          { id: '2', title: 'Bounty 2', completed: true, assignee_img: 'test.jpg', pow: 0 },
+          { id: '3', title: 'Bounty 3', assignee_img: 'test.jpg', pow: 2 },
+          { id: '4', title: 'Bounty 4', pow: 0 }
         ];
 
         fetchStub.resolves({
@@ -234,7 +281,8 @@ describe('BountyCardStore', () => {
 
         expect(store.paidItems.length).toBe(1);
         expect(store.completedItems.length).toBe(1);
-        expect(store.assignedItems.length).toBe(1);
+        expect(store.reviewItems.length).toBe(1);
+        expect(store.assignedItems.length).toBe(0);
         expect(store.todoItems.length).toBe(1);
       });
     });
