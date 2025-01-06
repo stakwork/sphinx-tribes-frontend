@@ -193,17 +193,18 @@ const PhasePlannerView: React.FC = observer(() => {
 
   const addTicketHandler = async () => {
     const newTicketUuid = uuidv4();
+    const latestTickets = phaseTicketStore.organizeTicketsByGroup(tickets);
     const initialTicketData = {
       uuid: newTicketUuid,
       feature_uuid,
       phase_uuid,
       name: '',
-      sequence: tickets.length + 1,
+      sequence: latestTickets.length + 1,
       dependency: [],
       description: '',
       status: 'DRAFT' as TicketStatus,
       version: 1,
-      number: tickets.length + 1
+      number: latestTickets.length + 1
     };
 
     const ticketPayload = {
@@ -232,7 +233,10 @@ const PhasePlannerView: React.FC = observer(() => {
       return;
     }
 
-    const reorderedTickets = Array.from(tickets);
+    const latestTickets = phaseTicketStore
+      .organizeTicketsByGroup(tickets)
+      .sort((a: Ticket, b: Ticket) => a.sequence - b.sequence);
+    const reorderedTickets = Array.from(latestTickets);
     const [movedTicket] = reorderedTickets.splice(source.index, 1);
     reorderedTickets.splice(destination.index, 0, movedTicket);
 
@@ -244,11 +248,7 @@ const PhasePlannerView: React.FC = observer(() => {
       await Promise.all(
         reorderedTickets.map((ticket: Ticket, index: number) => {
           const updatedTicket = { ...ticket, sequence: index + 1 };
-          return main.createUpdateTicket({
-            metadata: {
-              source: 'websocket',
-              id: websocketSessionId
-            },
+          return main.updateTicketSequence({
             ticket: updatedTicket
           });
         })
@@ -288,6 +288,7 @@ const PhasePlannerView: React.FC = observer(() => {
               <EuiDroppable droppableId="ticketDroppable" spacing="m">
                 {phaseTicketStore
                   .organizeTicketsByGroup(tickets)
+                  .sort((a: Ticket, b: Ticket) => a.sequence - b.sequence)
                   .map((ticket: Ticket, index: number) => (
                     <EuiDraggable
                       spacing="m"
