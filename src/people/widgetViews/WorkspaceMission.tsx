@@ -23,7 +23,6 @@ import {
   Label,
   Data,
   OptionsWrap,
-  TextArea,
   StyledListElement,
   FeatureLink,
   StyledList,
@@ -80,6 +79,8 @@ import EditSchematic from './workspace/EditSchematicModal';
 import ManageWorkspaceUsersModal from './workspace/ManageWorkspaceUsersModal';
 import { BudgetWrapComponent } from './BudgetWrap';
 import { LoadMoreContainer } from './WidgetSwitchViewer';
+import { EditableField } from './workspace/EditableField';
+import { Toast } from './workspace/interface';
 
 const color = colors['light'];
 
@@ -317,6 +318,9 @@ const WorkspaceMission = () => {
   const { chat } = useStores();
   const [chats, setChats] = React.useState<Chat[]>([]);
   const [isLoadingChats, setIsLoadingChats] = useState(true);
+  const [missionPreviewMode, setMissionPreviewMode] = useState<'preview' | 'edit'>('edit');
+  const [tacticsPreviewMode, setTacticsPreviewMode] = useState<'preview' | 'edit'>('edit');
+  const [toasts, setToasts] = useState<Toast[]>([]);
 
   const fetchCodeGraph = useCallback(async () => {
     try {
@@ -639,37 +643,64 @@ const WorkspaceMission = () => {
     closeAllFeatureStatus();
   };
 
-  const missionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newValue = e.target.value;
-    if (newValue.length) {
-      setMission(newValue);
+  const submitMission = async () => {
+    try {
+      const body = {
+        mission: mission ?? '',
+        owner_pubkey: ui.meInfo?.owner_pubkey ?? '',
+        uuid: workspaceData?.uuid ?? ''
+      };
+      await main.workspaceUpdateMission(body);
+      await getWorkspaceData();
+      setEditMission(false);
+      setToasts([
+        {
+          id: `${Date.now()}-mission-success`,
+          title: 'Success',
+          color: 'success',
+          text: 'Mission updated successfully!'
+        }
+      ]);
+    } catch (error) {
+      setToasts([
+        {
+          id: `${Date.now()}-mission-error`,
+          title: 'Error',
+          color: 'danger',
+          text: 'Failed to update mission'
+        }
+      ]);
     }
   };
 
-  const tacticsChange = (e: any) => {
-    setTactics(e.target.value);
-  };
-
-  const submitMission = async () => {
-    const body = {
-      mission: mission ?? '',
-      owner_pubkey: ui.meInfo?.owner_pubkey ?? '',
-      uuid: workspaceData?.uuid ?? ''
-    };
-    await main.workspaceUpdateMission(body);
-    await getWorkspaceData();
-    setEditMission(false);
-  };
-
   const submitTactics = async () => {
-    const body = {
-      tactics: tactics ?? '',
-      owner_pubkey: ui.meInfo?.owner_pubkey ?? '',
-      uuid: workspaceData?.uuid ?? ''
-    };
-    await main.workspaceUpdateTactics(body);
-    await getWorkspaceData();
-    setEditTactics(false);
+    try {
+      const body = {
+        tactics: tactics ?? '',
+        owner_pubkey: ui.meInfo?.owner_pubkey ?? '',
+        uuid: workspaceData?.uuid ?? ''
+      };
+      await main.workspaceUpdateTactics(body);
+      await getWorkspaceData();
+      setEditTactics(false);
+      setToasts([
+        {
+          id: `${Date.now()}-tactics-success`,
+          title: 'Success',
+          color: 'success',
+          text: 'Tactics updated successfully!'
+        }
+      ]);
+    } catch (error) {
+      setToasts([
+        {
+          id: `${Date.now()}-tactics-error`,
+          title: 'Error',
+          color: 'danger',
+          text: 'Failed to update tactics'
+        }
+      ]);
+    }
   };
 
   const toggleFeatureModal = () => {
@@ -721,13 +752,6 @@ const WorkspaceMission = () => {
     }
   };
 
-  const toastsEl = (
-    <EuiGlobalToastList
-      toasts={ui.toasts}
-      dismissToast={() => ui.setToasts([])}
-      toastLifeTimeMs={3000}
-    />
-  );
   const avatarList = useMemo(
     () => users.map((user: Person) => ({ name: user.owner_alias, imageUrl: user.img })),
     [users]
@@ -824,35 +848,32 @@ const WorkspaceMission = () => {
                     </EditPopover>
                   )}
                 </OptionsWrap>
-                {!editMission && (
-                  <>{workspaceData?.mission ? workspaceData.mission : 'No mission yet'}</>
-                )}
-
+                <EditableField
+                  value={mission ?? workspaceData?.mission ?? ''}
+                  setValue={setMission}
+                  isEditing={editMission}
+                  previewMode={missionPreviewMode}
+                  setPreviewMode={setMissionPreviewMode}
+                  placeholder="Mission"
+                  dataTestIdPrefix="mission"
+                />
                 {editMission && (
-                  <>
-                    <TextArea
-                      placeholder="Enter mission"
-                      onChange={missionChange}
-                      value={mission ?? workspaceData?.mission}
-                      data-testid="mission-textarea"
-                    />
-                    <ButtonWrap>
-                      <ActionButton
-                        onClick={() => setEditMission(!editMission)}
-                        data-testid="mission-cancel-btn"
-                        color="cancel"
-                      >
-                        Cancel
-                      </ActionButton>
-                      <ActionButton
-                        color="primary"
-                        onClick={submitMission}
-                        data-testid="mission-update-btn"
-                      >
-                        Update
-                      </ActionButton>
-                    </ButtonWrap>
-                  </>
+                  <ButtonWrap>
+                    <ActionButton
+                      onClick={() => setEditMission(!editMission)}
+                      data-testid="mission-cancel-btn"
+                      color="cancel"
+                    >
+                      Cancel
+                    </ActionButton>
+                    <ActionButton
+                      color="primary"
+                      onClick={submitMission}
+                      data-testid="mission-update-btn"
+                    >
+                      Update
+                    </ActionButton>
+                  </ButtonWrap>
                 )}
               </Data>
             </FieldWrap>
@@ -876,35 +897,32 @@ const WorkspaceMission = () => {
                     </EditPopover>
                   )}
                 </OptionsWrap>
-                {!editTactics && (
-                  <>{workspaceData?.tactics ? workspaceData.tactics : 'No tactics yet'}</>
-                )}
-
+                <EditableField
+                  value={tactics ?? workspaceData?.tactics ?? ''}
+                  setValue={setTactics}
+                  isEditing={editTactics}
+                  previewMode={tacticsPreviewMode}
+                  setPreviewMode={setTacticsPreviewMode}
+                  placeholder="Tactics"
+                  dataTestIdPrefix="tactics"
+                />
                 {editTactics && (
-                  <>
-                    <TextArea
-                      placeholder="Enter tactics"
-                      onChange={tacticsChange}
-                      value={tactics ?? workspaceData?.tactics}
-                      data-testid="tactics-textarea"
-                    />
-                    <ButtonWrap>
-                      <ActionButton
-                        data-testid="tactics-cancel-btn"
-                        onClick={() => setEditTactics(!editTactics)}
-                        color="cancel"
-                      >
-                        Cancel
-                      </ActionButton>
-                      <ActionButton
-                        data-testid="tactics-update-btn"
-                        color="primary"
-                        onClick={submitTactics}
-                      >
-                        Update
-                      </ActionButton>
-                    </ButtonWrap>
-                  </>
+                  <ButtonWrap>
+                    <ActionButton
+                      data-testid="tactics-cancel-btn"
+                      onClick={() => setEditTactics(!editTactics)}
+                      color="cancel"
+                    >
+                      Cancel
+                    </ActionButton>
+                    <ActionButton
+                      data-testid="tactics-update-btn"
+                      color="primary"
+                      onClick={submitTactics}
+                    >
+                      Update
+                    </ActionButton>
+                  </ButtonWrap>
                 )}
               </Data>
             </FieldWrap>
@@ -1480,7 +1498,11 @@ const WorkspaceMission = () => {
             updateUsers={updateWorkspaceUsers}
           />
         )}
-        {toastsEl}
+        <EuiGlobalToastList
+          toasts={toasts}
+          dismissToast={() => setToasts([])}
+          toastLifeTimeMs={3000}
+        />
       </WorkspaceBody>
     )
   );
