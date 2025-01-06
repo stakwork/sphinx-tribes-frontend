@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import {
   EuiDragDropContext,
   EuiDraggable,
@@ -78,7 +79,6 @@ import AddRepoModal from './workspace/AddRepoModal';
 import EditSchematic from './workspace/EditSchematicModal';
 import ManageWorkspaceUsersModal from './workspace/ManageWorkspaceUsersModal';
 import { BudgetWrapComponent } from './BudgetWrap';
-import { LoadMoreContainer } from './WidgetSwitchViewer';
 import { EditableField } from './workspace/EditableField';
 import { Toast } from './workspace/interface';
 
@@ -301,7 +301,6 @@ const WorkspaceMission = () => {
   const [modalType, setModalType] = useState('add');
   const [featureModal, setFeatureModal] = useState(false);
   const [features, setFeatures] = useState<Feature[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
   const [featuresCount, setFeaturesCount] = useState(0);
   const [isOpenUserManage, setIsOpenUserManage] = useState<boolean>(false);
   const [users, setUsers] = useState<Person[]>([]);
@@ -321,6 +320,7 @@ const WorkspaceMission = () => {
   const [missionPreviewMode, setMissionPreviewMode] = useState<'preview' | 'edit'>('edit');
   const [tacticsPreviewMode, setTacticsPreviewMode] = useState<'preview' | 'edit'>('edit');
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const [holding, setHolding] = useState(false);
 
   const fetchCodeGraph = useCallback(async () => {
     try {
@@ -559,18 +559,18 @@ const WorkspaceMission = () => {
     getWorkspaceUsers();
   }, [getWorkspaceData, getWorkspaceUsers]);
 
-  const getFeaturesCount = useCallback(async () => {
-    if (!uuid) return;
-    const featuresCount = await main.getWorkspaceFeaturesCount(uuid);
-    if (!featuresCount) return;
-    setFeaturesCount(featuresCount);
+  // const getFeaturesCount = useCallback(async () => {
+  //   if (!uuid) return;
+  //   const featuresCount = await main.getWorkspaceFeaturesCount(uuid);
+  //   if (!featuresCount) return;
+  //   setFeaturesCount(featuresCount);
 
-    setLoading(false);
-  }, [uuid, main]);
+  //   setLoading(false);
+  // }, [uuid, main]);
 
-  useEffect(() => {
-    getFeaturesCount();
-  }, [getFeaturesCount]);
+  // useEffect(() => {
+  //   getFeaturesCount();
+  // }, [getFeaturesCount]);
 
   const updateFeatures = (newFeatures: Feature[]) => {
     const updatedFeatures: Feature[] = [...features];
@@ -585,17 +585,40 @@ const WorkspaceMission = () => {
 
   const getFeatures = useCallback(async () => {
     if (!uuid) return;
-    const featuresRes = await main.getWorkspaceFeatures(uuid, {
-      page: currentPage,
-      status: 'active'
-    });
-    if (!featuresRes) return;
 
-    updateFeatures(featuresRes);
-    getFeaturesCount();
+    setLoading(true); // Set loading to true when the fetch starts
+    setHolding(true); // Set holding to true to show fetching is in progress
 
-    setLoading(false);
-  }, [uuid, main, getFeaturesCount, currentPage]);
+    let allFeatures: Feature[] = [];
+    let page = 1;
+    let hasMoreData = true;
+
+    try {
+      while (hasMoreData) {
+        const featuresRes = await main.getWorkspaceFeatures(uuid, {
+          page,
+          status: 'active'
+        });
+
+        if (featuresRes && Array.isArray(featuresRes)) {
+          allFeatures = [...allFeatures, ...featuresRes];
+          hasMoreData = featuresRes.length > 0; // Stop fetching if no data returned
+          page++;
+        } else {
+          hasMoreData = false; // Stop on unexpected response
+        }
+      }
+
+      if (allFeatures.length > 0) {
+        updateFeatures(allFeatures); // Update features with all data
+      }
+    } catch (error) {
+      console.error('Error fetching features:', error);
+    } finally {
+      setLoading(false); // Reset loading state after fetch completes
+      setHolding(false); // Reset holding state after fetch completes
+    }
+  }, [uuid, main]);
 
   useEffect(() => {
     getFeatures();
@@ -712,10 +735,10 @@ const WorkspaceMission = () => {
     setSchematicModal(!schematicModal);
   };
 
-  const loadMore = () => {
-    const nextPage = currentPage + 1;
-    setCurrentPage(nextPage);
-  };
+  // const loadMore = () => {
+  //   const nextPage = currentPage + 1;
+  //   setCurrentPage(nextPage);
+  // };
 
   const handleReorderFeatures = async (feat: Feature, priority: number) => {
     await main.addWorkspaceFeature({
@@ -757,7 +780,7 @@ const WorkspaceMission = () => {
     [users]
   );
 
-  if (loading) {
+  if (loading || holding) {
     return (
       <Body style={{ justifyContent: 'center', alignItems: 'center' }}>
         <EuiLoadingSpinner size="xl" />
@@ -1337,7 +1360,7 @@ const WorkspaceMission = () => {
                 </EuiDroppable>
               </EuiDragDropContext>
             </FeaturesWrap>
-            {featuresCount > features.length ? (
+            {/* {featuresCount > features.length ? (
               <LoadMoreContainer
                 color={color}
                 style={{
@@ -1351,7 +1374,7 @@ const WorkspaceMission = () => {
                   Load More
                 </div>
               </LoadMoreContainer>
-            ) : null}
+            ) : null} */}
           </FieldWrap>
         </DataWrap>
         <Modal
