@@ -49,7 +49,8 @@ import {
   TicketPayload,
   Ticket,
   CodeGraph,
-  CreateBountyResponse
+  CreateBountyResponse,
+  FeatureFlag
 } from './interface';
 
 function makeTorSaveURL(host: string, key: string) {
@@ -4036,6 +4037,121 @@ export class MainStore {
       return response.json();
     } catch (error) {
       console.error('Error creating bounty:', error);
+      return null;
+    }
+  }
+
+  async getFeatureFlags(): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+      const r: any = await fetch(`${TribesURL}/feature-flags`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json',
+          'x-session-id': this.sessionId
+        }
+      });
+
+      const data = await r.json();
+      console.log('data', data);
+      return data;
+    } catch (e) {
+      console.log('Error getFeatureFlags', e);
+      return null;
+    }
+  }
+
+  async updateFeatureFlag(uuid: string, enabled: boolean): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+      const r: any = await fetch(`${TribesURL}/feature-flags/${uuid}`, {
+        method: 'PUT',
+        mode: 'cors',
+        body: JSON.stringify({ enabled }),
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json',
+          'x-session-id': this.sessionId
+        }
+      });
+
+      return r;
+    } catch (e) {
+      console.log('Error updateFeatureFlag', e);
+      return null;
+    }
+  }
+
+  async createFeatureFlag(
+    data: Omit<FeatureFlag, 'uuid' | 'endpoints'> & { endpoints: string[] }
+  ): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+      const r: any = await fetch(`${TribesURL}/feature-flags`, {
+        method: 'POST',
+        mode: 'cors',
+        body: JSON.stringify(data),
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json',
+          'x-session-id': this.sessionId
+        }
+      });
+
+      return r.json();
+    } catch (e) {
+      console.log('Error createFeatureFlag', e);
+      return null;
+    }
+  }
+
+  async deleteFeatureFlag(uuid: string): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+      const r: any = await fetch(`${TribesURL}/feature-flags/${uuid}`, {
+        method: 'DELETE',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json',
+          'x-session-id': this.sessionId
+        }
+      });
+
+      return r.json();
+    } catch (e) {
+      console.log('Error deleteFeatureFlag', e);
+      return null;
+    }
+  }
+
+  async updateFeatureFlagDetails(
+    uuid: string,
+    data: Omit<FeatureFlag, 'uuid' | 'endpoints'> & { endpoints: string[] }
+  ): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+      const r: any = await fetch(`${TribesURL}/feature-flags/${uuid}`, {
+        method: 'PUT',
+        mode: 'cors',
+        body: JSON.stringify(data),
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json',
+          'x-session-id': this.sessionId
+        }
+      });
+
+      return r.json();
+    } catch (e) {
+      console.log('Error updateFeatureFlagDetails', e);
       return null;
     }
   }

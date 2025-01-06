@@ -25,6 +25,7 @@ import expand_more from './icons/expand_more.svg';
 import App from './components/Calendar/App';
 import InviteModal from './InviteModal';
 import FeatureBountyModal from './FeatureBountyModal';
+import FeatureFlagsModal from './FeatureFlagsModal';
 
 interface HeaderProps {
   startDate?: number;
@@ -54,6 +55,7 @@ export const Header = ({
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [openInvite, setOpenInvite] = useState(false);
   const [openFeatureBounty, setOpenFeatureBounty] = useState(false);
+  const [openFeatureFlags, setOpenFeatureFlags] = useState(false);
 
   const formatUnixDate = (unixDate: number) => {
     const formatString = 'DD MMM YYYY';
@@ -189,6 +191,10 @@ export const Header = ({
     getWorkspaces();
   }, [getWorkspaces]);
 
+  const toggleFeatureFlagsModal = () => {
+    setOpenFeatureFlags(!openFeatureFlags);
+  };
+
   return (
     <Container>
       <AlternateWrapper>
@@ -216,6 +222,9 @@ export const Header = ({
           ) : null}
         </LeftWrapper>
         <RightWrapper>
+          <FeaturedButton onClick={() => toggleFeatureFlagsModal()}>
+            <ExportText>Feature Flags</ExportText>
+          </FeaturedButton>
           <FeaturedButton onClick={() => toggleFeatureBountyModal()}>
             <ExportText>Featured Bounty</ExportText>
           </FeaturedButton>
@@ -275,6 +284,11 @@ export const Header = ({
               </Option>
             ) : null}
           </DropDown>
+          <FeatureFlagsModal
+            addToast={addToast}
+            open={openFeatureFlags}
+            close={toggleFeatureFlagsModal}
+          />
         </RightWrapper>
       </AlternateWrapper>
       {showCalendar && (
