@@ -557,3 +557,16 @@ export interface CreateBountyResponse {
   success: boolean;
   message?: string;
 }
+
+export interface Endpoint {
+  uuid: string;
+  path: string;
+}
+
+export interface FeatureFlag {
+  uuid: string;
+  name: string;
+  description: string;
+  enabled: boolean;
+  endpoints: Endpoint[];
+}
