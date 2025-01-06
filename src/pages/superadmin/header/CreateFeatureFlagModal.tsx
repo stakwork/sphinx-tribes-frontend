@@ -166,6 +166,30 @@ const CreateButton = styled.button`
   }
 `;
 
+const CloseButton = styled.div`
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: rgba(145, 87, 246, 0.1);
+  }
+`;
+
+const ModalContent = styled.div`
+  position: relative;
+  width: 100%;
+`;
+
 const CreateFeatureFlagModal = ({
   open,
   close,
@@ -263,66 +287,71 @@ const CreateFeatureFlagModal = ({
         maxHeight: '90vh',
         borderRadius: '12px',
         width: '90%',
-        maxWidth: '500px'
+        maxWidth: '500px',
+        position: 'relative'
       }}
       overlayClick={close}
-      bigCloseImage={close}
     >
-      <Wrapper>
-        <ModalTitle>{editData ? 'Edit' : 'Create'} Feature Flag</ModalTitle>
-        <FormGroup>
-          <Label>
-            Name <span className="required">*</span>
-          </Label>
-          <Input
-            type="text"
-            value={name}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
-            placeholder="Enter feature flag name"
-          />
-        </FormGroup>
-        <FormGroup>
-          <Label>Description</Label>
-          <TextArea
-            value={description}
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
-            placeholder="Enter feature flag description"
-          />
-        </FormGroup>
-        <FormGroup>
-          <CheckboxContainer>
+      <ModalContent>
+        <CloseButton onClick={close}>✕</CloseButton>
+        <Wrapper>
+          <ModalTitle>{editData ? 'Edit' : 'Create'} Feature Flag</ModalTitle>
+          <FormGroup>
+            <Label>
+              Name <span className="required">*</span>
+            </Label>
             <Input
-              type="checkbox"
-              checked={enabled}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEnabled(e.target.checked)}
+              type="text"
+              value={name}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
+              placeholder="Enter feature flag name"
             />
-            Enabled
-          </CheckboxContainer>
-        </FormGroup>
-        <FormGroup>
-          <Label>Endpoints</Label>
-          <EndpointList>
-            {endpoints.map((endpoint: string, index: number) => (
-              <EndpointItem key={index}>
-                <Input
-                  type="text"
-                  value={endpoint}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    handleEndpointChange(index, e.target.value)
-                  }
-                  placeholder="Enter endpoint path"
-                />
-                <RemoveButton onClick={() => handleRemoveEndpoint(index)}>Remove</RemoveButton>
-              </EndpointItem>
-            ))}
-          </EndpointList>
-          <AddButton onClick={handleAddEndpoint}>Add Endpoint</AddButton>
-        </FormGroup>
-        <CreateButton onClick={handleSubmit} disabled={loading}>
-          {loading ? (editData ? 'Updating...' : 'Creating...') : editData ? 'Update' : 'Create'}{' '}
-          Feature Flag
-        </CreateButton>
-      </Wrapper>
+          </FormGroup>
+          <FormGroup>
+            <Label>Description</Label>
+            <TextArea
+              value={description}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                setDescription(e.target.value)
+              }
+              placeholder="Enter feature flag description"
+            />
+          </FormGroup>
+          <FormGroup>
+            <CheckboxContainer>
+              <Input
+                type="checkbox"
+                checked={enabled}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEnabled(e.target.checked)}
+              />
+              Enabled
+            </CheckboxContainer>
+          </FormGroup>
+          <FormGroup>
+            <Label>Endpoints</Label>
+            <EndpointList>
+              {endpoints.map((endpoint: string, index: number) => (
+                <EndpointItem key={index}>
+                  <Input
+                    type="text"
+                    value={endpoint}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      handleEndpointChange(index, e.target.value)
+                    }
+                    placeholder="Enter endpoint path"
+                  />
+                  <RemoveButton onClick={() => handleRemoveEndpoint(index)}>Remove</RemoveButton>
+                </EndpointItem>
+              ))}
+            </EndpointList>
+            <AddButton onClick={handleAddEndpoint}>Add Endpoint</AddButton>
+          </FormGroup>
+          <CreateButton onClick={handleSubmit} disabled={loading}>
+            {loading ? (editData ? 'Updating...' : 'Creating...') : editData ? 'Update' : 'Create'}{' '}
+            Feature Flag
+          </CreateButton>
+        </Wrapper>
+      </ModalContent>
     </Modal>
   );
 };

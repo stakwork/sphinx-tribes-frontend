@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
+import { EuiLoadingSpinner } from '@elastic/eui';
 import { useIsMobile } from 'hooks/uiHooks';
 import { Modal } from '../../../components/common';
 import { BudgetButton } from '../../../people/widgetViews/workspace/style.ts';
@@ -98,6 +99,8 @@ const ActionButton = styled.button`
 const CreateButton = styled(BudgetButton)`
   margin-bottom: 20px;
   background: #9157f6;
+  font-size: 1.2rem;
+  font-weight: 500;
   color: white;
   &:hover {
     background: #7c3dde;
@@ -135,6 +138,13 @@ const CardField = styled.div`
     color: #666;
     margin-right: 8px;
   }
+`;
+
+const LoadingContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
 `;
 
 const FeatureFlagsModal = ({ open, close, addToast }: FeatureFlagsProps) => {
@@ -246,7 +256,9 @@ const FeatureFlagsModal = ({ open, close, addToast }: FeatureFlagsProps) => {
         <CreateButton onClick={() => setShowCreateModal(true)}>Create Feature Flag</CreateButton>
 
         {loading ? (
-          <div>Loading...</div>
+          <LoadingContainer>
+            <EuiLoadingSpinner size="xl" />
+          </LoadingContainer>
         ) : (
           <>
             <TableContainer>
