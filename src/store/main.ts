@@ -3839,6 +3839,37 @@ export class MainStore {
     }
   }
 
+  async updateTicketSequence(ticketPayload: { ticket: Ticket }): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return [];
+      const info = uiStore.meInfo;
+
+      const response = await fetch(
+        `${TribesURL}/bounties/ticket/${ticketPayload.ticket.ticket_group}/sequence`,
+        {
+          method: 'POST',
+          mode: 'cors',
+          headers: {
+            'x-jwt': info.tribe_jwt,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(ticketPayload)
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to create ticket');
+      }
+
+      const data = await response.json();
+      console.log('data', data);
+      return data;
+    } catch (e) {
+      console.log('Error creating ticket', e);
+      return 406;
+    }
+  }
+
   async sendTicketForReview(payload: TicketPayload): Promise<any> {
     try {
       if (!uiStore.meInfo) return null;
