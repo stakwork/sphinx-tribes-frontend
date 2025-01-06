@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { mainStore } from '../../../store/main';
 import { Modal } from '../../../components/common';
-import { FeatureFlag } from '../../../store/interface';
+import { Endpoint, FeatureFlag } from '../../../store/interface';
 
 interface CreateFeatureFlagProps {
   open: boolean;
@@ -205,10 +205,17 @@ const CreateFeatureFlagModal = ({
 
   useEffect(() => {
     if (editData) {
-      setName(editData.name);
-      setDescription(editData.description);
-      setEnabled(editData.enabled);
-      setEndpoints(editData.endpoints.map((ep: any) => ep.path));
+      setName(editData.name || '');
+      setDescription(editData.description || '');
+      setEnabled(editData.enabled || false);
+      if (editData.endpoints && editData.endpoints.length > 0) {
+        const endpointPaths = editData.endpoints.map((ep: Endpoint) =>
+          typeof ep === 'string' ? ep : ep.path
+        );
+        setEndpoints(endpointPaths);
+      } else {
+        setEndpoints(['']);
+      }
     } else {
       setName('');
       setDescription('');
