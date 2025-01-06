@@ -171,28 +171,48 @@ function Form(props: FormProps) {
   useEffect(() => {
     (async () => {
       try {
-        const features = await main.getWorkspaceFeatures(workspaceid, {
-          page: 1,
-          status: 'active'
-        });
-
-        if (Array.isArray(features)) {
-          const filteredFeatures = features.map(
-            ({ uuid, name }: { uuid: string; name: string }) => ({
-              value: uuid,
-              label: name
-            })
-          );
-
-          setWorkspaceFeatures(filteredFeatures);
-        } else {
-          console.log('Features object:', features);
+        interface Feature {
+          uuid: string;
+          name: string;
         }
+        let allFeatures: Feature[] = [];
+        let currentPage = 1;
+        let hasMoreData = true;
+
+        while (hasMoreData) {
+          const features = await main.getWorkspaceFeatures(workspaceid, {
+            page: currentPage,
+            status: 'active'
+          });
+
+          console.log(features);
+
+          if (Array.isArray(features)) {
+            allFeatures = [...allFeatures, ...features];
+            console.log(allFeatures);
+            hasMoreData = features.length > 0; // If no features returned, stop fetching
+            console.log(hasMoreData);
+            currentPage++;
+          } else {
+            console.log('Unexpected features object:', features);
+            hasMoreData = false; // Stop loop on unexpected response
+          }
+        }
+
+        // Process features once all pages are fetched
+        const filteredFeatures = allFeatures.map(
+          ({ uuid, name }: { uuid: string; name: string }) => ({
+            value: uuid,
+            label: name
+          })
+        );
+
+        setWorkspaceFeatures(filteredFeatures);
       } catch (error) {
         console.error('Error fetching or parsing features:', error);
       }
     })();
-  }, [main, featureid, workspaceFeature, workspaceid]);
+  }, [main, workspaceid]);
 
   useEffect(() => {
     (async () => {
