@@ -7,6 +7,7 @@ import { isInvoiceExpired, userCanManageBounty } from 'helpers';
 import { SOCKET_MSG, createSocketInstance } from 'config/socket';
 import { Box } from '@mui/system';
 import { bountyReviewStore } from 'store/bountyReviewStore';
+import { uiStore } from 'store/ui';
 import { Button, Divider, Modal, usePaymentConfirmationModal } from '../../../../components/common';
 import { colors } from '../../../../config/colors';
 import { renderMarkdown } from '../../../utils/RenderMarkdown';
@@ -150,6 +151,7 @@ function MobileView(props: CodingBountiesProps) {
   let bountyPaid = paid || invoiceStatus || keysendStatus;
   const bountyPending = localPending || payment_pending;
   const userAssigned = assignee && assignee.owner_pubkey !== '';
+  const isAssignee = assignee.owner_pubkey === uiStore._meInfo?.owner_pubkey;
   let bountyCompleted = completed;
 
   if (localPaid === 'PAID') {
@@ -1109,7 +1111,7 @@ function MobileView(props: CodingBountiesProps) {
                         sendToRedirect(profileUrl);
                       }}
                       showGithubBtn={!!ticket_url}
-                      showProof={userAssigned}
+                      showProof={isAssignee}
                       showProofAction={proofHandler}
                     />
                   </div>
@@ -1599,6 +1601,8 @@ function MobileView(props: CodingBountiesProps) {
                     const profileUrl = `https://community.sphinx.chat/t/${tribe}`;
                     sendToRedirect(profileUrl);
                   }}
+                  showProof={isAssignee}
+                  showProofAction={proofHandler}
                 />
               </>
             ) : (
