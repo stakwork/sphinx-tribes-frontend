@@ -65,6 +65,7 @@ import { SchematicPreview } from 'people/SchematicPreviewer';
 import avatarIcon from '../../public/static/profile_avatar.svg';
 import { colors } from '../../config/colors';
 import dragIcon from '../../pages/superadmin/header/icons/drag_indicator.svg';
+import { useFeatureFlag } from '../../hooks/useFeatureFlag';
 import AddCodeGraph from './workspace/AddCodeGraphModal';
 import AddFeature from './workspace/AddFeatureModal';
 import {
@@ -322,6 +323,9 @@ const WorkspaceMission = () => {
   const [tacticsPreviewMode, setTacticsPreviewMode] = useState<'preview' | 'edit'>('edit');
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [holding, setHolding] = useState(false);
+
+  const { isEnabled: isPlannerEnabled, loading: isPlannerLoading } =
+    useFeatureFlag('display_planner');
 
   const fetchCodeGraph = useCallback(async () => {
     try {
@@ -1145,7 +1149,7 @@ const WorkspaceMission = () => {
             </FieldWrap>
 
             <HorizontalGrayLine />
-            {uuid && (
+            {uuid && isPlannerEnabled && !isPlannerLoading && (
               <WorkspaceFieldWrap>
                 <Button
                   style={{
