@@ -1,7 +1,7 @@
 import { makeAutoObservable, runInAction, computed, observable, action } from 'mobx';
 import { TribesURL } from 'config';
 import { useMemo } from 'react';
-import { BountyCard, BountyCardStatus } from './interface';
+import { BountyCard } from './interface';
 import { uiStore } from './ui';
 
 interface FilterState {
@@ -22,22 +22,6 @@ export class BountyCardStore {
     makeAutoObservable(this);
     this.loadWorkspaceBounties();
     this.restoreFilterState();
-  }
-
-  private calculateBountyStatus(bounty: BountyCard): BountyCardStatus {
-    if (bounty.paid) {
-      return 'Paid';
-    }
-    if (bounty.completed || bounty.payment_pending) {
-      return 'Complete';
-    }
-    if (typeof bounty.pow === 'number' && bounty.pow > 0) {
-      return 'Review';
-    }
-    if (bounty.assignee_img) {
-      return 'Assigned';
-    }
-    return 'Todo';
   }
 
   loadWorkspaceBounties = async (): Promise<void> => {
@@ -103,8 +87,7 @@ export class BountyCardStore {
 
       runInAction(() => {
         this.bountyCards = bountyCardsWithProofs.map((bounty: BountyCard) => ({
-          ...bounty,
-          status: this.calculateBountyStatus(bounty)
+          ...bounty
         }));
       });
     } catch (error) {
@@ -131,23 +114,23 @@ export class BountyCardStore {
   };
 
   @computed get todoItems() {
-    return this.bountyCards.filter((card: BountyCard) => card.status === 'Todo');
+    return this.bountyCards.filter((card: BountyCard) => card.status === 'TODO');
   }
 
   @computed get assignedItems() {
-    return this.bountyCards.filter((card: BountyCard) => card.status === 'Assigned');
+    return this.bountyCards.filter((card: BountyCard) => card.status === 'IN_PROGRESS');
   }
 
   @computed get completedItems() {
-    return this.bountyCards.filter((card: BountyCard) => card.status === 'Complete');
+    return this.bountyCards.filter((card: BountyCard) => card.status === 'COMPLETED');
   }
 
   @computed get paidItems() {
-    return this.bountyCards.filter((card: BountyCard) => card.status === 'Paid');
+    return this.bountyCards.filter((card: BountyCard) => card.status === 'PAID');
   }
 
   @computed get reviewItems() {
-    return this.bountyCards.filter((card: BountyCard) => card.status === 'Review');
+    return this.bountyCards.filter((card: BountyCard) => card.status === 'IN_REVIEW');
   }
 
   @action
