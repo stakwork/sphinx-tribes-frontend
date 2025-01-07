@@ -78,7 +78,7 @@ describe('useFeatureFlag', () => {
     });
   });
 
-  it('should refresh flags when refresh is called', async () => {
+  it('should refresh the flags when refresh is called', async () => {
     const { result, waitForNextUpdate } = renderHook(() => useFeatureFlag('display_planner'));
 
     await waitForNextUpdate();
