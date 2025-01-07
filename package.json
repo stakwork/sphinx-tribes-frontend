@@ -79,6 +79,7 @@
     "mobx-react-lite": "^3.4.3",
     "moment": "^2.29.4",
     "nock": "^13.3.0",
+    "posthog-js": "^1.204.0",
     "prettier": "3.0.3",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
