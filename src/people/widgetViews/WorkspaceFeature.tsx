@@ -529,6 +529,7 @@ const WorkspaceFeature = () => {
   };
 
   const handleUserStorySubmit = async () => {
+    if (userStory.trim() === '') return;
     const body = {
       feature_uuid: feature_uuid ?? '',
       description: userStory,
