@@ -116,20 +116,20 @@ const ErrorMessage = styled.p`
 `;
 
 const COLUMN_CONFIGS = [
-  { id: 'Todo', title: 'To Do' },
-  { id: 'Assigned', title: 'In Progress' },
-  { id: 'Review', title: 'In Review' },
-  { id: 'Complete', title: 'Complete' },
-  { id: 'Paid', title: 'Paid' }
+  { id: 'TODO', title: 'To Do' },
+  { id: 'IN_PROGRESS', title: 'In Progress' },
+  { id: 'IN_REVIEW', title: 'In Review' },
+  { id: 'COMPLETED', title: 'Complete' },
+  { id: 'PAID', title: 'Paid' }
 ];
 
 const getCardStatus = (card: BountyCard) => {
-  if (!card.status) return 'Todo';
-  if (card.status === 'Paid') return 'Paid';
-  if (card.status === 'Complete') return 'Complete';
-  if (card.status === 'Review') return 'Review';
-  if (card.status === 'Assigned') return 'Assigned';
-  return 'Todo';
+  if (!card.status) return 'TODO';
+  if (card.status === 'PAID') return 'PAID';
+  if (card.status === 'COMPLETED') return 'COMPLETED';
+  if (card.status === 'IN_REVIEW') return 'IN_REVIEW';
+  if (card.status === 'IN_PROGRESS') return 'IN_PROGRESS';
+  return 'TODO';
 };
 
 const WorkspacePlanner = observer(() => {
