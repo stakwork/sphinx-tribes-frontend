@@ -253,7 +253,7 @@ function WidgetSwitchViewer(props: any) {
             }
           : isFeatured
           ? {
-              border: isBountyLandingPage ? `` : `2px solid #F7931A`,
+              border: '',
               borderRadius: '12px'
             }
           : {};
