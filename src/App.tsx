@@ -7,8 +7,10 @@ import { Router } from 'react-router-dom';
 import { uiStore } from 'store/ui';
 import './App.css';
 import { ThemeProvider, createTheme } from '@mui/system';
+import { usePostHog } from 'posthog-js/react';
 import { ModeDispatcher } from './config/ModeDispatcher';
 import { Pages } from './pages';
+import { appEnv } from './config/env';
 import { mainStore } from './store/main';
 
 let exchangeRateInterval: any = null;
@@ -18,6 +20,7 @@ const theme = createTheme({
 });
 
 function App() {
+  const posthog = usePostHog();
   const getUserWorkspaces = useCallback(async () => {
     if (uiStore.selectedPerson !== 0) {
       await mainStore.getUserWorkspaces(uiStore.selectedPerson);
@@ -56,6 +59,21 @@ function App() {
     return function cleanup() {
       clearInterval(exchangeRateInterval);
     };
+  }, []);
+
+  useEffect(() => {
+    //Posthog user opens the page
+    if (!appEnv.isTests) {
+      if (uiStore.meInfo?.id) {
+        posthog?.identify(uiStore.meInfo.owner_alias, {
+          name: uiStore.meInfo.owner_alias,
+          pubkey: uiStore.meInfo.pubkey,
+          session_id: mainStore.sessionId
+        });
+      } else {
+        posthog?.identify(mainStore.sessionId, {});
+      }
+    }
   }, []);
 
   return (
