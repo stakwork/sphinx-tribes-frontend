@@ -250,9 +250,13 @@ export const AssigneeProfile = styled.div<colorProps>`
   background: ${(p: any) => p?.color && p.color.pureWhite};
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+  padding: 16px;
+  box-sizing: border-box;
   .buttonSet {
     display: flex;
     flex-direction: column;
+    margin-bottom: 30px;
     flex: 1;
   }
 `;

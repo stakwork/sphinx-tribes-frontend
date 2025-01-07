@@ -18,15 +18,18 @@ export const ButtonContainer = styled.div<ButtonContainerProps>`
   border: 1px solid ${(p: any) => p?.color && p?.color.grayish.G600};
   border-radius: 30px;
   user-select: none;
+  position: relative;
   .LeadingImageContainer {
     margin-left: 14px;
     margin-right: 16px;
   }
   .ImageContainer {
     position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
     min-height: 48px;
     min-width: 48px;
-    right: 37px;
     display: flex;
     align-items: center;
     justify-content: center;
