@@ -62,6 +62,7 @@ import { userHasRole } from 'helpers/helpers-extended';
 import { CodeGraph, Chat } from 'store/interface';
 import { useHistory } from 'react-router-dom';
 import { SchematicPreview } from 'people/SchematicPreviewer';
+import { PostModal } from 'people/widgetViews/postBounty/PostModal';
 import avatarIcon from '../../public/static/profile_avatar.svg';
 import { colors } from '../../config/colors';
 import dragIcon from '../../pages/superadmin/header/icons/drag_indicator.svg';
@@ -323,6 +324,7 @@ const WorkspaceMission = () => {
   const [tacticsPreviewMode, setTacticsPreviewMode] = useState<'preview' | 'edit'>('edit');
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [holding, setHolding] = useState(false);
+  const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
 
   const { isEnabled: isPlannerEnabled, loading: isPlannerLoading } =
     useFeatureFlag('display_planner');
@@ -785,6 +787,10 @@ const WorkspaceMission = () => {
     [users]
   );
 
+  const handlePostBountyClick = () => {
+    setIsPostBountyModalOpen(true);
+  };
+
   if (loading || holding) {
     return (
       <Body style={{ justifyContent: 'center', alignItems: 'center' }}>
@@ -1189,6 +1195,25 @@ const WorkspaceMission = () => {
                 text="View Bounties"
               />
             </WorkspaceFieldWrap>
+            <WorkspaceFieldWrap>
+              <Button
+                style={{
+                  borderRadius: '5px',
+                  margin: 0,
+                  padding: '10px 20px',
+                  width: '100%',
+                  backgroundColor: '#49C998',
+                  color: 'white',
+                  textAlign: 'center',
+                  border: 'none',
+                  fontSize: '16px',
+                  cursor: 'pointer'
+                }}
+                onClick={handlePostBountyClick}
+                dataTestId="post-bounty-btn"
+                text="Post Bounty"
+              />
+            </WorkspaceFieldWrap>
             <HorizontalGrayLine />
             <FieldWrap style={{ marginTop: '10px' }}>
               <Label>Talk to Hive</Label>
@@ -1530,6 +1555,11 @@ const WorkspaceMission = () => {
           toasts={toasts}
           dismissToast={() => setToasts([])}
           toastLifeTimeMs={3000}
+        />
+        <PostModal
+          widget="bounties"
+          isOpen={isPostBountyModalOpen}
+          onClose={() => setIsPostBountyModalOpen(false)}
         />
       </WorkspaceBody>
     )
