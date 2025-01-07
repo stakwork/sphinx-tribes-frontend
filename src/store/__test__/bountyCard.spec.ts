@@ -32,7 +32,7 @@ describe('BountyCardStore', () => {
     });
   });
 
-  describe('loadWorkspaceBounties', () => {
+  describe('loadWorkpaceBounties', () => {
     it('should handle successful bounty cards fetch', async () => {
       const mockBounties = [{ id: 1, title: 'Test Bounty', pow: 0 }];
 
