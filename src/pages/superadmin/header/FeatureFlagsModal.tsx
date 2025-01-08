@@ -177,12 +177,27 @@ const FeatureFlagsModal = ({ open, close, addToast }: FeatureFlagsProps) => {
 
   const handleToggle = async (uuid: string, enabled: boolean) => {
     try {
-      const response = await mainStore.updateFeatureFlag(uuid, !enabled);
-      if (response?.ok) {
-        await fetchFeatureFlags();
+      const flagToUpdate = flags.find((flag: any) => flag.uuid === uuid);
+      if (!flagToUpdate) return;
+
+      const updatedData = {
+        ...flagToUpdate,
+        enabled: !enabled,
+        endpoints: flagToUpdate.endpoints ? flagToUpdate.endpoints.map((ep: any) => ep.path) : []
+      };
+
+      const response = await mainStore.updateFeatureFlagDetails(uuid, updatedData);
+
+      if (response?.success) {
+        setFlags((prevFlags: any) =>
+          prevFlags.map((flag: any) => (flag.uuid === uuid ? { ...flag, enabled: !enabled } : flag))
+        );
         if (addToast) addToast('Feature flag updated successfully', 'success');
+      } else {
+        if (addToast) addToast('Failed to update feature flag', 'error');
       }
     } catch (error) {
+      console.error('Error updating feature flag:', error);
       if (addToast) addToast('Failed to update feature flag', 'error');
     }
   };
