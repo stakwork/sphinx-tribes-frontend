@@ -324,6 +324,7 @@ const WorkspaceMission = () => {
   const [tacticsPreviewMode, setTacticsPreviewMode] = useState<'preview' | 'edit'>('edit');
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [holding, setHolding] = useState(false);
+  const [permissionsChecked, setPermissionsChecked] = useState<boolean>(false);
   const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
 
   const { isEnabled: isPlannerEnabled, loading: isPlannerLoading } =
@@ -375,6 +376,10 @@ const WorkspaceMission = () => {
     } catch (error) {
       console.error('Error deleteCodeGraph', error);
     }
+  };
+
+  const handlePostBountyClick = () => {
+    setIsPostBountyModalOpen(true);
   };
 
   useEffect(() => {
@@ -455,13 +460,13 @@ const WorkspaceMission = () => {
 
   const isMobile = useIsMobile();
 
-  const isWorkspaceAdmin =
-    workspaceData?.owner_pubkey &&
-    ui.meInfo?.owner_pubkey &&
-    workspaceData?.owner_pubkey === ui.meInfo?.owner_pubkey;
+  const editWorkspaceDisabled = useMemo(() => {
+    if (!ui.meInfo) return true;
+    if (!workspaceData?.owner_pubkey) return false;
 
-  const editWorkspaceDisabled =
-    !isWorkspaceAdmin && !userHasRole(main.bountyRoles, userRoles, 'EDIT ORGANIZATION');
+    const isWorkspaceAdmin = workspaceData.owner_pubkey === ui.meInfo.owner_pubkey;
+    return !isWorkspaceAdmin && !userHasRole(main.bountyRoles, userRoles, 'EDIT ORGANIZATION');
+  }, [workspaceData, ui.meInfo, userRoles, main.bountyRoles]);
 
   const getUserRoles = useCallback(
     async (user: any) => {
@@ -476,7 +481,11 @@ const WorkspaceMission = () => {
 
   useEffect(() => {
     if (uuid && ui.meInfo) {
-      getUserRoles(ui.meInfo);
+      getUserRoles(ui.meInfo).finally(() => {
+        setPermissionsChecked(true);
+      });
+    } else {
+      setPermissionsChecked(true);
     }
   }, [getUserRoles]);
 
@@ -787,11 +796,7 @@ const WorkspaceMission = () => {
     [users]
   );
 
-  const handlePostBountyClick = () => {
-    setIsPostBountyModalOpen(true);
-  };
-
-  if (loading || holding) {
+  if (loading || holding || !permissionsChecked) {
     return (
       <Body style={{ justifyContent: 'center', alignItems: 'center' }}>
         <EuiLoadingSpinner size="xl" />
@@ -799,26 +804,31 @@ const WorkspaceMission = () => {
     );
   }
 
+  if (editWorkspaceDisabled) {
+    return (
+      <FullNoBudgetWrap>
+        <MaterialIcon
+          icon={'lock'}
+          style={{
+            fontSize: 30,
+            cursor: 'pointer',
+            color: '#ccc'
+          }}
+        />
+        <FullNoBudgetText>
+          You have restricted permissions and you are unable to view this page. Reach out to the
+          workspace admin to get them updated.
+        </FullNoBudgetText>
+      </FullNoBudgetWrap>
+    );
+  }
+
   const toggleManageUserModal = () => setIsOpenUserManage(!isOpenUserManage);
   const updateWorkspaceUsers = (updatedUsers: Person[]) => setUsers(updatedUsers);
 
-  return editWorkspaceDisabled ? (
-    <FullNoBudgetWrap>
-      <MaterialIcon
-        icon={'lock'}
-        style={{
-          fontSize: 30,
-          cursor: 'pointer',
-          color: '#ccc'
-        }}
-      />
-      <FullNoBudgetText>
-        You have restricted permissions and you are unable to view this page. Reach out to the
-        workspace admin to get them updated.
-      </FullNoBudgetText>
-    </FullNoBudgetWrap>
-  ) : (
-    !loading && !editWorkspaceDisabled && (
+  return (
+    !loading &&
+    !editWorkspaceDisabled && (
       <WorkspaceBody>
         <HeaderWrap>
           <Header>

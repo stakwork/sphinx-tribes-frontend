@@ -27,7 +27,7 @@ import {
   EditPopoverContent,
   FeatureOptionsWrap
 } from 'pages/tickets/style';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { useStores } from 'store';
 import { mainStore } from 'store/main';
@@ -425,15 +425,17 @@ const WorkspaceFeature = () => {
   const [requirementsPreviewMode, setRequirementsPreviewMode] = useState<'preview' | 'edit'>(
     'edit'
   );
+  const [permissionsChecked, setPermissionsChecked] = useState<boolean>(false);
 
   const history = useHistory();
 
-  const isWorkspaceAdmin =
-    workspaceData?.owner_pubkey &&
-    ui.meInfo?.owner_pubkey &&
-    workspaceData?.owner_pubkey === ui.meInfo?.owner_pubkey;
-  const editWorkspaceDisabled =
-    !isWorkspaceAdmin && !userHasRole(main.bountyRoles, userRoles, 'EDIT ORGANIZATION');
+  const editWorkspaceDisabled = useMemo(() => {
+    if (!ui.meInfo) return true;
+    if (!workspaceData?.owner_pubkey) return false;
+
+    const isWorkspaceAdmin = workspaceData.owner_pubkey === ui.meInfo.owner_pubkey;
+    return !isWorkspaceAdmin && !userHasRole(main.bountyRoles, userRoles, 'EDIT ORGANIZATION');
+  }, [workspaceData, ui.meInfo, userRoles, main.bountyRoles]);
 
   const getFeatureData = useCallback(async () => {
     if (!feature_uuid) return;
@@ -503,7 +505,11 @@ const WorkspaceFeature = () => {
 
   useEffect(() => {
     if (featureData?.workspace_uuid && ui.meInfo) {
-      getUserRoles(ui.meInfo);
+      getUserRoles(ui.meInfo).finally(() => {
+        setPermissionsChecked(true);
+      });
+    } else {
+      setPermissionsChecked(true);
     }
   }, [getUserRoles, ui.meInfo]);
 
@@ -523,6 +529,7 @@ const WorkspaceFeature = () => {
   };
 
   const handleUserStorySubmit = async () => {
+    if (userStory.trim() === '') return;
     const body = {
       feature_uuid: feature_uuid ?? '',
       description: userStory,
@@ -630,11 +637,30 @@ const WorkspaceFeature = () => {
     />
   );
 
-  if (loading) {
+  if (loading || !permissionsChecked) {
     return (
       <Body style={{ justifyContent: 'center', alignItems: 'center' }}>
         <EuiLoadingSpinner size="xl" />
       </Body>
+    );
+  }
+
+  if (editWorkspaceDisabled) {
+    return (
+      <FullNoBudgetWrap>
+        <MaterialIcon
+          icon={'lock'}
+          style={{
+            fontSize: 30,
+            cursor: 'pointer',
+            color: '#ccc'
+          }}
+        />
+        <FullNoBudgetText>
+          You have restricted permissions and you are unable to view this page. Reach out to the
+          workspace admin to get them updated.
+        </FullNoBudgetText>
+      </FullNoBudgetWrap>
     );
   }
 
@@ -689,22 +715,7 @@ const WorkspaceFeature = () => {
     setIsEditModalOpen(false);
   };
 
-  return editWorkspaceDisabled ? (
-    <FullNoBudgetWrap>
-      <MaterialIcon
-        icon={'lock'}
-        style={{
-          fontSize: 30,
-          cursor: 'pointer',
-          color: '#ccc'
-        }}
-      />
-      <FullNoBudgetText>
-        You have restricted permissions and you are unable to view this page. Reach out to the
-        workspace admin to get them updated.
-      </FullNoBudgetText>
-    </FullNoBudgetWrap>
-  ) : (
+  return (
     <FeatureBody>
       <FeatureHeadWrap>
         <FeatureHeadNameWrap>

@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { observer } from 'mobx-react-lite';
 import { DisplayBounties } from '../../people/widgetViews/workspace/style';
 import { colors } from '../../config/colors';
-import { bountyStore } from '../../store/bountyStore';
+import { bountyStore, FeaturedBounty } from '../../store/bountyStore';
 import WidgetSwitchViewer from '../../people/widgetViews/WidgetSwitchViewer';
 
 const FeaturedContainer = styled.div`
@@ -25,41 +25,9 @@ const FeaturedHeader = styled.div`
 `;
 
 export const FeaturedBounties: React.FC = observer(() => {
-  const featuredBounty = bountyStore.getFeaturedBounties();
+  const featuredBounties = bountyStore.getFeaturedBounties();
   const [currentItems, setCurrentItems] = useState<number>(1);
   const [page, setPage] = useState<number>(1);
-
-  const widgetViewerProps = {
-    onPanelClick: (activeWorkspace?: string, bounty?: any) => {
-      if (bounty?.id) {
-        window.location.href = featuredBounty[0]?.url || '';
-      }
-    },
-    checkboxIdToSelectedMap: {},
-    checkboxIdToSelectedMapLanguage: {},
-    fromBountyPage: true,
-    selectedWidget: 'bounties',
-    isBountyLandingPage: true,
-    loading: false,
-    currentItems,
-    setCurrentItems: (items: number) => setCurrentItems(items),
-    page,
-    setPage: (newPage: number) => setPage(newPage),
-    languageString: '',
-
-    bounties: featuredBounty
-      ? [
-          {
-            body: {
-              id: featuredBounty[0]?.bountyId
-            },
-            person: {
-              wanteds: []
-            }
-          }
-        ]
-      : []
-  };
 
   return (
     <FeaturedContainer>
@@ -78,8 +46,39 @@ export const FeaturedBounties: React.FC = observer(() => {
             overflowY: 'auto'
           }}
         >
-          {featuredBounty ? (
-            <WidgetSwitchViewer {...widgetViewerProps} />
+          {featuredBounties && featuredBounties.length > 0 ? (
+            featuredBounties.map((bounty: FeaturedBounty, index: number) => {
+              const widgetViewerProps = {
+                onPanelClick: (activeWorkspace?: string, bounty?: any) => {
+                  if (bounty?.id) {
+                    window.location.href = bounty.url || '';
+                  }
+                },
+                checkboxIdToSelectedMap: {},
+                checkboxIdToSelectedMapLanguage: {},
+                fromBountyPage: true,
+                selectedWidget: 'bounties',
+                isBountyLandingPage: true,
+                loading: false,
+                currentItems,
+                setCurrentItems: (items: number) => setCurrentItems(items),
+                page,
+                setPage: (newPage: number) => setPage(newPage),
+                languageString: '',
+                bounties: [
+                  {
+                    body: {
+                      id: bounty.bountyId
+                    },
+                    person: {
+                      wanteds: []
+                    }
+                  }
+                ]
+              };
+
+              return <WidgetSwitchViewer key={index} {...widgetViewerProps} />;
+            })
           ) : (
             <div style={{ color: colors.light.text2, textAlign: 'center', padding: '20px' }}>
               No featured bounties at the moment

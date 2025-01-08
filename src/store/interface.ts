@@ -470,7 +470,7 @@ export type ChatRole = 'user' | 'assistant';
 export type ChatStatus = 'sending' | 'sent' | 'error';
 export type ContextTagType = 'productBrief' | 'featureBrief' | 'schematic';
 export type ChatSource = 'user' | 'agent';
-export type BountyCardStatus = 'Todo' | 'Assigned' | 'Review' | 'Complete' | 'Paid';
+export type BountyCardStatus = 'TODO' | 'IN_PROGRESS' | 'IN_REVIEW' | 'COMPLETED' | 'PAID';
 
 export interface ContextTag {
   type: ContextTagType;

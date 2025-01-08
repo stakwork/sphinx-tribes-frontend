@@ -53,6 +53,7 @@ export const SuperAdmin = () => {
   const [selectedProviders, setSelectedProviders] = useState<string>('');
   const [workspace, setWorkspace] = useState<string>('');
   const [toasts, setToasts]: any = useState([]);
+  const [permissionsChecked, setPermissionsChecked] = useState(false);
 
   /**
    * Todo use the same date range,
@@ -89,7 +90,9 @@ export const SuperAdmin = () => {
   };
 
   useEffect(() => {
-    getIsSuperAdmin();
+    getIsSuperAdmin().finally(() => {
+      setPermissionsChecked(true);
+    });
   }, [getIsSuperAdmin]);
 
   const getBounties = useCallback(async () => {
@@ -286,7 +289,7 @@ export const SuperAdmin = () => {
 
   return (
     <>
-      {!isSuperAdmin ? (
+      {!isSuperAdmin && permissionsChecked ? (
         <AdminAccessDenied />
       ) : (
         <Container>

@@ -90,13 +90,13 @@ const RowB = styled.div`
 const StatusText = styled.span<{ status?: BountyCardStatus }>`
   color: ${({ status }: { status?: BountyCardStatus }): string => {
     switch (status) {
-      case 'Paid':
+      case 'PAID':
         return colors.light.statusPaid;
-      case 'Complete':
+      case 'COMPLETED':
         return colors.light.statusCompleted;
-      case 'Review':
+      case 'IN_REVIEW':
         return colors.light.statusReview;
-      case 'Assigned':
+      case 'IN_PROGRESS':
         return colors.light.statusAssigned;
       default:
         return colors.light.pureBlack;
@@ -166,7 +166,13 @@ BountyCardComponent.propTypes = {
   workspace: PropTypes.shape({
     name: PropTypes.string
   }) as PropTypes.Validator<BountyCard['workspace']>,
-  status: PropTypes.oneOf(['Todo', 'Assigned', 'Review', 'Complete', 'Paid'] as BountyCardStatus[]),
+  status: PropTypes.oneOf([
+    'TODO',
+    'IN_PROGRESS',
+    'IN_REVIEW',
+    'COMPLETED',
+    'PAID'
+  ] as BountyCardStatus[]),
   onclick: PropTypes.func.isRequired
 };
 
