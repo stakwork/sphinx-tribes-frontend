@@ -63,6 +63,8 @@ import { CodeGraph, Chat } from 'store/interface';
 import { useHistory } from 'react-router-dom';
 import { SchematicPreview } from 'people/SchematicPreviewer';
 import { PostModal } from 'people/widgetViews/postBounty/PostModal';
+import { chatService } from 'services';
+import { archiveIcon } from 'components/common/DeleteConfirmationModal/archiveIcon';
 import avatarIcon from '../../public/static/profile_avatar.svg';
 import { colors } from '../../config/colors';
 import dragIcon from '../../pages/superadmin/header/icons/drag_indicator.svg';
@@ -76,7 +78,8 @@ import {
   RepoName,
   MissionRowFlex,
   FullNoBudgetWrap,
-  FullNoBudgetText
+  FullNoBudgetText,
+  ChatRowFlex
 } from './workspace/style';
 import AddRepoModal from './workspace/AddRepoModal';
 import EditSchematic from './workspace/EditSchematicModal';
@@ -220,6 +223,7 @@ const ChatListItem = styled(StyledListElement)`
   cursor: pointer;
   border-bottom: 1px solid #ebedf1;
   transition: background-color 0.2s ease;
+  position: relative;
 
   &:hover {
     background-color: #f5f7fa;
@@ -289,6 +293,7 @@ const WorkspaceMission = () => {
   const [loading, setLoading] = useState(true);
   const [displayMission, setDidplayMission] = useState(false);
   const [visibleFeatureStatus, setVisibleFeatureStatus] = useState<{ [key: string]: boolean }>({});
+  const [visibleChatMenu, setVisibleChatMenu] = useState<{ [key: string]: boolean }>({});
   const [editMission, setEditMission] = useState(false);
   const [displaySchematic, setDidplaySchematic] = useState(false);
   const [editTactics, setEditTactics] = useState(false);
@@ -665,6 +670,13 @@ const WorkspaceMission = () => {
     }));
   };
 
+  const toggleChatMenu = (chatId: string) => {
+    setVisibleChatMenu((prevState: { [key: string]: boolean }) => ({
+      ...prevState,
+      [chatId]: !prevState[chatId]
+    }));
+  };
+
   const closeAllFeatureStatus = () => {
     setVisibleFeatureStatus({});
   };
@@ -803,6 +815,52 @@ const WorkspaceMission = () => {
       </Body>
     );
   }
+
+  const handleArchiveChat = async (chatId: string) => {
+    try {
+      setIsLoadingChats(true);
+      await chatService.archiveChat(chatId);
+
+      const updatedChats = await chat.getWorkspaceChats(uuid);
+      setChats(updatedChats);
+
+      setToasts([
+        {
+          id: `${Date.now()}-archive-success`,
+          title: 'Success',
+          color: 'success',
+          text: 'Chat archived successfully!'
+        }
+      ]);
+    } catch (error) {
+      setToasts([
+        {
+          id: `${Date.now()}-archive-error`,
+          title: 'Error',
+          color: 'danger',
+          text: 'Failed to archive chat'
+        }
+      ]);
+    } finally {
+      setIsLoadingChats(false);
+    }
+  };
+
+  const confirmArchiveChat = (chatId: string) => {
+    openDeleteConfirmation({
+      onDelete: () => handleArchiveChat(chatId),
+      confirmButtonText: 'Confirm',
+      customIcon: archiveIcon,
+      children: (
+        <Box fontSize={20} textAlign="center">
+          Are you sure you want to <br />
+          <Box component="span" fontWeight="500">
+            Archive this Chat?
+          </Box>
+        </Box>
+      )
+    });
+  };
 
   if (editWorkspaceDisabled) {
     return (
@@ -1253,14 +1311,34 @@ const WorkspaceMission = () => {
                 ) : chats.length > 0 ? (
                   <StyledList>
                     {chats.map((chat: Chat) => (
-                      <ChatListItem key={chat.id} onClick={() => handleChatClick(chat.id)}>
+                      <ChatListItem key={chat.id}>
                         <ChatItemContent>
-                          <ChatTitle>{chat.title || 'Untitled Chat'}</ChatTitle>
-                          <ChatTimestamp>
-                            {chat.updatedAt || chat.createdAt
-                              ? new Date(chat.updatedAt || chat.createdAt).toLocaleString()
-                              : 'No date'}
-                          </ChatTimestamp>
+                          <ChatRowFlex onClick={() => handleChatClick(chat.id)}>
+                            <ChatTitle>{chat.title || 'Untitled Chat'}</ChatTitle>
+                            <ChatTimestamp>
+                              {chat.updatedAt || chat.createdAt
+                                ? new Date(chat.updatedAt || chat.createdAt).toLocaleString()
+                                : 'No date'}
+                            </ChatTimestamp>
+                          </ChatRowFlex>
+                          <OptionsWrap>
+                            <MaterialIcon
+                              icon={'more_horiz'}
+                              className="MaterialIcon"
+                              onClick={() => toggleChatMenu(chat.id)}
+                              data-testid={`chat-option-btn-${chat.id}`}
+                            />
+                            {visibleChatMenu[chat.id] && (
+                              <EditPopover>
+                                <EditPopoverTail />
+                                <EditPopoverContent onClick={() => confirmArchiveChat(chat.id)}>
+                                  <EditPopoverText data-testid={`chat-archive-btn-${chat.id}`}>
+                                    Archive
+                                  </EditPopoverText>
+                                </EditPopoverContent>
+                              </EditPopover>
+                            )}
+                          </OptionsWrap>
                         </ChatItemContent>
                       </ChatListItem>
                     ))}
