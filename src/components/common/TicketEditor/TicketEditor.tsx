@@ -418,7 +418,7 @@ const TicketEditor = observer(
                 onClick={handleUpdate}
                 data-testid="story-input-update-btn"
               >
-                Update
+                Save
               </ActionButton>
               <ActionButton
                 color="primary"
