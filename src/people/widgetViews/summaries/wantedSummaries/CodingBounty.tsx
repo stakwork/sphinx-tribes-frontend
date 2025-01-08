@@ -807,7 +807,6 @@ function MobileView(props: CodingBountiesProps) {
                     </PaidStatusPopover>
                   </>
                 )}
-
                 <CreatorDescription paid={bountyPaid} color={color}>
                   <div className="CreatorDescriptionOuterContainerCreatorView">
                     <div className="CreatorDescriptionInnerContainerCreatorView">
@@ -1458,8 +1457,43 @@ function MobileView(props: CodingBountiesProps) {
                 </>
               )}
             </DescriptionBox>
+            <ProofContainer>
+              <Section>
+                <Title>Proof of Work</Title>
+                <Description>
+                  {proofs[bountyID]?.length ? (
+                    <ul>
+                      {proofs[bountyID].map((proof: any, index: any) => (
+                        <li key={index}>
+                          {proof.description
+                            .split(/(https?:\/\/[^\s]+)/)
+                            .map((part: string, i: number) => {
+                              if (part.match(/https?:\/\/[^\s]+/)) {
+                                return (
+                                  <a key={i} href={part} target="_blank" rel="noopener noreferrer">
+                                    {part}
+                                  </a>
+                                );
+                              }
+                              return part;
+                            })}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>No proof available</p>
+                  )}
+                </Description>
+              </Section>
+              <Section style={{ flex: 0.3, textAlign: 'right' }}>
+                <Title>Status</Title>
+                <Status>
+                  {' '}
+                  {timingStats ? <pre>{JSON.stringify(timingStats, null, 2)}</pre> : <p>---</p>}
+                </Status>
+              </Section>
+            </ProofContainer>
           </CreatorDescription>
-
           <AssigneeProfile color={color}>
             {bountyPaid ? (
               <>
@@ -1604,6 +1638,16 @@ function MobileView(props: CodingBountiesProps) {
                   showProof={isAssignee}
                   showProofAction={proofHandler}
                 />
+                {isOpenProofModal && (
+                  <CodingBountyProofModal
+                    closeModal={() => setIsOpenProofModal(false)}
+                    value={value}
+                    onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setValue(e.target.value)}
+                    placeholder="Enter proof here"
+                    bountyId={id?.toString() || ''}
+                    submitProof={submitProof}
+                  />
+                )}
               </>
             ) : (
               <>
