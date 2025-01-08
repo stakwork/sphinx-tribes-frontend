@@ -92,6 +92,7 @@ const TicketEditor = observer(
     const [versionTicketData, setVersionTicketData] = useState<Ticket>(latestTicket as Ticket);
     const [isCopying, setIsCopying] = useState(false);
     const [activeMode, setActiveMode] = useState<'preview' | 'edit'>('edit');
+    const [isButtonDisabled, setIsButtonDisabled] = useState(true);
     const { main } = useStores();
     const [isCreatingBounty, setIsCreatingBounty] = useState(false);
     const ui = uiStore;
@@ -110,6 +111,13 @@ const TicketEditor = observer(
       );
       setVersions(versionsArray);
     }, [groupTickets, latestTicket?.version]);
+
+    useEffect(() => {
+      const isChanged =
+        ticketData.name.trim() !== versionTicketData.name.trim() ||
+        ticketData.description.trim() !== versionTicketData.description.trim();
+      setIsButtonDisabled(!isChanged);
+    }, [ticketData, versionTicketData]);
 
     const addUpdateSuccessToast = () => {
       setToasts([
@@ -134,6 +142,7 @@ const TicketEditor = observer(
     };
 
     const handleUpdate = async () => {
+      if (isButtonDisabled) return;
       try {
         const ticketPayload = {
           metadata: {
@@ -409,7 +418,7 @@ const TicketEditor = observer(
                 onClick={handleUpdate}
                 data-testid="story-input-update-btn"
               >
-                Update
+                {isButtonDisabled ? 'Save' : 'Update'}
               </ActionButton>
               <ActionButton
                 color="primary"
