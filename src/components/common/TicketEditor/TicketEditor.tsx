@@ -2,14 +2,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStores } from 'store';
-import {
-  EuiGlobalToastList,
-  EuiFlexGroup,
-  EuiFlexItem,
-  EuiPanel,
-  EuiIcon,
-  EuiBadge
-} from '@elastic/eui';
+import { EuiGlobalToastList, EuiFlexGroup, EuiFlexItem, EuiPanel, EuiIcon } from '@elastic/eui';
 import { renderMarkdown } from 'people/utils/RenderMarkdown.tsx';
 import styled from 'styled-components';
 import history from 'config/history.ts';
@@ -146,6 +139,7 @@ const TicketEditor = observer(
     const [versionTicketData, setVersionTicketData] = useState<Ticket>(latestTicket as Ticket);
     const [isCopying, setIsCopying] = useState(false);
     const [activeMode, setActiveMode] = useState<'preview' | 'edit'>('edit');
+    const [isButtonDisabled, setIsButtonDisabled] = useState(true);
     const { main } = useStores();
     const [isCreatingBounty, setIsCreatingBounty] = useState(false);
     const [isOptionsMenuVisible, setIsOptionsMenuVisible] = useState(false);
@@ -165,6 +159,13 @@ const TicketEditor = observer(
       );
       setVersions(versionsArray);
     }, [groupTickets, latestTicket?.version]);
+
+    useEffect(() => {
+      const isChanged =
+        ticketData.name.trim() !== versionTicketData.name.trim() ||
+        ticketData.description.trim() !== versionTicketData.description.trim();
+      setIsButtonDisabled(!isChanged);
+    }, [ticketData, versionTicketData]);
 
     const addUpdateSuccessToast = () => {
       setToasts([
@@ -193,6 +194,7 @@ const TicketEditor = observer(
     };
 
     const handleUpdate = async () => {
+      if (isButtonDisabled) return;
       try {
         const ticketPayload = {
           metadata: {
