@@ -188,6 +188,37 @@ export class ChatService {
       return undefined;
     }
   }
+
+  async archiveChat(chat_id: string): Promise<boolean> {
+    try {
+      if (!uiStore.meInfo) return false;
+      const info = uiStore.meInfo;
+
+      const response = await fetch(`${TribesURL}/hivechat/${chat_id}/archive`, {
+        method: 'PUT',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error('Invalid archive chat response');
+      }
+
+      return true;
+    } catch (e) {
+      console.error('Error archiving chat:', e);
+      return false;
+    }
+  }
 }
 
 export const chatService = new ChatService();

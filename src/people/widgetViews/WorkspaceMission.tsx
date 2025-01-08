@@ -63,6 +63,7 @@ import { CodeGraph, Chat } from 'store/interface';
 import { useHistory } from 'react-router-dom';
 import { SchematicPreview } from 'people/SchematicPreviewer';
 import { PostModal } from 'people/widgetViews/postBounty/PostModal';
+import { useChatArchiveConfirmationModal } from 'components/common/ChatArchiveConfirmationModal';
 import avatarIcon from '../../public/static/profile_avatar.svg';
 import { colors } from '../../config/colors';
 import dragIcon from '../../pages/superadmin/header/icons/drag_indicator.svg';
@@ -230,7 +231,13 @@ const ChatListItem = styled(StyledListElement)`
   }
 `;
 
+const ChatContentRow = styled.div`
+  display: flex;
+  gap: 12px;
+`;
+
 const ChatItemContent = styled.div`
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -251,6 +258,7 @@ const ChatTimestamp = styled.div`
   font-size: 12px;
   color: #8c9196;
   white-space: nowrap;
+  margin-top: 2px;
 `;
 
 interface BudgetHeaderProps {
@@ -326,6 +334,7 @@ const WorkspaceMission = () => {
   const [holding, setHolding] = useState(false);
   const [permissionsChecked, setPermissionsChecked] = useState<boolean>(false);
   const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
+  const [visibleChatMenus, setVisibleChatMenus] = useState<Record<string, boolean>>({});
 
   const { isEnabled: isPlannerEnabled, loading: isPlannerLoading } =
     useFeatureFlag('display_planner');
@@ -436,6 +445,63 @@ const WorkspaceMission = () => {
         }
       ]);
     }
+  };
+
+  const { openArchiveConfirmation } = useChatArchiveConfirmationModal();
+
+  const handleArchiveChat = async (chatId: string) => {
+    const success = await chat.archiveChat(chatId);
+    if (success) {
+      setChats(chats.filter((c: Chat) => c.id !== chatId));
+      setToasts([
+        {
+          id: `${Date.now()}-chat-archived`,
+          title: 'Success',
+          color: 'success',
+          text: 'Chat archived successfully'
+        }
+      ]);
+    } else {
+      setToasts([
+        {
+          id: `${Date.now()}-chat-archive-error`,
+          title: 'Error',
+          color: 'danger',
+          text: 'Failed to archive chat'
+        }
+      ]);
+    }
+
+    setVisibleChatMenus((prev: Record<string, boolean>) => ({
+      ...prev,
+      [chatId]: false
+    }));
+  };
+
+  const handleArchiveChatConfirmation = async (chatId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    openArchiveConfirmation({
+      onConfirmArchive: () => handleArchiveChat(chatId),
+      onCancel: () =>
+        setVisibleChatMenus((prev: Record<string, boolean>) => ({
+          ...prev,
+          [chatId]: false
+        })),
+      children: (
+        <Box fontSize={20} textAlign="center">
+          Are you sure you want to <br />
+          <Box component="span" fontWeight="500">
+            Archive this Chat?
+          </Box>
+        </Box>
+      )
+    });
+  };
+
+  const handleMenuClick = (chatId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setVisibleChatMenus({ [chatId]: !visibleChatMenus[chatId] });
   };
 
   const handleChatClick = (chatId: string) => {
@@ -1255,12 +1321,38 @@ const WorkspaceMission = () => {
                     {chats.map((chat: Chat) => (
                       <ChatListItem key={chat.id} onClick={() => handleChatClick(chat.id)}>
                         <ChatItemContent>
-                          <ChatTitle>{chat.title || 'Untitled Chat'}</ChatTitle>
-                          <ChatTimestamp>
-                            {chat.updatedAt || chat.createdAt
-                              ? new Date(chat.updatedAt || chat.createdAt).toLocaleString()
-                              : 'No date'}
-                          </ChatTimestamp>
+                          <ChatContentRow>
+                            <ChatTitle>{chat.title || 'Untitled Chat'}</ChatTitle>
+                            <ChatTimestamp>
+                              {chat.updatedAt || chat.createdAt
+                                ? new Date(chat.updatedAt || chat.createdAt).toLocaleString()
+                                : 'No date'}
+                            </ChatTimestamp>
+                          </ChatContentRow>
+                          <OptionsWrap style={{ position: 'relative', top: 'unset' }}>
+                            <MaterialIcon
+                              icon={'more_horiz'}
+                              className="MaterialIcon"
+                              onClick={(e: React.MouseEvent<HTMLElement>) =>
+                                handleMenuClick(chat.id, e)
+                              }
+                              data-testid={`chat-menu-btn-${chat.id}`}
+                            />
+                            {visibleChatMenus[chat.id] && (
+                              <EditPopover>
+                                <EditPopoverTail />
+                                <EditPopoverContent
+                                  onClick={(e: React.MouseEvent) =>
+                                    handleArchiveChatConfirmation(chat.id, e)
+                                  }
+                                >
+                                  <EditPopoverText data-testid={`chat-archive-btn-${chat.id}`}>
+                                    Archive
+                                  </EditPopoverText>
+                                </EditPopoverContent>
+                              </EditPopover>
+                            )}
+                          </OptionsWrap>
                         </ChatItemContent>
                       </ChatListItem>
                     ))}

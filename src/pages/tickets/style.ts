@@ -410,6 +410,7 @@ export const Input = styled.input`
 export const EditPopover = styled.div`
   position: relative;
   display: inline-block;
+  z-index: 1;
 `;
 
 export const EditPopoverContent = styled.div<EditPopoverContentProps>`

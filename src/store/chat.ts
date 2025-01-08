@@ -19,6 +19,8 @@ export interface ChatStore {
   addMessage: (message: ChatMessage) => void;
   updateMessage: (id: string, message: Partial<ChatMessage>) => void;
   getWorkspaceChats: (workspace_uuid: string) => Promise<Chat[]>;
+  archiveChat: (chat_id: string) => Promise<boolean>;
+  removeChat: (chat_id: string) => void;
 }
 
 export class ChatHistoryStore implements ChatStore {
@@ -176,6 +178,28 @@ export class ChatHistoryStore implements ChatStore {
     } catch (error) {
       console.error('Error sending message:', error);
       return undefined;
+    }
+  }
+
+  removeChat(chat_id: string) {
+    this.chats.delete(chat_id);
+    delete this.chatMessages[chat_id];
+    if (this.currentChatId === chat_id) {
+      this.currentChatId = null;
+    }
+  }
+
+  async archiveChat(chat_id: string): Promise<boolean> {
+    try {
+      const success = await chatService.archiveChat(chat_id);
+      if (success) {
+        this.removeChat(chat_id);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Error archiving chat:', error);
+      return false;
     }
   }
 }
