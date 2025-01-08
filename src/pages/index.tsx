@@ -70,7 +70,7 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
             <SuperAdmin />
           </Route>
           <Route path="*">
-          <BountiesLandingPage />
+            <BountiesLandingPage />
           </Route>
         </Switch>
       </MainLayout>
