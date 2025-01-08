@@ -306,7 +306,7 @@ function Form(props: FormProps) {
         // returns the body of a form page
         // assuming two collumn layout
         const GetFormFields = (schemaData: any, style: any = {}) => (
-          <div>
+          <>
             <div className="LeftSchema" style={style}>
               {schema
                 .filter((item: any) => schemaData.schema.includes(item.name))
@@ -413,7 +413,7 @@ function Form(props: FormProps) {
                   })}
               </div>
             )}
-          </div>
+          </>
         );
 
         return (
