@@ -25,8 +25,9 @@ const BountiesLandingPage: React.FC = () => {
   `;
 
   const ContentWrapper = styled.div`
-    max-width: 1400px;
+    max-width: 1500px;
     width: 100%;
+    margin: 40px;
     padding: 40px;
     background: white;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
@@ -35,6 +36,15 @@ const BountiesLandingPage: React.FC = () => {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    overflow-y: auto;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    scrollbar-width: none;
+
+    -ms-overflow-style: none;
   `;
 
   const ContentGrid = styled.div`
@@ -43,11 +53,12 @@ const BountiesLandingPage: React.FC = () => {
     gap: 60px;
     height: 100%;
     position: relative;
+    margin-right: -20px;
 
     &:after {
       content: '';
       position: absolute;
-      left: 68%;
+      left: 65%;
       top: 0;
       bottom: 0;
       width: 1px;
@@ -65,11 +76,39 @@ const BountiesLandingPage: React.FC = () => {
     }
   `;
 
+  const ScrollableColumn = styled.div`
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    max-height: 100%;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    h1 {
+      font-size: 24px;
+      font-family: Barlow;
+      color: ${color.text1};
+      margin-bottom: 24px;
+      font-weight: 500;
+    }
+
+    p {
+      margin-bottom: 16px;
+      font-weight: 500;
+      line-height: 1.6;
+      word-wrap: break-word;
+      max-width: 560px;
+    }
+  `;
+
   const Column = styled.div`
     display: flex;
     flex-direction: column;
     min-height: 100%;
-    margin-right: -20px;
 
     h1 {
       font-size: 24px;
@@ -92,14 +131,14 @@ const BountiesLandingPage: React.FC = () => {
     <Body isMobile={isMobile}>
       <ContentWrapper>
         <ContentGrid>
-          <Column>
+          <ScrollableColumn>
             <h1>Welcome to Bounties</h1>
             <p>
               Building the modern marketplace for work. Complete a bounty and get paid in Bitcoin
               instantly! ⚡
             </p>
             <BountyComponents />
-          </Column>
+          </ScrollableColumn>
           <Column>
             <h1>Freedom to Earn!</h1>
             <TopEarners limit={5} />
