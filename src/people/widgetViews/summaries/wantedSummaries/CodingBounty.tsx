@@ -1604,6 +1604,16 @@ function MobileView(props: CodingBountiesProps) {
                   showProof={isAssignee}
                   showProofAction={proofHandler}
                 />
+                {isOpenProofModal && (
+                  <CodingBountyProofModal
+                    closeModal={() => setIsOpenProofModal(false)}
+                    value={value}
+                    onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setValue(e.target.value)}
+                    placeholder="Enter proof here"
+                    bountyId={id?.toString() || ''}
+                    submitProof={submitProof}
+                  />
+                )}
               </>
             ) : (
               <>
