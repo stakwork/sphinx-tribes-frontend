@@ -1481,7 +1481,7 @@ function MobileView(props: CodingBountiesProps) {
                       ))}
                     </ul>
                   ) : (
-                    <p>No proofs available</p>
+                    <p>No proof available</p>
                   )}
                 </Description>
               </Section>
