@@ -1,11 +1,13 @@
 import { makeAutoObservable, runInAction, computed, observable, action } from 'mobx';
 import { TribesURL } from 'config';
 import { useMemo } from 'react';
-import { BountyCard } from './interface';
+import { BountyCard, BountyCardStatus } from './interface';
 import { uiStore } from './ui';
 
 interface FilterState {
   selectedFeatures: string[];
+  selectedPhases: string[];
+  selectedStatuses: string[];
   timestamp: number;
 }
 
@@ -16,6 +18,8 @@ export class BountyCardStore {
   error: string | null = null;
 
   @observable selectedFeatures: string[] = [];
+  @observable selectedPhases: string[] = [];
+  @observable selectedStatuses: string[] = [];
 
   constructor(workspaceId: string) {
     this.currentWorkspaceId = workspaceId;
@@ -139,6 +143,8 @@ export class BountyCardStore {
       'bountyFilterState',
       JSON.stringify({
         selectedFeatures: this.selectedFeatures,
+        selectedPhases: this.selectedPhases,
+        selectedStatuses: this.selectedStatuses,
         timestamp: Date.now()
       })
     );
@@ -151,10 +157,11 @@ export class BountyCardStore {
       const state = JSON.parse(saved) as FilterState;
       runInAction(() => {
         this.selectedFeatures = state.selectedFeatures;
+        this.selectedPhases = state.selectedPhases;
+        this.selectedStatuses = state.selectedStatuses;
       });
     }
   }
-
   @action
   toggleFeature(featureId: string) {
     if (this.selectedFeatures.includes(featureId)) {
@@ -166,33 +173,88 @@ export class BountyCardStore {
   }
 
   @action
+  togglePhase(phaseId: string) {
+    if (this.selectedPhases.includes(phaseId)) {
+      this.selectedPhases = this.selectedPhases.filter((id: string) => id !== phaseId);
+    } else {
+      this.selectedPhases.push(phaseId);
+    }
+    this.saveFilterState();
+  }
+
+  @action
+  toggleStatus(status: BountyCardStatus) {
+    if (this.selectedStatuses.includes(status)) {
+      this.selectedStatuses = this.selectedStatuses.filter((s: string) => s !== status);
+    } else {
+      this.selectedStatuses.push(status);
+    }
+    this.saveFilterState();
+  }
+
+  @action
   clearAllFilters() {
     this.selectedFeatures = [];
+    this.selectedPhases = [];
+    sessionStorage.removeItem('bountyFilterState');
+    this.saveFilterState();
+  }
+
+  @action
+  clearPhaseFilters() {
+    this.selectedPhases = [];
+    sessionStorage.removeItem('bountyFilterState');
+    this.saveFilterState();
+  }
+
+  @action
+  clearStatusFilters() {
+    this.selectedStatuses = [];
     sessionStorage.removeItem('bountyFilterState');
     this.saveFilterState();
   }
 
   @computed
+  get availablePhases() {
+    if (this.selectedFeatures.length === 0) return [];
+
+    const uniquePhases = new Map();
+
+    this.bountyCards
+      .filter((card: BountyCard) => {
+        const featureMatch =
+          this.selectedFeatures.length === 0 ||
+          (this.selectedFeatures.includes('no-feature') && !card.features?.uuid) ||
+          (card.features?.uuid && this.selectedFeatures.includes(card.features.uuid));
+
+        return featureMatch && card.phase;
+      })
+      .forEach((card: BountyCard) => {
+        if (card.phase) {
+          uniquePhases.set(card.phase.name, card.phase);
+        }
+      });
+
+    return Array.from(uniquePhases.values());
+  }
+
+  @computed
   get filteredBountyCards() {
-    if (this.selectedFeatures.length === 0) {
-      return this.bountyCards;
-    }
-
     return this.bountyCards.filter((card: BountyCard) => {
-      const hasNoFeature = !card.features?.uuid;
-      const isNoFeatureSelected = this.selectedFeatures.includes('no-feature');
-      const hasSelectedFeature =
-        card.features?.uuid && this.selectedFeatures.includes(card.features.uuid);
+      const featureMatch =
+        this.selectedFeatures.length === 0 ||
+        (this.selectedFeatures.includes('no-feature') && !card.features?.uuid) ||
+        (card.features?.uuid && this.selectedFeatures.includes(card.features.uuid));
 
-      if (hasNoFeature && isNoFeatureSelected) {
-        return true;
-      }
+      const phaseMatch =
+        this.selectedPhases.length === 0 ||
+        (card.phase && this.selectedPhases.includes(card.phase.uuid));
 
-      if (hasSelectedFeature) {
-        return true;
-      }
+      const statusMatch =
+        this.selectedStatuses.length === 0 ||
+        (card.status && this.selectedStatuses.includes(card.status));
 
-      return false;
+      return featureMatch && phaseMatch && statusMatch;
     });
   }
 
