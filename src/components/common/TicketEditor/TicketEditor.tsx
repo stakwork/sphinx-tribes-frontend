@@ -120,6 +120,7 @@ const FloatingCopyButton = styled.button`
 
 const EditorWrapper = styled.div`
   position: relative;
+  background-color: white;
 `;
 
 const TicketEditor = observer(
