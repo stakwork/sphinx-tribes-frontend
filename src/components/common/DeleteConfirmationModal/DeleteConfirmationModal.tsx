@@ -10,12 +10,17 @@ export type DeleteConfirmationModalProps = PropsWithChildren<{
   onClose: () => void;
   onDelete: () => void;
   onCancel?: () => void;
+  confirmButtonText?: string;
+  customIcon?: React.ReactNode;
 }>;
+
 export const DeleteConfirmationModal = ({
   onClose,
   children,
   onCancel,
-  onDelete
+  onDelete,
+  confirmButtonText = 'Delete',
+  customIcon = icon
 }: DeleteConfirmationModalProps) => {
   const closeHandler = () => {
     onClose();
@@ -26,10 +31,11 @@ export const DeleteConfirmationModal = ({
     onDelete();
     onClose();
   };
+
   return (
     <BaseModal backdrop="white" open onClose={closeHandler}>
       <Stack minWidth={350} p={4} alignItems="center" spacing={3}>
-        {icon}
+        {customIcon}
         {children}
         <Stack width="100%" direction="row" justifyContent="space-between">
           <IconButton width={120} height={44} color="white" text="Cancel" onClick={closeHandler} />
@@ -41,7 +47,7 @@ export const DeleteConfirmationModal = ({
             activecolor={'#E15A5A'}
             shadowcolor={'#ED747480'}
             data-testid="delete-confirmation"
-            text="Delete"
+            text={confirmButtonText}
             onClick={deleteHandler}
           />
         </Stack>

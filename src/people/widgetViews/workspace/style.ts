@@ -1003,6 +1003,14 @@ export const RowFlex = styled.div`
   align-items: center;
 `;
 
+export const ChatRowFlex = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px !important;
+  cursor: pointer;
+`;
+
 export const MissionRowFlex = styled.div`
   display: flex;
   width: 100%;

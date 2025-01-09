@@ -150,6 +150,16 @@ export class ChatHistoryStore implements ChatStore {
     }
   }
 
+  async archiveChat(chat_id: string): Promise<void> {
+    try {
+      await chatService.archiveChat(chat_id);
+      this.chats.delete(chat_id);
+    } catch (error) {
+      console.error('Error archiving chat in store:', error);
+      throw error;
+    }
+  }
+
   async sendMessage(
     chat_id: string,
     message: string,

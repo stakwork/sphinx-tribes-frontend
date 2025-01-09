@@ -428,6 +428,7 @@ export const Input = styled.input`
 export const EditPopover = styled.div`
   position: relative;
   display: inline-block;
+  z-index: 1000;
 `;
 
 export const ConvertToBountyPopover = styled.div`
