@@ -2,17 +2,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStores } from 'store';
-import {
-  EuiGlobalToastList,
-  EuiFlexGroup,
-  EuiFlexItem,
-  EuiPanel,
-  EuiIcon,
-  EuiBadge
-} from '@elastic/eui';
+import { EuiGlobalToastList, EuiFlexGroup, EuiFlexItem, EuiPanel, EuiIcon } from '@elastic/eui';
 import { renderMarkdown } from 'people/utils/RenderMarkdown.tsx';
 import styled from 'styled-components';
 import history from 'config/history.ts';
+import MaterialIcon from '@material/react-material-icon';
 import { phaseTicketStore } from '../../../store/phase';
 import {
   ActionButton,
@@ -23,7 +17,11 @@ import {
   TicketContainer,
   TicketHeader,
   TicketInput,
-  TicketHeaderInputWrap
+  TicketHeaderInputWrap,
+  BountyPopoverText,
+  BountyOptionsWrap,
+  ConvertToBountyPopover,
+  BountyPopoverContent
 } from '../../../pages/tickets/style';
 import { TicketStatus, Ticket, Author } from '../../../store/interface';
 import { Toast } from '../../../people/widgetViews/workspace/interface';
@@ -75,6 +73,55 @@ const SwitcherButton = styled.button<{ isActive: boolean }>`
   `}
 `;
 
+const VersionSelect = styled(Select)`
+  padding: 6px !important;
+  border-radius: 4px;
+  margin-top: 0 !important;
+  border: 1px solid #ccc;
+  background-color: white;
+  cursor: pointer;
+  min-width: auto;
+  height: 40px !important;
+  margin-bottom: 9px;
+`;
+
+const MaterialIconStyled = styled(MaterialIcon)`
+  cursor: pointer;
+  padding: 4px;
+  font-size: 40px !important;
+  border-radius: 4px;
+`;
+
+const FloatingCopyButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #f2f3f5;
+  color: black;
+  border: none;
+  border-radius: 4px;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.8;
+  transition: opacity 0.3s;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+`;
+
+const EditorWrapper = styled.div`
+  position: relative;
+`;
+
 const TicketEditor = observer(
   ({
     ticketData,
@@ -95,6 +142,7 @@ const TicketEditor = observer(
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
     const { main } = useStores();
     const [isCreatingBounty, setIsCreatingBounty] = useState(false);
+    const [isOptionsMenuVisible, setIsOptionsMenuVisible] = useState(false);
     const ui = uiStore;
 
     const groupTickets = useMemo(
@@ -139,6 +187,10 @@ const TicketEditor = observer(
           text: 'We had an issue, try again!'
         }
       ]);
+    };
+
+    const toggleOptionsMenu = () => {
+      setIsOptionsMenuVisible(!isOptionsMenuVisible);
     };
 
     const handleUpdate = async () => {
@@ -330,7 +382,7 @@ const TicketEditor = observer(
         <EuiFlexGroup alignItems="center" gutterSize="s">
           <EuiFlexItem grow={false}>
             <EuiPanel
-              style={{ backgroundColor: 'white', border: 'none' }}
+              style={{ backgroundColor: '#f2f3f5', border: 'none' }}
               color="transparent"
               className="drag-handle"
               paddingSize="s"
@@ -352,9 +404,33 @@ const TicketEditor = observer(
                 }
                 placeholder="Enter ticket name..."
               />
-              <EuiBadge color="success" style={{ marginBottom: '12px' }}>
-                Version {selectedVersion}
-              </EuiBadge>
+              <VersionSelect value={selectedVersion} onChange={handleChange}>
+                {Array.from(new Set(versions)).map((version: number) => (
+                  <Option key={version} value={version}>
+                    Version {version}
+                  </Option>
+                ))}
+              </VersionSelect>
+              <BountyOptionsWrap>
+                <MaterialIconStyled
+                  icon={'more_horiz'}
+                  className="MaterialIcon"
+                  onClick={() => toggleOptionsMenu()}
+                  data-testid="ticket-options-btn"
+                />
+                {isOptionsMenuVisible && (
+                  <ConvertToBountyPopover>
+                    <BountyPopoverContent>
+                      <BountyPopoverText
+                        onClick={handleCreateBounty}
+                        data-testid="convert-to-bounty-btn"
+                      >
+                        Convert to Bounty
+                      </BountyPopoverText>
+                    </BountyPopoverContent>
+                  </ConvertToBountyPopover>
+                )}
+              </BountyOptionsWrap>
               <CopyButtonGroup>
                 <SwitcherContainer>
                   <SwitcherButton
@@ -370,64 +446,30 @@ const TicketEditor = observer(
                     Edit
                   </SwitcherButton>
                 </SwitcherContainer>
-                <ActionButton
-                  color="primary"
-                  onClick={handleCopy}
-                  disabled={isCopying}
-                  data-testid="copy-description-btn"
-                >
-                  Copy
-                </ActionButton>
               </CopyButtonGroup>
             </TicketHeaderInputWrap>
-            {activeMode === 'edit' ? (
-              <TicketTextAreaComp
-                value={versionTicketData.description}
-                onChange={(value: string) =>
-                  setVersionTicketData({ ...versionTicketData, description: value })
-                }
-                placeholder="Enter ticket details..."
-                ui={ui}
-              />
-            ) : (
-              <div className="p-4 border rounded-md">
-                {renderMarkdown(versionTicketData.description)}
-              </div>
-            )}
+            <EditorWrapper>
+              {activeMode === 'edit' ? (
+                <>
+                  <FloatingCopyButton onClick={handleCopy} title="Copy Code">
+                    <EuiIcon type="copy" />
+                  </FloatingCopyButton>
+                  <TicketTextAreaComp
+                    value={versionTicketData.description}
+                    onChange={(value: string) =>
+                      setVersionTicketData({ ...versionTicketData, description: value })
+                    }
+                    placeholder="Enter ticket details..."
+                    ui={ui}
+                  />
+                </>
+              ) : (
+                <div className="p-4 border rounded-md">
+                  {renderMarkdown(versionTicketData.description)}
+                </div>
+              )}
+            </EditorWrapper>
             <TicketButtonGroup>
-              <Select
-                value={selectedVersion}
-                onChange={handleChange}
-                style={{
-                  padding: '5px 10px',
-                  borderRadius: '4px',
-                  border: '1px solid #ccc',
-                  marginRight: '10px',
-                  backgroundColor: 'white',
-                  cursor: 'pointer'
-                }}
-              >
-                {Array.from(new Set(versions)).map((version: number) => (
-                  <Option key={version} value={version}>
-                    Version {version}
-                  </Option>
-                ))}
-              </Select>
-              <ActionButton
-                color="primary"
-                onClick={handleUpdate}
-                data-testid="story-input-update-btn"
-              >
-                Save
-              </ActionButton>
-              <ActionButton
-                color="primary"
-                onClick={handleCreateBounty}
-                disabled={isCreatingBounty}
-                data-testid="create-bounty-from-ticket-btn"
-              >
-                {isCreatingBounty ? 'Creating Bounty...' : 'Create Bounty'}
-              </ActionButton>
               {swwfLink && (
                 <ActionButton
                   as="a"
@@ -451,7 +493,14 @@ const TicketEditor = observer(
                 onClick={handleTicketBuilder}
                 data-testid="story-generate-btn"
               >
-                Ticket Builder
+                Improve with AI
+              </ActionButton>
+              <ActionButton
+                color="primary"
+                onClick={handleUpdate}
+                data-testid="story-input-update-btn"
+              >
+                Save
               </ActionButton>
             </TicketButtonGroup>
             <EuiGlobalToastList

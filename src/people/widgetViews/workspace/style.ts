@@ -1647,7 +1647,7 @@ export const CopyButtonGroup = styled.div`
   align-items: baseline;
   justify-content: flex-end;
   margin-left: auto;
-  margin-top: calc(100px - 134px);
+  margin-top: calc(100px - 108px);
 
   ${ActionButton} {
     transition: background-color 0.2s ease;

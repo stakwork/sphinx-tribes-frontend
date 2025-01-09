@@ -219,6 +219,24 @@ export const OptionsWrap = styled.div`
   }
 `;
 
+export const BountyOptionsWrap = styled.div`
+  position: absolute;
+  margin-left: 58%;
+  margin-bottom: 1% !important;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  button {
+    border: 0.5px solid #000000;
+    font-size: 0.8rem;
+    font-weight: 700;
+    border-radius: 5px;
+    padding: 2px 10px;
+  }
+`;
+
 export const UserStoryOptionWrap = styled.div`
   position: absolute;
   top: 2px;
@@ -412,6 +430,13 @@ export const EditPopover = styled.div`
   display: inline-block;
 `;
 
+export const ConvertToBountyPopover = styled.div`
+  position: relative;
+  display: inline-block;
+  z-index: 1000;
+  left: 158px;
+`;
+
 export const EditPopoverContent = styled.div<EditPopoverContentProps>`
   position: absolute;
   bottom: ${({ bottom }: { bottom?: string }) => bottom ?? '-50px'};
@@ -427,6 +452,25 @@ export const EditPopoverContent = styled.div<EditPopoverContentProps>`
   gap: 6px;
 `;
 
+export const BountyPopoverContent = styled.div<EditPopoverContentProps>`
+  position: absolute;
+  bottom: ${({ bottom }: { bottom?: string }) => bottom ?? '5px'};
+  left: -30%;
+  transform: ${({ transform }: { transform?: string }) => transform ?? 'translateX(-80%)'};
+  width: 170px;
+  background: #fff;
+  box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.25);
+  border-radius: 6px;
+  padding: 8px 15px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  &:hover {
+    background-color: #f2f3f5;
+  }
+`;
+
 export const EditPopoverTail = styled.div<EditPopoverTailProps>`
   position: absolute;
   bottom: ${({ bottom }: { bottom?: string }) => bottom ?? '-16px'};
@@ -440,6 +484,13 @@ export const EditPopoverTail = styled.div<EditPopoverTailProps>`
 `;
 
 export const EditPopoverText = styled.span`
+  font-family: 'Barlow', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+`;
+
+export const BountyPopoverText = styled.span`
   font-family: 'Barlow', sans-serif;
   font-size: 1.1rem;
   font-weight: 600;
@@ -515,7 +566,7 @@ export const TicketContainer = styled.div`
 export const TicketHeader = styled.div`
   font-weight: bold;
   font-size: 20px;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 `;
 
 export const TicketTextArea = styled.textarea`
@@ -548,8 +599,8 @@ export const TicketTextArea = styled.textarea`
 `;
 
 export const TicketInput = styled.input`
-  width: 30%;
-  padding: 10px;
+  width: 25%;
+  padding: 9px;
   margin-bottom: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -566,6 +617,7 @@ export const TicketHeaderInputWrap = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
+  position: relative;
 `;
 
 export const WorkspaceFieldWrap = styled.div`
