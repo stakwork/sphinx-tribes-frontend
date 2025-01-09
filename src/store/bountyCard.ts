@@ -1,11 +1,13 @@
 import { makeAutoObservable, runInAction, computed, observable, action } from 'mobx';
 import { TribesURL } from 'config';
 import { useMemo } from 'react';
-import { BountyCard } from './interface';
+import { BountyCard, BountyCardStatus } from './interface';
 import { uiStore } from './ui';
 
 interface FilterState {
   selectedFeatures: string[];
+  selectedPhases: string[];
+  selectedStatuses: BountyCardStatus[];
   timestamp: number;
 }
 
@@ -16,6 +18,8 @@ export class BountyCardStore {
   error: string | null = null;
 
   @observable selectedFeatures: string[] = [];
+  @observable selectedPhases: string[] = [];
+  @observable selectedStatuses: BountyCardStatus[] = [];
 
   constructor(workspaceId: string) {
     this.currentWorkspaceId = workspaceId;
@@ -108,72 +112,115 @@ export class BountyCardStore {
     runInAction(() => {
       this.currentWorkspaceId = newWorkspaceId;
       this.bountyCards = [];
+      this.clearAllFilters();
     });
 
     await this.loadWorkspaceBounties();
   };
 
   @computed get todoItems() {
-    return this.bountyCards.filter((card: BountyCard) => card.status === 'TODO');
+    return this.filteredBountyCards.filter((card: BountyCard) => card.status === 'TODO');
   }
 
   @computed get assignedItems() {
-    return this.bountyCards.filter((card: BountyCard) => card.status === 'IN_PROGRESS');
+    return this.filteredBountyCards.filter((card: BountyCard) => card.status === 'IN_PROGRESS');
   }
 
   @computed get completedItems() {
-    return this.bountyCards.filter((card: BountyCard) => card.status === 'COMPLETED');
+    return this.filteredBountyCards.filter((card: BountyCard) => card.status === 'COMPLETED');
   }
 
   @computed get paidItems() {
-    return this.bountyCards.filter((card: BountyCard) => card.status === 'PAID');
+    return this.filteredBountyCards.filter((card: BountyCard) => card.status === 'PAID');
   }
 
   @computed get reviewItems() {
-    return this.bountyCards.filter((card: BountyCard) => card.status === 'IN_REVIEW');
+    return this.filteredBountyCards.filter((card: BountyCard) => card.status === 'IN_REVIEW');
   }
 
   @action
-  saveFilterState() {
-    sessionStorage.setItem(
-      'bountyFilterState',
-      JSON.stringify({
-        selectedFeatures: this.selectedFeatures,
-        timestamp: Date.now()
-      })
-    );
+  togglePhase(phaseId: string) {
+    this.selectedPhases = this.selectedPhases.includes(phaseId)
+      ? this.selectedPhases.filter((id: string) => id !== phaseId)
+      : [...this.selectedPhases, phaseId];
+    this.saveFilterState();
   }
 
   @action
-  restoreFilterState() {
-    const saved = sessionStorage.getItem('bountyFilterState');
-    if (saved) {
-      const state = JSON.parse(saved) as FilterState;
-      runInAction(() => {
-        this.selectedFeatures = state.selectedFeatures;
-      });
-    }
+  toggleStatus(status: BountyCardStatus) {
+    this.selectedStatuses = this.selectedStatuses.includes(status)
+      ? this.selectedStatuses.filter((s: BountyCardStatus) => s !== status)
+      : [...this.selectedStatuses, status];
+    this.saveFilterState();
   }
 
   @action
   toggleFeature(featureId: string) {
-    if (this.selectedFeatures.includes(featureId)) {
-      this.selectedFeatures = this.selectedFeatures.filter((id: string) => id !== featureId);
-    } else {
-      this.selectedFeatures.push(featureId);
+    this.selectedFeatures = this.selectedFeatures.includes(featureId)
+      ? this.selectedFeatures.filter((id: string) => id !== featureId)
+      : [...this.selectedFeatures, featureId];
+
+    if (this.selectedFeatures.length === 0) {
+      this.selectedPhases = [];
     }
+
     this.saveFilterState();
   }
 
   @action
   clearAllFilters() {
     this.selectedFeatures = [];
+    this.selectedPhases = [];
+    this.selectedStatuses = [];
     sessionStorage.removeItem('bountyFilterState');
     this.saveFilterState();
   }
 
+  @action
+  saveFilterState() {
+    const filterState: FilterState = {
+      selectedFeatures: this.selectedFeatures,
+      selectedPhases: this.selectedPhases,
+      selectedStatuses: this.selectedStatuses,
+      timestamp: Date.now()
+    };
+
+    sessionStorage.setItem('bountyFilterState', JSON.stringify(filterState));
+  }
+
+  @action
+  restoreFilterState() {
+    try {
+      const saved = sessionStorage.getItem('bountyFilterState');
+      if (saved) {
+        const state = JSON.parse(saved) as FilterState;
+        runInAction(() => {
+          this.selectedFeatures = state.selectedFeatures || [];
+          this.selectedPhases = state.selectedPhases || [];
+          this.selectedStatuses = state.selectedStatuses || [];
+        });
+      }
+    } catch (error) {
+      console.error('Error restoring filter state:', error);
+      this.clearAllFilters();
+    }
+  }
+
   @computed
-  get filteredBountyCards() {
+  get availablePhases(): string[] {
+    if (this.selectedFeatures.length === 0) return [];
+
+    return Array.from(
+      new Set(
+        this.filteredByFeatures
+          .filter((card: BountyCard) => card.phase?.uuid)
+          .map((card: BountyCard) => card.phase.uuid)
+      )
+    );
+  }
+
+  @computed
+  get filteredByFeatures(): BountyCard[] {
     if (this.selectedFeatures.length === 0) {
       return this.bountyCards;
     }
@@ -184,16 +231,35 @@ export class BountyCardStore {
       const hasSelectedFeature =
         card.features?.uuid && this.selectedFeatures.includes(card.features.uuid);
 
-      if (hasNoFeature && isNoFeatureSelected) {
-        return true;
-      }
-
-      if (hasSelectedFeature) {
-        return true;
-      }
-
-      return false;
+      return (hasNoFeature && isNoFeatureSelected) || hasSelectedFeature;
     });
+  }
+
+  @computed
+  get filteredBountyCards(): BountyCard[] {
+    return this.filteredByFeatures.filter((card: BountyCard) => {
+      const phaseMatch =
+        this.selectedPhases.length === 0 ||
+        (card.phase?.uuid && this.selectedPhases.includes(card.phase.uuid));
+
+      const statusMatch =
+        this.selectedStatuses.length === 0 ||
+        (card.status && this.selectedStatuses.includes(card.status));
+
+      return phaseMatch && statusMatch;
+    });
+  }
+
+  @computed
+  get filterStats() {
+    return {
+      totalCards: this.bountyCards.length,
+      filteredCount: this.filteredBountyCards.length,
+      hasActiveFilters:
+        this.selectedFeatures.length > 0 ||
+        this.selectedPhases.length > 0 ||
+        this.selectedStatuses.length > 0
+    };
   }
 
   @computed

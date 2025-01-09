@@ -471,6 +471,13 @@ export type ChatStatus = 'sending' | 'sent' | 'error';
 export type ContextTagType = 'productBrief' | 'featureBrief' | 'schematic';
 export type ChatSource = 'user' | 'agent';
 export type BountyCardStatus = 'TODO' | 'IN_PROGRESS' | 'IN_REVIEW' | 'COMPLETED' | 'PAID';
+export const STATUS_LABELS: Readonly<Record<BountyCardStatus, string>> = {
+  TODO: 'Todo',
+  IN_PROGRESS: 'In Progress',
+  IN_REVIEW: 'In Review',
+  COMPLETED: 'Completed',
+  PAID: 'Paid'
+} as const;
 
 export interface ContextTag {
   type: ContextTagType;
