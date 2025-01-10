@@ -55,7 +55,7 @@ interface FeatureOption {
 }
 
 const ClearButton = styled.button`
-  color: ${colors.light.primaryColor};
+  color: ${colors.light.blue4};
   background: none;
   border: none;
   font-size: 12px;
@@ -69,25 +69,42 @@ const ClearButton = styled.button`
 `;
 
 const SearchInputContainer = styled.div`
-  display: flex;
-  align-items: center;
+  position: relative;
+  width: 100%;
+  max-width: 400px;
   margin-bottom: 1rem;
 
   input {
-    width: 300px;
-    padding: 0.5rem;
+    width: 100%;
+    padding: 0.5rem 2.5rem 0.5rem 0.5rem; /* Add padding to account for the button */
     border: 1px solid ${colors.light.grayish.G1100};
     border-radius: 4px;
     font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s;
+
+    &:focus {
+      border-color: ${colors.light.blue3};
+    }
   }
 
   button {
-    margin-left: 0.5rem;
+    position: absolute;
+    top: 50%;
+    right: 0.5rem;
+    transform: translateY(-50%);
     background: transparent;
     border: none;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     cursor: pointer;
     color: ${colors.light.black400};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      color: ${colors.light.blue3};
+    }
   }
 `;
 
