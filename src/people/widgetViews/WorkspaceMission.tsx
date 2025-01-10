@@ -670,11 +670,10 @@ const WorkspaceMission = () => {
     }));
   };
 
-  const toggleChatMenu = (chatId: string) => {
-    setVisibleChatMenu((prevState: { [key: string]: boolean }) => ({
-      ...prevState,
-      [chatId]: !prevState[chatId]
-    }));
+  const toggleChatMenu = (chatId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    setVisibleChatMenu({ [chatId]: !visibleChatMenu[chatId] });
   };
 
   const closeAllFeatureStatus = () => {
@@ -846,9 +845,16 @@ const WorkspaceMission = () => {
     }
   };
 
-  const confirmArchiveChat = (chatId: string) => {
+  const confirmArchiveChat = (chatId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+
     openDeleteConfirmation({
       onDelete: () => handleArchiveChat(chatId),
+      onCancel: () =>
+        setVisibleChatMenu((prev: Record<string, boolean>) => ({
+          ...prev,
+          [chatId]: false
+        })),
       confirmButtonText: 'Confirm',
       customIcon: archiveIcon,
       children: (
@@ -1311,9 +1317,9 @@ const WorkspaceMission = () => {
                 ) : chats.length > 0 ? (
                   <StyledList>
                     {chats.map((chat: Chat) => (
-                      <ChatListItem key={chat.id}>
+                      <ChatListItem key={chat.id} onClick={() => handleChatClick(chat.id)}>
                         <ChatItemContent>
-                          <ChatRowFlex onClick={() => handleChatClick(chat.id)}>
+                          <ChatRowFlex>
                             <ChatTitle>{chat.title || 'Untitled Chat'}</ChatTitle>
                             <ChatTimestamp>
                               {chat.updatedAt || chat.createdAt
@@ -1321,17 +1327,19 @@ const WorkspaceMission = () => {
                                 : 'No date'}
                             </ChatTimestamp>
                           </ChatRowFlex>
-                          <OptionsWrap>
+                          <OptionsWrap style={{ top: 'unset' }}>
                             <MaterialIcon
                               icon={'more_horiz'}
                               className="MaterialIcon"
-                              onClick={() => toggleChatMenu(chat.id)}
+                              onClick={(e: React.MouseEvent) => toggleChatMenu(chat.id, e)}
                               data-testid={`chat-option-btn-${chat.id}`}
                             />
                             {visibleChatMenu[chat.id] && (
                               <EditPopover>
                                 <EditPopoverTail />
-                                <EditPopoverContent onClick={() => confirmArchiveChat(chat.id)}>
+                                <EditPopoverContent
+                                  onClick={(e: React.MouseEvent) => confirmArchiveChat(chat.id, e)}
+                                >
                                   <EditPopoverText data-testid={`chat-archive-btn-${chat.id}`}>
                                     Archive
                                   </EditPopoverText>

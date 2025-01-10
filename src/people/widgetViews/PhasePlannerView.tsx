@@ -18,6 +18,7 @@ import {
 import { SOCKET_MSG } from 'config/socket';
 import { createSocketInstance } from 'config/socket';
 import { phaseTicketStore } from '../../store/phase';
+import StakworkLogsPanel from '../../components/common/TicketEditor/StakworkLogsPanel.tsx';
 import {
   FeatureHeadNameWrap,
   FeatureHeadWrap,
@@ -327,6 +328,7 @@ const PhasePlannerView: React.FC = observer(() => {
             </AddTicketButton>
           </PhaseFlexContainer>
         </FieldWrap>
+        <StakworkLogsPanel swwfLinks={swwfLinks} />
       </FeatureDataWrap>
     </FeatureBody>
   );

@@ -65,7 +65,7 @@ export const Header = ({
 
       return moment
         .unix(unixDate)
-        .format(startYear !== endYear || unixDate === endDate ? formatString : 'DD MMM');
+        .format(startYear !== endYear || unixDate === endDate ? formatString : 'DD MMM YYYY');
     }
     return '';
   };

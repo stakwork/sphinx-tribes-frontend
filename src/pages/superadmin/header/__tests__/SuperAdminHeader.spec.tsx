@@ -268,7 +268,7 @@ describe('Header Component', () => {
 
     expect(monthElement).toBeInTheDocument();
 
-    const expectedDateRange = `${moment.unix(startDate).format('DD MMM')} - ${moment
+    const expectedDateRange = `${moment.unix(startDate).format('DD MMM YYYY')} - ${moment
       .unix(endDate)
       .format('DD MMM YYYY')}`;
     expect(monthElement).toHaveTextContent(expectedDateRange);
