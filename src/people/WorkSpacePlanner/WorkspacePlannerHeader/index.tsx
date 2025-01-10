@@ -3,7 +3,7 @@ import { EuiText, EuiPopover, EuiCheckboxGroup } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
 import { observer } from 'mobx-react-lite';
 import styled from 'styled-components';
-import { Workspace, Feature, BountyCard } from 'store/interface';
+import { Workspace, Feature, BountyCard, BountyCardStatus } from 'store/interface';
 import { useStores } from '../../../store';
 import { userCanManageBounty } from '../../../helpers';
 import { PostModal } from '../../widgetViews/postBounty/PostModal';
@@ -32,6 +32,7 @@ import { Header, Leftheader } from '../../../pages/tickets/style';
 import addBounty from '../../../pages/tickets/workspace/workspaceHeader/Icons/addBounty.svg';
 import websiteIcon from '../../../pages/tickets/workspace/workspaceHeader/Icons/websiteIcon.svg';
 import githubIcon from '../../../pages/tickets/workspace/workspaceHeader/Icons/githubIcon.svg';
+import { Phase } from '../../widgetViews/workspace/interface.ts';
 
 const color = colors['light'];
 
@@ -74,6 +75,8 @@ export const WorkspacePlannerHeader = observer(
     const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
     const [canPostBounty, setCanPostBounty] = useState(false);
     const [isFeaturePopoverOpen, setIsFeaturePopoverOpen] = useState<boolean>(false);
+    const [isPhasePopoverOpen, setIsPhasePopoverOpen] = useState<boolean>(false);
+    const [isStatusPopoverOpen, setIsStatusPopoverOpen] = useState<boolean>(false);
     const bountyCardStore = useBountyCardStore(workspace_uuid);
 
     const checkUserPermissions = useCallback(async () => {
@@ -104,7 +107,17 @@ export const WorkspacePlannerHeader = observer(
       setIsFeaturePopoverOpen((isPopoverOpen: boolean) => !isPopoverOpen);
     };
 
+    const onPhaseButtonClick = (): void => {
+      setIsPhasePopoverOpen((isPopoverOpen: boolean) => !isPopoverOpen);
+    };
+
+    const onStatusButtonClick = (): void => {
+      setIsStatusPopoverOpen((isPopoverOpen: boolean) => !isPopoverOpen);
+    };
+
     const closeFeaturePopover = () => setIsFeaturePopoverOpen(false);
+    const closePhasePopover = () => setIsPhasePopoverOpen(false);
+    const closeStatusPopover = () => setIsStatusPopoverOpen(false);
 
     const getFeatureOptions = (): FeatureOption[] => {
       const options: FeatureOption[] = [];
@@ -145,6 +158,11 @@ export const WorkspacePlannerHeader = observer(
 
       return options;
     };
+
+    const isPhaseFilterDisabled =
+      bountyCardStore.selectedFeatures.length === 0 ||
+      (bountyCardStore.selectedFeatures.length === 1 &&
+        bountyCardStore.selectedFeatures.includes('no-feature'));
 
     return (
       <>
@@ -277,25 +295,168 @@ export const WorkspacePlannerHeader = observer(
               </NewStatusContainer>
 
               <NewStatusContainer>
-                <StatusContainer color={color}>
-                  <InnerContainer>
-                    <EuiText className="statusText">Phase</EuiText>
-                    <div className="filterStatusIconContainer">
-                      <MaterialIcon className="materialStatusIcon" icon="keyboard_arrow_down" />
-                    </div>
-                  </InnerContainer>
-                </StatusContainer>
+                <EuiPopover
+                  button={
+                    <StatusContainer
+                      onClick={isPhaseFilterDisabled ? undefined : onPhaseButtonClick}
+                      color={color}
+                      style={{
+                        opacity: isPhaseFilterDisabled ? 0.5 : 1,
+                        cursor: isPhaseFilterDisabled ? 'not-allowed' : 'pointer'
+                      }}
+                    >
+                      <InnerContainer>
+                        <EuiText className="statusText">Phase</EuiText>
+                        <Formatter>
+                          {bountyCardStore.selectedPhases.length > 0 && (
+                            <FilterCount color={color}>
+                              <EuiText className="filterCountText">
+                                {bountyCardStore.selectedPhases.length}
+                              </EuiText>
+                            </FilterCount>
+                          )}
+                        </Formatter>
+                        <MaterialIcon
+                          icon={isPhasePopoverOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}
+                        />
+                      </InnerContainer>
+                    </StatusContainer>
+                  }
+                  isOpen={isPhasePopoverOpen && !isPhaseFilterDisabled}
+                  closePopover={closePhasePopover}
+                  panelStyle={{
+                    border: 'none',
+                    boxShadow: `0px 1px 20px ${color.black90}`,
+                    background: `${color.pureWhite}`,
+                    borderRadius: '0px 0px 6px 6px',
+                    maxWidth: '140px',
+                    minHeight: '160px',
+                    marginTop: '0px',
+                    marginLeft: '20px'
+                  }}
+                  panelClassName="yourClassNameHere"
+                  panelPaddingSize="none"
+                  anchorPosition="downLeft"
+                >
+                  <div style={{ display: 'flex', flex: 'row' }}>
+                    <EuiPopOverCheckbox className="CheckboxOuter" color={color}>
+                      <EuiCheckboxGroup
+                        options={bountyCardStore.availablePhases.map((phase: any) => ({
+                          label: phase.name,
+                          id: phase.uuid
+                        }))}
+                        idToSelectedMap={bountyCardStore.selectedPhases.reduce(
+                          (acc: { [key: string]: boolean }, phaseId: string) => {
+                            acc[phaseId] = true;
+                            return acc;
+                          },
+                          {}
+                        )}
+                        onChange={(id: string) => {
+                          bountyCardStore.togglePhase(id);
+                          setFilterToggle(!filterToggle);
+                        }}
+                      />
+                      {bountyCardStore.selectedPhases.length > 0 && (
+                        <div
+                          style={{
+                            padding: '8px 16px',
+                            borderTop: `1px solid ${color.grayish.G800}`
+                          }}
+                        >
+                          <ClearButton
+                            onClick={(e: React.MouseEvent): void => {
+                              e.stopPropagation();
+                              bountyCardStore.clearPhaseFilters();
+                              setFilterToggle(!filterToggle);
+                            }}
+                          >
+                            Clear All
+                          </ClearButton>
+                        </div>
+                      )}
+                    </EuiPopOverCheckbox>
+                  </div>
+                </EuiPopover>
               </NewStatusContainer>
 
               <NewStatusContainer>
-                <StatusContainer color={color}>
-                  <InnerContainer>
-                    <EuiText className="statusText">Status</EuiText>
-                    <div className="filterStatusIconContainer">
-                      <MaterialIcon className="materialStatusIcon" icon="keyboard_arrow_down" />
-                    </div>
-                  </InnerContainer>
-                </StatusContainer>
+                <EuiPopover
+                  button={
+                    <StatusContainer onClick={onStatusButtonClick} color={color}>
+                      <InnerContainer>
+                        <EuiText className="statusText">Status</EuiText>
+                        <Formatter>
+                          {bountyCardStore.selectedStatuses.length > 0 && (
+                            <FilterCount color={color}>
+                              <EuiText className="filterCountText">
+                                {bountyCardStore.selectedStatuses.length}
+                              </EuiText>
+                            </FilterCount>
+                          )}
+                        </Formatter>
+                        <MaterialIcon
+                          icon={isStatusPopoverOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}
+                        />
+                      </InnerContainer>
+                    </StatusContainer>
+                  }
+                  panelStyle={{
+                    border: 'none',
+                    boxShadow: `0px 1px 20px ${color.black90}`,
+                    background: `${color.pureWhite}`,
+                    borderRadius: '0px 0px 6px 6px',
+                    maxWidth: '140px',
+                    minHeight: '160px',
+                    marginTop: '0px',
+                    marginLeft: '20px'
+                  }}
+                  isOpen={isStatusPopoverOpen}
+                  closePopover={closeStatusPopover}
+                  panelClassName="yourClassNameHere"
+                  panelPaddingSize="none"
+                  anchorPosition="downLeft"
+                >
+                  <div style={{ display: 'flex', flex: 'row' }}>
+                    <EuiPopOverCheckbox className="CheckboxOuter" color={color}>
+                      <EuiCheckboxGroup
+                        options={[
+                          { label: 'TODO', id: 'TODO' },
+                          { label: 'IN_PROGRESS', id: 'IN_PROGRESS' },
+                          { label: 'IN_REVIEW', id: 'IN_REVIEW' },
+                          { label: 'COMPLETED', id: 'COMPLETED' },
+                          { label: 'PAID', id: 'PAID' }
+                        ]}
+                        idToSelectedMap={bountyCardStore.selectedStatuses.reduce(
+                          (acc: any, status: any) => ({ ...acc, [status]: true }),
+                          {}
+                        )}
+                        onChange={(id: string) => {
+                          bountyCardStore.toggleStatus(id as BountyCardStatus);
+                          setFilterToggle(!filterToggle);
+                        }}
+                      />
+                      {bountyCardStore.selectedStatuses.length > 0 && (
+                        <div
+                          style={{
+                            padding: '8px 16px',
+                            borderTop: `1px solid ${color.grayish.G800}`
+                          }}
+                        >
+                          <ClearButton
+                            onClick={(e: React.MouseEvent): void => {
+                              e.stopPropagation();
+                              bountyCardStore.clearStatusFilters();
+                              setFilterToggle(!filterToggle);
+                            }}
+                          >
+                            Clear All
+                          </ClearButton>
+                        </div>
+                      )}
+                    </EuiPopOverCheckbox>
+                  </div>
+                </EuiPopover>
               </NewStatusContainer>
             </FiltersRight>
           </Filters>
