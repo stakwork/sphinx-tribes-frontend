@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-unused-vars */
 import React, { useState, useCallback, useEffect } from 'react';
 import { EuiText, EuiPopover, EuiCheckboxGroup } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
@@ -43,6 +45,8 @@ interface WorkspacePlannerHeaderProps {
   };
   filterToggle: boolean;
   setFilterToggle: (a: boolean) => void;
+  searchText: string;
+  setSearchText: React.Dispatch<React.SetStateAction<string>>;
 }
 
 interface FeatureOption {
@@ -64,12 +68,57 @@ const ClearButton = styled.button`
   }
 `;
 
+const SearchInputContainer = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+
+  input {
+    width: 300px;
+    padding: 0.5rem;
+    border: 1px solid ${colors.light.grayish.G1100};
+    border-radius: 4px;
+    font-size: 1rem;
+  }
+
+  button {
+    margin-left: 0.5rem;
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: ${colors.light.black400};
+  }
+`;
+
+const SearchInput = ({
+  value,
+  onChange,
+  onClear
+}: {
+  value: string;
+  onChange: (val: string) => void;
+  onClear: () => void;
+}) => (
+  <SearchInputContainer>
+    <input
+      type="text"
+      placeholder="Search tickets..."
+      value={value}
+      onChange={(e: any) => onChange(e.target.value)}
+    />
+    {value && <button onClick={onClear}>×</button>}
+  </SearchInputContainer>
+);
+
 export const WorkspacePlannerHeader = observer(
   ({
     workspace_uuid,
     workspaceData,
     filterToggle,
-    setFilterToggle
+    setFilterToggle,
+    searchText,
+    setSearchText
   }: WorkspacePlannerHeaderProps) => {
     const { main, ui } = useStores();
     const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
@@ -78,11 +127,29 @@ export const WorkspacePlannerHeader = observer(
     const [isPhasePopoverOpen, setIsPhasePopoverOpen] = useState<boolean>(false);
     const [isStatusPopoverOpen, setIsStatusPopoverOpen] = useState<boolean>(false);
     const bountyCardStore = useBountyCardStore(workspace_uuid);
+    const [debouncedSearch, setDebouncedSearch] = useState('');
 
     const checkUserPermissions = useCallback(async () => {
       const hasPermission = await userCanManageBounty(workspace_uuid, ui.meInfo?.pubkey, main);
       setCanPostBounty(hasPermission);
     }, [workspace_uuid, ui.meInfo, main]);
+
+    useEffect(() => {
+      const handler = setTimeout(() => setDebouncedSearch(searchText), 300);
+      return () => clearTimeout(handler);
+    }, [searchText]);
+
+    const handleClearSearch = () => setSearchText('');
+
+    useEffect(() => {
+      bountyCardStore.restoreFilterState();
+      const savedSearchText = sessionStorage.getItem('workspaceSearchText');
+      if (savedSearchText) setSearchText(savedSearchText);
+    }, [bountyCardStore, filterToggle, setSearchText]);
+
+    useEffect(() => {
+      sessionStorage.setItem('workspaceSearchText', searchText);
+    }, [searchText]);
 
     useEffect(() => {
       checkUserPermissions();
@@ -458,6 +525,11 @@ export const WorkspacePlannerHeader = observer(
                   </div>
                 </EuiPopover>
               </NewStatusContainer>
+              <SearchInput
+                value={searchText}
+                onChange={(val: string) => setSearchText(val)}
+                onClear={handleClearSearch}
+              />
             </FiltersRight>
           </Filters>
         </FillContainer>
