@@ -1582,6 +1582,7 @@ export const PhaseFlexContainer = styled.div`
   width: 100%;
   flex-direction: column;
   gap: 16px;
+  margin-bottom: 5%;
 `;
 
 export const TicketButtonGroup = styled.div`
