@@ -455,21 +455,18 @@ export const EditPopoverContent = styled.div<EditPopoverContentProps>`
 
 export const BountyPopoverContent = styled.div<EditPopoverContentProps>`
   position: absolute;
-  bottom: ${({ bottom }: { bottom?: string }) => bottom ?? '5px'};
+  bottom: ${({ bottom }: { bottom?: string }) => bottom ?? '-30px'};
   left: -30%;
   transform: ${({ transform }: { transform?: string }) => transform ?? 'translateX(-80%)'};
-  width: 170px;
+  width: 175px;
   background: #fff;
   box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.25);
   border-radius: 6px;
   padding: 8px 15px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 6px;
-
-  &:hover {
-    background-color: #f2f3f5;
-  }
 `;
 
 export const EditPopoverTail = styled.div<EditPopoverTailProps>`
@@ -496,6 +493,12 @@ export const BountyPopoverText = styled.span`
   font-size: 1.1rem;
   font-weight: 600;
   color: #333;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    font-weight: 700;
+  }
 `;
 
 export const FeatureOptionsWrap = styled.div`

@@ -7,6 +7,7 @@ import { renderMarkdown } from 'people/utils/RenderMarkdown.tsx';
 import styled from 'styled-components';
 import history from 'config/history.ts';
 import MaterialIcon from '@material/react-material-icon';
+import { Box } from '@mui/system';
 import { phaseTicketStore } from '../../../store/phase';
 import {
   ActionButton,
@@ -27,6 +28,7 @@ import { TicketStatus, Ticket, Author } from '../../../store/interface';
 import { Toast } from '../../../people/widgetViews/workspace/interface';
 import { uiStore } from '../../../store/ui';
 import { Select, Option } from '../../../people/widgetViews/workspace/style.ts';
+import { useDeleteConfirmationModal } from '../../../components/common/DeleteConfirmationModal/DeleteConfirmationModal.tsx';
 import { TicketTextAreaComp } from './TicketTextArea.tsx';
 
 interface TicketEditorProps {
@@ -145,6 +147,7 @@ const TicketEditor = observer(
     const [isCreatingBounty, setIsCreatingBounty] = useState(false);
     const [isOptionsMenuVisible, setIsOptionsMenuVisible] = useState(false);
     const ui = uiStore;
+    const { openDeleteConfirmation } = useDeleteConfirmationModal();
 
     const groupTickets = useMemo(
       () => phaseTicketStore.getTicketsByGroup(ticketData.ticket_group as string),
@@ -378,6 +381,63 @@ const TicketEditor = observer(
       }
     };
 
+    const handleDeleteTicket = async () => {
+      const success = await main.deleteTicket(ticketData.uuid);
+      if (success) {
+        setToasts([
+          {
+            id: `${Date.now()}-delete-success`,
+            title: 'Ticket',
+            color: 'success',
+            text: 'Ticket deleted successfully!'
+          }
+        ]);
+
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        phaseTicketStore.clearPhaseTickets(ticketData.phase_uuid);
+        if (getPhaseTickets) {
+          const phaseTickets = await getPhaseTickets();
+
+          if (!Array.isArray(phaseTickets)) {
+            console.error('Error: phaseTickets is not an array');
+            return;
+          }
+
+          phaseTicketStore.clearPhaseTickets(ticketData.phase_uuid);
+          for (const updatedTicket of phaseTickets) {
+            if (updatedTicket.UUID) {
+              updatedTicket.uuid = updatedTicket.UUID;
+            }
+            phaseTicketStore.addTicket(updatedTicket);
+          }
+        }
+      } else {
+        setToasts([
+          {
+            id: `${Date.now()}-delete-error`,
+            title: 'Error',
+            color: 'danger',
+            text: 'Failed to delete ticket'
+          }
+        ]);
+      }
+    };
+
+    const deleteTicketHandler = () => {
+      openDeleteConfirmation({
+        onDelete: handleDeleteTicket,
+        children: (
+          <Box fontSize={20} textAlign="center">
+            Are you sure you want to <br />
+            <Box component="span" fontWeight="500">
+              delete this ticket?
+            </Box>
+          </Box>
+        )
+      });
+    };
+
     return (
       <TicketContainer>
         <EuiFlexGroup alignItems="center" gutterSize="s">
@@ -427,6 +487,15 @@ const TicketEditor = observer(
                         data-testid="convert-to-bounty-btn"
                       >
                         Convert to Bounty
+                      </BountyPopoverText>
+                      <BountyPopoverText
+                        onClick={() => {
+                          toggleOptionsMenu();
+                          deleteTicketHandler();
+                        }}
+                        data-testid="delete-ticket-btn"
+                      >
+                        Delete Ticket
                       </BountyPopoverText>
                     </BountyPopoverContent>
                   </ConvertToBountyPopover>

@@ -4186,6 +4186,32 @@ export class MainStore {
       return null;
     }
   }
+
+  async deleteTicket(uuid: string): Promise<boolean> {
+    try {
+      if (!uiStore.meInfo) return false;
+      const info = uiStore.meInfo;
+
+      const response = await fetch(`${TribesURL}/bounties/ticket/${uuid}`, {
+        method: 'DELETE',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json',
+          'x-session-id': this.sessionId
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete ticket');
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error deleting ticket:', error);
+      return false;
+    }
+  }
 }
 
 export const mainStore = new MainStore();
