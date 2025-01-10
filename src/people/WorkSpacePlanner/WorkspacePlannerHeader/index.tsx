@@ -1,9 +1,10 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { EuiText, EuiPopover, EuiCheckboxGroup } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
 import { observer } from 'mobx-react-lite';
 import styled from 'styled-components';
 import { Workspace, Feature, BountyCard, BountyCardStatus } from 'store/interface';
+import { debounce } from 'lodash';
 import { useStores } from '../../../store';
 import { userCanManageBounty } from '../../../helpers';
 import { PostModal } from '../../widgetViews/postBounty/PostModal';
@@ -32,7 +33,7 @@ import { Header, Leftheader } from '../../../pages/tickets/style';
 import addBounty from '../../../pages/tickets/workspace/workspaceHeader/Icons/addBounty.svg';
 import websiteIcon from '../../../pages/tickets/workspace/workspaceHeader/Icons/websiteIcon.svg';
 import githubIcon from '../../../pages/tickets/workspace/workspaceHeader/Icons/githubIcon.svg';
-import { Phase } from '../../widgetViews/workspace/interface.ts';
+import { SearchBar } from '../../../components/common';
 
 const color = colors['light'];
 
@@ -63,6 +64,9 @@ const ClearButton = styled.button`
     text-decoration: underline;
   }
 `;
+
+const SEARCH_DEBOUNCE_MS = 300;
+const MIN_SEARCH_LENGTH = 2;
 
 export const WorkspacePlannerHeader = observer(
   ({
@@ -163,6 +167,43 @@ export const WorkspacePlannerHeader = observer(
       bountyCardStore.selectedFeatures.length === 0 ||
       (bountyCardStore.selectedFeatures.length === 1 &&
         bountyCardStore.selectedFeatures.includes('no-feature'));
+
+    const debouncedSearch = useMemo(
+      () =>
+        debounce((text: string) => {
+          if (text.length === 0 || text.length >= MIN_SEARCH_LENGTH) {
+            bountyCardStore.setSearchText(text);
+            setFilterToggle(!filterToggle);
+          }
+        }, SEARCH_DEBOUNCE_MS),
+      [bountyCardStore, filterToggle, setFilterToggle]
+    );
+
+    const handleSearch = useCallback(
+      (e: React.ChangeEvent<HTMLInputElement> | string) => {
+        const searchText = typeof e === 'string' ? e : e.target.value;
+        debouncedSearch(searchText);
+      },
+      [debouncedSearch]
+    );
+
+    const handleKeyUp = useCallback(
+      (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if ((e.key === 'Backspace' || e.key === 'Delete') && !e.currentTarget.value) {
+          bountyCardStore.clearSearch();
+          setFilterToggle(!filterToggle);
+          return;
+        }
+
+        if (e.key === 'Enter') {
+          debouncedSearch.cancel();
+          const searchText = e.currentTarget.value;
+          bountyCardStore.setSearchText(searchText);
+          setFilterToggle(!filterToggle);
+        }
+      },
+      [bountyCardStore, debouncedSearch, filterToggle, setFilterToggle]
+    );
 
     return (
       <>
@@ -458,6 +499,27 @@ export const WorkspacePlannerHeader = observer(
                   </div>
                 </EuiPopover>
               </NewStatusContainer>
+
+              <SearchBar
+                name="search"
+                type="search"
+                placeholder="Search tickets..."
+                value={bountyCardStore.searchText}
+                onChange={handleSearch}
+                onKeyUp={handleKeyUp}
+                borderRadius={'6px'}
+                width={'384px'}
+                height={'40px'}
+                marginLeft={'20px'}
+                color={color.grayish.G950}
+                TextColor={color.grayish.G100}
+                TextColorHover={color.grayish.G50}
+                border={`1px solid ${color.grayish.G600}`}
+                borderHover={`1px solid ${color.grayish.G400}`}
+                borderActive={`1px solid ${color.light_blue100}`}
+                iconColor={color.grayish.G300}
+                iconColorHover={color.grayish.G50}
+              />
             </FiltersRight>
           </Filters>
         </FillContainer>

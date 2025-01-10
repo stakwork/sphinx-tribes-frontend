@@ -8,6 +8,7 @@ interface FilterState {
   selectedFeatures: string[];
   selectedPhases: string[];
   selectedStatuses: string[];
+  searchText: string;
   timestamp: number;
 }
 
@@ -20,6 +21,7 @@ export class BountyCardStore {
   @observable selectedFeatures: string[] = [];
   @observable selectedPhases: string[] = [];
   @observable selectedStatuses: string[] = [];
+  @observable searchText = '';
 
   constructor(workspaceId: string) {
     this.currentWorkspaceId = workspaceId;
@@ -145,6 +147,7 @@ export class BountyCardStore {
         selectedFeatures: this.selectedFeatures,
         selectedPhases: this.selectedPhases,
         selectedStatuses: this.selectedStatuses,
+        searchText: this.searchText,
         timestamp: Date.now()
       })
     );
@@ -159,6 +162,7 @@ export class BountyCardStore {
         this.selectedFeatures = state.selectedFeatures;
         this.selectedPhases = state.selectedPhases;
         this.selectedStatuses = state.selectedStatuses;
+        this.searchText = state.searchText || '';
       });
     }
   }
@@ -196,6 +200,8 @@ export class BountyCardStore {
   clearAllFilters() {
     this.selectedFeatures = [];
     this.selectedPhases = [];
+    this.selectedStatuses = [];
+    this.searchText = '';
     sessionStorage.removeItem('bountyFilterState');
     this.saveFilterState();
   }
@@ -241,6 +247,13 @@ export class BountyCardStore {
   @computed
   get filteredBountyCards() {
     return this.bountyCards.filter((card: BountyCard) => {
+      const searchMatch =
+        !this.searchText ||
+        [card.title, card.features?.name, card.phase?.name].some(
+          (field: string | undefined) =>
+            field?.toLowerCase().includes(this.searchText.toLowerCase().trim())
+        );
+
       const featureMatch =
         this.selectedFeatures.length === 0 ||
         (this.selectedFeatures.includes('no-feature') && !card.features?.uuid) ||
@@ -254,13 +267,32 @@ export class BountyCardStore {
         this.selectedStatuses.length === 0 ||
         (card.status && this.selectedStatuses.includes(card.status));
 
-      return featureMatch && phaseMatch && statusMatch;
+      return searchMatch && featureMatch && phaseMatch && statusMatch;
     });
   }
 
   @computed
   get hasCardsWithoutFeatures() {
     return this.bountyCards.some((card: BountyCard) => !card.features?.uuid);
+  }
+
+  @action
+  setSearchText(text: string) {
+    this.searchText = text.trim();
+    this.saveFilterState();
+  }
+
+  @action
+  clearSearch() {
+    this.searchText = '';
+    this.saveFilterState();
+  }
+
+  private sanitizeSearchText(text: string): string {
+    return text
+      .replace(/\s+/g, ' ')
+      .replace(/[^\w\s-]/g, '')
+      .trim();
   }
 }
 
