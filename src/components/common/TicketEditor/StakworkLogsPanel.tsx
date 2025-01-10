@@ -19,13 +19,13 @@ const PanelWrapper = styled.div<{ collapsed: boolean }>`
   flex-direction: column;
 `;
 
-const Header = styled.div`
+const Header = styled.div<{ collapsed: boolean }>`
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 8px 16px;
   background-color: #1f2937;
-  border-bottom: 1px solid #374151;
+  border-bottom: ${(props: any) => (props.collapsed ? 'none' : '1px solid #374151')};
 `;
 
 const Title = styled.h2`
@@ -83,14 +83,14 @@ const PlaceholderText = styled.p`
   font-style: italic;
 `;
 
-const Footer = styled.div`
+const Footer = styled.div<{ collapsed: boolean }>`
   display: flex;
   color: #6b7a8d;
   justify-content: space-between;
   align-items: center;
   padding: 8px 16px;
   background-color: #1f2937;
-  border-top: 1px solid #374151;
+  border-top: ${(props: any) => (props.collapsed ? 'none' : '1px solid #374151')};
 `;
 
 interface LogEntry {
@@ -129,15 +129,15 @@ const StakworkLogsPanel = ({ swwfLinks }: { swwfLinks: Record<string, string> })
         if (data.type === 'ping') return;
         const message = data?.message?.message;
         if (message) {
-          setLogs((prev: any) => [
-            ...prev,
-            { timestamp: new Date().toISOString(), projectId, ticketUUID, message }
+          setLogs((prev: LogEntry[]) => [
+            { timestamp: new Date().toISOString(), projectId, ticketUUID, message },
+            ...prev
           ]);
         }
       };
 
       ws.onerror = () => {
-        setConnections((prev: any) =>
+        setConnections((prev: Connection[]) =>
           prev.map((conn: Connection) =>
             conn.projectId === projectId ? { ...conn, status: 'error' } : conn
           )
@@ -145,30 +145,31 @@ const StakworkLogsPanel = ({ swwfLinks }: { swwfLinks: Record<string, string> })
       };
 
       ws.onclose = () => {
-        setConnections((prev: any) =>
+        setConnections((prev: Connection[]) =>
           prev.map((conn: Connection) =>
             conn.projectId === projectId ? { ...conn, status: 'disconnected' } : conn
           )
         );
       };
 
-      setConnections((prev: any) => [
+      setConnections((prev: Connection[]) => [
         ...prev,
         { projectId, ticketUUID, websocket: ws, status: 'connected' }
       ]);
-
-      return ws;
     };
 
-    const connectionsMap = new Map(connections.map((conn: Connection) => [conn.projectId, conn]));
     Object.entries(swwfLinks).forEach(([ticketUUID, projectId]: [string, string]) => {
-      if (!connectionsMap.has(projectId)) {
+      if (!connections.some((conn: Connection) => conn.projectId === projectId)) {
         connectToLogWebSocket(projectId, ticketUUID);
       }
     });
 
     return () => {
-      connections.forEach((conn: Connection) => conn.websocket?.close());
+      connections.forEach((conn: Connection) => {
+        if (!Object.values(swwfLinks).includes(conn.projectId)) {
+          conn.websocket.close();
+        }
+      });
     };
   }, [connections, swwfLinks]);
 
@@ -180,7 +181,7 @@ const StakworkLogsPanel = ({ swwfLinks }: { swwfLinks: Record<string, string> })
 
   return (
     <PanelWrapper collapsed={collapsed}>
-      <Header>
+      <Header collapsed={collapsed}>
         <Title>Stakwork Project Logs</Title>
         <StatusIndicator status={overallStatus}>
           <div className="circle">{overallStatus}</div>
@@ -202,7 +203,7 @@ const StakworkLogsPanel = ({ swwfLinks }: { swwfLinks: Record<string, string> })
           )}
         </ContentArea>
       )}
-      <Footer>Active Connections: {connections.length}</Footer>
+      <Footer collapsed={collapsed}>Active Connections: {connections.length}</Footer>
     </PanelWrapper>
   );
 };
