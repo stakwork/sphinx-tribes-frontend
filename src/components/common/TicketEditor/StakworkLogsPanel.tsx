@@ -6,7 +6,7 @@ const PanelWrapper = styled.div<{ collapsed: boolean }>`
   bottom: 0;
   left: 49%;
   width: 77%;
-  height: ${(props: any) => (props.collapsed ? '8vh' : '30vh')};
+  height: ${(props: any) => (props.collapsed ? '12vh' : '30vh')};
   max-height: 50vh;
   background-color: #111827;
   color: white;
@@ -19,40 +19,19 @@ const PanelWrapper = styled.div<{ collapsed: boolean }>`
   flex-direction: column;
 `;
 
-const Header = styled.div<{ collapsed: boolean }>`
+const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 8px 16px;
   background-color: #1f2937;
-  border-bottom: ${(props: any) => (props.collapsed ? 'none' : '1px solid #374151')};
+  border-bottom: 1px solid #374151;
 `;
 
 const Title = styled.h2`
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   margin: 0;
-`;
-
-const StatusIndicator = styled.div<{ status: string }>`
-  display: flex;
-  align-items: center;
-
-  .circle {
-    margin-left: 8px;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: bold;
-    background-color: ${(props: any) =>
-      props.status === 'disconnected'
-        ? '#EF4444'
-        : props.status === 'connected'
-        ? '#10B981'
-        : '#F59E0B'};
-    color: white;
-    text-transform: capitalize;
-  }
 `;
 
 const CollapseButton = styled.button`
@@ -70,11 +49,14 @@ const CollapseButton = styled.button`
   }
 `;
 
-const ContentArea = styled.div`
-  padding: 16px;
-  overflow-y: auto;
+const ContentArea = styled.div<{ collapsed: boolean }>`
+  padding: ${(props: any) => (props.collapsed ? '8px' : '16px')};
+  overflow-y: ${(props: any) => (props.collapsed ? 'hidden' : 'auto')};
   flex-grow: 1;
   background-color: #1a202c;
+  display: ${(props: any) => (props.collapsed ? 'flex' : 'block')};
+  align-items: ${(props: any) => (props.collapsed ? 'center' : 'unset')};
+  color: ${(props: any) => (props.collapsed ? '#9ca3af' : 'inherit')};
 `;
 
 const PlaceholderText = styled.p`
@@ -83,14 +65,14 @@ const PlaceholderText = styled.p`
   font-style: italic;
 `;
 
-const Footer = styled.div<{ collapsed: boolean }>`
+const Footer = styled.div`
   display: flex;
   color: #6b7a8d;
   justify-content: space-between;
   align-items: center;
   padding: 8px 16px;
   background-color: #1f2937;
-  border-top: ${(props: any) => (props.collapsed ? 'none' : '1px solid #374151')};
+  border-top: 1px solid #374151;
 `;
 
 interface LogEntry {
@@ -108,7 +90,7 @@ interface Connection {
 }
 
 const StakworkLogsPanel = ({ swwfLinks }: { swwfLinks: Record<string, string> }) => {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [connections, setConnections] = useState<Connection[]>([]);
 
@@ -173,37 +155,34 @@ const StakworkLogsPanel = ({ swwfLinks }: { swwfLinks: Record<string, string> })
     };
   }, [connections, swwfLinks]);
 
-  const overallStatus = connections.some((conn: Connection) => conn.status === 'connected')
-    ? 'connected'
-    : connections.some((conn: Connection) => conn.status === 'error')
-    ? 'error'
-    : 'disconnected';
-
   return (
     <PanelWrapper collapsed={collapsed}>
-      <Header collapsed={collapsed}>
-        <Title>Stakwork Project Logs</Title>
-        <StatusIndicator status={overallStatus}>
-          <div className="circle">{overallStatus}</div>
-        </StatusIndicator>
+      <Header>
+        <Title>Hive - Chain of Thought</Title>
         <CollapseButton onClick={() => setCollapsed(!collapsed)}>
           {collapsed ? 'Expand' : 'Collapse'}
         </CollapseButton>
       </Header>
-      {!collapsed && (
-        <ContentArea>
-          {logs.length ? (
-            logs.map((log: LogEntry, index: number) => (
-              <div key={index}>
-                [{log.timestamp}] {log.projectId}: {log.message}
-              </div>
-            ))
+      <ContentArea collapsed={collapsed}>
+        {collapsed ? (
+          logs.length ? (
+            <div>
+              [{logs[0].timestamp}] {logs[0].projectId}: {logs[0].message}
+            </div>
           ) : (
             <PlaceholderText>Waiting for logs...</PlaceholderText>
-          )}
-        </ContentArea>
-      )}
-      <Footer collapsed={collapsed}>Active Connections: {connections.length}</Footer>
+          )
+        ) : logs.length ? (
+          logs.map((log: LogEntry, index: number) => (
+            <div key={index}>
+              [{log.timestamp}] {log.projectId}: {log.message}
+            </div>
+          ))
+        ) : (
+          <PlaceholderText>Waiting for logs...</PlaceholderText>
+        )}
+      </ContentArea>
+      <Footer>Active Connections: {connections.length}</Footer>
     </PanelWrapper>
   );
 };
