@@ -6,7 +6,7 @@ const PanelWrapper = styled.div<{ collapsed: boolean }>`
   bottom: 0;
   left: 49%;
   width: 77%;
-  height: ${(props: any) => (props.collapsed ? '8vh' : '30vh')};
+  height: ${(props: any) => (props.collapsed ? '12vh' : '30vh')};
   max-height: 50vh;
   background-color: #111827;
   color: white;
@@ -29,30 +29,9 @@ const Header = styled.div`
 `;
 
 const Title = styled.h2`
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   margin: 0;
-`;
-
-const StatusIndicator = styled.div<{ status: string }>`
-  display: flex;
-  align-items: center;
-
-  .circle {
-    margin-left: 8px;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: bold;
-    background-color: ${(props: any) =>
-      props.status === 'disconnected'
-        ? '#EF4444'
-        : props.status === 'connected'
-        ? '#10B981'
-        : '#F59E0B'};
-    color: white;
-    text-transform: capitalize;
-  }
 `;
 
 const CollapseButton = styled.button`
@@ -70,11 +49,14 @@ const CollapseButton = styled.button`
   }
 `;
 
-const ContentArea = styled.div`
-  padding: 16px;
-  overflow-y: auto;
+const ContentArea = styled.div<{ collapsed: boolean }>`
+  padding: ${(props: any) => (props.collapsed ? '8px' : '16px')};
+  overflow-y: ${(props: any) => (props.collapsed ? 'hidden' : 'auto')};
   flex-grow: 1;
   background-color: #1a202c;
+  display: ${(props: any) => (props.collapsed ? 'flex' : 'block')};
+  align-items: ${(props: any) => (props.collapsed ? 'center' : 'unset')};
+  color: ${(props: any) => (props.collapsed ? '#9ca3af' : 'inherit')};
 `;
 
 const PlaceholderText = styled.p`
@@ -108,7 +90,7 @@ interface Connection {
 }
 
 const StakworkLogsPanel = ({ swwfLinks }: { swwfLinks: Record<string, string> }) => {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [connections, setConnections] = useState<Connection[]>([]);
 
@@ -129,15 +111,15 @@ const StakworkLogsPanel = ({ swwfLinks }: { swwfLinks: Record<string, string> })
         if (data.type === 'ping') return;
         const message = data?.message?.message;
         if (message) {
-          setLogs((prev: any) => [
-            ...prev,
-            { timestamp: new Date().toISOString(), projectId, ticketUUID, message }
+          setLogs((prev: LogEntry[]) => [
+            { timestamp: new Date().toISOString(), projectId, ticketUUID, message },
+            ...prev
           ]);
         }
       };
 
       ws.onerror = () => {
-        setConnections((prev: any) =>
+        setConnections((prev: Connection[]) =>
           prev.map((conn: Connection) =>
             conn.projectId === projectId ? { ...conn, status: 'error' } : conn
           )
@@ -145,63 +127,61 @@ const StakworkLogsPanel = ({ swwfLinks }: { swwfLinks: Record<string, string> })
       };
 
       ws.onclose = () => {
-        setConnections((prev: any) =>
+        setConnections((prev: Connection[]) =>
           prev.map((conn: Connection) =>
             conn.projectId === projectId ? { ...conn, status: 'disconnected' } : conn
           )
         );
       };
 
-      setConnections((prev: any) => [
+      setConnections((prev: Connection[]) => [
         ...prev,
         { projectId, ticketUUID, websocket: ws, status: 'connected' }
       ]);
-
-      return ws;
     };
 
-    const connectionsMap = new Map(connections.map((conn: Connection) => [conn.projectId, conn]));
     Object.entries(swwfLinks).forEach(([ticketUUID, projectId]: [string, string]) => {
-      if (!connectionsMap.has(projectId)) {
+      if (!connections.some((conn: Connection) => conn.projectId === projectId)) {
         connectToLogWebSocket(projectId, ticketUUID);
       }
     });
 
     return () => {
-      connections.forEach((conn: Connection) => conn.websocket?.close());
+      connections.forEach((conn: Connection) => {
+        if (!Object.values(swwfLinks).includes(conn.projectId)) {
+          conn.websocket.close();
+        }
+      });
     };
   }, [connections, swwfLinks]);
-
-  const overallStatus = connections.some((conn: Connection) => conn.status === 'connected')
-    ? 'connected'
-    : connections.some((conn: Connection) => conn.status === 'error')
-    ? 'error'
-    : 'disconnected';
 
   return (
     <PanelWrapper collapsed={collapsed}>
       <Header>
-        <Title>Stakwork Project Logs</Title>
-        <StatusIndicator status={overallStatus}>
-          <div className="circle">{overallStatus}</div>
-        </StatusIndicator>
+        <Title>Hive - Chain of Thought</Title>
         <CollapseButton onClick={() => setCollapsed(!collapsed)}>
           {collapsed ? 'Expand' : 'Collapse'}
         </CollapseButton>
       </Header>
-      {!collapsed && (
-        <ContentArea>
-          {logs.length ? (
-            logs.map((log: LogEntry, index: number) => (
-              <div key={index}>
-                [{log.timestamp}] {log.projectId}: {log.message}
-              </div>
-            ))
+      <ContentArea collapsed={collapsed}>
+        {collapsed ? (
+          logs.length ? (
+            <div>
+              [{logs[0].timestamp}] {logs[0].projectId}: {logs[0].message}
+            </div>
           ) : (
             <PlaceholderText>Waiting for logs...</PlaceholderText>
-          )}
-        </ContentArea>
-      )}
+          )
+        ) : logs.length ? (
+          logs.map((log: LogEntry, index: number) => (
+            <div key={index}>
+              [{log.timestamp}] {log.projectId}: {log.message}
+            </div>
+          ))
+        ) : (
+          <PlaceholderText>Waiting for logs...</PlaceholderText>
+        )}
+      </ContentArea>
       <Footer>Active Connections: {connections.length}</Footer>
     </PanelWrapper>
   );
