@@ -247,11 +247,11 @@ export class BountyCardStore {
   get filteredBountyCards() {
     return this.bountyCards.filter((card: BountyCard) => {
       const searchMatch =
-      !this.searchText ||
-      [card.title, card.features?.name, card.phase?.name].some(
-        (field: string | undefined) =>
-          field?.toLowerCase().includes(this.searchText.toLowerCase().trim())
-      );
+        !this.searchText ||
+        [card.title, card.features?.name, card.phase?.name].some(
+          (field: string | undefined) =>
+            field?.toLowerCase().includes(this.searchText.toLowerCase().trim())
+        );
 
       const featureMatch =
         this.selectedFeatures.length === 0 ||
