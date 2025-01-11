@@ -138,6 +138,7 @@ const WorkspacePlanner = observer(() => {
   const [loading, setLoading] = useState(true);
   const [workspaceData, setWorkspaceData] = useState<any>(null);
   const [filterToggle, setFilterToggle] = useState(false);
+  const [searchText, setSearchText] = useState('');
   const bountyCardStore = useBountyCardStore(uuid);
 
   useEffect(() => {
@@ -189,6 +190,8 @@ const WorkspacePlanner = observer(() => {
         workspaceData={workspaceData}
         filterToggle={filterToggle}
         setFilterToggle={setFilterToggle}
+        searchText={searchText}
+        setSearchText={setSearchText}
       />
       <ContentArea>
         <ColumnsContainer>
@@ -209,13 +212,17 @@ const WorkspacePlanner = observer(() => {
                 ) : bountyCardStore.error ? (
                   <ErrorMessage>{bountyCardStore.error}</ErrorMessage>
                 ) : (
-                  groupedBounties[id]?.map((card: BountyCard) => (
-                    <BountyCardComp
-                      key={card.id}
-                      {...card}
-                      onclick={() => handleCardClick(card.id)}
-                    />
-                  ))
+                  groupedBounties[id]
+                    ?.filter((card: BountyCard) =>
+                      card.title.toLowerCase().includes(searchText.toLowerCase())
+                    )
+                    .map((card: BountyCard) => (
+                      <BountyCardComp
+                        key={card.id}
+                        {...card}
+                        onclick={() => handleCardClick(card.id)}
+                      />
+                    ))
                 )}
               </ColumnContent>
             </Column>
