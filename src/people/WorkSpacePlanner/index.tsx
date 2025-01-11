@@ -178,9 +178,13 @@ const WorkspacePlanner = observer(() => {
 
   const handleCardClick = (bountyId: string) => {
     bountyCardStore.saveFilterState();
-    history.push(`/bounty/${bountyId}`, {
-      from: `/workspace/${uuid}/planner`
-    });
+    window.open(
+      history.createHref({
+        pathname: `/bounty/${bountyId}`,
+        state: { from: `/workspace/${uuid}/planner` }
+      }),
+      '_blank'
+    );
   };
 
   return (

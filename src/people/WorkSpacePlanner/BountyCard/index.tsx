@@ -124,7 +124,10 @@ const BountyCardComponent: React.FC<BountyCardProps> = ({
       <CardTitle
         role="button"
         tabIndex={0}
-        onClick={(e: React.MouseEvent<HTMLHeadingElement>) => e.stopPropagation()}
+        onClick={(e: React.MouseEvent<HTMLHeadingElement>) => {
+          e.stopPropagation();
+          onclick(id);
+        }}
       >
         {title}
       </CardTitle>
