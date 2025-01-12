@@ -2,7 +2,7 @@ import { Box } from '@mui/system';
 import { BaseModal } from 'components/common';
 import { colors } from 'config';
 import { observer } from 'mobx-react-lite';
-import { ActionButton, CopyButtonGroup } from 'people/widgetViews/workspace/style';
+import { ProofActionButton, CopyButtonGroup } from 'people/widgetViews/workspace/style';
 import React, { memo } from 'react';
 import styled from 'styled-components';
 
@@ -96,9 +96,9 @@ const ProofModal = ({
       <Box p={4} bgcolor={palette.grayish.G950} borderRadius={2} minWidth={400} minHeight={450}>
         <TextArea value={value} onChange={onChange} placeholder={placeholder} />
         <CopyButtonGroup>
-          <ActionButton color="primary" onClick={handleSubmit}>
+          <ProofActionButton color="primary" onClick={handleSubmit} disabled={!value.trim()}>
             Submit Proof
-          </ActionButton>
+          </ProofActionButton>
         </CopyButtonGroup>
       </Box>
     </BaseModal>

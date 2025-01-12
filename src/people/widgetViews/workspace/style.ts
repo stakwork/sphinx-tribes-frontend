@@ -1803,3 +1803,61 @@ export const EmptyState = styled.div`
   font-weight: 500;
   color: #000;
 `;
+
+export const ProofActionButton = styled.button<ButtonProps>`
+  padding: 5px 20px;
+  width: ${(p: ButtonProps) => p.width ?? '124px'};
+  border-radius: 5px;
+  border-radius: ${(p: any) => p.borderRadius ?? '0.375rem'};
+  font-family: 'Barlow';
+  font-size: 0.9375rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 0rem;
+  letter-spacing: 0.00938rem;
+  margin-top: ${(p: any) => p.marginTop ?? '1.5rem'};
+  border: none;
+  height: ${(p: any) => p.height ?? '40px'};
+  background: var(--Primary-blue, #618aff);
+  box-shadow: 0px 2px 10px 0px rgba(97, 138, 255, 0.5);
+  border: none;
+  color: #fff;
+  white-space: nowrap;
+  cursor: pointer;
+  position: relative;
+
+  background: ${(p: any) => {
+    if (p.color === 'primary') {
+      return 'rgb(97, 138, 255)';
+    } else if (p.color === 'cancel') {
+      return '#D3D3D3';
+    }
+  }};
+  color: ${(p: any) => {
+    if (p.color === 'primary') {
+      return '#FFF';
+    } else if (p.color === 'cancel') {
+      return '#000';
+    }
+  }};
+
+  &:hover {
+    text-decoration: none;
+    color: white;
+  }
+
+  :disabled {
+    background: #9ca3af !important;
+    color: #fff;
+    box-shadow: none;
+    cursor: not-allowed;
+
+    &:hover::before {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+    }
+  }
+`;
