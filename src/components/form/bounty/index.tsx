@@ -4,6 +4,7 @@ import { observer } from 'mobx-react-lite';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useIsMobile } from 'hooks';
 import { RefineDescriptionModal } from 'components/common/RefineDescriptionModal';
+import { toCapitalize } from '../../../helpers/helpers';
 import api from '../../../api';
 import { colors } from '../../../config/colors';
 import { BountyDetailsCreationData } from '../../../people/utils/BountyCreationConstant';
@@ -59,6 +60,7 @@ function Form(props: FormProps) {
 
   const [schemaData, setSchemaData] = useState(BountyDetailsCreationData.step_1);
   const [stepTracker, setStepTracker] = useState<number>(1);
+  const [userWorkspaces, setUserWorkspaces] = useState<Array<{ label: string; value: string }>>([]);
 
   let lastPage = 1;
   const scrollDiv = scrollRef ?? refBody;
@@ -94,6 +96,20 @@ function Form(props: FormProps) {
         return;
     }
   }, [stepTracker]);
+
+  const getUUIDFromURL = useCallback((url: string) => {
+    const urlParts = url.split('/');
+    return urlParts[urlParts.length - 1];
+  }, []);
+
+  useEffect(() => {
+    async function fetchWorkspaces() {
+      if (ui.meInfo?.id) {
+        await main.getUserDropdownWorkspaces(ui.meInfo?.id);
+      }
+    }
+    fetchWorkspaces();
+  }, [main, ui.meInfo?.id]);
 
   useEffect(() => {
     (async () => {
@@ -233,6 +249,38 @@ function Form(props: FormProps) {
       }
     })();
   }, [featureid, main]);
+
+  useEffect(() => {
+    if (main.dropDownWorkspaces.length) {
+      const workspaceOptions = main.dropDownWorkspaces.map((org: any) => ({
+        label: toCapitalize(org.name),
+        value: org.uuid
+      }));
+      setUserWorkspaces(workspaceOptions);
+
+      if (schema && Array.isArray(schema)) {
+        const orgUuidFieldIndex = schema.findIndex((field: FormField) => field.name === 'org_uuid');
+        if (orgUuidFieldIndex !== -1) {
+          schema[orgUuidFieldIndex].options = workspaceOptions;
+        }
+      }
+    }
+  }, [main.dropDownWorkspaces, schema]);
+
+  useEffect(() => {
+    if (userWorkspaces.length && !dynamicInitialValues?.org_uuid) {
+      const uuid = getUUIDFromURL(window.location.href);
+      const defaultWorkspace = userWorkspaces.find((obj: any) => obj.value === uuid);
+
+      if (defaultWorkspace) {
+        setDynamicInitialValues((prev: any) => ({
+          ...prev,
+          org_uuid: defaultWorkspace.value
+        }));
+        reloadForm();
+      }
+    }
+  }, [userWorkspaces, dynamicInitialValues?.org_uuid, getUUIDFromURL]);
 
   // replace schema with dynamic schema if there is one
   schema = dynamicSchema || schema;
