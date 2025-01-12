@@ -94,6 +94,9 @@ export interface Phase {
   feature_uuid: string;
   name: string;
   priority: number;
+  phase_purpose?: string;
+  phase_outcome?: string;
+  phase_scope?: string;
 }
 
 export type PhaseOperationType = 'create' | 'edit' | 'delete';

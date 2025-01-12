@@ -5,7 +5,7 @@ import { Feature, Ticket, TicketMessage, TicketStatus } from 'store/interface';
 import MaterialIcon from '@material/react-material-icon';
 import TicketEditor from 'components/common/TicketEditor/TicketEditor';
 import { useStores } from 'store';
-import { EuiDragDropContext, EuiDroppable, EuiDraggable } from '@elastic/eui';
+import { EuiDragDropContext, EuiDroppable, EuiDraggable, EuiGlobalToastList } from '@elastic/eui';
 import { v4 as uuidv4 } from 'uuid';
 import {
   FeatureBody,
@@ -13,7 +13,14 @@ import {
   FieldWrap,
   PhaseLabel,
   LabelValue,
-  AddTicketButton
+  AddTicketButton,
+  EditPopoverText,
+  EditPopoverContent,
+  EditPopoverTail,
+  EditPopover,
+  OptionsWrap,
+  Data,
+  Label
 } from 'pages/tickets/style';
 import { SOCKET_MSG } from 'config/socket';
 import { createSocketInstance } from 'config/socket';
@@ -24,9 +31,11 @@ import {
   FeatureHeadWrap,
   WorkspaceName,
   PhaseFlexContainer,
+  ButtonWrap,
   ActionButton
 } from './workspace/style';
-import { Phase } from './workspace/interface';
+import { Phase, Toast } from './workspace/interface';
+import { EditableField } from './workspace/EditableField.tsx';
 
 interface PhasePlannerParams {
   feature_uuid: string;
@@ -39,6 +48,19 @@ const PhasePlannerView: React.FC = observer(() => {
   const [phaseData, setPhaseData] = useState<Phase | null>(null);
   const [websocketSessionId, setWebsocketSessionId] = useState<string>('');
   const [swwfLinks, setSwwfLinks] = useState<Record<string, string>>({});
+  const [purpose, setPurpose] = useState<string>(phaseData?.phase_purpose || '');
+  const [outcome, setOutcome] = useState<string>(phaseData?.phase_outcome || '');
+  const [scope, setScope] = useState<string>(phaseData?.phase_scope || '');
+  const [editPurpose, setEditPurpose] = useState<boolean>(false);
+  const [editOutcome, setEditOutcome] = useState<boolean>(false);
+  const [editScope, setEditScope] = useState<boolean>(false);
+  const [displayPurpose, setDisplayPurpose] = useState<boolean>(false);
+  const [displayOutcome, setDisplayOutcome] = useState<boolean>(false);
+  const [displayScope, setDisplayScope] = useState<boolean>(false);
+  const [purposePreviewMode, setPurposePreviewMode] = useState<'preview' | 'edit'>('edit');
+  const [outcomePreviewMode, setOutcomePreviewMode] = useState<'preview' | 'edit'>('edit');
+  const [scopePreviewMode, setScopePreviewMode] = useState<'preview' | 'edit'>('edit');
+  const [toasts, setToasts] = useState<Toast[]>([]);
   const { main } = useStores();
   const history = useHistory();
   const tickets = phaseTicketStore.getPhaseTickets(phase_uuid);
@@ -140,6 +162,120 @@ const PhasePlannerView: React.FC = observer(() => {
     };
   }, [main]);
 
+  const editPurposeActions = () => {
+    setEditPurpose(!editPurpose);
+    setDisplayPurpose(false);
+  };
+
+  const editOutcomeActions = () => {
+    setEditOutcome(!editOutcome);
+    setDisplayOutcome(false);
+  };
+
+  const editScopeActions = () => {
+    setEditScope(!editScope);
+    setDisplayScope(false);
+  };
+
+  const submitPurpose = async () => {
+    if (!phaseData) return;
+    try {
+      const updatedPhase = await main.createOrUpdatePhase({
+        ...phaseData,
+        phase_purpose: purpose
+      });
+      if (updatedPhase) {
+        setPhaseData(updatedPhase);
+        setPurpose(updatedPhase.phase_purpose || '');
+        setEditPurpose(false);
+        setToasts([
+          {
+            id: `${Date.now()}-purpose-success`,
+            title: 'Success',
+            color: 'success',
+            text: 'Purpose updated successfully!'
+          }
+        ]);
+      }
+    } catch (error) {
+      console.error('Error updating phase purpose:', error);
+      setToasts([
+        {
+          id: `${Date.now()}-purpose-error`,
+          title: 'Error',
+          color: 'danger',
+          text: 'Failed to update purpose'
+        }
+      ]);
+    }
+  };
+
+  const submitOutcome = async () => {
+    if (!phaseData) return;
+    try {
+      const updatedPhase = await main.createOrUpdatePhase({
+        ...phaseData,
+        phase_outcome: outcome
+      });
+      if (updatedPhase) {
+        setPhaseData(updatedPhase);
+        setOutcome(updatedPhase.phase_outcome || '');
+        setEditOutcome(false);
+        setToasts([
+          {
+            id: `${Date.now()}-outcome-success`,
+            title: 'Success',
+            color: 'success',
+            text: 'Outcome updated successfully!'
+          }
+        ]);
+      }
+    } catch (error) {
+      console.error('Error updating phase outcome:', error);
+      setToasts([
+        {
+          id: `${Date.now()}-outcome-error`,
+          title: 'Error',
+          color: 'danger',
+          text: 'Failed to update outcome'
+        }
+      ]);
+    }
+  };
+
+  const submitScope = async () => {
+    if (!phaseData) return;
+    try {
+      const updatedPhase = await main.createOrUpdatePhase({
+        ...phaseData,
+        phase_scope: scope
+      });
+      if (updatedPhase) {
+        setPhaseData(updatedPhase);
+        setScope(updatedPhase.phase_scope || '');
+        setEditScope(false);
+        setToasts([
+          {
+            id: `${Date.now()}-scope-success`,
+            title: 'Success',
+            color: 'success',
+            text: 'Scope updated successfully!'
+          }
+        ]);
+      }
+    } catch (error) {
+      console.error('Error updating phase scope:', error);
+      setToasts([
+        {
+          id: `${Date.now()}-scope-error`,
+          title: 'Error',
+          color: 'danger',
+          text: 'Failed to update scope'
+        }
+      ]);
+    }
+  };
+
   const getFeatureData = useCallback(async () => {
     if (!feature_uuid) return;
     const data = await main.getFeaturesByUuid(feature_uuid);
@@ -178,6 +314,9 @@ const PhasePlannerView: React.FC = observer(() => {
           }
           setFeatureData(feature);
           setPhaseData(phase);
+          setPurpose(phase.phase_purpose || '');
+          setOutcome(phase.phase_outcome || '');
+          setScope(phase.phase_scope || '');
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -261,6 +400,10 @@ const PhasePlannerView: React.FC = observer(() => {
     }
   };
 
+  const toastsEl = (
+    <EuiGlobalToastList toasts={toasts} dismissToast={() => setToasts([])} toastLifeTimeMs={3000} />
+  );
+
   return (
     <FeatureBody>
       <FeatureHeadWrap>
@@ -285,6 +428,155 @@ const PhasePlannerView: React.FC = observer(() => {
             <PhaseLabel>
               Phase: <LabelValue>{phaseData?.name}</LabelValue>
             </PhaseLabel>
+            <FieldWrap>
+              <Label>Purpose</Label>
+              <Data>
+                <OptionsWrap>
+                  <MaterialIcon
+                    icon={'more_horiz'}
+                    className="MaterialIcon"
+                    onClick={() => setDisplayPurpose(!displayPurpose)}
+                    data-testid="purpose-option-btn"
+                  />
+                  {displayPurpose && (
+                    <EditPopover>
+                      <EditPopoverTail />
+                      <EditPopoverContent onClick={editPurposeActions}>
+                        <MaterialIcon icon="edit" style={{ fontSize: '20px', marginTop: '2px' }} />
+                        <EditPopoverText data-testid="purpose-edit-btn">Edit</EditPopoverText>
+                      </EditPopoverContent>
+                    </EditPopover>
+                  )}
+                </OptionsWrap>
+                <EditableField
+                  value={purpose ?? phaseData?.phase_purpose ?? ''}
+                  setValue={setPurpose}
+                  isEditing={editPurpose}
+                  previewMode={purposePreviewMode}
+                  setPreviewMode={setPurposePreviewMode}
+                  placeholder="Purpose"
+                  dataTestIdPrefix="purpose"
+                />
+                {editPurpose && (
+                  <ButtonWrap>
+                    <ActionButton
+                      onClick={() => setEditPurpose(!editPurpose)}
+                      data-testid="purpose-cancel-btn"
+                      color="cancel"
+                    >
+                      Cancel
+                    </ActionButton>
+                    <ActionButton
+                      color="primary"
+                      onClick={submitPurpose}
+                      data-testid="purpose-update-btn"
+                    >
+                      Update
+                    </ActionButton>
+                  </ButtonWrap>
+                )}
+              </Data>
+            </FieldWrap>
+
+            <FieldWrap>
+              <Label>Outcome</Label>
+              <Data>
+                <OptionsWrap>
+                  <MaterialIcon
+                    icon={'more_horiz'}
+                    className="MaterialIcon"
+                    onClick={() => setDisplayOutcome(!displayOutcome)}
+                    data-testid="outcome-option-btn"
+                  />
+                  {displayOutcome && (
+                    <EditPopover>
+                      <EditPopoverTail />
+                      <EditPopoverContent onClick={editOutcomeActions}>
+                        <MaterialIcon icon="edit" style={{ fontSize: '20px', marginTop: '2px' }} />
+                        <EditPopoverText data-testid="outcome-edit-btn">Edit</EditPopoverText>
+                      </EditPopoverContent>
+                    </EditPopover>
+                  )}
+                </OptionsWrap>
+                <EditableField
+                  value={outcome ?? phaseData?.phase_outcome ?? ''}
+                  setValue={setOutcome}
+                  isEditing={editOutcome}
+                  previewMode={outcomePreviewMode}
+                  setPreviewMode={setOutcomePreviewMode}
+                  placeholder="Outcome"
+                  dataTestIdPrefix="outcome"
+                />
+                {editOutcome && (
+                  <ButtonWrap>
+                    <ActionButton
+                      onClick={() => setEditOutcome(!editOutcome)}
+                      data-testid="outcome-cancel-btn"
+                      color="cancel"
+                    >
+                      Cancel
+                    </ActionButton>
+                    <ActionButton
+                      color="primary"
+                      onClick={submitOutcome}
+                      data-testid="outcome-update-btn"
+                    >
+                      Update
+                    </ActionButton>
+                  </ButtonWrap>
+                )}
+              </Data>
+            </FieldWrap>
+
+            <FieldWrap>
+              <Label>Scope</Label>
+              <Data>
+                <OptionsWrap>
+                  <MaterialIcon
+                    icon={'more_horiz'}
+                    className="MaterialIcon"
+                    onClick={() => setDisplayScope(!displayScope)}
+                    data-testid="scope-option-btn"
+                  />
+                  {displayScope && (
+                    <EditPopover>
+                      <EditPopoverTail />
+                      <EditPopoverContent onClick={editScopeActions}>
+                        <MaterialIcon icon="edit" style={{ fontSize: '20px', marginTop: '2px' }} />
+                        <EditPopoverText data-testid="scope-edit-btn">Edit</EditPopoverText>
+                      </EditPopoverContent>
+                    </EditPopover>
+                  )}
+                </OptionsWrap>
+                <EditableField
+                  value={scope ?? phaseData?.phase_scope ?? ''}
+                  setValue={setScope}
+                  isEditing={editScope}
+                  previewMode={scopePreviewMode}
+                  setPreviewMode={setScopePreviewMode}
+                  placeholder="Scope"
+                  dataTestIdPrefix="scope"
+                />
+                {editScope && (
+                  <ButtonWrap>
+                    <ActionButton
+                      onClick={() => setEditScope(!editScope)}
+                      data-testid="scope-cancel-btn"
+                      color="cancel"
+                    >
+                      Cancel
+                    </ActionButton>
+                    <ActionButton
+                      color="primary"
+                      onClick={submitScope}
+                      data-testid="scope-update-btn"
+                    >
+                      Update
+                    </ActionButton>
+                  </ButtonWrap>
+                )}
+              </Data>
+            </FieldWrap>
             <EuiDragDropContext onDragEnd={onDragEnd}>
               <EuiDroppable droppableId="ticketDroppable" spacing="m">
                 {phaseTicketStore
@@ -330,6 +622,7 @@ const PhasePlannerView: React.FC = observer(() => {
         </FieldWrap>
         <StakworkLogsPanel swwfLinks={swwfLinks} />
       </FeatureDataWrap>
+      {toastsEl}
     </FeatureBody>
   );
 });
