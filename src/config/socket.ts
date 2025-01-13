@@ -1,3 +1,4 @@
+import { v4 as uuidv4, v4 } from 'uuid';
 import { getHost } from './host';
 
 export const URL =
@@ -22,7 +23,25 @@ let socket: WebSocket | null = null;
 
 export const createSocketInstance = (): WebSocket => {
   if (!socket || !socket.OPEN) {
-    socket = new WebSocket(URL);
+    // get socket from localStorage
+    const webssocketToken = localStorage.getItem('websocket_token');
+    let uniqueID = webssocketToken;
+
+    if (uniqueID === null) {
+      uniqueID = v4();
+      localStorage.setItem('websocket_token', uniqueID);
+    }
+
+    socket = new WebSocket(URL + `?uniqueId=${uniqueID}`);
+
+    socket.onclose = () => {
+      console.log('WebSocket connection closed');
+      setTimeout(createSocketInstance);
+    };
+    socket.onerror = (error: any) => {
+      console.error('WebSocket error:', error);
+      setTimeout(createSocketInstance, 1000);
+    };
   }
   return socket;
 };
