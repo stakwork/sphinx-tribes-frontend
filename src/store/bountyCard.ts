@@ -327,7 +327,7 @@ export class BountyCardStore {
 
       const assigneeMatch =
         this.selectedAssignees.length === 0 ||
-        (this.selectedAssignees.includes('unassigned') && !card.assignee) || // Changed to check for entire assignee object
+        (this.selectedAssignees.includes('unassigned') && !card.assignee_img) ||
         (card.assignee?.id && this.selectedAssignees.includes(card.assignee.id));
 
       return searchMatch && featureMatch && phaseMatch && statusMatch && assigneeMatch;
