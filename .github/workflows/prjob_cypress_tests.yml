@@ -28,6 +28,7 @@ jobs:
             echo "No Cypress test files found."
             tests="[]"
           fi
+          echo "Generated Tests Array: $tests"
           echo "tests=$tests" >> $GITHUB_OUTPUT
 
     outputs:
@@ -45,6 +46,11 @@ jobs:
 
       - name: Checkout Repository
         uses: actions/checkout@v2
+
+      - name: Debug Tests Output
+        run: |
+          echo "Tests Output: ${{ needs.get-cypress-tests.outputs.tests }}"
+          echo "${{ needs.get-cypress-tests.outputs.tests }}" | jq .
 
       - name: Log tests
         run: |
