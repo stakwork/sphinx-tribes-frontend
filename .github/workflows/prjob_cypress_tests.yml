@@ -28,11 +28,11 @@ jobs:
             echo "No Cypress test files found."
             tests="[]"
           fi
-          echo "tests=$tests" >> $GITHUB_ENV
+          echo "$tests" > $GITHUB_OUTPUT
 
     outputs:
-      # tests: ${{ steps.list-tests.outputs.tests }}
-      tests: $tests
+      tests: ${{ steps.list-tests.outputs.tests }}
+     
 
   cypress:
     name: Cypress
