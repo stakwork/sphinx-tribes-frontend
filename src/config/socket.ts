@@ -36,14 +36,15 @@ export const createSocketInstance = (): WebSocket => {
     socket = new WebSocket(URL + `?uniqueId=${uniqueID}`);
 
     socket.onclose = () => {
-      console.log('WebSocket connection closed');
-      setTimeout(createSocketInstance);
+      console.log('WebSocket connection closed from index');
+      setTimeout(createSocketInstance, 500);
     };
     socket.onerror = (error: any) => {
       console.error('WebSocket error:', error);
       setTimeout(createSocketInstance, 1000);
     };
   }
+
   return socket;
 };
 

@@ -175,7 +175,6 @@ export const HiveChatView: React.FC = observer(() => {
   const chatHistoryRef = useRef<HTMLDivElement>(null);
   const [title, setTitle] = useState('Talk to Hive - Chat');
   const history = useHistory();
-  const socketRef = useRef<WebSocket | null>(null);
   const [isUpdatingTitle, setIsUpdatingTitle] = useState(false);
 
   const handleBackClick = () => {
@@ -274,12 +273,7 @@ export const HiveChatView: React.FC = observer(() => {
   };
 
   useEffect(() => {
-    const socket = createSocketInstance();
-    socketRef.current = socket;
-
-    socket.onopen = () => {
-      console.log('Socket connected in Hive Chat');
-    };
+    let socket = createSocketInstance();
 
     socket.onmessage = async (event: MessageEvent) => {
       console.log('Raw websocket message received:', event.data);
@@ -351,7 +345,11 @@ export const HiveChatView: React.FC = observer(() => {
 
     setIsSending(true);
     try {
-      const sentMessage = await chat.sendMessage(chatId, message, websocketSessionId, uuid);
+      let socketId = websocketSessionId;
+      if (socketId === '') {
+        socketId = localStorage.getItem('websocket_token') || '';
+      }
+      const sentMessage = await chat.sendMessage(chatId, message, socketId, uuid);
       if (sentMessage) {
         chat.addMessage(sentMessage);
         setMessage('');
