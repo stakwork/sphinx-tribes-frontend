@@ -28,7 +28,7 @@ jobs:
             echo "No Cypress test files found."
             tests="[]"
           fi
-          echo "$tests" > $GITHUB_OUTPUT
+          echo "tests=$tests" >> $GITHUB_OUTPUT
 
     outputs:
       tests: ${{ steps.list-tests.outputs.tests }}
