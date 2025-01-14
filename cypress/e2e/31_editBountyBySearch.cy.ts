@@ -37,6 +37,8 @@ describe('Edit Bounty By Searching, Change Workspace And Assignee', () => {
     cy.wait(1000);
     cy.contains(workSpace.loggedInAs).click();
     cy.wait(1000);
+    cy.create_workspace(workSpace);
+    cy.wait(1000)
 
     // Create two workspaces
     for (let i = 1; i <= 2; i++) {
