@@ -6,6 +6,33 @@ on:
       - "*"
 
 jobs:
+  get-cypress-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          path: ./sphinx-tribes-frontend
+
+      - name: Debug test files
+        working-directory: ./sphinx-tribes-frontend
+        run: |
+          find cypress/e2e -name '*.spec.js' -o -name '*.cy.ts' | jq -R -s -c 'split("\n") | map(select(. != ""))'
+
+      - name: List Cypress test files
+        id: list-tests
+        working-directory: ./sphinx-tribes-frontend
+        run: |
+          tests=$(find cypress/e2e -name '*.spec.js' -o -name '*.cy.ts' | jq -R -s -c 'split("\n") | map(select(. != ""))')
+          if [ -z "$tests" ]; then
+            echo "No Cypress test files found."
+            tests="[]"
+          fi
+          echo "::set-output name=tests::$tests"
+
+    outputs:
+      tests: ${{ steps.list-tests.outputs.tests }}
+
   cypress:
     name: Cypress
     runs-on: ubuntu-latest
