@@ -8,8 +8,15 @@ interface FilterState {
   selectedFeatures: string[];
   selectedPhases: string[];
   selectedStatuses: string[];
+  selectedAssignees: string[];
   timestamp: number;
   searchText: string;
+}
+
+interface Assignee {
+  id: string;
+  name: string;
+  count: number;
 }
 
 export class BountyCardStore {
@@ -21,6 +28,7 @@ export class BountyCardStore {
   @observable selectedFeatures: string[] = [];
   @observable selectedPhases: string[] = [];
   @observable selectedStatuses: string[] = [];
+  @observable selectedAssignees: string[] = [];
   @observable searchText = '';
 
   constructor(workspaceId: string) {
@@ -147,6 +155,7 @@ export class BountyCardStore {
         selectedFeatures: this.selectedFeatures,
         selectedPhases: this.selectedPhases,
         selectedStatuses: this.selectedStatuses,
+        selectedAssignees: this.selectedAssignees,
         searchText: this.searchText,
         timestamp: Date.now()
       })
@@ -162,6 +171,7 @@ export class BountyCardStore {
         this.selectedFeatures = state.selectedFeatures;
         this.selectedPhases = state.selectedPhases;
         this.selectedStatuses = state.selectedStatuses;
+        this.selectedAssignees = state.selectedAssignees || [];
       });
     }
   }
@@ -171,6 +181,16 @@ export class BountyCardStore {
       this.selectedFeatures = this.selectedFeatures.filter((id: string) => id !== featureId);
     } else {
       this.selectedFeatures.push(featureId);
+    }
+    this.saveFilterState();
+  }
+
+  @action
+  toggleAssignee(assigneeId: string) {
+    if (this.selectedAssignees.includes(assigneeId)) {
+      this.selectedAssignees = this.selectedAssignees.filter((id: string) => id !== assigneeId);
+    } else {
+      this.selectedAssignees.push(assigneeId);
     }
     this.saveFilterState();
   }
@@ -199,6 +219,7 @@ export class BountyCardStore {
   clearAllFilters() {
     this.selectedFeatures = [];
     this.selectedPhases = [];
+    this.selectedAssignees = [];
     sessionStorage.removeItem('bountyFilterState');
     this.saveFilterState();
   }
@@ -244,6 +265,44 @@ export class BountyCardStore {
   }
 
   @computed
+  get availableAssignees(): Assignee[] {
+    const assigneeCounts = new Map<string, Assignee>();
+
+    // Add "Unassigned" option with count of unassigned bounties
+    const unassignedCount = this.bountyCards.filter(
+      (card: BountyCard) => !card.assignee?.id
+    ).length;
+    assigneeCounts.set('unassigned', {
+      id: 'unassigned',
+      name: 'Unassigned',
+      count: unassignedCount
+    });
+
+    // Count cards per assignee
+    this.bountyCards.forEach((card: BountyCard) => {
+      if (card.assignee?.id && card.assignee.name) {
+        const existing = assigneeCounts.get(card.assignee.id);
+        if (existing) {
+          existing.count++;
+        } else {
+          assigneeCounts.set(card.assignee.id, {
+            id: card.assignee.id,
+            name: card.assignee.name,
+            count: 1
+          });
+        }
+      }
+    });
+
+    // Convert to array and sort by name (keeping Unassigned at top)
+    return Array.from(assigneeCounts.values()).sort((a: Assignee, b: Assignee) => {
+      if (a.id === 'unassigned') return -1;
+      if (b.id === 'unassigned') return 1;
+      return a.name.localeCompare(b.name);
+    });
+  }
+
+  @computed
   get filteredBountyCards() {
     return this.bountyCards.filter((card: BountyCard) => {
       const searchMatch =
@@ -266,7 +325,12 @@ export class BountyCardStore {
         this.selectedStatuses.length === 0 ||
         (card.status && this.selectedStatuses.includes(card.status));
 
-      return searchMatch && featureMatch && phaseMatch && statusMatch;
+      const assigneeMatch =
+        this.selectedAssignees.length === 0 ||
+        (this.selectedAssignees.includes('unassigned') && !card.assignee) || // Changed to check for entire assignee object
+        (card.assignee?.id && this.selectedAssignees.includes(card.assignee.id));
+
+      return searchMatch && featureMatch && phaseMatch && statusMatch && assigneeMatch;
     });
   }
 
@@ -284,6 +348,12 @@ export class BountyCardStore {
   @action
   clearSearch() {
     this.searchText = '';
+    this.saveFilterState();
+  }
+
+  @action
+  clearAssigneeFilters() {
+    this.selectedAssignees = [];
     this.saveFilterState();
   }
 

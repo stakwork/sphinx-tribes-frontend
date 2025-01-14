@@ -39,6 +39,9 @@ const CardTitle = styled.h3`
   &:hover {
     color: ${colors.light.primaryColor};
   }
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 `;
 
 const AssignerPic = styled.div`
@@ -117,7 +120,8 @@ const BountyCardComponent: React.FC<BountyCardProps> = ({
   assignee_img,
   workspace,
   status,
-  onclick
+  onclick,
+  assignee_name
 }: BountyCardProps) => (
   <CardContainer onClick={() => onclick(id)}>
     <CardHeader>
@@ -130,6 +134,7 @@ const BountyCardComponent: React.FC<BountyCardProps> = ({
         }}
       >
         {title}
+        <span className="fontSize: 16px">{assignee_name}</span>
       </CardTitle>
       {assignee_img && (
         <AssignerPic>
@@ -140,6 +145,7 @@ const BountyCardComponent: React.FC<BountyCardProps> = ({
 
     <RowT>
       <span title={features?.name ?? 'No Feature'}>
+        {/* <span>Jordan</span> */}
         {truncate(features?.name ?? 'No Feature', 10)}
       </span>
       <span title={phase?.name ?? 'No Phase'}>{truncate(phase?.name ?? 'No Phase', 20)}</span>
