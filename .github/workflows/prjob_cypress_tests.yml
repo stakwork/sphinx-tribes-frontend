@@ -28,10 +28,11 @@ jobs:
             echo "No Cypress test files found."
             tests="[]"
           fi
-          echo "::set-output name=tests::$tests"
+          echo "tests=$tests" >> $GITHUB_ENV
 
     outputs:
-      tests: ${{ steps.list-tests.outputs.tests }}
+      # tests: ${{ steps.list-tests.outputs.tests }}
+      tests: $tests
 
   cypress:
     name: Cypress
@@ -44,6 +45,9 @@ jobs:
 
       - name: Checkout Repository
         uses: actions/checkout@v2
+
+      - name: Log tests
+        run: echo ${{ fromJson(needs.get-cypress-tests.outputs.tests) }}
       
       - name: Setup Node
         uses: actions/setup-node@v3
