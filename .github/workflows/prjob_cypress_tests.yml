@@ -29,7 +29,8 @@ jobs:
             tests="[]"
           fi
           echo "Generated Tests Array: $tests"
-          echo "tests=$tests" >> $GITHUB_OUTPUT
+          echo "::set-output name=tests::$tests"
+
 
     outputs:
       tests: ${{ steps.list-tests.outputs.tests }}
