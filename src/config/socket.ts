@@ -1,4 +1,4 @@
-import { v4 as uuidv4, v4 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import { getHost } from './host';
 
 export const URL =
@@ -28,8 +28,8 @@ export const createSocketInstance = (): WebSocket => {
     const webssocketToken = localStorage.getItem('websocket_token');
     let uniqueID = webssocketToken;
 
-    if (uniqueID === null) {
-      uniqueID = v4();
+    if (uniqueID === null || uniqueID === '') {
+      uniqueID = uuidv4();
       localStorage.setItem('websocket_token', uniqueID);
     }
 

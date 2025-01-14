@@ -318,12 +318,6 @@ export const HiveChatView: React.FC = observer(() => {
         }
       ]);
     };
-
-    return () => {
-      if (socketRef.current?.readyState === WebSocket.OPEN) {
-        socketRef.current.close();
-      }
-    };
   }, [ui, refreshChatHistory, chatId, chat]);
 
   useEffect(() => {
