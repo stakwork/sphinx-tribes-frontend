@@ -133,7 +133,7 @@ function MobileView(props: CodingBountiesProps) {
   const [paymentError, setPaymentError] = useState('');
   const [isOpenProofModal, setIsOpenProofModal] = useState(false);
   const [value, setValue] = useState('');
-  const [timingStats] = useState(null);
+  const [timingStats, setTimingStats] = useState(null);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const bountyID = id?.toString() || '';
