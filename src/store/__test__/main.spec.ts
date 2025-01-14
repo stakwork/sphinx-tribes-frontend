@@ -2,6 +2,7 @@ import { toJS } from 'mobx';
 import sinon from 'sinon';
 import moment from 'moment';
 import { waitFor } from '@testing-library/react';
+import { Person } from 'store/interface';
 import { people } from '../../__test__/__mockData__/persons';
 import { user } from '../../__test__/__mockData__/user';
 import { MeInfo, emptyMeInfo, uiStore } from '../ui';
@@ -1254,5 +1255,212 @@ describe('Main store', () => {
     sinon.assert.called(fetchStub);
     expect(fetchStub.calledOnce).toEqual(true);
     expect(store.peopleBounties[0].body.coding_languages).toEqual(filterCriteria.coding_languages);
+  });
+
+  it('should successfully fetch workspace users', async () => {
+    const mockUsers: Person[] = [
+      {
+        id: 1,
+        unique_name: 'user-one',
+        owner_pubkey: 'pub-key-1',
+        uuid: 'user-1',
+        owner_alias: 'User One',
+        description: 'Test user one',
+        img: 'image1.jpg',
+        tags: ['developer'],
+        photo_url: 'photo1.jpg',
+        alias: 'User One',
+        route_hint: 'hint1',
+        contact_key: 'contact1',
+        price_to_meet: 100,
+        url: 'https://test1.com',
+        verification_signature: 'sig1',
+        extras: {
+          email: [],
+          liquid: [],
+          wanted: []
+        }
+      },
+      {
+        id: 2,
+        unique_name: 'user-two',
+        owner_pubkey: 'pub-key-2',
+        uuid: 'user-2',
+        owner_alias: 'User Two',
+        description: 'Test user two',
+        img: 'image2.jpg',
+        tags: ['designer'],
+        photo_url: 'photo2.jpg',
+        alias: 'User Two',
+        route_hint: 'hint2',
+        contact_key: 'contact2',
+        price_to_meet: 200,
+        url: 'https://test2.com',
+        verification_signature: 'sig2',
+        extras: {
+          email: [],
+          liquid: [],
+          wanted: []
+        }
+      }
+    ];
+
+    const workspaceUuid = 'workspace-123';
+    const url = `${TribesURL}/workspaces/users/${workspaceUuid}`;
+
+    fetchStub.withArgs(url, sinon.match.any).returns(
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve(mockUsers)
+      }) as any
+    );
+
+    const store = new MainStore();
+    const result = await store.getWorkspaceUsers(workspaceUuid);
+
+    expect(
+      fetchStub.calledWith(
+        url,
+        sinon.match({
+          method: 'GET',
+          mode: 'cors'
+        })
+      )
+    ).toBeTruthy();
+    expect(result).toEqual(mockUsers);
+  });
+
+  it('should return empty array when workspace users fetch fails', async () => {
+    const workspaceUuid = 'workspace-123';
+    const url = `${TribesURL}/workspaces/users/${workspaceUuid}`;
+
+    fetchStub.withArgs(url, sinon.match.any).returns(Promise.reject(new Error('API Error')));
+
+    const store = new MainStore();
+    const result = await store.getWorkspaceUsers(workspaceUuid);
+
+    expect(result).toEqual([]);
+  });
+
+  it('should return empty array for malformed workspace users response', async () => {
+    const workspaceUuid = 'workspace-123';
+    const url = `${TribesURL}/workspaces/users/${workspaceUuid}`;
+
+    fetchStub.withArgs(url, sinon.match.any).returns(
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve(null)
+      }) as any
+    );
+
+    const store = new MainStore();
+    const result = await store.getWorkspaceUsers(workspaceUuid);
+    waitFor(() => {
+      expect(result).toEqual([]);
+    });
+  });
+
+  it('should handle empty workspace UUID for users fetch', async () => {
+    const workspaceUuid = '';
+
+    const store = new MainStore();
+    const result = await store.getWorkspaceUsers(workspaceUuid);
+
+    expect(result).toEqual([]);
+  });
+  it('should return empty array when API call fails', async () => {
+    const workspaceUuid = 'workspace-123';
+    const url = `${TribesURL}/workspaces/users/${workspaceUuid}`;
+
+    fetchStub.withArgs(url, sinon.match.any).returns(Promise.reject(new Error('API Error')));
+
+    const store = new MainStore();
+    const result = await store.getWorkspaceUsers(workspaceUuid);
+
+    expect(fetchStub.withArgs(url, sinon.match.any).calledOnce).toEqual(true);
+    expect(result).toEqual([]);
+  });
+
+  it('should return empty array when response is not ok', async () => {
+    const workspaceUuid = 'workspace-123';
+    const url = `${TribesURL}/workspaces/users/${workspaceUuid}`;
+
+    fetchStub.withArgs(url, sinon.match.any).returns(
+      Promise.resolve({
+        ok: false,
+        status: 404,
+        json: () => Promise.resolve([])
+      }) as any
+    );
+
+    const store = new MainStore();
+    const result = await store.getWorkspaceUsers(workspaceUuid);
+
+    expect(fetchStub.withArgs(url, sinon.match.any).calledOnce).toEqual(true);
+    expect(result).toEqual([]);
+  });
+
+  it('should handle malformed response data', async () => {
+    const workspaceUuid = 'workspace-123';
+    const url = `${TribesURL}/workspaces/users/${workspaceUuid}`;
+
+    fetchStub.withArgs(url, sinon.match.any).returns(
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve(null)
+      }) as any
+    );
+
+    const store = new MainStore();
+    const result = await store.getWorkspaceUsers(workspaceUuid);
+    waitFor(() => {
+      expect(fetchStub.withArgs(url, sinon.match.any).calledOnce).toEqual(true);
+      expect(result).toEqual([]);
+    });
+  });
+
+  it('should make request with correct parameters', async () => {
+    const workspaceUuid = 'workspace-123';
+    const url = `${TribesURL}/workspaces/users/${workspaceUuid}`;
+
+    const expectedRequestOptions = {
+      method: 'GET',
+      mode: 'cors'
+    };
+
+    fetchStub.withArgs(url, expectedRequestOptions).returns(
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve(people)
+      }) as any
+    );
+
+    const store = new MainStore();
+    await store.getWorkspaceUsers(workspaceUuid);
+
+    expect(fetchStub.calledWith(url, sinon.match(expectedRequestOptions))).toEqual(true);
+  });
+
+  it('should handle empty workspace UUID', async () => {
+    const workspaceUuid = '';
+    const url = `${TribesURL}/workspaces/users/${workspaceUuid}`;
+
+    fetchStub.withArgs(url, sinon.match.any).returns(
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve([])
+      }) as any
+    );
+
+    const store = new MainStore();
+    const result = await store.getWorkspaceUsers(workspaceUuid);
+
+    expect(fetchStub.withArgs(url, sinon.match.any).calledOnce).toEqual(true);
+    expect(result).toEqual([]);
   });
 });
