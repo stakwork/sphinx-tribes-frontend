@@ -35,7 +35,7 @@ import {
   WorkspaceFieldWrap
 } from 'pages/tickets/style';
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useStores } from 'store';
 import { useDeleteConfirmationModal } from 'components/common';
@@ -309,7 +309,7 @@ const WorkspaceMission = () => {
   const [modalType, setModalType] = useState('add');
   const [featureModal, setFeatureModal] = useState(false);
   const [features, setFeatures] = useState<Feature[]>([]);
-  const [featuresCount, setFeaturesCount] = useState(0);
+  const [featuresCount] = useState(0);
   const [isOpenUserManage, setIsOpenUserManage] = useState<boolean>(false);
   const [users, setUsers] = useState<Person[]>([]);
   const [displayUserRepoOptions, setDisplayUserRepoOptions] = useState<Record<number, boolean>>({});
@@ -328,9 +328,14 @@ const WorkspaceMission = () => {
   const [missionPreviewMode, setMissionPreviewMode] = useState<'preview' | 'edit'>('edit');
   const [tacticsPreviewMode, setTacticsPreviewMode] = useState<'preview' | 'edit'>('edit');
   const [toasts, setToasts] = useState<Toast[]>([]);
-  const [holding, setHolding] = useState(false);
+  const [holding] = useState(false);
   const [permissionsChecked, setPermissionsChecked] = useState<boolean>(false);
   const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const ITEMS_PER_PAGE = 4;
+  const INITIAL_LOAD_LIMIT = 20;
 
   const { isEnabled: isPlannerEnabled, loading: isPlannerLoading } =
     useFeatureFlag('display_planner');
@@ -593,57 +598,88 @@ const WorkspaceMission = () => {
   //   getFeaturesCount();
   // }, [getFeaturesCount]);
 
-  const updateFeatures = (newFeatures: Feature[]) => {
-    const updatedFeatures: Feature[] = [...features];
-    newFeatures.forEach((newFeat: Feature) => {
-      const featIndex = features.findIndex((feat: Feature) => feat.uuid === newFeat.uuid);
-      if (featIndex === -1) {
-        updatedFeatures.push(newFeat);
-      }
-    });
-    setFeatures(updatedFeatures);
-  };
+  // const updateFeatures = (newFeatures: Feature[]) => {
+  //   const updatedFeatures: Feature[] = [...features];
+  //   newFeatures.forEach((newFeat: Feature) => {
+  //     const featIndex = features.findIndex((feat: Feature) => feat.uuid === newFeat.uuid);
+  //     if (featIndex === -1) {
+  //       updatedFeatures.push(newFeat);
+  //     }
+  //   });
+  //   setFeatures(updatedFeatures);
+  // };
 
-  const getFeatures = useCallback(async () => {
-    if (!uuid) return;
+  const getFeatures = useCallback(
+    // eslint-disable-next-line @typescript-eslint/typedef
+    async (page: number, isInitialLoad = false) => {
+      if (!uuid) return;
 
-    setLoading(true); // Set loading to true when the fetch starts
-    setHolding(true); // Set holding to true to show fetching is in progress
+      setIsLoadingMore(true);
 
-    let allFeatures: Feature[] = [];
-    let page = 1;
-    let hasMoreData = true;
-
-    try {
-      while (hasMoreData) {
+      try {
         const featuresRes = await main.getWorkspaceFeatures(uuid, {
           page,
-          status: 'active'
+          status: 'active',
+          limit: ITEMS_PER_PAGE
         });
 
         if (featuresRes && Array.isArray(featuresRes)) {
-          allFeatures = [...allFeatures, ...featuresRes];
-          hasMoreData = featuresRes.length > 0; // Stop fetching if no data returned
-          page++;
-        } else {
-          hasMoreData = false; // Stop on unexpected response
-        }
-      }
+          if (page === 1) {
+            setFeatures(featuresRes);
+          } else {
+            setFeatures((prev: Feature[]) => [...prev, ...featuresRes]);
+          }
 
-      if (allFeatures.length > 0) {
-        updateFeatures(allFeatures); // Update features with all data
+          // If it's initial load and we haven't reached INITIAL_LOAD_LIMIT, load more
+          if (
+            isInitialLoad &&
+            features.length < INITIAL_LOAD_LIMIT &&
+            featuresRes.length === ITEMS_PER_PAGE
+          ) {
+            setTimeout(() => {
+              getFeatures(page + 1, true);
+            }, 500); // Add small delay between loads
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching features:', error);
+      } finally {
+        setIsLoadingMore(false);
       }
-    } catch (error) {
-      console.error('Error fetching features:', error);
-    } finally {
-      setLoading(false); // Reset loading state after fetch completes
-      setHolding(false); // Reset holding state after fetch completes
-    }
-  }, [uuid, main]);
+    },
+    [uuid, main, features.length]
+  );
 
   useEffect(() => {
-    getFeatures();
+    getFeatures(1, true);
   }, [getFeatures]);
+
+  const observerTarget = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries: IntersectionObserverEntry[]) => {
+        const target = entries[0];
+        if (target.isIntersecting && !isLoadingMore && features.length < INITIAL_LOAD_LIMIT) {
+          setCurrentPage((prev: number) => prev + 1);
+          getFeatures(currentPage + 1);
+        }
+      },
+      {
+        threshold: 0.5
+      }
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => {
+      if (observerTarget.current) {
+        observer.unobserve(observerTarget.current);
+      }
+    };
+  }, [currentPage, isLoadingMore, features.length, getFeatures]);
 
   const handleWebsiteButton = (websiteUrl: string) => {
     window.open(websiteUrl, '_blank');
@@ -689,7 +725,7 @@ const WorkspaceMission = () => {
         text: 'Feature is successfully archived'
       }
     ]);
-    getFeatures();
+    getFeatures(1, true);
     closeAllFeatureStatus();
   };
 
@@ -1485,6 +1521,40 @@ const WorkspaceMission = () => {
                       ))}
                 </EuiDroppable>
               </EuiDragDropContext>
+
+              {/* Observer target for infinite scroll */}
+              <div ref={observerTarget} style={{ height: '20px' }} />
+
+              {/* Loading indicator */}
+              {isLoadingMore && (
+                <LoadingContainer>
+                  <EuiLoadingSpinner size="m" />
+                  <LoadingText>Loading more features...</LoadingText>
+                </LoadingContainer>
+              )}
+
+              {/* Load More button (shown after initial 20 items) */}
+              {features.length >= INITIAL_LOAD_LIMIT && featuresCount > features.length && (
+                <div
+                  style={{
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginTop: '20px'
+                  }}
+                >
+                  <div
+                    className="LoadMoreButton"
+                    onClick={() => {
+                      setCurrentPage((prev: number) => prev + 1);
+                      getFeatures(currentPage + 1);
+                    }}
+                  >
+                    Load More
+                  </div>
+                </div>
+              )}
             </FeaturesWrap>
             {/* {featuresCount > features.length ? (
               <LoadMoreContainer
@@ -1529,7 +1599,7 @@ const WorkspaceMission = () => {
         >
           <AddFeature
             closeHandler={toggleFeatureModal}
-            getFeatures={getFeatures}
+            getFeatures={() => getFeatures(1, true)}
             workspace_uuid={uuid}
             priority={featuresCount}
           />
