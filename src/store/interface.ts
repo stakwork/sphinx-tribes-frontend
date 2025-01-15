@@ -517,20 +517,12 @@ export interface BountyCard {
   phase: Phase;
   workspace: Workspace;
   assignee_img?: string;
-}
-
-export interface BountyCard {
-  id: string;
-  title: string;
-  features: Feature;
-  phase: Phase;
-  workspace: Workspace;
-  assignee_img?: string;
   status?: BountyCardStatus;
   paid?: boolean;
   completed?: boolean;
   payment_pending?: boolean;
-  assignee?: string;
+  assignee?: any;
+  assignee_name?: string;
   pow?: number;
 }
 

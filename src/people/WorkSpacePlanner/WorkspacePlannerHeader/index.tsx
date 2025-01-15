@@ -142,6 +142,7 @@ export const WorkspacePlannerHeader = observer(
     const [canPostBounty, setCanPostBounty] = useState(false);
     const [isFeaturePopoverOpen, setIsFeaturePopoverOpen] = useState<boolean>(false);
     const [isPhasePopoverOpen, setIsPhasePopoverOpen] = useState<boolean>(false);
+    const [isAssigneePopoverOpen, setIsAssigneePopoverOpen] = useState<boolean>(false);
     const [isStatusPopoverOpen, setIsStatusPopoverOpen] = useState<boolean>(false);
     const bountyCardStore = useBountyCardStore(workspace_uuid);
     const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -199,9 +200,14 @@ export const WorkspacePlannerHeader = observer(
       setIsStatusPopoverOpen((isPopoverOpen: boolean) => !isPopoverOpen);
     };
 
+    const onAssigneeButtonClick = (): void => {
+      setIsAssigneePopoverOpen((isPopoverOpen: boolean) => !isPopoverOpen);
+    };
+
     const closeFeaturePopover = () => setIsFeaturePopoverOpen(false);
     const closePhasePopover = () => setIsPhasePopoverOpen(false);
     const closeStatusPopover = () => setIsStatusPopoverOpen(false);
+    const closeAssigneePopover = () => setIsAssigneePopoverOpen(false);
 
     const getFeatureOptions = (): FeatureOption[] => {
       const options: FeatureOption[] = [];
@@ -531,6 +537,92 @@ export const WorkspacePlannerHeader = observer(
                             onClick={(e: React.MouseEvent): void => {
                               e.stopPropagation();
                               bountyCardStore.clearStatusFilters();
+                              setFilterToggle(!filterToggle);
+                            }}
+                          >
+                            Clear All
+                          </ClearButton>
+                        </div>
+                      )}
+                    </EuiPopOverCheckbox>
+                  </div>
+                </EuiPopover>
+              </NewStatusContainer>
+
+              <NewStatusContainer>
+                <EuiPopover
+                  button={
+                    <StatusContainer
+                      onClick={onAssigneeButtonClick}
+                      color={color}
+                      // style={{
+                      //   opacity: isPhaseFilterDisabled ? 0.5 : 1,
+                      //   cursor: isPhaseFilterDisabled ? 'not-allowed' : 'pointer'
+                      // }}
+                    >
+                      <InnerContainer>
+                        <EuiText className="statusText">Assignee</EuiText>
+                        <Formatter>
+                          {bountyCardStore.selectedAssignees.length > 0 && (
+                            <FilterCount color={color}>
+                              <EuiText className="filterCountText">
+                                {bountyCardStore.selectedAssignees.length}
+                              </EuiText>
+                            </FilterCount>
+                          )}
+                        </Formatter>
+                        <MaterialIcon
+                          icon={isAssigneePopoverOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}
+                        />
+                      </InnerContainer>
+                    </StatusContainer>
+                  }
+                  isOpen={isAssigneePopoverOpen}
+                  closePopover={closeAssigneePopover}
+                  panelStyle={{
+                    border: 'none',
+                    boxShadow: `0px 1px 20px ${color.black90}`,
+                    background: `${color.pureWhite}`,
+                    borderRadius: '0px 0px 6px 6px',
+                    maxWidth: '140px',
+                    minHeight: '160px',
+                    marginTop: '0px',
+                    marginLeft: '20px'
+                  }}
+                  panelClassName="yourClassNameHere"
+                  panelPaddingSize="none"
+                  anchorPosition="downLeft"
+                >
+                  <div style={{ display: 'flex', flex: 'row' }}>
+                    <EuiPopOverCheckbox className="CheckboxOuter" color={color}>
+                      <EuiCheckboxGroup
+                        options={bountyCardStore.availableAssignees.map((assignee: any) => ({
+                          label: assignee.name,
+                          id: assignee
+                        }))}
+                        idToSelectedMap={bountyCardStore.availableAssignees.reduce(
+                          (acc: { [key: string]: boolean }, assignee: any) => {
+                            acc[assignee] = bountyCardStore.selectedAssignees.includes(assignee);
+                            return acc;
+                          },
+                          {}
+                        )}
+                        onChange={(id: string) => {
+                          bountyCardStore.toggleAssignee(id);
+                          setFilterToggle(!filterToggle);
+                        }}
+                      />
+                      {bountyCardStore.selectedAssignees.length > 0 && (
+                        <div
+                          style={{
+                            padding: '8px 16px',
+                            borderTop: `1px solid ${color.grayish.G800}`
+                          }}
+                        >
+                          <ClearButton
+                            onClick={(e: React.MouseEvent): void => {
+                              e.stopPropagation();
+                              bountyCardStore.clearAssigneeFilters();
                               setFilterToggle(!filterToggle);
                             }}
                           >
