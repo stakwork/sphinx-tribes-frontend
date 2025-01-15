@@ -70,39 +70,8 @@ export class BountyCardStore {
 
       const data = (await response.json()) as BountyCard[] | null;
 
-      // Fetch proof counts for each bounty
-      const bountyCardsWithProofs = await Promise.all(
-        (data || []).map(async (bounty: BountyCard) => {
-          try {
-            const proofsUrl = `${TribesURL}/gobounties/${bounty.id}/proofs`;
-            const proofsResponse = await fetch(proofsUrl, {
-              method: 'GET',
-              headers: {
-                'x-jwt': jwt,
-                'Content-Type': 'application/json'
-              }
-            });
-
-            if (!proofsResponse.ok) {
-              return { ...bounty, pow: 0 };
-            }
-
-            const proofs = await proofsResponse.json();
-            return {
-              ...bounty,
-              pow: Array.isArray(proofs) ? proofs.length : 0
-            };
-          } catch (error) {
-            console.error(`Error fetching proofs for bounty ${bounty.id}:`, error);
-            return { ...bounty, pow: 0 };
-          }
-        })
-      );
-
       runInAction(() => {
-        this.bountyCards = bountyCardsWithProofs.map((bounty: BountyCard) => ({
-          ...bounty
-        }));
+        this.bountyCards = data || [];
       });
     } catch (error) {
       console.error('Error loading bounties:', error);
