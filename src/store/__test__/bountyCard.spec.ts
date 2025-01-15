@@ -34,20 +34,15 @@ describe('BountyCardStore', () => {
 
   describe('loadWorkspaceBounties', () => {
     it('should handle successful bounty cards fetch', async () => {
-      const mockBounties = [{ id: 1, title: 'Test Bounty', pow: 0 }];
+      const mockBounties = [{ id: 1, title: 'Test Bounty', status: 'TODO' }];
 
-      fetchStub.onFirstCall().resolves({
+      fetchStub.resolves({
         ok: true,
         json: async () => mockBounties
       } as Response);
 
-      fetchStub.onSecondCall().resolves({
-        ok: true,
-        json: async () => []
-      } as Response);
-
       store = new BountyCardStore(mockWorkspaceId);
-      await waitFor(() => expect(store.bountyCards).toEqual([{ ...mockBounties[0] }]));
+      await waitFor(() => expect(store.bountyCards).toEqual(mockBounties));
 
       expect(store.loading).toBe(false);
       expect(store.error).toBeNull();
@@ -70,23 +65,18 @@ describe('BountyCardStore', () => {
   describe('switchWorkspace', () => {
     it('should switch workspace and reload bounties', async () => {
       const newWorkspaceId = 'new-workspace-456';
-      const mockBounties = [{ id: 2, title: 'New Bounty', pow: 0 }];
+      const mockBounties = [{ id: 2, title: 'New Bounty', status: 'TODO' }];
 
-      fetchStub.onFirstCall().resolves({
+      fetchStub.resolves({
         ok: true,
         json: async () => mockBounties
-      } as Response);
-
-      fetchStub.onSecondCall().resolves({
-        ok: true,
-        json: async () => []
       } as Response);
 
       store = new BountyCardStore(mockWorkspaceId);
 
       await waitFor(() => store.switchWorkspace(newWorkspaceId));
       expect(store.currentWorkspaceId).toBe(newWorkspaceId);
-      expect(store.bountyCards).toEqual([{ ...mockBounties[0] }]);
+      expect(store.bountyCards).toEqual(mockBounties);
     });
 
     it('should not reload if workspace id is the same', async () => {
