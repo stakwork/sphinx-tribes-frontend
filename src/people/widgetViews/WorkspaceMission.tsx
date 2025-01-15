@@ -309,7 +309,7 @@ const WorkspaceMission = () => {
   const [modalType, setModalType] = useState('add');
   const [featureModal, setFeatureModal] = useState(false);
   const [features, setFeatures] = useState<Feature[]>([]);
-  const [featuresCount, setFeaturesCount] = useState(0);
+  const [featuresCount] = useState(0);
   const [isOpenUserManage, setIsOpenUserManage] = useState<boolean>(false);
   const [users, setUsers] = useState<Person[]>([]);
   const [displayUserRepoOptions, setDisplayUserRepoOptions] = useState<Record<number, boolean>>({});
