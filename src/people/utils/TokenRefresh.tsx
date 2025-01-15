@@ -16,6 +16,7 @@ function TokenRefresh() {
         if (res && res.jwt) {
           ui.setMeInfo({ ...ui.meInfo, tribe_jwt: res.jwt });
         } else {
+          console.log('Token refresh failed, logging out!', res);
           ui.setMeInfo(null);
           ui.setSelectedPerson(0);
           ui.setSelectingPerson(0);
