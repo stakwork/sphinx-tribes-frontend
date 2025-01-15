@@ -34,6 +34,8 @@ function TokenRefresh() {
         throw new Error('Token does not contain an expiration time');
       }
 
+      console.log('Payload ===', payload);
+
       const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
       const expiryTime = payload.exp; // Expiry time in seconds
       const oneHour = 3600; // One hour in seconds
@@ -53,25 +55,29 @@ function TokenRefresh() {
   };
 
   useEffect(() => {
-    setInterval(async () => {
-      if ((ui.meInfo, ui.meInfo?.tribe_jwt)) {
-        const tokenExpireCheck = isTokenExpiring(ui.meInfo?.tribe_jwt);
-        if (tokenExpireCheck.expired) {
-          const res = await main.refreshJwt();
-          if (res && res.jwt) {
-            ui.setMeInfo({ ...ui.meInfo, tribe_jwt: res.jwt });
-          } else {
-            console.log('Token refresh failed, logging out!', res);
-            ui.setMeInfo(null);
-            ui.setSelectedPerson(0);
-            ui.setSelectingPerson(0);
-            setShow(true);
-            // run this to reset state
-            main.getPeople();
+    setInterval(
+      async () => {
+        if ((ui.meInfo, ui.meInfo?.tribe_jwt)) {
+          const tokenExpireCheck = isTokenExpiring(ui.meInfo?.tribe_jwt);
+          console.log('TOken Expired Check', tokenExpireCheck);
+          if (tokenExpireCheck.expired) {
+            const res = await main.refreshJwt();
+            if (res && res.jwt) {
+              ui.setMeInfo({ ...ui.meInfo, tribe_jwt: res.jwt });
+            } else {
+              console.log('Token refresh failed, logging out!', res);
+              ui.setMeInfo(null);
+              ui.setSelectedPerson(0);
+              ui.setSelectingPerson(0);
+              setShow(true);
+              // run this to reset state
+              main.getPeople();
+            }
           }
         }
-      }
-    }, 6000 * 60);
+      },
+      1000 * 60 * 60
+    );
   }, [main, ui]);
 
   return (
