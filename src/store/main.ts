@@ -1492,6 +1492,7 @@ export class MainStore {
       if (!uiStore.meInfo) return null;
       const info = uiStore.meInfo;
 
+      console.log('Refreshing token ====');
       const r: any = await fetch(`${TribesURL}/refresh_jwt`, {
         method: 'GET',
         mode: 'cors',
