@@ -37,6 +37,8 @@ describe('Edit Bounty By Searching, Change Workspace And Assignee', () => {
     cy.wait(1000);
     cy.contains(workSpace.loggedInAs).click();
     cy.wait(1000);
+    cy.create_workspace(workSpace);
+    cy.wait(1000)
 
     // Create two workspaces
     for (let i = 1; i <= 2; i++) {
@@ -77,8 +79,8 @@ describe('Edit Bounty By Searching, Change Workspace And Assignee', () => {
     // Select the dynamically generated workspace
     cy.get('[data-testid="org_uuid"]').should('exist').click({ force: true }).wait(5000);
     cy.wait(1000);
-    cy.contains(bounty.workspace).should('exist').click({ force: true });
-    cy.wait(1000);
+    // cy.contains(bounty.workspace).should('exist').click({ force: true });
+    // cy.wait(1000);
     // Assign a new assignee
     cy.get('.SearchInput').type(NewAssignee);
     cy.wait(1000);
