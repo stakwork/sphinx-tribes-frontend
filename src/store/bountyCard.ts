@@ -265,13 +265,11 @@ export class BountyCardStore {
   }
 
   @computed
-  get availableAssignees(): Assignee[] {
-    const assigneeCounts = new Map<string, Assignee>();
+  get availableAssignees(): any[] {
+    const assigneeCounts = new Map<string, any>();
 
     // Add "Unassigned" option with count of unassigned bounties
-    const unassignedCount = this.bountyCards.filter(
-      (card: BountyCard) => !card.assignee?.id
-    ).length;
+    const unassignedCount = this.bountyCards.filter((card: BountyCard) => !card.assignee).length;
     assigneeCounts.set('unassigned', {
       id: 'unassigned',
       name: 'Unassigned',
@@ -280,14 +278,14 @@ export class BountyCardStore {
 
     // Count cards per assignee
     this.bountyCards.forEach((card: BountyCard) => {
-      if (card.assignee?.id && card.assignee.name) {
-        const existing = assigneeCounts.get(card.assignee.id);
+      if (card.assignee_name) {
+        const existing = assigneeCounts.get(card.assignee);
         if (existing) {
           existing.count++;
         } else {
-          assigneeCounts.set(card.assignee.id, {
-            id: card.assignee.id,
-            name: card.assignee.name,
+          assigneeCounts.set(card.assignee, {
+            id: card.assignee,
+            name: card.assignee_name,
             count: 1
           });
         }
@@ -328,7 +326,7 @@ export class BountyCardStore {
       const assigneeMatch =
         this.selectedAssignees.length === 0 ||
         (this.selectedAssignees.includes('unassigned') && !card.assignee_img) ||
-        (card.assignee?.id && this.selectedAssignees.includes(card.assignee.id));
+        (card.assignee && this.selectedAssignees.includes(card.assignee));
 
       return searchMatch && featureMatch && phaseMatch && statusMatch && assigneeMatch;
     });

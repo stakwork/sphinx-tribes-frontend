@@ -108,12 +108,6 @@ const SearchInputContainer = styled.div`
   }
 `;
 
-interface Assignee {
-  id: string;
-  name: string;
-  count: number;
-}
-
 const SearchInput = ({
   value,
   onChange,
@@ -604,13 +598,11 @@ export const WorkspacePlannerHeader = observer(
                       <EuiCheckboxGroup
                         options={bountyCardStore.availableAssignees.map((assignee: any) => ({
                           label: assignee.name,
-                          id: assignee.id
+                          id: assignee
                         }))}
                         idToSelectedMap={bountyCardStore.availableAssignees.reduce(
-                          (acc: { [key: string]: boolean }, assignee: Assignee) => {
-                            acc[assignee.id] = bountyCardStore.selectedAssignees.includes(
-                              assignee.id
-                            );
+                          (acc: { [key: string]: boolean }, assignee: any) => {
+                            acc[assignee] = bountyCardStore.selectedAssignees.includes(assignee);
                             return acc;
                           },
                           {}

@@ -134,7 +134,7 @@ const BountyCardComponent: React.FC<BountyCardProps> = ({
         }}
       >
         {title}
-        <span className="fontSize: 16px">{assignee_name}</span>
+        <span style={{ fontSize: '16px', marginTop: '10px' }}>{assignee_name}</span>
       </CardTitle>
       {assignee_img && (
         <AssignerPic>
