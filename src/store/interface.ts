@@ -568,3 +568,10 @@ export interface FeatureFlag {
   enabled: boolean;
   endpoints: Endpoint[];
 }
+
+export interface FeaturedBounty {
+  bountyId: string;
+  url: string;
+  addedAt: number;
+  title?: string | undefined;
+}
