@@ -22,7 +22,7 @@ describe('Alice tries to create 6 bounties and then assert filtered bounties', (
         assign: assignees[i],
         deliverables: 'We are good to go man',
         tribe: '',
-        estimate_session_length: 'Less than 3 hour',
+        estimate_session_length: '3 hours',
         estimate_completion_date: '09/09/2024'
       });
       cy.wait(1000);

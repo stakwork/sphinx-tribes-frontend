@@ -23,10 +23,12 @@ declare namespace Cypress {
     | 'Other';
 
   type EstimateSessionLength =
-    | 'Less than 1 hour'
-    | 'Less than 3 hour'
-    | 'More than 3 hour'
-    | 'Not sure yet';
+    | '1 hour'
+    | '3 hours'
+    | '8 hours'
+    | '24 hours'
+    | '48 hours'
+    | '72 hours';
 
   type Bounty = {
     workspace?: string;

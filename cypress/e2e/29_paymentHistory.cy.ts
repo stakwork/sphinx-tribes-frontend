@@ -93,7 +93,7 @@ describe('It Lists all payments in history', () => {
       deliverables: 'We are good to go man',
       workspace: workSpace.name,
       tribe: '',
-      estimate_session_length: 'Less than 3 hour',
+      estimate_session_length: '3 hours',
       estimate_completion_date: '09/09/2024'
     };
 

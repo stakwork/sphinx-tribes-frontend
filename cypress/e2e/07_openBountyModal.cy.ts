@@ -8,7 +8,7 @@ describe('View Bounty From Modal', () => {
     assign: 'carol',
     deliverables: 'I can submit a pr within 2 days of taking the bounty',
     tribe: '',
-    estimate_session_length: 'Less than 3 hour',
+    estimate_session_length: '3 hours',
     estimate_completion_date: '09/09/2024'
   };
 

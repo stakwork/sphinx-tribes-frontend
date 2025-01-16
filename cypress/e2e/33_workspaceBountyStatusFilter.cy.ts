@@ -24,7 +24,7 @@ describe('filter by status for org bounty', () => {
       description: 'This is available',
       amount: '123',
       tribe: 'Amazing Workspace Tribe',
-      estimate_session_length: 'Less than 3 hour',
+      estimate_session_length: '3 hours',
       estimate_completion_date: '09/09/2024',
       deliverables: 'We are good to go man',
       assign: ''
@@ -38,7 +38,7 @@ describe('filter by status for org bounty', () => {
       description: 'This is available',
       amount: '123',
       tribe: 'Amazing Workspace Tribe',
-      estimate_session_length: 'Less than 3 hour',
+      estimate_session_length: '3 hours',
       estimate_completion_date: '09/09/2024',
       deliverables: 'We are good to go man',
       assign: ''
@@ -52,7 +52,7 @@ describe('filter by status for org bounty', () => {
       description: 'This is available',
       amount: '123',
       tribe: 'Amazing Workspace Tribe',
-      estimate_session_length: 'Less than 3 hour',
+      estimate_session_length: '3 hours',
       estimate_completion_date: '09/09/2024',
       deliverables: 'We are good to go man',
       assign: ''
@@ -66,7 +66,7 @@ describe('filter by status for org bounty', () => {
       description: 'This is available',
       amount: '123',
       tribe: 'Amazing Workspace Tribe',
-      estimate_session_length: 'Less than 3 hour',
+      estimate_session_length: '3 hours',
       estimate_completion_date: '09/09/2024',
       deliverables: 'We are good to go man',
       assign: 'carol'
@@ -80,7 +80,7 @@ describe('filter by status for org bounty', () => {
       description: 'This is available',
       amount: '123',
       tribe: 'Amazing Workspace Tribe',
-      estimate_session_length: 'Less than 3 hour',
+      estimate_session_length: '3 hours',
       estimate_completion_date: '09/09/2024',
       deliverables: 'We are good to go man',
       assign: 'alice'
@@ -94,7 +94,7 @@ describe('filter by status for org bounty', () => {
       description: 'This is available',
       amount: '123',
       tribe: 'Amazing Workspace Tribe',
-      estimate_session_length: 'Less than 3 hour',
+      estimate_session_length: '3 hours',
       estimate_completion_date: '09/09/2024',
       deliverables: 'We are good to go man',
       assign: 'carol'
@@ -108,7 +108,7 @@ describe('filter by status for org bounty', () => {
       description: 'This is available',
       amount: '123',
       tribe: 'Amazing Workspace Tribe',
-      estimate_session_length: 'Less than 3 hour',
+      estimate_session_length: '3 hours',
       estimate_completion_date: '09/09/2024',
       deliverables: 'We are good to go man',
       assign: 'carol'
@@ -122,7 +122,7 @@ describe('filter by status for org bounty', () => {
       description: 'This is available',
       amount: '123',
       tribe: 'Amazing Workspace Tribe',
-      estimate_session_length: 'Less than 3 hour',
+      estimate_session_length: '3 hours',
       estimate_completion_date: '09/09/2024',
       deliverables: 'We are good to go man',
       assign: 'alice'
