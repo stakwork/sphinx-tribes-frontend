@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import { EuiText } from '@elastic/eui';
 import { Formik } from 'formik';
