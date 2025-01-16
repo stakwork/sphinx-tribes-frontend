@@ -96,6 +96,10 @@ export class BountyCardStore {
     await this.loadWorkspaceBounties();
   };
 
+  @computed get draftItems() {
+    return this.bountyCards.filter((card: BountyCard) => card.status === 'DRAFT');
+  }
+
   @computed get todoItems() {
     return this.bountyCards.filter((card: BountyCard) => card.status === 'TODO');
   }
