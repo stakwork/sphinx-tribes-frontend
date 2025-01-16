@@ -1,4 +1,5 @@
 import { makeAutoObservable } from 'mobx';
+import { mainStore } from './main.ts';
 
 export interface FeaturedBounty {
   bountyId: string;
@@ -13,39 +14,16 @@ export class BountyStore {
 
   constructor() {
     makeAutoObservable(this);
-    this.loadFromStorage();
+    this.loadFeaturedBounties();
   }
 
-  private loadFromStorage(): void {
+  async loadFeaturedBounties() {
     try {
-      const saved = localStorage.getItem('featuredBounties');
-      if (saved) {
-        this.featuredBounties = JSON.parse(saved);
-        return;
-      }
+      this.featuredBounties = (await mainStore.fetchFeaturedBounties()) as FeaturedBounty[];
 
-      const oldSaved = localStorage.getItem('featuredBounty');
-      if (oldSaved) {
-        const oldBounty = JSON.parse(oldSaved);
-        this.featuredBounties = [
-          {
-            ...oldBounty,
-            addedAt: Date.now()
-          }
-        ];
-        this.saveToStorage();
-        localStorage.removeItem('featuredBounty');
-      }
+      return this.featuredBounties;
     } catch (error) {
-      console.error('Error loading from storage:', error);
-    }
-  }
-
-  private saveToStorage(): void {
-    try {
-      localStorage.setItem('featuredBounties', JSON.stringify(this.featuredBounties));
-    } catch (error) {
-      console.error('Error saving to storage:', error);
+      console.error('Error loading featured bounties:', error);
     }
   }
 
@@ -54,30 +32,29 @@ export class BountyStore {
     return match ? match[1] : null;
   }
 
-  addFeaturedBounty(url: string, title?: string): void {
-    const bountyId = this.getBountyIdFromURL(url);
-    if (!bountyId || this.hasBounty(bountyId)) return;
+  async addFeaturedBounty(bounty: { bountyId: string; url: string; title?: string }) {
+    try {
+      await mainStore.addFeaturedBounty(bounty);
+      await this.loadFeaturedBounties();
 
-    const newBounty: FeaturedBounty = {
-      bountyId,
-      url,
-      title,
-      addedAt: Date.now()
-    };
-
-    this.featuredBounties = [newBounty, ...this.featuredBounties].slice(
-      0,
-      this.maxFeaturedBounties
-    );
-
-    this.saveToStorage();
+      return true;
+    } catch (error) {
+      console.error('Error adding featured bounty:', error);
+      return false;
+    }
   }
 
-  removeFeaturedBounty(bountyId: string): void {
-    this.featuredBounties = this.featuredBounties.filter(
-      (b: FeaturedBounty) => b.bountyId !== bountyId
-    );
-    this.saveToStorage();
+  async removeFeaturedBounty(bountyId: string) {
+    try {
+      await mainStore.deleteFeaturedBounty(bountyId);
+
+      await this.loadFeaturedBounties();
+
+      return true;
+    } catch (error) {
+      console.error('Error deleting featured bounty:', error);
+      return false;
+    }
   }
 
   hasBounty(bountyId: string): boolean {
@@ -88,9 +65,18 @@ export class BountyStore {
     return this.featuredBounties;
   }
 
-  clearFeaturedBounties(): void {
-    this.featuredBounties = [];
-    this.saveToStorage();
+  async clearFeaturedBounties() {
+    try {
+      for (const bounty of this.featuredBounties) {
+        await this.removeFeaturedBounty(bounty.bountyId);
+      }
+
+      await this.loadFeaturedBounties();
+
+      console.log('All featured bounties removed successfully.');
+    } catch (error) {
+      console.error('Error removing all featured bounties:', error);
+    }
   }
 }
 

@@ -50,7 +50,8 @@ import {
   Ticket,
   CodeGraph,
   CreateBountyResponse,
-  FeatureFlag
+  FeatureFlag,
+  FeaturedBounty
 } from './interface';
 
 function makeTorSaveURL(host: string, key: string) {
@@ -4210,6 +4211,91 @@ export class MainStore {
       return true;
     } catch (error) {
       console.error('Error deleting ticket:', error);
+      return false;
+    }
+  }
+
+  async fetchFeaturedBounties(): Promise<FeaturedBounty[] | []> {
+    try {
+      if (!uiStore.meInfo) return [];
+      const info = uiStore.meInfo;
+
+      const response = await fetch(`${TribesURL}/gobounties/featured/all`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt || '',
+          'Content-Type': 'application/json',
+          'x-session-id': this.sessionId
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch featured bounties');
+      }
+
+      const responseData = await response.json();
+
+      return responseData;
+    } catch (error) {
+      console.error('Error fetching featured bounties:', error);
+      return [];
+    }
+  }
+
+  async addFeaturedBounty(bounty: {
+    bountyId: string;
+    url: string;
+    title?: string;
+  }): Promise<boolean> {
+    try {
+      if (!uiStore.meInfo) return false;
+      const info = uiStore.meInfo;
+
+      const response = await fetch(`${TribesURL}/gobounties/featured/create`, {
+        method: 'POST',
+        mode: 'cors',
+        body: JSON.stringify(bounty),
+        headers: {
+          'x-jwt': info.tribe_jwt || '',
+          'Content-Type': 'application/json',
+          'x-session-id': this.sessionId
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to add featured bounty');
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error adding featured bounty:', error);
+      return false;
+    }
+  }
+
+  async deleteFeaturedBounty(bountyId: string): Promise<boolean> {
+    try {
+      if (!uiStore.meInfo) return false;
+      const info = uiStore.meInfo;
+
+      const response = await fetch(`${TribesURL}/gobounties/featured/delete/${bountyId}`, {
+        method: 'DELETE',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt || '',
+          'Content-Type': 'application/json',
+          'x-session-id': this.sessionId
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete featured bounty');
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error deleting featured bounty:', error);
       return false;
     }
   }

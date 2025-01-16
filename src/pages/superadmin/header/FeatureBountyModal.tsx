@@ -110,10 +110,11 @@ const FeatureBountyModal = (props: FeatureBountyProps) => {
         return;
       }
 
-      bountyStore.addFeaturedBounty(bountyUrl);
-
-      if (addToast) addToast('Bounty added to featured list', 'success');
-      setBountyUrl('');
+      const success = await bountyStore.addFeaturedBounty({ bountyId, url: bountyUrl });
+      if (success) {
+        if (addToast) addToast('Bounty added to featured list', 'success');
+        setBountyUrl('');
+      }
     } catch (error) {
       if (addToast) addToast('Could not add bounty to featured list', 'error');
     } finally {
@@ -121,13 +122,15 @@ const FeatureBountyModal = (props: FeatureBountyProps) => {
     }
   };
 
-  const handleRemoveFeaturedBounty = (bountyId: string) => {
-    bountyStore.removeFeaturedBounty(bountyId);
-    if (addToast) addToast('Featured bounty removed', 'success');
+  const handleRemoveFeaturedBounty = async (bountyId: string) => {
+    const success = await bountyStore.removeFeaturedBounty(bountyId);
+    if (success) {
+      if (addToast) addToast('Featured bounty removed', 'success');
+    }
   };
 
-  const handleClearAll = () => {
-    bountyStore.clearFeaturedBounties();
+  const handleClearAll = async () => {
+    await bountyStore.clearFeaturedBounties();
     if (addToast) addToast('All featured bounties cleared', 'success');
   };
 
