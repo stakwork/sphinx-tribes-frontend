@@ -10,7 +10,7 @@ describe('Alice tries to Mark a Bounty as paid after creating a bounty', () => {
     assign: assignee,
     deliverables: 'Just get it done',
     tribe: '',
-    estimate_session_length: 'Less than 3 hour',
+    estimate_session_length: '3 hours',
     estimate_completion_date: '12/12/2024'
   };
 

@@ -9,7 +9,7 @@ describe('Edit Bounty From Modal', () => {
     assign: assignee,
     deliverables: 'We are good to go man',
     tribe: '',
-    estimate_session_length: 'Less than 3 hour',
+    estimate_session_length: '3 hours',
     estimate_completion_date: '09/09/2024'
   };
 

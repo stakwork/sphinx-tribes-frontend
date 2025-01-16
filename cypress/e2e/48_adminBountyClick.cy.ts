@@ -9,7 +9,7 @@ describe('Super Admin Bounty Creation and Verification', () => {
     amount: '844',
     deliverables: 'I can submit a pr within 2 days of taking the bounty',
     tribe: '',
-    estimate_session_length: 'Less than 3 hour',
+    estimate_session_length: '3 hours',
     estimate_completion_date: '09/09/2024'
   };
 
@@ -47,7 +47,7 @@ describe('Super Admin Bounty Creation and Verification', () => {
     cy.wait(1000);
 
     cy.contains('Estimate:').should('exist');
-    cy.contains('< 3 hrs').should('exist');
+    cy.contains('3 hours').should('exist');
     cy.wait(1000);
 
     cy.contains('Copy Link').should('exist');

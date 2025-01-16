@@ -16,7 +16,7 @@ describe('Alice tries to create 8 bounties and then assert that he can go to the
         assign: assignees[i],
         deliverables: 'We are good to go man',
         tribe: '',
-        estimate_session_length: 'Less than 3 hour',
+        estimate_session_length: '3 hours',
         estimate_completion_date: '09/09/2024'
       });
       cy.wait(2000);
