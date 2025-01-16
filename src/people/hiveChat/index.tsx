@@ -178,6 +178,8 @@ const connectToLogWebSocket = (
 ) => {
   const ws = new WebSocket('wss://jobs.stakwork.com/cable?channel=ProjectLogChannel');
 
+  console.log('inside connectToLogWebSocket function');
+
   ws.onopen = () => {
     const command = {
       command: 'subscribe',
@@ -224,6 +226,9 @@ export const HiveChatView: React.FC = observer(() => {
   const handleBackClick = () => {
     history.push(`/workspace/${uuid}`);
   };
+
+  console.log('logs here ', logs);
+  console.log('last logs here ', lastLogLine);
 
   const refreshChatHistory = useCallback(async () => {
     try {
@@ -330,8 +335,9 @@ export const HiveChatView: React.FC = observer(() => {
           const sessionId = data.body;
           setWebsocketSessionId(sessionId);
           console.log(`Websocket Session ID: ${sessionId}`);
-        } else if (data.action === 'swrun' && data.Message) {
-          const match = data.Message.match(/\/projects\/([^/]+)/);
+        } else if (data.action === 'swrun' && data.message) {
+          const match = data.message.match(/\/projects\/([^/]+)/);
+          console.log(`match: ${match}`);
           if (match && match[1]) {
             const projectID = match[1];
             setProjectId(projectID);
