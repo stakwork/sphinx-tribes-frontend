@@ -20,12 +20,7 @@ export const languages = [
   'Neo4j'
 ];
 
-export const estimation = [
-  'Less than 1 hour',
-  'Less than 3 hours',
-  'More than 3 hours',
-  'Not sure yet'
-];
+export const estimation = ['1 hour', '3 hours', '8 hours', '24 hours', '48 hours', '72 hours'];
 
 export const estimated_budget_15_min = ['USD $10', 'USD $20', 'USD $30', 'USD $40', 'USD $50'];
 
