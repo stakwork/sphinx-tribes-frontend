@@ -6,7 +6,11 @@ import { colors } from '../../../config';
 
 const truncate = (str: string, n: number) => (str.length > n ? `${str.substr(0, n - 1)}...` : str);
 
-const CardContainer = styled.div`
+interface CardContainerProps {
+  isDraft?: boolean;
+}
+
+const CardContainer = styled.div<CardContainerProps>`
   width: 384px;
   height: auto;
   border-radius: 8px;
@@ -14,8 +18,20 @@ const CardContainer = styled.div`
   margin-bottom: 16px;
   display: flex;
   flex-direction: column;
-  background-color: ${colors.light.grayish.G950};
+  background-color: ${(props: CardContainerProps): string =>
+    props.isDraft ? colors.light.grayish.G900 : colors.light.grayish.G950};
+  border-left: ${(props: CardContainerProps): string =>
+    props.isDraft ? `4px solid ${colors.light.blue1}` : 'none'};
   cursor: pointer;
+`;
+
+const DraftIndicator = styled.span`
+  background: ${colors.light.blue1};
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  margin-right: 8px;
 `;
 
 const CardHeader = styled.div`
@@ -93,6 +109,8 @@ const RowB = styled.div`
 const StatusText = styled.span<{ status?: BountyCardStatus }>`
   color: ${({ status }: { status?: BountyCardStatus }): string => {
     switch (status) {
+      case 'DRAFT':
+        return colors.light.statusDraft;
       case 'PAID':
         return colors.light.statusPaid;
       case 'COMPLETED':
@@ -123,7 +141,7 @@ const BountyCardComponent: React.FC<BountyCardProps> = ({
   onclick,
   assignee_name
 }: BountyCardProps) => (
-  <CardContainer onClick={() => onclick(id)}>
+  <CardContainer isDraft={status === 'DRAFT'} onClick={() => onclick(id)}>
     <CardHeader>
       <CardTitle
         role="button"
@@ -133,6 +151,7 @@ const BountyCardComponent: React.FC<BountyCardProps> = ({
           onclick(id);
         }}
       >
+        {status === 'DRAFT' && <DraftIndicator>Draft</DraftIndicator>}
         {title}
         <span style={{ fontSize: '16px', marginTop: '10px' }}>{assignee_name}</span>
       </CardTitle>
@@ -176,6 +195,7 @@ BountyCardComponent.propTypes = {
     name: PropTypes.string
   }) as PropTypes.Validator<BountyCard['workspace']>,
   status: PropTypes.oneOf([
+    'DRAFT',
     'TODO',
     'IN_PROGRESS',
     'IN_REVIEW',

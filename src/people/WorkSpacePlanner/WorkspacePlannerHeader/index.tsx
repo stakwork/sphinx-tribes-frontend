@@ -511,6 +511,7 @@ export const WorkspacePlannerHeader = observer(
                     <EuiPopOverCheckbox className="CheckboxOuter" color={color}>
                       <EuiCheckboxGroup
                         options={[
+                          { label: 'DRAFT', id: 'DRAFT' },
                           { label: 'TODO', id: 'TODO' },
                           { label: 'IN_PROGRESS', id: 'IN_PROGRESS' },
                           { label: 'IN_REVIEW', id: 'IN_REVIEW' },

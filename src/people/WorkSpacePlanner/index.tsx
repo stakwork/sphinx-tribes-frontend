@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import { EuiLoadingSpinner } from '@elastic/eui';
 import styled from 'styled-components';
 import { useBountyCardStore } from 'store/bountyCard';
-import { BountyCard } from 'store/interface';
+import { BountyCard, BountyCardStatus } from 'store/interface';
 import history from 'config/history';
 import { useStores } from '../../store';
 import { colors } from '../../config';
@@ -116,6 +116,7 @@ const ErrorMessage = styled.p`
 `;
 
 const COLUMN_CONFIGS = [
+  { id: 'DRAFT', title: 'Draft' },
   { id: 'TODO', title: 'To Do' },
   { id: 'IN_PROGRESS', title: 'In Progress' },
   { id: 'IN_REVIEW', title: 'In Review' },
@@ -124,6 +125,7 @@ const COLUMN_CONFIGS = [
 ];
 
 const getCardStatus = (card: BountyCard) => {
+  if (card.status === 'DRAFT') return 'DRAFT';
   if (!card.status) return 'TODO';
   if (card.status === 'PAID') return 'PAID';
   if (card.status === 'COMPLETED') return 'COMPLETED';
@@ -176,15 +178,25 @@ const WorkspacePlanner = observer(() => {
     {}
   );
 
-  const handleCardClick = (bountyId: string) => {
+  const handleCardClick = (bountyId: string, status?: BountyCardStatus) => {
     bountyCardStore.saveFilterState();
-    window.open(
-      history.createHref({
-        pathname: `/bounty/${bountyId}`,
-        state: { from: `/workspace/${uuid}/planner` }
-      }),
-      '_blank'
-    );
+    if (status === 'DRAFT') {
+      window.open(
+        history.createHref({
+          pathname: `/workspace/${uuid}/ticket/${bountyId}`,
+          state: { from: `/workspace/${uuid}/planner` }
+        }),
+        '_blank'
+      );
+    } else {
+      window.open(
+        history.createHref({
+          pathname: `/bounty/${bountyId}`,
+          state: { from: `/workspace/${uuid}/planner` }
+        }),
+        '_blank'
+      );
+    }
   };
 
   return (
@@ -224,7 +236,7 @@ const WorkspacePlanner = observer(() => {
                       <BountyCardComp
                         key={card.id}
                         {...card}
-                        onclick={() => handleCardClick(card.id)}
+                        onclick={() => handleCardClick(card.id, card.status)}
                       />
                     ))
                 )}
