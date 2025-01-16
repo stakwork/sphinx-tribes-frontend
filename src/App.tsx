@@ -64,11 +64,14 @@ function App() {
   useEffect(() => {
     //Posthog user opens the page
     if (!appEnv.isTests) {
+      if (posthog && posthog.sessionManager) {
+        const { sessionId } = posthog.sessionManager.checkAndGetSessionAndWindowId();
+        mainStore.setSessionId(sessionId);
+      }
       if (uiStore.meInfo?.id) {
         posthog?.identify(uiStore.meInfo.owner_alias, {
           name: uiStore.meInfo.owner_alias,
-          pubkey: uiStore.meInfo.pubkey,
-          session_id: mainStore.sessionId
+          pubkey: uiStore.meInfo.pubkey
         });
       } else {
         posthog?.identify(mainStore.sessionId, {});
