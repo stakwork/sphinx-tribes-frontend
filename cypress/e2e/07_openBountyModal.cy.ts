@@ -48,7 +48,7 @@ describe('View Bounty From Modal', () => {
     cy.wait(1000);
 
     cy.contains('Estimate:').should('exist');
-    cy.contains('< 3 hrs').should('exist');
+    cy.contains('3 hours').should('exist');
     cy.wait(1000);
 
     cy.contains('Copy Link').should('exist');
