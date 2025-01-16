@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { EuiText } from '@elastic/eui';
 import { Formik } from 'formik';
 import { observer } from 'mobx-react-lite';
@@ -61,6 +62,8 @@ function Form(props: FormProps) {
   const [schemaData, setSchemaData] = useState(BountyDetailsCreationData.step_1);
   const [stepTracker, setStepTracker] = useState<number>(1);
   const [userWorkspaces, setUserWorkspaces] = useState<Array<{ label: string; value: string }>>([]);
+  const [userFeature, setUserFeature] = useState<Array<{ label: string; value: string }>>([]);
+  const [userPhase, setUserPhase] = useState<Array<{ label: string; value: string }>>([]);
 
   let lastPage = 1;
   const scrollDiv = scrollRef ?? refBody;
@@ -135,6 +138,8 @@ function Form(props: FormProps) {
     }
     setLoading(false);
   }, [initialValues?.type, props.schema]);
+
+  console.log(initialValues, 'initial Values');
 
   // this useEffect triggers when the dynamic schema name is updated
   // checks if there are autofill fields that we can pull from local storage
@@ -267,6 +272,16 @@ function Form(props: FormProps) {
     }
   }, [main.dropDownWorkspaces, schema]);
 
+  console.log(initValues.phase_uuid, 'Dynamic Init Values');
+
+  useEffect(() => {
+    if (userPhase.length || userFeature.length) {
+      const response = main.getFeaturePhaseByUUID('cttojb4opisrkesd6h1g', initialValues.phase_uuid);
+
+      console.log(response);
+    }
+  }, []);
+
   useEffect(() => {
     if (userWorkspaces.length && !dynamicInitialValues?.org_uuid) {
       const uuid = getUUIDFromURL(window.location.href);
@@ -285,11 +300,11 @@ function Form(props: FormProps) {
   // replace schema with dynamic schema if there is one
   schema = dynamicSchema || schema;
   if (schema && Array.isArray(schema)) {
-    const featureFieldIndex = schema.findIndex((field: FormField) => field.name === 'feature_id');
+    const featureFieldIndex = schema.findIndex((field: FormField) => field.name === 'feature_uuid');
     if (featureFieldIndex !== -1) {
       schema[featureFieldIndex].options = workspaceFeature;
     }
-    const phaseFieldIndex = schema.findIndex((field: FormField) => field.name === 'phase_id');
+    const phaseFieldIndex = schema.findIndex((field: FormField) => field.name === 'phase_uuid');
     if (phaseFieldIndex !== -1) {
       schema[phaseFieldIndex].options = featurePhase;
     }
@@ -344,8 +359,8 @@ function Form(props: FormProps) {
           key === '' ? true : values?.[key]
         );
 
-        if (values.org_uuid !== '') {
-          setFeatureid(values.feature_id);
+        if (values.org_uuid !== '' || values.org_uuid === '') {
+          setFeatureid(values.feature_uuid);
           setWorskspaceid(values.org_uuid);
         }
 
