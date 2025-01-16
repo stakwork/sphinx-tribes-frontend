@@ -24,6 +24,13 @@ interface SendButtonProps {
   disabled: boolean;
 }
 
+interface LogEntry {
+  timestamp: string;
+  projectId: string;
+  chatId: string;
+  message: string;
+}
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -164,6 +171,39 @@ const LoadingContainer = styled.div`
   height: 100%;
 `;
 
+const connectToLogWebSocket = (
+  projectId: string,
+  chatId: string,
+  setLogs: (update: (prevLogs: LogEntry[]) => LogEntry[]) => void
+) => {
+  const ws = new WebSocket('wss://jobs.stakwork.com/cable?channel=ProjectLogChannel');
+
+  ws.onopen = () => {
+    const command = {
+      command: 'subscribe',
+      identifier: JSON.stringify({ channel: 'ProjectLogChannel', id: projectId })
+    };
+    ws.send(JSON.stringify(command));
+  };
+
+  ws.onmessage = (event: any) => {
+    const data = JSON.parse(event.data);
+    if (data.type === 'ping') return;
+
+    const message = data?.message?.message;
+    if (message) {
+      setLogs((prevLogs: LogEntry[]) => [
+        ...prevLogs,
+        { timestamp: new Date().toISOString(), projectId, chatId, message }
+      ]);
+    }
+  };
+
+  ws.onerror = (error: any) => console.error('WebSocket error123:', error);
+
+  return ws;
+};
+
 export const HiveChatView: React.FC = observer(() => {
   const { uuid, chatId } = useParams<RouteParams>();
   const { chat, ui } = useStores();
@@ -176,6 +216,10 @@ export const HiveChatView: React.FC = observer(() => {
   const [title, setTitle] = useState('Talk to Hive - Chat');
   const history = useHistory();
   const [isUpdatingTitle, setIsUpdatingTitle] = useState(false);
+  const [projectId, setProjectId] = useState('');
+  const [logs, setLogs] = useState<LogEntry[]>([]);
+  const [isChainVisible, setIsChainVisible] = useState(false);
+  const [lastLogLine, setLastLogLine] = useState('');
 
   const handleBackClick = () => {
     history.push(`/workspace/${uuid}`);
@@ -286,11 +330,21 @@ export const HiveChatView: React.FC = observer(() => {
           const sessionId = data.body;
           setWebsocketSessionId(sessionId);
           console.log(`Websocket Session ID: ${sessionId}`);
+        } else if (data.action === 'swrun' && data.Message) {
+          const match = data.Message.match(/\/projects\/([^/]+)/);
+          if (match && match[1]) {
+            const projectID = match[1];
+            setProjectId(projectID);
+            console.log(`Project ID: ${projectID}`);
+            setIsChainVisible(true);
+          }
         } else if (data.action === 'message' && data.chatMessage) {
           chat.addMessage(data.chatMessage);
+          setIsChainVisible(false);
           await refreshChatHistory();
         } else if (data.action === 'process' && data.chatMessage) {
           chat.updateMessage(data.chatMessage.id, data.chatMessage);
+          setIsChainVisible(false);
           await refreshChatHistory();
         }
       } catch (error) {
@@ -313,6 +367,20 @@ export const HiveChatView: React.FC = observer(() => {
       ]);
     };
   }, [ui, refreshChatHistory, chatId, chat]);
+
+  useEffect(() => {
+    const ws = connectToLogWebSocket(projectId, chatId, setLogs);
+
+    return () => {
+      ws.close();
+    };
+  }, [projectId, chatId]);
+
+  useEffect(() => {
+    if (logs.length > 0) {
+      setLastLogLine(logs[logs.length - 1]?.message || '');
+    }
+  }, [logs]);
 
   useEffect(() => {
     const loadInitialChat = async () => {
@@ -440,6 +508,12 @@ export const HiveChatView: React.FC = observer(() => {
               })}
             </MessageBubble>
           ))}
+          {isChainVisible && (
+            <MessageBubble isUser={false}>
+              <h6>Hive - Chain of Thought</h6>
+              <p>{lastLogLine}</p>
+            </MessageBubble>
+          )}
         </ChatHistory>
         <InputContainer>
           <TextArea
