@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/typedef */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 import {
@@ -309,7 +310,7 @@ const WorkspaceMission = () => {
   const [modalType, setModalType] = useState('add');
   const [featureModal, setFeatureModal] = useState(false);
   const [features, setFeatures] = useState<Feature[]>([]);
-  const [featuresCount] = useState(0);
+  const [featuresCount] = useState(22);
   const [isOpenUserManage, setIsOpenUserManage] = useState<boolean>(false);
   const [users, setUsers] = useState<Person[]>([]);
   const [displayUserRepoOptions, setDisplayUserRepoOptions] = useState<Record<number, boolean>>({});
@@ -328,14 +329,14 @@ const WorkspaceMission = () => {
   const [missionPreviewMode, setMissionPreviewMode] = useState<'preview' | 'edit'>('edit');
   const [tacticsPreviewMode, setTacticsPreviewMode] = useState<'preview' | 'edit'>('edit');
   const [toasts, setToasts] = useState<Toast[]>([]);
-  const [holding] = useState(false);
   const [permissionsChecked, setPermissionsChecked] = useState<boolean>(false);
   const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
+  const [loadLimit, setLoadLimit] = useState(20);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const ITEMS_PER_PAGE = 4;
-  const INITIAL_LOAD_LIMIT = 20;
+  const INITIAL_LOAD_LIMIT = loadLimit;
 
   const { isEnabled: isPlannerEnabled, loading: isPlannerLoading } =
     useFeatureFlag('display_planner');
@@ -610,8 +611,7 @@ const WorkspaceMission = () => {
   // };
 
   const getFeatures = useCallback(
-    // eslint-disable-next-line @typescript-eslint/typedef
-    async (page: number, isInitialLoad = false) => {
+    async (page: number, isInitialLoad = false): Promise<void> => {
       if (!uuid) return;
 
       setIsLoadingMore(true);
@@ -624,22 +624,25 @@ const WorkspaceMission = () => {
         });
 
         if (featuresRes && Array.isArray(featuresRes)) {
-          if (page === 1) {
-            setFeatures(featuresRes);
-          } else {
-            setFeatures((prev: Feature[]) => [...prev, ...featuresRes]);
-          }
+          setFeatures((prev: Feature[]) => {
+            const newFeatures = page === 1 ? featuresRes : [...prev, ...featuresRes];
+            const uniqueFeatures = Array.from(new Set(newFeatures.map((f) => f.id))).map(
+              (id) => newFeatures.find((f) => f.id === id)!
+            );
+            const updatedLength = uniqueFeatures.length;
 
-          // If it's initial load and we haven't reached INITIAL_LOAD_LIMIT, load more
-          if (
-            isInitialLoad &&
-            features.length < INITIAL_LOAD_LIMIT &&
-            featuresRes.length === ITEMS_PER_PAGE
-          ) {
-            setTimeout(() => {
-              getFeatures(page + 1, true);
-            }, 500); // Add small delay between loads
-          }
+            // If it's an initial load and we haven't reached INITIAL_LOAD_LIMIT, load more
+            if (
+              isInitialLoad &&
+              featuresRes.length === ITEMS_PER_PAGE &&
+              updatedLength < INITIAL_LOAD_LIMIT
+            ) {
+              // Continue with current features if condition is met
+              return uniqueFeatures;
+            }
+
+            return uniqueFeatures;
+          });
         }
       } catch (error) {
         console.error('Error fetching features:', error);
@@ -647,16 +650,20 @@ const WorkspaceMission = () => {
         setIsLoadingMore(false);
       }
     },
-    [uuid, main, features.length]
+    [uuid, main]
   );
 
   useEffect(() => {
-    getFeatures(1, true);
+    getFeatures(1, false);
   }, [getFeatures]);
 
   const observerTarget = useRef(null);
 
   useEffect(() => {
+    // Don't observe if we've reached the limit
+    if (features.length >= INITIAL_LOAD_LIMIT) return;
+    if (features.length === 0) return;
+
     const observer = new IntersectionObserver(
       (entries: IntersectionObserverEntry[]) => {
         const target = entries[0];
@@ -666,7 +673,9 @@ const WorkspaceMission = () => {
         }
       },
       {
-        threshold: 0.5
+        root: null,
+        rootMargin: '20px',
+        threshold: 0.1
       }
     );
 
@@ -676,10 +685,10 @@ const WorkspaceMission = () => {
 
     return () => {
       if (observerTarget.current) {
-        observer.unobserve(observerTarget.current);
+        observer.disconnect();
       }
     };
-  }, [currentPage, isLoadingMore, features.length, getFeatures]);
+  }, [currentPage, isLoadingMore, features.length, ui]);
 
   const handleWebsiteButton = (websiteUrl: string) => {
     window.open(websiteUrl, '_blank');
@@ -843,7 +852,7 @@ const WorkspaceMission = () => {
     [users]
   );
 
-  if (loading || holding || !permissionsChecked) {
+  if (loading || !permissionsChecked) {
     return (
       <Body style={{ justifyContent: 'center', alignItems: 'center' }}>
         <EuiLoadingSpinner size="xl" />
@@ -1526,51 +1535,42 @@ const WorkspaceMission = () => {
               <div ref={observerTarget} style={{ height: '20px' }} />
 
               {/* Loading indicator */}
-              {isLoadingMore && (
+              {isLoadingMore && features.length < featuresCount && (
                 <LoadingContainer>
                   <EuiLoadingSpinner size="m" />
                   <LoadingText>Loading more features...</LoadingText>
                 </LoadingContainer>
               )}
 
-              {/* Load More button (shown after initial 20 items) */}
-              {features.length >= INITIAL_LOAD_LIMIT && featuresCount > features.length && (
-                <div
-                  style={{
-                    width: '100%',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    marginTop: '20px'
-                  }}
-                >
-                  <div
-                    className="LoadMoreButton"
-                    onClick={() => {
-                      setCurrentPage((prev: number) => prev + 1);
-                      getFeatures(currentPage + 1);
-                    }}
-                  >
-                    Load More
-                  </div>
-                </div>
+              {isLoadingMore && features.length === featuresCount && (
+                <LoadingContainer>
+                  <LoadingText>All Features Loaded</LoadingText>
+                </LoadingContainer>
               )}
-            </FeaturesWrap>
-            {/* {featuresCount > features.length ? (
-              <LoadMoreContainer
-                color={color}
+
+              <div
                 style={{
                   width: '100%',
                   display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center'
+                  alignItems: 'center',
+                  justifyContent: 'center'
                 }}
               >
-                <div className="LoadMoreButton" onClick={() => loadMore()}>
-                  Load More
-                </div>
-              </LoadMoreContainer>
-            ) : null} */}
+                {/* Load More button (shown after initial 20 items) */}
+                {features.length >= INITIAL_LOAD_LIMIT &&
+                  featuresCount > 20 &&
+                  features.length < featuresCount && (
+                    <Button
+                      text="Load More"
+                      onClick={() => {
+                        setLoadLimit(100);
+                        setCurrentPage((prev: number) => prev + 1);
+                        getFeatures(currentPage + 1, true);
+                      }}
+                    />
+                  )}
+              </div>
+            </FeaturesWrap>
           </FieldWrap>
         </DataWrap>
         <Modal
