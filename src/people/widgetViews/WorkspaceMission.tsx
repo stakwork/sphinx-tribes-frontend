@@ -627,6 +627,7 @@ const WorkspaceMission = () => {
           setFeatures((prev: Feature[]) => {
             const newFeatures = page === 1 ? featuresRes : [...prev, ...featuresRes];
             const uniqueFeatures = Array.from(new Set(newFeatures.map((f) => f.id))).map(
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
               (id) => newFeatures.find((f) => f.id === id)!
             );
             const updatedLength = uniqueFeatures.length;
