@@ -16,7 +16,7 @@ import { chatHistoryStore } from './chat';
 
   function hydrateAll() {
     Promise.all([hydrate('main', mainStore), hydrate('ui', uiStore)]).then(() => {
-      mainStore.initializeSessionId();
+      //mainStore.initializeSessionId();
       uiStore.setReady(true);
     });
   }
