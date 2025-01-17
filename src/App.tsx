@@ -61,7 +61,7 @@ function App() {
     };
   }, []);
 
-  const setPosthog = useCallback(async () => {
+  const setPosthog = useCallback(() => {
     //Posthog user opens the page
     if (!appEnv.isTests) {
       if (uiStore.meInfo?.id) {
@@ -73,8 +73,8 @@ function App() {
         posthog?.identify(mainStore.sessionId, {});
       }
       if (posthog && posthog.sessionManager) {
-        const { sessionId } = posthog.sessionManager.checkAndGetSessionAndWindowId();
-        await mainStore.setSessionId(sessionId);
+        const sessionId = posthog.get_session_id();
+        mainStore.setSessionId(sessionId);
       }
     }
   }, [posthog]);
