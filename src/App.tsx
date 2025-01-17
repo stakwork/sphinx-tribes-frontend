@@ -77,11 +77,11 @@ function App() {
         await mainStore.setSessionId(sessionId);
       }
     }
-  }, []);
+  }, [posthog]);
 
   useEffect(() => {
     setPosthog();
-  }, []);
+  }, [setPosthog]);
 
   return (
     <ThemeProvider theme={theme}>
