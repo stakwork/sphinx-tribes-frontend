@@ -61,12 +61,12 @@ function App() {
     };
   }, []);
 
-  useEffect(() => {
+  const setPosthog = useCallback(async () => {
     //Posthog user opens the page
     if (!appEnv.isTests) {
       if (posthog && posthog.sessionManager) {
         const { sessionId } = posthog.sessionManager.checkAndGetSessionAndWindowId();
-        mainStore.setSessionId(sessionId);
+        await mainStore.setSessionId(sessionId);
       }
       if (uiStore.meInfo?.id) {
         posthog?.identify(uiStore.meInfo.owner_alias, {
@@ -77,6 +77,10 @@ function App() {
         posthog?.identify(mainStore.sessionId, {});
       }
     }
+  }, []);
+
+  useEffect(() => {
+    setPosthog();
   }, []);
 
   return (
