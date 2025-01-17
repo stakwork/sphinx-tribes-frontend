@@ -22,6 +22,7 @@ import InvitePeopleSearch from '../../../../components/form/inputs/widgets/Peopl
 import { CodingBountiesProps } from '../../../interfaces';
 import LoomViewerRecorder from '../../../utils/LoomViewerRecorder';
 import { paidString, unpaidString } from '../constants';
+import { ElapsedTimer } from '../../../../components/common/ElapsedTimer';
 import Invoice from './Invoice';
 import {
   AssigneeProfile,
@@ -49,7 +50,8 @@ import {
   Section,
   Title,
   Description,
-  Status
+  Status,
+  ElapsedTimerContainer
 } from './style';
 import { getTwitterLink } from './lib';
 import CodingMobile from './CodingMobile';
@@ -1019,6 +1021,16 @@ function MobileView(props: CodingBountiesProps) {
                       </div>
                     )}
                   </UnassignedPersonProfile>
+                  {userAssigned && (
+                    <>
+                      <DividerContainer>
+                        <Divider />
+                      </DividerContainer>
+                      <ElapsedTimerContainer>
+                        <ElapsedTimer bountyId={bountyID} />
+                      </ElapsedTimerContainer>
+                    </>
+                  )}
                   {payment_failed && (
                     <ErrorWrapper>
                       <Divider />
