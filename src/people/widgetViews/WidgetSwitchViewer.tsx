@@ -292,7 +292,9 @@ function WidgetSwitchViewer(props: any) {
                 {...body}
               />
             ) : selectedWidget === 'bounties' ? (
-              <WantedView
+              <div>
+                              James
+                   <WantedView
                 showName
                 onPanelClick={() => {
                   if (onPanelClick) onPanelClick(activeWorkspace, body);
@@ -305,7 +307,8 @@ function WidgetSwitchViewer(props: any) {
                 activeWorkspace={activeWorkspace}
                 {...body}
                 {...organization}
-              />
+                   />
+              </div>
             ) : null}
           </Panel>
         );
