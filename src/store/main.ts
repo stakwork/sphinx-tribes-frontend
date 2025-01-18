@@ -4165,6 +4165,25 @@ export class MainStore {
     }
   }
 
+  async getTotalWorkspaceBountyCount(
+    uuid: string,
+    open: boolean,
+    assigned: boolean,
+    paid: boolean,
+    pending: boolean,
+    failed: boolean
+  ): Promise<number> {
+    try {
+      const count = await api.get(
+        `workspaces/bounties/${uuid}/count?Open=${open}&Assigned=${assigned}&Paid=${paid}&Pending=${pending}&Failed=${failed}`
+      );
+      return await count;
+    } catch (e) {
+      console.log('fetch failed getTotalWorkspaceBountyCount: ', e);
+      return 0;
+    }
+  }
+
   async updateFeatureFlagDetails(
     uuid: string,
     data: Omit<FeatureFlag, 'uuid' | 'endpoints'> & { endpoints: string[] }

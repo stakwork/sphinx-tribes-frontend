@@ -55,20 +55,23 @@ function WorkspaceBodyComponent() {
   }, [main, ui.meInfo]);
 
   const getTotalBounties = useCallback(
-    async (uuid: any, statusData: any, page: any) => {
-      const WorkspaceTotalBounties = await main.getTotalWorkspaceBounties(uuid, {
-        page,
-        ...statusData,
-        resetPage: true
-      });
+    async (uuid: any, statusData: any) => {
+      const WorkspaceTotalBounties = await main.getTotalWorkspaceBountyCount(
+        uuid,
+        statusData.Open,
+        statusData.Assigned,
+        statusData.Paid,
+        statusData.Pending,
+        statusData.Failed
+      );
       setTotalBounties(WorkspaceTotalBounties);
     },
     [main]
   );
 
   useEffect(() => {
-    getTotalBounties(uuid, checkboxIdToSelectedMap, page);
-  }, [checkboxIdToSelectedMap, getTotalBounties, page, uuid]);
+    getTotalBounties(uuid, checkboxIdToSelectedMap);
+  }, [checkboxIdToSelectedMap, getTotalBounties, uuid]);
 
   const onChangeStatus = (optionId: any) => {
     const newCheckboxIdToSelectedMap = {
@@ -80,7 +83,7 @@ function WorkspaceBodyComponent() {
     // set the store status, to enable the accurate navigation modal call
     main.setWorkspaceBountiesStatus(newCheckboxIdToSelectedMap);
     setCheckboxIdToSelectedMap(newCheckboxIdToSelectedMap);
-    getTotalBounties(uuid, newCheckboxIdToSelectedMap, page);
+    getTotalBounties(uuid, newCheckboxIdToSelectedMap);
     // set data to default
     setCurrentItems(queryLimit);
     setPage(1);
