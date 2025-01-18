@@ -798,3 +798,10 @@ export const DeliverablesContainer = styled.div`
     }
   }
 `;
+
+export const ElapsedTimerContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
