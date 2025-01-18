@@ -50,10 +50,14 @@ const ColumnsContainer = styled.div`
   }
 `;
 
-const Column = styled.div`
+interface ColumnProps {
+  hidden?: boolean;
+}
+
+const Column = styled.div<ColumnProps>`
   flex: 0 0 320px;
   border-radius: 8px;
-  display: flex;
+  display: ${(props: ColumnProps) => (props.hidden ? 'none' : 'flex')};
   flex-direction: column;
   height: auto;
   min-height: 500px;
@@ -199,6 +203,13 @@ const WorkspacePlanner = observer(() => {
     }
   };
 
+  const shouldShowColumn = (status: BountyCardStatus): boolean => {
+    if (bountyCardStore.selectedStatuses.length === 0) {
+      return true;
+    }
+    return bountyCardStore.selectedStatuses.includes(status);
+  };
+
   return (
     <PlannerContainer>
       <WorkspacePlannerHeader
@@ -212,7 +223,7 @@ const WorkspacePlanner = observer(() => {
       <ContentArea>
         <ColumnsContainer>
           {COLUMN_CONFIGS.map(({ id, title }: { id: string; title: string }) => (
-            <Column key={id}>
+            <Column key={id} hidden={!shouldShowColumn(id as BountyCardStatus)}>
               <ColumnHeader>
                 <ColumnTitle>
                   {title}
