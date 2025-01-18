@@ -383,7 +383,7 @@ export const WorkspaceHeader = ({
                       color: isSortByPopoverOpen ? color.grayish.G10 : ''
                     }}
                   >
-                    Sort By t: {sortDirectionLabel}
+                    Sort By: {sortDirectionLabel}
                   </EuiText>
                 </div>
 

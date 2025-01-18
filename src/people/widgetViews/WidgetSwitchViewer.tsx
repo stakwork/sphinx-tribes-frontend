@@ -293,21 +293,20 @@ function WidgetSwitchViewer(props: any) {
               />
             ) : selectedWidget === 'bounties' ? (
               <div>
-                              James
-                   <WantedView
-                showName
-                onPanelClick={() => {
-                  if (onPanelClick) onPanelClick(activeWorkspace, body);
-                }}
-                person={person}
-                showModal={showModal}
-                isBountyLandingPage={isBountyLandingPage}
-                setDeletePayload={setDeletePayload}
-                fromBountyPage={props.fromBountyPage}
-                activeWorkspace={activeWorkspace}
-                {...body}
-                {...organization}
-                   />
+                <WantedView
+                  showName
+                  onPanelClick={() => {
+                    if (onPanelClick) onPanelClick(activeWorkspace, body);
+                  }}
+                  person={person}
+                  showModal={showModal}
+                  isBountyLandingPage={isBountyLandingPage}
+                  setDeletePayload={setDeletePayload}
+                  fromBountyPage={props.fromBountyPage}
+                  activeWorkspace={activeWorkspace}
+                  {...body}
+                  {...organization}
+                />
               </div>
             ) : null}
           </Panel>

@@ -213,7 +213,6 @@ function WorkspaceBodyComponent() {
                 height: '100%'
               }}
             >
-              heee
               <WidgetSwitchViewer
                 checkboxIdToSelectedMap={checkboxIdToSelectedMap}
                 checkboxIdToSelectedMapLanguage={checkboxIdToSelectedMapLanguage}
