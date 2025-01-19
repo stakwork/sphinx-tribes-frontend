@@ -553,14 +553,7 @@ export const WorkspacePlannerHeader = observer(
               <NewStatusContainer>
                 <EuiPopover
                   button={
-                    <StatusContainer
-                      onClick={onAssigneeButtonClick}
-                      color={color}
-                      // style={{
-                      //   opacity: isPhaseFilterDisabled ? 0.5 : 1,
-                      //   cursor: isPhaseFilterDisabled ? 'not-allowed' : 'pointer'
-                      // }}
-                    >
+                    <StatusContainer onClick={onAssigneeButtonClick} color={color}>
                       <InnerContainer>
                         <EuiText className="statusText">Assignee</EuiText>
                         <Formatter>
@@ -599,11 +592,13 @@ export const WorkspacePlannerHeader = observer(
                       <EuiCheckboxGroup
                         options={bountyCardStore.availableAssignees.map((assignee: any) => ({
                           label: assignee.name,
-                          id: assignee
+                          id: assignee.name
                         }))}
                         idToSelectedMap={bountyCardStore.availableAssignees.reduce(
                           (acc: { [key: string]: boolean }, assignee: any) => {
-                            acc[assignee] = bountyCardStore.selectedAssignees.includes(assignee);
+                            acc[assignee.name] = bountyCardStore.selectedAssignees.includes(
+                              assignee.name
+                            );
                             return acc;
                           },
                           {}
