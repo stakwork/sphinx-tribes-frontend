@@ -58,11 +58,11 @@ function WorkspaceBodyComponent() {
     async (uuid: any, statusData: any) => {
       const WorkspaceTotalBounties = await main.getTotalWorkspaceBountyCount(
         uuid,
-        statusData.Open,
-        statusData.Assigned,
-        statusData.Paid,
-        statusData.Pending,
-        statusData.Failed
+        statusData?.Open,
+        statusData?.Assigned,
+        statusData?.Paid,
+        statusData?.Pending,
+        statusData?.Failed
       );
       setTotalBounties(WorkspaceTotalBounties);
     },
