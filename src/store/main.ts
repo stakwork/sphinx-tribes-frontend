@@ -3929,6 +3929,37 @@ export class MainStore {
     }
   }
 
+
+  async getTicketsByGroup(groupId: string): Promise<Ticket[]> {
+    try {
+      if (!uiStore.meInfo) return [];
+      const info = uiStore.meInfo;
+
+      const response = await fetch(`${TribesURL}/bounties/ticket/group/${groupId}`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json',
+          'x-session-id': this.sessionId
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch tickets by group');
+      }
+
+      const data = await response.json();
+      return data.map((ticket: Ticket) => ({
+        ...ticket,
+        uuid: ticket.UUID || ticket.uuid
+      }));
+    } catch (error) {
+      console.error('Error fetching tickets by group:', error);
+      return [];
+    }
+  }
+
   async createConnectionCodes({
     users_number,
     sats_amount,

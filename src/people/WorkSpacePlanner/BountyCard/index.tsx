@@ -127,7 +127,7 @@ const StatusText = styled.span<{ status?: BountyCardStatus }>`
 `;
 
 interface BountyCardProps extends BountyCard {
-  onclick: (bountyId: string) => void;
+  onclick: (bountyId: string, status?: BountyCardStatus, ticketGroup?: string) => void;
 }
 
 const BountyCardComponent: React.FC<BountyCardProps> = ({
@@ -139,16 +139,17 @@ const BountyCardComponent: React.FC<BountyCardProps> = ({
   workspace,
   status,
   onclick,
-  assignee_name
+  assignee_name,
+  ticket_group
 }: BountyCardProps) => (
-  <CardContainer isDraft={status === 'DRAFT'} onClick={() => onclick(id)}>
+  <CardContainer isDraft={status === 'DRAFT'} onClick={() => onclick(id, status, ticket_group)}>
     <CardHeader>
       <CardTitle
         role="button"
         tabIndex={0}
         onClick={(e: React.MouseEvent<HTMLHeadingElement>) => {
           e.stopPropagation();
-          onclick(id);
+          onclick(id, status, ticket_group);
         }}
       >
         {status === 'DRAFT' && <DraftIndicator>Draft</DraftIndicator>}
