@@ -3929,7 +3929,6 @@ export class MainStore {
     }
   }
 
-
   async getTicketsByGroup(groupId: string): Promise<Ticket[]> {
     try {
       if (!uiStore.meInfo) return [];
