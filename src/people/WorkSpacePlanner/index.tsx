@@ -182,16 +182,15 @@ const WorkspacePlanner = observer(() => {
     {}
   );
 
-  const handleCardClick = (bountyId: string, status?: BountyCardStatus) => {
+  const handleCardClick = (bountyId: string, status?: BountyCardStatus, ticketGroup?: string) => {
     bountyCardStore.saveFilterState();
-    if (status === 'DRAFT') {
-      window.open(
-        history.createHref({
-          pathname: `/workspace/${uuid}/ticket/${bountyId}`,
-          state: { from: `/workspace/${uuid}/planner` }
-        }),
-        '_blank'
-      );
+    if (status === 'DRAFT' && ticketGroup) {
+      const ticketUrl = history.createHref({
+        pathname: `/workspace/${uuid}/ticket/${ticketGroup}`,
+        state: { from: `/workspace/${uuid}/planner` }
+      });
+      console.log('Opening ticket URL:', ticketUrl);
+      window.open(ticketUrl, '_blank');
     } else {
       window.open(
         history.createHref({
@@ -247,7 +246,7 @@ const WorkspacePlanner = observer(() => {
                       <BountyCardComp
                         key={card.id}
                         {...card}
-                        onclick={() => handleCardClick(card.id, card.status)}
+                        onclick={() => handleCardClick(card.id, card.status, card.ticket_group)}
                       />
                     ))
                 )}

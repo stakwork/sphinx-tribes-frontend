@@ -530,6 +530,8 @@ export interface BountyCard {
   assignee?: any;
   assignee_name?: string;
   pow?: number;
+  ticket_uuid?: string;
+  ticket_group?: string;
 }
 
 export type BountyReviewStatus = 'New' | 'Accepted' | 'Rejected' | 'Change Requested';
