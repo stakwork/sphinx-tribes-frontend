@@ -7,15 +7,18 @@ import '@elastic/eui/dist/eui_theme_dark.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import { appEnv } from './config/env';
 
+//const options = {
+//  api_host: process.env.REACT_APP_PUBLIC_POSTHOG_HOST
+//};
 const options = {
-  api_host: process.env.REACT_APP_PUBLIC_POSTHOG_HOST
+  api_host: 'https://us.i.posthog.com'
 };
 
 if (appEnv.isTests) {
   ReactDOM.render(<App />, document.getElementById('root'));
 } else {
   ReactDOM.render(
-    <PostHogProvider apiKey={process.env.REACT_APP_PUBLIC_POSTHOG_KEY} options={options}>
+    <PostHogProvider apiKey={'phc_1UPR3wqvyvLllQJtpecsmaqEfKInrr0WDSPZf0RHODP'} options={options}>
       <App />
     </PostHogProvider>,
     document.getElementById('root')
