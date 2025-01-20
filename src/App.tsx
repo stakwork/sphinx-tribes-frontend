@@ -72,9 +72,13 @@ function App() {
       } else {
         posthog?.identify(mainStore.sessionId, {});
       }
-      if (posthog && posthog.sessionManager) {
+      if (posthog) {
+        console.log('got posthog');
         const sessionId = posthog.get_session_id();
+        console.log('session id: ', sessionId);
         mainStore.setSessionId(sessionId);
+      } else {
+        console.log('posthog not availible');
       }
     }
   }, [posthog]);

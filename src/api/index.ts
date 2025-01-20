@@ -1,4 +1,5 @@
 import { getHost } from '../config/host';
+import { mainStore } from '../store/main';
 
 function addMethod(m: string): (url: string, data?: any, incomingHeaders?: any) => void {
   const host = getHost();
@@ -11,6 +12,8 @@ function addMethod(m: string): (url: string, data?: any, incomingHeaders?: any) 
     try {
       const headers: { [key: string]: string } = {};
       const opts: { [key: string]: any } = { mode: 'cors' };
+      headers['x-session-id'] = mainStore.sessionId;
+      console.log('Headers sesisonId: ', headers['x-session-id']);
       if (m === 'POST' || m === 'PUT') {
         if (!incomingHeaders) {
           headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
