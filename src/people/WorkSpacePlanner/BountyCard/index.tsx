@@ -165,7 +165,6 @@ const BountyCardComponent: React.FC<BountyCardProps> = ({
 
     <RowT>
       <span title={features?.name ?? 'No Feature'}>
-        {/* <span>Jordan</span> */}
         {truncate(features?.name ?? 'No Feature', 10)}
       </span>
       <span title={phase?.name ?? 'No Phase'}>{truncate(phase?.name ?? 'No Phase', 20)}</span>
