@@ -4,6 +4,7 @@ import memo from 'memo-decorator';
 import { action, makeAutoObservable, observable } from 'mobx';
 import { persist } from 'mobx-persist';
 import { Phase, Repository } from 'people/widgetViews/workspace/interface';
+import posthog from 'posthog-js';
 import api from '../api';
 import { getHostIncludingDockerHosts } from '../config/host';
 import { TribesURL } from '../config/host';
@@ -2122,8 +2123,7 @@ export class MainStore {
     let sessionId = sessionStorage.getItem('sphinx_session_id');
 
     if (!sessionId) {
-      //sessionId = randomString(32);
-      sessionId = '';
+      sessionId = posthog.get_session_id();
       sessionStorage.setItem('sphinx_session_id', sessionId);
     }
 
