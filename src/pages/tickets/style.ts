@@ -539,7 +539,6 @@ export const AddTicketButton = styled.div`
   display: flex;
   align-items: center;
   margin-left: auto;
-  margin-bottom: 60px;
 
   button {
     transition: background-color 0.2s ease;

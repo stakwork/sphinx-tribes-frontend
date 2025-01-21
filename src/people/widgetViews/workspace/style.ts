@@ -1318,6 +1318,16 @@ export const StyledEuiTabbedContent = styled(EuiTabbedContent as any)`
   }
 `;
 
+export const StyledEuiTabbedContentForPhase = styled(EuiTabbedContent as any)`
+  && {
+    .euiTab {
+      position: absolute;
+      border: 1px solid transparent; /* Explicitly set the border to transparent */
+      margin: 0px;
+    }
+  }
+`;
+
 export const TabContentOptions = styled.div`
   cursor: pointer;
   display: flex;
@@ -1582,7 +1592,7 @@ export const PhaseFlexContainer = styled.div`
   width: 100%;
   flex-direction: column;
   gap: 16px;
-  margin-bottom: 5%;
+  margin-bottom: 2%;
 `;
 
 export const TicketButtonGroup = styled.div`
