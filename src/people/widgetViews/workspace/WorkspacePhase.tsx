@@ -134,7 +134,7 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
     []
   );
 
-  const checkboxIdToSelectedMapLanguage = {};
+  const checkboxIdToSelectedMapLanguage = useMemo(() => ({}), []);
   const languageString = '';
 
   const selectedWidget = 'bounties';
@@ -171,20 +171,23 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
     setIsPostBountyModalOpen(true);
   };
 
-  const onPanelClick = (activeWorkspace?: string, bounty?: any) => {
-    if (bounty?.id) {
-      history.push(`/bounty/${bounty.id}`);
-    } else {
-      history.push(`/feature/${props.workspace_uuid}`);
-    }
-  };
+  const onPanelClick = useCallback(
+    (activeWorkspace?: string, bounty?: any) => {
+      if (bounty?.id) {
+        history.push(`/bounty/${bounty.id}`);
+      } else {
+        history.push(`/feature/${props.workspace_uuid}`);
+      }
+    },
+    [history, props.workspace_uuid]
+  );
 
-  const handlePhasePlannerClick = () => {
+  const handlePhasePlannerClick = useCallback(() => {
     if (phases[selectedIndex]) {
       const phase = phases[selectedIndex];
       history.push(`/feature/${phase.feature_uuid}/phase/${phase.uuid}/planner`);
     }
-  };
+  }, [history, phases, selectedIndex]);
 
   const handlePhaseNameChange = (name: string) => setPhaseName(name);
 
@@ -373,12 +376,14 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
       })),
     [
       phases,
-      currentItems,
-      totalBounties,
       canPostBounty,
-      checkboxIdToSelectedMap,
-      loading,
+      handlePhasePlannerClick,
+      totalBounties,
       onPanelClick,
+      checkboxIdToSelectedMap,
+      checkboxIdToSelectedMapLanguage,
+      loading,
+      currentItems,
       page,
       selectedIndex
     ]

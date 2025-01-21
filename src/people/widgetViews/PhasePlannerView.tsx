@@ -1,11 +1,24 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useParams, useHistory } from 'react-router-dom';
-import { Feature, Ticket, TicketMessage, TicketStatus } from 'store/interface';
+import {
+  BountyStatus,
+  Feature,
+  phaseBountyLimit,
+  Ticket,
+  TicketMessage,
+  TicketStatus
+} from 'store/interface';
 import MaterialIcon from '@material/react-material-icon';
 import TicketEditor from 'components/common/TicketEditor/TicketEditor';
 import { useStores } from 'store';
-import { EuiDragDropContext, EuiDroppable, EuiDraggable, EuiGlobalToastList } from '@elastic/eui';
+import {
+  EuiDragDropContext,
+  EuiDroppable,
+  EuiDraggable,
+  EuiGlobalToastList,
+  EuiTabbedContentTab
+} from '@elastic/eui';
 import { v4 as uuidv4 } from 'uuid';
 import {
   FeatureBody,
@@ -32,10 +45,14 @@ import {
   WorkspaceName,
   PhaseFlexContainer,
   ButtonWrap,
-  ActionButton
+  ActionButton,
+  DisplayBounties,
+  StyledEuiTabbedContentForPhase
 } from './workspace/style';
 import { Phase, Toast } from './workspace/interface';
 import { EditableField } from './workspace/EditableField.tsx';
+import WidgetSwitchViewer from './WidgetSwitchViewer.tsx';
+import { PostModal } from './postBounty/PostModal.tsx';
 
 interface PhasePlannerParams {
   feature_uuid: string;
@@ -64,6 +81,13 @@ const PhasePlannerView: React.FC = observer(() => {
   const { main } = useStores();
   const history = useHistory();
   const tickets = phaseTicketStore.getPhaseTickets(phase_uuid);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState<number>(1);
+  const [currentItems, setCurrentItems] = useState<number>(phaseBountyLimit);
+  const [totalBounties, setTotalBounties] = useState(0);
+  const [phases, setPhases] = useState<Phase[]>([]);
+  const [selectedIndex, setSelectedIndex] = useState<number>(0);
+  const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
 
   useEffect(() => {
     const socket = createSocketInstance();
@@ -161,6 +185,68 @@ const PhasePlannerView: React.FC = observer(() => {
       }
     };
   }, [main]);
+
+  const checkboxIdToSelectedMap: BountyStatus = useMemo(
+    () => ({
+      Open: true,
+      Assigned: true,
+      Completed: true,
+      Paid: true,
+      Pending: true,
+      Failed: true
+    }),
+    []
+  );
+
+  const checkboxIdToSelectedMapLanguage = useMemo(() => ({}), []);
+  const languageString = '';
+
+  const selectedWidget = 'bounties';
+
+  const getTotalBounties = useCallback(
+    async (statusData: any) => {
+      if (phases[selectedIndex]) {
+        const totalBounties = await main.getTotalPhaseBountyCount(
+          phases[selectedIndex].feature_uuid,
+          phases[selectedIndex].uuid,
+          statusData.Open,
+          statusData.Assigned,
+          statusData.Paid
+        );
+        setTotalBounties(totalBounties);
+      }
+    },
+    [phases, selectedIndex, main]
+  );
+
+  useEffect(() => {
+    if (phases[selectedIndex]) {
+      (async () => {
+        setLoading(true);
+
+        await main.getPhaseBounties(
+          phases[selectedIndex].feature_uuid,
+          phases[selectedIndex].uuid,
+          {
+            page: 1,
+            resetPage: true,
+            ...checkboxIdToSelectedMap,
+            languages: languageString
+          }
+        );
+
+        await getTotalBounties(checkboxIdToSelectedMap);
+
+        setLoading(false);
+      })();
+    }
+  }, [phases, selectedIndex, main, checkboxIdToSelectedMap, languageString, getTotalBounties]);
+
+  const handleTabClick = (selectedTab: EuiTabbedContentTab) => {
+    setSelectedIndex(parseInt(selectedTab.id));
+    setPage(1);
+    setCurrentItems(phaseBountyLimit);
+  };
 
   const editPurposeActions = () => {
     setEditPurpose(!editPurpose);
@@ -282,9 +368,20 @@ const PhasePlannerView: React.FC = observer(() => {
     return data;
   }, [feature_uuid, main]);
 
+  const getFeaturePhaseData = useCallback(async () => {
+    if (!feature_uuid) return;
+    const phases = await main.getFeaturePhases(feature_uuid);
+
+    if (phases) {
+      setPhases(phases);
+    }
+    return phases;
+  }, [feature_uuid, main]);
+
   const getPhaseData = useCallback(async () => {
     if (!feature_uuid || !phase_uuid) return;
     const data = await main.getFeaturePhaseByUUID(feature_uuid, phase_uuid);
+    setLoading(true);
     return data;
   }, [feature_uuid, phase_uuid, main]);
 
@@ -300,6 +397,8 @@ const PhasePlannerView: React.FC = observer(() => {
         const feature = await getFeatureData();
         const phase = await getPhaseData();
         const phaseTickets = await getPhaseTickets();
+        const featPhaseData = await getFeaturePhaseData();
+        setPhases(featPhaseData as any);
 
         if (!feature || !phase || !Array.isArray(phaseTickets)) {
           history.push('/');
@@ -325,11 +424,22 @@ const PhasePlannerView: React.FC = observer(() => {
     };
 
     fetchData();
-  }, [getFeatureData, getPhaseData, history, getPhaseTickets, phase_uuid]);
+  }, [getFeatureData, getPhaseData, history, getPhaseTickets, phase_uuid, getFeaturePhaseData]);
 
   const handleClose = () => {
     history.push(`/feature/${feature_uuid}`);
   };
+
+  const onPanelClick = useCallback(
+    (activeWorkspace?: string, bounty?: any) => {
+      if (bounty?.id) {
+        history.push(`/bounty/${bounty.id}`);
+      } else {
+        history.push(`/feature/${featureData?.workspace_uuid}`);
+      }
+    },
+    [history, featureData?.workspace_uuid]
+  );
 
   const addTicketHandler = async () => {
     const newTicketUuid = uuidv4();
@@ -399,6 +509,59 @@ const PhasePlannerView: React.FC = observer(() => {
       console.error('Error updating ticket order:', error);
     }
   };
+
+  const tabs = useMemo(
+    () =>
+      phases.map((phase: Phase, index: number) => ({
+        id: `${index}`,
+        content: (
+          <DisplayBounties>
+            <div
+              style={{
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                height: '100%',
+                overflowY: 'auto'
+              }}
+            >
+              {totalBounties > 0 ? (
+                <WidgetSwitchViewer
+                  onPanelClick={onPanelClick}
+                  checkboxIdToSelectedMap={checkboxIdToSelectedMap}
+                  checkboxIdToSelectedMapLanguage={checkboxIdToSelectedMapLanguage}
+                  fromBountyPage={true}
+                  selectedWidget={selectedWidget}
+                  loading={loading}
+                  currentItems={currentItems}
+                  setCurrentItems={setCurrentItems}
+                  page={page}
+                  setPage={setPage}
+                  languageString={languageString}
+                  phaseTotalBounties={totalBounties}
+                  featureUuid={phases[selectedIndex].feature_uuid}
+                  phaseUuid={phases[selectedIndex].uuid}
+                />
+              ) : (
+                <p>No Bounties Yet!</p>
+              )}
+            </div>
+          </DisplayBounties>
+        )
+      })),
+    [
+      phases,
+      totalBounties,
+      onPanelClick,
+      checkboxIdToSelectedMap,
+      checkboxIdToSelectedMapLanguage,
+      loading,
+      currentItems,
+      page,
+      selectedIndex
+    ]
+  );
 
   const toastsEl = (
     <EuiGlobalToastList toasts={toasts} dismissToast={() => setToasts([])} toastLifeTimeMs={3000} />
@@ -619,8 +782,21 @@ const PhasePlannerView: React.FC = observer(() => {
               </ActionButton>
             </AddTicketButton>
           </PhaseFlexContainer>
+          <div style={{ marginBottom: '20%' }}>
+            {phases.length ? (
+              <div style={{ backgroundColor: 'white', padding: '12px' }}>
+                <StyledEuiTabbedContentForPhase tabs={tabs} onTabClick={handleTabClick} />
+              </div>
+            ) : null}
+          </div>
         </FieldWrap>
         <StakworkLogsPanel swwfLinks={swwfLinks} />
+        <PostModal
+          widget={selectedWidget}
+          isOpen={isPostBountyModalOpen}
+          onClose={() => setIsPostBountyModalOpen(false)}
+          phase_uuid={phases[selectedIndex]?.uuid}
+        />
       </FeatureDataWrap>
       {toastsEl}
     </FeatureBody>
