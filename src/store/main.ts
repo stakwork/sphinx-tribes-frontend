@@ -4349,6 +4349,107 @@ export class MainStore {
       return false;
     }
   }
+
+  async createSnippet(workspaceUUID: string, title: string, snippet: string): Promise<boolean> {
+    try {
+      const response = await fetch(`${TribesURL}/snippet/create?workspace_uuid=${workspaceUUID}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-jwt': uiStore.meInfo?.tribe_jwt || '',
+          'x-session-id': this.sessionId || ''
+        },
+        body: JSON.stringify({ title, snippet })
+      });
+
+      if (!response.ok) throw new Error('Failed to create snippet');
+      return true;
+    } catch (error) {
+      console.error('Error creating snippet:', error);
+      return false;
+    }
+  }
+
+  async getSnippetsByWorkspace(workspaceUUID: string): Promise<any[]> {
+    try {
+      if (!uiStore.meInfo) return [];
+      const response = await fetch(`${TribesURL}/snippet/workspace/${workspaceUUID}`, {
+        method: 'GET',
+        headers: {
+          'x-jwt': uiStore.meInfo?.tribe_jwt || '',
+          'Content-Type': 'application/json',
+          'x-session-id': this.sessionId || ''
+        }
+      });
+
+      if (!response.ok) throw new Error('Failed to fetch snippets by workspace');
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching snippets by workspace:', error);
+      return [];
+    }
+  }
+
+  async getSnippetByID(id: string): Promise<any | null> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const response = await fetch(`${TribesURL}/snippet/${id}`, {
+        method: 'GET',
+        headers: {
+          'x-jwt': uiStore.meInfo?.tribe_jwt || '',
+          'Content-Type': 'application/json',
+          'x-session-id': this.sessionId || ''
+        }
+      });
+
+      if (!response.ok) throw new Error('Failed to fetch snippet by ID');
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching snippet by ID:', error);
+      return null;
+    }
+  }
+
+  async updateSnippet(id: string, title: string, snippet: string): Promise<boolean> {
+    try {
+      if (!uiStore.meInfo) return false;
+      const response = await fetch(`${TribesURL}/snippet/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-jwt': uiStore.meInfo?.tribe_jwt || '',
+          'x-session-id': this.sessionId || ''
+        },
+        body: JSON.stringify({ title, snippet })
+      });
+
+      if (!response.ok) throw new Error('Failed to update snippet');
+      return true;
+    } catch (error) {
+      console.error('Error updating snippet:', error);
+      return false;
+    }
+  }
+
+  async deleteSnippet(id: string): Promise<boolean> {
+    try {
+      if (!uiStore.meInfo) return false;
+      const response = await fetch(`${TribesURL}/snippet/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'x-jwt': uiStore.meInfo?.tribe_jwt || '',
+          'Content-Type': 'application/json',
+          'x-session-id': this.sessionId || ''
+        }
+      });
+
+      if (!response.ok) throw new Error('Failed to delete snippet');
+      return true;
+    } catch (error) {
+      console.error('Error deleting snippet:', error);
+      return false;
+    }
+  }
 }
 
 export const mainStore = new MainStore();
