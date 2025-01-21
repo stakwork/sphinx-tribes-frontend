@@ -540,8 +540,8 @@ const PhasePlannerView: React.FC = observer(() => {
                   setPage={setPage}
                   languageString={languageString}
                   phaseTotalBounties={totalBounties}
-                  featureUuid={phases[selectedIndex].feature_uuid}
-                  phaseUuid={phases[selectedIndex].uuid}
+                  featureUuid={feature_uuid}
+                  phaseUuid={phase_uuid}
                 />
               ) : (
                 <p>No Bounties Yet!</p>
@@ -559,7 +559,8 @@ const PhasePlannerView: React.FC = observer(() => {
       loading,
       currentItems,
       page,
-      selectedIndex
+      feature_uuid,
+      phase_uuid
     ]
   );
 
