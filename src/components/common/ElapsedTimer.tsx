@@ -35,7 +35,7 @@ const ElapsedTimerBase: React.FC<ElapsedTimerProps> = ({ bountyId }: ElapsedTime
   const [elapsedTime, setElapsedTime] = useState<string>('00h 00m');
   const [firstAssignedAt, setFirstAssignedAt] = useState<string | null>(null);
   const [error, setError] = useState<boolean>(false);
-  const timerRef = useRef<NodeJS.Timeout>();
+  const timerRef = useRef<ReturnType<typeof setInterval>>();
 
   useEffect(() => {
     const fetchTiming = async () => {
