@@ -1368,6 +1368,7 @@ export const PostABounty = styled.div`
 export const DisplayBounties = styled.div`
   justify-content: center;
   align-items: center;
+  margin-bottom: 20px;
 `;
 
 export const Background = styled.div`
