@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { observer } from 'mobx-react-lite';
 import { useIsMobile } from 'hooks/uiHooks';
-import { queryLimit, phaseBountyLimit } from 'store/interface';
+import { queryLimit } from 'store/interface';
 import { Spacer } from '../main/Body';
 import NoResults from '../utils/NoResults';
 import { uiStore } from '../../store/ui';
@@ -88,16 +88,12 @@ function WidgetSwitchViewer(props: any) {
     isBountyLandingPage,
     activeWorkspace,
     uuid,
-    orgQueryLimit,
-    phaseTotalBounties,
-    featureUuid,
-    phaseUuid
+    orgQueryLimit
   } = props;
 
   const items = currentItems ?? 0;
   const bountiesTotal = totalBounties ?? 0;
   const WorkspaceBountiesTotal = WorkspaceTotalBounties ?? 0;
-  const phaseBountiesTotal = phaseTotalBounties ?? 0;
   const page = propsPage ?? 0;
 
   const panelStyles = isMobile
@@ -222,22 +218,6 @@ function WidgetSwitchViewer(props: any) {
     });
   };
 
-  const nextPhaseBounties = async () => {
-    const currentPage = page + 1;
-    if (setPage) {
-      setPage(currentPage);
-    }
-
-    if (setCurrentItems) {
-      setCurrentItems(currentItems + phaseBountyLimit);
-    }
-    await main.getPhaseBounties(featureUuid, phaseUuid, {
-      limit: phaseBountyLimit,
-      page: currentPage,
-      ...props.checkboxIdToSelectedMap
-    });
-  };
-
   const listItems =
     activeList && activeList.length ? (
       activeList.slice(0, currentItems).map((item: any, i: number) => {
@@ -316,7 +296,6 @@ function WidgetSwitchViewer(props: any) {
 
   const showLoadMore = bountiesTotal > items && activeList.length >= queryLimit;
   const WorkspaceLoadMore = WorkspaceBountiesTotal > items && activeList.length >= orgQueryLimit;
-  const PhaseLoadMore = phaseBountiesTotal > items && activeList.length >= phaseBountyLimit;
 
   return (
     <>
@@ -351,21 +330,6 @@ function WidgetSwitchViewer(props: any) {
           }}
         >
           <div className="LoadMoreButton" onClick={() => nextWorkspaceBounties()}>
-            Load More
-          </div>
-        </LoadMoreContainer>
-      )}
-      {featureUuid && phaseUuid && PhaseLoadMore && (
-        <LoadMoreContainer
-          color={color}
-          style={{
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}
-        >
-          <div className="LoadMoreButton" onClick={() => nextPhaseBounties()}>
             Load More
           </div>
         </LoadMoreContainer>
