@@ -120,7 +120,7 @@ export class BountyReviewStore {
         throw new Error(`Failed to load timing stats: ${response.statusText}`);
       }
 
-      const data = (await response.json()) as BountyTiming;
+      const data = await response.json();
       this.setTiming(bountyId, data);
     } catch (error: any) {
       this.setError(error.message);
