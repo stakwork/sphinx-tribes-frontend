@@ -43,7 +43,10 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
           <Route path="/p/">
             <People />
           </Route>
-          <Route path="/workspace/bounties/:uuid">
+          <Route
+            path={['/workspace/bounties/:uuid', '/workspace/bounties/:uuid/bounty/:bountyId']}
+            exact
+          >
             <WorkspaceTicketsPage />
           </Route>
           <Route path="/workspace/:workspaceId/ticket/:ticketId">

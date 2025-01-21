@@ -105,7 +105,7 @@ function WorkspaceBodyComponent() {
 
   const onPanelClick = (activeWorkspace: string, item: any) => {
     history.push({
-      pathname: `/bounty/${item.id}`,
+      pathname: `/workspace/bounties/${uuid}/bounty/${item.id}`,
       state: { activeWorkspace }
     });
   };
