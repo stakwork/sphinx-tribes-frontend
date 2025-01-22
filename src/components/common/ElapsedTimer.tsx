@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { observer } from 'mobx-react-lite';
 import { bountyReviewStore } from 'store/bountyReviewStore';
 import styled from 'styled-components';
@@ -35,6 +35,7 @@ const ElapsedTimerBase: React.FC<ElapsedTimerProps> = ({ bountyId }: ElapsedTime
   const [elapsedTime, setElapsedTime] = useState<string>('00h 00m');
   const [firstAssignedAt, setFirstAssignedAt] = useState<string | null>(null);
   const [error, setError] = useState<boolean>(false);
+  const timerRef = useRef<ReturnType<typeof setInterval>>();
 
   useEffect(() => {
     const fetchTiming = async () => {
@@ -47,9 +48,9 @@ const ElapsedTimerBase: React.FC<ElapsedTimerProps> = ({ bountyId }: ElapsedTime
         await bountyReviewStore.getTiming(bountyId);
         const timing = bountyReviewStore.timings[bountyId];
 
-        if (timing?.firstAssignedAt) {
-          setFirstAssignedAt(timing.firstAssignedAt);
-          setElapsedTime(formatElapsedTime(timing.firstAssignedAt));
+        if (timing?.first_assigned_at) {
+          setFirstAssignedAt(timing.first_assigned_at);
+          setElapsedTime(formatElapsedTime(timing.first_assigned_at));
           setError(false);
         } else {
           setFirstAssignedAt(null);
@@ -68,16 +69,25 @@ const ElapsedTimerBase: React.FC<ElapsedTimerProps> = ({ bountyId }: ElapsedTime
   }, [bountyId]);
 
   useEffect(() => {
-    if (!firstAssignedAt) return;
+    if (!firstAssignedAt) {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+      return;
+    }
 
     const updateTimer = () => {
       setElapsedTime(formatElapsedTime(firstAssignedAt));
     };
 
     updateTimer();
-    const interval = setInterval(updateTimer, 60000);
+    timerRef.current = setInterval(updateTimer, 60000);
 
-    return () => clearInterval(interval);
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
   }, [firstAssignedAt]);
 
   if (error) {
