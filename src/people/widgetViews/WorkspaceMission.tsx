@@ -87,6 +87,7 @@ import ManageWorkspaceUsersModal from './workspace/ManageWorkspaceUsersModal';
 import { BudgetWrapComponent } from './BudgetWrap';
 import { EditableField } from './workspace/EditableField';
 import { Toast } from './workspace/interface';
+import TextSnippetModal from './workspace/TextSnippetModal.tsx';
 
 const color = colors['light'];
 
@@ -331,6 +332,15 @@ const WorkspaceMission = () => {
   const [holding, setHolding] = useState(false);
   const [permissionsChecked, setPermissionsChecked] = useState<boolean>(false);
   const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
+  const [isSnippetModalVisible, setSnippetModalVisible] = useState(false);
+
+  const openSnippetModal = () => {
+    setSnippetModalVisible(true);
+  };
+
+  const closeSnippetModal = () => {
+    setSnippetModalVisible(false);
+  };
 
   const { isEnabled: isPlannerEnabled, loading: isPlannerLoading } =
     useFeatureFlag('display_planner');
@@ -1276,6 +1286,25 @@ const WorkspaceMission = () => {
                   margin: 0,
                   padding: '10px 20px',
                   width: '100%',
+                  backgroundColor: '#4285f4',
+                  color: 'white',
+                  textAlign: 'center',
+                  border: 'none',
+                  fontSize: '16px',
+                  cursor: 'pointer'
+                }}
+                onClick={() => openSnippetModal()}
+                dataTestId="workspace-planner-btn"
+                text="Manage Text snippets"
+              />
+            </WorkspaceFieldWrap>
+            <WorkspaceFieldWrap>
+              <Button
+                style={{
+                  borderRadius: '5px',
+                  margin: 0,
+                  padding: '10px 20px',
+                  width: '100%',
                   backgroundColor: '#49C998',
                   color: 'white',
                   textAlign: 'center',
@@ -1637,6 +1666,40 @@ const WorkspaceMission = () => {
             url={selectedCodeGraph?.url}
           />
         </Modal>
+        <Modal
+          visible={isSnippetModalVisible}
+          style={{
+            height: '100%',
+            flexDirection: 'column'
+          }}
+          envStyle={{
+            marginTop: isMobile ? 64 : 0,
+            background: color.pureWhite,
+            zIndex: 20,
+            maxHeight: '60%',
+            borderRadius: '10px',
+            minWidth: isMobile ? '100%' : '60%',
+            minHeight: isMobile ? '100%' : '50%',
+            boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
+            overflowX: 'hidden'
+          }}
+          overlayClick={closeSnippetModal}
+          bigCloseImage={closeSnippetModal}
+          bigCloseImageStyle={{
+            position: 'absolute',
+            top: '-1%',
+            right: '-1%',
+            background: '#000',
+            borderRadius: '50%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            cursor: 'pointer'
+          }}
+        >
+          <TextSnippetModal isVisible={isSnippetModalVisible} workspaceUUID={uuid} />
+        </Modal>
+
         {isOpenUserManage && (
           <ManageWorkspaceUsersModal
             isOpen={isOpenUserManage}
