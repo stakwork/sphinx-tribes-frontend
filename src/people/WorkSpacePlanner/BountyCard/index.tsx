@@ -25,15 +25,6 @@ const CardContainer = styled.div<CardContainerProps>`
   cursor: pointer;
 `;
 
-const DraftIndicator = styled.span`
-  background: ${colors.light.blue1};
-  color: white;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 12px;
-  margin-right: 8px;
-`;
-
 const CardHeader = styled.div`
   display: flex;
   justify-content: space-between;
@@ -152,7 +143,6 @@ const BountyCardComponent: React.FC<BountyCardProps> = ({
           onclick(id, status, ticket_group);
         }}
       >
-        {status === 'DRAFT' && <DraftIndicator>Draft</DraftIndicator>}
         {title}
         <span style={{ fontSize: '16px', marginTop: '10px' }}>{assignee_name}</span>
       </CardTitle>
