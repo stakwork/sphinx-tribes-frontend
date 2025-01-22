@@ -37,7 +37,7 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
           <Route path="/dailyBounty">
             <DailyBountyPage />
           </Route>
-          <Route path={['/bounties', '/t/', '/tickets', '/bounty/:bountyId', '/b/']}>
+          <Route path={['/bounties', '/t/', '/tickets', '/bounty/:bountyId', '/b/', 'man']}>
             <TicketsPage />
           </Route>
           <Route path="/p/">
