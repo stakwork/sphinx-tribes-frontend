@@ -720,6 +720,12 @@ export const wantedCodingTaskSchema: FormField[] = [
     options: codingLanguages
   },
   {
+    name: 'text_snippet',
+    label: 'Text Snippet Title',
+    type: 'select',
+    options: []
+  },
+  {
     name: 'github_description',
     label: 'Get Description From Github ',
     type: 'switch'
