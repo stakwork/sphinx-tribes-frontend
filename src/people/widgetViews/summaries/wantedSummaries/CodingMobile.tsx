@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { EuiText } from '@elastic/eui';
 import { CodingViewProps } from 'people/interfaces';
+import styled from 'styled-components';
 import { bountyReviewStore } from '../../../../store/bountyReviewStore';
 import { Divider, Modal } from '../../../../components/common';
 import BountyProfileView from '../../../../bounties/BountyProfileView';
@@ -101,6 +102,11 @@ export default function MobileView(props: CodingViewProps) {
       setEnableDelete(true);
     }
   };
+
+  const StyledUnassignedPersonProfile = styled(UnassignedPersonProfile)`
+    padding-left: 0 !important;
+    margin-top: 10 !important;
+  `;
 
   return (
     <>
@@ -207,6 +213,93 @@ export default function MobileView(props: CodingViewProps) {
           </div>
 
           <T>{titleString}</T>
+          <StyledUnassignedPersonProfile
+            unassigned_border={color.grayish.G300}
+            grayish_G200={color.grayish.G200}
+            color={color}
+            style={{ marginBottom: '20px' }}
+          >
+            {!isAssigned && (
+              <div className="UnassignedPersonContainer">
+                <img src="/static/unassigned_profile.svg" alt="" height={'100%'} width={'100%'} />
+              </div>
+            )}
+
+            {isAssigned ? (
+              <div className="BountyProfileOuterContainerCreatorView">
+                <BountyProfileView
+                  assignee={!assignedPerson ? assignee : assignedPerson}
+                  status={pillText || ''}
+                  canViewProfile={false}
+                  statusStyle={{
+                    width: '66px',
+                    height: '16px',
+                    background: pillColor
+                  }}
+                  UserProfileContainerStyle={{
+                    height: 48,
+                    width: 'fit-content',
+                    minWidth: 'fit-content',
+                    padding: 0
+                  }}
+                  isNameClickable={true}
+                  UserImageStyle={{
+                    width: '48px',
+                    height: '48px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    borderRadius: '200px',
+                    overflow: 'hidden'
+                  }}
+                  NameContainerStyle={{
+                    height: '28px',
+                    maxWidth: '154px'
+                  }}
+                  userInfoStyle={{
+                    marginLeft: '12px'
+                  }}
+                />
+                {!bountyPaid && !bountyPending && (
+                  <div
+                    data-testid="edit-btn"
+                    className="AssigneeCloseButtonContainer"
+                    onClick={handleAssigneeClose}
+                  >
+                    <img
+                      src="/static/assignee_close.png"
+                      alt="cross_icon"
+                      height={'100%'}
+                      width={'100%'}
+                    />
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="UnassignedPersonalDetailContainer">
+                <ImageButton
+                  buttonText={'Not Assigned'}
+                  ButtonContainerStyle={{
+                    width: '159px',
+                    height: '48px',
+                    background: color.pureWhite,
+                    marginLeft: '-12px'
+                  }}
+                  buttonTextStyle={{
+                    color: color.grayish.G50,
+                    width: '114px',
+                    paddingLeft: '20px'
+                  }}
+                  endImageSrc={'/static/addIcon.svg'}
+                  endingImageContainerStyle={{
+                    right: '34px',
+                    fontSize: '12px'
+                  }}
+                  buttonAction={handleAssigneeOpen}
+                />
+              </div>
+            )}
+          </StyledUnassignedPersonProfile>
 
           <div
             style={{
@@ -214,94 +307,6 @@ export default function MobileView(props: CodingViewProps) {
               flexDirection: 'row'
             }}
           >
-            <div style={{ height: 10 }} />
-            <UnassignedPersonProfile
-              unassigned_border={color.grayish.G300}
-              grayish_G200={color.grayish.G200}
-              color={color}
-              style={{ marginBottom: '20px' }}
-            >
-              {!isAssigned && (
-                <div className="UnassignedPersonContainer">
-                  <img src="/static/unassigned_profile.svg" alt="" height={'100%'} width={'100%'} />
-                </div>
-              )}
-
-              {isAssigned ? (
-                <div className="BountyProfileOuterContainerCreatorView">
-                  <BountyProfileView
-                    assignee={!assignedPerson ? assignee : assignedPerson}
-                    status={pillText || ''}
-                    canViewProfile={false}
-                    statusStyle={{
-                      width: '66px',
-                      height: '16px',
-                      background: pillColor
-                    }}
-                    UserProfileContainerStyle={{
-                      height: 48,
-                      width: 'fit-content',
-                      minWidth: 'fit-content',
-                      padding: 0
-                    }}
-                    isNameClickable={true}
-                    UserImageStyle={{
-                      width: '48px',
-                      height: '48px',
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      borderRadius: '200px',
-                      overflow: 'hidden'
-                    }}
-                    NameContainerStyle={{
-                      height: '28px',
-                      maxWidth: '154px'
-                    }}
-                    userInfoStyle={{
-                      marginLeft: '12px'
-                    }}
-                  />
-                  {!bountyPaid && !bountyPending && (
-                    <div
-                      data-testid="edit-btn"
-                      className="AssigneeCloseButtonContainer"
-                      onClick={handleAssigneeClose}
-                    >
-                      <img
-                        src="/static/assignee_close.png"
-                        alt="cross_icon"
-                        height={'100%'}
-                        width={'100%'}
-                      />
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="UnassignedPersonalDetailContainer">
-                  <ImageButton
-                    buttonText={'Not Assigned'}
-                    ButtonContainerStyle={{
-                      width: '159px',
-                      height: '48px',
-                      background: color.pureWhite,
-                      marginLeft: '-12px'
-                    }}
-                    buttonTextStyle={{
-                      color: color.grayish.G50,
-                      width: '114px',
-                      paddingLeft: '20px'
-                    }}
-                    endImageSrc={'/static/addIcon.svg'}
-                    endingImageContainerStyle={{
-                      right: '34px',
-                      fontSize: '12px'
-                    }}
-                    buttonAction={handleAssigneeOpen}
-                  />
-                </div>
-              )}
-            </UnassignedPersonProfile>
             {ticket_url && (
               <GithubIconMobile
                 onClick={(e: any) => {
@@ -347,7 +352,7 @@ export default function MobileView(props: CodingViewProps) {
               display: 'flex',
               flexDirection: 'row',
               marginTop: '10px',
-              minHeight: '60px'
+              minHeight: '10px'
             }}
           >
             {(labels ?? []).map((x: any) => (

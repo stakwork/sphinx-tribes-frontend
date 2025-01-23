@@ -369,7 +369,7 @@ export interface CodingViewProps extends WantedSummaryProps {
   // owner_id: string;
   bountyPaid?: boolean;
   hasAccess?: boolean;
-  editAction?: (any?: any) => void; // Updated to accept optional parameter
+  editAction?: (any?: any) => void;
   deleteAction?: (any?: any) => void;
   deletingState?: boolean;
   enableDelete?: boolean;
