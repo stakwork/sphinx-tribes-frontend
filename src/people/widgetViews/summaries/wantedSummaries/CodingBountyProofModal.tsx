@@ -6,20 +6,20 @@ import { ProofActionButton, CopyButtonGroup } from 'people/widgetViews/workspace
 import React, { memo } from 'react';
 import styled from 'styled-components';
 
-const ModalContainer = styled.div`
+const ModalContainer = styled.div<{ isMobile: boolean }>`
   max-height: auto;
   overflow-y: visible;
   display: flex;
   justify-content: center;
   margin-top: 20px;
   margin-bottom: 20px;
-  width: 650px;
+  width: ${(props: { isMobile: boolean }) => (props.isMobile ? '80vw' : '650px')};
   display: flex;
   flex-direction: column;
   gap: 20px;
 `;
 
-const StyledTextArea = styled.textarea`
+const StyledTextArea = styled.textarea<{ isMobile: boolean }>`
   padding: 0.5rem 1rem;
   border-radius: 0.375rem;
   border: 2px solid #dde1e5;
@@ -33,7 +33,7 @@ const StyledTextArea = styled.textarea`
   line-height: 20px;
   width: 100%;
   resize: vertical;
-  min-height: 300px;
+  min-height: ${(props: { isMobile: boolean }) => (props.isMobile ? '40vh' : '300px')};
 
   ::placeholder {
     color: #b0b7bc;
@@ -55,25 +55,28 @@ interface TextAreaProps {
   value: string;
   onChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
   placeholder?: string;
+  isMobile: boolean;
 }
 
-const TextArea = memo(({ value, onChange, placeholder }: TextAreaProps) => (
-  <ModalContainer>
+const TextArea = memo(({ value, onChange, placeholder, isMobile }: TextAreaProps) => (
+  <ModalContainer isMobile={isMobile}>
     <StyledTextArea
       value={value}
       onChange={onChange}
       placeholder={placeholder}
       aria-label="Enter your proof"
+      isMobile={isMobile}
     />
   </ModalContainer>
 ));
 
 TextArea.displayName = 'TextArea';
 
-interface ProofModalProps extends TextAreaProps {
+interface ProofModalProps extends Omit<TextAreaProps, 'isMobile'> {
   closeModal: () => void;
   bountyId: string;
   submitProof: (bountyId: string, description: string) => Promise<boolean>;
+  isMobile?: boolean;
 }
 
 const ProofModal = ({
@@ -82,7 +85,8 @@ const ProofModal = ({
   placeholder,
   closeModal,
   bountyId,
-  submitProof
+  submitProof,
+  isMobile = false
 }: ProofModalProps) => {
   const handleSubmit = async () => {
     const success: boolean = await submitProof(bountyId, value);
@@ -93,10 +97,23 @@ const ProofModal = ({
 
   return (
     <BaseModal open onClose={closeModal}>
-      <Box p={4} bgcolor={palette.grayish.G950} borderRadius={2} minWidth={400} minHeight={450}>
-        <TextArea value={value} onChange={onChange} placeholder={placeholder} />
+      <Box
+        p={isMobile ? 2 : 4}
+        bgcolor={palette.grayish.G950}
+        borderRadius={2}
+        minWidth={isMobile ? '90vw' : 400}
+        minHeight={isMobile ? '50vh' : 450}
+      >
+        <TextArea value={value} onChange={onChange} placeholder={placeholder} isMobile={isMobile} />
         <CopyButtonGroup>
-          <ProofActionButton color="primary" onClick={handleSubmit} disabled={!value.trim()}>
+          <ProofActionButton
+            color="primary"
+            onClick={handleSubmit}
+            disabled={!value.trim()}
+            style={{
+              width: isMobile ? '100%' : 'auto'
+            }}
+          >
             Submit Proof
           </ProofActionButton>
         </CopyButtonGroup>
