@@ -346,7 +346,9 @@ export class MainStore {
 
     try {
       // 1. get user liquid address
-      const userLiquidAddress = await api.get(`liquidAddressByPubkey/${userPubkey}`);
+      const userLiquidAddress = await api.get(`liquidAddressByPubkey/${userPubkey}`, {
+        signal: AbortSignal.timeout(2000)
+      });
 
       if (!userLiquidAddress) {
         throw new Error('No Liquid Address tied to user account');
@@ -355,6 +357,7 @@ export class MainStore {
       // 2. get password for login, login to "token" aliased as "tt"
       const res0 = await fetch(`${URL}/login`, {
         method: 'POST',
+        signal: AbortSignal.timeout(2000),
         body: JSON.stringify({
           pwd: 'password i got from user'
         }),
@@ -367,6 +370,7 @@ export class MainStore {
       // 3. first create the badge
       const res1 = await fetch(`${URL}/issue?token=${tt}`, {
         method: 'POST',
+        signal: AbortSignal.timeout(2000),
         body: JSON.stringify({
           name: badgeName,
           icon: badgeIcon,
@@ -380,6 +384,7 @@ export class MainStore {
       // 4. then transfer it
       const res2 = await fetch(`${URL}/transfer?token=${tt}`, {
         method: 'POST',
+        signal: AbortSignal.timeout(2000),
         body: JSON.stringify({
           asset: createdBadge.id,
           to: userLiquidAddress,
@@ -402,7 +407,8 @@ export class MainStore {
       const URL = 'https://liquid.sphinx.chat';
 
       const l = await fetch(`${URL}/list?limit=100000`, {
-        method: 'GET'
+        method: 'GET',
+        signal: AbortSignal.timeout(2000)
       });
 
       const badgelist = await l.json();
@@ -419,7 +425,8 @@ export class MainStore {
       const URL = 'https://liquid.sphinx.chat';
 
       const b = await fetch(`${URL}/balances?pubkey=${pubkey}&limit=100000`, {
-        method: 'GET'
+        method: 'GET',
+        signal: AbortSignal.timeout(2000)
       });
 
       const balances = await b.json();
