@@ -47,7 +47,7 @@ function addMethod(m: string): (url: string, data?: any, incomingHeaders?: any) 
         res = await r.json();
       }
 
-      headers['x-session-id'] = await mainStore.getSessionId();
+      headers['x-session-id'] = mainStore.getSessionId();
       console.log('Headers sesisonId: ', headers['x-session-id']);
 
       return res;
