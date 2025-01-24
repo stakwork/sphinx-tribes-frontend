@@ -93,7 +93,6 @@ const StatusDropdown: React.FC<StatusDropdownProps> = observer(
             borderRadius: '4px',
             border: `1px solid ${color.grayish.G300}`,
             backgroundColor: color.pureWhite,
-            color: color.grayish.G600,
             cursor: isLoading ? 'not-allowed' : 'pointer',
             minWidth: '140px',
             fontSize: '14px',
