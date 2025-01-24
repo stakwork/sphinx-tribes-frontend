@@ -238,10 +238,9 @@ function Form(props: FormProps) {
 
   const filteredSnippets = snippets.map((p: any) => ({
     value: p.id,
-    label: p.title
+    label: p.title,
+    snippet: p.snippet
   }));
-
-  console.log(filteredSnippets, 'Filtered Snippets');
 
   useEffect(() => {
     (async () => {
@@ -627,6 +626,22 @@ function Form(props: FormProps) {
                                 }}
                                 handleChange={(e: any) => {
                                   setFieldValue(item.name, e);
+
+                                  setFieldValue(item.name, e);
+                                  if (item.name === 'text_snippet') {
+                                    const selectedSnippet = filteredSnippets.find(
+                                      (snippet: {
+                                        value: string;
+                                        label: string;
+                                        snippet: string;
+                                      }) => snippet.value === e
+                                    );
+                                    if (selectedSnippet) {
+                                      const descriptionContent = `${selectedSnippet.snippet}`;
+                                      // Update the description field
+                                      setFieldValue('description', descriptionContent);
+                                    }
+                                  }
                                 }}
                                 setFieldValue={(e: any, f: any) => {
                                   setFieldValue(e, f);
