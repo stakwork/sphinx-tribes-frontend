@@ -17,6 +17,10 @@ describe('Alice Create a Workspace and then Edit to validate characters the limi
   });
 
   it('should not allow editing a workspace with excessive character limits', () => {
+    cy.wait(1000);
+    cy.login(worksapce.loggedInAs);
+    cy.wait(1000);
+
     cy.clickAlias(worksapce.loggedInAs);
     cy.wait(1000);
 
