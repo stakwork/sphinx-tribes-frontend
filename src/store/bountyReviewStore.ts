@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx';
 import { TribesURL } from 'config';
-import { ProofOfWork, BountyTiming } from './interface';
+import { ProofOfWork, BountyTiming, BountyReviewStatus } from './interface';
 import { uiStore } from './ui';
 
 export class BountyReviewStore {
@@ -27,6 +27,10 @@ export class BountyReviewStore {
 
   setError(error: string | null) {
     this.error = error;
+  }
+
+  setReviewLoading(proofId: string, loading: boolean) {
+    this.loading = loading;
   }
 
   async getProofs(bountyId: string) {
@@ -126,6 +130,25 @@ export class BountyReviewStore {
       this.setError(error.message);
     } finally {
       this.setLoading(false);
+    }
+  }
+
+  async updateProofStatus(bountyId: string, proofId: string, status: BountyReviewStatus) {
+    try {
+      this.setReviewLoading(proofId, true);
+      await fetch(`${TribesURL}/gobounties/${bountyId}/proofs/${proofId}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-jwt': uiStore.meInfo?.tribe_jwt || ''
+        },
+        body: JSON.stringify({ status })
+      });
+      await this.getProofs(bountyId);
+    } catch (error: any) {
+      this.setError(error.message);
+    } finally {
+      this.setReviewLoading(proofId, false);
     }
   }
 }
