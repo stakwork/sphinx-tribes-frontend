@@ -71,7 +71,6 @@ function BodyComponent() {
   useEffect(() => {
     (async () => {
       await main.getOpenGithubIssues();
-      await main.getBadgeList();
       await main.getPeople();
       await main.getPeopleBounties({
         page: 1,
@@ -80,6 +79,7 @@ function BodyComponent() {
         languages: languageString
       });
       setLoading(false);
+      await main.getBadgeList();
     })();
   }, [main, checkboxIdToSelectedMap, languageString, searchParams]);
 
