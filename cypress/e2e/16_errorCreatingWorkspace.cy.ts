@@ -1,7 +1,7 @@
 describe('Workspace creation error handling', () => {
   const workspaceExceedingLimits = {
     loggedInAs: 'alice',
-    name: 'ThisNameIsWayTooLongForAWorkspace', // More than 20 characters
+    name: 'ThisNameIsWayTooLongForAWorkspace', // More than 20 characterss
     description:
       'This description is intentionally made longer than one hundred and twenty characters to test the validation functionality of the workspace creation form.' // More than 120 characters
   };
