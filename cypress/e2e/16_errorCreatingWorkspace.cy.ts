@@ -1,17 +1,16 @@
 describe('Workspace creation error handling', () => {
   const workspaceExceedingLimits = {
     loggedInAs: 'alice',
-    name: 'ThisNameIsWayTooLongForAWorkspace', // More than 20 characters
+    name: 'ThisNameIsWayTooLongForAWorkspace', // More than 20 characterss
     description:
       'This description is intentionally made longer than one hundred and twenty characters to test the validation functionality of the workspace creation form.' // More than 120 characters
   };
 
-  before(() => {
+  it('should not allow adding a workspace with excessive character limits', () => {
+    cy.wait(1000);
     cy.login(workspaceExceedingLimits.loggedInAs);
     cy.wait(1000);
-  });
 
-  it('should not allow adding a workspace with excessive character limits', () => {
     cy.clickAlias(workspaceExceedingLimits.loggedInAs);
     cy.wait(1000);
 
