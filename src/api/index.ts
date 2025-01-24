@@ -12,8 +12,6 @@ function addMethod(m: string): (url: string, data?: any, incomingHeaders?: any) 
     try {
       const headers: { [key: string]: string } = {};
       const opts: { [key: string]: any } = { mode: 'cors' };
-      headers['x-session-id'] = mainStore.getSessionId();
-      console.log('Headers sesisonId: ', headers['x-session-id']);
       if (m === 'POST' || m === 'PUT') {
         if (!incomingHeaders) {
           headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
@@ -48,6 +46,10 @@ function addMethod(m: string): (url: string, data?: any, incomingHeaders?: any) 
       else {
         res = await r.json();
       }
+
+      headers['x-session-id'] = await mainStore.getSessionId();
+      console.log('Headers sesisonId: ', headers['x-session-id']);
+
       return res;
     } catch (e) {
       throw e;
