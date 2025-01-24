@@ -6,6 +6,7 @@ import moment from 'moment';
 import { isInvoiceExpired, userCanManageBounty } from 'helpers';
 import { SOCKET_MSG, createSocketInstance } from 'config/socket';
 import { Box } from '@mui/system';
+import { BountyReviewStatus } from 'store/interface';
 import { bountyReviewStore } from 'store/bountyReviewStore';
 import { uiStore } from 'store/ui';
 import { Button, Divider, Modal, usePaymentConfirmationModal } from '../../../../components/common';
@@ -15,6 +16,7 @@ import { satToUsd } from '../../../../helpers';
 import { useStores } from '../../../../store';
 import IconButton from '../../../../components/common/IconButton2';
 import ImageButton from '../../../../components/common/ImageButton';
+import StatusDropdown from '../../../../components/common/StatusDropdown';
 import BountyProfileView from '../../../../bounties/BountyProfileView';
 import ButtonSet from '../../../../bounties/BountyModalButtonSet';
 import BountyPrice from '../../../../bounties/BountyPrice';
@@ -57,6 +59,7 @@ import { getTwitterLink } from './lib';
 import CodingMobile from './CodingMobile';
 import { BountyEstimates } from './Components';
 import CodingBountyProofModal from './CodingBountyProofModal';
+
 let interval;
 
 function MobileView(props: CodingBountiesProps) {
@@ -489,6 +492,31 @@ function MobileView(props: CodingBountiesProps) {
   };
 
   const { proofs } = bountyReviewStore;
+
+  const isAssigner = person?.owner_pubkey === uiStore._meInfo?.owner_pubkey;
+
+  const handleStatusUpdate = async (proofId: string, status: BountyReviewStatus) => {
+    try {
+      await bountyReviewStore.updateProofStatus(bountyID, proofId, status);
+      setToasts([
+        {
+          id: `${Math.random()}`,
+          title: 'Status Updated',
+          color: 'success',
+          text: 'Proof status updated successfully'
+        }
+      ]);
+    } catch (error) {
+      setToasts([
+        {
+          id: `${Math.random()}`,
+          title: 'Update Failed',
+          color: 'danger',
+          text: 'Failed to update proof status'
+        }
+      ]);
+    }
+  };
 
   useEffect(() => {
     const fetchProofs = async () => {
@@ -953,35 +981,51 @@ function MobileView(props: CodingBountiesProps) {
                           <ul>
                             {proofs[bountyID].map((proof: any, index: any) => (
                               <li key={index}>
-                                {proof.description
-                                  .split(/(https?:\/\/[^\s]+)/)
-                                  .map((part: string, i: number) => {
-                                    if (part.match(/https?:\/\/[^\s]+/)) {
-                                      return (
-                                        <a
-                                          key={i}
-                                          href={part}
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                        >
-                                          {part}
-                                        </a>
-                                      );
-                                    }
-                                    return part;
-                                  })}
+                                <div
+                                  style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center'
+                                  }}
+                                >
+                                  <div>
+                                    {proof.description
+                                      .split(/(https?:\/\/[^\s]+)/)
+                                      .map((part: string, i: number) => {
+                                        if (part.match(/https?:\/\/[^\s]+/)) {
+                                          return (
+                                            <a
+                                              key={i}
+                                              href={part}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                            >
+                                              {part}
+                                            </a>
+                                          );
+                                        }
+                                        return part;
+                                      })}
+                                  </div>
+                                  <StatusDropdown
+                                    bountyId={bountyID}
+                                    proofId={proof.id}
+                                    currentStatus={proof.status}
+                                    isAssigner={isAssigner}
+                                    onStatusUpdate={handleStatusUpdate}
+                                  />
+                                </div>
                               </li>
                             ))}
                           </ul>
                         ) : (
-                          <p>No proofs available</p>
+                          <p>No proof available</p>
                         )}
                       </Description>
                     </Section>
                     <Section style={{ flex: 0.3, textAlign: 'right' }}>
                       <Title>Status</Title>
                       <Status>
-                        {' '}
                         {timingStats ? (
                           <pre>{JSON.stringify(timingStats, null, 2)}</pre>
                         ) : (
@@ -1546,18 +1590,40 @@ function MobileView(props: CodingBountiesProps) {
                     <ul>
                       {proofs[bountyID].map((proof: any, index: any) => (
                         <li key={index}>
-                          {proof.description
-                            .split(/(https?:\/\/[^\s]+)/)
-                            .map((part: string, i: number) => {
-                              if (part.match(/https?:\/\/[^\s]+/)) {
-                                return (
-                                  <a key={i} href={part} target="_blank" rel="noopener noreferrer">
-                                    {part}
-                                  </a>
-                                );
-                              }
-                              return part;
-                            })}
+                          <div
+                            style={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center'
+                            }}
+                          >
+                            <div>
+                              {proof.description
+                                .split(/(https?:\/\/[^\s]+)/)
+                                .map((part: string, i: number) => {
+                                  if (part.match(/https?:\/\/[^\s]+/)) {
+                                    return (
+                                      <a
+                                        key={i}
+                                        href={part}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                      >
+                                        {part}
+                                      </a>
+                                    );
+                                  }
+                                  return part;
+                                })}
+                            </div>
+                            <StatusDropdown
+                              bountyId={bountyID}
+                              proofId={proof.id}
+                              currentStatus={proof.status}
+                              isAssigner={isAssigner}
+                              onStatusUpdate={handleStatusUpdate}
+                            />
+                          </div>
                         </li>
                       ))}
                     </ul>
@@ -1569,7 +1635,6 @@ function MobileView(props: CodingBountiesProps) {
               <Section style={{ flex: 0.3, textAlign: 'right' }}>
                 <Title>Status</Title>
                 <Status>
-                  {' '}
                   {timingStats ? <pre>{JSON.stringify(timingStats, null, 2)}</pre> : <p>---</p>}
                 </Status>
               </Section>

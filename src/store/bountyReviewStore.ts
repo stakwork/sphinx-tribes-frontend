@@ -1,12 +1,13 @@
 import { makeAutoObservable } from 'mobx';
 import { TribesURL } from 'config';
-import { ProofOfWork, BountyTiming } from './interface';
+import { ProofOfWork, BountyTiming, BountyReviewStatus } from './interface';
 import { uiStore } from './ui';
 
 export class BountyReviewStore {
   proofs: Record<string, ProofOfWork[]> = {};
   timings: Record<string, BountyTiming> = {};
   loading = false;
+  reviewLoading: Record<string, boolean> = {};
   error: string | null = null;
 
   constructor() {
@@ -27,6 +28,10 @@ export class BountyReviewStore {
 
   setError(error: string | null) {
     this.error = error;
+  }
+
+  setReviewLoading(proofId: string, loading: boolean) {
+    this.reviewLoading[proofId] = loading;
   }
 
   async getProofs(bountyId: string) {
@@ -126,6 +131,33 @@ export class BountyReviewStore {
       this.setError(error.message);
     } finally {
       this.setLoading(false);
+    }
+  }
+
+  async updateProofStatus(bountyId: string, proofId: string, status: BountyReviewStatus) {
+    try {
+      if (!uiStore._meInfo) return;
+      const info = uiStore.meInfo;
+
+      this.setReviewLoading(proofId, true);
+      const response = await fetch(`${TribesURL}/gobounties/${bountyId}/proofs/${proofId}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-jwt': info?.tribe_jwt || ''
+        },
+        body: JSON.stringify({ status })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to update proof status: ${response.statusText}`);
+      }
+
+      await this.getProofs(bountyId);
+    } catch (error: any) {
+      this.setError(error.message);
+    } finally {
+      this.setReviewLoading(proofId, false);
     }
   }
 }
