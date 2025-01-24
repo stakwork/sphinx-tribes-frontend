@@ -332,8 +332,8 @@ export const Section = styled.div`
   margin-top: 60px;
 `;
 
-export const Title = styled.h2`
-  font-size: 24px;
+export const Title = styled.h2<{ isMobile?: boolean }>`
+  font-size: ${(props: { isMobile?: boolean }) => (props.isMobile ? '18px' : '24px')};
   font-weight: 600;
   color: #333;
   margin-bottom: 20px;

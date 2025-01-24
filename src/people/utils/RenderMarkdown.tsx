@@ -6,77 +6,79 @@ import styled from 'styled-components';
 import { colors } from '../../config';
 
 const MarkdownContainer = styled.div`
-  /* Base text styling */
   font-size: 1rem;
-  line-height: 1.4;
+  line-height: 1.6;
   color: #3c3f41;
 
-  /* List styling */
   ul,
   ol {
-    margin: 0;
+    margin: 1rem 0;
     padding-left: 1.5rem;
   }
 
   li {
-    margin: 0;
-    padding: 0;
-    line-height: 1.2;
+    margin: 0.5rem 0;
+    line-height: 1.4;
   }
 
-  /* Remove extra space between list items */
-  li + li {
-    margin-top: 0;
-  }
-
-  /* Fix nested list spacing */
-  li > ul,
-  li > ol {
-    margin: 0;
-  }
-
-  /* Paragraph spacing */
   p {
-    margin: 0;
+    margin: 1rem 0;
   }
 
-  /* Heading spacing */
   h1 {
-    margin: 0;
-    font-size: 1.8rem;
+    margin: 0.5rem 0 1rem;
+    font-size: 2rem;
   }
 
   h2 {
-    margin: 0;
-    font-size: 1.5rem;
+    margin: 1.25rem 0 0.75rem;
+    font-size: 1.75rem;
   }
 
   h3,
   h4,
   h5,
   h6 {
-    margin: 0;
+    margin: 1rem 0 0.5rem;
   }
 
-  /* Table styling */
   table {
     border-collapse: collapse;
     width: 100%;
-    margin: 0.3rem 0;
+    margin: 1rem 0;
   }
 
   th,
   td {
     border: 1px solid #dde1e5;
-    padding: 0.4rem;
+    padding: 0.8rem;
+    text-align: left;
   }
 
-  /* Blockquote styling */
   blockquote {
-    margin: 0.3rem 0;
-    padding-left: 0.8rem;
-    border-left: 3px solid #dde1e5;
+    margin: 1rem 0;
+    padding-left: 1rem;
+    border-left: 4px solid #dde1e5;
     color: #666;
+    font-style: italic;
+  }
+
+  pre {
+    background-color: #050038;
+    color: #ffffff;
+    font-family: monospace;
+    padding: 1rem;
+    border-radius: 6px;
+    border: 1px solid #444;
+    margin: 1rem 0;
+    overflow-x: auto;
+  }
+
+  code {
+    color: #f5f5f5;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-family: monospace;
   }
 `;
 
@@ -104,36 +106,28 @@ export function renderMarkdown(markdown: any, customStyles?: CustomStyles) {
         rehypePlugins={[rehypeRaw]}
         components={{
           code({ className, children, ...props }: any) {
-            const useStyling = !!customStyles;
-
-            return useStyling ? (
+            return (
               <pre
                 style={{
                   backgroundColor: codeBlockBackground,
                   color: textColor,
                   fontFamily: codeBlockFont,
-                  padding: '12px 16px',
+                  padding: '1rem',
                   borderRadius: '6px',
                   border: `1px solid ${borderColor}`,
-                  display: 'block',
-                  overflowX: 'auto',
-                  margin: '0.5rem 0'
+                  margin: '1rem 0',
+                  overflowX: 'auto'
                 }}
                 {...props}
               >
                 <code className={className}>{children}</code>
               </pre>
-            ) : (
-              <pre {...props}>
-                <code className={className}>{children}</code>
-              </pre>
             );
           },
           img({ className, ...props }: any) {
-            // Images styling is always applied
             return (
               <img
-                alt={'Markdown'}
+                alt="Markdown"
                 className={className}
                 style={{
                   width: '100%',
