@@ -11,11 +11,6 @@ describe('Alice Create a Workspace and then Edit to validate characters the limi
       'This description is intentionally made longer than one hundred and twenty characters to test the validation functionality of the workspace creation form.'
   };
 
-  before(() => {
-    cy.login(worksapce.loggedInAs);
-    cy.wait(1000);
-  });
-
   it('should not allow editing a workspace with excessive character limits', () => {
     cy.wait(1000);
     cy.login(worksapce.loggedInAs);
