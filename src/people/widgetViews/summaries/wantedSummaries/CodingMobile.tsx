@@ -1,8 +1,12 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable func-style */
 import React, { useState } from 'react';
 import { EuiText } from '@elastic/eui';
 import { CodingViewProps } from 'people/interfaces';
 import styled from 'styled-components';
+import StatusDropdown from 'components/common/ProofStatusDropDown';
+import { BountyReviewStatus } from 'store/interface';
+import { uiStore } from 'store/ui';
 import { bountyReviewStore } from '../../../../store/bountyReviewStore';
 import { Divider, Modal } from '../../../../components/common';
 import BountyProfileView from '../../../../bounties/BountyProfileView';
@@ -81,13 +85,13 @@ export default function MobileView(props: CodingViewProps) {
     assigneeHandlerOpen,
     assigneeValue,
     peopleList,
-    handleAssigneeDetails
+    handleAssigneeDetails,
+
   } = props;
 
   const color = colors['light'];
   const { proofs } = bountyReviewStore;
   const bountyID = id?.toString() || '';
-  const [timingStats] = useState(null);
 
   const handleAssigneeClose = () => {
     if (changeAssignedPerson && setEnableDelete) {
@@ -107,6 +111,35 @@ export default function MobileView(props: CodingViewProps) {
     padding-left: 0 !important;
     margin-top: 10 !important;
   `;
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [toasts, setToasts]: any = useState([]);
+  const isAssigner = owner_id === uiStore._meInfo?.owner_pubkey;
+
+  const handleStatusUpdate = async (proofId: string, status: BountyReviewStatus) => {
+    try {
+      console.log(proofId, status);
+      await bountyReviewStore.updateProofStatus(bountyID, proofId, status);
+
+      setToasts([
+        {
+          id: `${Math.random()}`,
+          title: 'Status Updated',
+          color: 'success',
+          text: 'Proof status updated successfully'
+        }
+      ]);
+    } catch (error: any) {
+      setToasts([
+        {
+          id: `${Math.random()}`,
+          title: 'Update Failed',
+          color: 'danger',
+          text: error.message || 'Failed to update proof status'
+        }
+      ]);
+    }
+  };
 
   return (
     <>
@@ -429,12 +462,37 @@ export default function MobileView(props: CodingViewProps) {
 
           <ProofContainer>
             <Section>
-              <Title isMobile={true}>Proof of Work</Title>
-              <Description>
-                {proofs[bountyID]?.length ? (
-                  <ul>
-                    {proofs[bountyID].map((proof: any, index: any) => (
-                      <li key={index}>
+              <Title>Proof of Work</Title>
+              {proofs[bountyID]?.length ? (
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '10px',
+                    width: '100%'
+                  }}
+                >
+                  {proofs[bountyID].map((proof: any, index: any) => (
+                    <div
+                      key={index}
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '5px',
+                        width: '100%'
+                      }}
+                    >
+                      <Status style={{ flex: 0.3 }}>
+                        <StatusDropdown
+                          bountyId={bountyID}
+                          proofId={proof.id}
+                          currentStatus={proof.status}
+                          isAssigner={isAssigner}
+                          onStatusUpdate={handleStatusUpdate}
+                          isMobile={true}
+                        />
+                      </Status>
+                      <Description style={{ flex: 1, textAlign: 'left' }}>
                         {proof.description
                           .split(/(https?:\/\/[^\s]+)/)
                           .map((part: string, i: number) => {
@@ -447,19 +505,13 @@ export default function MobileView(props: CodingViewProps) {
                             }
                             return part;
                           })}
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>No proofs available</p>
-                )}
-              </Description>
-            </Section>
-            <Section style={{ flex: 0.3, textAlign: 'right' }}>
-              <Title isMobile={true}>Status</Title>
-              <Status>
-                {timingStats ? <pre>{JSON.stringify(timingStats, null, 2)}</pre> : <p>---</p>}
-              </Status>
+                      </Description>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p>No proofs available</p>
+              )}
             </Section>
           </ProofContainer>
         </Pad>
