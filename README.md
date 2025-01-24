@@ -31,10 +31,10 @@ To run the **tribes** frontend locally, utilize the following ports:
 
 If you wish to run only the frontend, follow these steps:
 
-1. Modify line 10 in `src/config/ModeDispatcher.tsx`: 
+1. Modify line 11 in `src/config/ModeDispatcher.tsx`:
  - Change `'localhost:3000': AppMode.TRIBES` to `'localhost:3000': AppMode.COMMUNITY`
 
-2. Modify line 27 in `src/config/ModeDispatcher.tsx`: 
+2. Modify line 28 in `src/config/ModeDispatcher.tsx`:
  - Change `return hosts[host] || AppMode.TRIBES;` to `return hosts[host] || AppMode.COMMUNITY;`
 
 3. Modify line 10 in `src/config/host.ts`: 
