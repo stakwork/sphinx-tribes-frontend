@@ -367,6 +367,29 @@ export interface CodingViewProps extends WantedSummaryProps {
   showPayBounty?: boolean;
   paid: boolean;
   // owner_id: string;
+  bountyPaid?: boolean;
+  hasAccess?: boolean;
+  editAction?: (any?: any) => void;
+  deleteAction?: (any?: any) => void;
+  deletingState?: boolean;
+  enableDelete?: boolean;
+  bountyPending?: boolean;
+  isEditButtonDisable?: boolean;
+  isAssigned?: boolean;
+  assignedPerson?: Person;
+  pillText?: string;
+  pillColor?: string;
+  changeAssignedPerson?: () => void;
+  setEnableDelete?: (value: boolean) => void;
+  assigneeHandlerOpen?: () => void;
+  assigneeValue?: boolean;
+  peopleList?: Person[];
+  handleAssigneeDetails?: (value: any) => void;
+  color?: {
+    pureWhite: string;
+    pureBlack: string;
+    [key: string]: string;
+  };
 }
 
 export interface AddToFavoritesProps {
