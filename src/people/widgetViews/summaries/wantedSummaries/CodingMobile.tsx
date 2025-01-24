@@ -85,8 +85,7 @@ export default function MobileView(props: CodingViewProps) {
     assigneeHandlerOpen,
     assigneeValue,
     peopleList,
-    handleAssigneeDetails,
-
+    handleAssigneeDetails
   } = props;
 
   const color = colors['light'];
