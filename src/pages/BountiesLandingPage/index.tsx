@@ -1,13 +1,50 @@
 /* eslint-disable react/prop-types */
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useIsMobile } from '../../hooks';
 import { colors } from '../../config/colors';
 import TopEarners from '../../components/common/TopEarners/index.tsx';
 import { BountyComponents } from '../../components/BountyComponents';
+import StartUpModal from '../../people/utils/StartUpModal';
+
+const ButtonContainer = styled.div`
+  display: flex;
+  gap: 16px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+`;
+
+const Button = styled.button<{ variant: 'primary' | 'secondary' }>`
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  ${({ variant }: { variant: 'primary' | 'secondary' }) =>
+    variant === 'primary'
+      ? `
+    background: ${colors.light.blue1};
+    color: white;
+    border: none;
+    &:hover {
+      background: ${colors.light.blue2};
+    }
+  `
+      : `
+    background: transparent;
+    color: ${colors.light.blue1};
+    border: 1px solid ${colors.light.blue1};
+    &:hover {
+      background: ${colors.light.blue1}10;
+    }
+  `}
+`;
 
 const BountiesLandingPage: React.FC = () => {
   const isMobile = useIsMobile();
+  const [isOpenStartupModal, setIsOpenStartupModal] = useState(false);
 
   const color = colors['light'];
 
@@ -25,7 +62,7 @@ const BountiesLandingPage: React.FC = () => {
   `;
 
   const ContentWrapper = styled.div`
-    max-width: 1500px;
+    max-width: 1550px;
     width: 100%;
     margin: 40px;
     padding: 40px;
@@ -50,10 +87,8 @@ const BountiesLandingPage: React.FC = () => {
   const ContentGrid = styled.div`
     display: grid;
     grid-template-columns: 2fr 1fr;
-    gap: 60px;
     height: 100%;
     position: relative;
-    margin-right: -20px;
 
     &:after {
       content: '';
@@ -93,7 +128,7 @@ const BountiesLandingPage: React.FC = () => {
       font-family: Barlow;
       color: ${color.text1};
       margin-bottom: 24px;
-      font-weight: 500;
+      font-weight: 600;
     }
 
     p {
@@ -115,7 +150,7 @@ const BountiesLandingPage: React.FC = () => {
       font-family: Barlow;
       color: ${color.text1};
       margin-bottom: 24px;
-      font-weight: 500;
+      font-weight: 600;
     }
 
     p {
@@ -127,24 +162,48 @@ const BountiesLandingPage: React.FC = () => {
     }
   `;
 
+  const handleStartEarning = () => {
+    setIsOpenStartupModal(true);
+  };
+
+  const handleViewBounties = () => {
+    window.open('https://community.sphinx.chat/bounties', '_blank');
+  };
+
   return (
     <Body isMobile={isMobile}>
       <ContentWrapper>
         <ContentGrid>
           <ScrollableColumn>
-            <h1>Welcome to Bounties</h1>
+            <h1>Complete Tasks and Get Paid in Bitcoin Instantly</h1>
             <p>
-              Building the modern marketplace for work. Complete a bounty and get paid in Bitcoin
-              instantly! ⚡
+              Welcome to the modern marketplace for work that gives you the freedom to earn Bitcoin
+              for every bounty you complete.
             </p>
+            <ButtonContainer>
+              <Button variant="primary" onClick={handleStartEarning}>
+                Start Earning Bitcoin
+              </Button>
+              <Button variant="secondary" onClick={handleViewBounties}>
+                View Open Bounties
+              </Button>
+            </ButtonContainer>
             <BountyComponents />
           </ScrollableColumn>
           <Column>
-            <h1>Freedom to Earn!</h1>
+            <h1>All-Time Top Bounty Hunters</h1>
             <TopEarners limit={5} />
           </Column>
         </ContentGrid>
       </ContentWrapper>
+
+      {isOpenStartupModal && (
+        <StartUpModal
+          closeModal={() => setIsOpenStartupModal(false)}
+          dataObject={'createWork'}
+          buttonColor={'success'}
+        />
+      )}
     </Body>
   );
 };
