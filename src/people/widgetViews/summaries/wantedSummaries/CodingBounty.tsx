@@ -630,6 +630,9 @@ function MobileView(props: CodingBountiesProps) {
     setPaidStatus(paid);
   }, [paid]);
 
+  let pillColor = color.statusAssigned;
+  let pillText = 'assigned';
+
   if (isMobile) {
     return (
       <CodingMobile
@@ -644,66 +647,133 @@ function MobileView(props: CodingBountiesProps) {
         isCopied={isCopied}
         titleString={titleString}
         showPayBounty={showPayBounty}
+        bountyPaid={bountyPaid}
+        hasAccess={hasAccess}
+        bountyPending={bountyPending}
+        isEditButtonDisable={isEditButtonDisable}
+        deletingState={props.deletingState}
+        enableDelete={enableDelete}
+        editAction={props?.editAction}
+        deleteAction={props?.deleteAction}
+        assignedPerson={assignedPerson}
+        isAssigned={isAssigned}
+        pillText={pillText}
+        pillColor={pillColor}
+        changeAssignedPerson={changeAssignedPerson}
+        setEnableDelete={setEnableDelete}
+        assigneeHandlerOpen={assigneeHandlerOpen}
+        assigneeValue={assigneeValue}
+        peopleList={peopleList}
+        handleAssigneeDetails={handleAssigneeDetails}
         markPaidOrUnpaid={
           hasAccess && (
-            <IconButton
-              width={'100%'}
-              height={48}
-              style={{
-                bottom: '10px',
-                border: `1px solid ${color.primaryColor.P400}`,
-                background: paidStatus ? color.green1 : color.pureWhite,
-                color: paidStatus ? color.white100 : color.borderGreen1
-              }}
-              disabled={bountyPending}
-              data-testid="paid_btn"
-              text={paidStatus ? unpaidString : paidString}
-              loading={saving === 'paid' || updatingPayment}
-              endingImg={'/static/mark_unpaid.svg'}
-              textStyle={{
-                width: '130px',
-                display: 'flex',
-                justifyContent: 'center',
-                fontFamily: 'Barlow',
-                marginLeft: '30px',
-                fontSize: '15px'
-              }}
-              onClick={paidStatus ? handleSetAsUnpaid : handleSetAsPaid}
-            />
+            <>
+              {isAssignee && (
+                <Button
+                  iconSize={14}
+                  width={'100%'}
+                  height={48}
+                  color="withdraw"
+                  onClick={() => setIsOpenProofModal(true)}
+                  style={{
+                    marginBottom: '20px'
+                  }}
+                  ButtonTextStyle={{
+                    fontSize: '15px',
+                    fontFamily: 'Barlow'
+                  }}
+                  text="Submit Proof"
+                />
+              )}
+              <IconButton
+                width={'100%'}
+                height={48}
+                style={{
+                  bottom: '10px',
+                  border: `1px solid ${color.primaryColor.P400}`,
+                  background: paidStatus ? color.green1 : color.pureWhite,
+                  color: paidStatus ? color.white100 : color.borderGreen1
+                }}
+                disabled={bountyPending}
+                data-testid="paid_btn"
+                text={paidStatus ? unpaidString : paidString}
+                loading={saving === 'paid' || updatingPayment}
+                endingImg={'/static/mark_unpaid.svg'}
+                textStyle={{
+                  width: '130px',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  fontFamily: 'Barlow',
+                  marginLeft: '30px',
+                  fontSize: '15px'
+                }}
+                onClick={paidStatus ? handleSetAsUnpaid : handleSetAsPaid}
+              />
+            </>
           )
         }
         payBounty={
           hasAccess &&
           userAssigned && (
-            <IconButton
-              width={'100%'}
-              height={48}
-              disabled={
-                paymentLoading || payBountyDisable || pendingPaymentLoading || bountyPending
-              }
-              style={{
-                bottom: '10px'
-              }}
-              text={'Pay Bounty'}
-              loading={saving === 'paid' || updatingPayment}
-              textStyle={{
-                display: 'flex',
-                justifyContent: 'center',
-                fontFamily: 'Barlow',
-                fontSize: '15px',
-                marginLeft: '30px'
-              }}
-              hovercolor={color.button_secondary.hover}
-              shadowcolor={color.button_secondary.shadow}
-              onClick={confirmPaymentHandler}
-            />
+            <>
+              {!bountyCompleted && (
+                <Button
+                  disabled={paymentLoading || payBountyDisable || !created}
+                  iconSize={14}
+                  width={'100%'}
+                  height={48}
+                  color="withdraw"
+                  onClick={() => created && updateCompletedStatus(created)}
+                  style={{
+                    marginBottom: '20px'
+                  }}
+                  ButtonTextStyle={{
+                    fontSize: '15px',
+                    fontFamily: 'Barlow'
+                  }}
+                  text="Complete Bounty"
+                />
+              )}
+
+              <IconButton
+                width={'100%'}
+                height={48}
+                disabled={
+                  paymentLoading || payBountyDisable || pendingPaymentLoading || bountyPending
+                }
+                style={{
+                  bottom: '10px'
+                }}
+                text={'Pay Bounty'}
+                loading={saving === 'paid' || updatingPayment}
+                textStyle={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  fontFamily: 'Barlow',
+                  fontSize: '15px',
+                  marginLeft: '30px'
+                }}
+                hovercolor={color.button_secondary.hover}
+                shadowcolor={color.button_secondary.shadow}
+                onClick={confirmPaymentHandler}
+              />
+              {isOpenProofModal && (
+                <CodingBountyProofModal
+                  closeModal={() => setIsOpenProofModal(false)}
+                  value={value}
+                  onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setValue(e.target.value)}
+                  placeholder="Enter proof here"
+                  bountyId={id?.toString() || ''}
+                  submitProof={submitProof}
+                  isMobile={isMobile}
+                />
+              )}
+            </>
           )
         }
       />
     );
   }
-
-  let pillColor = color.statusAssigned;
 
   if (bountyPaid) {
     pillColor = color.statusPaid;
@@ -714,8 +784,6 @@ function MobileView(props: CodingBountiesProps) {
   } else if (bountyCompleted && !bountyPaid) {
     pillColor = color.statusCompleted;
   }
-
-  let pillText = 'assigned';
 
   if (bountyPaid) {
     pillText = 'paid';
@@ -1134,6 +1202,7 @@ function MobileView(props: CodingBountiesProps) {
                       placeholder="Enter proof here"
                       bountyId={id?.toString() || ''}
                       submitProof={submitProof}
+                      isMobile={isMobile}
                     />
                   )}
                   <BottomButtonContainer>
@@ -1658,6 +1727,7 @@ function MobileView(props: CodingBountiesProps) {
                     placeholder="Enter proof here"
                     bountyId={id?.toString() || ''}
                     submitProof={submitProof}
+                    isMobile={isMobile}
                   />
                 )}
               </>

@@ -220,6 +220,12 @@ describe('filter by status for org bounty', () => {
     cy.get('body').click(0, 0);
     cy.wait(1000);
 
+    cy.contains('Status').first().click();
+    cy.wait(1000);
+
+    cy.contains('label', 'Assigned').click();
+    cy.wait(1000);
+
     cy.contains(bounty8.title).click();
     cy.wait(1000);
 
