@@ -3,7 +3,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { PriceOuterContainer } from '../..';
 import { colors } from '../../../../config';
-import { DollarConverter } from '../../../../helpers';
+import { formatSatsInMillions, satToUsd } from '../../../../helpers';
 import { LeaderItem } from '../../../../pages/leaderboard/store';
 import { UserInfo } from '../../../../pages/leaderboard/userInfo';
 
@@ -15,6 +15,7 @@ const ItemContainer = styled.div`
   align-items: center;
   gap: 1rem;
   padding: 0.5rem;
+  padding-right: 0 !important;
   margin-left: var(--position-gutter);
   background-color: ${colors.light.pureWhite};
   border-radius: 0.5rem;
@@ -47,6 +48,38 @@ const ItemContainer = styled.div`
     left: calc(-1 * var(--position-gutter));
     font-weight: 500;
   }
+
+  & .Price_Dynamic_Text {
+    display: flex;
+    align-items: center;
+  }
+
+  & .Price_inner_Container {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  & .sat-amount {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  & .separator {
+    margin: 0 10px;
+    color: black;
+    font-weight: 500;
+  }
+
+  & .usd-amount {
+    margin-right: 5px;
+    color: ${colors.light.text2};
+    &::before {
+      content: '|';
+      color: ${colors.light.grayish.G900};
+    }
+  }
 `;
 
 type Props = LeaderItem & {
@@ -69,10 +102,11 @@ export const LeaerboardItem = ({ owner_pubkey, total_sats_earned, position }: Pr
           priceBackground={color.primaryColor.P100}
         >
           <div className="Price_inner_Container">
-            <EuiText className="Price_Dynamic_Text">{DollarConverter(total_sats_earned)}</EuiText>
-          </div>
-          <div className="Price_SAT_Container">
-            <EuiText className="Price_SAT_Text">SAT</EuiText>
+            <div className="Price_Dynamic_Text">
+              <span className="sat-amount">{formatSatsInMillions(total_sats_earned)} SAT</span>
+              <span className="separator">|</span>
+              <span className="usd-amount">${satToUsd(total_sats_earned)}</span>
+            </div>
           </div>
         </PriceOuterContainer>
       </div>
