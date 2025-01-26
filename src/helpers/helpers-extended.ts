@@ -406,3 +406,10 @@ export const normalizeUrl = (input: string): string => {
     return noSpaces;
   }
 };
+
+export const formatSatsInMillions = (sats: number): string => {
+  if (sats >= 1000000) {
+    return `${(sats / 1000000).toFixed(1)}M`;
+  }
+  return DollarConverter(sats);
+};

@@ -8,6 +8,8 @@ import { SOCKET_MSG, createSocketInstance } from 'config/socket';
 import { Box } from '@mui/system';
 import { bountyReviewStore } from 'store/bountyReviewStore';
 import { uiStore } from 'store/ui';
+import { BountyReviewStatus } from 'store/interface';
+import StatusDropdown from 'components/common/ProofStatusDropDown';
 import { Button, Divider, Modal, usePaymentConfirmationModal } from '../../../../components/common';
 import { colors } from '../../../../config/colors';
 import { renderMarkdown } from '../../../utils/RenderMarkdown';
@@ -135,7 +137,6 @@ function MobileView(props: CodingBountiesProps) {
   const [paymentError, setPaymentError] = useState('');
   const [isOpenProofModal, setIsOpenProofModal] = useState(false);
   const [value, setValue] = useState('');
-  const [timingStats] = useState(null);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const bountyID = id?.toString() || '';
@@ -489,6 +490,33 @@ function MobileView(props: CodingBountiesProps) {
   };
 
   const { proofs } = bountyReviewStore;
+
+  const isAssigner = person?.owner_pubkey === uiStore._meInfo?.owner_pubkey;
+
+  const handleStatusUpdate = async (proofId: string, status: BountyReviewStatus) => {
+    try {
+      console.log(proofId, status);
+      await bountyReviewStore.updateProofStatus(bountyID, proofId, status);
+
+      setToasts([
+        {
+          id: `${Math.random()}`,
+          title: 'Status Updated',
+          color: 'success',
+          text: 'Proof status updated successfully'
+        }
+      ]);
+    } catch (error: any) {
+      setToasts([
+        {
+          id: `${Math.random()}`,
+          title: 'Update Failed',
+          color: 'danger',
+          text: error.message || 'Failed to update proof status'
+        }
+      ]);
+    }
+  };
 
   useEffect(() => {
     const fetchProofs = async () => {
@@ -948,11 +976,25 @@ function MobileView(props: CodingBountiesProps) {
                   <ProofContainer>
                     <Section>
                       <Title>Proof of Work</Title>
-                      <Description>
-                        {proofs[bountyID]?.length ? (
-                          <ul>
-                            {proofs[bountyID].map((proof: any, index: any) => (
-                              <li key={index}>
+                      {proofs[bountyID]?.length ? (
+                        <div
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '10px',
+                            width: '100%'
+                          }}
+                        >
+                          {proofs[bountyID].map((proof: any, index: any) => (
+                            <div
+                              key={index}
+                              style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                width: '100%'
+                              }}
+                            >
+                              <Description style={{ flex: 1, textAlign: 'left' }}>
                                 {proof.description
                                   .split(/(https?:\/\/[^\s]+)/)
                                   .map((part: string, i: number) => {
@@ -970,24 +1012,22 @@ function MobileView(props: CodingBountiesProps) {
                                     }
                                     return part;
                                   })}
-                              </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p>No proofs available</p>
-                        )}
-                      </Description>
-                    </Section>
-                    <Section style={{ flex: 0.3, textAlign: 'right' }}>
-                      <Title>Status</Title>
-                      <Status>
-                        {' '}
-                        {timingStats ? (
-                          <pre>{JSON.stringify(timingStats, null, 2)}</pre>
-                        ) : (
-                          <p>---</p>
-                        )}
-                      </Status>
+                              </Description>
+                              <Status style={{ flex: 0.3, textAlign: 'right' }}>
+                                <StatusDropdown
+                                  bountyId={bountyID}
+                                  proofId={proof.id}
+                                  currentStatus={proof.status}
+                                  isAssigner={isAssigner}
+                                  onStatusUpdate={handleStatusUpdate}
+                                />
+                              </Status>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p>No proofs available</p>
+                      )}
                     </Section>
                   </ProofContainer>
                 </CreatorDescription>
@@ -1569,8 +1609,23 @@ function MobileView(props: CodingBountiesProps) {
               <Section style={{ flex: 0.3, textAlign: 'right' }}>
                 <Title>Status</Title>
                 <Status>
-                  {' '}
-                  {timingStats ? <pre>{JSON.stringify(timingStats, null, 2)}</pre> : <p>---</p>}
+                  {proofs[bountyID]?.length ? (
+                    <ul>
+                      {proofs[bountyID].map((proof: any, index: any) => (
+                        <div key={index}>
+                          <StatusDropdown
+                            bountyId={bountyID}
+                            proofId={proof.id}
+                            currentStatus={proof.status}
+                            isAssigner={isAssigner}
+                            onStatusUpdate={handleStatusUpdate}
+                          />
+                        </div>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>---</p>
+                  )}
                 </Status>
               </Section>
             </ProofContainer>
