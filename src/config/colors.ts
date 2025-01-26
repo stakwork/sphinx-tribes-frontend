@@ -33,6 +33,7 @@ const palette = {
   black300: '#202020',
   black400: '#222E3A',
   black500: '#3c3f41',
+  orange1: `#FF9248`,
   background100: '#f0f1f3',
   statusAssigned: '#49C998',
   statusCompleted: '#9B870C',
