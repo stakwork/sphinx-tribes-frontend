@@ -627,7 +627,6 @@ function Form(props: FormProps) {
                                 handleChange={(e: any) => {
                                   setFieldValue(item.name, e);
 
-                                  setFieldValue(item.name, e);
                                   if (item.name === 'text_snippet') {
                                     const selectedSnippet = filteredSnippets.find(
                                       (snippet: {
@@ -637,9 +636,9 @@ function Form(props: FormProps) {
                                       }) => snippet.value === e
                                     );
                                     if (selectedSnippet) {
-                                      const descriptionContent = `${selectedSnippet.snippet}`;
-                                      // Update the description field
-                                      setFieldValue('description', descriptionContent);
+                                      const existingDescription = values.description || '';
+                                      const descriptionContent = `${existingDescription}\n\n${selectedSnippet.snippet}`;
+                                      setFieldValue('description', descriptionContent.trim());
                                     }
                                   }
                                 }}
