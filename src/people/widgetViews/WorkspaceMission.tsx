@@ -89,6 +89,7 @@ import ManageWorkspaceUsersModal from './workspace/ManageWorkspaceUsersModal';
 import { BudgetWrapComponent } from './BudgetWrap';
 import { EditableField } from './workspace/EditableField';
 import { Toast } from './workspace/interface';
+import TextSnippetModal from './workspace/TextSnippetModal.tsx';
 
 const color = colors['light'];
 
@@ -311,7 +312,7 @@ const WorkspaceMission = () => {
   const [modalType, setModalType] = useState('add');
   const [featureModal, setFeatureModal] = useState(false);
   const [features, setFeatures] = useState<Feature[]>([]);
-  const [featuresCount] = useState(22);
+  const [featuresCount] = useState(0);
   const [isOpenUserManage, setIsOpenUserManage] = useState<boolean>(false);
   const [users, setUsers] = useState<Person[]>([]);
   const [displayUserRepoOptions, setDisplayUserRepoOptions] = useState<Record<number, boolean>>({});
@@ -338,6 +339,15 @@ const WorkspaceMission = () => {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const ITEMS_PER_PAGE = 4;
   const INITIAL_LOAD_LIMIT = loadLimit;
+  const [isSnippetModalVisible, setSnippetModalVisible] = useState(false);
+
+  const openSnippetModal = () => {
+    setSnippetModalVisible(true);
+  };
+
+  const closeSnippetModal = () => {
+    setSnippetModalVisible(false);
+  };
 
   const { isEnabled: isPlannerEnabled, loading: isPlannerLoading } =
     useFeatureFlag('display_planner');
@@ -554,7 +564,7 @@ const WorkspaceMission = () => {
         <Box fontSize={20} textAlign="center">
           Are you sure you want to <br />
           <Box component="span" fontWeight="500">
-            Delete this Repo?
+            Delete this Repo? h
           </Box>
         </Box>
       )
@@ -1303,6 +1313,25 @@ const WorkspaceMission = () => {
                   margin: 0,
                   padding: '10px 20px',
                   width: '100%',
+                  backgroundColor: '#4285f4',
+                  color: 'white',
+                  textAlign: 'center',
+                  border: 'none',
+                  fontSize: '16px',
+                  cursor: 'pointer'
+                }}
+                onClick={() => openSnippetModal()}
+                dataTestId="workspace-planner-btn"
+                text="Manage Text snippets"
+              />
+            </WorkspaceFieldWrap>
+            <WorkspaceFieldWrap>
+              <Button
+                style={{
+                  borderRadius: '5px',
+                  margin: 0,
+                  padding: '10px 20px',
+                  width: '100%',
                   backgroundColor: '#49C998',
                   color: 'white',
                   textAlign: 'center',
@@ -1703,6 +1732,40 @@ const WorkspaceMission = () => {
             url={selectedCodeGraph?.url}
           />
         </Modal>
+        <Modal
+          visible={isSnippetModalVisible}
+          style={{
+            height: '100%',
+            flexDirection: 'column'
+          }}
+          envStyle={{
+            marginTop: isMobile ? 64 : 0,
+            background: color.pureWhite,
+            zIndex: 20,
+            maxHeight: '60%',
+            borderRadius: '10px',
+            minWidth: isMobile ? '100%' : '60%',
+            minHeight: isMobile ? '100%' : '50%',
+            boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
+            overflowX: 'hidden'
+          }}
+          overlayClick={closeSnippetModal}
+          bigCloseImage={closeSnippetModal}
+          bigCloseImageStyle={{
+            position: 'absolute',
+            top: '-1%',
+            right: '-1%',
+            background: '#000',
+            borderRadius: '50%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            cursor: 'pointer'
+          }}
+        >
+          <TextSnippetModal isVisible={isSnippetModalVisible} workspaceUUID={uuid} />
+        </Modal>
+
         {isOpenUserManage && (
           <ManageWorkspaceUsersModal
             isOpen={isOpenUserManage}

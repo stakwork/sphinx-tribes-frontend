@@ -2,6 +2,7 @@ import { toJS } from 'mobx';
 import sinon from 'sinon';
 import moment from 'moment';
 import { waitFor } from '@testing-library/react';
+import { Person, PersonBounty } from 'store/interface';
 import { people } from '../../__test__/__mockData__/persons';
 import { user } from '../../__test__/__mockData__/user';
 import { MeInfo, emptyMeInfo, uiStore } from '../ui';
@@ -1254,5 +1255,613 @@ describe('Main store', () => {
     sinon.assert.called(fetchStub);
     expect(fetchStub.calledOnce).toEqual(true);
     expect(store.peopleBounties[0].body.coding_languages).toEqual(filterCriteria.coding_languages);
+  });
+
+  it('should successfully fetch workspace users', async () => {
+    const mockUsers: Person[] = [
+      {
+        id: 1,
+        unique_name: 'user-one',
+        owner_pubkey: 'pub-key-1',
+        uuid: 'user-1',
+        owner_alias: 'User One',
+        description: 'Test user one',
+        img: 'image1.jpg',
+        tags: ['developer'],
+        photo_url: 'photo1.jpg',
+        alias: 'User One',
+        route_hint: 'hint1',
+        contact_key: 'contact1',
+        price_to_meet: 100,
+        url: 'https://test1.com',
+        verification_signature: 'sig1',
+        extras: {
+          email: [],
+          liquid: [],
+          wanted: []
+        }
+      },
+      {
+        id: 2,
+        unique_name: 'user-two',
+        owner_pubkey: 'pub-key-2',
+        uuid: 'user-2',
+        owner_alias: 'User Two',
+        description: 'Test user two',
+        img: 'image2.jpg',
+        tags: ['designer'],
+        photo_url: 'photo2.jpg',
+        alias: 'User Two',
+        route_hint: 'hint2',
+        contact_key: 'contact2',
+        price_to_meet: 200,
+        url: 'https://test2.com',
+        verification_signature: 'sig2',
+        extras: {
+          email: [],
+          liquid: [],
+          wanted: []
+        }
+      }
+    ];
+
+    const workspaceUuid = 'workspace-123';
+    const url = `${TribesURL}/workspaces/users/${workspaceUuid}`;
+
+    fetchStub.withArgs(url, sinon.match.any).returns(
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve(mockUsers)
+      }) as any
+    );
+
+    const store = new MainStore();
+    const result = await store.getWorkspaceUsers(workspaceUuid);
+
+    expect(
+      fetchStub.calledWith(
+        url,
+        sinon.match({
+          method: 'GET',
+          mode: 'cors'
+        })
+      )
+    ).toBeTruthy();
+    expect(result).toEqual(mockUsers);
+  });
+
+  it('should return empty array when workspace users fetch fails', async () => {
+    const workspaceUuid = 'workspace-123';
+    const url = `${TribesURL}/workspaces/users/${workspaceUuid}`;
+
+    fetchStub.withArgs(url, sinon.match.any).returns(Promise.reject(new Error('API Error')));
+
+    const store = new MainStore();
+    const result = await store.getWorkspaceUsers(workspaceUuid);
+
+    expect(result).toEqual([]);
+  });
+
+  it('should return empty array for malformed workspace users response', async () => {
+    const workspaceUuid = 'workspace-123';
+    const url = `${TribesURL}/workspaces/users/${workspaceUuid}`;
+
+    fetchStub.withArgs(url, sinon.match.any).returns(
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve(null)
+      }) as any
+    );
+
+    const store = new MainStore();
+    const result = await store.getWorkspaceUsers(workspaceUuid);
+    waitFor(() => {
+      expect(result).toEqual([]);
+    });
+  });
+
+  it('should handle empty workspace UUID for users fetch', async () => {
+    const workspaceUuid = '';
+
+    const store = new MainStore();
+    const result = await store.getWorkspaceUsers(workspaceUuid);
+
+    expect(result).toEqual([]);
+  });
+  it('should return empty array when API call fails', async () => {
+    const workspaceUuid = 'workspace-123';
+    const url = `${TribesURL}/workspaces/users/${workspaceUuid}`;
+
+    fetchStub.withArgs(url, sinon.match.any).returns(Promise.reject(new Error('API Error')));
+
+    const store = new MainStore();
+    const result = await store.getWorkspaceUsers(workspaceUuid);
+
+    expect(fetchStub.withArgs(url, sinon.match.any).calledOnce).toEqual(true);
+    expect(result).toEqual([]);
+  });
+
+  it('should return empty array when response is not ok', async () => {
+    const workspaceUuid = 'workspace-123';
+    const url = `${TribesURL}/workspaces/users/${workspaceUuid}`;
+
+    fetchStub.withArgs(url, sinon.match.any).returns(
+      Promise.resolve({
+        ok: false,
+        status: 404,
+        json: () => Promise.resolve([])
+      }) as any
+    );
+
+    const store = new MainStore();
+    const result = await store.getWorkspaceUsers(workspaceUuid);
+
+    expect(fetchStub.withArgs(url, sinon.match.any).calledOnce).toEqual(true);
+    expect(result).toEqual([]);
+  });
+
+  it('should handle malformed response data', async () => {
+    const workspaceUuid = 'workspace-123';
+    const url = `${TribesURL}/workspaces/users/${workspaceUuid}`;
+
+    fetchStub.withArgs(url, sinon.match.any).returns(
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve(null)
+      }) as any
+    );
+
+    const store = new MainStore();
+    const result = await store.getWorkspaceUsers(workspaceUuid);
+    waitFor(() => {
+      expect(fetchStub.withArgs(url, sinon.match.any).calledOnce).toEqual(true);
+      expect(result).toEqual([]);
+    });
+  });
+
+  it('should make request with correct parameters', async () => {
+    const workspaceUuid = 'workspace-123';
+    const url = `${TribesURL}/workspaces/users/${workspaceUuid}`;
+
+    const expectedRequestOptions = {
+      method: 'GET',
+      mode: 'cors'
+    };
+
+    fetchStub.withArgs(url, expectedRequestOptions).returns(
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve(people)
+      }) as any
+    );
+
+    const store = new MainStore();
+    await store.getWorkspaceUsers(workspaceUuid);
+
+    expect(fetchStub.calledWith(url, sinon.match(expectedRequestOptions))).toEqual(true);
+  });
+
+  it('should handle empty workspace UUID', async () => {
+    const workspaceUuid = '';
+    const url = `${TribesURL}/workspaces/users/${workspaceUuid}`;
+
+    fetchStub.withArgs(url, sinon.match.any).returns(
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve([])
+      }) as any
+    );
+
+    const store = new MainStore();
+    const result = await store.getWorkspaceUsers(workspaceUuid);
+
+    expect(fetchStub.withArgs(url, sinon.match.any).calledOnce).toEqual(true);
+    expect(result).toEqual([]);
+  });
+});
+
+describe('getUserRoles', () => {
+  let mainStore: MainStore;
+  const validUuid = 'valid-uuid-123';
+  const validUser = 'valid-user-456';
+  const mockJwt = 'test_jwt';
+  const mockSessionId = 'test-session-id';
+
+  beforeEach(() => {
+    mainStore = new MainStore();
+    uiStore.setMeInfo({ ...user, tribe_jwt: mockJwt });
+    sinon.stub(mainStore, 'getSessionId').returns(mockSessionId);
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it('Valid Inputs with Existing User and UUID', async () => {
+    const mockRoles = [
+      { id: 1, name: 'admin' },
+      { id: 2, name: 'developer' }
+    ];
+    fetchStub.resolves({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve(mockRoles)
+    } as Response);
+
+    const result = await mainStore.getUserRoles(validUuid, validUser);
+
+    expect(result).toEqual(mockRoles);
+    sinon.assert.calledWithMatch(
+      fetchStub,
+      `${TribesURL}/workspaces/users/role/${validUuid}/${validUser}`,
+      {
+        method: 'GET',
+        headers: {
+          'x-jwt': mockJwt,
+          'Content-Type': 'application/json',
+          'x-session-id': mockSessionId
+        }
+      }
+    );
+  });
+
+  it('Valid Inputs with No Roles', async () => {
+    fetchStub.resolves({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve([])
+    } as Response);
+
+    const result = await mainStore.getUserRoles(validUuid, validUser);
+    expect(result).toEqual([]);
+  });
+
+  it('Empty UUID and User', async () => {
+    fetchStub.resolves({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve([])
+    } as Response);
+
+    const result = await mainStore.getUserRoles('', '');
+
+    expect(result).toEqual([]);
+
+    expect(fetchStub.calledOnce).toBe(true);
+    sinon.assert.calledWith(
+      fetchStub,
+      sinon.match((url: string) => url.includes('/workspaces/users/role/')),
+      sinon.match({
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'x-jwt': mockJwt,
+          'Content-Type': 'application/json',
+          'x-session-id': mockSessionId
+        }
+      })
+    );
+  });
+
+  it('Long UUID and User Strings', async () => {
+    const longString = 'a'.repeat(1000);
+    fetchStub.resolves({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve([])
+    } as Response);
+
+    const result = await mainStore.getUserRoles(longString, longString);
+    expect(result).toEqual([]);
+  });
+
+  it('Invalid UUID Format', async () => {
+    fetchStub.resolves({
+      ok: false,
+      status: 400,
+      json: () => Promise.resolve({ error: 'Invalid UUID format' })
+    } as Response);
+
+    const result = await mainStore.getUserRoles('invalid-uuid', validUser);
+    expect(result).toEqual([]);
+  });
+
+  it('Invalid User Format', async () => {
+    fetchStub.resolves({
+      ok: false,
+      status: 400,
+      json: () => Promise.resolve({ error: 'Invalid user format' })
+    } as Response);
+
+    const result = await mainStore.getUserRoles(validUuid, 'invalid@user');
+    expect(result).toEqual([]);
+  });
+
+  it('Network Error During Fetch', async () => {
+    fetchStub.rejects(new Error('Network error'));
+
+    const result = await mainStore.getUserRoles(validUuid, validUser);
+    expect(result).toEqual([]);
+  });
+
+  it('Unauthorized Access', async () => {
+    fetchStub.resolves({
+      ok: false,
+      status: 401,
+      json: () => Promise.resolve({ error: 'Unauthorized' })
+    } as Response);
+
+    const result = await mainStore.getUserRoles(validUuid, validUser);
+    expect(result).toEqual([]);
+  });
+
+  it('Server Returns Non-JSON Response', async () => {
+    fetchStub.resolves({
+      ok: true,
+      status: 200,
+      json: () => Promise.reject(new Error('Invalid JSON'))
+    } as Response);
+
+    const result = await mainStore.getUserRoles(validUuid, validUser);
+    expect(result).toEqual([]);
+  });
+
+  it('High Volume of Roles', async () => {
+    const largeRolesArray = Array.from({ length: 1000 }, (_: any, i: number) => ({
+      id: i,
+      name: `role-${i}`
+    }));
+    fetchStub.resolves({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve(largeRolesArray)
+    } as Response);
+
+    const result = await mainStore.getUserRoles(validUuid, validUser);
+
+    waitFor(() => {
+      expect(result).toEqual(largeRolesArray);
+      expect(result.length).toBe(1000);
+    });
+  });
+
+  it('No meInfo in uiStore', async () => {
+    uiStore.setMeInfo(null);
+    const result = await mainStore.getUserRoles(validUuid, validUser);
+    waitFor(() => {
+      expect(result).toEqual([]);
+      sinon.assert.notCalled(fetchStub);
+    });
+  });
+
+  it('Session ID Not Set', async () => {
+    sinon.restore();
+    sinon.stub(mainStore, 'getSessionId').returns('');
+
+    const mockRoles = [{ id: 1, name: 'admin' }];
+    fetchStub.resolves({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve(mockRoles)
+    } as Response);
+
+    const result = await mainStore.getUserRoles(validUuid, validUser);
+
+    waitFor(() => {
+      sinon.assert.calledWithMatch(
+        fetchStub,
+        `${TribesURL}/workspaces/users/role/${validUuid}/${validUser}`,
+        {
+          headers: {
+            'x-jwt': mockJwt,
+            'Content-Type': 'application/json',
+            'x-session-id': ''
+          }
+        }
+      );
+      expect(result).toEqual(mockRoles);
+    });
+  });
+});
+
+describe('MainStore.setPersonBounties', () => {
+  let mainStore: MainStore;
+
+  beforeEach(() => {
+    mainStore = new MainStore();
+  });
+
+  it('Standard Input', () => {
+    const bounties: PersonBounty[] = [
+      {
+        owner_id: '1',
+        wanted_type: 'bug',
+        person: { name: 'John' },
+        body: { title: 'Bounty 1' },
+        codingLanguage: 'JavaScript',
+        estimated_session_length: '2 hours'
+      },
+      {
+        owner_id: '2',
+        wanted_type: 'feature',
+        person: { name: 'Jane' },
+        body: { title: 'Bounty 2' },
+        codingLanguage: 'TypeScript',
+        estimated_session_length: '4 hours'
+      }
+    ];
+
+    mainStore.setPersonBounties(bounties);
+    expect(mainStore.personAssignedBounties).toEqual(bounties);
+  });
+
+  it('Empty Array', () => {
+    const bounties: PersonBounty[] = [];
+    mainStore.setPersonBounties(bounties);
+    expect(mainStore.personAssignedBounties).toEqual([]);
+  });
+
+  it('Single Element Array', () => {
+    const bounties: PersonBounty[] = [
+      {
+        owner_id: '1',
+        wanted_type: 'bug',
+        person: { name: 'John' },
+        body: { title: 'Single Bounty' },
+        codingLanguage: 'Python',
+        estimated_session_length: '1 hour'
+      }
+    ];
+
+    mainStore.setPersonBounties(bounties);
+    expect(mainStore.personAssignedBounties).toEqual(bounties);
+  });
+
+  it('Large Array', () => {
+    const bounties: PersonBounty[] = Array.from({ length: 1000 }, (_: unknown, i: number) => ({
+      owner_id: i.toString(),
+      wanted_type: 'bug',
+      person: { name: `Person ${i}` },
+      body: { title: `Bounty ${i}` },
+      codingLanguage: 'JavaScript',
+      estimated_session_length: '3 hours'
+    }));
+
+    mainStore.setPersonBounties(bounties);
+    expect(mainStore.personAssignedBounties.length).toBe(1000);
+    expect(mainStore.personAssignedBounties).toEqual(bounties);
+  });
+
+  it('Array with Null Elements', () => {
+    const bounties: PersonBounty[] = [
+      {
+        owner_id: '1',
+        wanted_type: 'bug',
+        person: null,
+        body: null,
+        codingLanguage: '',
+        estimated_session_length: ''
+      },
+      {
+        owner_id: '2',
+        wanted_type: 'feature',
+        person: { name: 'Jane' },
+        body: { title: 'Valid Bounty' },
+        codingLanguage: 'Ruby',
+        estimated_session_length: '2 hours'
+      }
+    ];
+
+    mainStore.setPersonBounties(bounties);
+    expect(mainStore.personAssignedBounties).toEqual(bounties);
+  });
+
+  it('Array with Mixed Valid and Invalid Elements', () => {
+    const bounties: PersonBounty[] = [
+      {
+        owner_id: '1',
+        wanted_type: 'bug',
+        person: { name: 'John' },
+        body: { title: 'Valid Bounty' },
+        codingLanguage: 'Java',
+        estimated_session_length: '5 hours'
+      },
+      {
+        owner_id: '2',
+        wanted_type: 'invalid_type',
+        person: { name: 'Jane' },
+        body: { title: 'Invalid Bounty' },
+        codingLanguage: 'Go',
+        estimated_session_length: '1 hour'
+      }
+    ];
+
+    mainStore.setPersonBounties(bounties);
+    expect(mainStore.personAssignedBounties).toEqual(bounties);
+  });
+
+  it('Array with Duplicate Elements', () => {
+    const duplicateBounty: PersonBounty = {
+      owner_id: '1',
+      wanted_type: 'bug',
+      person: { name: 'John' },
+      body: { title: 'Duplicate Bounty' },
+      codingLanguage: 'PHP',
+      estimated_session_length: '3 hours'
+    };
+
+    const bounties: PersonBounty[] = [duplicateBounty, duplicateBounty];
+
+    mainStore.setPersonBounties(bounties);
+    expect(mainStore.personAssignedBounties).toEqual(bounties);
+    expect(mainStore.personAssignedBounties.length).toBe(2);
+  });
+
+  it('Array with Missing Properties', () => {
+    const bounties: PersonBounty[] = [
+      {
+        owner_id: '1',
+        wanted_type: 'bug',
+        codingLanguage: 'C++',
+        estimated_session_length: '2 hours'
+      },
+      {
+        owner_id: '2',
+        wanted_type: 'feature',
+        person: { name: 'Jane' },
+        codingLanguage: 'Rust',
+        estimated_session_length: '4 hours'
+      }
+    ] as PersonBounty[];
+
+    mainStore.setPersonBounties(bounties);
+    expect(mainStore.personAssignedBounties).toEqual(bounties);
+  });
+
+  it('should handle null input', () => {
+    waitFor(() => {
+      expect(() => {
+        mainStore.setPersonBounties(null as unknown as PersonBounty[]);
+      }).toThrow();
+    });
+  });
+
+  it('should handle undefined input', () => {
+    waitFor(() => {
+      expect(() => {
+        mainStore.setPersonBounties(undefined as unknown as PersonBounty[]);
+      }).toThrow();
+    });
+  });
+
+  it('should handle very large arrays efficiently', () => {
+    waitFor(() => {
+      const start = performance.now();
+
+      const largeBounties: PersonBounty[] = Array.from(
+        { length: 10000 },
+        (_: unknown, i: number) => ({
+          owner_id: i.toString(),
+          wanted_type: 'bug',
+          person: { name: `Person ${i}` },
+          body: { title: `Bounty ${i}` },
+          codingLanguage: 'JavaScript',
+          estimated_session_length: '2 hours'
+        })
+      );
+
+      mainStore.setPersonBounties(largeBounties);
+
+      const end = performance.now();
+      const executionTime = end - start;
+
+      expect(executionTime).toBeLessThan(1000);
+      expect(mainStore.personAssignedBounties.length).toBe(10000);
+    });
   });
 });

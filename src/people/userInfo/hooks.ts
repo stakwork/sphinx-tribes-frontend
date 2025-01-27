@@ -33,6 +33,7 @@ export const useUserInfo = () => {
 
   function logout() {
     ui.setEditMe(false);
+    console.log('logging out!');
     ui.setMeInfo(null);
     main.getPeople({ resetPage: true });
     main.setLnToken('');

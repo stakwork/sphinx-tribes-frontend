@@ -6,7 +6,11 @@ import { colors } from '../../../config';
 
 const truncate = (str: string, n: number) => (str.length > n ? `${str.substr(0, n - 1)}...` : str);
 
-const CardContainer = styled.div`
+interface CardContainerProps {
+  isDraft?: boolean;
+}
+
+const CardContainer = styled.div<CardContainerProps>`
   width: 384px;
   height: auto;
   border-radius: 8px;
@@ -14,7 +18,10 @@ const CardContainer = styled.div`
   margin-bottom: 16px;
   display: flex;
   flex-direction: column;
-  background-color: ${colors.light.grayish.G950};
+  background-color: ${(props: CardContainerProps): string =>
+    props.isDraft ? colors.light.grayish.G900 : colors.light.grayish.G950};
+  border-left: ${(props: CardContainerProps): string =>
+    props.isDraft ? `4px solid ${colors.light.blue1}` : 'none'};
   cursor: pointer;
 `;
 
@@ -39,6 +46,9 @@ const CardTitle = styled.h3`
   &:hover {
     color: ${colors.light.primaryColor};
   }
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 `;
 
 const AssignerPic = styled.div`
@@ -90,6 +100,8 @@ const RowB = styled.div`
 const StatusText = styled.span<{ status?: BountyCardStatus }>`
   color: ${({ status }: { status?: BountyCardStatus }): string => {
     switch (status) {
+      case 'DRAFT':
+        return colors.light.statusDraft;
       case 'PAID':
         return colors.light.statusPaid;
       case 'COMPLETED':
@@ -106,7 +118,7 @@ const StatusText = styled.span<{ status?: BountyCardStatus }>`
 `;
 
 interface BountyCardProps extends BountyCard {
-  onclick: (bountyId: string) => void;
+  onclick: (bountyId: string, status?: BountyCardStatus, ticketGroup?: string) => void;
 }
 
 const BountyCardComponent: React.FC<BountyCardProps> = ({
@@ -117,19 +129,22 @@ const BountyCardComponent: React.FC<BountyCardProps> = ({
   assignee_img,
   workspace,
   status,
-  onclick
+  onclick,
+  assignee_name,
+  ticket_group
 }: BountyCardProps) => (
-  <CardContainer onClick={() => onclick(id)}>
+  <CardContainer isDraft={status === 'DRAFT'} onClick={() => onclick(id, status, ticket_group)}>
     <CardHeader>
       <CardTitle
         role="button"
         tabIndex={0}
         onClick={(e: React.MouseEvent<HTMLHeadingElement>) => {
           e.stopPropagation();
-          onclick(id);
+          onclick(id, status, ticket_group);
         }}
       >
         {title}
+        <span style={{ fontSize: '16px', marginTop: '10px' }}>{assignee_name}</span>
       </CardTitle>
       {assignee_img && (
         <AssignerPic>
@@ -170,6 +185,7 @@ BountyCardComponent.propTypes = {
     name: PropTypes.string
   }) as PropTypes.Validator<BountyCard['workspace']>,
   status: PropTypes.oneOf([
+    'DRAFT',
     'TODO',
     'IN_PROGRESS',
     'IN_REVIEW',

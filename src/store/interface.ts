@@ -470,7 +470,13 @@ export type ChatRole = 'user' | 'assistant';
 export type ChatStatus = 'sending' | 'sent' | 'error';
 export type ContextTagType = 'productBrief' | 'featureBrief' | 'schematic';
 export type ChatSource = 'user' | 'agent';
-export type BountyCardStatus = 'TODO' | 'IN_PROGRESS' | 'IN_REVIEW' | 'COMPLETED' | 'PAID';
+export type BountyCardStatus =
+  | 'DRAFT'
+  | 'TODO'
+  | 'IN_PROGRESS'
+  | 'IN_REVIEW'
+  | 'COMPLETED'
+  | 'PAID';
 
 export interface ContextTag {
   type: ContextTagType;
@@ -517,21 +523,15 @@ export interface BountyCard {
   phase: Phase;
   workspace: Workspace;
   assignee_img?: string;
-}
-
-export interface BountyCard {
-  id: string;
-  title: string;
-  features: Feature;
-  phase: Phase;
-  workspace: Workspace;
-  assignee_img?: string;
   status?: BountyCardStatus;
   paid?: boolean;
   completed?: boolean;
   payment_pending?: boolean;
-  assignee?: string;
+  assignee?: any;
+  assignee_name?: string;
   pow?: number;
+  ticket_uuid?: string;
+  ticket_group?: string;
 }
 
 export type BountyReviewStatus = 'New' | 'Accepted' | 'Rejected' | 'Change Requested';
@@ -545,11 +545,12 @@ export interface ProofOfWork {
 }
 
 export interface BountyTiming {
-  totalWorkTimeSeconds: number;
-  totalAttempts: number;
-  firstAssignedAt: string | null;
-  lastPoWAt: string | null;
-  closedAt: string | null;
+  total_work_time_seconds: number;
+  total_duration_seconds: number;
+  total_attempts: number;
+  first_assigned_at: string;
+  last_pow_at: string | null;
+  closed_at: string | null;
 }
 
 export interface CreateBountyResponse {
@@ -569,4 +570,11 @@ export interface FeatureFlag {
   description: string;
   enabled: boolean;
   endpoints: Endpoint[];
+}
+
+export interface FeaturedBounty {
+  bountyId: string;
+  url: string;
+  addedAt: number;
+  title?: string | undefined;
 }

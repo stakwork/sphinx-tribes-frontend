@@ -128,6 +128,32 @@ const SearchInput = ({
   </SearchInputContainer>
 );
 
+const ScrollablePopoverContent = styled.div`
+  max-height: 300px;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  &::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: ${colors.light.grayish.G800};
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: ${colors.light.grayish.G200};
+    border-radius: 3px;
+  }
+`;
+
+const CustomEuiPopOverCheckbox = styled(EuiPopOverCheckbox)`
+  border-right: none;
+  background: ${colors.light.pureWhite};
+  padding: 15px 10px !important;
+`;
+
 export const WorkspacePlannerHeader = observer(
   ({
     workspace_uuid,
@@ -142,6 +168,7 @@ export const WorkspacePlannerHeader = observer(
     const [canPostBounty, setCanPostBounty] = useState(false);
     const [isFeaturePopoverOpen, setIsFeaturePopoverOpen] = useState<boolean>(false);
     const [isPhasePopoverOpen, setIsPhasePopoverOpen] = useState<boolean>(false);
+    const [isAssigneePopoverOpen, setIsAssigneePopoverOpen] = useState<boolean>(false);
     const [isStatusPopoverOpen, setIsStatusPopoverOpen] = useState<boolean>(false);
     const bountyCardStore = useBountyCardStore(workspace_uuid);
     const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -199,9 +226,14 @@ export const WorkspacePlannerHeader = observer(
       setIsStatusPopoverOpen((isPopoverOpen: boolean) => !isPopoverOpen);
     };
 
+    const onAssigneeButtonClick = (): void => {
+      setIsAssigneePopoverOpen((isPopoverOpen: boolean) => !isPopoverOpen);
+    };
+
     const closeFeaturePopover = () => setIsFeaturePopoverOpen(false);
     const closePhasePopover = () => setIsPhasePopoverOpen(false);
     const closeStatusPopover = () => setIsStatusPopoverOpen(false);
+    const closeAssigneePopover = () => setIsAssigneePopoverOpen(false);
 
     const getFeatureOptions = (): FeatureOption[] => {
       const options: FeatureOption[] = [];
@@ -329,7 +361,6 @@ export const WorkspacePlannerHeader = observer(
                     background: `${color.pureWhite}`,
                     borderRadius: '0px 0px 6px 6px',
                     maxWidth: '140px',
-                    minHeight: '160px',
                     marginTop: '0px',
                     marginLeft: '20px'
                   }}
@@ -339,42 +370,44 @@ export const WorkspacePlannerHeader = observer(
                   panelPaddingSize="none"
                   anchorPosition="downLeft"
                 >
-                  <div style={{ display: 'flex', flex: 'row' }}>
-                    <EuiPopOverCheckbox className="CheckboxOuter" color={color}>
-                      <EuiCheckboxGroup
-                        options={getFeatureOptions()}
-                        idToSelectedMap={bountyCardStore.selectedFeatures.reduce(
-                          (acc: { [key: string]: boolean }, featureId: string) => {
-                            acc[featureId] = true;
-                            return acc;
-                          },
-                          {}
-                        )}
-                        onChange={(id: string) => {
-                          bountyCardStore.toggleFeature(id);
-                          setFilterToggle(!filterToggle);
-                        }}
-                      />
-                      {bountyCardStore.selectedFeatures.length > 0 && (
-                        <div
-                          style={{
-                            padding: '8px 16px',
-                            borderTop: `1px solid ${color.grayish.G800}`
+                  <ScrollablePopoverContent>
+                    <div style={{ display: 'flex', flex: 'row' }}>
+                      <CustomEuiPopOverCheckbox className="CheckboxOuter" color={color}>
+                        <EuiCheckboxGroup
+                          options={getFeatureOptions()}
+                          idToSelectedMap={bountyCardStore.selectedFeatures.reduce(
+                            (acc: { [key: string]: boolean }, featureId: string) => {
+                              acc[featureId] = true;
+                              return acc;
+                            },
+                            {}
+                          )}
+                          onChange={(id: string) => {
+                            bountyCardStore.toggleFeature(id);
+                            setFilterToggle(!filterToggle);
                           }}
-                        >
-                          <ClearButton
-                            onClick={(e: React.MouseEvent): void => {
-                              e.stopPropagation();
-                              bountyCardStore.clearAllFilters();
-                              setFilterToggle(!filterToggle);
+                        />
+                        {bountyCardStore.selectedFeatures.length > 0 && (
+                          <div
+                            style={{
+                              padding: '8px 16px',
+                              borderTop: `1px solid ${color.grayish.G800}`
                             }}
                           >
-                            Clear All
-                          </ClearButton>
-                        </div>
-                      )}
-                    </EuiPopOverCheckbox>
-                  </div>
+                            <ClearButton
+                              onClick={(e: React.MouseEvent): void => {
+                                e.stopPropagation();
+                                bountyCardStore.clearAllFilters();
+                                setFilterToggle(!filterToggle);
+                              }}
+                            >
+                              Clear All
+                            </ClearButton>
+                          </div>
+                        )}
+                      </CustomEuiPopOverCheckbox>
+                    </div>
+                  </ScrollablePopoverContent>
                 </EuiPopover>
               </NewStatusContainer>
 
@@ -413,8 +446,7 @@ export const WorkspacePlannerHeader = observer(
                     boxShadow: `0px 1px 20px ${color.black90}`,
                     background: `${color.pureWhite}`,
                     borderRadius: '0px 0px 6px 6px',
-                    maxWidth: '140px',
-                    minHeight: '160px',
+                    maxWidth: '148px',
                     marginTop: '0px',
                     marginLeft: '20px'
                   }}
@@ -422,45 +454,47 @@ export const WorkspacePlannerHeader = observer(
                   panelPaddingSize="none"
                   anchorPosition="downLeft"
                 >
-                  <div style={{ display: 'flex', flex: 'row' }}>
-                    <EuiPopOverCheckbox className="CheckboxOuter" color={color}>
-                      <EuiCheckboxGroup
-                        options={bountyCardStore.availablePhases.map((phase: any) => ({
-                          label: phase.name,
-                          id: phase.uuid
-                        }))}
-                        idToSelectedMap={bountyCardStore.selectedPhases.reduce(
-                          (acc: { [key: string]: boolean }, phaseId: string) => {
-                            acc[phaseId] = true;
-                            return acc;
-                          },
-                          {}
-                        )}
-                        onChange={(id: string) => {
-                          bountyCardStore.togglePhase(id);
-                          setFilterToggle(!filterToggle);
-                        }}
-                      />
-                      {bountyCardStore.selectedPhases.length > 0 && (
-                        <div
-                          style={{
-                            padding: '8px 16px',
-                            borderTop: `1px solid ${color.grayish.G800}`
+                  <ScrollablePopoverContent>
+                    <div style={{ display: 'flex', flex: 'row' }}>
+                      <CustomEuiPopOverCheckbox className="CheckboxOuter" color={color}>
+                        <EuiCheckboxGroup
+                          options={bountyCardStore.availablePhases.map((phase: any) => ({
+                            label: phase.name,
+                            id: phase.uuid
+                          }))}
+                          idToSelectedMap={bountyCardStore.selectedPhases.reduce(
+                            (acc: { [key: string]: boolean }, phaseId: string) => {
+                              acc[phaseId] = true;
+                              return acc;
+                            },
+                            {}
+                          )}
+                          onChange={(id: string) => {
+                            bountyCardStore.togglePhase(id);
+                            setFilterToggle(!filterToggle);
                           }}
-                        >
-                          <ClearButton
-                            onClick={(e: React.MouseEvent): void => {
-                              e.stopPropagation();
-                              bountyCardStore.clearPhaseFilters();
-                              setFilterToggle(!filterToggle);
+                        />
+                        {bountyCardStore.selectedPhases.length > 0 && (
+                          <div
+                            style={{
+                              padding: '8px 16px',
+                              borderTop: `1px solid ${color.grayish.G800}`
                             }}
                           >
-                            Clear All
-                          </ClearButton>
-                        </div>
-                      )}
-                    </EuiPopOverCheckbox>
-                  </div>
+                            <ClearButton
+                              onClick={(e: React.MouseEvent): void => {
+                                e.stopPropagation();
+                                bountyCardStore.clearPhaseFilters();
+                                setFilterToggle(!filterToggle);
+                              }}
+                            >
+                              Clear All
+                            </ClearButton>
+                          </div>
+                        )}
+                      </CustomEuiPopOverCheckbox>
+                    </div>
+                  </ScrollablePopoverContent>
                 </EuiPopover>
               </NewStatusContainer>
 
@@ -505,6 +539,7 @@ export const WorkspacePlannerHeader = observer(
                     <EuiPopOverCheckbox className="CheckboxOuter" color={color}>
                       <EuiCheckboxGroup
                         options={[
+                          { label: 'DRAFT', id: 'DRAFT' },
                           { label: 'TODO', id: 'TODO' },
                           { label: 'IN_PROGRESS', id: 'IN_PROGRESS' },
                           { label: 'IN_REVIEW', id: 'IN_REVIEW' },
@@ -531,6 +566,87 @@ export const WorkspacePlannerHeader = observer(
                             onClick={(e: React.MouseEvent): void => {
                               e.stopPropagation();
                               bountyCardStore.clearStatusFilters();
+                              setFilterToggle(!filterToggle);
+                            }}
+                          >
+                            Clear All
+                          </ClearButton>
+                        </div>
+                      )}
+                    </EuiPopOverCheckbox>
+                  </div>
+                </EuiPopover>
+              </NewStatusContainer>
+
+              <NewStatusContainer>
+                <EuiPopover
+                  button={
+                    <StatusContainer onClick={onAssigneeButtonClick} color={color}>
+                      <InnerContainer>
+                        <EuiText className="statusText">Assignee</EuiText>
+                        <Formatter>
+                          {bountyCardStore.selectedAssignees.length > 0 && (
+                            <FilterCount color={color}>
+                              <EuiText className="filterCountText">
+                                {bountyCardStore.selectedAssignees.length}
+                              </EuiText>
+                            </FilterCount>
+                          )}
+                        </Formatter>
+                        <MaterialIcon
+                          icon={isAssigneePopoverOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}
+                        />
+                      </InnerContainer>
+                    </StatusContainer>
+                  }
+                  isOpen={isAssigneePopoverOpen}
+                  closePopover={closeAssigneePopover}
+                  panelStyle={{
+                    border: 'none',
+                    boxShadow: `0px 1px 20px ${color.black90}`,
+                    background: `${color.pureWhite}`,
+                    borderRadius: '0px 0px 6px 6px',
+                    maxWidth: '140px',
+                    minHeight: '160px',
+                    marginTop: '0px',
+                    marginLeft: '20px'
+                  }}
+                  panelClassName="yourClassNameHere"
+                  panelPaddingSize="none"
+                  anchorPosition="downLeft"
+                >
+                  <div style={{ display: 'flex', flex: 'row' }}>
+                    <EuiPopOverCheckbox className="CheckboxOuter" color={color}>
+                      <EuiCheckboxGroup
+                        options={bountyCardStore.availableAssignees.map((assignee: any) => ({
+                          label: assignee.name,
+                          id: assignee.name
+                        }))}
+                        idToSelectedMap={bountyCardStore.availableAssignees.reduce(
+                          (acc: { [key: string]: boolean }, assignee: any) => {
+                            acc[assignee.name] = bountyCardStore.selectedAssignees.includes(
+                              assignee.name
+                            );
+                            return acc;
+                          },
+                          {}
+                        )}
+                        onChange={(id: string) => {
+                          bountyCardStore.toggleAssignee(id);
+                          setFilterToggle(!filterToggle);
+                        }}
+                      />
+                      {bountyCardStore.selectedAssignees.length > 0 && (
+                        <div
+                          style={{
+                            padding: '8px 16px',
+                            borderTop: `1px solid ${color.grayish.G800}`
+                          }}
+                        >
+                          <ClearButton
+                            onClick={(e: React.MouseEvent): void => {
+                              e.stopPropagation();
+                              bountyCardStore.clearAssigneeFilters();
                               setFilterToggle(!filterToggle);
                             }}
                           >

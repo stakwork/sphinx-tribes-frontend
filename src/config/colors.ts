@@ -33,6 +33,7 @@ const palette = {
   black300: '#202020',
   black400: '#222E3A',
   black500: '#3c3f41',
+  orange1: `#FF9248`,
   background100: '#f0f1f3',
   statusAssigned: '#49C998',
   statusCompleted: '#9B870C',
@@ -40,6 +41,7 @@ const palette = {
   statusFailed: '#FF0000',
   statusPaid: '#8256D0',
   statusReview: '#ff9248',
+  statusDraft: '#A88B5F',
   button_primary: {
     main: '#49C998',
     hover: '#3CBE88',

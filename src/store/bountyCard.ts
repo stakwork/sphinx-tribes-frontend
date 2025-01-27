@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/typedef */
 import { makeAutoObservable, runInAction, computed, observable, action } from 'mobx';
 import { TribesURL } from 'config';
 import { useMemo } from 'react';
@@ -8,8 +9,15 @@ interface FilterState {
   selectedFeatures: string[];
   selectedPhases: string[];
   selectedStatuses: string[];
+  selectedAssignees: string[];
   timestamp: number;
   searchText: string;
+}
+
+interface Assignee {
+  id: string;
+  name: string;
+  count: number;
 }
 
 export class BountyCardStore {
@@ -21,6 +29,7 @@ export class BountyCardStore {
   @observable selectedFeatures: string[] = [];
   @observable selectedPhases: string[] = [];
   @observable selectedStatuses: string[] = [];
+  @observable selectedAssignees: string[] = [];
   @observable searchText = '';
 
   constructor(workspaceId: string) {
@@ -62,39 +71,14 @@ export class BountyCardStore {
 
       const data = (await response.json()) as BountyCard[] | null;
 
-      // Fetch proof counts for each bounty
-      const bountyCardsWithProofs = await Promise.all(
-        (data || []).map(async (bounty: BountyCard) => {
-          try {
-            const proofsUrl = `${TribesURL}/gobounties/${bounty.id}/proofs`;
-            const proofsResponse = await fetch(proofsUrl, {
-              method: 'GET',
-              headers: {
-                'x-jwt': jwt,
-                'Content-Type': 'application/json'
-              }
-            });
-
-            if (!proofsResponse.ok) {
-              return { ...bounty, pow: 0 };
-            }
-
-            const proofs = await proofsResponse.json();
-            return {
-              ...bounty,
-              pow: Array.isArray(proofs) ? proofs.length : 0
-            };
-          } catch (error) {
-            console.error(`Error fetching proofs for bounty ${bounty.id}:`, error);
-            return { ...bounty, pow: 0 };
-          }
-        })
-      );
+      // eslint-disable-next-line @typescript-eslint/typedef
+      console.log(data?.filter((b) => b.status !== 'DRAFT'));
 
       runInAction(() => {
-        this.bountyCards = bountyCardsWithProofs.map((bounty: BountyCard) => ({
-          ...bounty
-        }));
+        this.bountyCards = (data || []).filter(
+          (bounty) =>
+            !(bounty.status === 'DRAFT' && this.currentWorkspaceId !== bounty.workspace?.uuid)
+        );
       });
     } catch (error) {
       console.error('Error loading bounties:', error);
@@ -118,6 +102,10 @@ export class BountyCardStore {
 
     await this.loadWorkspaceBounties();
   };
+
+  @computed get draftItems() {
+    return this.bountyCards.filter((card: BountyCard) => card.status === 'DRAFT');
+  }
 
   @computed get todoItems() {
     return this.bountyCards.filter((card: BountyCard) => card.status === 'TODO');
@@ -147,6 +135,7 @@ export class BountyCardStore {
         selectedFeatures: this.selectedFeatures,
         selectedPhases: this.selectedPhases,
         selectedStatuses: this.selectedStatuses,
+        selectedAssignees: this.selectedAssignees,
         searchText: this.searchText,
         timestamp: Date.now()
       })
@@ -162,6 +151,7 @@ export class BountyCardStore {
         this.selectedFeatures = state.selectedFeatures;
         this.selectedPhases = state.selectedPhases;
         this.selectedStatuses = state.selectedStatuses;
+        this.selectedAssignees = state.selectedAssignees || [];
       });
     }
   }
@@ -171,6 +161,16 @@ export class BountyCardStore {
       this.selectedFeatures = this.selectedFeatures.filter((id: string) => id !== featureId);
     } else {
       this.selectedFeatures.push(featureId);
+    }
+    this.saveFilterState();
+  }
+
+  @action
+  toggleAssignee(assigneeId: string) {
+    if (this.selectedAssignees.includes(assigneeId)) {
+      this.selectedAssignees = this.selectedAssignees.filter((id: string) => id !== assigneeId);
+    } else {
+      this.selectedAssignees.push(assigneeId);
     }
     this.saveFilterState();
   }
@@ -199,6 +199,7 @@ export class BountyCardStore {
   clearAllFilters() {
     this.selectedFeatures = [];
     this.selectedPhases = [];
+    this.selectedAssignees = [];
     sessionStorage.removeItem('bountyFilterState');
     this.saveFilterState();
   }
@@ -244,6 +245,42 @@ export class BountyCardStore {
   }
 
   @computed
+  get availableAssignees(): any[] {
+    const assigneeCounts = new Map<string, any>();
+
+    // Add "Unassigned" option with count of unassigned bounties
+    const unassignedCount = this.bountyCards.filter((card: BountyCard) => !card.assignee).length;
+    assigneeCounts.set('unassigned', {
+      id: 'unassigned',
+      name: 'Unassigned',
+      count: unassignedCount
+    });
+
+    // Count cards per assignee
+    this.bountyCards.forEach((card: BountyCard) => {
+      if (card.assignee_name) {
+        const existing = assigneeCounts.get(card.assignee);
+        if (existing) {
+          existing.count++;
+        } else {
+          assigneeCounts.set(card.assignee, {
+            id: card.assignee_name,
+            name: card.assignee_name,
+            count: 1
+          });
+        }
+      }
+    });
+
+    // Convert to array and sort by name (keeping Unassigned at top)
+    return Array.from(assigneeCounts.values()).sort((a: Assignee, b: Assignee) => {
+      if (a.id === 'Unassigned') return -1;
+      if (b.id === 'Unassigned') return 1;
+      return a.name.localeCompare(b.name);
+    });
+  }
+
+  @computed
   get filteredBountyCards() {
     return this.bountyCards.filter((card: BountyCard) => {
       const searchMatch =
@@ -266,7 +303,12 @@ export class BountyCardStore {
         this.selectedStatuses.length === 0 ||
         (card.status && this.selectedStatuses.includes(card.status));
 
-      return searchMatch && featureMatch && phaseMatch && statusMatch;
+      const assigneeMatch =
+        this.selectedAssignees.length === 0 ||
+        (this.selectedAssignees.includes('Unassigned') && !card.assignee_img) ||
+        (card.assignee_name && this.selectedAssignees.includes(card.assignee_name));
+
+      return searchMatch && featureMatch && phaseMatch && statusMatch && assigneeMatch;
     });
   }
 
@@ -284,6 +326,12 @@ export class BountyCardStore {
   @action
   clearSearch() {
     this.searchText = '';
+    this.saveFilterState();
+  }
+
+  @action
+  clearAssigneeFilters() {
+    this.selectedAssignees = [];
     this.saveFilterState();
   }
 

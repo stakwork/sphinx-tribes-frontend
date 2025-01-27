@@ -3,6 +3,9 @@ import styled from 'styled-components';
 import { EuiIcon } from '@elastic/eui';
 import { renderMarkdown } from 'people/utils/RenderMarkdown';
 import { CopyButtonGroup } from 'people/widgetViews/workspace/style';
+import { useDropzone } from 'react-dropzone';
+import { v4 as uuidv4 } from 'uuid';
+import { useStores } from 'store';
 import { colors } from '../../../config/colors';
 import type { Props } from './propsType';
 import { FieldEnv, FieldTextArea, Note } from './index';
@@ -127,12 +130,97 @@ export default function TextAreaInput({
   const color = colors['light'];
   const [active, setActive] = useState<boolean>(false);
   const [activeMode, setActiveMode] = useState<'preview' | 'edit'>('edit');
+  const { main } = useStores();
+
   const normalizeAndTrimText = (text: string) => text.split('\n').join('\n');
 
   const handleTextChange = (e: any) => {
     const newText = normalizeAndTrimText(e.target.value.trimStart());
     handleChange(newText);
   };
+
+  const textareaValue = () => {
+    const textArea = document.querySelector('textarea');
+    return textArea?.value || '';
+  };
+
+  const handleFailurePlaceHolder = (placeholder: string) => {
+    const failurePlaceholder = `![Upload failed]()\n`;
+    const updatedValue = textareaValue().replace(placeholder, failurePlaceholder);
+    handleChange(updatedValue);
+  };
+
+  const uploadImage = async (file: File, placeholder: string) => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const uploadedFile = await main.uploadFile(formData);
+      let image_url = '';
+      if (uploadedFile && uploadedFile.ok) {
+        image_url = await uploadedFile.json();
+      }
+
+      if (image_url) {
+        const finalMarkdown = `![image](${image_url})\n`;
+        const updatedValue = textareaValue().replace(placeholder, finalMarkdown);
+        handleChange(updatedValue);
+      } else {
+        handleFailurePlaceHolder(placeholder);
+      }
+    } catch (e) {
+      console.error('ERROR UPLOADING IMAGE', e);
+      handleFailurePlaceHolder(placeholder);
+    }
+  };
+
+  const handleImageUpload = async (file: File) => {
+    const uniqueId = uuidv4();
+    const placeholder = `![Uploading ${uniqueId}...]()\n`;
+
+    const textArea = document.querySelector('textarea');
+    const cursorPosition = textArea?.selectionStart || textArea?.value.length || value.length;
+    const newValue =
+      textareaValue().slice(0, cursorPosition) +
+      placeholder +
+      textareaValue().slice(cursorPosition);
+    handleChange(newValue);
+
+    try {
+      uploadImage(file, placeholder);
+    } catch (error) {
+      const failurePlaceholder = `![Failed to upload ${uniqueId}...]()\n`;
+      const updatedValue = textareaValue().replace(placeholder, failurePlaceholder);
+      handleChange(updatedValue);
+    }
+  };
+
+  const onDrop = async (acceptedFiles: File[]) => {
+    const file = acceptedFiles[0];
+    if (!file || !file.type.startsWith('image/')) return;
+    await handleImageUpload(file);
+  };
+
+  const handlePaste = async (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    const { items } = e.clipboardData;
+    for (const item of Array.from(items)) {
+      if (item.type.startsWith('image/')) {
+        e.preventDefault();
+        const file = item.getAsFile();
+        if (file) {
+          await handleImageUpload(file);
+        }
+      }
+    }
+  };
+
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    accept: {
+      'image/*': []
+    },
+    noClick: true,
+    noKeyboard: true
+  });
 
   const handleTextBlur = (e: any) => {
     const normalizedText = normalizeAndTrimText(e.target.value);
@@ -169,22 +257,26 @@ export default function TextAreaInput({
       >
         <R>
           {activeMode === 'edit' ? (
-            <FieldTextArea
-              color={color}
-              height={StyleOnText[label]?.height ?? defaultHeight}
-              width={StyleOnText[label]?.width ?? defaultWidth}
-              name="first"
-              value={value || ''}
-              readOnly={readOnly || github_state || false}
-              onChange={handleTextChange}
-              onBlur={handleTextBlur}
-              onFocus={(e: any) => {
-                handleFocus(e);
-                setActive(true);
-              }}
-              rows={label === 'Description' ? 8 : 6}
-              data-testid={`checktextarea`}
-            />
+            <div {...getRootProps()}>
+              <input {...getInputProps()} />
+              <FieldTextArea
+                color={color}
+                height={StyleOnText[label]?.height ?? defaultHeight}
+                width={StyleOnText[label]?.width ?? defaultWidth}
+                name="first"
+                value={value || ''}
+                readOnly={readOnly || github_state || false}
+                onChange={handleTextChange}
+                onBlur={handleTextBlur}
+                onPaste={handlePaste}
+                onFocus={(e: any) => {
+                  handleFocus(e);
+                  setActive(true);
+                }}
+                rows={label === 'Description' ? 8 : 6}
+                data-testid={`checktextarea`}
+              />
+            </div>
           ) : (
             <div className="p-4">{renderMarkdown(value)}</div>
           )}

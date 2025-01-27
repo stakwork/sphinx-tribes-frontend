@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useParams, useHistory } from 'react-router-dom';
-import { Feature, Ticket, TicketMessage, TicketStatus } from 'store/interface';
+import { BountyStatus, Feature, Ticket, TicketMessage, TicketStatus } from 'store/interface';
 import MaterialIcon from '@material/react-material-icon';
 import TicketEditor from 'components/common/TicketEditor/TicketEditor';
 import { useStores } from 'store';
@@ -32,10 +32,12 @@ import {
   WorkspaceName,
   PhaseFlexContainer,
   ButtonWrap,
-  ActionButton
+  ActionButton,
+  DisplayBounties
 } from './workspace/style';
 import { Phase, Toast } from './workspace/interface';
 import { EditableField } from './workspace/EditableField.tsx';
+import WidgetSwitchViewer from './WidgetSwitchViewer.tsx';
 
 interface PhasePlannerParams {
   feature_uuid: string;
@@ -64,6 +66,25 @@ const PhasePlannerView: React.FC = observer(() => {
   const { main } = useStores();
   const history = useHistory();
   const tickets = phaseTicketStore.getPhaseTickets(phase_uuid);
+  const [page, setPage] = useState<number>(1);
+  const [loading, setLoading] = useState(true);
+  const [totalBounties, setTotalBounties] = useState(0);
+  const selectedWidget = 'bounties';
+
+  const checkboxIdToSelectedMap: BountyStatus = useMemo(
+    () => ({
+      Open: true,
+      Assigned: true,
+      Completed: true,
+      Paid: true,
+      Pending: true,
+      Failed: true
+    }),
+    []
+  );
+
+  const checkboxIdToSelectedMapLanguage = {};
+  const languageString = '';
 
   useEffect(() => {
     const socket = createSocketInstance();
@@ -294,6 +315,22 @@ const PhasePlannerView: React.FC = observer(() => {
     return data;
   }, [feature_uuid, phase_uuid, main]);
 
+  const getTotalBounties = useCallback(
+    async (statusData: any) => {
+      if (phase_uuid) {
+        const totalBounties = await main.getTotalPhaseBountyCount(
+          feature_uuid,
+          phase_uuid,
+          statusData.Open,
+          statusData.Assigned,
+          statusData.Paid
+        );
+        setTotalBounties(totalBounties);
+      }
+    },
+    [phase_uuid, main, feature_uuid]
+  );
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -397,6 +434,33 @@ const PhasePlannerView: React.FC = observer(() => {
       console.log('Ticket order updated successfully');
     } catch (error) {
       console.error('Error updating ticket order:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (phase_uuid) {
+      (async () => {
+        setLoading(true);
+
+        await main.getPhaseBounties(feature_uuid, phase_uuid, {
+          page: 1,
+          resetPage: true,
+          ...checkboxIdToSelectedMap,
+          languages: languageString
+        });
+
+        await getTotalBounties(checkboxIdToSelectedMap);
+
+        setLoading(false);
+      })();
+    }
+  }, [main, checkboxIdToSelectedMap, languageString, getTotalBounties, feature_uuid, phase_uuid]);
+
+  const onPanelClick = (activeWorkspace?: string, bounty?: any) => {
+    if (bounty?.id) {
+      history.push(`/bounty/${bounty.id}`);
+    } else {
+      history.push(`/feature/${feature_uuid}/phase/${phase_uuid}/planner`);
     }
   };
 
@@ -618,6 +682,37 @@ const PhasePlannerView: React.FC = observer(() => {
                 Add Ticket
               </ActionButton>
             </AddTicketButton>
+            <DisplayBounties>
+              <div
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  height: '100%',
+                  overflowY: 'auto'
+                }}
+              >
+                {totalBounties > 0 ? (
+                  <WidgetSwitchViewer
+                    onPanelClick={onPanelClick}
+                    checkboxIdToSelectedMap={checkboxIdToSelectedMap}
+                    checkboxIdToSelectedMapLanguage={checkboxIdToSelectedMapLanguage}
+                    fromBountyPage={true}
+                    selectedWidget={selectedWidget}
+                    loading={loading}
+                    page={page}
+                    setPage={setPage}
+                    languageString={languageString}
+                    phaseTotalBounties={totalBounties}
+                    featureUuid={feature_uuid}
+                    phaseUuid={phase_uuid}
+                  />
+                ) : (
+                  <p>No Bounties Yet!</p>
+                )}
+              </div>
+            </DisplayBounties>
           </PhaseFlexContainer>
         </FieldWrap>
         <StakworkLogsPanel swwfLinks={swwfLinks} />

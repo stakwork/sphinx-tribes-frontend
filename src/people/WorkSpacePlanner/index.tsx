@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import { EuiLoadingSpinner } from '@elastic/eui';
 import styled from 'styled-components';
 import { useBountyCardStore } from 'store/bountyCard';
-import { BountyCard } from 'store/interface';
+import { BountyCard, BountyCardStatus } from 'store/interface';
 import history from 'config/history';
 import { useStores } from '../../store';
 import { colors } from '../../config';
@@ -50,10 +50,14 @@ const ColumnsContainer = styled.div`
   }
 `;
 
-const Column = styled.div`
+interface ColumnProps {
+  hidden?: boolean;
+}
+
+const Column = styled.div<ColumnProps>`
   flex: 0 0 320px;
   border-radius: 8px;
-  display: flex;
+  display: ${(props: ColumnProps) => (props.hidden ? 'none' : 'flex')};
   flex-direction: column;
   height: auto;
   min-height: 500px;
@@ -116,6 +120,7 @@ const ErrorMessage = styled.p`
 `;
 
 const COLUMN_CONFIGS = [
+  { id: 'DRAFT', title: 'Draft' },
   { id: 'TODO', title: 'To Do' },
   { id: 'IN_PROGRESS', title: 'In Progress' },
   { id: 'IN_REVIEW', title: 'In Review' },
@@ -124,6 +129,7 @@ const COLUMN_CONFIGS = [
 ];
 
 const getCardStatus = (card: BountyCard) => {
+  if (card.status === 'DRAFT') return 'DRAFT';
   if (!card.status) return 'TODO';
   if (card.status === 'PAID') return 'PAID';
   if (card.status === 'COMPLETED') return 'COMPLETED';
@@ -176,15 +182,31 @@ const WorkspacePlanner = observer(() => {
     {}
   );
 
-  const handleCardClick = (bountyId: string) => {
+  const handleCardClick = (bountyId: string, status?: BountyCardStatus, ticketGroup?: string) => {
     bountyCardStore.saveFilterState();
-    window.open(
-      history.createHref({
-        pathname: `/bounty/${bountyId}`,
+    if (status === 'DRAFT' && ticketGroup) {
+      const ticketUrl = history.createHref({
+        pathname: `/workspace/${uuid}/ticket/${ticketGroup}`,
         state: { from: `/workspace/${uuid}/planner` }
-      }),
-      '_blank'
-    );
+      });
+      console.log('Opening ticket URL:', ticketUrl);
+      window.open(ticketUrl, '_blank');
+    } else {
+      window.open(
+        history.createHref({
+          pathname: `/bounty/${bountyId}`,
+          state: { from: `/workspace/${uuid}/planner` }
+        }),
+        '_blank'
+      );
+    }
+  };
+
+  const shouldShowColumn = (status: BountyCardStatus): boolean => {
+    if (bountyCardStore.selectedStatuses.length === 0) {
+      return true;
+    }
+    return bountyCardStore.selectedStatuses.includes(status);
   };
 
   return (
@@ -200,7 +222,7 @@ const WorkspacePlanner = observer(() => {
       <ContentArea>
         <ColumnsContainer>
           {COLUMN_CONFIGS.map(({ id, title }: { id: string; title: string }) => (
-            <Column key={id}>
+            <Column key={id} hidden={!shouldShowColumn(id as BountyCardStatus)}>
               <ColumnHeader>
                 <ColumnTitle>
                   {title}
@@ -224,7 +246,7 @@ const WorkspacePlanner = observer(() => {
                       <BountyCardComp
                         key={card.id}
                         {...card}
-                        onclick={() => handleCardClick(card.id)}
+                        onclick={() => handleCardClick(card.id, card.status, card.ticket_group)}
                       />
                     ))
                 )}

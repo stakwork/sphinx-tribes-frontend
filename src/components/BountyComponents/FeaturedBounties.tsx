@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { observer } from 'mobx-react-lite';
 import { DisplayBounties } from '../../people/widgetViews/workspace/style';
@@ -25,9 +25,17 @@ const FeaturedHeader = styled.div`
 `;
 
 export const FeaturedBounties: React.FC = observer(() => {
-  const featuredBounties = bountyStore.getFeaturedBounties();
   const [currentItems, setCurrentItems] = useState<number>(1);
   const [page, setPage] = useState<number>(1);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await bountyStore.loadFeaturedBounties();
+    };
+    fetchData();
+  }, []);
+
+  const featuredBounties = bountyStore.getFeaturedBounties();
 
   return (
     <FeaturedContainer>

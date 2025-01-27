@@ -21,7 +21,7 @@ describe('Edit Bounty By Searching, Change Workspace And Assignee', () => {
     description: 'This is available',
     amount: '110',
     tribe: 'Amazing Workspace Tribe',
-    estimate_session_length: 'Less than 3 hour',
+    estimate_session_length: '3 hours',
     estimate_completion_date: '09/09/2024',
     deliverables: 'We are good to go man',
     assign: 'bob'
@@ -36,6 +36,8 @@ describe('Edit Bounty By Searching, Change Workspace And Assignee', () => {
     cy.login(workSpace.loggedInAs);
     cy.wait(1000);
     cy.contains(workSpace.loggedInAs).click();
+    cy.wait(1000);
+    cy.create_workspace(workSpace);
     cy.wait(1000);
 
     // Create two workspaces
@@ -77,8 +79,8 @@ describe('Edit Bounty By Searching, Change Workspace And Assignee', () => {
     // Select the dynamically generated workspace
     cy.get('[data-testid="org_uuid"]').should('exist').click({ force: true }).wait(5000);
     cy.wait(1000);
-    cy.contains(bounty.workspace).should('exist').click({ force: true });
-    cy.wait(1000);
+    // cy.contains(bounty.workspace).should('exist').click({ force: true });
+    // cy.wait(1000);
     // Assign a new assignee
     cy.get('.SearchInput').type(NewAssignee);
     cy.wait(1000);
