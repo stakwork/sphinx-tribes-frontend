@@ -8,6 +8,8 @@ import { SOCKET_MSG, createSocketInstance } from 'config/socket';
 import { Box } from '@mui/system';
 import { bountyReviewStore } from 'store/bountyReviewStore';
 import { uiStore } from 'store/ui';
+import { BountyReviewStatus } from 'store/interface';
+import StatusDropdown from 'components/common/ProofStatusDropDown';
 import { Button, Divider, Modal, usePaymentConfirmationModal } from '../../../../components/common';
 import { colors } from '../../../../config/colors';
 import { renderMarkdown } from '../../../utils/RenderMarkdown';
@@ -22,6 +24,7 @@ import InvitePeopleSearch from '../../../../components/form/inputs/widgets/Peopl
 import { CodingBountiesProps } from '../../../interfaces';
 import LoomViewerRecorder from '../../../utils/LoomViewerRecorder';
 import { paidString, unpaidString } from '../constants';
+import { ElapsedTimer } from '../../../../components/common/ElapsedTimer';
 import Invoice from './Invoice';
 import {
   AssigneeProfile,
@@ -49,7 +52,8 @@ import {
   Section,
   Title,
   Description,
-  Status
+  Status,
+  ElapsedTimerContainer
 } from './style';
 import { getTwitterLink } from './lib';
 import CodingMobile from './CodingMobile';
@@ -133,7 +137,6 @@ function MobileView(props: CodingBountiesProps) {
   const [paymentError, setPaymentError] = useState('');
   const [isOpenProofModal, setIsOpenProofModal] = useState(false);
   const [value, setValue] = useState('');
-  const [timingStats] = useState(null);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const bountyID = id?.toString() || '';
@@ -488,6 +491,33 @@ function MobileView(props: CodingBountiesProps) {
 
   const { proofs } = bountyReviewStore;
 
+  const isAssigner = person?.owner_pubkey === uiStore._meInfo?.owner_pubkey;
+
+  const handleStatusUpdate = async (proofId: string, status: BountyReviewStatus) => {
+    try {
+      console.log(proofId, status);
+      await bountyReviewStore.updateProofStatus(bountyID, proofId, status);
+
+      setToasts([
+        {
+          id: `${Math.random()}`,
+          title: 'Status Updated',
+          color: 'success',
+          text: 'Proof status updated successfully'
+        }
+      ]);
+    } catch (error: any) {
+      setToasts([
+        {
+          id: `${Math.random()}`,
+          title: 'Update Failed',
+          color: 'danger',
+          text: error.message || 'Failed to update proof status'
+        }
+      ]);
+    }
+  };
+
   useEffect(() => {
     const fetchProofs = async () => {
       await bountyReviewStore.getProofs(bountyID);
@@ -628,6 +658,9 @@ function MobileView(props: CodingBountiesProps) {
     setPaidStatus(paid);
   }, [paid]);
 
+  let pillColor = color.statusAssigned;
+  let pillText = 'assigned';
+
   if (isMobile) {
     return (
       <CodingMobile
@@ -642,66 +675,133 @@ function MobileView(props: CodingBountiesProps) {
         isCopied={isCopied}
         titleString={titleString}
         showPayBounty={showPayBounty}
+        bountyPaid={bountyPaid}
+        hasAccess={hasAccess}
+        bountyPending={bountyPending}
+        isEditButtonDisable={isEditButtonDisable}
+        deletingState={props.deletingState}
+        enableDelete={enableDelete}
+        editAction={props?.editAction}
+        deleteAction={props?.deleteAction}
+        assignedPerson={assignedPerson}
+        isAssigned={isAssigned}
+        pillText={pillText}
+        pillColor={pillColor}
+        changeAssignedPerson={changeAssignedPerson}
+        setEnableDelete={setEnableDelete}
+        assigneeHandlerOpen={assigneeHandlerOpen}
+        assigneeValue={assigneeValue}
+        peopleList={peopleList}
+        handleAssigneeDetails={handleAssigneeDetails}
         markPaidOrUnpaid={
           hasAccess && (
-            <IconButton
-              width={'100%'}
-              height={48}
-              style={{
-                bottom: '10px',
-                border: `1px solid ${color.primaryColor.P400}`,
-                background: paidStatus ? color.green1 : color.pureWhite,
-                color: paidStatus ? color.white100 : color.borderGreen1
-              }}
-              disabled={bountyPending}
-              data-testid="paid_btn"
-              text={paidStatus ? unpaidString : paidString}
-              loading={saving === 'paid' || updatingPayment}
-              endingImg={'/static/mark_unpaid.svg'}
-              textStyle={{
-                width: '130px',
-                display: 'flex',
-                justifyContent: 'center',
-                fontFamily: 'Barlow',
-                marginLeft: '30px',
-                fontSize: '15px'
-              }}
-              onClick={paidStatus ? handleSetAsUnpaid : handleSetAsPaid}
-            />
+            <>
+              {isAssignee && (
+                <Button
+                  iconSize={14}
+                  width={'100%'}
+                  height={48}
+                  color="withdraw"
+                  onClick={() => setIsOpenProofModal(true)}
+                  style={{
+                    marginBottom: '20px'
+                  }}
+                  ButtonTextStyle={{
+                    fontSize: '15px',
+                    fontFamily: 'Barlow'
+                  }}
+                  text="Submit Proof"
+                />
+              )}
+              <IconButton
+                width={'100%'}
+                height={48}
+                style={{
+                  bottom: '10px',
+                  border: `1px solid ${color.primaryColor.P400}`,
+                  background: paidStatus ? color.green1 : color.pureWhite,
+                  color: paidStatus ? color.white100 : color.borderGreen1
+                }}
+                disabled={bountyPending}
+                data-testid="paid_btn"
+                text={paidStatus ? unpaidString : paidString}
+                loading={saving === 'paid' || updatingPayment}
+                endingImg={'/static/mark_unpaid.svg'}
+                textStyle={{
+                  width: '130px',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  fontFamily: 'Barlow',
+                  marginLeft: '30px',
+                  fontSize: '15px'
+                }}
+                onClick={paidStatus ? handleSetAsUnpaid : handleSetAsPaid}
+              />
+            </>
           )
         }
         payBounty={
           hasAccess &&
           userAssigned && (
-            <IconButton
-              width={'100%'}
-              height={48}
-              disabled={
-                paymentLoading || payBountyDisable || pendingPaymentLoading || bountyPending
-              }
-              style={{
-                bottom: '10px'
-              }}
-              text={'Pay Bounty'}
-              loading={saving === 'paid' || updatingPayment}
-              textStyle={{
-                display: 'flex',
-                justifyContent: 'center',
-                fontFamily: 'Barlow',
-                fontSize: '15px',
-                marginLeft: '30px'
-              }}
-              hovercolor={color.button_secondary.hover}
-              shadowcolor={color.button_secondary.shadow}
-              onClick={confirmPaymentHandler}
-            />
+            <>
+              {!bountyCompleted && (
+                <Button
+                  disabled={paymentLoading || payBountyDisable || !created}
+                  iconSize={14}
+                  width={'100%'}
+                  height={48}
+                  color="withdraw"
+                  onClick={() => created && updateCompletedStatus(created)}
+                  style={{
+                    marginBottom: '20px'
+                  }}
+                  ButtonTextStyle={{
+                    fontSize: '15px',
+                    fontFamily: 'Barlow'
+                  }}
+                  text="Complete Bounty"
+                />
+              )}
+
+              <IconButton
+                width={'100%'}
+                height={48}
+                disabled={
+                  paymentLoading || payBountyDisable || pendingPaymentLoading || bountyPending
+                }
+                style={{
+                  bottom: '10px'
+                }}
+                text={'Pay Bounty'}
+                loading={saving === 'paid' || updatingPayment}
+                textStyle={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  fontFamily: 'Barlow',
+                  fontSize: '15px',
+                  marginLeft: '30px'
+                }}
+                hovercolor={color.button_secondary.hover}
+                shadowcolor={color.button_secondary.shadow}
+                onClick={confirmPaymentHandler}
+              />
+              {isOpenProofModal && (
+                <CodingBountyProofModal
+                  closeModal={() => setIsOpenProofModal(false)}
+                  value={value}
+                  onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setValue(e.target.value)}
+                  placeholder="Enter proof here"
+                  bountyId={id?.toString() || ''}
+                  submitProof={submitProof}
+                  isMobile={isMobile}
+                />
+              )}
+            </>
           )
         }
       />
     );
   }
-
-  let pillColor = color.statusAssigned;
 
   if (bountyPaid) {
     pillColor = color.statusPaid;
@@ -712,8 +812,6 @@ function MobileView(props: CodingBountiesProps) {
   } else if (bountyCompleted && !bountyPaid) {
     pillColor = color.statusCompleted;
   }
-
-  let pillText = 'assigned';
 
   if (bountyPaid) {
     pillText = 'paid';
@@ -878,11 +976,25 @@ function MobileView(props: CodingBountiesProps) {
                   <ProofContainer>
                     <Section>
                       <Title>Proof of Work</Title>
-                      <Description>
-                        {proofs[bountyID]?.length ? (
-                          <ul>
-                            {proofs[bountyID].map((proof: any, index: any) => (
-                              <li key={index}>
+                      {proofs[bountyID]?.length ? (
+                        <div
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '10px',
+                            width: '100%'
+                          }}
+                        >
+                          {proofs[bountyID].map((proof: any, index: any) => (
+                            <div
+                              key={index}
+                              style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                width: '100%'
+                              }}
+                            >
+                              <Description style={{ flex: 1, textAlign: 'left' }}>
                                 {proof.description
                                   .split(/(https?:\/\/[^\s]+)/)
                                   .map((part: string, i: number) => {
@@ -900,24 +1012,22 @@ function MobileView(props: CodingBountiesProps) {
                                     }
                                     return part;
                                   })}
-                              </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p>No proofs available</p>
-                        )}
-                      </Description>
-                    </Section>
-                    <Section style={{ flex: 0.3, textAlign: 'right' }}>
-                      <Title>Status</Title>
-                      <Status>
-                        {' '}
-                        {timingStats ? (
-                          <pre>{JSON.stringify(timingStats, null, 2)}</pre>
-                        ) : (
-                          <p>---</p>
-                        )}
-                      </Status>
+                              </Description>
+                              <Status style={{ flex: 0.3, textAlign: 'right' }}>
+                                <StatusDropdown
+                                  bountyId={bountyID}
+                                  proofId={proof.id}
+                                  currentStatus={proof.status}
+                                  isAssigner={isAssigner}
+                                  onStatusUpdate={handleStatusUpdate}
+                                />
+                              </Status>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p>No proofs available</p>
+                      )}
                     </Section>
                   </ProofContainer>
                 </CreatorDescription>
@@ -1019,6 +1129,16 @@ function MobileView(props: CodingBountiesProps) {
                       </div>
                     )}
                   </UnassignedPersonProfile>
+                  {userAssigned && (
+                    <>
+                      <DividerContainer>
+                        <Divider />
+                      </DividerContainer>
+                      <ElapsedTimerContainer>
+                        <ElapsedTimer bountyId={bountyID} />
+                      </ElapsedTimerContainer>
+                    </>
+                  )}
                   {payment_failed && (
                     <ErrorWrapper>
                       <Divider />
@@ -1122,6 +1242,7 @@ function MobileView(props: CodingBountiesProps) {
                       placeholder="Enter proof here"
                       bountyId={id?.toString() || ''}
                       submitProof={submitProof}
+                      isMobile={isMobile}
                     />
                   )}
                   <BottomButtonContainer>
@@ -1488,8 +1609,23 @@ function MobileView(props: CodingBountiesProps) {
               <Section style={{ flex: 0.3, textAlign: 'right' }}>
                 <Title>Status</Title>
                 <Status>
-                  {' '}
-                  {timingStats ? <pre>{JSON.stringify(timingStats, null, 2)}</pre> : <p>---</p>}
+                  {proofs[bountyID]?.length ? (
+                    <ul>
+                      {proofs[bountyID].map((proof: any, index: any) => (
+                        <div key={index}>
+                          <StatusDropdown
+                            bountyId={bountyID}
+                            proofId={proof.id}
+                            currentStatus={proof.status}
+                            isAssigner={isAssigner}
+                            onStatusUpdate={handleStatusUpdate}
+                          />
+                        </div>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>---</p>
+                  )}
                 </Status>
               </Section>
             </ProofContainer>
@@ -1646,6 +1782,7 @@ function MobileView(props: CodingBountiesProps) {
                     placeholder="Enter proof here"
                     bountyId={id?.toString() || ''}
                     submitProof={submitProof}
+                    isMobile={isMobile}
                   />
                 )}
               </>

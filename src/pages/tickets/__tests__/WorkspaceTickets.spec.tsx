@@ -55,7 +55,7 @@ describe('WorkspaceTicketsPage Component', () => {
       main: {
         getSpecificWorkspaceBounties: jest.fn(() => [orgBounty]),
         getTribesByOwner: jest.fn(),
-        getTotalWorkspaceBounties: jest.fn(() => 1)
+        getTotalWorkspaceBountyCount: jest.fn(() => 1)
       },
       ui: {
         selectedPerson: '123',
@@ -68,7 +68,7 @@ describe('WorkspaceTicketsPage Component', () => {
     jest
       .spyOn(mainStore, 'getSpecificWorkspaceBounties')
       .mockReturnValue(Promise.resolve(orgBounty));
-    jest.spyOn(mainStore, 'getTotalWorkspaceBounties').mockReturnValue(Promise.resolve(1));
+    jest.spyOn(mainStore, 'getTotalWorkspaceBountyCount').mockReturnValue(Promise.resolve(1));
     act(async () => {
       const { getByText } = render(
         <MemoryRouter initialEntries={['/workspace/bounties/random_org_uuid']}>
@@ -140,7 +140,7 @@ describe('WorkspaceTicketsPage Component', () => {
       main: {
         getSpecificWorkspaceBounties: jest.fn(() => [orgBounties]),
         getTribesByOwner: jest.fn(),
-        getTotalWorkspaceBounties: jest.fn(() => 20)
+        getTotalWorkspaceBountyCount: jest.fn(() => 20)
       },
       ui: {
         selectedPerson: '123',
@@ -153,7 +153,7 @@ describe('WorkspaceTicketsPage Component', () => {
     jest
       .spyOn(mainStore, 'getSpecificWorkspaceBounties')
       .mockReturnValue(Promise.resolve(orgBounties));
-    jest.spyOn(mainStore, 'getTotalWorkspaceBounties').mockReturnValue(Promise.resolve(20));
+    jest.spyOn(mainStore, 'getTotalWorkspaceBountyCount').mockReturnValue(Promise.resolve(20));
     async () => {
       const { getByText } = render(
         <MemoryRouter initialEntries={['/workspace/bounties/random_org_uuid']}>

@@ -94,6 +94,8 @@ const StakworkLogsPanel = ({ swwfLinks }: { swwfLinks: Record<string, string> })
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [connections, setConnections] = useState<Connection[]>([]);
 
+  console.log('TicketBuilder Phase planner', logs);
+
   useEffect(() => {
     const connectToLogWebSocket = (projectId: string, ticketUUID: string) => {
       const ws = new WebSocket('wss://jobs.stakwork.com/cable?channel=ProjectLogChannel');
@@ -109,10 +111,21 @@ const StakworkLogsPanel = ({ swwfLinks }: { swwfLinks: Record<string, string> })
       ws.onmessage = (event: any) => {
         const data = JSON.parse(event.data);
         if (data.type === 'ping') return;
-        const message = data?.message?.message;
-        if (message) {
+
+        console.log('TicketBuilder Phase planner data', data);
+
+        const messageData = data?.message;
+        if (
+          messageData &&
+          (messageData.type === 'on_step_start' || messageData.type === 'on_step_complete')
+        ) {
           setLogs((prev: LogEntry[]) => [
-            { timestamp: new Date().toISOString(), projectId, ticketUUID, message },
+            {
+              timestamp: new Date().toISOString(),
+              projectId,
+              ticketUUID,
+              message: messageData.message
+            },
             ...prev
           ]);
         }

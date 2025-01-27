@@ -25,15 +25,6 @@ const CardContainer = styled.div<CardContainerProps>`
   cursor: pointer;
 `;
 
-const DraftIndicator = styled.span`
-  background: ${colors.light.blue1};
-  color: white;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 12px;
-  margin-right: 8px;
-`;
-
 const CardHeader = styled.div`
   display: flex;
   justify-content: space-between;
@@ -127,7 +118,7 @@ const StatusText = styled.span<{ status?: BountyCardStatus }>`
 `;
 
 interface BountyCardProps extends BountyCard {
-  onclick: (bountyId: string) => void;
+  onclick: (bountyId: string, status?: BountyCardStatus, ticketGroup?: string) => void;
 }
 
 const BountyCardComponent: React.FC<BountyCardProps> = ({
@@ -139,19 +130,19 @@ const BountyCardComponent: React.FC<BountyCardProps> = ({
   workspace,
   status,
   onclick,
-  assignee_name
+  assignee_name,
+  ticket_group
 }: BountyCardProps) => (
-  <CardContainer isDraft={status === 'DRAFT'} onClick={() => onclick(id)}>
+  <CardContainer isDraft={status === 'DRAFT'} onClick={() => onclick(id, status, ticket_group)}>
     <CardHeader>
       <CardTitle
         role="button"
         tabIndex={0}
         onClick={(e: React.MouseEvent<HTMLHeadingElement>) => {
           e.stopPropagation();
-          onclick(id);
+          onclick(id, status, ticket_group);
         }}
       >
-        {status === 'DRAFT' && <DraftIndicator>Draft</DraftIndicator>}
         {title}
         <span style={{ fontSize: '16px', marginTop: '10px' }}>{assignee_name}</span>
       </CardTitle>
@@ -164,7 +155,6 @@ const BountyCardComponent: React.FC<BountyCardProps> = ({
 
     <RowT>
       <span title={features?.name ?? 'No Feature'}>
-        {/* <span>Jordan</span> */}
         {truncate(features?.name ?? 'No Feature', 10)}
       </span>
       <span title={phase?.name ?? 'No Phase'}>{truncate(phase?.name ?? 'No Phase', 20)}</span>

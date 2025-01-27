@@ -332,8 +332,8 @@ export const Section = styled.div`
   margin-top: 60px;
 `;
 
-export const Title = styled.h2`
-  font-size: 24px;
+export const Title = styled.h2<{ isMobile?: boolean }>`
+  font-size: ${(props: { isMobile?: boolean }) => (props.isMobile ? '18px' : '24px')};
   font-weight: 600;
   color: #333;
   margin-bottom: 20px;
@@ -797,4 +797,11 @@ export const DeliverablesContainer = styled.div`
       white-space: pre-wrap;
     }
   }
+`;
+
+export const ElapsedTimerContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;

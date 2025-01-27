@@ -61,13 +61,9 @@ function App() {
     };
   }, []);
 
-  useEffect(() => {
+  const setPosthog = useCallback(() => {
     //Posthog user opens the page
     if (!appEnv.isTests) {
-      if (posthog && posthog.sessionManager) {
-        const { sessionId } = posthog.sessionManager.checkAndGetSessionAndWindowId();
-        mainStore.setSessionId(sessionId);
-      }
       if (uiStore.meInfo?.id) {
         posthog?.identify(uiStore.meInfo.owner_alias, {
           name: uiStore.meInfo.owner_alias,
@@ -76,8 +72,20 @@ function App() {
       } else {
         posthog?.identify(mainStore.sessionId, {});
       }
+      if (posthog) {
+        console.log('got posthog');
+        const sessionId = posthog.get_session_id();
+        console.log('session id: ', sessionId);
+        mainStore.setSessionId(sessionId);
+      } else {
+        console.log('posthog not availible');
+      }
     }
-  }, []);
+  }, [posthog]);
+
+  useEffect(() => {
+    setPosthog();
+  }, [setPosthog]);
 
   return (
     <ThemeProvider theme={theme}>

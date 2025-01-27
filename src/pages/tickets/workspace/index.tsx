@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import ConnectCard from 'people/utils/ConnectCard';
+import { useParams } from 'react-router-dom';
 import { TicketModalPage } from '../TicketModalPage';
 import WorkspaceTickets from './WorkspaceTickets';
 
 export const WorkspaceTicketsPage = () => {
+  const { bountyId } = useParams<{ bountyId?: string }>();
   const [connectPerson, setConnectPerson] = useState<any>(null);
   return (
     <>
       <WorkspaceTickets />
-      <TicketModalPage setConnectPerson={setConnectPerson} />
+      {bountyId && <TicketModalPage setConnectPerson={setConnectPerson} />}
       {connectPerson && (
         <ConnectCard
           dismiss={() => setConnectPerson(null)}

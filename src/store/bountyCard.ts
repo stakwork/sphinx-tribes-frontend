@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/typedef */
 import { makeAutoObservable, runInAction, computed, observable, action } from 'mobx';
 import { TribesURL } from 'config';
 import { useMemo } from 'react';
@@ -70,8 +71,14 @@ export class BountyCardStore {
 
       const data = (await response.json()) as BountyCard[] | null;
 
+      // eslint-disable-next-line @typescript-eslint/typedef
+      console.log(data?.filter((b) => b.status !== 'DRAFT'));
+
       runInAction(() => {
-        this.bountyCards = data || [];
+        this.bountyCards = (data || []).filter(
+          (bounty) =>
+            !(bounty.status === 'DRAFT' && this.currentWorkspaceId !== bounty.workspace?.uuid)
+        );
       });
     } catch (error) {
       console.error('Error loading bounties:', error);
@@ -257,7 +264,7 @@ export class BountyCardStore {
           existing.count++;
         } else {
           assigneeCounts.set(card.assignee, {
-            id: card.assignee,
+            id: card.assignee_name,
             name: card.assignee_name,
             count: 1
           });
@@ -267,8 +274,8 @@ export class BountyCardStore {
 
     // Convert to array and sort by name (keeping Unassigned at top)
     return Array.from(assigneeCounts.values()).sort((a: Assignee, b: Assignee) => {
-      if (a.id === 'unassigned') return -1;
-      if (b.id === 'unassigned') return 1;
+      if (a.id === 'Unassigned') return -1;
+      if (b.id === 'Unassigned') return 1;
       return a.name.localeCompare(b.name);
     });
   }
@@ -298,8 +305,8 @@ export class BountyCardStore {
 
       const assigneeMatch =
         this.selectedAssignees.length === 0 ||
-        (this.selectedAssignees.includes('unassigned') && !card.assignee_img) ||
-        (card.assignee && this.selectedAssignees.includes(card.assignee));
+        (this.selectedAssignees.includes('Unassigned') && !card.assignee_img) ||
+        (card.assignee_name && this.selectedAssignees.includes(card.assignee_name));
 
       return searchMatch && featureMatch && phaseMatch && statusMatch && assigneeMatch;
     });

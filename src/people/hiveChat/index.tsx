@@ -178,8 +178,6 @@ const connectToLogWebSocket = (
 ) => {
   const ws = new WebSocket('wss://jobs.stakwork.com/cable?channel=ProjectLogChannel');
 
-  console.log('inside connectToLogWebSocket function');
-
   ws.onopen = () => {
     const command = {
       command: 'subscribe',
@@ -192,11 +190,17 @@ const connectToLogWebSocket = (
     const data = JSON.parse(event.data);
     if (data.type === 'ping') return;
 
-    const message = data?.message?.message;
-    if (message) {
+    console.log('Hive Chat Data message', data);
+
+    const messageData = data?.message;
+
+    if (
+      messageData &&
+      (messageData.type === 'on_step_start' || messageData.type === 'on_step_complete')
+    ) {
       setLogs((prevLogs: LogEntry[]) => [
         ...prevLogs,
-        { timestamp: new Date().toISOString(), projectId, chatId, message }
+        { timestamp: new Date().toISOString(), projectId, chatId, message: messageData.message }
       ]);
     }
   };
@@ -227,8 +231,7 @@ export const HiveChatView: React.FC = observer(() => {
     history.push(`/workspace/${uuid}`);
   };
 
-  console.log('logs here ', logs);
-  console.log('last logs here ', lastLogLine);
+  console.log('Hive Chat logs', logs);
 
   const refreshChatHistory = useCallback(async () => {
     try {
@@ -337,7 +340,6 @@ export const HiveChatView: React.FC = observer(() => {
           console.log(`Websocket Session ID: ${sessionId}`);
         } else if (data.action === 'swrun' && data.message) {
           const match = data.message.match(/\/projects\/([^/]+)/);
-          console.log(`match: ${match}`);
           if (match && match[1]) {
             const projectID = match[1];
             setProjectId(projectID);
@@ -347,10 +349,10 @@ export const HiveChatView: React.FC = observer(() => {
         } else if (data.action === 'message' && data.chatMessage) {
           chat.addMessage(data.chatMessage);
           setIsChainVisible(false);
+          setLogs([]);
           await refreshChatHistory();
         } else if (data.action === 'process' && data.chatMessage) {
           chat.updateMessage(data.chatMessage.id, data.chatMessage);
-          setIsChainVisible(false);
           await refreshChatHistory();
         }
       } catch (error) {

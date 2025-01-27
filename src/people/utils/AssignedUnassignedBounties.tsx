@@ -1,8 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { observer } from 'mobx-react-lite';
 import { BountiesProps } from 'people/interfaces';
-import { Link } from 'react-router-dom';
 import { EuiText } from '@elastic/eui';
 import { userCanManageBounty } from 'helpers';
 import { colors } from '../../config/colors';
@@ -112,13 +111,6 @@ const UnassignedPersonProfile = styled.div<containerProps>`
   }
 `;
 
-const BountyLink = styled(Link)`
-  text-decoration: none;
-  :hover {
-    text-decoration: none;
-  }
-`;
-
 const Bounties = (props: BountiesProps) => {
   const {
     assignee,
@@ -133,7 +125,6 @@ const Bounties = (props: BountiesProps) => {
     widget,
     created,
     org_uuid,
-    activeWorkspace,
     isBountyLandingPage
   } = props;
 
@@ -144,112 +135,103 @@ const Bounties = (props: BountiesProps) => {
   const [openConnectModal, setConnectModal] = useState<boolean>(false);
   const closeConnectModal = () => setConnectModal(false);
   const showConnectModal = () => setConnectModal(true);
+  const [canAssignHunter, setCanAssignHunter] = useState(false);
 
   const { ui, main } = useStores();
   const userPubkey = ui.meInfo?.owner_pubkey;
 
-  const canAssignHunter = useMemo(() => {
-    if (!org_uuid || !userPubkey) return false;
+  const checkUserRoles = useCallback(async () => {
+    const canAssignHunter = await userCanManageBounty(org_uuid, userPubkey, main);
+    const bountyOwner = ui.meInfo?.owner_pubkey === person.owner_pubkey;
 
-    const isBountyOwner = ui.meInfo?.owner_pubkey === person.owner_pubkey;
+    const canAssign = canAssignHunter || bountyOwner;
+    setCanAssignHunter(canAssign);
+  }, [main, org_uuid, userPubkey, person.owner_pubkey, ui.meInfo?.owner_pubkey]);
 
-    const canManage = userCanManageBounty(org_uuid, userPubkey, main);
-
-    return isBountyOwner || canManage;
-  }, [org_uuid, userPubkey, person.owner_pubkey, main]);
+  useEffect(() => {
+    checkUserRoles();
+  }, [checkUserRoles]);
 
   return (
     <>
       {!!assignee?.owner_pubkey && !!assignee?.owner_alias ? (
-        <BountyLink
-          to={{
-            pathname: `/bounty/${props.id}`,
-            state: { activeWorkspace }
+        <BountyContainer
+          assignedBackgroundImage={'url("/static/assigned_bounty_bg.svg")'}
+          color={color}
+          onClick={onPanelClick}
+          style={{
+            backgroundPositionY: '-2px'
           }}
         >
-          <BountyContainer
-            assignedBackgroundImage={'url("/static/assigned_bounty_bg.svg")'}
-            color={color}
-            style={{
-              backgroundPositionY: '-2px'
-            }}
-          >
-            <div className="BountyDescriptionContainer">
-              <BountyDescription
-                {...person}
-                {...props}
-                title={title}
-                img={person.img}
-                org_img={props.img}
-                codingLanguage={codingLanguage}
-                created={created}
-                isBountyLandingPage={isBountyLandingPage}
-              />
-            </div>
-            <div className="BountyPriceContainer">
-              <BountyPrice
-                priceMin={priceMin}
-                priceMax={priceMax}
-                price={price}
-                sessionLength={sessionLength}
-                style={{
-                  minWidth: '213px',
-                  maxWidth: '213px',
-                  borderRight: `1px solid ${color.primaryColor.P200}`
-                }}
-              />
-              <BountyProfileView
-                assignee={assignee}
-                status={'ASSIGNED'}
-                canViewProfile={true}
-                statusStyle={{
-                  width: '55px',
-                  height: '16px',
-                  background: color.statusAssigned
-                }}
-                isBountyLandingPage={isBountyLandingPage}
-              />
-            </div>
-          </BountyContainer>
-        </BountyLink>
+          <div className="BountyDescriptionContainer">
+            <BountyDescription
+              {...person}
+              {...props}
+              title={title}
+              img={person.img}
+              org_img={props.img}
+              codingLanguage={codingLanguage}
+              created={created}
+              isBountyLandingPage={isBountyLandingPage}
+            />
+          </div>
+          <div className="BountyPriceContainer">
+            <BountyPrice
+              priceMin={priceMin}
+              priceMax={priceMax}
+              price={price}
+              sessionLength={sessionLength}
+              style={{
+                minWidth: '213px',
+                maxWidth: '213px',
+                borderRight: `1px solid ${color.primaryColor.P200}`
+              }}
+            />
+            <BountyProfileView
+              assignee={assignee}
+              status={'ASSIGNED'}
+              canViewProfile={true}
+              statusStyle={{
+                width: '55px',
+                height: '16px',
+                background: color.statusAssigned
+              }}
+              isBountyLandingPage={isBountyLandingPage}
+            />
+          </div>
+        </BountyContainer>
       ) : (
         <BountyContainer color={color}>
           <DescriptionPriceContainer
             data-testid="description-price-container"
             unAssignedBackgroundImage={'url("/static/unassigned_bounty_bg.svg")'}
             isBountyLandingPage={isBountyLandingPage}
+            onClick={onPanelClick}
           >
-            <BountyLink
-              to={{
-                pathname: `/bounty/${props.id}`,
-                state: { activeWorkspace }
-              }}
-            >
-              <div style={{ display: 'flex', flexDirection: 'row' }}>
-                <BountyDescription
-                  {...person}
-                  {...props}
-                  img={person.img}
-                  org_img={props.img}
-                  title={title}
-                  codingLanguage={codingLanguage}
-                  widget={widget}
-                  created={created}
-                />
-                <BountyPrice
-                  priceMin={priceMin}
-                  priceMax={priceMax}
-                  price={price}
-                  sessionLength={sessionLength}
-                  style={{
-                    borderLeft: `1px solid ${color.grayish.G700}`,
-                    maxWidth: isBountyLandingPage ? '220px' : '245px',
-                    minWidth: isBountyLandingPage ? '220px' : '245px'
-                  }}
-                  isBountyLandingPage={isBountyLandingPage}
-                />
-              </div>
-            </BountyLink>
+            <div style={{ display: 'flex', flexDirection: 'row' }}>
+              <BountyDescription
+                {...person}
+                {...props}
+                img={person.img}
+                org_img={props.img}
+                title={title}
+                codingLanguage={codingLanguage}
+                widget={widget}
+                created={created}
+              />
+              <BountyPrice
+                priceMin={priceMin}
+                priceMax={priceMax}
+                price={price}
+                sessionLength={sessionLength}
+                style={{
+                  borderLeft: `1px solid ${color.grayish.G700}`,
+                  maxWidth: isBountyLandingPage ? '220px' : '245px',
+                  minWidth: isBountyLandingPage ? '220px' : '245px'
+                }}
+                isBountyLandingPage={isBountyLandingPage}
+              />
+            </div>
 
             <UnassignedPersonProfile
               unassigned_border={color.grayish.G300}

@@ -53,10 +53,14 @@ const ColumnsContainer = styled.div`
   }
 `;
 
-const Column = styled.div`
+interface ColumnProps {
+  hidden?: boolean;
+}
+
+const Column = styled.div<ColumnProps>`
   flex: 0 0 320px;
   border-radius: 8px;
-  display: flex;
+  display: ${(props: ColumnProps) => (props.hidden ? 'none' : 'flex')};
   flex-direction: column;
   height: auto;
   min-height: 500px;
@@ -233,17 +237,31 @@ const WorkspacePlanner = observer(() => {
     setShowLoadMore((showMore) => ({ ...showMore, [columnId]: false }));
   };
 
-  const handleCardClick = (bountyId: string, status?: BountyCardStatus) => {
+  const handleCardClick = (bountyId: string, status?: BountyCardStatus, ticketGroup?: string) => {
     bountyCardStore.saveFilterState();
-    const url =
-      status === 'DRAFT' ? `/workspace/${uuid}/ticket/${bountyId}` : `/bounty/${bountyId}`;
-    window.open(
-      history.createHref({
-        pathname: url,
+    if (status === 'DRAFT' && ticketGroup) {
+      const ticketUrl = history.createHref({
+        pathname: `/workspace/${uuid}/ticket/${ticketGroup}`,
         state: { from: `/workspace/${uuid}/planner` }
-      }),
-      '_blank'
-    );
+      });
+      console.log('Opening ticket URL:', ticketUrl);
+      window.open(ticketUrl, '_blank');
+    } else {
+      window.open(
+        history.createHref({
+          pathname: `/bounty/${bountyId}`,
+          state: { from: `/workspace/${uuid}/planner` }
+        }),
+        '_blank'
+      );
+    }
+  };
+
+  const shouldShowColumn = (status: BountyCardStatus): boolean => {
+    if (bountyCardStore.selectedStatuses.length === 0) {
+      return true;
+    }
+    return bountyCardStore.selectedStatuses.includes(status);
   };
 
   return (
@@ -259,7 +277,7 @@ const WorkspacePlanner = observer(() => {
       <ContentArea>
         <ColumnsContainer>
           {COLUMN_CONFIGS.map(({ id, title }: { id: string; title: string }) => (
-            <Column key={id}>
+            <Column key={id} hidden={!shouldShowColumn(id as BountyCardStatus)}>
               <ColumnHeader>
                 <ColumnTitle>
                   {title}
@@ -283,7 +301,7 @@ const WorkspacePlanner = observer(() => {
                       <BountyCardComp
                         key={card.id}
                         {...card}
-                        onclick={() => handleCardClick(card.id, card.status)}
+                        onclick={() => handleCardClick(card.id, card.status, card.ticket_group)}
                       />
                     ))
                 )}

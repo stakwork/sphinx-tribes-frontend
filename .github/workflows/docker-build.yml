@@ -51,6 +51,8 @@ jobs:
           docker buildx build \
           --cache-to "type=local,dest=/tmp/.buildx-cache" \
           --platform linux/amd64,linux/arm/v7 \
+          --build-arg REACT_APP_PUBLIC_POSTHOG_KEY=${{ secrets.REACT_APP_PUBLIC_POSTHOG_KEY }} \
+          --build-arg REACT_APP_PUBLIC_POSTHOG_HOST=${{ secrets.REACT_APP_PUBLIC_POSTHOG_HOST }} \
           --tag "${{ secrets.DOCKER_HUB_USER }}/sphinx-tribes-frontend:${{ env.RELEASE_TAG }}" \
           --tag "${{ secrets.DOCKER_HUB_USER }}/sphinx-tribes-frontend:latest" \
           --output "type=registry" ./

@@ -191,7 +191,6 @@ export const Data = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
-  white-space: pre-wrap;
 
   .MaterialIcon {
     font-style: normal;
