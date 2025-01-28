@@ -14,38 +14,38 @@ import mockBounties, {
   filterBounty
 } from '../../bounties/__mock__/mockBounties.data';
 
-let fetchStub: sinon.SinonStub;
-let mockApiResponseData: any[];
-
-const origFetch = global.fetch;
-
-const Crypto = {
-  getRandomValues: (arr: Uint8Array) => {
-    for (let i = 0; i < arr.length; i++) {
-      arr[i] = Math.floor(Math.random() * 256);
-    }
-    return arr;
-  }
-};
-
-beforeAll(() => {
-  fetchStub = sinon.stub(global, 'fetch');
-  fetchStub.returns(Promise.resolve({ status: 200, json: () => Promise.resolve({}) })); // Mock a default behavior
-  mockApiResponseData = [
-    { uuid: 'cm3eulatu2rvqi9o75ug' },
-    { uuid: 'cldl1g04nncmf23du7kg' },
-    { orgUUID: 'cmas9gatu2rvqiev4ur0' }
-  ];
-  global.crypto = Crypto as any;
-});
-
-afterAll(() => {
-  global.fetch = origFetch;
-
-  sinon.restore();
-});
-
 describe('Main store', () => {
+  let fetchStub: sinon.SinonStub;
+  let mockApiResponseData: any[];
+
+  const origFetch = global.fetch;
+
+  const Crypto = {
+    getRandomValues: (arr: Uint8Array) => {
+      for (let i = 0; i < arr.length; i++) {
+        arr[i] = Math.floor(Math.random() * 256);
+      }
+      return arr;
+    }
+  };
+
+  beforeAll(() => {
+    fetchStub = sinon.stub(global, 'fetch');
+    fetchStub.returns(Promise.resolve({ status: 200, json: () => Promise.resolve({}) })); // Mock a default behavior
+    mockApiResponseData = [
+      { uuid: 'cm3eulatu2rvqi9o75ug' },
+      { uuid: 'cldl1g04nncmf23du7kg' },
+      { orgUUID: 'cmas9gatu2rvqiev4ur0' }
+    ];
+    global.crypto = Crypto as any;
+  });
+
+  afterAll(() => {
+    global.fetch = origFetch;
+
+    sinon.restore();
+  });
+
   beforeEach(async () => {
     uiStore.setMeInfo(user);
     localStorageMock.setItem('ui', JSON.stringify(uiStore));
@@ -1471,11 +1471,13 @@ describe('getUserRoles', () => {
   const validUser = 'valid-user-456';
   const mockJwt = 'test_jwt';
   const mockSessionId = 'test-session-id';
+  let fetchStub: sinon.SinonStub;
 
   beforeEach(() => {
     mainStore = new MainStore();
     uiStore.setMeInfo({ ...user, tribe_jwt: mockJwt });
     sinon.stub(mainStore, 'getSessionId').returns(mockSessionId);
+    fetchStub = sinon.stub(window, 'fetch');
   });
 
   afterEach(() => {
@@ -1870,11 +1872,17 @@ describe('getPersonById', () => {
   let mainStore: MainStore;
   const mockJwt = 'test_jwt';
   const mockSessionId = 'test-session-id';
+  let fetchStub: sinon.SinonStub;
 
   beforeEach(() => {
     mainStore = new MainStore();
     uiStore.setMeInfo({ ...user, tribe_jwt: mockJwt });
     sinon.stub(mainStore, 'getSessionId').returns(mockSessionId);
+    fetchStub = sinon.stub(window, 'fetch');
+  });
+
+  afterEach(() => {
+    sinon.restore();
   });
 
   const tests = [
