@@ -1471,7 +1471,18 @@ describe('getUserRoles', () => {
   const validUser = 'valid-user-456';
   const mockJwt = 'test_jwt';
   const mockSessionId = 'test-session-id';
+  const origFetch = global.fetch;
   let fetchStub: sinon.SinonStub;
+
+  beforeAll(() => {
+    fetchStub = sinon.stub(global, 'fetch');
+    fetchStub.returns(Promise.resolve({ status: 200, json: () => Promise.resolve({}) })); // Mock a default behavior
+  });
+
+  afterAll(() => {
+    global.fetch = origFetch;
+    sinon.restore();
+  });
 
   beforeEach(() => {
     mainStore = new MainStore();
