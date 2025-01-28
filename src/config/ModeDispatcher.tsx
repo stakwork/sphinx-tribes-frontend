@@ -8,7 +8,7 @@ export enum AppMode {
 }
 
 const hosts: { [k: string]: AppMode } = {
-  'localhost:3000': AppMode.TRIBES,
+  'localhost:3000': AppMode.COMMUNITY,
   'localhost:13000': AppMode.TRIBES,
   'localhost:23000': AppMode.TRIBES,
   'tribes.sphinx.chat': AppMode.TRIBES,
@@ -25,7 +25,7 @@ const hosts: { [k: string]: AppMode } = {
 
 function getMode(): AppMode {
   const { host } = window.location;
-  return hosts[host] || AppMode.TRIBES;
+  return hosts[host] || AppMode.COMMUNITY;
 }
 
 export const ModeDispatcher = ({
