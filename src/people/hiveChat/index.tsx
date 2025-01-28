@@ -56,6 +56,13 @@ const Header = styled.div`
   gap: 10px;
 `;
 
+const TitleContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+`;
+
 const Title = styled.h2`
   font-size: 1.1rem;
   font-weight: 500;
@@ -226,6 +233,7 @@ export const HiveChatView: React.FC = observer(() => {
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [isChainVisible, setIsChainVisible] = useState(false);
   const [lastLogLine, setLastLogLine] = useState('');
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
 
   const handleBackClick = () => {
     history.push(`/workspace/${uuid}`);
@@ -304,24 +312,19 @@ export const HiveChatView: React.FC = observer(() => {
     initializeChat();
   }, [chatId, chat]);
 
-  let debounceUpdateTitle: ReturnType<typeof setTimeout>;
-  const handleTitleChange = (
-    chatId: string,
-    uuid: string,
-    title: string,
-    setIsUpdatingTitle: (status: boolean) => void
-  ) => {
-    clearTimeout(debounceUpdateTitle);
-
-    debounceUpdateTitle = setTimeout(() => {
-      updateChatTitle(chatId, uuid, title, setIsUpdatingTitle);
-    }, 1500);
-  };
-
   const onTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newTitle = event.target.value;
     setTitle(newTitle);
-    handleTitleChange(chatId, uuid, newTitle, setIsUpdatingTitle);
+    setIsEditingTitle(true);
+  };
+
+  const handleSaveTitle = async () => {
+    try {
+      await updateChatTitle(chatId, uuid, title, setIsUpdatingTitle);
+      setIsEditingTitle(false);
+    } catch (error) {
+      console.error('Error saving title:', error);
+    }
   };
 
   useEffect(() => {
@@ -494,15 +497,26 @@ export const HiveChatView: React.FC = observer(() => {
             color: '#5f6368'
           }}
         />
-        <TitleInput
-          value={title}
-          onChange={onTitleChange}
-          placeholder="Enter chat title..."
-          disabled={isUpdatingTitle}
-          style={{
-            cursor: isUpdatingTitle ? 'not-allowed' : 'text'
-          }}
-        />
+        <TitleContainer>
+          <TitleInput
+            value={title}
+            onChange={onTitleChange}
+            placeholder="Enter chat title..."
+            disabled={isUpdatingTitle}
+            style={{
+              cursor: isUpdatingTitle ? 'not-allowed' : 'text'
+            }}
+          />
+          {isEditingTitle && (
+            <SendButton
+              onClick={handleSaveTitle}
+              disabled={isUpdatingTitle}
+              style={{ margin: 0, padding: '8px 16px' }}
+            >
+              Save
+            </SendButton>
+          )}
+        </TitleContainer>
       </Header>
       <ChatBody>
         <ChatHistory ref={chatHistoryRef}>
