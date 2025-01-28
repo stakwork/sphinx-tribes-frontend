@@ -517,6 +517,15 @@ export class MainStore {
   }
 
   setPeople(p: Person[]) {
+    if (!Array.isArray(p)) {
+      throw new TypeError('Input must be an array of Person objects.');
+    }
+
+    for (const person of p) {
+      if (typeof person !== 'object' || person === null || !('id' in person)) {
+        throw new TypeError('Each item in the array must be a valid Person object.');
+      }
+    }
     this._people = p;
   }
 
