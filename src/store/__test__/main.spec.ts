@@ -1976,8 +1976,7 @@ describe('setPeople', () => {
   test('Array with Complex Objects', () => {
     const complexInput: Person[] = [
       {
-        ...validInput[0],
-        extras: { hobbies: ['reading', 'coding'] }
+        ...validInput[0]
       }
     ];
     mainStore.setPeople(complexInput);
