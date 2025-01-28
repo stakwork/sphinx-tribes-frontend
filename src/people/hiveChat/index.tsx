@@ -56,7 +56,7 @@ const Header = styled.div`
   gap: 10px;
 `;
 
-const TitleContainer = styled.div`
+const SaveTitleContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
@@ -497,7 +497,7 @@ export const HiveChatView: React.FC = observer(() => {
             color: '#5f6368'
           }}
         />
-        <TitleContainer>
+        <SaveTitleContainer>
           <TitleInput
             value={title}
             onChange={onTitleChange}
@@ -516,7 +516,7 @@ export const HiveChatView: React.FC = observer(() => {
               Save
             </SendButton>
           )}
-        </TitleContainer>
+        </SaveTitleContainer>
       </Header>
       <ChatBody>
         <ChatHistory ref={chatHistoryRef}>
