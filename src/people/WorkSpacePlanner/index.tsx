@@ -306,7 +306,7 @@ const WorkspacePlanner = observer(() => {
                     ))
                 )}
                 {!showLoadMore[id] && (
-                  <div ref={(el) => attachObserver(id, el)} style={{ height: '1px' }} />
+                  <div ref={(el) => attachObserver(id, el)} style={{ height: '2px' }} />
                 )}
                 {showLoadMore[id] && <Button text="Load More" onClick={() => loadAllCards(id)} />}
               </ColumnContent>
