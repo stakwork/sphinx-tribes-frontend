@@ -93,14 +93,14 @@ export default function MobileView(props: CodingViewProps) {
   const bountyID = id?.toString() || '';
 
   const handleAssigneeClose = () => {
-    if (changeAssignedPerson && setEnableDelete) {
+    if (hasAccess && changeAssignedPerson && setEnableDelete) {
       changeAssignedPerson();
       setEnableDelete(false);
     }
   };
 
   const handleAssigneeOpen = () => {
-    if (assigneeHandlerOpen && setEnableDelete) {
+    if (hasAccess && assigneeHandlerOpen && setEnableDelete) {
       assigneeHandlerOpen();
       setEnableDelete(true);
     }
@@ -142,7 +142,7 @@ export default function MobileView(props: CodingViewProps) {
 
   return (
     <>
-      {assigneeValue && (
+      {hasAccess && assigneeValue && (
         <Modal
           visible={true}
           envStyle={{
@@ -292,7 +292,7 @@ export default function MobileView(props: CodingViewProps) {
                     marginLeft: '12px'
                   }}
                 />
-                {!bountyPaid && !bountyPending && (
+                {hasAccess && !bountyPaid && !bountyPending && (
                   <div
                     data-testid="edit-btn"
                     className="AssigneeCloseButtonContainer"
@@ -309,26 +309,37 @@ export default function MobileView(props: CodingViewProps) {
               </div>
             ) : (
               <div className="UnassignedPersonalDetailContainer">
-                <ImageButton
-                  buttonText={'Not Assigned'}
-                  ButtonContainerStyle={{
-                    width: '159px',
-                    height: '48px',
-                    background: color.pureWhite,
-                    marginLeft: '-12px'
-                  }}
-                  buttonTextStyle={{
-                    color: color.grayish.G50,
-                    width: '114px',
-                    paddingLeft: '20px'
-                  }}
-                  endImageSrc={'/static/addIcon.svg'}
-                  endingImageContainerStyle={{
-                    right: '34px',
-                    fontSize: '12px'
-                  }}
-                  buttonAction={handleAssigneeOpen}
-                />
+                {hasAccess ? (
+                  <ImageButton
+                    buttonText={'Not Assigned'}
+                    ButtonContainerStyle={{
+                      width: '159px',
+                      height: '48px',
+                      background: color.pureWhite,
+                      marginLeft: '-12px'
+                    }}
+                    buttonTextStyle={{
+                      color: color.grayish.G50,
+                      width: '114px',
+                      paddingLeft: '20px'
+                    }}
+                    endImageSrc={'/static/addIcon.svg'}
+                    endingImageContainerStyle={{
+                      right: '34px',
+                      fontSize: '12px'
+                    }}
+                    buttonAction={handleAssigneeOpen}
+                  />
+                ) : (
+                  <div
+                    style={{
+                      padding: '15px 0 15px 20px',
+                      color: color.grayish.G50
+                    }}
+                  >
+                    Not Assigned
+                  </div>
+                )}
               </div>
             )}
           </StyledUnassignedPersonProfile>
