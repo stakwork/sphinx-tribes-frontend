@@ -1,9 +1,11 @@
+/* eslint-disable react/prop-types */
 import { EuiText } from '@elastic/eui';
 import { Formik } from 'formik';
 import { observer } from 'mobx-react-lite';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useIsMobile } from 'hooks';
 import { RefineDescriptionModal } from 'components/common/RefineDescriptionModal';
+import { snippetStore } from 'store/snippetStore';
 import { toCapitalize } from '../../../helpers/helpers';
 import api from '../../../api';
 import { colors } from '../../../config/colors';
@@ -112,6 +114,10 @@ function Form(props: FormProps) {
   }, [main, ui.meInfo?.id]);
 
   useEffect(() => {
+    snippetStore.loadSnippets(workspaceid);
+  }, [workspaceid]);
+
+  useEffect(() => {
     (async () => {
       try {
         const response = await api.get(`people?page=1&search=&sortBy=last_login&limit=100`);
@@ -201,8 +207,6 @@ function Form(props: FormProps) {
             status: 'active'
           });
 
-          console.log(features);
-
           if (Array.isArray(features)) {
             allFeatures = [...allFeatures, ...features];
             console.log(allFeatures);
@@ -229,6 +233,14 @@ function Form(props: FormProps) {
       }
     })();
   }, [main, workspaceid]);
+
+  const snippets = snippetStore.getAllSnippets();
+
+  const filteredSnippets = snippets.map((p: any) => ({
+    value: p.id,
+    label: p.title,
+    snippet: p.snippet
+  }));
 
   useEffect(() => {
     (async () => {
@@ -292,6 +304,10 @@ function Form(props: FormProps) {
     const phaseFieldIndex = schema.findIndex((field: FormField) => field.name === 'phase_id');
     if (phaseFieldIndex !== -1) {
       schema[phaseFieldIndex].options = featurePhase;
+    }
+    const snippetFieldIndex = schema.findIndex((field: FormField) => field.name === 'text_snippet');
+    if (snippetFieldIndex !== -1) {
+      schema[snippetFieldIndex].options = filteredSnippets;
     }
   }
 
@@ -610,6 +626,21 @@ function Form(props: FormProps) {
                                 }}
                                 handleChange={(e: any) => {
                                   setFieldValue(item.name, e);
+
+                                  if (item.name === 'text_snippet') {
+                                    const selectedSnippet = filteredSnippets.find(
+                                      (snippet: {
+                                        value: string;
+                                        label: string;
+                                        snippet: string;
+                                      }) => snippet.value === e
+                                    );
+                                    if (selectedSnippet) {
+                                      const existingDescription = values.description || '';
+                                      const descriptionContent = `${existingDescription}\n\n${selectedSnippet.snippet}`;
+                                      setFieldValue('description', descriptionContent.trim());
+                                    }
+                                  }
                                 }}
                                 setFieldValue={(e: any, f: any) => {
                                   setFieldValue(e, f);
