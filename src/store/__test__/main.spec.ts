@@ -1865,3 +1865,100 @@ describe('MainStore.setPersonBounties', () => {
     });
   });
 });
+
+describe('getPersonById', () => {
+  let mainStore: MainStore;
+  const mockJwt = 'test_jwt';
+  const mockSessionId = 'test-session-id';
+
+  beforeEach(() => {
+    mainStore = new MainStore();
+    uiStore.setMeInfo({ ...user, tribe_jwt: mockJwt });
+    sinon.stub(mainStore, 'getSessionId').returns(mockSessionId);
+  });
+
+  const tests = [
+    {
+      name: 'Valid ID Input',
+      id: 1,
+      mockResponse: { id: 1 },
+      expectedPerson: { id: 1 },
+      expectError: false
+    },
+    {
+      name: 'Another Valid ID Input',
+      id: 2,
+      mockResponse: { id: 2 },
+      expectedPerson: { id: 2 },
+      expectError: false
+    },
+    {
+      name: 'Minimum ID Value',
+      id: 0,
+      mockResponse: { id: 0 },
+      expectedPerson: { id: 0 },
+      expectError: false
+    },
+    {
+      name: 'Maximum ID Value',
+      id: 2147483647,
+      mockResponse: null,
+      mockError: new Error('not found'),
+      expectedPerson: null,
+      expectError: true
+    },
+    {
+      name: 'Non-Existent ID',
+      id: 9999,
+      mockResponse: null,
+      mockError: new Error('not found'),
+      expectedPerson: null,
+      expectError: true
+    },
+    {
+      name: 'Negative ID',
+      id: -1,
+      mockResponse: null,
+      mockError: new Error('invalid id'),
+      expectedPerson: null,
+      expectError: true
+    },
+    {
+      name: 'ID as a Floating Point Number',
+      id: 1.5,
+      mockResponse: { id: 1 },
+      expectedPerson: { id: 1 },
+      expectError: false
+    }
+  ];
+
+  tests.forEach((tt: any) => {
+    it(tt.name, async () => {
+      if (tt.mockResponse) {
+        fetchStub.resolves({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve(tt.mockResponse)
+        } as Response);
+      } else {
+        fetchStub.rejects(tt.mockError || new Error('Unknown error'));
+      }
+
+      try {
+        const person = await mainStore.getPersonById(tt.id);
+
+        if (tt.expectError) {
+          fail('Expected an error but did not receive one');
+        } else {
+          expect(person).toEqual(tt.expectedPerson);
+        }
+      } catch (err) {
+        if (!tt.expectError) {
+          fail(`Did not expect an error but received: ${err}`);
+        } else {
+          expect(err).toEqual(tt.mockError);
+        }
+      }
+    });
+  });
+});
