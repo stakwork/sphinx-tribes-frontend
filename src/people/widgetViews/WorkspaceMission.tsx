@@ -312,7 +312,7 @@ const WorkspaceMission = () => {
   const [modalType, setModalType] = useState('add');
   const [featureModal, setFeatureModal] = useState(false);
   const [features, setFeatures] = useState<Feature[]>([]);
-  const [featuresCount] = useState(0);
+  const [featuresCount] = useState(22);
   const [isOpenUserManage, setIsOpenUserManage] = useState<boolean>(false);
   const [users, setUsers] = useState<Person[]>([]);
   const [displayUserRepoOptions, setDisplayUserRepoOptions] = useState<Record<number, boolean>>({});
@@ -333,12 +333,11 @@ const WorkspaceMission = () => {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [permissionsChecked, setPermissionsChecked] = useState<boolean>(false);
   const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
-  const [loadLimit, setLoadLimit] = useState(20);
+  const [loadLimit, setLoadLimit] = useState(100);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const ITEMS_PER_PAGE = 4;
-  const INITIAL_LOAD_LIMIT = loadLimit;
   const [isSnippetModalVisible, setSnippetModalVisible] = useState(false);
 
   const openSnippetModal = () => {
@@ -601,7 +600,6 @@ const WorkspaceMission = () => {
     if (!uuid) return;
     const featuresCount = await main.getWorkspaceFeaturesCount(uuid);
     if (!featuresCount) return;
-    setLoadLimit(featuresCount);
 
     setLoading(false);
   }, [uuid, main]);
@@ -609,19 +607,6 @@ const WorkspaceMission = () => {
   useEffect(() => {
     getFeaturesCount();
   }, [getFeaturesCount]);
-
-  console.log(loadLimit, 'Load Limit');
-
-  // const updateFeatures = (newFeatures: Feature[]) => {
-  //   const updatedFeatures: Feature[] = [...features];
-  //   newFeatures.forEach((newFeat: Feature) => {
-  //     const featIndex = features.findIndex((feat: Feature) => feat.uuid === newFeat.uuid);
-  //     if (featIndex === -1) {
-  //       updatedFeatures.push(newFeat);
-  //     }
-  //   });
-  //   setFeatures(updatedFeatures);
-  // };
 
   const getFeatures = useCallback(
     async (page: number, isInitialLoad = false): Promise<void> => {
@@ -1572,29 +1557,6 @@ const WorkspaceMission = () => {
                   <LoadingText>Loading more features...</LoadingText>
                 </LoadingContainer>
               )}
-
-              <div
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-              >
-                {/* Load More button (shown after initial 20 items) */}
-                {features.length >= INITIAL_LOAD_LIMIT &&
-                  featuresCount > 20 &&
-                  features.length < featuresCount && (
-                    <Button
-                      text="Load More"
-                      onClick={() => {
-                        setLoadLimit(100);
-                        setCurrentPage((prev: number) => prev + 1);
-                        getFeatures(currentPage + 1, true);
-                      }}
-                    />
-                  )}
-              </div>
             </FeaturesWrap>
           </FieldWrap>
         </DataWrap>
