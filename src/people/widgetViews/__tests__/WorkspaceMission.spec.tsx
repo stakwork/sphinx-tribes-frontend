@@ -5,6 +5,44 @@ import WorkspaceMission from '../WorkspaceMission';
 import { useFeatureFlag } from '../../../hooks/useFeatureFlag';
 import { withProviders } from '../../../providers';
 
+global.IntersectionObserver = class IntersectionObserver {
+  readonly root: Element | null = null;
+  readonly rootMargin: string = '0px';
+  readonly thresholds: ReadonlyArray<number> = [0];
+  private callback: IntersectionObserverCallback;
+  private options?: IntersectionObserverInit;
+
+  constructor(callback: IntersectionObserverCallback, options?: IntersectionObserverInit) {
+    this.callback = callback;
+    this.options = options;
+  }
+
+  observe(target: Element) {
+    const entry: IntersectionObserverEntry = {
+      isIntersecting: true,
+      target: target,
+      boundingClientRect: target.getBoundingClientRect(),
+      intersectionRatio: 1,
+      intersectionRect: target.getBoundingClientRect(),
+      rootBounds: null,
+      time: Date.now()
+    };
+    this.callback([entry], this);
+  }
+
+  unobserve() {
+    // No-op
+  }
+
+  disconnect() {
+    // No-op
+  }
+
+  takeRecords(): IntersectionObserverEntry[] {
+    return [];
+  }
+};
+
 jest.mock('../../../hooks/useFeatureFlag');
 
 const mockCrypto = {
