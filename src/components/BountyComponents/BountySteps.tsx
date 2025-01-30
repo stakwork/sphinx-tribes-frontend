@@ -9,18 +9,19 @@ const StepsContainer = styled.div`
   margin: 20px 0;
 `;
 
-const StepItem = styled.div`
+const StepItem = styled.li`
   display: flex;
   align-items: flex-start;
   gap: 4px;
   font-size: 16px;
   margin-left: 2%;
   color: ${colors.light.text1};
+  list-style-type: decimal;  
 `;
 
 const StepLabel = styled.span`
   font-weight: 800;
-  font-size: 18px;
+  font-size: 16px;
 `;
 
 const StepText = styled.span`
@@ -38,7 +39,7 @@ const StepLink = styled.a`
   }
 `;
 
-const StepTitle = styled.h6`
+const StepTitle = styled.h2`
   font-size: 20px;
   font-family: 'Barlow';
   font-weight: 800;
@@ -73,6 +74,7 @@ const steps: Step[] = [
 export const BountySteps: React.FC = () => (
   <StepsContainer>
     <StepTitle>If you want to earn bounties</StepTitle>
+    <ul>
     {steps.map((step: Step, index: number) => (
       <StepItem key={index}>
         <StepLabel>{`Step ${index + 1}:`}</StepLabel>
@@ -91,5 +93,6 @@ export const BountySteps: React.FC = () => (
         </StepText>
       </StepItem>
     ))}
+    </ul> 
   </StepsContainer>
 );

@@ -206,7 +206,7 @@ const GetSphinxsBtn = styled.button`
   }
 `;
 
-const LoginBtn = styled.div`
+const LoginBtn = styled.button`
   display: flex;
   flex-wrap: nowrap;
   width: 120px;
@@ -218,6 +218,8 @@ const LoginBtn = styled.div`
   line-height: 17px;
   cursor: pointer;
   margin-left: 18px;
+  background: transparent;
+  border: none;
   span {
     margin-right: 8px;
   }
@@ -460,7 +462,7 @@ function Header() {
         >
           <Row style={{ height: '100%', marginBottom: '-2px', flex: 2 }}>
             <EuiHeaderSection grow={false}>
-              <Img src="/static/people_logo.svg" />
+              <Img src="/static/people_logo.svg" role="image" aria-label="Sphinx Community"/>
             </EuiHeaderSection>
 
             <Tabs>

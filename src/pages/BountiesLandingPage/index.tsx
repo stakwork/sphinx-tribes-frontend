@@ -12,6 +12,8 @@ const ButtonContainer = styled.div`
   gap: 16px;
   margin-top: 20px;
   margin-bottom: 20px;
+  padding: 4px;
+  overflow: visible;
 `;
 
 const Button = styled.button<{ variant: 'primary' | 'secondary' }>`
@@ -40,6 +42,11 @@ const Button = styled.button<{ variant: 'primary' | 'secondary' }>`
       background: ${colors.light.blue1}10;
     }
   `}
+
+  &:focus {
+    outline: 2px solid ${colors.light.blue1};
+    outline-offset: 1px;
+  }
 `;
 
 const BountiesLandingPage: React.FC = () => {
@@ -153,6 +160,14 @@ const BountiesLandingPage: React.FC = () => {
       font-weight: 600;
     }
 
+    h3 {
+      font-size: 24px;
+      font-family: Barlow;
+      color: ${color.text1};
+      margin-bottom: 24px;
+      font-weight: 600;
+    }
+
     p {
       margin-bottom: 16px;
       font-weight: 500;
@@ -191,7 +206,7 @@ const BountiesLandingPage: React.FC = () => {
             <BountyComponents />
           </ScrollableColumn>
           <Column>
-            <h1>All-Time Top Bounty Hunters</h1>
+            <h3>All-Time Top Bounty Hunters</h3>
             <TopEarners limit={5} />
           </Column>
         </ContentGrid>
