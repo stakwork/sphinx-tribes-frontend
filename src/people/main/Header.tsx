@@ -462,7 +462,7 @@ function Header() {
         >
           <Row style={{ height: '100%', marginBottom: '-2px', flex: 2 }}>
             <EuiHeaderSection grow={false}>
-              <Img src="/static/people_logo.svg" role="image" aria-label="Sphinx Community"/>
+              <Img src="/static/people_logo.svg" role="img" aria-label="Sphinx Community"/>
             </EuiHeaderSection>
 
             <Tabs>
