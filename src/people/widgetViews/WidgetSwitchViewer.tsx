@@ -88,6 +88,8 @@ function WidgetSwitchViewer(props: any) {
     isBountyLandingPage,
     activeWorkspace,
     uuid,
+    featureUuid,
+    phaseUuid,
     orgQueryLimit
   } = props;
 
@@ -109,7 +111,7 @@ function WidgetSwitchViewer(props: any) {
         justifyContent: 'center'
       };
 
-  const { peoplePosts, peopleBounties, peopleOffers } = main;
+  const { peoplePosts, peopleBounties, phaseBounties, peopleOffers } = main;
   const { selectedWidget, onPanelClick, org_uuid } = props;
 
   const featuredBountyIds = bountyStore
@@ -137,7 +139,21 @@ function WidgetSwitchViewer(props: any) {
     offer: peopleOffers
   };
 
+  const phaseListSource = {
+    post: peoplePosts,
+    bounties: selectedWidget === 'bounties' ? sortBounties(phaseBounties) : phaseBounties,
+    offer: peopleOffers
+  };
+
   const activeList = [...listSource[selectedWidget]].filter(({ body }: any) => {
+    const value = { ...body };
+    if (org_uuid) {
+      return value.org_uuid === org_uuid;
+    }
+    return value;
+  });
+
+  const activePhaseList = [...phaseListSource[selectedWidget]].filter(({ body }: any) => {
     const value = { ...body };
     if (org_uuid) {
       return value.org_uuid === org_uuid;
@@ -238,7 +254,81 @@ function WidgetSwitchViewer(props: any) {
             }
           : {};
 
-        // if this person has entries for this widget
+        return (
+          <Panel
+            color={color}
+            isMobile={isMobile}
+            key={person?.owner_pubkey + i + body?.created}
+            isAssignee={!!body.assignee}
+            style={{
+              ...panelStyles,
+              ...conditionalStyles,
+              cursor: 'pointer',
+              padding: isFeatured ? '2px' : 0,
+              overflow: 'hidden',
+              background: 'transparent',
+              minHeight: !isMobile ? '160px' : '',
+              maxHeight: 'auto',
+              boxShadow: 'none'
+            }}
+          >
+            {selectedWidget === 'post' ? (
+              <PostView
+                showName
+                key={`${i + person.owner_pubkey}pview`}
+                person={person}
+                {...body}
+              />
+            ) : selectedWidget === 'offer' ? (
+              <OfferView
+                showName
+                key={`${i + person.owner_pubkey}oview`}
+                person={person}
+                {...body}
+              />
+            ) : selectedWidget === 'bounties' ? (
+              <WantedView
+                showName
+                onPanelClick={() => {
+                  if (onPanelClick) onPanelClick(activeWorkspace, body);
+                }}
+                person={person}
+                showModal={showModal}
+                isBountyLandingPage={isBountyLandingPage}
+                setDeletePayload={setDeletePayload}
+                fromBountyPage={props.fromBountyPage}
+                activeWorkspace={activeWorkspace}
+                {...body}
+                {...organization}
+              />
+            ) : null}
+          </Panel>
+        );
+      })
+    ) : (
+      <NoResults loaded={!!languageString} />
+    );
+
+  const phaseListItems =
+    activePhaseList && activePhaseList.length ? (
+      activePhaseList.slice(0, currentItems).map((item: any, i: number) => {
+        const { person, body, organization } = item;
+        person.img = person.img || main.getUserAvatarPlaceholder(person.owner_pubkey);
+
+        const isFeatured = featuredBountyIds.includes(body.id.toString());
+
+        const conditionalStyles = body?.paid
+          ? {
+              border: isMobile ? `2px 0 0 0 solid ${color.grayish.G600}` : '',
+              boxShadow: 'none'
+            }
+          : isFeatured
+          ? {
+              border: '',
+              borderRadius: '12px'
+            }
+          : {};
+
         return (
           <Panel
             color={color}
@@ -299,7 +389,7 @@ function WidgetSwitchViewer(props: any) {
 
   return (
     <>
-      {listItems}
+      {featureUuid && phaseUuid ? phaseListItems : listItems}
       <Spacer key={'spacer2'} />
       {showDeleteModal && (
         <DeleteTicketModal closeModal={closeModal} confirmDelete={confirmDelete} />
