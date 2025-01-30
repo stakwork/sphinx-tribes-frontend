@@ -1865,3 +1865,137 @@ describe('MainStore.setPersonBounties', () => {
     });
   });
 });
+
+describe('setPeople', () => {
+  let mainStore: MainStore;
+
+  beforeEach(() => {
+    mainStore = new MainStore();
+  });
+
+  const validInput: Person[] = [
+    {
+      id: 1,
+      unique_name: 'alice123',
+      owner_pubkey: 'pubkey1',
+      uuid: 'uuid1',
+      owner_alias: 'AliceOwner',
+      description: 'Description for Alice',
+      img: 'https://example.com/alice.jpg',
+      tags: ['tag1', 'tag2'],
+      photo_url: 'https://example.com/photo_alice.jpg',
+      alias: 'Alice',
+      route_hint: 'route_hint1',
+      contact_key: 'contact_key1',
+      price_to_meet: 100,
+      url: 'https://example.com/alice',
+      verification_signature: 'signature1',
+      extras: {}
+    },
+    {
+      id: 2,
+      unique_name: 'bob123',
+      owner_pubkey: 'pubkey2',
+      uuid: 'uuid2',
+      owner_alias: 'BobOwner',
+      description: 'Description for Bob',
+      img: 'https://example.com/bob.jpg',
+      tags: ['tag3', 'tag4'],
+      photo_url: 'https://example.com/photo_bob.jpg',
+      alias: 'Bob',
+      route_hint: 'route_hint2',
+      contact_key: 'contact_key2',
+      price_to_meet: 200,
+      url: 'https://example.com/bob',
+      verification_signature: 'signature2',
+      extras: {}
+    }
+  ];
+
+  test('Standard Input', () => {
+    mainStore.setPeople(validInput);
+    expect(mainStore.people).toEqual(validInput);
+  });
+
+  test('Empty Array', () => {
+    const input: Person[] = [];
+    mainStore.setPeople(input);
+    expect(mainStore.people).toEqual(input);
+  });
+
+  test('Single Element Array', () => {
+    const singlePersonInput: Person[] = [validInput[0]];
+    mainStore.setPeople(singlePersonInput);
+    expect(mainStore.people).toEqual(singlePersonInput);
+  });
+
+  test('Large Array', () => {
+    const largeArray: Person[] = Array.from({ length: 10000 }, (_: unknown, i: number) => ({
+      id: i,
+      unique_name: `person${i}`,
+      owner_pubkey: `pubkey${i}`,
+      uuid: `uuid${i}`,
+      owner_alias: `alias${i}`,
+      description: `Description for person${i}`,
+      img: `https://example.com/person${i}.jpg`,
+      tags: [`tag${i}`],
+      photo_url: `https://example.com/photo_person${i}.jpg`,
+      alias: `Person${i}`,
+      route_hint: `route_hint${i}`,
+      contact_key: `contact_key${i}`,
+      price_to_meet: i * 10,
+      url: `https://example.com/person${i}`,
+      verification_signature: `signature${i}`,
+      extras: {}
+    }));
+    mainStore.setPeople(largeArray);
+    expect(mainStore.people).toEqual(largeArray);
+  });
+
+  test('Array with Duplicate Entries', () => {
+    const duplicateArray: Person[] = [validInput[0], validInput[0]];
+    mainStore.setPeople(duplicateArray);
+    expect(mainStore.people).toEqual(duplicateArray);
+  });
+
+  test('Invalid Data Type', () => {
+    // @ts-expect-error
+    expect(() => mainStore.setPeople({ name: 'Invalid', age: 50 })).toThrow(TypeError);
+  });
+
+  test('Null Input', () => {
+    // @ts-expect-error
+    expect(() => mainStore.setPeople(null)).toThrow(TypeError);
+  });
+
+  test('Undefined Input', () => {
+    // @ts-expect-error
+    expect(() => mainStore.setPeople(undefined)).toThrow(TypeError);
+  });
+
+  test('Array with Complex Objects', () => {
+    const complexInput: Person[] = [
+      {
+        ...validInput[0]
+      }
+    ];
+    mainStore.setPeople(complexInput);
+    expect(mainStore.people).toEqual(complexInput);
+  });
+
+  test('Array with Mixed Valid and Invalid Objects', () => {
+    // TypeScript should prevent this from compiling.
+    // @ts-expect-error
+    expect(() => mainStore.setPeople([validInput[0], { invalid: 'data' }])).toThrow(TypeError);
+  });
+
+  test('Array with Null Elements', () => {
+    // @ts-expect-error
+    expect(() => mainStore.setPeople([validInput[0], null])).toThrow(TypeError);
+  });
+
+  test('Array with Undefined Elements', () => {
+    // @ts-expect-error
+    expect(() => mainStore.setPeople([validInput[0], undefined])).toThrow(TypeError);
+  });
+});
