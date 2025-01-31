@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { EuiSpacer, EuiTabbedContentProps, EuiTabbedContentTab } from '@elastic/eui';
 import { Button } from 'components/common';
 import MaterialIcon from '@material/react-material-icon';
@@ -18,11 +18,14 @@ import {
   StyledEuiTabbedContent,
   TabContent,
   PostABounty,
-  TabContentOptions
+  TabContentOptions,
+  DisplayBounties
 } from '../workspace/style';
 import addBounty from '../../../pages/tickets/workspace/workspaceHeader/Icons/addBounty.svg';
 import { userCanManageBounty } from '../../../helpers';
 import { PostModal } from '../postBounty/PostModal';
+import WidgetSwitchViewer from '../WidgetSwitchViewer';
+import { BountyStatus, phaseBountyLimit } from '../../../store/interface';
 import { Phase, PhaseOperationMessage, PhaseOperationType, Toast } from './interface';
 import { AddPhaseModal, DeletePhaseModal, EditPhaseModal } from './WorkspacePhasingModals';
 
@@ -114,6 +117,26 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
   const [phaseName, setPhaseName] = useState<string>('');
   const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
   const [canPostBounty, setCanPostBounty] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState<number>(1);
+  const [currentItems, setCurrentItems] = useState<number>(phaseBountyLimit);
+  const [totalBounties, setTotalBounties] = useState(0);
+
+  const checkboxIdToSelectedMap: BountyStatus = useMemo(
+    () => ({
+      Open: true,
+      Assigned: true,
+      Completed: true,
+      Paid: true,
+      Pending: true,
+      Failed: true
+    }),
+    []
+  );
+
+  const checkboxIdToSelectedMapLanguage = {};
+  const languageString = '';
+
   const selectedWidget = 'bounties';
 
   const history = useHistory();
@@ -121,6 +144,16 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
   const handleTabClick = (selectedTab: EuiTabbedContentTab) => {
     setSelectedIndex(parseInt(selectedTab.id));
     setPhaseName(phases[selectedIndex]?.name);
+    setPage(1);
+    setCurrentItems(phaseBountyLimit);
+  };
+
+  const onPanelClick = (activeWorkspace?: string, bounty?: any) => {
+    if (bounty?.id) {
+      history.push(`/bounty/${bounty.id}`);
+    } else {
+      history.push(`/feature/${props.workspace_uuid}`);
+    }
   };
 
   const handleAddPhaseClick = () => {
@@ -153,6 +186,45 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
       history.push(`/feature/${phase.feature_uuid}/phase/${phase.uuid}/planner`);
     }
   };
+
+  const getTotalBounties = useCallback(
+    async (statusData: any) => {
+      if (phases[selectedIndex]) {
+        const totalBounties = await main.getTotalPhaseBountyCount(
+          phases[selectedIndex].feature_uuid,
+          phases[selectedIndex].uuid,
+          statusData.Open,
+          statusData.Assigned,
+          statusData.Paid
+        );
+        setTotalBounties(totalBounties);
+      }
+    },
+    [phases, selectedIndex, main]
+  );
+
+  useEffect(() => {
+    if (phases[selectedIndex]) {
+      (async () => {
+        setLoading(true);
+
+        await main.getPhaseBounties(
+          phases[selectedIndex].feature_uuid,
+          phases[selectedIndex].uuid,
+          {
+            page: 1,
+            resetPage: true,
+            ...checkboxIdToSelectedMap,
+            languages: languageString
+          }
+        );
+
+        await getTotalBounties(checkboxIdToSelectedMap);
+
+        setLoading(false);
+      })();
+    }
+  }, [phases, selectedIndex, main, checkboxIdToSelectedMap, languageString, getTotalBounties]);
 
   const handlePhaseNameChange = (name: string) => setPhaseName(name);
 
@@ -264,10 +336,55 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
                 </>
               )}
             </PostABounty>
+            <DisplayBounties>
+              <div
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  height: '100%',
+                  overflowY: 'auto'
+                }}
+              >
+                {totalBounties > 0 ? (
+                  <WidgetSwitchViewer
+                    onPanelClick={onPanelClick}
+                    checkboxIdToSelectedMap={checkboxIdToSelectedMap}
+                    checkboxIdToSelectedMapLanguage={checkboxIdToSelectedMapLanguage}
+                    fromBountyPage={true}
+                    selectedWidget={selectedWidget}
+                    loading={loading}
+                    currentItems={currentItems}
+                    setCurrentItems={setCurrentItems}
+                    page={page}
+                    setPage={setPage}
+                    languageString={languageString}
+                    phaseTotalBounties={totalBounties}
+                    featureUuid={phases[selectedIndex].feature_uuid}
+                    phaseUuid={phases[selectedIndex].uuid}
+                  />
+                ) : (
+                  <p>No Bounties Yet!</p>
+                )}
+              </div>
+            </DisplayBounties>
           </TabContent>
         )
       })),
-    [phases, canPostBounty, selectedIndex]
+    [
+      phases,
+      canPostBounty,
+      handlePhasePlannerClick,
+      totalBounties,
+      onPanelClick,
+      checkboxIdToSelectedMap,
+      checkboxIdToSelectedMapLanguage,
+      loading,
+      currentItems,
+      page,
+      selectedIndex
+    ]
   );
 
   const selectedTab = useMemo(() => tabs[selectedIndex], [selectedIndex, tabs]);

@@ -17,7 +17,8 @@ describe('WidgetSwitchViewer Component', () => {
         getSpecificWorkspaceBounties: jest.fn(() => Promise.resolve()),
         peopleBounties: [],
         peopleOffers: [],
-        peoplePosts: []
+        peoplePosts: [],
+        phaseBounties: []
       }
     });
   });

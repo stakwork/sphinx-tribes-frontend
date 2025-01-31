@@ -630,6 +630,12 @@ export class MainStore {
     this.peopleBounties = bounties;
   }
 
+  @persist('list')
+  phaseBounties: PersonBounty[] = [];
+  @action setPhaseBounties(bounties: PersonBounty[]) {
+    this.phaseBounties = bounties;
+  }
+
   @persist('object')
   bountiesStatus: BountyStatus = defaultBountyStatus;
   @action setBountiesStatus(status: BountyStatus) {
@@ -826,7 +832,7 @@ export class MainStore {
 
       // for search always reset page
       if (queryParams && queryParams.resetPage) {
-        this.setPeopleBounties(ps3);
+        this.setPhaseBounties(ps3);
         uiStore.setPeopleBountiesPageNumber(1);
       } else {
         // all other cases, merge
@@ -837,7 +843,7 @@ export class MainStore {
           queryParams,
           'bounties'
         );
-        this.setPeopleBounties(wanteds);
+        this.setPhaseBounties(wanteds);
       }
 
       return ps3;
