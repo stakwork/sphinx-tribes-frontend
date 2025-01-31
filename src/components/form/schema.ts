@@ -721,7 +721,7 @@ export const wantedCodingTaskSchema: FormField[] = [
   },
   {
     name: 'text_snippet',
-    label: 'Text Snippet Title',
+    label: 'Insert Text Snippet',
     type: 'select',
     options: []
   },

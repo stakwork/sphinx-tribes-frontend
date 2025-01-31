@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { SwitcherButton, SwitcherContainer } from 'people/widgetViews/workspace/style';
+import { renderMarkdown } from 'people/utils/RenderMarkdown';
+import { snippetStore } from 'store/snippetStore';
 import { colors } from '../../../config/colors';
 import { normalizeTextValue } from '../../../helpers';
 import type { Props } from './propsType';
+import { SnippetDropdown } from './SnippetDropDown';
 
 interface styledProps {
   color?: any;
@@ -42,12 +46,6 @@ const InputOuterBox = styled.div<styledProps>`
     color: #999;
   }
 `;
-const ErrorText = styled.p`
-  font-size: 11px;
-  color: #ff8f80;
-  z-index: 999;
-  top: 75px;
-`;
 export default function TextAreaInputNew({
   error,
   label,
@@ -61,7 +59,8 @@ export default function TextAreaInputNew({
   labelStyle,
   name,
   testId,
-  setColor
+  setColor,
+  workspaceid
 }: Props) {
   let labeltext = label;
   if (error) labeltext = `${labeltext}*`;
@@ -70,6 +69,12 @@ export default function TextAreaInputNew({
   const [textValue, setTextValue] = useState(value);
   const [showPlaceholder, setShowPlaceholder] = useState(!textValue);
   const [characterError, setCharacterError] = useState(false);
+  const [activeMode, setActiveMode] = useState<'preview' | 'edit'>('edit');
+
+  useEffect(() => {
+    setTextValue(value);
+    setShowPlaceholder(!value);
+  }, [value]);
 
   useEffect(() => {
     if (textValue) {
@@ -80,82 +85,124 @@ export default function TextAreaInputNew({
     }
   }, [textValue]);
 
+  useEffect(() => {
+    if (workspaceid) {
+      snippetStore.loadSnippets(workspaceid);
+    }
+  }, [workspaceid]);
+
+  const snippets = snippetStore.getAllSnippets();
+
+  const filteredSnippets = snippets.map((p: any) => ({
+    value: p.id,
+    label: p.title,
+    snippet: p.snippet
+  }));
+
+  const handleSnippetSelect = (snippet: string) => {
+    const newValue = value ? `${value}\n${snippet}` : snippet;
+    handleChange(newValue);
+    setTextValue(newValue);
+  };
+
   return (
-    <InputOuterBox
-      color={color}
-      borderColor={characterError || isError ? color.red2 : color.grayish.G600}
-      characterError={characterError}
-    >
-      <textarea
-        className="inputText"
-        placeholder={showPlaceholder ? placeholder : ''} //displays the placeholder only when the textValue is empty
-        id={name}
-        data-testid={testId}
-        value={textValue}
-        onFocus={() => {
-          handleFocus();
-          setShowPlaceholder(false);
-        }}
-        onBlur={() => {
-          handleBlur();
-          if (error) {
-            setIsError(true);
-          }
-          if (!textValue) {
-            setShowPlaceholder(true);
-          } else {
-            const trimmedAndSingleSpacedValue = normalizeTextValue(textValue);
-            setTextValue(trimmedAndSingleSpacedValue);
-            handleChange(trimmedAndSingleSpacedValue);
-          }
-        }}
-        onChange={(e: any) => {
-          const newVal = e.target.value.trimStart();
-          if (name === 'description') {
-            if (newVal.length <= 120) {
-              handleChange(newVal);
-              setTextValue(newVal);
-              setCharacterError(false);
-              setColor && setColor(false, name);
-            } else {
-              setCharacterError(true);
-              setColor && setColor(true, name);
-            }
-          } else {
-            handleChange(newVal);
-            setTextValue(newVal);
-          }
-        }}
-        style={{
-          height: label === 'Deliverables' ? '137px' : '175px',
-          ...style
-        }}
-      />
-      <label
-        htmlFor={name}
-        className="text"
-        onClick={handleFocus}
-        style={{
-          position: 'absolute',
-          left: 16,
-          top:
-            isFocused && !isFocused[label]
-              ? textValue === undefined || textValue === ''
-                ? 10
-                : -9
-              : -9,
-          fontSize: isFocused && !isFocused[label] ? (textValue === undefined ? 14 : 12) : 12,
-          color: color.grayish.G300,
-          background: color.pureWhite,
-          fontFamily: 'Barlow',
-          fontWeight: '500',
-          transition: 'all 0.5s',
-          ...labelStyle
-        }}
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '20px' }}>
+        <SnippetDropdown items={filteredSnippets} onSelect={handleSnippetSelect} />
+        <SwitcherContainer>
+          <SwitcherButton
+            isActive={activeMode === 'preview'}
+            onClick={() => setActiveMode('preview')}
+          >
+            Preview
+          </SwitcherButton>
+          <SwitcherButton isActive={activeMode === 'edit'} onClick={() => setActiveMode('edit')}>
+            Edit
+          </SwitcherButton>
+        </SwitcherContainer>
+      </div>
+
+      <InputOuterBox
+        color={color}
+        borderColor={characterError || isError ? color.red2 : color.grayish.G600}
+        characterError={characterError}
       >
-        {labeltext}
-      </label>
-      {characterError ? <ErrorText>Description is too long</ErrorText> : null}
-    </InputOuterBox>
+        {activeMode === 'edit' ? (
+          <textarea
+            className="inputText"
+            placeholder={showPlaceholder ? placeholder : ''} // Displays the placeholder only when the textValue is empty
+            id={name}
+            data-testid={testId}
+            value={textValue || ''}
+            onFocus={() => {
+              handleFocus();
+              setShowPlaceholder(false);
+            }}
+            onBlur={() => {
+              handleBlur();
+              if (error) {
+                setIsError(true);
+              }
+              if (!textValue) {
+                setShowPlaceholder(true);
+              } else {
+                const trimmedAndSingleSpacedValue = normalizeTextValue(textValue);
+                setTextValue(trimmedAndSingleSpacedValue);
+                handleChange(trimmedAndSingleSpacedValue);
+              }
+            }}
+            onChange={(e: any) => {
+              const newVal = e.target.value.trimStart();
+              if (name === 'description') {
+                if (newVal.length <= 120) {
+                  handleChange(newVal);
+                  setTextValue(newVal);
+                  setCharacterError(false);
+                  setColor && setColor(false, name);
+                } else {
+                  setCharacterError(true);
+                  setColor && setColor(true, name);
+                }
+              } else {
+                handleChange(newVal);
+                setTextValue(newVal);
+              }
+            }}
+            style={{
+              height: label === 'Deliverables' ? '137px' : '175px',
+              ...style
+            }}
+          />
+        ) : (
+          <div className="p-4 border-solid">{renderMarkdown(value)}</div>
+        )}
+
+        {/* Label */}
+        <label
+          htmlFor={name}
+          className="text"
+          onClick={handleFocus}
+          style={{
+            position: 'absolute',
+            left: 16,
+            top:
+              isFocused && !isFocused[label]
+                ? textValue === undefined || textValue === ''
+                  ? 10
+                  : -9
+                : -9,
+            fontSize: isFocused && !isFocused[label] ? (textValue === undefined ? 14 : 12) : 12,
+            color: color.grayish.G300,
+            background: color.pureWhite,
+            fontFamily: 'Barlow',
+            fontWeight: '500',
+            transition: 'all 0.5s',
+            ...labelStyle
+          }}
+        >
+          {labeltext}
+        </label>
+      </InputOuterBox>
+    </div>
   );
 }

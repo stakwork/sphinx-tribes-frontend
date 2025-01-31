@@ -1,38 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import TextAreaInput from './TextAreaInput';
 import '@testing-library/jest-dom';
-
-const mockProps = {
-  label: 'Description',
-  value: '',
-  readOnly: false,
-  github_state: true,
-  labelStyle: { color: 'red', fontSize: '16px' },
-  handleChange: jest.fn(),
-  placeholder: '',
-  handleBlur: jest.fn(),
-  handleFocus: jest.fn(),
-  prepend: '',
-  extraHTML: '',
-  note: '',
-  testId: '',
-  options: [
-    { label: 'Option 1', value: '1' },
-    { label: 'Option 2', value: '2' }
-  ],
-  name: '',
-  error: '',
-  borderType: undefined,
-  imageIcon: false,
-  isFocused: jest.fn(),
-  disabled: false,
-  notProfilePic: true,
-  style: { width: '100%', padding: '10px' },
-  maxLength: 100,
-  setColor: jest.fn()
-};
 
 describe('TextAreaInput', () => {
   it('renders uneditable description when pulled from GitHub issue', () => {
@@ -63,7 +32,8 @@ describe('TextAreaInput', () => {
       notProfilePic: true,
       style: { width: '100%', padding: '10px' },
       maxLength: 100,
-      setColor: jest.fn()
+      setColor: jest.fn(),
+      workspaceid: 'csvm3cqtu2rphloa7870'
     };
 
     render(<TextAreaInput {...mockProps} />);
@@ -101,7 +71,8 @@ describe('TextAreaInput', () => {
       notProfilePic: true,
       style: { width: '100%', padding: '10px' },
       maxLength: 100,
-      setColor: jest.fn()
+      setColor: jest.fn(),
+      workspaceid: 'csvm3cqtu2rphloa7870'
     };
 
     render(<TextAreaInput {...mockProps} />);

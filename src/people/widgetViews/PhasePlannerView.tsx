@@ -520,6 +520,7 @@ const PhasePlannerView: React.FC = observer(() => {
                   setPreviewMode={setPurposePreviewMode}
                   placeholder="Purpose"
                   dataTestIdPrefix="purpose"
+                  workspaceUUID={featureData?.workspace_uuid ?? ''}
                 />
                 {editPurpose && (
                   <ButtonWrap>
@@ -570,6 +571,7 @@ const PhasePlannerView: React.FC = observer(() => {
                   setPreviewMode={setOutcomePreviewMode}
                   placeholder="Outcome"
                   dataTestIdPrefix="outcome"
+                  workspaceUUID={featureData?.workspace_uuid}
                 />
                 {editOutcome && (
                   <ButtonWrap>
@@ -620,6 +622,7 @@ const PhasePlannerView: React.FC = observer(() => {
                   setPreviewMode={setScopePreviewMode}
                   placeholder="Scope"
                   dataTestIdPrefix="scope"
+                  workspaceUUID={featureData?.workspace_uuid}
                 />
                 {editScope && (
                   <ButtonWrap>
@@ -666,6 +669,7 @@ const PhasePlannerView: React.FC = observer(() => {
                             dragHandleProps={provided.dragHandleProps}
                             swwfLink={swwfLinks[ticket.uuid]}
                             getPhaseTickets={getPhaseTickets}
+                            workspaceUUID={featureData?.workspace_uuid || ''}
                           />
                         </div>
                       )}

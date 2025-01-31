@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { EuiIcon } from '@elastic/eui';
 import { renderMarkdown } from 'people/utils/RenderMarkdown';
@@ -6,8 +6,10 @@ import { CopyButtonGroup } from 'people/widgetViews/workspace/style';
 import { useDropzone } from 'react-dropzone';
 import { v4 as uuidv4 } from 'uuid';
 import { useStores } from 'store';
+import { snippetStore } from 'store/snippetStore';
 import { colors } from '../../../config/colors';
 import type { Props } from './propsType';
+import { SnippetDropdown } from './SnippetDropDown';
 import { FieldEnv, FieldTextArea, Note } from './index';
 
 const StyleOnText = {
@@ -39,7 +41,6 @@ const OuterContainer = styled.div<styledProps>`
       label {
         color: ${(p: any) => p?.color && p?.color.grayish.G300} !important;
         background: ${(p: any) => p?.color && p?.color.pureWhite};
-        z-index: 10;
       }
     }
   }
@@ -52,7 +53,6 @@ const OuterContainer = styled.div<styledProps>`
       label {
         color: ${(p: any) => p?.color && p?.color.grayish.G300} !important;
         background: ${(p: any) => p?.color && p?.color.pureWhite};
-        z-index: 10;
       }
     }
   }
@@ -125,12 +125,32 @@ export default function TextAreaInput({
   readOnly,
   extraHTML,
   borderType,
-  github_state
+  github_state,
+  workspaceid
 }: Props) {
   const color = colors['light'];
   const [active, setActive] = useState<boolean>(false);
   const [activeMode, setActiveMode] = useState<'preview' | 'edit'>('edit');
   const { main } = useStores();
+
+  useEffect(() => {
+    if (workspaceid) {
+      snippetStore.loadSnippets(workspaceid);
+    }
+  }, [workspaceid]);
+
+  const snippets = snippetStore.getAllSnippets();
+
+  const filteredSnippets = snippets.map((p: any) => ({
+    value: p.id,
+    label: p.title,
+    snippet: p.snippet
+  }));
+
+  const handleSnippetSelect = (snippet: string) => {
+    const newValue = value ? `${value}\n${snippet}` : snippet;
+    handleChange(newValue);
+  };
 
   const normalizeAndTrimText = (text: string) => text.split('\n').join('\n');
 
@@ -230,8 +250,9 @@ export default function TextAreaInput({
   };
 
   return (
-    <OuterContainer color={color}>
+    <div>
       <CopyButtonGroup>
+        <SnippetDropdown items={filteredSnippets} onSelect={handleSnippetSelect} />
         <SwitcherContainer>
           <SwitcherButton
             isActive={activeMode === 'preview'}
@@ -244,55 +265,57 @@ export default function TextAreaInput({
           </SwitcherButton>
         </SwitcherContainer>
       </CopyButtonGroup>
-      <FieldEnv
-        color={color}
-        onClick={() => {
-          setActive(true);
-        }}
-        className={active ? 'euiFormRow_active' : (value ?? '') === '' ? '' : 'euiFormRow_filed'}
-        border={borderType}
-        label={label}
-        height={StyleOnText[label]?.height ?? defaultHeight}
-        width={StyleOnText[label]?.width ?? defaultWidth}
-      >
-        <R>
-          {activeMode === 'edit' ? (
-            <div {...getRootProps()}>
-              <input {...getInputProps()} />
-              <FieldTextArea
-                color={color}
-                height={StyleOnText[label]?.height ?? defaultHeight}
-                width={StyleOnText[label]?.width ?? defaultWidth}
-                name="first"
-                value={value || ''}
-                readOnly={readOnly || github_state || false}
-                onChange={handleTextChange}
-                onBlur={handleTextBlur}
-                onPaste={handlePaste}
-                onFocus={(e: any) => {
-                  handleFocus(e);
-                  setActive(true);
-                }}
-                rows={label === 'Description' ? 8 : 6}
-                data-testid={`checktextarea`}
-              />
-            </div>
-          ) : (
-            <div className="p-4">{renderMarkdown(value)}</div>
-          )}
-          {error && (
-            <E color={color}>
-              <EuiIcon type="alert" size="m" style={{ width: 20, height: 20 }} />
-            </E>
-          )}
-        </R>
-      </FieldEnv>
-      {note && <Note color={color}>*{note}</Note>}
-      <ExtraText
-        color={color}
-        style={{ display: value && extraHTML ? 'block' : 'none' }}
-        dangerouslySetInnerHTML={{ __html: extraHTML || '' }}
-      />
-    </OuterContainer>
+      <OuterContainer color={color}>
+        <FieldEnv
+          color={color}
+          onClick={() => {
+            setActive(true);
+          }}
+          className={active ? 'euiFormRow_active' : (value ?? '') === '' ? '' : 'euiFormRow_filed'}
+          border={borderType}
+          label={label}
+          height={StyleOnText[label]?.height ?? defaultHeight}
+          width={StyleOnText[label]?.width ?? defaultWidth}
+        >
+          <R>
+            {activeMode === 'edit' ? (
+              <div {...getRootProps()}>
+                <input {...getInputProps()} />
+                <FieldTextArea
+                  color={color}
+                  height={StyleOnText[label]?.height ?? defaultHeight}
+                  width={StyleOnText[label]?.width ?? defaultWidth}
+                  name="first"
+                  value={value || ''}
+                  readOnly={readOnly || github_state || false}
+                  onChange={handleTextChange}
+                  onBlur={handleTextBlur}
+                  onPaste={handlePaste}
+                  onFocus={(e: any) => {
+                    handleFocus(e);
+                    setActive(true);
+                  }}
+                  rows={label === 'Description' ? 8 : 6}
+                  data-testid={`checktextarea`}
+                />
+              </div>
+            ) : (
+              <div className="p-4">{renderMarkdown(value)}</div>
+            )}
+            {error && (
+              <E color={color}>
+                <EuiIcon type="alert" size="m" style={{ width: 20, height: 20 }} />
+              </E>
+            )}
+          </R>
+        </FieldEnv>
+        {note && <Note color={color}>*{note}</Note>}
+        <ExtraText
+          color={color}
+          style={{ display: value && extraHTML ? 'block' : 'none' }}
+          dangerouslySetInnerHTML={{ __html: extraHTML || '' }}
+        />
+      </OuterContainer>
+    </div>
   );
 }
