@@ -28,8 +28,7 @@ describe('User Journey: Sign in and Submit Proof', () => {
     cy.contains('Filter').click();
     cy.contains('Assigned').click();
     cy.contains(bounty.title).click();
-    cy.window().focus();
-    cy.contains('Copy Link').click();
+    cy.contains('Copy Link').focus().realClick();
     cy.get('[data-testid="close-btn"]').click();
     cy.logout(bountyCreator);
     /**
