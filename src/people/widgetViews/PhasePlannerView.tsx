@@ -71,8 +71,6 @@ const PhasePlannerView: React.FC = observer(() => {
   const [totalBounties, setTotalBounties] = useState(0);
   const selectedWidget = 'bounties';
 
-  console.log(featureData?.workspace_uuid, 'Things to do');
-
   const checkboxIdToSelectedMap: BountyStatus = useMemo(
     () => ({
       Open: true,

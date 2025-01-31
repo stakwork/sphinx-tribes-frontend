@@ -27,4 +27,5 @@ export interface Props {
   maxLength?: number;
   setColor?: (data: boolean, value: string) => void;
   isOpen?: boolean;
+  workspaceid: string;
 }

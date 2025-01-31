@@ -305,10 +305,6 @@ function Form(props: FormProps) {
     if (phaseFieldIndex !== -1) {
       schema[phaseFieldIndex].options = featurePhase;
     }
-    const snippetFieldIndex = schema.findIndex((field: FormField) => field.name === 'text_snippet');
-    if (snippetFieldIndex !== -1) {
-      schema[snippetFieldIndex].options = filteredSnippets;
-    }
   }
 
   schema = isMobile ? swapElements([...schema], 7, 8) : schema;
@@ -701,6 +697,7 @@ function Form(props: FormProps) {
                               deleteErrors={() => {
                                 if (errors[item.name]) delete errors[item.name];
                               }}
+                              workspaceid={workspaceid}
                               isFocused={isFocused}
                               handleChange={(e: any) => {
                                 setFieldValue(item.name, e);
