@@ -1667,6 +1667,177 @@ describe('getUserRoles', () => {
       expect(result).toEqual(mockRoles);
     });
   });
+
+  it('Special Characters in UUID/User', async () => {
+    const specialUuid = '!@#$%^&*()';
+    const specialUser = '你好世界';
+
+    fetchStub.resolves({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve([{ id: 1, name: 'admin' }])
+    } as Response);
+
+    const result = await mainStore.getUserRoles(specialUuid, specialUser);
+
+    waitFor(() => {
+      sinon.assert.calledWithMatch(
+        fetchStub,
+        `${TribesURL}/workspaces/users/role/${encodeURIComponent(specialUuid)}/${encodeURIComponent(
+          specialUser
+        )}`,
+        {
+          headers: {
+            'x-jwt': mockJwt,
+            'Content-Type': 'application/json',
+            'x-session-id': mockSessionId
+          }
+        }
+      );
+      expect(result).toHaveLength(1);
+    });
+  });
+
+  it('Invalid JWT Token', async () => {
+    uiStore.setMeInfo({ ...user, tribe_jwt: 'invalid_jwt' });
+
+    fetchStub.resolves({
+      ok: false,
+      status: 401,
+      json: () => Promise.resolve({ error: 'Invalid JWT' })
+    } as Response);
+
+    const result = await mainStore.getUserRoles(validUuid, validUser);
+    expect(result).toEqual([]);
+  });
+
+  it('Cross-Origin Request', async () => {
+    fetchStub.rejects(new Error('Cross-Origin Request Blocked'));
+
+    const result = await mainStore.getUserRoles(validUuid, validUser);
+    expect(result).toEqual([]);
+    expect(fetchStub.getCall(0).args[1].mode).toBe('cors');
+  });
+
+  it('Malformed UUID', async () => {
+    const malformedUuid = 'not-a-valid-uuid-format';
+
+    fetchStub.resolves({
+      ok: false,
+      status: 400,
+      json: () => Promise.resolve({ error: 'Malformed UUID' })
+    } as Response);
+
+    waitFor(() => {
+      const result = mainStore.getUserRoles(malformedUuid, validUser);
+      expect(result).toEqual([]);
+    });
+  });
+
+  it('Malformed User', async () => {
+    const malformedUser = '@invalid@user@';
+
+    fetchStub.resolves({
+      ok: false,
+      status: 400,
+      json: () => Promise.resolve({ error: 'Malformed User' })
+    } as Response);
+
+    const result = await mainStore.getUserRoles(validUuid, malformedUser);
+    expect(result).toEqual([]);
+  });
+
+  it('Expired Session ID', async () => {
+    fetchStub.resolves({
+      ok: false,
+      status: 401,
+      json: () => Promise.resolve({ error: 'Session expired' })
+    } as Response);
+
+    const result = await mainStore.getUserRoles(validUuid, validUser);
+    expect(result).toEqual([]);
+  });
+
+  it('Empty UUID with Valid User', async () => {
+    const result = await mainStore.getUserRoles('', validUser);
+    waitFor(() => {
+      expect(result).toEqual([]);
+      sinon.assert.calledWithMatch(
+        fetchStub,
+        sinon.match((url: string) => url.includes('//')),
+        sinon.match.any
+      );
+    });
+  });
+
+  it('Empty User with Valid UUID', async () => {
+    const result = await mainStore.getUserRoles(validUuid, '');
+    waitFor(() => {
+      expect(result).toEqual([]);
+      sinon.assert.calledWithMatch(
+        fetchStub,
+        sinon.match((url: string) => url.endsWith('/')),
+        sinon.match.any
+      );
+    });
+  });
+
+  it('Multiple Consecutive API Calls', async () => {
+    const mockRoles = [{ id: 1, name: 'admin' }];
+    fetchStub.resolves({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve(mockRoles)
+    } as Response);
+
+    const promises = Array(5)
+      .fill(null)
+      .map(() => mainStore.getUserRoles(validUuid, validUser));
+    waitFor(async () => {
+      const results = await Promise.all(promises);
+      results.forEach((result: any) => {
+        expect(result).toEqual(mockRoles);
+      });
+      expect(fetchStub.callCount).toBe(5);
+    });
+  });
+
+  it('Response with Empty Role Names', async () => {
+    const rolesWithEmptyNames = [
+      { id: 1, name: '' },
+      { id: 2, name: null },
+      { id: 3, name: undefined }
+    ];
+
+    fetchStub.resolves({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve(rolesWithEmptyNames)
+    } as Response);
+
+    waitFor(async () => {
+      const result = await mainStore.getUserRoles(validUuid, validUser);
+      expect(result).toEqual(rolesWithEmptyNames);
+    });
+  });
+
+  it('Response with Duplicate Role IDs', async () => {
+    const duplicateRoles = [
+      { id: 1, name: 'admin' },
+      { id: 1, name: 'super_admin' }
+    ];
+
+    fetchStub.resolves({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve(duplicateRoles)
+    } as Response);
+
+    waitFor(async () => {
+      const result = await mainStore.getUserRoles(validUuid, validUser);
+      expect(result).toEqual(duplicateRoles);
+    });
+  });
 });
 
 describe('MainStore.setPersonBounties', () => {
