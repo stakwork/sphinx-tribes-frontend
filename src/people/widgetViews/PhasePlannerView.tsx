@@ -71,6 +71,8 @@ const PhasePlannerView: React.FC = observer(() => {
   const [totalBounties, setTotalBounties] = useState(0);
   const selectedWidget = 'bounties';
 
+  console.log(featureData?.workspace_uuid, 'Things to do');
+
   const checkboxIdToSelectedMap: BountyStatus = useMemo(
     () => ({
       Open: true,
@@ -520,6 +522,7 @@ const PhasePlannerView: React.FC = observer(() => {
                   setPreviewMode={setPurposePreviewMode}
                   placeholder="Purpose"
                   dataTestIdPrefix="purpose"
+                  workspaceUUID={featureData?.workspace_uuid ?? ''}
                 />
                 {editPurpose && (
                   <ButtonWrap>
@@ -570,6 +573,7 @@ const PhasePlannerView: React.FC = observer(() => {
                   setPreviewMode={setOutcomePreviewMode}
                   placeholder="Outcome"
                   dataTestIdPrefix="outcome"
+                  workspaceUUID={featureData?.workspace_uuid}
                 />
                 {editOutcome && (
                   <ButtonWrap>
@@ -620,6 +624,7 @@ const PhasePlannerView: React.FC = observer(() => {
                   setPreviewMode={setScopePreviewMode}
                   placeholder="Scope"
                   dataTestIdPrefix="scope"
+                  workspaceUUID={featureData?.workspace_uuid}
                 />
                 {editScope && (
                   <ButtonWrap>
@@ -666,6 +671,7 @@ const PhasePlannerView: React.FC = observer(() => {
                             dragHandleProps={provided.dragHandleProps}
                             swwfLink={swwfLinks[ticket.uuid]}
                             getPhaseTickets={getPhaseTickets}
+                            workspaceUUID={featureData?.workspace_uuid || ''}
                           />
                         </div>
                       )}
