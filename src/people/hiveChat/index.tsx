@@ -10,7 +10,7 @@ import { EuiLoadingSpinner } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
 import { chatHistoryStore } from 'store/chat.ts';
 import { renderMarkdown } from '../utils/RenderMarkdown.tsx';
-
+import { UploadModal } from '../../components/UploadModal';
 interface RouteParams {
   uuid: string;
   chatId: string;
@@ -178,6 +178,40 @@ const LoadingContainer = styled.div`
   height: 100%;
 `;
 
+const AttachButton = styled.button<{ disabled: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 8px 8px 16px;
+  margin-right: 6px;
+  background: transparent;
+  border: 1px solid #5f6368;
+  border-radius: 8px;
+  color: #5f6368;
+  cursor: ${(props: { disabled: boolean }) => (props.disabled ? 'not-allowed' : 'pointer')};
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+  height: fit-content;
+  align-self: center;
+  margin-top: 1px;
+
+  &:hover:not(:disabled) {
+    background: rgba(95, 99, 104, 0.1);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    border-color: #e4e7eb;
+    color: #9aa0a6;
+  }
+`;
+
+const AttachIcon = styled(MaterialIcon)`
+  font-size: 16px;
+  margin-right: 2px;
+`;
+
 const connectToLogWebSocket = (
   projectId: string,
   chatId: string,
@@ -234,6 +268,8 @@ export const HiveChatView: React.FC = observer(() => {
   const [isChainVisible, setIsChainVisible] = useState(false);
   const [lastLogLine, setLastLogLine] = useState('');
   const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState('');
 
   const handleBackClick = () => {
     history.push(`/workspace/${uuid}`);
@@ -419,6 +455,14 @@ export const HiveChatView: React.FC = observer(() => {
     }
   }, [messages]);
 
+  const handleUploadComplete = (url: string) => {
+    setPdfUrl(url);
+    setMessage((prevMessage: string) => {
+      const pdfLink = `\n[PDF Document](${url})`;
+      return prevMessage + pdfLink;
+    });
+  };
+
   const handleSendMessage = async () => {
     if (!message.trim() || isSending) return;
 
@@ -428,10 +472,21 @@ export const HiveChatView: React.FC = observer(() => {
       if (socketId === '') {
         socketId = localStorage.getItem('websocket_token') || '';
       }
-      const sentMessage = await chat.sendMessage(chatId, message, socketId, uuid);
+
+      const sentMessage = await chat.sendMessage(
+        chatId,
+        message,
+        socketId,
+        uuid,
+        undefined,
+        pdfUrl
+      );
+
       if (sentMessage) {
         chat.addMessage(sentMessage);
         setMessage('');
+        setPdfUrl('');
+
         const textarea = document.querySelector('textarea');
         if (textarea) {
           textarea.style.height = '60px';
@@ -545,9 +600,20 @@ export const HiveChatView: React.FC = observer(() => {
             placeholder="Type your message..."
             disabled={isSending}
           />
+          <AttachButton onClick={() => setIsUploadModalOpen(true)} disabled={isSending}>
+            Attach
+            <AttachIcon icon="attach_file" />
+          </AttachButton>
           <SendButton onClick={handleSendMessage} disabled={!message.trim() || isSending}>
             Send
           </SendButton>
+          {isUploadModalOpen && (
+            <UploadModal
+              isOpen={isUploadModalOpen}
+              onClose={() => setIsUploadModalOpen(false)}
+              onUploadComplete={handleUploadComplete}
+            />
+          )}
         </InputContainer>
       </ChatBody>
     </Container>
