@@ -109,3 +109,245 @@ describe('UiStore.setSelectedPerson', () => {
     expect(mainStore.getPersonById).toHaveBeenCalledWith(1);
   });
 });
+
+describe('UiStore.setMeInfo', () => {
+  let uiStore: UiStore;
+
+  beforeEach(() => {
+    uiStore = new UiStore();
+  });
+
+  it('Standard Input with All Fields Present', () => {
+    const input = {
+      pubkey: 'pub123',
+      owner_pubkey: 'owner123',
+      photo_url: 'photo.jpg',
+      img: 'image.jpg',
+      alias: 'john',
+      owner_alias: 'owner_john',
+      route_hint: 'hint',
+      contact_key: 'key123',
+      price_to_meet: 100,
+      jwt: 'jwt123',
+      tribe_jwt: 'tribe123',
+      url: 'http://example.com',
+      description: 'description',
+      verification_signature: 'sig123',
+      extras: {},
+      isSuperAdmin: false
+    };
+
+    uiStore.setMeInfo(input);
+    expect(uiStore.meInfo).toEqual(input);
+  });
+
+  it('Input with photo_url but No img', () => {
+    const input = {
+      pubkey: 'pub123',
+      photo_url: 'photo.jpg',
+      alias: 'john',
+      route_hint: 'hint',
+      contact_key: 'key123',
+      price_to_meet: 100,
+      jwt: 'jwt123',
+      tribe_jwt: 'tribe123',
+      url: 'url123',
+      description: 'desc',
+      verification_signature: 'sig123',
+      extras: {},
+      isSuperAdmin: false,
+      img: ''
+    };
+
+    uiStore.setMeInfo(input);
+    expect(uiStore.meInfo?.img).toBe('photo.jpg');
+  });
+
+  it('Input with No owner_alias', () => {
+    const input = {
+      pubkey: 'pub123',
+      alias: 'john',
+      route_hint: 'hint',
+      contact_key: 'key123',
+      price_to_meet: 100,
+      photo_url: '',
+      img: '',
+      jwt: 'jwt123',
+      tribe_jwt: 'tribe123',
+      url: 'url123',
+      description: 'desc',
+      verification_signature: 'sig123',
+      extras: {},
+      isSuperAdmin: false
+    };
+
+    uiStore.setMeInfo(input);
+    expect(uiStore.meInfo?.owner_alias).toBe('john');
+  });
+
+  it('Input with No owner_pubkey', () => {
+    const input = {
+      pubkey: 'pub123',
+      alias: 'john',
+      route_hint: 'hint',
+      contact_key: 'key123',
+      price_to_meet: 100,
+      photo_url: '',
+      img: '',
+      jwt: 'jwt123',
+      tribe_jwt: 'tribe123',
+      url: 'url123',
+      description: 'desc',
+      verification_signature: 'sig123',
+      extras: {},
+      isSuperAdmin: false
+    };
+
+    uiStore.setMeInfo(input);
+    expect(uiStore.meInfo?.owner_pubkey).toBe('pub123');
+  });
+
+  it('Input with Only photo_url and alias', () => {
+    const input = {
+      pubkey: '',
+      photo_url: 'photo.jpg',
+      alias: 'john',
+      route_hint: '',
+      contact_key: '',
+      price_to_meet: 0,
+      jwt: '',
+      tribe_jwt: '',
+      url: '',
+      description: '',
+      verification_signature: '',
+      extras: {},
+      isSuperAdmin: false,
+      img: ''
+    };
+
+    uiStore.setMeInfo(input);
+    waitFor(() => {
+      expect(uiStore.meInfo?.img).toBe('photo.jpg');
+      expect(uiStore.meInfo?.owner_alias).toBe('john');
+    });
+  });
+
+  it('Input with Only pubkey', () => {
+    const input = {
+      pubkey: 'pub123',
+      photo_url: '',
+      alias: '',
+      route_hint: '',
+      contact_key: '',
+      price_to_meet: 0,
+      jwt: '',
+      tribe_jwt: '',
+      url: '',
+      img: '',
+      description: '',
+      verification_signature: '',
+      extras: {},
+      isSuperAdmin: false
+    };
+
+    uiStore.setMeInfo(input);
+    expect(uiStore.meInfo?.owner_pubkey).toBe('pub123');
+  });
+
+  it('Input with Empty Strings', () => {
+    const input = {
+      pubkey: '',
+      photo_url: '',
+      alias: '',
+      route_hint: '',
+      contact_key: '',
+      price_to_meet: 0,
+      jwt: '',
+      tribe_jwt: '',
+      url: '',
+      img: '',
+      description: '',
+      verification_signature: '',
+      extras: {},
+      isSuperAdmin: false
+    };
+
+    uiStore.setMeInfo(input);
+    waitFor(() => {
+      expect(uiStore.meInfo).toEqual(input);
+    });
+  });
+
+  it('Null Input', () => {
+    uiStore.setMeInfo(null);
+    expect(uiStore.meInfo).toBeNull();
+  });
+
+  it('Input with Invalid Data Types', () => {
+    const input = {
+      pubkey: 123 as unknown as string,
+      photo_url: true as unknown as string,
+      alias: {} as unknown as string,
+      route_hint: '',
+      contact_key: '',
+      price_to_meet: '100' as unknown as number,
+      jwt: '',
+      tribe_jwt: '',
+      url: '',
+      img: '',
+      description: '',
+      verification_signature: '',
+      extras: {},
+      isSuperAdmin: 'true' as unknown as boolean
+    };
+
+    uiStore.setMeInfo(input);
+    expect(uiStore.meInfo).toBeTruthy();
+  });
+
+  it('Input with Identical alias and owner_alias', () => {
+    const input = {
+      pubkey: 'pub123',
+      alias: 'john',
+      owner_alias: 'john',
+      route_hint: '',
+      contact_key: '',
+      price_to_meet: 0,
+      photo_url: '',
+      img: '',
+      jwt: '',
+      tribe_jwt: '',
+      url: '',
+      description: '',
+      verification_signature: '',
+      extras: {},
+      isSuperAdmin: false
+    };
+
+    uiStore.setMeInfo(input);
+    expect(uiStore.meInfo?.alias).toBe(uiStore.meInfo?.owner_alias);
+  });
+
+  it('Input with Identical pubkey and owner_pubkey', () => {
+    const input = {
+      pubkey: 'pub123',
+      owner_pubkey: 'pub123',
+      alias: 'john',
+      route_hint: '',
+      contact_key: '',
+      price_to_meet: 0,
+      photo_url: '',
+      img: '',
+      jwt: '',
+      tribe_jwt: '',
+      url: '',
+      description: '',
+      verification_signature: '',
+      extras: {},
+      isSuperAdmin: false
+    };
+
+    uiStore.setMeInfo(input);
+    expect(uiStore.meInfo?.pubkey).toBe(uiStore.meInfo?.owner_pubkey);
+  });
+});
