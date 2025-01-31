@@ -579,3 +579,19 @@ export interface FeaturedBounty {
   addedAt: number;
   title?: string | undefined;
 }
+
+export interface ConnectionCodesList {
+  connection_string: string;
+  pubkey: string;
+  sats_amount: number;
+  date_created: string;
+  is_used: boolean;
+}
+
+export interface ConnectionCodesListResponse {
+  success: boolean;
+  data: {
+    codes: ConnectionCodesList[];
+    total: number;
+  };
+}

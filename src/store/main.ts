@@ -52,7 +52,8 @@ import {
   CodeGraph,
   CreateBountyResponse,
   FeatureFlag,
-  FeaturedBounty
+  FeaturedBounty,
+  ConnectionCodesListResponse
 } from './interface';
 
 function makeTorSaveURL(host: string, key: string) {
@@ -4026,6 +4027,36 @@ export class MainStore {
     } catch (e) {
       console.log('Error createConnectionCodes', e);
       return 406;
+    }
+  }
+
+  async getInviteCodes(page: number, limit: number): Promise<ConnectionCodesListResponse> {
+    try {
+      if (!uiStore.meInfo) return { success: false, data: { codes: [], total: 0 } };
+      const info = uiStore.meInfo;
+
+      const response = await fetch(
+        `${TribesURL}/connectioncodes/list?page=${page}&limit=${limit}`,
+        {
+          method: 'GET',
+          mode: 'cors',
+          headers: {
+            'x-jwt': info.tribe_jwt,
+            'Content-Type': 'application/json',
+            'x-session-id': this.getSessionId()
+          }
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data: ConnectionCodesListResponse = await response.json();
+      return data;
+    } catch (e) {
+      console.log('Error getInviteCodes', e);
+      return { success: false, data: { codes: [], total: 0 } };
     }
   }
 

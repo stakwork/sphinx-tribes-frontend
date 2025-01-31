@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import { BudgetButton } from 'people/widgetViews/workspace/style';
 import { useStores } from 'store';
 import { Modal } from '../../../components/common';
+import ViewInvitesModal from './ViewInvitesModal';
 
 interface InviteProps {
   open: boolean;
@@ -26,6 +27,20 @@ const Wrapper = styled.div`
   padding: 40px 50px;
 `;
 
+const ViewInvitesLink = styled.button`
+  position: absolute;
+  top: 47px;
+  right: 30px;
+  background: none;
+  border: none;
+  color: #9157f6;
+  cursor: pointer;
+  font-size: 1rem;
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
 const InviteModal = (props: InviteProps) => {
   const isMobile = useIsMobile();
   const { main } = useStores();
@@ -35,6 +50,7 @@ const InviteModal = (props: InviteProps) => {
   const [satAmount, setSatAmount] = useState(1);
   const [pubkey, setPubkey] = useState('');
   const config = nonWidgetConfigs['workspaceusers'];
+  const [showInvites, setShowInvites] = useState(false);
 
   const parsePubkey = (pubkey: string): { parsedPubkey: string; routeHint: string } => {
     if (pubkey) {
@@ -120,6 +136,7 @@ const InviteModal = (props: InviteProps) => {
       >
         <Wrapper>
           <WithdrawModalTitle className="withdraw-title">Invite Users</WithdrawModalTitle>
+          <ViewInvitesLink onClick={() => setShowInvites(true)}>[ View Invites ]</ViewInvitesLink>
           <InvoiceForm>
             <InvoiceInputContainer>
               <InvoiceLabel
@@ -191,6 +208,11 @@ const InviteModal = (props: InviteProps) => {
           </BudgetButton>
         </Wrapper>
       </Modal>
+      <ViewInvitesModal
+        open={showInvites}
+        close={() => setShowInvites(false)}
+        addToast={addToast}
+      />
     </>
   );
 };
