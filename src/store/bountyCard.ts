@@ -12,6 +12,7 @@ interface FilterState {
   selectedAssignees: string[];
   timestamp: number;
   searchText: string;
+  inverseSearch: boolean;
 }
 
 interface Assignee {
@@ -31,6 +32,7 @@ export class BountyCardStore {
   @observable selectedStatuses: string[] = [];
   @observable selectedAssignees: string[] = [];
   @observable searchText = '';
+  @observable inverseSearch = false;
 
   constructor(workspaceId: string) {
     this.currentWorkspaceId = workspaceId;
@@ -55,7 +57,16 @@ export class BountyCardStore {
         this.error = null;
       });
 
-      const url = `${TribesURL}/gobounties/bounty-cards?workspace_uuid=${this.currentWorkspaceId}`;
+      const searchParams = new URLSearchParams({
+        workspace_uuid: this.currentWorkspaceId
+      });
+
+      if (this.searchText) {
+        searchParams.append('search', this.searchText);
+        searchParams.append('inverse_search', String(this.inverseSearch));
+      }
+
+      const url = `${TribesURL}/gobounties/bounty-cards?${searchParams.toString()}`;
 
       const response = await fetch(url, {
         method: 'GET',
@@ -137,6 +148,7 @@ export class BountyCardStore {
         selectedStatuses: this.selectedStatuses,
         selectedAssignees: this.selectedAssignees,
         searchText: this.searchText,
+        inverseSearch: this.inverseSearch,
         timestamp: Date.now()
       })
     );
@@ -152,6 +164,7 @@ export class BountyCardStore {
         this.selectedPhases = state.selectedPhases;
         this.selectedStatuses = state.selectedStatuses;
         this.selectedAssignees = state.selectedAssignees || [];
+        this.inverseSearch = state.inverseSearch || false;
       });
     }
   }
@@ -333,6 +346,13 @@ export class BountyCardStore {
   clearAssigneeFilters() {
     this.selectedAssignees = [];
     this.saveFilterState();
+  }
+
+  @action
+  toggleInverseSearch() {
+    this.inverseSearch = !this.inverseSearch;
+    this.saveFilterState();
+    this.loadWorkspaceBounties();
   }
 
   private sanitizeSearchText(text: string): string {

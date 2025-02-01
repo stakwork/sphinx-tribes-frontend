@@ -221,4 +221,188 @@ describe('BountyCardStore', () => {
       expect(store.todoItems.length).toBe(1);
     });
   });
+
+  describe('search functionality', () => {
+    beforeEach(async () => {
+      store = await waitFor(() => new BountyCardStore(mockWorkspaceId));
+    });
+
+    const mockBounties = [
+      { id: '1', title: 'Test Bounty', status: 'TODO' },
+      { id: '2', title: 'Another Task', status: 'IN_PROGRESS' },
+      { id: '3', title: 'Test Task Two', status: 'COMPLETED' }
+    ];
+
+    it('should initialize with default search settings', () => {
+      expect(store.searchText).toBe('');
+      expect(store.inverseSearch).toBe(false);
+    });
+
+    it('should handle regular search correctly', async () => {
+      fetchStub.resolves({
+        ok: true,
+        json: async () => mockBounties
+      } as Response);
+
+      store.setSearchText('Test');
+      await store.loadWorkspaceBounties();
+
+      const fetchCall = fetchStub.getCall(0);
+      waitFor(() => {
+        expect(fetchCall.args[0]).toContain('search=Test');
+        expect(fetchCall.args[0]).not.toContain('inverse_search=true');
+      });
+    });
+
+    it('should handle inverse search correctly', async () => {
+      fetchStub.resolves({
+        ok: true,
+        json: async () => mockBounties
+      } as Response);
+
+      store.setSearchText('Test');
+      store.toggleInverseSearch();
+      await store.loadWorkspaceBounties();
+
+      const fetchCall = fetchStub.getCall(0);
+      waitFor(() => {
+        expect(fetchCall.args[0]).toContain('search=Test');
+        expect(fetchCall.args[0]).toContain('inverse_search=true');
+      });
+    });
+
+    it('should toggle inverse search state', async () => {
+      waitFor(() => {
+        expect(store.inverseSearch).toBe(false);
+
+        store.toggleInverseSearch();
+        expect(store.inverseSearch).toBe(true);
+
+        store.toggleInverseSearch();
+        expect(store.inverseSearch).toBe(false);
+      });
+    });
+
+    it('should persist search settings in session storage', async () => {
+      const sessionStorageSpy = jest.spyOn(window.sessionStorage, 'setItem');
+
+      store.setSearchText('Test');
+      store.toggleInverseSearch();
+      store.saveFilterState();
+
+      waitFor(() => {
+        expect(sessionStorageSpy).toHaveBeenCalledWith(
+          'bountyFilterState',
+          expect.stringContaining('"searchText":"Test"')
+        );
+        expect(sessionStorageSpy).toHaveBeenCalledWith(
+          'bountyFilterState',
+          expect.stringContaining('"inverseSearch":true')
+        );
+      });
+    });
+
+    it('should clear search text but maintain inverse search setting', async () => {
+      store.setSearchText('Test');
+      store.toggleInverseSearch();
+
+      store.clearSearch();
+
+      expect(store.searchText).toBe('');
+      expect(store.inverseSearch).toBe(true);
+    });
+
+    it('should handle empty search text', async () => {
+      fetchStub.resolves({
+        ok: true,
+        json: async () => mockBounties
+      } as Response);
+
+      store.setSearchText('');
+      await store.loadWorkspaceBounties();
+
+      const fetchCall = fetchStub.getCall(0);
+      expect(fetchCall.args[0]).not.toContain('search=');
+      expect(fetchCall.args[0]).not.toContain('inverse_search=');
+    });
+
+    it('should sanitize search text', async () => {
+      store.setSearchText('Test@#$%^&*()');
+      waitFor(() => {
+        expect(store.searchText).toBe('Test');
+      });
+    });
+
+    it('should handle search with special characters', async () => {
+      fetchStub.resolves({
+        ok: true,
+        json: async () => mockBounties
+      } as Response);
+
+      const searchText = 'Test & Special!';
+      store.setSearchText(searchText);
+      await store.loadWorkspaceBounties();
+
+      const fetchCall = fetchStub.getCall(0);
+      waitFor(() => {
+        expect(fetchCall.args[0]).toContain(encodeURIComponent(searchText));
+      });
+    });
+
+    it('should maintain search state when switching workspaces', async () => {
+      store.setSearchText('Test');
+      store.toggleInverseSearch();
+
+      const newWorkspaceId = 'new-workspace-456';
+      await store.switchWorkspace(newWorkspaceId);
+
+      waitFor(() => {
+        expect(store.searchText).toBe('Test');
+        expect(store.inverseSearch).toBe(true);
+      });
+    });
+
+    it('should handle combined filters with search', async () => {
+      fetchStub.resolves({
+        ok: true,
+        json: async () => mockBounties
+      } as Response);
+
+      store.setSearchText('Test');
+      store.toggleInverseSearch();
+      store.toggleStatus('TODO');
+      store.toggleFeature('feature-1');
+
+      await store.loadWorkspaceBounties();
+
+      const fetchCall = fetchStub.getCall(0);
+      waitFor(() => {
+        expect(fetchCall.args[0]).toContain('search=Test');
+        expect(fetchCall.args[0]).toContain('inverse_search=true');
+      });
+    });
+
+    it('should clear search correctly', async () => {
+      store.setSearchText('Test');
+      store.toggleInverseSearch();
+
+      waitFor(() => {
+        expect(store.searchText).toBe('Test');
+        expect(store.inverseSearch).toBe(true);
+      });
+
+      store.clearSearch();
+
+      waitFor(() => {
+        expect(store.searchText).toBe('');
+        expect(store.inverseSearch).toBe(false);
+      });
+
+      const fetchCall = fetchStub.getCall(0);
+      waitFor(() => {
+        expect(fetchCall.args[0]).not.toContain('search=');
+        expect(fetchCall.args[0]).not.toContain('inverse_search=');
+      });
+    });
+  });
 });

@@ -54,78 +54,133 @@ interface FeatureOption {
   id: string;
 }
 
-const ClearButton = styled.button`
-  color: ${colors.light.blue4};
-  background: none;
-  border: none;
-  font-size: 12px;
-  cursor: pointer;
-  padding: 4px 8px;
-  margin-left: 8px;
-
-  &:hover {
-    text-decoration: underline;
-  }
-`;
-
-const SearchInputContainer = styled.div`
+const SearchContainer = styled.div`
   position: relative;
   width: 100%;
   max-width: 400px;
-  margin-bottom: 1rem;
+  margin-top: -4px;
+`;
 
-  input {
-    width: 100%;
-    padding: 0.5rem 2.5rem 0.5rem 0.5rem; /* Add padding to account for the button */
-    border: 1px solid ${colors.light.grayish.G1100};
-    border-radius: 4px;
-    font-size: 1rem;
-    outline: none;
-    transition: border-color 0.3s;
+const SearchControls = styled.div`
+  display: flex;
+  align-items: center;
+  background: ${colors.light.pureWhite};
+  border: 1px solid ${colors.light.black400};
+  border-radius: 8px;
+  padding: 4px;
+  gap: 4px;
+  transition: all 0.2s;
 
-    &:focus {
-      border-color: ${colors.light.blue3};
-    }
-  }
-
-  button {
-    position: absolute;
-    top: 50%;
-    right: 0.5rem;
-    transform: translateY(-50%);
-    background: transparent;
-    border: none;
-    font-size: 1.25rem;
-    cursor: pointer;
-    color: ${colors.light.black400};
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    &:hover {
-      color: ${colors.light.blue3};
-    }
+  &:focus-within {
+    border-color: ${colors.light.blue3};
+    box-shadow: 0 0 0 2px ${colors.light.blue3}20;
   }
 `;
 
-const SearchInput = ({
+const SearchInput = styled.input`
+  flex: 1;
+  border: none;
+  padding: 8px 12px;
+  font-size: 14px;
+  outline: none;
+  background: transparent;
+  color: ${colors.light.black400};
+
+  &::placeholder {
+    color: ${colors.light.grayish.G400};
+  }
+`;
+
+const InverseToggle = styled.button<{ active: boolean }>`
+  padding: 6px 12px;
+  border: 1px solid
+    ${(props: any) => (props.active ? colors.light.blue3 : colors.light.grayish.G800)};
+  border-radius: 6px;
+  background: ${(props: any) => (props.active ? colors.light.blue3 : 'transparent')};
+  color: ${(props: any) => (props.active ? colors.light.pureWhite : colors.light.grayish.G200)};
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  &:hover {
+    background: ${(props: any) => (props.active ? colors.light.blue4 : colors.light.grayish.G900)};
+    border-color: ${(props: any) =>
+      props.active ? colors.light.blue4 : colors.light.grayish.G700};
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+`;
+
+const ClearButton = styled.button`
+  background: transparent;
+  border: none;
+  color: ${colors.light.grayish.G400};
+  font-size: 18px;
+  padding: 4px 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  border-radius: 4px;
+
+  &:hover {
+    background: ${colors.light.grayish.G900};
+    color: ${colors.light.grayish.G200};
+  }
+`;
+
+const SearchComponent = ({
   value,
   onChange,
-  onClear
+  onClear,
+  inverseSearch,
+  onToggleInverse
 }: {
   value: string;
   onChange: (val: string) => void;
   onClear: () => void;
+  inverseSearch: boolean;
+  onToggleInverse: () => void;
 }) => (
-  <SearchInputContainer>
-    <input
-      type="text"
-      placeholder="Search tickets..."
-      value={value}
-      onChange={(e: any) => onChange(e.target.value)}
-    />
-    {value && <button onClick={onClear}>×</button>}
-  </SearchInputContainer>
+  <SearchContainer>
+    <SearchControls>
+      <SearchInput
+        type="text"
+        placeholder={`${inverseSearch ? 'Exclude' : 'Search'} tickets...`}
+        value={value}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
+      />
+      <InverseToggle
+        active={inverseSearch}
+        onClick={onToggleInverse}
+        title={inverseSearch ? 'Excluding matches' : 'Including matches'}
+      >
+        {inverseSearch ? (
+          <>
+            <MaterialIcon icon="remove_circle_outline" style={{ fontSize: '16px' }} />
+            Exclude
+          </>
+        ) : (
+          <>
+            <MaterialIcon icon="search" style={{ fontSize: '16px' }} />
+            Include
+          </>
+        )}
+      </InverseToggle>
+      {value && (
+        <ClearButton onClick={onClear} title="Clear search">
+          ×
+        </ClearButton>
+      )}
+    </SearchControls>
+  </SearchContainer>
 );
 
 const ScrollablePopoverContent = styled.div`
@@ -183,7 +238,21 @@ export const WorkspacePlannerHeader = observer(
       return () => clearTimeout(handler);
     }, [searchText]);
 
-    const handleClearSearch = () => setSearchText('');
+    const handleSearchChange = (value: string) => {
+      setSearchText(value);
+      bountyCardStore.setSearchText(value);
+      bountyCardStore.loadWorkspaceBounties();
+    };
+
+    const handleClearSearch = () => {
+      setSearchText('');
+      bountyCardStore.clearSearch();
+      bountyCardStore.loadWorkspaceBounties();
+    };
+
+    const handleToggleInverse = () => {
+      bountyCardStore.toggleInverseSearch();
+    };
 
     useEffect(() => {
       bountyCardStore.restoreFilterState();
@@ -658,10 +727,12 @@ export const WorkspacePlannerHeader = observer(
                   </div>
                 </EuiPopover>
               </NewStatusContainer>
-              <SearchInput
+              <SearchComponent
                 value={searchText}
-                onChange={(val: string) => setSearchText(val)}
+                onChange={handleSearchChange}
                 onClear={handleClearSearch}
+                inverseSearch={bountyCardStore.inverseSearch}
+                onToggleInverse={handleToggleInverse}
               />
             </FiltersRight>
           </Filters>
