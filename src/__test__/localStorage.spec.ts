@@ -1,4 +1,4 @@
-import {waitFor} from "@testing-library/react";
+import { waitFor } from '@testing-library/react';
 import { localStorageMock } from '../__test__/__mockData__/localStorage';
 
 describe('Local Storage', () => {
@@ -103,16 +103,20 @@ describe('Local Storage', () => {
   });
 
   it('should convert function key to string', () => {
-    const funcKey = function test() {''};
+    const funcKey = function test() {
+      ('');
+    };
     localStorageMock.setItem(funcKey as any, 'function key value');
     expect(localStorageMock.getItem(funcKey.toString())).toBe('function key value');
   });
 
   it('should handle large object value', () => {
-    const largeObject = Array(1000).fill(0).reduce((acc: any, _:unknown, i: any) => {
-      acc[`key${i}`] = `value${i}`;
-      return acc;
-    }, {});
+    const largeObject = Array(1000)
+      .fill(0)
+      .reduce((acc: any, _: unknown, i: any) => {
+        acc[`key${i}`] = `value${i}`;
+        return acc;
+      }, {});
     localStorageMock.setItem('largeObject', largeObject);
     expect(localStorageMock.getItem('largeObject')).toEqual(largeObject);
   });
@@ -138,6 +142,6 @@ describe('Local Storage', () => {
     localStorageMock.setItem(symbolKey as any, 'symbol key value');
     waitFor(() => {
       expect(localStorageMock.getItem(symbolKey.toString())).toBe('symbol key value');
-    })
+    });
   });
 });
