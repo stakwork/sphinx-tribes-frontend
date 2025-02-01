@@ -58,12 +58,13 @@ export const UserInfo = observer(({ id }: { id: string }) => {
         size="l"
         name={person.owner_alias}
         imageUrl={person.img || main.getUserAvatarPlaceholder(person.owner_pubkey)}
+        aria-hidden="true"
       />
       <div className="info">
         <EuiText className="name">
           <Link data-testId={'user-id'} className="name" to={`/p/${person.uuid}`}>
             {person.owner_alias}
-            <MaterialIcon className="icon" icon="link" />
+            <MaterialIcon className="icon" icon="link" role="img" aria-hidden="true"/>
           </Link>
         </EuiText>
       </div>
