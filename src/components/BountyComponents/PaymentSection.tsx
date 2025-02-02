@@ -4,7 +4,7 @@ import StartUpModal from '../../people/utils/StartUpModal';
 
 const Section = styled.section`
   background: #1a242e;
-  padding: 80px 0;
+  padding: 80px 0 30px 0;
   width: 100%;
 `;
 
@@ -35,6 +35,12 @@ const Header = styled.div`
     margin-bottom: 32px;
     padding: 0 8%;
   }
+
+  @media (max-width: 768px) {
+    h2 {
+      font-size: 35px;
+    }
+  }
 `;
 
 const CardsContainer = styled.div`
@@ -46,7 +52,7 @@ const CardsContainer = styled.div`
     grid-template-columns: repeat(2, 1fr);
   }
 
-  @media (max-width: 767px) {
+  @media (max-width: 768px) {
     grid-template-columns: 1fr;
   }
 `;

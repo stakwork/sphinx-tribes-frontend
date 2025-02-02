@@ -38,7 +38,8 @@ const Content = styled.div`
     color: #ffffff;
 
     @media (max-width: 768px) {
-      font-size: 48px;
+      margin-top: 20px;
+      font-size: 40px;
     }
   }
 
@@ -48,6 +49,11 @@ const Content = styled.div`
     line-height: 1.5;
     color: rgba(229, 231, 235, 0.8);
     max-width: 500px;
+  }
+
+  @media (max-width: 768px) {
+    margin-left: 0;
+    order: 1;
   }
 `;
 
@@ -62,6 +68,10 @@ const VideoContainer = styled.div`
     max-width: 560px;
     border-radius: 12px;
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+  }
+
+  @media (max-width: 768px) {
+    order: 2;
   }
 `;
 
@@ -137,7 +147,7 @@ const HeroSection: React.FC = () => {
           <video
             autoPlay
             loop
-            muted
+            controls
             playsInline
             src="https://stakwork-uploads.s3.amazonaws.com/admin_customers/admin/TimeIntoMoney.mp4"
           />
