@@ -29,58 +29,59 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
   community: () => (
     <>
       <TokenRefresh />
-      <MainLayout header={<PeopleHeader />}>
-        <Switch>
-          <Route path="/h">
-            <BountiesLandingPage />
-          </Route>
-          <Route path="/dailyBounty">
-            <DailyBountyPage />
-          </Route>
-          <Route path={['/bounties', '/t/', '/tickets', '/bounty/:bountyId', '/b/']}>
-            <TicketsPage />
-          </Route>
-          <Route path="/p/">
-            <People />
-          </Route>
-          <Route
-            path={['/workspace/bounties/:uuid', '/workspace/bounties/:uuid/bounty/:bountyId']}
-            exact
-          >
-            <WorkspaceTicketsPage />
-          </Route>
-          <Route path="/workspace/:workspaceId/ticket/:ticketId">
-            <WorkspaceTicketView />
-          </Route>
-          <Route path="/workspace/:uuid/planner">
-            <WorkSpacePlanner />
-          </Route>
-          <Route path="/workspace/:uuid/hivechat/:chatId">
-            <HiveChatView />
-          </Route>
-          <Route path="/workspace/:uuid">
-            <WorkspaceMission />
-          </Route>
-          <Route path="/feature/:feature_uuid/phase/:phase_uuid/planner">
-            <PhasePlannerView />
-          </Route>
-          <Route path="/feature/:feature_uuid/stories">
-            <GenerateStoriesView />
-          </Route>
-          <Route path="/feature/:feature_uuid">
-            <WorkspaceFeature />
-          </Route>
-          <Route path="/leaderboard">
-            <LeaderboardPage />
-          </Route>
-          <Route path="/admin">
-            <SuperAdmin />
-          </Route>
-          <Route path="*">
-            <BountiesLandingPage />
-          </Route>
-        </Switch>
-      </MainLayout>
+      <Switch>
+        <Route path={['/h', '*']}>
+          <BountiesLandingPage />
+        </Route>
+        <Route path="/">
+          <MainLayout header={<PeopleHeader />}>
+            <Switch>
+              <Route path="/dailyBounty">
+                <DailyBountyPage />
+              </Route>
+              <Route path={['/bounties', '/t/', '/tickets', '/bounty/:bountyId', '/b/']}>
+                <TicketsPage />
+              </Route>
+              <Route path="/p/">
+                <People />
+              </Route>
+              <Route
+                path={['/workspace/bounties/:uuid', '/workspace/bounties/:uuid/bounty/:bountyId']}
+                exact
+              >
+                <WorkspaceTicketsPage />
+              </Route>
+              <Route path="/workspace/:workspaceId/ticket/:ticketId">
+                <WorkspaceTicketView />
+              </Route>
+              <Route path="/workspace/:uuid/planner">
+                <WorkSpacePlanner />
+              </Route>
+              <Route path="/workspace/:uuid/hivechat/:chatId">
+                <HiveChatView />
+              </Route>
+              <Route path="/workspace/:uuid">
+                <WorkspaceMission />
+              </Route>
+              <Route path="/feature/:feature_uuid/phase/:phase_uuid/planner">
+                <PhasePlannerView />
+              </Route>
+              <Route path="/feature/:feature_uuid/stories">
+                <GenerateStoriesView />
+              </Route>
+              <Route path="/feature/:feature_uuid">
+                <WorkspaceFeature />
+              </Route>
+              <Route path="/leaderboard">
+                <LeaderboardPage />
+              </Route>
+              <Route path="/admin">
+                <SuperAdmin />
+              </Route>
+            </Switch>
+          </MainLayout>
+        </Route>
+      </Switch>
     </>
   ),
   people: () => <></>,
