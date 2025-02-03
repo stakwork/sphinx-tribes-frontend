@@ -563,7 +563,7 @@ const WorkspaceMission = () => {
         <Box fontSize={20} textAlign="center">
           Are you sure you want to <br />
           <Box component="span" fontWeight="500">
-            Delete this Repo? h
+            Delete this Repo?
           </Box>
         </Box>
       )
@@ -784,11 +784,6 @@ const WorkspaceMission = () => {
     setSchematicModal(!schematicModal);
   };
 
-  // const loadMore = () => {
-  //   const nextPage = currentPage + 1;
-  //   setCurrentPage(nextPage);
-  // };
-
   const handleReorderFeatures = async (feat: Feature, priority: number) => {
     await main.addWorkspaceFeature({
       workspace_uuid: feat.workspace_uuid,
@@ -986,6 +981,7 @@ const WorkspaceMission = () => {
                   setPreviewMode={setMissionPreviewMode}
                   placeholder="Mission"
                   dataTestIdPrefix="mission"
+                  workspaceUUID={workspaceData?.uuid}
                 />
                 {editMission && (
                   <ButtonWrap>
@@ -1035,6 +1031,7 @@ const WorkspaceMission = () => {
                   setPreviewMode={setTacticsPreviewMode}
                   placeholder="Tactics"
                   dataTestIdPrefix="tactics"
+                  workspaceUUID={workspaceData?.uuid}
                 />
                 {editTactics && (
                   <ButtonWrap>

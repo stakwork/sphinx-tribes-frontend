@@ -1772,7 +1772,7 @@ export const SwitcherButton = styled.button<{ isActive: boolean }>`
 export const PreviewButtonGroup = styled.div`
   display: flex;
   gap: 10px;
-  align-items: baseline;
+  align-items: center;
   justify-content: flex-end;
   margin-left: auto;
   margin-top: calc(100px - 110px);

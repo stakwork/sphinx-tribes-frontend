@@ -2037,6 +2037,166 @@ describe('MainStore.setPersonBounties', () => {
   });
 });
 
+describe('MainStore.setPeopleBounties', () => {
+  let mainStore: MainStore;
+
+  beforeEach(() => {
+    mainStore = new MainStore();
+  });
+
+  it('should set people bounties with valid input', () => {
+    const validBounties: PersonBounty[] = [
+      {
+        owner_id: '1',
+        wanted_type: 'bug',
+        person: { name: 'John' },
+        body: { title: 'Test Bounty' },
+        codingLanguage: 'JavaScript',
+        estimated_session_length: '2 hours'
+      }
+    ];
+
+    mainStore.setPersonBounties(validBounties);
+    expect(mainStore.personAssignedBounties).toEqual(validBounties);
+  });
+
+  it('should handle empty array input', () => {
+    const emptyBounties: PersonBounty[] = [];
+    mainStore.setPersonBounties(emptyBounties);
+    expect(mainStore.personAssignedBounties).toEqual([]);
+  });
+
+  it('should handle single element array', () => {
+    const singleBounty: PersonBounty[] = [
+      {
+        owner_id: '1',
+        wanted_type: 'feature',
+        person: { name: 'Alice' },
+        body: { title: 'Single Bounty' },
+        codingLanguage: 'TypeScript',
+        estimated_session_length: '1 hour'
+      }
+    ];
+
+    mainStore.setPersonBounties(singleBounty);
+    expect(mainStore.personAssignedBounties).toEqual(singleBounty);
+  });
+
+  it('should throw error for null input', () => {
+    waitFor(() => {
+      expect(() => {
+        mainStore.setPersonBounties(null as unknown as PersonBounty[]);
+      }).toThrow(TypeError);
+    });
+  });
+
+  it('should throw error for undefined input', () => {
+    waitFor(() => {
+      expect(() => {
+        mainStore.setPersonBounties(undefined as unknown as PersonBounty[]);
+      }).toThrow(TypeError);
+    });
+  });
+
+  it('should throw error for non-array input', () => {
+    waitFor(() => {
+      expect(() => {
+        mainStore.setPersonBounties({} as unknown as PersonBounty[]);
+      }).toThrow(TypeError);
+    });
+  });
+
+  it('should throw error for array with invalid objects', () => {
+    const invalidBounties = [
+      { invalid: 'data' },
+      { wrong: 'structure' }
+    ] as unknown as PersonBounty[];
+
+    waitFor(() => {
+      expect(() => {
+        mainStore.setPersonBounties(invalidBounties);
+      }).toThrow(TypeError);
+    });
+  });
+
+  it('should handle large array input', () => {
+    const largeBounties: PersonBounty[] = Array.from({ length: 1000 }, (_: unknown, i: number) => ({
+      owner_id: i.toString(),
+      wanted_type: 'bug',
+      person: { name: `Person ${i}` },
+      body: { title: `Bounty ${i}` },
+      codingLanguage: 'JavaScript',
+      estimated_session_length: '2 hours'
+    }));
+
+    mainStore.setPersonBounties(largeBounties);
+    expect(mainStore.personAssignedBounties.length).toBe(1000);
+    expect(mainStore.personAssignedBounties).toEqual(largeBounties);
+  });
+
+  it('should throw error for array with mixed types', () => {
+    const mixedBounties = [
+      {
+        owner_id: '1',
+        wanted_type: 'bug',
+        person: { name: 'John' },
+        body: { title: 'Valid Bounty' },
+        codingLanguage: 'JavaScript',
+        estimated_session_length: '2 hours'
+      },
+      'invalid string entry',
+      42,
+      null
+    ] as unknown as PersonBounty[];
+
+    waitFor(() => {
+      expect(() => {
+        mainStore.setPersonBounties(mixedBounties);
+      }).toThrow(TypeError);
+    });
+  });
+
+  it('should handle array with duplicate entries', () => {
+    const duplicateBounty: PersonBounty = {
+      owner_id: '1',
+      wanted_type: 'bug',
+      person: { name: 'John' },
+      body: { title: 'Duplicate Bounty' },
+      codingLanguage: 'JavaScript',
+      estimated_session_length: '2 hours'
+    };
+
+    const duplicateBounties: PersonBounty[] = [duplicateBounty, duplicateBounty];
+    mainStore.setPersonBounties(duplicateBounties);
+    expect(mainStore.personAssignedBounties).toEqual(duplicateBounties);
+    expect(mainStore.personAssignedBounties.length).toBe(2);
+  });
+
+  it('should set bounties within reasonable time', () => {
+    const start = performance.now();
+    const largeBounties: PersonBounty[] = Array.from(
+      { length: 10000 },
+      (_: unknown, i: number) => ({
+        owner_id: i.toString(),
+        wanted_type: 'bug',
+        person: { name: `Person ${i}` },
+        body: { title: `Bounty ${i}` },
+        codingLanguage: 'JavaScript',
+        estimated_session_length: '2 hours'
+      })
+    );
+
+    mainStore.setPersonBounties(largeBounties);
+    const end = performance.now();
+    const executionTime = end - start;
+
+    waitFor(() => {
+      expect(executionTime).toBeLessThan(1000);
+      expect(mainStore.personAssignedBounties.length).toBe(10000);
+    });
+  });
+});
+
 describe('setPeople', () => {
   let mainStore: MainStore;
 

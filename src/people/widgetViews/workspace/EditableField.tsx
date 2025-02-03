@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { renderMarkdown } from 'people/utils/RenderMarkdown';
 import { TicketTextAreaComp } from 'components/common/TicketEditor/TicketTextArea';
 import { useStores } from 'store';
+import { snippetStore } from 'store/snippetStore';
+import { SnippetDropdown } from 'components/form/inputs/SnippetDropDown';
 import { PreviewButtonGroup } from './style';
 import { SwitcherContainer, SwitcherButton, EmptyState } from './style';
 
@@ -13,6 +15,7 @@ interface EditableFieldProps {
   setPreviewMode: (mode: 'preview' | 'edit') => void;
   placeholder?: string;
   dataTestIdPrefix?: string;
+  workspaceUUID?: string;
 }
 
 export const EditableField: React.FC<EditableFieldProps> = ({
@@ -22,9 +25,28 @@ export const EditableField: React.FC<EditableFieldProps> = ({
   previewMode,
   setPreviewMode,
   placeholder,
-  dataTestIdPrefix
+  dataTestIdPrefix,
+  workspaceUUID
 }: EditableFieldProps) => {
   const { ui } = useStores();
+
+  useEffect(() => {
+    if (workspaceUUID) {
+      snippetStore.loadSnippets(workspaceUUID);
+    }
+  }, [workspaceUUID]);
+
+  const snippets = snippetStore.getAllSnippets();
+
+  const filteredSnippets = snippets.map((p: any) => ({
+    value: p.id,
+    label: p.title,
+    snippet: p.snippet
+  }));
+
+  const handleSnippetSelect = (snippet: string) => {
+    setValue(value ? `${value}\n${snippet}` : snippet);
+  };
 
   if (!isEditing) {
     if (!value?.trim()) {
@@ -36,6 +58,7 @@ export const EditableField: React.FC<EditableFieldProps> = ({
   return (
     <>
       <PreviewButtonGroup>
+        <SnippetDropdown items={filteredSnippets} onSelect={handleSnippetSelect} />
         <SwitcherContainer>
           <SwitcherButton
             isActive={previewMode === 'preview'}

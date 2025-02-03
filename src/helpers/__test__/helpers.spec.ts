@@ -209,6 +209,124 @@ describe('testing helpers', () => {
       const hasRole = userHasManageBountyRoles(testRoles, userRole);
       expect(hasRole).toBe(false);
     });
+
+    it('should return true when role exists in both bounty roles and user roles', () => {
+      const bountyRoles = [{ name: 'ADMIN' }, { name: 'EDITOR' }];
+      const userRoles = [{ role: 'ADMIN' }, { role: 'USER' }];
+      expect(userHasRole(bountyRoles, userRoles, 'ADMIN')).toBe(true);
+    });
+
+    it('should return false when role exists only in bounty roles', () => {
+      const bountyRoles = [{ name: 'ADMIN' }, { name: 'EDITOR' }];
+      const userRoles = [{ role: 'USER' }, { role: 'VIEWER' }];
+      expect(userHasRole(bountyRoles, userRoles, 'ADMIN')).toBe(false);
+    });
+
+    it('should return false when role exists only in user roles', () => {
+      const bountyRoles = [{ name: 'EDITOR' }, { name: 'VIEWER' }];
+      const userRoles = [{ role: 'ADMIN' }, { role: 'USER' }];
+      expect(userHasRole(bountyRoles, userRoles, 'ADMIN')).toBe(false);
+    });
+
+    it('should return false when role does not exist in either list', () => {
+      const bountyRoles = [{ name: 'EDITOR' }, { name: 'VIEWER' }];
+      const userRoles = [{ role: 'USER' }, { role: 'ADMIN' }];
+      expect(userHasRole(bountyRoles, userRoles, 'MANAGER')).toBe(false);
+    });
+
+    it('should return false when bounty roles list is empty', () => {
+      const bountyRoles: any[] = [];
+      const userRoles = [{ role: 'ADMIN' }, { role: 'USER' }];
+      expect(userHasRole(bountyRoles, userRoles, 'ADMIN')).toBe(false);
+    });
+
+    it('should return false when user roles list is empty', () => {
+      const bountyRoles = [{ name: 'ADMIN' }, { name: 'EDITOR' }];
+      const userRoles: any[] = [];
+      expect(userHasRole(bountyRoles, userRoles, 'ADMIN')).toBe(false);
+    });
+
+    it('should return false when role string is empty', () => {
+      const bountyRoles = [{ name: 'ADMIN' }, { name: 'EDITOR' }];
+      const userRoles = [{ role: 'ADMIN' }, { role: 'USER' }];
+      expect(userHasRole(bountyRoles, userRoles, '')).toBe(false);
+    });
+
+    it('should be case sensitive when checking roles', () => {
+      const bountyRoles = [{ name: 'ADMIN' }, { name: 'EDITOR' }];
+      const userRoles = [{ role: 'admin' }, { role: 'USER' }];
+      expect(userHasRole(bountyRoles, userRoles, 'ADMIN')).toBe(false);
+    });
+
+    it('should handle invalid data types in bounty roles', () => {
+      const bountyRoles = [null, undefined, 42, 'string', true, {}] as any[];
+      const userRoles = [{ role: 'ADMIN' }];
+      waitFor(() => {
+        expect(userHasRole(bountyRoles, userRoles, 'ADMIN')).toBe(false);
+      });
+    });
+
+    it('should handle invalid data types in user roles', () => {
+      const bountyRoles = [{ name: 'ADMIN' }];
+      const userRoles = [null, undefined, 42, 'string', true, {}] as any[];
+      waitFor(() => {
+        expect(userHasRole(bountyRoles, userRoles, 'ADMIN')).toBe(false);
+      });
+    });
+
+    it('should handle null values in bounty roles', () => {
+      const bountyRoles = [{ name: null }, { name: 'EDITOR' }];
+      const userRoles = [{ role: 'ADMIN' }];
+      expect(userHasRole(bountyRoles, userRoles, 'ADMIN')).toBe(false);
+    });
+
+    it('should handle null values in user roles', () => {
+      const bountyRoles = [{ name: 'ADMIN' }];
+      const userRoles = [{ role: null }, { role: 'USER' }];
+      expect(userHasRole(bountyRoles, userRoles, 'ADMIN')).toBe(false);
+    });
+
+    it('should handle large number of roles efficiently', () => {
+      const bountyRoles = Array.from({ length: 1000 }, (_: unknown, i: number) => ({
+        name: `ROLE_${i}`
+      }));
+      const userRoles = Array.from({ length: 1000 }, (_: unknown, i: number) => ({
+        role: `ROLE_${i}`
+      }));
+      expect(userHasRole(bountyRoles, userRoles, 'ROLE_999')).toBe(true);
+    });
+
+    it('should handle role as a number', () => {
+      const bountyRoles = [{ name: 42 }];
+      const userRoles = [{ role: 42 }];
+      waitFor(() => {
+        expect(userHasRole(bountyRoles, userRoles, 42 as any)).toBe(false);
+      });
+    });
+
+    it('should handle role as an object', () => {
+      const bountyRoles = [{ name: { id: 1 } }];
+      const userRoles = [{ role: { id: 1 } }];
+      waitFor(() => {
+        expect(userHasRole(bountyRoles, userRoles, { id: 1 } as any)).toBe(false);
+      });
+    });
+
+    it('should handle role as a boolean', () => {
+      const bountyRoles = [{ name: true }];
+      const userRoles = [{ role: true }];
+      waitFor(() => {
+        expect(userHasRole(bountyRoles, userRoles, true as any)).toBe(false);
+      });
+    });
+
+    it('should handle role as special characters', () => {
+      const bountyRoles = [{ name: '@#$%^&*' }, { name: 'NORMAL' }];
+      const userRoles = [{ role: '@#$%^&*' }, { role: 'USER' }];
+      waitFor(() => {
+        expect(userHasRole(bountyRoles, userRoles, '@#$%^&*')).toBe(true);
+      });
+    });
   });
   describe('toCapitalize', () => {
     test('test to capitalize string', () => {
