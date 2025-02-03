@@ -55,7 +55,7 @@ Cypress.Commands.add('login', (userAlias: string) => {
       }
     }
 
-    cy.visit('http://localhost:3007');
+    cy.visit('http://localhost:3007/bounties');
     cy.wait(2000);
     cy.contains('Sign in').click();
 
@@ -342,7 +342,7 @@ Cypress.Commands.add('lnurl_login', (seed: string): Cypress.Chainable<string> =>
     return hashHex;
   }
 
-  cy.visit('http://localhost:3007');
+  cy.visit('http://localhost:3007/bounties');
   cy.wait(2000);
   cy.contains('Sign in').click();
 
