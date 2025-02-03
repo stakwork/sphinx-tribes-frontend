@@ -55,8 +55,8 @@ Cypress.Commands.add('login', (userAlias: string) => {
       }
     }
 
-    cy.visit('http://localhost:3007');
-    cy.wait(2000);
+    cy.visit('http://localhost:3007/bounties');
+    cy.wait(3000);
     cy.contains('Sign in').click();
 
     cy.get('[data-challenge]')
@@ -342,8 +342,8 @@ Cypress.Commands.add('lnurl_login', (seed: string): Cypress.Chainable<string> =>
     return hashHex;
   }
 
-  cy.visit('http://localhost:3007');
-  cy.wait(2000);
+  cy.visit('http://localhost:3007/bounties');
+  cy.wait(3000);
   cy.contains('Sign in').click();
 
   cy.contains('Login with LNAUTH').click();

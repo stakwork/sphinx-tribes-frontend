@@ -30,16 +30,23 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
     <>
       <TokenRefresh />
       <Switch>
-        <Route path={['/h', '*']}>
+        <Route exact path="/bounties">
+          <MainLayout header={<PeopleHeader />}>
+            <TicketsPage />
+          </MainLayout>
+        </Route>
+
+        <Route exact path={['/h', '/']}>
           <BountiesLandingPage />
         </Route>
+
         <Route path="/">
           <MainLayout header={<PeopleHeader />}>
             <Switch>
               <Route path="/dailyBounty">
                 <DailyBountyPage />
               </Route>
-              <Route path={['/bounties', '/t/', '/tickets', '/bounty/:bountyId', '/b/']}>
+              <Route path={['/t/', '/tickets', '/bounty/:bountyId', '/b/']}>
                 <TicketsPage />
               </Route>
               <Route path="/p/">
