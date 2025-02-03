@@ -158,6 +158,9 @@ Cypress.Commands.add('logout', (userAlias: string) => {
 
   cy.contains('Sign out').click();
 
+  cy.visit('http://localhost:3007/bounties');
+  cy.wait(3000);
+
   cy.contains('Sign in').eq(0);
 });
 
