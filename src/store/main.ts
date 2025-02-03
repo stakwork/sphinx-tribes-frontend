@@ -2582,7 +2582,8 @@ export class MainStore {
     try {
       if (!uiStore.meInfo) return [];
       const info = uiStore.meInfo;
-      const r: any = await fetch(`${TribesURL}/workspaces/users/role/${uuid}/${user}`, {
+
+      const r: Response = await fetch(`${TribesURL}/workspaces/users/role/${uuid}/${user}`, {
         method: 'GET',
         mode: 'cors',
         headers: {
@@ -2592,7 +2593,17 @@ export class MainStore {
         }
       });
 
-      return r.json();
+      if (!r.ok) {
+        console.error(`Fetch failed with status: ${r.status}`);
+        return [];
+      }
+
+      try {
+        return await r.json();
+      } catch (jsonError) {
+        console.error('JSON Parsing Error:', jsonError);
+        return [];
+      }
     } catch (e) {
       console.log('Error getUserRoles', e);
       return [];
