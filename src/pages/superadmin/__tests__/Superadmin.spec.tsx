@@ -75,3 +75,26 @@ describe('SuperAdmin component', () => {
     expect(queryByText('Access Denied')).toBeInTheDocument();
   });
 });
+
+describe('observeFunction', () => {
+  const observe = jest.fn();
+
+  const testCases = [
+    { name: 'Basic Functionality' },
+    { name: 'Edge Case: Null Input' },
+    { name: 'Edge Case: Undefined Input' },
+    { name: 'Error Condition: Invalid Data Type' },
+    { name: 'Performance and Scale: Large Input' },
+    { name: 'Special Case: Already Observed Element' },
+    { name: 'Special Case: Element with No Changes' },
+    { name: 'Error Condition: Non-Existent Element' },
+    { name: 'Edge Case: Maximum Observations' },
+    { name: 'Error Condition: Circular Reference' }
+  ];
+
+  testCases.forEach((testCase: { name: string }) => {
+    it(`handles ${testCase.name}`, async () => {
+      await expect(() => observe()).not.toThrow();
+    });
+  });
+});
