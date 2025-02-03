@@ -8,6 +8,8 @@ import styled from 'styled-components';
 import history from 'config/history.ts';
 import MaterialIcon from '@material/react-material-icon';
 import { Box } from '@mui/system';
+import { snippetStore } from 'store/snippetStore.ts';
+import { SnippetDropdown } from 'components/form/inputs/SnippetDropDown.tsx';
 import { phaseTicketStore } from '../../../store/phase';
 import {
   ActionButton,
@@ -30,7 +32,6 @@ import { uiStore } from '../../../store/ui';
 import { Select, Option } from '../../../people/widgetViews/workspace/style.ts';
 import { useDeleteConfirmationModal } from '../../../components/common/DeleteConfirmationModal/DeleteConfirmationModal.tsx';
 import { TicketTextAreaComp } from './TicketTextArea.tsx';
-
 interface TicketEditorProps {
   ticketData: Ticket;
   index: number;
@@ -40,6 +41,7 @@ interface TicketEditorProps {
   dragHandleProps?: Record<string, any>;
   swwfLink?: string;
   getPhaseTickets: () => Promise<Ticket[] | undefined>;
+  workspaceUUID: string;
 }
 
 const SwitcherContainer = styled.div`
@@ -131,7 +133,8 @@ const TicketEditor = observer(
     websocketSessionId,
     dragHandleProps,
     swwfLink,
-    getPhaseTickets
+    getPhaseTickets,
+    workspaceUUID
   }: TicketEditorProps) => {
     const [toasts, setToasts] = useState<Toast[]>([]);
     const [versions, setVersions] = useState<number[]>([]);
@@ -153,6 +156,25 @@ const TicketEditor = observer(
       () => phaseTicketStore.getTicketsByGroup(ticketData.ticket_group as string),
       [ticketData.ticket_group]
     );
+
+    useEffect(() => {
+      snippetStore.loadSnippets(workspaceUUID);
+    }, [workspaceUUID]);
+
+    const snippets = snippetStore.getAllSnippets();
+
+    const filteredSnippets = snippets.map((p: any) => ({
+      value: p.id,
+      label: p.title,
+      snippet: p.snippet
+    }));
+
+    const handleSnippetSelect = (snippet: string) => {
+      setVersionTicketData((prevData) => ({
+        ...prevData,
+        description: prevData.description ? `${prevData.description}\n${snippet}` : snippet
+      }));
+    };
 
     useEffect(() => {
       const maxLimit = 21;
@@ -502,6 +524,7 @@ const TicketEditor = observer(
                 )}
               </BountyOptionsWrap>
               <CopyButtonGroup>
+                <SnippetDropdown items={filteredSnippets} onSelect={handleSnippetSelect} />
                 <SwitcherContainer>
                   <SwitcherButton
                     isActive={activeMode === 'preview'}

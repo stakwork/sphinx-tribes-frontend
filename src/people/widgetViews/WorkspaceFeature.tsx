@@ -188,6 +188,7 @@ interface WSEditableFieldProps {
   feature_uuid?: string;
   previewMode: 'preview' | 'edit';
   setPreviewMode: DispatchSetStateAction<'preview' | 'edit'>;
+  workspaceUUID: string;
 }
 
 const WorkspaceEditableField = ({
@@ -205,7 +206,8 @@ const WorkspaceEditableField = ({
   showAudioButton = false,
   feature_uuid,
   previewMode,
-  setPreviewMode
+  setPreviewMode,
+  workspaceUUID
 }: WSEditableFieldProps) => {
   const handleEditClick = () => {
     setIsEditing(!isEditing);
@@ -291,6 +293,7 @@ const WorkspaceEditableField = ({
           setPreviewMode={setPreviewMode}
           placeholder={placeholder}
           dataTestIdPrefix={dataTestIdPrefix}
+          workspaceUUID={workspaceUUID}
         />
 
         {isEditing && (
@@ -805,6 +808,7 @@ const WorkspaceFeature = () => {
           feature_uuid={feature_uuid}
           previewMode={briefPreviewMode}
           setPreviewMode={setBriefPreviewMode}
+          workspaceUUID={featureData?.workspace_uuid ?? ''}
         />
         <FieldWrap>
           <Label>User Stories</Label>
@@ -911,6 +915,7 @@ const WorkspaceFeature = () => {
           main={main}
           previewMode={requirementsPreviewMode}
           setPreviewMode={setRequirementsPreviewMode}
+          workspaceUUID={featureData?.workspace_uuid ?? ''}
         />
         <WorkspaceEditableField
           label="Architecture"
@@ -926,6 +931,7 @@ const WorkspaceFeature = () => {
           main={main}
           previewMode={architecturePreviewMode}
           setPreviewMode={setArchitecturePreviewMode}
+          workspaceUUID={featureData?.workspace_uuid ?? ''}
         />
         <UserStoryModal
           open={modalOpen}
