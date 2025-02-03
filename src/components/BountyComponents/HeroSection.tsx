@@ -149,7 +149,7 @@ const HeroSection: React.FC = () => {
             loop
             controls
             playsInline
-            src="https://stakwork-uploads.s3.amazonaws.com/admin_customers/admin/TimeIntoMoney.mp4"
+            src="https://stakwork-uploads.s3.amazonaws.com/admin_customers/admin/CodeGetPaid.mp4"
           />
         </VideoContainer>
       </HeroContainer>
