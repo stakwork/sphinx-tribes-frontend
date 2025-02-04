@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import StartUpModal from '../../people/utils/StartUpModal';
+import { getHost } from '../../config';
 
 const HeroContainer = styled.section`
   background: #1a242e;
@@ -122,7 +123,8 @@ const HeroSection: React.FC = () => {
   };
 
   const handleViewBounties = () => {
-    window.open('https://community.sphinx.chat/bounties', '_blank');
+    const host = getHost();
+    window.open(`https://${host}`, '_blank');
   };
 
   return (
