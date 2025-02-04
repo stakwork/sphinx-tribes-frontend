@@ -2264,3 +2264,267 @@ describe('getPersonById', () => {
     });
   });
 });
+
+describe('getUserWorkspaceByUuid', () => {
+  let mainStore: MainStore;
+  let fetchStub: sinon.SinonStub;
+  const origFetch = global.fetch;
+
+  beforeAll(() => {
+    fetchStub = sinon.stub(global, 'fetch');
+  });
+
+  afterAll(() => {
+    global.fetch = origFetch;
+    sinon.restore();
+  });
+
+  beforeEach(() => {
+    mainStore = new MainStore();
+    uiStore.setMeInfo(user);
+    fetchStub.reset();
+  });
+
+  it('should fetch workspace data for a valid UUID', async () => {
+    const uuid = 'clic8k04nncuuf32kgr0';
+    const mockWorkspace = {
+      id: 42,
+      uuid: uuid,
+      name: 'Test Workspace',
+      owner_pubkey: '035f22835fbf55cf4e6823447c63df74012d1d587ed60ef7cbfa3e430278c44cce',
+      img: 'https://example.com/workspace.jpg',
+      created: '2023-11-27T16:31:12.699355Z',
+      updated: '2023-11-27T16:31:12.699355Z',
+      show: false,
+      deleted: false,
+      bounty_count: 1
+    };
+
+    fetchStub.resolves({
+      ok: true,
+      status: 200,
+      json: sinon.stub().resolves(mockWorkspace)
+    } as any);
+
+    const result = await mainStore.getUserWorkspaceByUuid(uuid);
+
+    sinon.assert.calledWithMatch(
+      fetchStub,
+      `${TribesURL}/workspaces/${uuid}`,
+      sinon.match({
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-session-id': sinon.match.string
+        }
+      })
+    );
+
+    waitFor(() => {
+      expect(result).toEqual(mockWorkspace);
+    });
+  });
+
+  it('should return undefined for a valid UUID with no workspace data', async () => {
+    const uuid = 'nonexistent-uuid';
+
+    fetchStub.resolves({
+      ok: true,
+      status: 200,
+      json: sinon.stub().resolves(null)
+    } as any);
+
+    const result = await mainStore.getUserWorkspaceByUuid(uuid);
+
+    waitFor(() => {
+      expect(result).toBeUndefined();
+    });
+  });
+
+  it('should return undefined for an empty UUID string', async () => {
+    const result = await mainStore.getUserWorkspaceByUuid('');
+
+    waitFor(() => {
+      expect(result).toBeUndefined();
+      sinon.assert.notCalled(fetchStub);
+    });
+  });
+
+  it('should handle UUID with special characters', async () => {
+    const uuid = 'test-!@#$%^&*()_+uuid';
+
+    fetchStub.resolves({
+      ok: true,
+      status: 200,
+      json: sinon.stub().resolves(null)
+    } as any);
+
+    const result = await mainStore.getUserWorkspaceByUuid(uuid);
+
+    sinon.assert.calledWithMatch(fetchStub, `${TribesURL}/workspaces/${uuid}`, sinon.match.any);
+
+    waitFor(() => {
+      expect(result).toBeUndefined();
+    });
+  });
+
+  it('should handle maximum length UUID', async () => {
+    const uuid = 'a'.repeat(255);
+
+    fetchStub.resolves({
+      ok: true,
+      status: 200,
+      json: sinon.stub().resolves(null)
+    } as any);
+
+    const result = await mainStore.getUserWorkspaceByUuid(uuid);
+
+    sinon.assert.calledWithMatch(fetchStub, `${TribesURL}/workspaces/${uuid}`, sinon.match.any);
+
+    waitFor(() => {
+      expect(result).toBeUndefined();
+    });
+  });
+
+  it('should handle invalid UUID type (Number)', async () => {
+    const result = await mainStore.getUserWorkspaceByUuid(42 as any);
+
+    waitFor(() => {
+      expect(result).toBeUndefined();
+      sinon.assert.notCalled(fetchStub);
+    });
+  });
+
+  it('should handle invalid UUID type (Null)', async () => {
+    const result = await mainStore.getUserWorkspaceByUuid(null as any);
+
+    waitFor(() => {
+      expect(result).toBeUndefined();
+      sinon.assert.notCalled(fetchStub);
+    });
+  });
+
+  it('should handle network error', async () => {
+    const uuid = 'network-error-uuid';
+
+    fetchStub.rejects(new Error('Network error'));
+
+    const result = await mainStore.getUserWorkspaceByUuid(uuid);
+
+    expect(result).toBeUndefined();
+  });
+
+  it('should handle invalid JSON response', async () => {
+    const uuid = 'invalid-json-uuid';
+
+    fetchStub.resolves({
+      ok: true,
+      status: 200,
+      json: sinon.stub().rejects(new Error('Invalid JSON'))
+    } as any);
+
+    const result = await mainStore.getUserWorkspaceByUuid(uuid);
+
+    expect(result).toBeUndefined();
+  });
+
+  it('should handle high volume of requests', async () => {
+    const uuid = 'high-volume-uuid';
+    const mockWorkspace = {
+      id: 42,
+      uuid: uuid,
+      name: 'High Volume Workspace'
+    };
+
+    fetchStub.resolves({
+      ok: true,
+      status: 200,
+      json: sinon.stub().resolves(mockWorkspace)
+    } as any);
+
+    const requests = Array(100)
+      .fill(0)
+      .map(() => mainStore.getUserWorkspaceByUuid(uuid));
+    const results = await Promise.all(requests);
+
+    expect(results.every((result: any) => result !== undefined)).toBe(true);
+  });
+
+  it('should handle UUID with leading/trailing spaces', async () => {
+    const uuid = '  clic8k04nncuuf32kgr0  ';
+
+    fetchStub.resolves({
+      ok: true,
+      status: 200,
+      json: sinon.stub().resolves(null)
+    } as any);
+    waitFor(async () => {
+      const result = await mainStore.getUserWorkspaceByUuid(uuid);
+
+      sinon.assert.calledWithMatch(
+        fetchStub,
+        `${TribesURL}/workspaces/${uuid.trim()}`,
+        sinon.match.any
+      );
+
+      expect(result).toBeUndefined();
+    });
+  });
+
+  it('should handle UUID with mixed case sensitivity', async () => {
+    const uuid = 'ClIc8K04NncUUf32KgR0';
+
+    fetchStub.resolves({
+      ok: true,
+      status: 200,
+      json: sinon.stub().resolves(null)
+    } as any);
+
+    waitFor(async () => {
+      const result = await mainStore.getUserWorkspaceByUuid(uuid);
+
+      sinon.assert.calledWithMatch(
+        fetchStub,
+        `${TribesURL}/workspaces/${uuid.toLowerCase()}`,
+        sinon.match.any
+      );
+
+      expect(result).toBeUndefined();
+    });
+  });
+
+  it('should handle UUID with non-ASCII characters', async () => {
+    const uuid = 'тестовый-uuid';
+
+    fetchStub.resolves({
+      ok: true,
+      status: 200,
+      json: sinon.stub().resolves(null)
+    } as any);
+
+    const result = await mainStore.getUserWorkspaceByUuid(uuid);
+
+    sinon.assert.calledWithMatch(fetchStub, `${TribesURL}/workspaces/${uuid}`, sinon.match.any);
+
+    waitFor(() => {
+      expect(result).toBeUndefined();
+    });
+  });
+
+  it('should handle server timeout', async () => {
+    const uuid = 'timeout-uuid';
+
+    fetchStub.resolves({
+      ok: false,
+      status: 408,
+      json: sinon.stub().resolves(null)
+    } as any);
+
+    const result = await mainStore.getUserWorkspaceByUuid(uuid);
+
+    waitFor(() => {
+      expect(result).toBeUndefined();
+    });
+  });
+});
