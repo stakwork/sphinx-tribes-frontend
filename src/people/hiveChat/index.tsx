@@ -11,6 +11,8 @@ import MaterialIcon from '@material/react-material-icon';
 import { chatHistoryStore } from 'store/chat.ts';
 import { renderMarkdown } from '../utils/RenderMarkdown.tsx';
 import { UploadModal } from '../../components/UploadModal';
+import { useFeatureFlag } from '../../hooks/useFeatureFlag';
+
 interface RouteParams {
   uuid: string;
   chatId: string;
@@ -215,7 +217,8 @@ const AttachIcon = styled(MaterialIcon)`
 const connectToLogWebSocket = (
   projectId: string,
   chatId: string,
-  setLogs: (update: (prevLogs: LogEntry[]) => LogEntry[]) => void
+  setLogs: (update: (prevLogs: LogEntry[]) => LogEntry[]) => void,
+  isVerboseLoggingEnabled: boolean
 ) => {
   const ws = new WebSocket('wss://jobs.stakwork.com/cable?channel=ProjectLogChannel');
 
@@ -231,7 +234,9 @@ const connectToLogWebSocket = (
     const data = JSON.parse(event.data);
     if (data.type === 'ping') return;
 
-    console.log('Hive Chat Data message', data);
+    if (isVerboseLoggingEnabled) {
+      console.log('Hive Chat Data message', data);
+    }
 
     const messageData = data?.message;
 
@@ -270,12 +275,15 @@ export const HiveChatView: React.FC = observer(() => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [pdfUrl, setPdfUrl] = useState('');
+  const { isEnabled: isVerboseLoggingEnabled } = useFeatureFlag('verbose_logging_sw');
 
   const handleBackClick = () => {
     history.push(`/workspace/${uuid}`);
   };
 
-  console.log('Hive Chat logs', logs);
+  if (isVerboseLoggingEnabled) {
+    console.log('Hive Chat logs', logs);
+  }
 
   const refreshChatHistory = useCallback(async () => {
     try {
@@ -416,12 +424,12 @@ export const HiveChatView: React.FC = observer(() => {
   }, [ui, refreshChatHistory, chatId, chat]);
 
   useEffect(() => {
-    const ws = connectToLogWebSocket(projectId, chatId, setLogs);
+    const ws = connectToLogWebSocket(projectId, chatId, setLogs, isVerboseLoggingEnabled);
 
     return () => {
       ws.close();
     };
-  }, [projectId, chatId]);
+  }, [projectId, chatId, isVerboseLoggingEnabled]);
 
   useEffect(() => {
     if (logs.length > 0) {

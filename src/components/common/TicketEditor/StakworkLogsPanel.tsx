@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { useFeatureFlag } from '../../../hooks/useFeatureFlag';
 
 const PanelWrapper = styled.div<{ collapsed: boolean }>`
   position: fixed;
@@ -93,8 +94,11 @@ const StakworkLogsPanel = ({ swwfLinks }: { swwfLinks: Record<string, string> })
   const [collapsed, setCollapsed] = useState(true);
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [connections, setConnections] = useState<Connection[]>([]);
+  const { isEnabled: isVerboseLoggingEnabled } = useFeatureFlag('verbose_logging_sw');
 
-  console.log('TicketBuilder Phase planner', logs);
+  if (isVerboseLoggingEnabled) {
+    console.log('TicketBuilder Phase planner', logs);
+  }
 
   useEffect(() => {
     const connectToLogWebSocket = (projectId: string, ticketUUID: string) => {
@@ -112,7 +116,9 @@ const StakworkLogsPanel = ({ swwfLinks }: { swwfLinks: Record<string, string> })
         const data = JSON.parse(event.data);
         if (data.type === 'ping') return;
 
-        console.log('TicketBuilder Phase planner data', data);
+        if (isVerboseLoggingEnabled) {
+          console.log('TicketBuilder Phase planner data', data);
+        }
 
         const messageData = data?.message;
         if (
@@ -166,7 +172,7 @@ const StakworkLogsPanel = ({ swwfLinks }: { swwfLinks: Record<string, string> })
         }
       });
     };
-  }, [connections, swwfLinks]);
+  }, [connections, swwfLinks, isVerboseLoggingEnabled]);
 
   return (
     <PanelWrapper collapsed={collapsed}>
