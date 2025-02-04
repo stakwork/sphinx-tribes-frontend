@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import StartUpModal from '../../people/utils/StartUpModal';
+import { getHost } from '../../config';
 
 const Nav = styled.nav`
   background: #1a242e;
@@ -81,7 +82,8 @@ const BountyNavBar: React.FC = () => {
   };
 
   const handleViewBounties = () => {
-    window.open('https://community.sphinx.chat/bounties', '_blank');
+    const host = getHost();
+    window.location.href = `https://${host}/bounties`;
   };
 
   return (
