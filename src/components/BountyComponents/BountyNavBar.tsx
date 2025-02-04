@@ -31,6 +31,7 @@ const Nav = styled.nav`
   z-index: 1000;
 
   @media (max-width: 768px) {
+    padding: 12px 16px;
     ${ButtonGroup} {
       display: none;
     }
@@ -42,8 +43,11 @@ const Logo = styled.div`
   align-items: center;
   gap: 8px;
 
-  img {
-    height: 32px;
+  @media (max-width: 768px) {
+    gap: 12px;
+    img {
+      height: 28px;
+    }
   }
 `;
 
@@ -55,6 +59,11 @@ const Img = styled.div`
   width: 232px;
 
   position: relative;
+
+  @media (max-width: 768px) {
+    width: 190px;
+    height: 32px;
+  }
 `;
 
 const Corner = styled.div`
@@ -222,10 +231,14 @@ const HamburgerButton = styled.button`
   font-size: 24px;
   cursor: pointer;
   padding: 8px;
-  margin-right: 16px;
+  margin: 0;
 
   @media (max-width: 768px) {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    width: 40px;
   }
 `;
 
@@ -234,6 +247,9 @@ const Welcome = styled.div`
   line-height: 24px;
   margin: 20px 0 50px;
   text-align: center;
+
+  /* Text 2 */
+
   color: #3c3f41;
 `;
 
@@ -248,6 +264,10 @@ const Name = styled.span`
   font-weight: 500;
   font-size: 26px;
   line-height: 19px;
+  /* or 73% */
+
+  /* Text 2 */
+
   color: #292c33;
 `;
 
@@ -319,7 +339,7 @@ const BountyNavBar: React.FC = () => {
       <Nav>
         <Logo>
           <HamburgerButton onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-            <MaterialIcon icon="menu" />
+            <MaterialIcon icon="menu" style={{ fontSize: 28 }} />
           </HamburgerButton>
           <Img />
           <span>SPHINX COMMUNITY</span>
