@@ -178,7 +178,8 @@ export class ChatService {
     message: string,
     sourceWebsocketID: string,
     workspaceUUID: string,
-    contextTags?: ContextTag[]
+    contextTags?: ContextTag[],
+    pdfUrl?: string
   ): Promise<ChatMessage | undefined> {
     try {
       if (!uiStore.meInfo) return undefined;
@@ -196,7 +197,8 @@ export class ChatService {
           message,
           context_tags: contextTags,
           sourceWebsocketID,
-          workspaceUUID
+          workspaceUUID,
+          pdf_url: pdfUrl
         })
       });
 
@@ -214,6 +216,43 @@ export class ChatService {
     } catch (e) {
       console.error('Error sending message:', e);
       return undefined;
+    }
+  }
+
+  async uploadFile(file: File): Promise<{ success: boolean; url: string }> {
+    try {
+      if (!uiStore.meInfo) return { success: false, url: '' };
+      const info = uiStore.meInfo;
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch(`${TribesURL}/hivechat/upload`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt
+        },
+        body: formData
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || `Server error: ${response.status}`);
+      }
+
+      if (!result.success) {
+        throw new Error(result.message || 'Upload failed');
+      }
+
+      return {
+        success: true,
+        url: result.url
+      };
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      throw error;
     }
   }
 }
