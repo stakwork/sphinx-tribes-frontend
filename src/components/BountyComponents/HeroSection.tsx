@@ -124,7 +124,7 @@ const HeroSection: React.FC = () => {
 
   const handleViewBounties = () => {
     const host = getHost();
-    window.open(`https://${host}`, '_blank');
+    window.location.href = `https://${host}`;
   };
 
   return (
