@@ -189,7 +189,7 @@ export default function MobileView(props: CodingViewProps) {
       )}
       <div style={{ padding: 20, overflow: 'auto', height: 'calc(100% - 60px)' }}>
         <Pad>
-          {!bountyPaid && hasAccess && (
+          {!bountyPaid && hasAccess && isAssigner && (
             <div
               style={{
                 display: 'flex',
@@ -292,7 +292,7 @@ export default function MobileView(props: CodingViewProps) {
                     marginLeft: '12px'
                   }}
                 />
-                {hasAccess && !bountyPaid && !bountyPending && (
+                {hasAccess && !bountyPaid && !bountyPending && isAssigner && (
                   <div
                     data-testid="edit-btn"
                     className="AssigneeCloseButtonContainer"
