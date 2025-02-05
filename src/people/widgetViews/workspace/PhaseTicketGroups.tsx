@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Ticket } from 'store/interface';
 
 const TicketGroupContainer = styled.div`
-  margin-top: -15px;
+  margin-top: 10px;
   width: 100%;
   display: flex;
   flex-direction: column;
