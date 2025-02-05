@@ -63,12 +63,13 @@ export default function TextAreaInputNew({
   workspaceid
 }: Props) {
   let labeltext = label;
-  if (error) labeltext = `${labeltext}*`;
+  const [characterError, setCharacterError] = useState(false);
+  if (error || characterError) labeltext = `${labeltext}*`;
+
   const color = colors['light'];
   const [isError, setIsError] = useState<boolean>(false);
   const [textValue, setTextValue] = useState(value);
   const [showPlaceholder, setShowPlaceholder] = useState(!textValue);
-  const [characterError, setCharacterError] = useState(false);
   const [activeMode, setActiveMode] = useState<'preview' | 'edit'>('edit');
 
   useEffect(() => {
@@ -130,7 +131,7 @@ export default function TextAreaInputNew({
         {activeMode === 'edit' ? (
           <textarea
             className="inputText"
-            placeholder={showPlaceholder ? placeholder : ''} // Displays the placeholder only when the textValue is empty
+            placeholder={showPlaceholder ? placeholder : ''}
             id={name}
             data-testid={testId}
             value={textValue || ''}
@@ -154,15 +155,11 @@ export default function TextAreaInputNew({
             onChange={(e: any) => {
               const newVal = e.target.value.trimStart();
               if (name === 'description') {
-                if (newVal.length <= 120) {
-                  handleChange(newVal);
-                  setTextValue(newVal);
-                  setCharacterError(false);
-                  setColor && setColor(false, name);
-                } else {
-                  setCharacterError(true);
-                  setColor && setColor(true, name);
-                }
+                const isExceeding = newVal.length > 120;
+                handleChange(newVal);
+                setTextValue(newVal);
+                setCharacterError(isExceeding);
+                setColor && setColor(isExceeding, name);
               } else {
                 handleChange(newVal);
                 setTextValue(newVal);
@@ -177,7 +174,6 @@ export default function TextAreaInputNew({
           <div className="p-4 border-solid">{renderMarkdown(value)}</div>
         )}
 
-        {/* Label */}
         <label
           htmlFor={name}
           className="text"
