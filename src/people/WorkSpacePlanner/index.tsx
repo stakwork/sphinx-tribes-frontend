@@ -170,7 +170,7 @@ const WorkspacePlanner = observer(() => {
   useEffect(() => {
     const disposer = autorun(() => {
       const { loading, error, bountyCards } = bountyCardStore;
-      console.log('BountyCardStore updated:', { loading, error, bountyCards });
+      console.log('BountyCardStore the updated:', { loading, error, bountyCards });
     });
 
     return () => {
