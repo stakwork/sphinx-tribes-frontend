@@ -7,6 +7,7 @@ import BountyNavBar from '../../components/BountyComponents/BountyNavBar';
 import HeroSection from '../../components/BountyComponents/HeroSection';
 import CommunitySection from '../../components/BountyComponents/CommunitySection';
 import PaymentSection from '../../components/BountyComponents/PaymentSection';
+import Footer from '../../components/BountyComponents/Footer.tsx';
 
 const Body = styled.div<{ isMobile: boolean }>`
   display: flex;
@@ -45,6 +46,7 @@ const BountiesLandingPage: React.FC = () => {
         <HeroSection />
         <CommunitySection />
         <PaymentSection />
+        <Footer />
       </ContentWrapper>
     </Body>
   );
