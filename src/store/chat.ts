@@ -166,7 +166,8 @@ export class ChatHistoryStore implements ChatStore {
     sourceWebsocketID: string,
     workspaceUUID: string,
     contextTags?: ContextTag[],
-    pdfUrl?: string
+    pdfUrl?: string,
+    modelSelection?: string
   ): Promise<ChatMessage | undefined> {
     try {
       const newMessage = await chatService.sendMessage(
@@ -175,7 +176,8 @@ export class ChatHistoryStore implements ChatStore {
         sourceWebsocketID,
         workspaceUUID,
         contextTags,
-        pdfUrl
+        pdfUrl,
+        modelSelection
       );
       if (newMessage) {
         if (!this.chatMessages[chat_id]) {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/typedef */
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useHistory, useParams } from 'react-router-dom';
@@ -12,6 +13,7 @@ import { chatHistoryStore } from 'store/chat.ts';
 import { renderMarkdown } from '../utils/RenderMarkdown.tsx';
 import { UploadModal } from '../../components/UploadModal';
 import { useFeatureFlag } from '../../hooks/useFeatureFlag';
+import { ModelOption, ModelSelector } from './modelSelector.tsx';
 
 interface RouteParams {
   uuid: string;
@@ -106,18 +108,17 @@ const ChatHistory = styled.div`
   min-height: 0;
 `;
 
-const MessageBubble = styled.div<{ isUser: boolean }>`
+const MessageBubble = styled.div<MessageBubbleProps>`
   max-width: 70%;
   margin: 12px 0;
-  padding: 12px 16px;
-  border-radius: 12px;
-  background-color: ${(props: MessageBubbleProps) => (props.isUser ? '#808080' : '#F2F3F5')};
-  color: ${(props: MessageBubbleProps) => (props.isUser ? 'white' : '#202124')};
-  align-self: ${(props: MessageBubbleProps) => (props.isUser ? 'flex-end' : 'flex-start')};
+  padding: 0px 20px;
+  border-radius: 16px;
   word-wrap: break-word;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  margin-left: ${(props: MessageBubbleProps) => (props.isUser ? 'auto' : '0')};
-  margin-right: ${(props: MessageBubbleProps) => (props.isUser ? '0' : 'auto')};
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  align-self: ${(props) => (props.isUser ? 'flex-end' : 'flex-start')};
+
+  background-color: ${(props) => (props.isUser ? '#808080' : '#F2F3F5')};
+  color: ${(props) => (props.isUser ? 'white' : '#202124')};
 `;
 
 const InputContainer = styled.div`
@@ -276,6 +277,10 @@ export const HiveChatView: React.FC = observer(() => {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [pdfUrl, setPdfUrl] = useState('');
   const { isEnabled: isVerboseLoggingEnabled } = useFeatureFlag('verbose_logging_sw');
+  const [selectedModel, setSelectedModel] = useState<ModelOption>({
+    label: 'Open AI - 4o',
+    value: 'gpt-4o'
+  });
 
   const handleBackClick = () => {
     history.push(`/workspace/${uuid}`);
@@ -372,6 +377,7 @@ export const HiveChatView: React.FC = observer(() => {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line prefer-const
     let socket = createSocketInstance();
 
     socket.onmessage = async (event: MessageEvent) => {
@@ -490,7 +496,8 @@ export const HiveChatView: React.FC = observer(() => {
         socketId,
         uuid,
         undefined,
-        pdfUrl
+        pdfUrl,
+        selectedModel.value
       );
 
       if (sentMessage) {
@@ -583,6 +590,7 @@ export const HiveChatView: React.FC = observer(() => {
             </SendButton>
           )}
         </SaveTitleContainer>
+        <ModelSelector selectedModel={selectedModel} onModelChange={setSelectedModel} />
       </Header>
       <ChatBody>
         <ChatHistory ref={chatHistoryRef}>
