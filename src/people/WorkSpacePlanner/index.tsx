@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import { useBountyCardStore } from 'store/bountyCard';
 import { BountyCard, BountyCardStatus } from 'store/interface';
 import history from 'config/history';
+import { autorun } from 'mobx';
 import { useStores } from '../../store';
 import { colors } from '../../config';
 import { WorkspacePlannerHeader } from './WorkspacePlannerHeader';
@@ -162,6 +163,21 @@ const WorkspacePlanner = observer(() => {
     fetchWorkspaceData();
   }, [main, uuid, bountyCardStore]);
 
+  const handleToggleInverse = () => {
+    bountyCardStore.toggleInverseSearch();
+  };
+
+  useEffect(() => {
+    const disposer = autorun(() => {
+      const { loading, error, bountyCards } = bountyCardStore;
+      console.log('BountyCardStore updated:', { loading, error, bountyCards });
+    });
+
+    return () => {
+      disposer();
+    };
+  }, [bountyCardStore]);
+
   if (loading) {
     return (
       <PlannerContainer>
@@ -218,6 +234,8 @@ const WorkspacePlanner = observer(() => {
         setFilterToggle={setFilterToggle}
         searchText={searchText}
         setSearchText={setSearchText}
+        inverseSearch={bountyCardStore.inverseSearch}
+        onToggleInverse={handleToggleInverse}
       />
       <ContentArea>
         <ColumnsContainer>
@@ -240,7 +258,9 @@ const WorkspacePlanner = observer(() => {
                 ) : (
                   groupedBounties[id]
                     ?.filter((card: BountyCard) =>
-                      card.title.toLowerCase().includes(searchText.toLowerCase())
+                      bountyCardStore.inverseSearch
+                        ? !card.title.toLowerCase().includes(searchText.toLowerCase())
+                        : card.title.toLowerCase().includes(searchText.toLowerCase())
                     )
                     .map((card: BountyCard) => (
                       <BountyCardComp
