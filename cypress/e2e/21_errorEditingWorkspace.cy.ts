@@ -26,8 +26,6 @@ describe('Alice Create a Workspace and then Edit to validate characters the limi
       }
     });
 
-    cy.get('[data-testid="add-workspace"]').invoke('removeAttr', 'disabled').click({ force: true });
-
     cy.contains('button', /^Edit$/).click({ force: true });
 
     cy.get('#name').invoke('val', '').type(orgExceedingLimits.name);
