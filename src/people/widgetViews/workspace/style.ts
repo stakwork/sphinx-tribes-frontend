@@ -1262,7 +1262,8 @@ export const ButtonGroup = styled.div`
 export const StyledEuiTabbedContent = styled(EuiTabbedContent as any)`
   && {
     .euiTabs {
-      overflow: unset;
+      overflow-x: auto;
+      padding-bottom: 45px;
     }
 
     .euiTab {
