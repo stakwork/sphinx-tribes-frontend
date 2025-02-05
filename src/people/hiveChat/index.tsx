@@ -392,11 +392,14 @@ export const HiveChatView: React.FC = observer(() => {
             setProjectId(projectID);
             console.log(`Project ID: ${projectID}`);
             setIsChainVisible(true);
+            setLogs([]);
+            setLastLogLine('');
           }
         } else if (data.action === 'message' && data.chatMessage) {
           chat.addMessage(data.chatMessage);
           setIsChainVisible(false);
           setLogs([]);
+          setLastLogLine('');
           await refreshChatHistory();
         } else if (data.action === 'process' && data.chatMessage) {
           chat.updateMessage(data.chatMessage.id, data.chatMessage);
