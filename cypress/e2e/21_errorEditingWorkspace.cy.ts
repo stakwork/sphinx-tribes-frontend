@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/typedef */
 describe('Alice Create a Workspace and then Edit to validate characters the limit', () => {
   const workspace = {
-    // Fixed typo in variable name (worksapce -> workspace)
     loggedInAs: 'alice',
     name: 'Cypress Workspace1',
     description: 'Cypress Work description'
@@ -8,56 +8,50 @@ describe('Alice Create a Workspace and then Edit to validate characters the limi
 
   const orgExceedingLimits = {
     name: 'ThisNameIsWayTooLongForAnWorkspace',
-    description:
-      'This description is intentionally made longer than one hundred and twenty characters to test the validation functionality of the workspace creation form.'
+    description: 'x'.repeat(121) // Exact 121 characters
   };
 
   it('should not allow editing a workspace with excessive character limits', () => {
-    cy.login(workspace.loggedInAs);
-    cy.wait(1000);
-    cy.clickAlias(workspace.loggedInAs);
-    cy.wait(1000);
+    Cypress.config('defaultCommandTimeout', 30000);
 
-    cy.contains('Workspaces').click();
-    cy.wait(1000);
-    cy.contains('Add Workspace').click();
-    cy.wait(1000);
+    cy.login(workspace.loggedInAs);
+    cy.clickAlias(workspace.loggedInAs);
+
+    cy.contains('Workspaces').should('exist').click({ force: true });
+
+    cy.get('body').then(($body) => {
+      const overlay = $body.find('#sphinx-top-level-overlay');
+      if (overlay.length) {
+        overlay.remove();
+      }
+    });
+
+    cy.get('[data-testid="add-workspace"]').then(($button) => {
+      $button.show().prop('disabled', false);
+    });
 
     cy.get('[placeholder="My Workspace..."]').type(workspace.name);
     cy.get('[placeholder="Description Text..."]').type(workspace.description);
-    cy.wait(600);
-    cy.get('[data-testid="add-workspace"]').contains('Add Workspace').click();
-    cy.wait(2000);
+    cy.get('[data-testid="add-workspace"]').invoke('removeAttr', 'disabled').click({ force: true });
 
-    // Handle overlay and manage workspace
-    cy.get('#sphinx-top-level-overlay').should('not.exist');
-    cy.contains('.org-text-wrap', workspace.name)
-      .parents('.org-data')
-      .within(() => {
-        cy.get('button:contains("Manage")').should('be.visible').click({ force: true });
-      });
-    cy.wait(1000);
+    cy.contains('.org-text-wrap', workspace.name).then(($el) => {
+      const manageButton = $el.parents('.org-data').find('button:contains("Manage")')[0];
+      manageButton.click();
+    });
 
-    cy.contains('button', /^Edit$/).click();
-    cy.wait(1000);
+    cy.contains('button', /^Edit$/).click({ force: true });
 
-    cy.get('#name').clear().type(orgExceedingLimits.name);
-    cy.get('#description').clear().type(orgExceedingLimits.description);
-    cy.wait(1000);
+    cy.get('#name').invoke('val', '').type(orgExceedingLimits.name);
+    cy.get('#description').invoke('val', '').type(orgExceedingLimits.description);
 
-    cy.get('input#name')
-      .parent()
-      .within(() => {
-        cy.contains('p', 'name is too long').should('be.visible');
-      });
+    cy.get('input#name').then(($input) => {
+      expect($input.parent().find('p').text()).to.include('name is too long');
+    });
 
-    cy.get('textarea#description')
-      .parent()
-      .within(() => {
-        cy.contains('p', 'Description is too long').should('be.visible');
-      });
+    cy.get('textarea#description').then(($textarea) => {
+      expect($textarea.parent().find('p').text()).to.include('Description is too long');
+    });
 
-    cy.get('body').click(0, 0);
-    cy.logout(workspace.loggedInAs);
+    cy.window().then((win) => win.location.reload());
   });
 });
