@@ -351,3 +351,387 @@ describe('UiStore.setMeInfo', () => {
     expect(uiStore.meInfo?.pubkey).toBe(uiStore.meInfo?.owner_pubkey);
   });
 });
+
+describe('setShowSignIn', () => {
+  let uiStore: UiStore;
+
+  beforeEach(() => {
+    uiStore = new UiStore();
+  });
+
+  it('Initial state verification', () => {
+    expect(uiStore.showSignIn).toBe(false);
+  });
+
+  it('Set showSignIn to true', () => {
+    uiStore.setShowSignIn(true);
+    expect(uiStore.showSignIn).toBe(true);
+  });
+
+  it('Set showSignIn to false', () => {
+    uiStore.setShowSignIn(true);
+    uiStore.setShowSignIn(false);
+    expect(uiStore.showSignIn).toBe(false);
+  });
+
+  it('Set showSignIn with non-boolean truthy value', () => {
+    uiStore.setShowSignIn(1 as unknown as boolean);
+    waitFor(() => {
+      expect(uiStore.showSignIn).toBe(true);
+    });
+
+    uiStore.setShowSignIn('true' as unknown as boolean);
+    waitFor(() => {
+      expect(uiStore.showSignIn).toBe(true);
+    });
+  });
+
+  it('Set showSignIn with non-boolean falsy value', () => {
+    uiStore.setShowSignIn(true);
+
+    uiStore.setShowSignIn(0 as unknown as boolean);
+    waitFor(() => {
+      expect(uiStore.showSignIn).toBe(false);
+    });
+
+    uiStore.setShowSignIn('' as unknown as boolean);
+    waitFor(() => {
+      expect(uiStore.showSignIn).toBe(false);
+    });
+
+    uiStore.setShowSignIn(null as unknown as boolean);
+    waitFor(() => {
+      expect(uiStore.showSignIn).toBe(false);
+    });
+
+    uiStore.setShowSignIn(undefined as unknown as boolean);
+    waitFor(() => {
+      expect(uiStore.showSignIn).toBe(false);
+    });
+  });
+
+  it('Set showSignIn with invalid type (object)', () => {
+    uiStore.setShowSignIn(true);
+
+    uiStore.setShowSignIn({} as unknown as boolean);
+    waitFor(() => {
+      expect(uiStore.showSignIn).toBe(true);
+    });
+
+    uiStore.setShowSignIn([] as unknown as boolean);
+    waitFor(() => {
+      expect(uiStore.showSignIn).toBe(true);
+    });
+  });
+
+  it('Multiple consecutive calls with same value', () => {
+    uiStore.setShowSignIn(true);
+    uiStore.setShowSignIn(true);
+    expect(uiStore.showSignIn).toBe(true);
+
+    uiStore.setShowSignIn(false);
+    uiStore.setShowSignIn(false);
+    expect(uiStore.showSignIn).toBe(false);
+  });
+
+  it('Toggle behavior verification', () => {
+    uiStore.setShowSignIn(true);
+    expect(uiStore.showSignIn).toBe(true);
+
+    uiStore.setShowSignIn(false);
+    expect(uiStore.showSignIn).toBe(false);
+
+    uiStore.setShowSignIn(true);
+    expect(uiStore.showSignIn).toBe(true);
+  });
+
+  it('Boundary testing with Boolean values', () => {
+    uiStore.setShowSignIn(Boolean(true) as unknown as boolean);
+    expect(uiStore.showSignIn).toBe(true);
+
+    uiStore.setShowSignIn(Boolean(false) as unknown as boolean);
+    expect(uiStore.showSignIn).toBe(false);
+  });
+});
+
+describe('setSelectingPerson', () => {
+  let uiStore: UiStore;
+
+  beforeEach(() => {
+    uiStore = new UiStore();
+  });
+
+  it('Standard Input (Positive Number)', () => {
+    uiStore.setSelectingPerson(42);
+    expect(uiStore.selectingPerson).toBe(42);
+  });
+
+  it('Standard Input (Negative Number)', () => {
+    uiStore.setSelectingPerson(-42);
+    expect(uiStore.selectingPerson).toBe(-42);
+  });
+
+  it('Zero Value', () => {
+    uiStore.setSelectingPerson(0);
+    expect(uiStore.selectingPerson).toBe(0);
+  });
+
+  it('Undefined Value', () => {
+    uiStore.setSelectingPerson(undefined);
+    expect(uiStore.selectingPerson).toBe(0);
+  });
+
+  it('Maximum Safe Integer', () => {
+    uiStore.setSelectingPerson(Number.MAX_SAFE_INTEGER);
+    expect(uiStore.selectingPerson).toBe(Number.MAX_SAFE_INTEGER);
+  });
+
+  it('Minimum Safe Integer', () => {
+    uiStore.setSelectingPerson(Number.MIN_SAFE_INTEGER);
+    expect(uiStore.selectingPerson).toBe(Number.MIN_SAFE_INTEGER);
+  });
+
+  it('Non-Number Input (String)', () => {
+    uiStore.setSelectingPerson('123' as unknown as number);
+    waitFor(() => {
+      expect(uiStore.selectingPerson).toBe(0);
+    });
+  });
+
+  it('Non-Number Input (Object)', () => {
+    uiStore.setSelectingPerson({ id: 1 } as unknown as number);
+    waitFor(() => {
+      expect(uiStore.selectingPerson).toBe(0);
+    });
+  });
+
+  it('Null Value', () => {
+    uiStore.setSelectingPerson(null as unknown as number);
+    expect(uiStore.selectingPerson).toBe(0);
+  });
+
+  it('Large Positive Number', () => {
+    const largeNumber = 1e15;
+    uiStore.setSelectingPerson(largeNumber);
+    expect(uiStore.selectingPerson).toBe(largeNumber);
+  });
+
+  it('Large Negative Number', () => {
+    const largeNegativeNumber = -1e15;
+    uiStore.setSelectingPerson(largeNegativeNumber);
+    expect(uiStore.selectingPerson).toBe(largeNegativeNumber);
+  });
+
+  it('Floating Point Number', () => {
+    uiStore.setSelectingPerson(3.14159);
+    expect(uiStore.selectingPerson).toBe(3.14159);
+  });
+
+  it('NaN (Not a Number)', () => {
+    uiStore.setSelectingPerson(NaN);
+    expect(uiStore.selectingPerson).toBe(0);
+  });
+
+  it('Infinity', () => {
+    uiStore.setSelectingPerson(Infinity);
+    waitFor(() => {
+      expect(uiStore.selectingPerson).toBe(0);
+    });
+  });
+
+  it('Negative Infinity', () => {
+    uiStore.setSelectingPerson(-Infinity);
+    waitFor(() => {
+      expect(uiStore.selectingPerson).toBe(0);
+    });
+  });
+
+  it('Multiple consecutive calls', () => {
+    uiStore.setSelectingPerson(1);
+    uiStore.setSelectingPerson(2);
+    uiStore.setSelectingPerson(3);
+    expect(uiStore.selectingPerson).toBe(3);
+  });
+
+  it('Same value multiple times', () => {
+    uiStore.setSelectingPerson(42);
+    uiStore.setSelectingPerson(42);
+    uiStore.setSelectingPerson(42);
+    expect(uiStore.selectingPerson).toBe(42);
+  });
+
+  it('Alternating between valid and invalid values', () => {
+    waitFor(() => {
+      uiStore.setSelectingPerson(1);
+      expect(uiStore.selectingPerson).toBe(1);
+
+      uiStore.setSelectingPerson(NaN);
+      expect(uiStore.selectingPerson).toBe(0);
+
+      uiStore.setSelectingPerson(2);
+      expect(uiStore.selectingPerson).toBe(2);
+
+      uiStore.setSelectingPerson('invalid' as unknown as number);
+      expect(uiStore.selectingPerson).toBe(0);
+    });
+  });
+});
+
+describe('setBadgeList', () => {
+  let uiStore: UiStore;
+
+  beforeEach(() => {
+    uiStore = new UiStore();
+  });
+
+  it('Standard Array Input', () => {
+    const badges = [
+      { id: 1, name: 'Badge1' },
+      { id: 2, name: 'Badge2' }
+    ];
+    uiStore.setBadgeList(badges);
+    expect(uiStore.badgeList).toEqual(badges);
+  });
+
+  it('Empty Array Input', () => {
+    uiStore.setBadgeList([]);
+    expect(uiStore.badgeList).toEqual([]);
+  });
+
+  it('Single Object Input', () => {
+    const badge = { id: 1, name: 'Badge1' };
+    uiStore.setBadgeList(badge);
+    expect(uiStore.badgeList).toEqual(badge);
+  });
+
+  it('Null Input', () => {
+    uiStore.setBadgeList(null);
+    expect(uiStore.badgeList).toBeNull();
+  });
+
+  it('Undefined Input', () => {
+    uiStore.setBadgeList(undefined);
+    expect(uiStore.badgeList).toBeUndefined();
+  });
+
+  it('Empty String Input', () => {
+    uiStore.setBadgeList('');
+    expect(uiStore.badgeList).toBe('');
+  });
+
+  it('Non-Array, Non-Object Input', () => {
+    const number = 42;
+    uiStore.setBadgeList(number);
+    expect(uiStore.badgeList).toBe(number);
+  });
+
+  it('Boolean Input', () => {
+    uiStore.setBadgeList(true);
+    expect(uiStore.badgeList).toBe(true);
+
+    uiStore.setBadgeList(false);
+    expect(uiStore.badgeList).toBe(false);
+  });
+
+  it('Large Array Input', () => {
+    const largeArray = Array(1000)
+      .fill(null)
+      .map((_: any, index: number) => ({
+        id: index,
+        name: `Badge${index}`
+      }));
+    uiStore.setBadgeList(largeArray);
+    expect(uiStore.badgeList).toEqual(largeArray);
+    expect(uiStore.badgeList.length).toBe(1000);
+  });
+
+  it('Nested Object Input', () => {
+    const nestedObject = {
+      level1: {
+        level2: {
+          level3: {
+            badges: [{ id: 1, name: 'NestedBadge' }]
+          }
+        }
+      }
+    };
+    uiStore.setBadgeList(nestedObject);
+    expect(uiStore.badgeList).toEqual(nestedObject);
+  });
+
+  it('Function as Input', () => {
+    const func = () => ['badge1', 'badge2'];
+    uiStore.setBadgeList(func);
+    waitFor(() => {
+      expect(typeof uiStore.badgeList).toBe('function');
+      expect(uiStore.badgeList).toBe(func);
+    });
+  });
+
+  it('Array with Mixed Types', () => {
+    const mixedArray = [
+      'string',
+      42,
+      { id: 1 },
+      true,
+      null,
+      undefined,
+      [],
+      () => {
+        ('');
+      }
+    ];
+    uiStore.setBadgeList(mixedArray);
+    waitFor(() => {
+      expect(uiStore.badgeList).toEqual(mixedArray);
+    });
+  });
+
+  it('Object with Circular Reference', () => {
+    const circularObj: any = {
+      name: 'CircularBadge',
+      reference: null
+    };
+    circularObj.reference = circularObj;
+
+    waitFor(() => {
+      uiStore.setBadgeList(circularObj);
+      expect(uiStore.badgeList).toBe(circularObj);
+      expect(uiStore.badgeList.name).toBe('CircularBadge');
+      expect(uiStore.badgeList.reference).toBe(circularObj);
+    });
+  });
+
+  it('Multiple consecutive calls', () => {
+    const badges1 = [{ id: 1 }];
+    const badges2 = [{ id: 2 }];
+
+    uiStore.setBadgeList(badges1);
+    expect(uiStore.badgeList).toEqual(badges1);
+
+    uiStore.setBadgeList(badges2);
+    expect(uiStore.badgeList).toEqual(badges2);
+  });
+
+  it('Setting same value multiple times', () => {
+    const badges = [{ id: 1 }];
+
+    uiStore.setBadgeList(badges);
+    uiStore.setBadgeList(badges);
+    uiStore.setBadgeList(badges);
+    waitFor(() => {
+      expect(uiStore.badgeList).toBe(badges);
+    });
+  });
+
+  it('Array with special characters', () => {
+    const specialChars = [
+      { id: 1, name: '!@#$%^&*()' },
+      { id: 2, name: '😀🎉🔥' },
+      { id: 3, name: '\\n\\t\\r' }
+    ];
+
+    uiStore.setBadgeList(specialChars);
+    expect(uiStore.badgeList).toEqual(specialChars);
+  });
+});
