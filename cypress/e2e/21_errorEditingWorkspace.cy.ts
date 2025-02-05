@@ -26,10 +26,6 @@ describe('Alice Create a Workspace and then Edit to validate characters the limi
       }
     });
 
-    cy.get('[data-testid="add-workspace"]').then(($button) => {
-      $button.show().prop('disabled', false);
-    });
-
     cy.get('[placeholder="My Workspace..."]').type(workspace.name);
     cy.get('[placeholder="Description Text..."]').type(workspace.description);
     cy.get('[data-testid="add-workspace"]').invoke('removeAttr', 'disabled').click({ force: true });
