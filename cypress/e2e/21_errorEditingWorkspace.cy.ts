@@ -1,5 +1,6 @@
 describe('Alice Create a Workspace and then Edit to validate characters the limit', () => {
-  const worksapce = {
+  const workspace = {
+    // Fixed typo in variable name (worksapce -> workspace)
     loggedInAs: 'alice',
     name: 'Cypress Workspace1',
     description: 'Cypress Work description'
@@ -12,50 +13,51 @@ describe('Alice Create a Workspace and then Edit to validate characters the limi
   };
 
   it('should not allow editing a workspace with excessive character limits', () => {
+    cy.login(workspace.loggedInAs);
     cy.wait(1000);
-    cy.login(worksapce.loggedInAs);
-    cy.wait(1000);
-
-    cy.clickAlias(worksapce.loggedInAs);
+    cy.clickAlias(workspace.loggedInAs);
     cy.wait(1000);
 
     cy.contains('Workspaces').click();
     cy.wait(1000);
-
     cy.contains('Add Workspace').click();
     cy.wait(1000);
 
-    cy.get('[placeholder="My Workspace..."]').type(worksapce.name);
-    cy.get('[placeholder="Description Text..."]').type(worksapce.description);
-
+    cy.get('[placeholder="My Workspace..."]').type(workspace.name);
+    cy.get('[placeholder="Description Text..."]').type(workspace.description);
     cy.wait(600);
-
     cy.get('[data-testid="add-workspace"]').contains('Add Workspace').click();
-    cy.wait(1000);
+    cy.wait(2000);
 
-    cy.contains('.org-text-wrap', worksapce.name)
+    // Handle overlay and manage workspace
+    cy.get('#sphinx-top-level-overlay').should('not.exist');
+    cy.contains('.org-text-wrap', workspace.name)
       .parents('.org-data')
       .within(() => {
-        cy.get('button').contains('Manage').click();
+        cy.get('button:contains("Manage")').should('be.visible').click({ force: true });
       });
     cy.wait(1000);
 
-    cy.contains(/^Edit$/).click();
+    cy.contains('button', /^Edit$/).click();
     cy.wait(1000);
 
-    cy.get('#name').type(orgExceedingLimits.name);
-    cy.get('#description').type(orgExceedingLimits.description);
+    cy.get('#name').clear().type(orgExceedingLimits.name);
+    cy.get('#description').clear().type(orgExceedingLimits.description);
     cy.wait(1000);
 
-    cy.get('input#name').then(($input) => {
-      cy.wrap($input.closest('div')).find('p').should('contain.text', 'name is too long');
-    });
+    cy.get('input#name')
+      .parent()
+      .within(() => {
+        cy.contains('p', 'name is too long').should('be.visible');
+      });
 
-    cy.get('textarea#description').then(($textarea) => {
-      cy.wrap($textarea.closest('div')).find('p').should('contain.text', 'Description is too long');
-    });
+    cy.get('textarea#description')
+      .parent()
+      .within(() => {
+        cy.contains('p', 'Description is too long').should('be.visible');
+      });
 
     cy.get('body').click(0, 0);
-    cy.logout(worksapce.loggedInAs);
+    cy.logout(workspace.loggedInAs);
   });
 });
