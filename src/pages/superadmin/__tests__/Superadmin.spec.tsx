@@ -154,7 +154,9 @@ describe('disconnectFunction', () => {
     {
       name: 'Performance and Scale',
       setup: () => {
-        const multipleObservers = Array(1000).fill(null).map(() => new MockIntersectionObserver());
+        const multipleObservers = Array(1000)
+          .fill(null)
+          .map(() => new MockIntersectionObserver());
         return multipleObservers;
       },
       verify: (observers: MockIntersectionObserver[]) => {
@@ -173,7 +175,13 @@ describe('disconnectFunction', () => {
         });
         return { observer: mockObserver, callbacks };
       },
-      verify: ({ observer, callbacks }: { observer: MockIntersectionObserver, callbacks: (() => void)[] }) => {
+      verify: ({
+        observer,
+        callbacks
+      }: {
+        observer: MockIntersectionObserver;
+        callbacks: (() => void)[];
+      }) => {
         const callback = jest.fn();
         callbacks.push(callback);
         observer.disconnect();
@@ -183,7 +191,9 @@ describe('disconnectFunction', () => {
     {
       name: 'Special Case: Database Connection',
       setup: () => {
-        mockObserver.disconnect = jest.fn().mockImplementation(() => Promise.resolve('disconnected'));
+        mockObserver.disconnect = jest
+          .fn()
+          .mockImplementation(() => Promise.resolve('disconnected'));
         return mockObserver;
       },
       verify: async () => {
@@ -193,12 +203,15 @@ describe('disconnectFunction', () => {
     {
       name: 'Concurrency Test',
       setup: () => {
-        const observers = Array(5).fill(null).map(() => new MockIntersectionObserver());
+        const observers = Array(5)
+          .fill(null)
+          .map(() => new MockIntersectionObserver());
         return observers;
       },
-      verify: (observers: MockIntersectionObserver[]) => Promise.all(
-        observers.map((obs: MockIntersectionObserver) => Promise.resolve(obs.disconnect()))
-      ).then((results: any) => expect(results).toBeDefined())
+      verify: (observers: MockIntersectionObserver[]) =>
+        Promise.all(
+          observers.map((obs: MockIntersectionObserver) => Promise.resolve(obs.disconnect()))
+        ).then((results: any) => expect(results).toBeDefined())
     },
     {
       name: 'State Verification',
@@ -209,7 +222,13 @@ describe('disconnectFunction', () => {
         });
         return { observer: mockObserver, getState: () => isConnected };
       },
-      verify: ({ observer, getState }: { observer: MockIntersectionObserver, getState: () => boolean }) => {
+      verify: ({
+        observer,
+        getState
+      }: {
+        observer: MockIntersectionObserver;
+        getState: () => boolean;
+      }) => {
         observer.disconnect();
         expect(getState()).toBe(false);
       }
@@ -223,7 +242,7 @@ describe('disconnectFunction', () => {
         });
         return { observer: mockObserver, logs };
       },
-      verify: ({ observer, logs }: { observer: MockIntersectionObserver, logs: string[] }) => {
+      verify: ({ observer, logs }: { observer: MockIntersectionObserver; logs: string[] }) => {
         observer.disconnect();
         expect(logs.length).toBe(1);
         expect(logs[0]).toMatch(/Disconnect called at/);
@@ -231,7 +250,7 @@ describe('disconnectFunction', () => {
     }
   ];
 
-  testCases.forEach((testCase: { name: string, setup: () => any, verify: (arg: any) => void }) => {
+  testCases.forEach((testCase: { name: string; setup: () => any; verify: (arg: any) => void }) => {
     it(`handles ${testCase.name}`, async () => {
       const setup = testCase.setup();
       await testCase.verify(setup);
