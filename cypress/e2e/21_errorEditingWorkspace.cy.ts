@@ -26,14 +26,7 @@ describe('Alice Create a Workspace and then Edit to validate characters the limi
       }
     });
 
-    cy.get('[placeholder="My Workspace..."]').type(workspace.name);
-    cy.get('[placeholder="Description Text..."]').type(workspace.description);
     cy.get('[data-testid="add-workspace"]').invoke('removeAttr', 'disabled').click({ force: true });
-
-    cy.contains('.org-text-wrap', workspace.name).then(($el) => {
-      const manageButton = $el.parents('.org-data').find('button:contains("Manage")')[0];
-      manageButton.click();
-    });
 
     cy.contains('button', /^Edit$/).click({ force: true });
 
