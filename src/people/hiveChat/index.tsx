@@ -493,11 +493,11 @@ export const HiveChatView: React.FC = observer(() => {
       const sentMessage = await chat.sendMessage(
         chatId,
         message,
+        selectedModel.value,
         socketId,
         uuid,
         undefined,
-        pdfUrl,
-        selectedModel.value
+        pdfUrl
       );
 
       if (sentMessage) {

@@ -163,11 +163,11 @@ export class ChatHistoryStore implements ChatStore {
   async sendMessage(
     chat_id: string,
     message: string,
+    modelSelection: string,
     sourceWebsocketID: string,
     workspaceUUID: string,
     contextTags?: ContextTag[],
-    pdfUrl?: string,
-    modelSelection?: string
+    pdfUrl?: string
   ): Promise<ChatMessage | undefined> {
     try {
       const newMessage = await chatService.sendMessage(

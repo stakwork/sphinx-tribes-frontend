@@ -3,13 +3,13 @@ import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 
 export interface ModelOption {
-    label: string;
-    value: string;
+  label: string;
+  value: string;
 }
 
 export interface ModelSelectorProps {
-    selectedModel: ModelOption;
-    onModelChange: (model: ModelOption) => void;
+  selectedModel: ModelOption;
+  onModelChange: (model: ModelOption) => void;
 }
 
 const DropdownContainer = styled.div`
@@ -60,90 +60,87 @@ const Arrow = styled.span`
   margin-left: 10px;
 `;
 
-export const ModelSelector: React.FC<ModelSelectorProps> = ({
-    selectedModel,
-    onModelChange,
-}) => {
-    const modelOptions: ModelOption[] = [
-        {
-            "label": "Open AI - 4o",
-            "value": "gpt-4o"
-        },
-        {
-            "label": "Open AI - 03 Mini",
-            "value": "o3-mini"
-        },
-        {
-            "label": "Claude 3.5 Sonnet",
-            "value": "claude-3-5-sonnet-latest"
-        }
-    ];
-
-    const [isOpen, setIsOpen] = useState(false);
-    const [error, setError] = useState<Error | null>(null);
-    const containerRef = useRef<HTMLDivElement>(null);
-
-    // Close dropdown when clicking outside
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            try {
-                if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-                    setIsOpen(false);
-                }
-            } catch (err) {
-                console.error("Error handling click outside:", err);
-                setError(err instanceof Error ? err : new Error("Unexpected error"));
-            }
-        };
-
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, []);
-
-    const handleItemClick = (option: ModelOption) => {
-        try {
-            onModelChange(option);
-            setIsOpen(false);
-        } catch (err) {
-            console.error("Error handling item click:", err);
-            setError(err instanceof Error ? err : new Error("Unexpected error"));
-        }
-    };
-
-    const toggleDropdown = () => {
-        try {
-            setIsOpen(!isOpen);
-        } catch (err) {
-            console.error("Error toggling dropdown:", err);
-            setError(err instanceof Error ? err : new Error("Unexpected error"));
-        }
-    };
-
-    if (error) {
-        return (
-            <div style={{ color: 'red', padding: '10px', border: '1px solid red' }}>
-                Something went wrong: {error.message}
-            </div>
-        );
+export const ModelSelector: React.FC<ModelSelectorProps> = ({ selectedModel, onModelChange }) => {
+  const modelOptions: ModelOption[] = [
+    {
+      label: 'Open AI - 4o',
+      value: 'gpt-4o'
+    },
+    {
+      label: 'Open AI - 03 Mini',
+      value: 'o3-mini'
+    },
+    {
+      label: 'Claude 3.5 Sonnet',
+      value: 'claude-3-5-sonnet-latest'
     }
+  ];
 
+  const [isOpen, setIsOpen] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      try {
+        if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+          setIsOpen(false);
+        }
+      } catch (err) {
+        console.error('Error handling click outside:', err);
+        setError(err instanceof Error ? err : new Error('Unexpected error'));
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleItemClick = (option: ModelOption) => {
+    try {
+      onModelChange(option);
+      setIsOpen(false);
+    } catch (err) {
+      console.error('Error handling item click:', err);
+      setError(err instanceof Error ? err : new Error('Unexpected error'));
+    }
+  };
+
+  const toggleDropdown = () => {
+    try {
+      setIsOpen(!isOpen);
+    } catch (err) {
+      console.error('Error toggling dropdown:', err);
+      setError(err instanceof Error ? err : new Error('Unexpected error'));
+    }
+  };
+
+  if (error) {
     return (
-        <DropdownContainer ref={containerRef}>
-            <DropdownHeader onClick={toggleDropdown}>
-                <span>{selectedModel.label}</span>
-                <Arrow />
-            </DropdownHeader>
-            {isOpen && (
-                <DropdownList>
-                    {modelOptions.map((option) => (
-                        <DropdownListItem key={option.value} onClick={() => handleItemClick(option)}>
-                            {option.label}
-                        </DropdownListItem>
-                    ))}
-                </DropdownList>
-            )}
-        </DropdownContainer>
+      <div style={{ color: 'red', padding: '10px', border: '1px solid red' }}>
+        Something went wrong: {error.message}
+      </div>
     );
+  }
+
+  return (
+    <DropdownContainer ref={containerRef}>
+      <DropdownHeader onClick={toggleDropdown}>
+        <span>{selectedModel.label}</span>
+        <Arrow />
+      </DropdownHeader>
+      {isOpen && (
+        <DropdownList>
+          {modelOptions.map((option) => (
+            <DropdownListItem key={option.value} onClick={() => handleItemClick(option)}>
+              {option.label}
+            </DropdownListItem>
+          ))}
+        </DropdownList>
+      )}
+    </DropdownContainer>
+  );
 };
