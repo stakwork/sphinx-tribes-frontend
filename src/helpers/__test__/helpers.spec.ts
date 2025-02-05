@@ -22,7 +22,8 @@ import {
   formatPercentage,
   normalizeInput,
   normalizeTextValue,
-  normalizeUrl
+  normalizeUrl,
+  ManageBountiesGroup
 } from '../helpers-extended';
 
 beforeAll(() => {
@@ -605,6 +606,172 @@ describe('testing helpers', () => {
       inputsAndExpected.forEach(({ input, expected }: { input: string; expected: string }) => {
         expect(normalizeUrl(input)).toEqual(expected);
       });
+    });
+  });
+
+  describe('userHasManageBountyRoles', () => {
+    it('User has all required roles', () => {
+      const bountyRoles = ManageBountiesGroup.map((role: string) => ({ name: role }));
+      const userRoles = ManageBountiesGroup.map((role: string) => ({ role }));
+
+      expect(userHasManageBountyRoles(bountyRoles, userRoles)).toBe(true);
+    });
+
+    it('User has some required roles', () => {
+      const bountyRoles = ManageBountiesGroup.map((role: string) => ({ name: role }));
+      const userRoles = [{ role: 'ADD BOUNTY' }, { role: 'UPDATE BOUNTY' }];
+
+      expect(userHasManageBountyRoles(bountyRoles, userRoles)).toBe(false);
+    });
+
+    it('User has no required roles', () => {
+      const bountyRoles = ManageBountiesGroup.map((role: string) => ({ name: role }));
+      const userRoles = [{ role: 'SOME_OTHER_ROLE' }];
+
+      expect(userHasManageBountyRoles(bountyRoles, userRoles)).toBe(false);
+    });
+
+    it('Empty bountyRoles and userRoles', () => {
+      expect(userHasManageBountyRoles([], [])).toBe(false);
+    });
+
+    it('Empty bountyRoles with non-empty userRoles', () => {
+      const userRoles = ManageBountiesGroup.map((role: string) => ({ role }));
+      expect(userHasManageBountyRoles([], userRoles)).toBe(false);
+    });
+
+    it('Non-empty bountyRoles with empty userRoles', () => {
+      const bountyRoles = ManageBountiesGroup.map((role: string) => ({ name: role }));
+      expect(userHasManageBountyRoles(bountyRoles, [])).toBe(false);
+    });
+
+    it('Invalid data types for bountyRoles and userRoles', () => {
+      const invalidBountyRoles = [{ invalid: 'data' }];
+      const invalidUserRoles = [{ wrong: 'format' }];
+
+      expect(userHasManageBountyRoles(invalidBountyRoles, invalidUserRoles)).toBe(false);
+    });
+
+    it('Non-array inputs', () => {
+      waitFor(() => {
+        expect(userHasManageBountyRoles('not an array' as any, 'not an array' as any)).toBe(false);
+        expect(userHasManageBountyRoles({} as any, {} as any)).toBe(false);
+        expect(userHasManageBountyRoles(null as any, null as any)).toBe(false);
+      });
+    });
+
+    it('Mixed data types in arrays', () => {
+      const bountyRoles = [{ name: 'ADD BOUNTY' }, null, undefined, 42, 'string'];
+      const userRoles = [{ role: 'ADD BOUNTY' }, null, undefined, 42, 'string'];
+
+      waitFor(() => {
+        expect(userHasManageBountyRoles(bountyRoles as any, userRoles as any)).toBe(false);
+      });
+    });
+
+    it('Large number of roles', () => {
+      const largeRoles = Array(1000)
+        .fill(null)
+        .map((_: any, i: number) => ({
+          name: `ROLE_${i}`
+        }));
+      const largeUserRoles = Array(1000)
+        .fill(null)
+        .map((_: any, i: number) => ({
+          role: `ROLE_${i}`
+        }));
+
+      ManageBountiesGroup.forEach((role: string) => {
+        largeRoles.push({ name: role });
+        largeUserRoles.push({ role });
+      });
+
+      expect(userHasManageBountyRoles(largeRoles, largeUserRoles)).toBe(true);
+    });
+
+    it('Large number of roles with missing roles', () => {
+      const largeRoles = Array(1000)
+        .fill(null)
+        .map((_: any, i: number) => ({
+          name: `ROLE_${i}`
+        }));
+      const largeUserRoles = Array(1000)
+        .fill(null)
+        .map((_: any, i: number) => ({
+          role: `ROLE_${i}`
+        }));
+
+      largeRoles.push({ name: ManageBountiesGroup[0] });
+      largeUserRoles.push({ role: ManageBountiesGroup[0] });
+
+      expect(userHasManageBountyRoles(largeRoles, largeUserRoles)).toBe(false);
+    });
+
+    it('Roles with special characters', () => {
+      const bountyRoles = ManageBountiesGroup.map((role: string) => ({
+        name: `${role}!@#$%^&*()`
+      }));
+      const userRoles = ManageBountiesGroup.map((role: string) => ({
+        role: `${role}!@#$%^&*()`
+      }));
+
+      expect(userHasManageBountyRoles(bountyRoles, userRoles)).toBe(false);
+    });
+
+    it('Case sensitivity check', () => {
+      const bountyRoles = ManageBountiesGroup.map((role: string) => ({
+        name: role.toLowerCase()
+      }));
+      const userRoles = ManageBountiesGroup.map((role: string) => ({
+        role: role.toUpperCase()
+      }));
+
+      expect(userHasManageBountyRoles(bountyRoles, userRoles)).toBe(false);
+    });
+
+    it('Duplicate roles in bountyRoles', () => {
+      const bountyRoles = [
+        ...ManageBountiesGroup.map((role: string) => ({ name: role })),
+        ...ManageBountiesGroup.map((role: string) => ({ name: role }))
+      ];
+      const userRoles = ManageBountiesGroup.map((role: string) => ({ role }));
+
+      expect(userHasManageBountyRoles(bountyRoles, userRoles)).toBe(true);
+    });
+
+    it('Duplicate roles in userRoles', () => {
+      const bountyRoles = ManageBountiesGroup.map((role: string) => ({ name: role }));
+      const userRoles = [
+        ...ManageBountiesGroup.map((role: string) => ({ role })),
+        ...ManageBountiesGroup.map((role: string) => ({ role }))
+      ];
+
+      expect(userHasManageBountyRoles(bountyRoles, userRoles)).toBe(true);
+    });
+
+    it('Handles undefined properties', () => {
+      const bountyRoles = [{ name: undefined }, { name: 'ADD BOUNTY' }];
+      const userRoles = [{ role: undefined }, { role: 'ADD BOUNTY' }];
+
+      expect(userHasManageBountyRoles(bountyRoles as any, userRoles as any)).toBe(false);
+    });
+
+    it('Handles missing properties', () => {
+      const bountyRoles = [{}];
+      const userRoles = [{}];
+
+      expect(userHasManageBountyRoles(bountyRoles, userRoles)).toBe(false);
+    });
+
+    it('Handles whitespace in role names', () => {
+      const bountyRoles = ManageBountiesGroup.map((role: string) => ({
+        name: `  ${role}  `
+      }));
+      const userRoles = ManageBountiesGroup.map((role: string) => ({
+        role: `  ${role}  `
+      }));
+
+      expect(userHasManageBountyRoles(bountyRoles, userRoles)).toBe(false);
     });
   });
 });
