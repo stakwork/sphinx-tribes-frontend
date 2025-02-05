@@ -1,5 +1,6 @@
 import { ChatHistoryStore } from '../chat';
 import { Chat } from '../interface';
+import { chatService } from '../../services/index';
 
 describe('ChatHistoryStore', () => {
   let store: ChatHistoryStore;
@@ -106,6 +107,74 @@ describe('ChatHistoryStore', () => {
 
       const result = store.getChat('chat123');
       expect(result?.title).toBe('Updated Title');
+    });
+  });
+
+  describe('sendMessage', () => {
+    const mockChat: Chat = {
+      id: 'chat123',
+      workspaceId: 'workspace123',
+      title: 'Test Chat',
+      createdAt: '2024-03-20T10:00:00Z',
+      updatedAt: '2024-03-20T10:00:00Z'
+    };
+
+    beforeEach(() => {
+      store.addChat(mockChat);
+    });
+
+    it('should send message with default model selection', async () => {
+      const spy = jest.spyOn(chatService, 'sendMessage');
+
+      await store.sendMessage('chat123', 'test message', 'gpt-4o', 'websocket123', 'workspace123');
+
+      expect(spy).toHaveBeenCalledWith(
+        'chat123',
+        'test message',
+        'gpt-4o',
+        'websocket123',
+        'workspace123',
+        undefined,
+        undefined
+      );
+    });
+
+    it('should send message with custom model selection', async () => {
+      const spy = jest.spyOn(chatService, 'sendMessage');
+
+      await store.sendMessage(
+        'chat123',
+        'test message',
+        'claude-3-5-sonnet-latest',
+        'websocket123',
+        'workspace123'
+      );
+
+      expect(spy).toHaveBeenCalledWith(
+        'chat123',
+        'test message',
+        'claude-3-5-sonnet-latest',
+        'websocket123',
+        'workspace123',
+        undefined,
+        undefined
+      );
+    });
+
+    it('should send message with o3-mini model selection', async () => {
+      const spy = jest.spyOn(chatService, 'sendMessage');
+
+      await store.sendMessage('chat123', 'test message', 'o3-mini', 'websocket123', 'workspace123');
+
+      expect(spy).toHaveBeenCalledWith(
+        'chat123',
+        'test message',
+        'o3-mini',
+        'websocket123',
+        'workspace123',
+        undefined,
+        undefined
+      );
     });
   });
 });

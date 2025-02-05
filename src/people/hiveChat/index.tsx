@@ -33,6 +33,11 @@ interface LogEntry {
   message: string;
 }
 
+interface ModelOption {
+  label: string;
+  value: string;
+}
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -214,6 +219,49 @@ const AttachIcon = styled(MaterialIcon)`
   margin-right: 2px;
 `;
 
+const Dropdown = styled.select`
+  width: 250px;
+  padding: 8px;
+  border: 2px solid #e4e7eb;
+  border-radius: 4px;
+  background: white;
+  font-size: 1rem;
+  cursor: pointer;
+
+  &:focus {
+    border-color: #4285f4;
+    outline: none;
+  }
+`;
+
+const modelOptions: ModelOption[] = [
+  { label: 'Open AI - 4o', value: 'gpt-4o' },
+  { label: 'Open AI - 03 Mini', value: 'o3-mini' },
+  { label: 'Claude 3.5 Sonnet', value: 'claude-3-5-sonnet-latest' }
+];
+
+const ModelSelector = styled(Dropdown)`
+  width: 200px;
+  padding: 8px 12px;
+  border: 1px solid #e4e7eb;
+  border-radius: 4px;
+  background: white;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #5f6368;
+  cursor: pointer;
+
+  &:focus {
+    border-color: #4285f4;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.1);
+  }
+
+  &:hover {
+    border-color: #4285f4;
+  }
+`;
+
 const connectToLogWebSocket = (
   projectId: string,
   chatId: string,
@@ -276,6 +324,7 @@ export const HiveChatView: React.FC = observer(() => {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [pdfUrl, setPdfUrl] = useState('');
   const { isEnabled: isVerboseLoggingEnabled } = useFeatureFlag('verbose_logging_sw');
+  const [selectedModel, setSelectedModel] = useState('gpt-4o');
 
   const handleBackClick = () => {
     history.push(`/workspace/${uuid}`);
@@ -484,9 +533,19 @@ export const HiveChatView: React.FC = observer(() => {
         socketId = localStorage.getItem('websocket_token') || '';
       }
 
+      const validModel = modelOptions.find((m: ModelOption) => m.value === selectedModel);
+      const modelToUse = validModel ? selectedModel : 'gpt-4o';
+
+      if (!validModel) {
+        console.warn('Invalid model selected, falling back to default model');
+        setSelectedModel('gpt-4o');
+        localStorage.setItem('selectedModel', 'gpt-4o');
+      }
+
       const sentMessage = await chat.sendMessage(
         chatId,
         message,
+        modelToUse,
         socketId,
         uuid,
         undefined,
@@ -512,7 +571,7 @@ export const HiveChatView: React.FC = observer(() => {
         {
           title: 'Error',
           color: 'danger',
-          text: 'Failed to send message'
+          text: 'Failed to send message. Please try again or select a different model.'
         }
       ]);
     } finally {
@@ -531,6 +590,21 @@ export const HiveChatView: React.FC = observer(() => {
       e.preventDefault();
       handleSendMessage();
     }
+  };
+
+  const handleModelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newModel = e.target.value;
+    setSelectedModel(newModel);
+    localStorage.setItem('selectedModel', newModel);
+
+    ui.setToasts([
+      {
+        title: 'Model Updated',
+        text: `Chat model switched to ${modelOptions.find((m: ModelOption) => m.value === newModel)
+          ?.label}`,
+        color: 'success'
+      }
+    ]);
   };
 
   if (loading) {
@@ -574,14 +648,21 @@ export const HiveChatView: React.FC = observer(() => {
             }}
           />
           {isEditingTitle && (
-            <SendButton
-              onClick={handleSaveTitle}
-              disabled={isUpdatingTitle}
-              style={{ margin: 0, padding: '8px 16px' }}
-            >
+            <SendButton onClick={handleSaveTitle} disabled={isUpdatingTitle}>
               Save
             </SendButton>
           )}
+          <ModelSelector
+            value={selectedModel}
+            onChange={handleModelChange}
+            aria-label="Select AI Model"
+          >
+            {modelOptions.map((option: ModelOption) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </ModelSelector>
         </SaveTitleContainer>
       </Header>
       <ChatBody>

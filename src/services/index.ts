@@ -176,6 +176,7 @@ export class ChatService {
   async sendMessage(
     chat_id: string,
     message: string,
+    modelSelection: string,
     sourceWebsocketID: string,
     workspaceUUID: string,
     contextTags?: ContextTag[],
@@ -198,7 +199,8 @@ export class ChatService {
           context_tags: contextTags,
           sourceWebsocketID,
           workspaceUUID,
-          pdf_url: pdfUrl
+          pdf_url: pdfUrl,
+          modelSelection
         })
       });
 

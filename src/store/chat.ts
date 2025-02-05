@@ -163,6 +163,7 @@ export class ChatHistoryStore implements ChatStore {
   async sendMessage(
     chat_id: string,
     message: string,
+    modelSelection: string,
     sourceWebsocketID: string,
     workspaceUUID: string,
     contextTags?: ContextTag[],
@@ -172,6 +173,7 @@ export class ChatHistoryStore implements ChatStore {
       const newMessage = await chatService.sendMessage(
         chat_id,
         message,
+        modelSelection,
         sourceWebsocketID,
         workspaceUUID,
         contextTags,
