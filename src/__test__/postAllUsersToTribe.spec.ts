@@ -70,7 +70,7 @@ describe('postAllUsersToTribe', () => {
     expect(mockFetch).toHaveBeenCalledWith(
       'http://valid-ip/profile',
       expect.objectContaining({
-        body: expect.stringContaining('undefined'),
+        body: expect.stringContaining('undefined')
       })
     );
   });
@@ -92,11 +92,13 @@ describe('postAllUsersToTribe', () => {
     const mockFetch = jest.fn().mockResolvedValue({ ok: true });
     global.fetch = mockFetch;
 
-    const largeNodeArray = Array(100).fill(null).map((_: any, index: number) => ({
-      external_ip: `http://valid-ip-${index}`,
-      alias: `testAlias${index}`,
-      authToken: `validToken${index}`
-    }));
+    const largeNodeArray = Array(100)
+      .fill(null)
+      .map((_: any, index: number) => ({
+        external_ip: `http://valid-ip-${index}`,
+        alias: `testAlias${index}`,
+        authToken: `validToken${index}`
+      }));
 
     await postAllUsersToTribe(largeNodeArray);
 
@@ -125,11 +127,13 @@ describe('postAllUsersToTribe', () => {
     const mockFetch = jest.fn().mockResolvedValue({ ok: true });
     global.fetch = mockFetch;
 
-    const nodeWithSpecialChars = [{
-      external_ip: 'http://valid-ip',
-      alias: 'test@#$%^&*()_+',
-      authToken: 'validToken'
-    }];
+    const nodeWithSpecialChars = [
+      {
+        external_ip: 'http://valid-ip',
+        alias: 'test@#$%^&*()_+',
+        authToken: 'validToken'
+      }
+    ];
 
     await postAllUsersToTribe(nodeWithSpecialChars);
 
@@ -145,24 +149,25 @@ describe('postAllUsersToTribe', () => {
     const mockFetch = jest.fn().mockResolvedValue({ ok: true });
     global.fetch = mockFetch;
 
-    const nodeWithInvalidIP = [{
-      external_ip: 'invalid-url',
-      alias: 'testAlias',
-      authToken: 'validToken'
-    }];
+    const nodeWithInvalidIP = [
+      {
+        external_ip: 'invalid-url',
+        alias: 'testAlias',
+        authToken: 'validToken'
+      }
+    ];
 
     await postAllUsersToTribe(nodeWithInvalidIP);
 
-    expect(mockFetch).toHaveBeenCalledWith(
-      'invalid-url/profile',
-      expect.any(Object)
-    );
+    expect(mockFetch).toHaveBeenCalledWith('invalid-url/profile', expect.any(Object));
   });
 
   it('Handles concurrent requests', async () => {
-    const mockFetch = jest.fn().mockImplementation(() =>
-      new Promise((resolve: any) => setTimeout(resolve, Math.random() * 100))
-    );
+    const mockFetch = jest
+      .fn()
+      .mockImplementation(
+        () => new Promise((resolve: any) => setTimeout(resolve, Math.random() * 100))
+      );
     global.fetch = mockFetch;
 
     await postAllUsersToTribe(mockNodes);
