@@ -2528,3 +2528,207 @@ describe('getUserWorkspaceByUuid', () => {
     });
   });
 });
+
+describe('setPeople Tests', () => {
+  let mainStore: MainStore;
+
+  beforeEach(() => {
+    mainStore = new MainStore();
+  });
+
+  const validPerson: Person = {
+    id: 1,
+    unique_name: 'test123',
+    owner_pubkey: 'pubkey1',
+    uuid: 'uuid1',
+    owner_alias: 'TestOwner',
+    description: 'Test Description',
+    img: 'https://example.com/test.jpg',
+    tags: ['tag1'],
+    photo_url: 'https://example.com/photo_test.jpg',
+    alias: 'Test',
+    route_hint: 'route_hint1',
+    contact_key: 'contact_key1',
+    price_to_meet: 100,
+    url: 'https://example.com/test',
+    verification_signature: 'signature1',
+    extras: {}
+  };
+
+  test('Standard Input', () => {
+    const input = [validPerson];
+    mainStore.setPeople(input);
+    expect(mainStore.people).toEqual(input);
+  });
+
+  test('Empty Array', () => {
+    const input: Person[] = [];
+    mainStore.setPeople(input);
+    expect(mainStore.people).toEqual([]);
+  });
+
+  test('Single Element Array', () => {
+    const input = [validPerson];
+    mainStore.setPeople(input);
+    expect(mainStore.people).toEqual(input);
+  });
+
+  test('Large Array', () => {
+    const input = Array.from({ length: 1000 }, (_: any, i: number) => ({
+      ...validPerson,
+      id: i,
+      unique_name: `test${i}`
+    }));
+    mainStore.setPeople(input);
+    expect(mainStore.people).toEqual(input);
+  });
+
+  test('Null Input', () => {
+    expect(() => mainStore.setPeople(null as any)).toThrow(TypeError);
+  });
+
+  test('Invalid Data Type', () => {
+    expect(() => mainStore.setPeople('not an array' as any)).toThrow(TypeError);
+  });
+
+  test('Array with Invalid Elements', () => {
+    const invalidInput = [validPerson, { id: 'invalid', name: 'Invalid Person' }];
+    waitFor(() => {
+      expect(() => mainStore.setPeople(invalidInput as any)).toThrow(TypeError);
+    });
+  });
+
+  test('Array with Duplicate Entries', () => {
+    const input = [validPerson, { ...validPerson }];
+    mainStore.setPeople(input);
+    expect(mainStore.people).toEqual(input);
+  });
+
+  test('Array with Complex Objects', () => {
+    const complexPerson = {
+      ...validPerson,
+      extras: {
+        skills: ['JavaScript', 'TypeScript'],
+        languages: ['English', 'Spanish'],
+        certifications: ['AWS', 'Azure']
+      }
+    };
+    const input = [complexPerson];
+    mainStore.setPeople(input as any);
+    expect(mainStore.people).toEqual(input);
+  });
+
+  test('Stress Test with Maximum Capacity', () => {
+    const input = Array.from({ length: 10000 }, (_: any, i: number) => ({
+      ...validPerson,
+      id: i,
+      unique_name: `test${i}`
+    }));
+    const start = performance.now();
+    mainStore.setPeople(input);
+    const end = performance.now();
+    const executionTime = end - start;
+
+    waitFor(() => {
+      expect(mainStore.people).toEqual(input);
+      expect(executionTime).toBeLessThan(1000);
+    });
+  });
+
+  test('Array with Mixed Validity', () => {
+    const mixedInput = [validPerson, { id: 2 }, undefined, null];
+    expect(() => mainStore.setPeople(mixedInput as any)).toThrow(TypeError);
+  });
+
+  test('Array with Edge Age Values', () => {
+    const edgeCases = [
+      {
+        ...validPerson,
+        id: Number.MAX_SAFE_INTEGER
+      },
+      {
+        ...validPerson,
+        id: Number.MIN_SAFE_INTEGER
+      },
+      {
+        ...validPerson,
+        id: 0
+      }
+    ];
+    mainStore.setPeople(edgeCases);
+    expect(mainStore.people).toEqual(edgeCases);
+  });
+});
+
+describe('setAssignInvoice Tests', () => {
+  let mainStore: MainStore;
+
+  beforeEach(() => {
+    mainStore = new MainStore();
+  });
+
+  test('Basic Functionality: Valid String Input', () => {
+    const testInvoice = 'lnbc123xyz';
+    mainStore.setAssignInvoice(testInvoice);
+    expect(mainStore.assignInvoice).toBe(testInvoice);
+  });
+
+  test('Edge Case: Empty String', () => {
+    mainStore.setAssignInvoice('');
+    expect(mainStore.assignInvoice).toBe('');
+  });
+
+  test('Edge Case: Long String', () => {
+    const longInvoice = 'a'.repeat(10000);
+    mainStore.setAssignInvoice(longInvoice);
+    expect(mainStore.assignInvoice).toBe(longInvoice);
+  });
+
+  test('Error Condition: Null Input', () => {
+    waitFor(() => {
+      expect(() => mainStore.setAssignInvoice(null as any)).toThrow(TypeError);
+    });
+  });
+
+  test('Error Condition: Undefined Input', () => {
+    waitFor(() => {
+      expect(() => mainStore.setAssignInvoice(undefined as any)).toThrow(TypeError);
+    });
+  });
+
+  test('Error Condition: Non-String Input (Number)', () => {
+    waitFor(() => {
+      expect(() => mainStore.setAssignInvoice(123 as any)).toThrow(TypeError);
+    });
+  });
+
+  test('Error Condition: Non-String Input (Object)', () => {
+    waitFor(() => {
+      expect(() => mainStore.setAssignInvoice({ invoice: 'test' } as any)).toThrow(TypeError);
+    });
+  });
+
+  test('Special Case: String with Special Characters', () => {
+    const specialCharsInvoice = 'lnbc!@#$%^&*()_+-=[]{}|;:,.<>?';
+    mainStore.setAssignInvoice(specialCharsInvoice);
+    expect(mainStore.assignInvoice).toBe(specialCharsInvoice);
+  });
+
+  test('Special Case: String with Whitespace', () => {
+    const whitespaceInvoice = '  lnbc123xyz  ';
+    mainStore.setAssignInvoice(whitespaceInvoice);
+    expect(mainStore.assignInvoice).toBe(whitespaceInvoice);
+  });
+
+  test('Error Condition: Non-String Input (Boolean)', () => {
+    waitFor(() => {
+      expect(() => mainStore.setAssignInvoice(true as any)).toThrow(TypeError);
+    });
+  });
+
+  test('Error Condition: Non-String Input (Array)', () => {
+    waitFor(() => {
+      expect(() => mainStore.setAssignInvoice(['test'] as any)).toThrow(TypeError);
+    });
+  });
+});
