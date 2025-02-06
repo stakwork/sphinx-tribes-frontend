@@ -3341,6 +3341,7 @@ export class MainStore {
     examples: any[];
     webhook_url: string;
     featureUUID: string;
+    sourceWebsocketId: string;
   }): Promise<any> {
     try {
       const info = uiStore.meInfo;
