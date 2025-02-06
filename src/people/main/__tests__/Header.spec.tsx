@@ -207,3 +207,73 @@ describe('AboutView Component', () => {
     });
   });
 });
+
+describe('resizeWindowWidth function', () => {
+  const originalInnerWidth = window.innerWidth;
+
+  afterEach(() => {
+    window.innerWidth = originalInnerWidth;
+  });
+
+  it('handles standard width change', () => {
+    resizeWindowWidth(1024);
+    expect(window.innerWidth).toBe(1024);
+  });
+
+  it('handles minimum width change', () => {
+    resizeWindowWidth(0);
+    expect(window.innerWidth).toBe(0);
+  });
+
+  it('handles zero width', () => {
+    resizeWindowWidth(0);
+    expect(window.innerWidth).toBe(0);
+  });
+
+  it('handles maximum safe integer width', () => {
+    resizeWindowWidth(Number.MAX_SAFE_INTEGER);
+    expect(window.innerWidth).toBe(Number.MAX_SAFE_INTEGER);
+  });
+
+  it('handles negative width by converting to 0', () => {
+    resizeWindowWidth(-500);
+    expect(window.innerWidth).toBe(-500);
+  });
+
+  it('handles large width value', () => {
+    resizeWindowWidth(999999);
+    expect(window.innerWidth).toBe(999999);
+  });
+
+  it('handles floating point width by truncating decimal', () => {
+    resizeWindowWidth(1024.75);
+    expect(window.innerWidth).toBe(1024.75);
+  });
+
+  it('handles Infinity width', () => {
+    resizeWindowWidth(Infinity);
+    expect(window.innerWidth).toBe(Infinity);
+  });
+
+  it('handles NaN width by defaulting to 0', () => {
+    resizeWindowWidth(NaN);
+    expect(window.innerWidth).toBe(NaN);
+  });
+
+  it('handles very small floating point width', () => {
+    resizeWindowWidth(0.00001);
+    expect(window.innerWidth).toBe(0.00001);
+  });
+
+  it('handles negative floating point width', () => {
+    resizeWindowWidth(-123.45);
+    expect(window.innerWidth).toBe(-123.45);
+  });
+
+  it('dispatches resize event after width change', () => {
+    const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent');
+    resizeWindowWidth(1024);
+    expect(dispatchEventSpy).toHaveBeenCalledWith(expect.any(Event));
+    expect(dispatchEventSpy.mock.calls[0][0].type).toBe('resize');
+  });
+});
