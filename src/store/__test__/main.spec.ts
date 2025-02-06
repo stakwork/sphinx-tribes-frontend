@@ -2,7 +2,7 @@ import { toJS } from 'mobx';
 import sinon from 'sinon';
 import moment from 'moment';
 import { waitFor } from '@testing-library/react';
-import { Person, PersonBounty } from 'store/interface';
+import { Person, PersonBounty, Workspace } from 'store/interface';
 import { people } from '../../__test__/__mockData__/persons';
 import { user } from '../../__test__/__mockData__/user';
 import { MeInfo, emptyMeInfo, uiStore } from '../ui';
@@ -1668,6 +1668,233 @@ describe('getUserRoles', () => {
       );
       expect(result).toEqual(mockRoles);
     });
+  });
+});
+
+describe('setDropDownWorkspaces', () => {
+  let mainStore: MainStore;
+
+  beforeEach(() => {
+    mainStore = new MainStore();
+  });
+
+  it('should set standard array of workspaces', () => {
+    const workspaces: Workspace[] = [
+      {
+        id: '1',
+        uuid: 'uuid-1',
+        name: 'Workspace 1',
+        description: 'Description 1',
+        owner_pubkey: 'pubkey-1',
+        img: 'image1.jpg',
+        created: '2024-01-01T00:00:00Z',
+        updated: '2024-01-01T00:00:00Z',
+        show: true
+      },
+      {
+        id: '2',
+        uuid: 'uuid-2',
+        name: 'Workspace 2',
+        description: 'Description 2',
+        owner_pubkey: 'pubkey-2',
+        img: 'image2.jpg',
+        created: '2024-01-01T00:00:00Z',
+        updated: '2024-01-01T00:00:00Z',
+        show: true
+      }
+    ];
+
+    mainStore.setDropDownWorkspaces(workspaces);
+    expect(mainStore.dropDownWorkspaces).toEqual(workspaces);
+  });
+
+  it('should handle empty array input', () => {
+    mainStore.setDropDownWorkspaces([]);
+    expect(mainStore.dropDownWorkspaces).toEqual([]);
+  });
+
+  it('should handle single workspace', () => {
+    const workspace: Workspace = {
+      id: '1',
+      uuid: 'uuid-1',
+      name: 'Single Workspace',
+      description: 'Description',
+      owner_pubkey: 'pubkey-1',
+      img: 'image1.jpg',
+      created: '2024-01-01T00:00:00Z',
+      updated: '2024-01-01T00:00:00Z',
+      show: true
+    };
+
+    mainStore.setDropDownWorkspaces([workspace]);
+    expect(mainStore.dropDownWorkspaces).toHaveLength(1);
+    expect(mainStore.dropDownWorkspaces[0]).toEqual(workspace);
+  });
+
+  it('should handle large number of workspaces', () => {
+    const workspaces: Workspace[] = Array.from({ length: 1000 }, (_: unknown, i: number) => ({
+      id: i.toString(),
+      uuid: `uuid-${i}`,
+      name: `Workspace ${i}`,
+      description: `Description ${i}`,
+      owner_pubkey: `pubkey-${i}`,
+      img: `image${i}.jpg`,
+      created: '2024-01-01T00:00:00Z',
+      updated: '2024-01-01T00:00:00Z',
+      show: true
+    }));
+
+    mainStore.setDropDownWorkspaces(workspaces);
+    expect(mainStore.dropDownWorkspaces).toHaveLength(1000);
+    expect(mainStore.dropDownWorkspaces).toEqual(workspaces);
+  });
+
+  it('should handle null input', () => {
+    mainStore.setDropDownWorkspaces(null as any);
+    expect(mainStore.dropDownWorkspaces).toEqual(null);
+  });
+
+  it('should handle undefined input', () => {
+    mainStore.setDropDownWorkspaces(undefined as any);
+    expect(mainStore.dropDownWorkspaces).toEqual(undefined);
+  });
+
+  it('should handle invalid data type', () => {
+    const invalidInput = 'not an array' as any;
+    mainStore.setDropDownWorkspaces(invalidInput);
+    expect(mainStore.dropDownWorkspaces).toEqual(invalidInput);
+  });
+
+  it('should handle array with mixed types', () => {
+    const validWorkspace: Workspace = {
+      id: '1',
+      uuid: 'uuid-1',
+      name: 'Workspace 1',
+      description: 'Description 1',
+      owner_pubkey: 'pubkey-1',
+      img: 'image1.jpg',
+      created: '2024-01-01T00:00:00Z',
+      updated: '2024-01-01T00:00:00Z',
+      show: true
+    };
+
+    const mixedWorkspaces = [
+      validWorkspace,
+      'invalid item' as any,
+      null as any,
+      {
+        id: '2',
+        uuid: 'uuid-2',
+        name: 'Workspace 2',
+        description: 'Description 2',
+        owner_pubkey: 'pubkey-2',
+        img: 'image2.jpg',
+        created: '2024-01-01T00:00:00Z',
+        updated: '2024-01-01T00:00:00Z',
+        show: true
+      }
+    ];
+
+    mainStore.setDropDownWorkspaces(mixedWorkspaces as any);
+    expect(mainStore.dropDownWorkspaces).toEqual(mixedWorkspaces);
+  });
+
+  it('should handle array with duplicates', () => {
+    const workspace: Workspace = {
+      id: '1',
+      uuid: 'uuid-1',
+      name: 'Duplicate Workspace',
+      description: 'Description',
+      owner_pubkey: 'pubkey-1',
+      img: 'image1.jpg',
+      created: '2024-01-01T00:00:00Z',
+      updated: '2024-01-01T00:00:00Z',
+      show: true
+    };
+
+    const duplicateWorkspaces = [workspace, workspace, workspace];
+
+    mainStore.setDropDownWorkspaces(duplicateWorkspaces);
+    expect(mainStore.dropDownWorkspaces).toHaveLength(3);
+    expect(mainStore.dropDownWorkspaces).toEqual(duplicateWorkspaces);
+  });
+
+  it('should handle very large workspace objects', () => {
+    const largeWorkspace: Workspace = {
+      id: '1',
+      uuid: 'uuid-1',
+      name: 'Large Workspace',
+      description: 'A'.repeat(10000),
+      owner_pubkey: 'pubkey-1',
+      img: 'image1.jpg',
+      created: '2024-01-01T00:00:00Z',
+      updated: '2024-01-01T00:00:00Z',
+      show: true,
+      additionalData: Array(1000).fill('large data')
+    } as Workspace;
+
+    mainStore.setDropDownWorkspaces([largeWorkspace]);
+    expect(mainStore.dropDownWorkspaces).toHaveLength(1);
+    expect(mainStore.dropDownWorkspaces[0]).toEqual(largeWorkspace);
+  });
+
+  it('should handle array with deeply nested objects', () => {
+    const nestedWorkspace: Workspace = {
+      id: '1',
+      uuid: 'uuid-1',
+      name: 'Nested Workspace',
+      description: 'Description',
+      owner_pubkey: 'pubkey-1',
+      img: 'image1.jpg',
+      created: '2024-01-01T00:00:00Z',
+      updated: '2024-01-01T00:00:00Z',
+      show: true,
+      nested: {
+        level1: {
+          level2: {
+            level3: {
+              data: 'deeply nested data'
+            }
+          }
+        }
+      }
+    } as Workspace;
+
+    mainStore.setDropDownWorkspaces([nestedWorkspace]);
+    expect(mainStore.dropDownWorkspaces).toHaveLength(1);
+    expect(mainStore.dropDownWorkspaces[0]).toEqual(nestedWorkspace);
+  });
+
+  it('should handle array with null or undefined elements', () => {
+    const validWorkspace1: Workspace = {
+      id: '1',
+      uuid: 'uuid-1',
+      name: 'Valid Workspace',
+      description: 'Description',
+      owner_pubkey: 'pubkey-1',
+      img: 'image1.jpg',
+      created: '2024-01-01T00:00:00Z',
+      updated: '2024-01-01T00:00:00Z',
+      show: true
+    };
+
+    const validWorkspace2: Workspace = {
+      id: '2',
+      uuid: 'uuid-2',
+      name: 'Another Valid Workspace',
+      description: 'Description 2',
+      owner_pubkey: 'pubkey-2',
+      img: 'image2.jpg',
+      created: '2024-01-01T00:00:00Z',
+      updated: '2024-01-01T00:00:00Z',
+      show: true
+    };
+
+    const workspacesWithNulls = [null, validWorkspace1, undefined, validWorkspace2] as any[];
+
+    mainStore.setDropDownWorkspaces(workspacesWithNulls);
+    expect(mainStore.dropDownWorkspaces).toEqual(workspacesWithNulls);
+    expect(mainStore.dropDownWorkspaces).toHaveLength(4);
   });
 });
 
