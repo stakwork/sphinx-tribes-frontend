@@ -179,7 +179,8 @@ export class ChatService {
     sourceWebsocketID: string,
     workspaceUUID: string,
     contextTags?: ContextTag[],
-    pdfUrl?: string
+    pdfUrl?: string,
+    modelSelection?: string
   ): Promise<ChatMessage | undefined> {
     try {
       if (!uiStore.meInfo) return undefined;
@@ -198,7 +199,8 @@ export class ChatService {
           context_tags: contextTags,
           sourceWebsocketID,
           workspaceUUID,
-          pdf_url: pdfUrl
+          pdf_url: pdfUrl,
+          modelSelection
         })
       });
 

@@ -163,6 +163,7 @@ export class ChatHistoryStore implements ChatStore {
   async sendMessage(
     chat_id: string,
     message: string,
+    modelSelection: string,
     sourceWebsocketID: string,
     workspaceUUID: string,
     contextTags?: ContextTag[],
@@ -175,7 +176,8 @@ export class ChatHistoryStore implements ChatStore {
         sourceWebsocketID,
         workspaceUUID,
         contextTags,
-        pdfUrl
+        pdfUrl,
+        modelSelection
       );
       if (newMessage) {
         if (!this.chatMessages[chat_id]) {
