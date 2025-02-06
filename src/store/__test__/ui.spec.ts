@@ -735,3 +735,160 @@ describe('setBadgeList', () => {
     expect(uiStore.badgeList).toEqual(specialChars);
   });
 });
+
+describe('setToasts', () => {
+  let uiStore: UiStore;
+
+  beforeEach(() => {
+    uiStore = new UiStore();
+  });
+
+  it('Assigning an Array of Toast Objects', () => {
+    const toasts = [
+      { id: 1, message: 'Success', type: 'success' },
+      { id: 2, message: 'Error', type: 'error' }
+    ];
+    uiStore.setToasts(toasts);
+    expect(uiStore.toasts).toEqual(toasts);
+  });
+
+  it('Assigning an Empty Array', () => {
+    uiStore.setToasts([]);
+    expect(uiStore.toasts).toEqual([]);
+  });
+
+  it('Assigning a Large Array', () => {
+    const largeToasts = Array(100)
+      .fill(null)
+      .map((_: any, index: number) => ({
+        id: index,
+        message: `Toast ${index}`,
+        type: index % 2 === 0 ? 'success' : 'error'
+      }));
+    uiStore.setToasts(largeToasts);
+    expect(uiStore.toasts).toEqual(largeToasts);
+    expect(uiStore.toasts.length).toBe(100);
+  });
+
+  it('Assigning a Single Toast Object', () => {
+    const singleToast = { id: 1, message: 'Single Toast', type: 'info' };
+    uiStore.setToasts(singleToast);
+    expect(uiStore.toasts).toEqual(singleToast);
+  });
+
+  it('Assigning null', () => {
+    uiStore.setToasts(null);
+    expect(uiStore.toasts).toBeNull();
+  });
+
+  it('Assigning undefined', () => {
+    uiStore.setToasts(undefined);
+    expect(uiStore.toasts).toBeUndefined();
+  });
+
+  it('Assigning a Non-Array, Non-Object Value', () => {
+    uiStore.setToasts('invalid toast' as any);
+    expect(uiStore.toasts).toBe('invalid toast');
+
+    uiStore.setToasts(42 as any);
+    expect(uiStore.toasts).toBe(42);
+
+    uiStore.setToasts(true as any);
+    expect(uiStore.toasts).toBe(true);
+  });
+
+  it('Assigning a Very Large Array', () => {
+    const veryLargeToasts = Array(1000)
+      .fill(null)
+      .map((_: any, index: number) => ({
+        id: index,
+        message: `Toast ${index}`,
+        type: 'info',
+        timestamp: Date.now(),
+        duration: 3000
+      }));
+    uiStore.setToasts(veryLargeToasts);
+    expect(uiStore.toasts).toEqual(veryLargeToasts);
+    expect(uiStore.toasts.length).toBe(1000);
+  });
+
+  it('Assigning an Array with Mixed Types', () => {
+    const mixedToasts = [
+      { id: 1, message: 'Valid Toast' },
+      'string toast',
+      42,
+      null,
+      undefined,
+      { random: 'object' },
+      [1, 2, 3],
+      true
+    ];
+    uiStore.setToasts(mixedToasts);
+    expect(uiStore.toasts).toEqual(mixedToasts);
+  });
+
+  it('Assigning an Object with Unexpected Properties', () => {
+    const unexpectedToast = {
+      id: 1,
+      message: 'Toast',
+      type: 'success',
+      unexpectedProp1: 'value1',
+      unexpectedProp2: { nested: 'value' },
+      unexpectedProp3: [1, 2, 3],
+      unexpectedFunction: () => console.log('test')
+    };
+    uiStore.setToasts(unexpectedToast);
+    waitFor(() => {
+      expect(uiStore.toasts).toEqual(unexpectedToast);
+    });
+  });
+
+  it('Assigning a Nested Array', () => {
+    const nestedToasts = [
+      { id: 1, message: 'Toast 1' },
+      [
+        { id: 2, message: 'Nested Toast 1' },
+        { id: 3, message: 'Nested Toast 2' }
+      ],
+      {
+        subToasts: [
+          { id: 4, message: 'Sub Toast 1' },
+          { id: 5, message: 'Sub Toast 2' }
+        ]
+      }
+    ];
+    uiStore.setToasts(nestedToasts);
+    expect(uiStore.toasts).toEqual(nestedToasts);
+  });
+
+  it('should handle consecutive calls with different values', () => {
+    const toasts1 = [{ id: 1, message: 'First' }];
+    const toasts2 = [{ id: 2, message: 'Second' }];
+
+    uiStore.setToasts(toasts1);
+    expect(uiStore.toasts).toEqual(toasts1);
+
+    uiStore.setToasts(toasts2);
+    expect(uiStore.toasts).toEqual(toasts2);
+  });
+
+  it('should handle toast objects with special characters', () => {
+    const specialToasts = [
+      { id: 1, message: '!@#$%^&*()' },
+      { id: 2, message: '😀🎉🔥' },
+      { id: 3, message: '\\n\\t\\r' }
+    ];
+    uiStore.setToasts(specialToasts);
+    expect(uiStore.toasts).toEqual(specialToasts);
+  });
+
+  it('should handle toast objects with empty or whitespace messages', () => {
+    const emptyToasts = [
+      { id: 1, message: '' },
+      { id: 2, message: '   ' },
+      { id: 3, message: '\n\t' }
+    ];
+    uiStore.setToasts(emptyToasts);
+    expect(uiStore.toasts).toEqual(emptyToasts);
+  });
+});
