@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach } from '@jest/globals';
+import { waitFor } from '@testing-library/react';
 
 global.fetch = jest.fn();
 
@@ -190,5 +191,190 @@ describe('postAllUsersToTribe', () => {
     ]);
 
     expect(calls).toEqual([1, 2]);
+  });
+
+  it('Single Node with Valid Data', async () => {
+    const mockFetch = jest.fn().mockResolvedValue({ ok: true });
+    global.fetch = mockFetch;
+
+    const singleNode = [
+      {
+        external_ip: 'http://valid-ip',
+        alias: 'testAlias',
+        authToken: 'validToken'
+      }
+    ];
+
+    await postAllUsersToTribe(singleNode);
+
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    expect(mockFetch).toHaveBeenCalledWith(
+      'http://valid-ip/profile',
+      expect.objectContaining({
+        method: 'POST',
+        body: expect.stringContaining('testAlias'),
+        headers: { 'x-user-token': 'validToken' }
+      })
+    );
+  });
+
+  it('Node with Empty Alias', async () => {
+    const mockFetch = jest.fn().mockResolvedValue({ ok: true });
+    global.fetch = mockFetch;
+
+    const nodeWithEmptyAlias = [
+      {
+        external_ip: 'http://valid-ip',
+        alias: '',
+        authToken: 'validToken'
+      }
+    ];
+
+    await postAllUsersToTribe(nodeWithEmptyAlias);
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      'http://valid-ip/profile',
+      expect.objectContaining({
+        body: expect.stringContaining('"owner_alias":""')
+      })
+    );
+  });
+
+  it('Node with Empty AuthToken', async () => {
+    const mockFetch = jest.fn().mockResolvedValue({ ok: true });
+    global.fetch = mockFetch;
+
+    const nodeWithEmptyToken = [
+      {
+        external_ip: 'http://valid-ip',
+        alias: 'testAlias',
+        authToken: ''
+      }
+    ];
+
+    await postAllUsersToTribe(nodeWithEmptyToken);
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      'http://valid-ip/profile',
+      expect.objectContaining({
+        headers: { 'x-user-token': '' }
+      })
+    );
+  });
+
+  it('Null Node Properties', async () => {
+    const mockFetch = jest.fn().mockResolvedValue({ ok: true });
+    global.fetch = mockFetch;
+
+    const nodeWithNullProps = [
+      {
+        external_ip: null,
+        alias: null,
+        authToken: null
+      }
+    ];
+
+    await postAllUsersToTribe(nodeWithNullProps);
+    waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledWith(
+        'null/profile',
+        expect.objectContaining({
+          body: expect.stringContaining('"owner_alias":null'),
+          headers: { 'x-user-token': 'null' }
+        })
+      );
+    });
+  });
+
+  it('Non-String Node Properties', async () => {
+    const mockFetch = jest.fn().mockResolvedValue({ ok: true });
+    global.fetch = mockFetch;
+
+    const nodeWithNonStringProps = [
+      {
+        external_ip: 123,
+        alias: 456,
+        authToken: 789
+      }
+    ];
+
+    await postAllUsersToTribe(nodeWithNonStringProps);
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      '123/profile',
+      expect.objectContaining({
+        body: expect.stringContaining('"owner_alias":"456"'),
+        headers: { 'x-user-token': '789' }
+      })
+    );
+  });
+
+  it('Node with Long Alias', async () => {
+    const mockFetch = jest.fn().mockResolvedValue({ ok: true });
+    global.fetch = mockFetch;
+
+    const longAlias = 'a'.repeat(1000);
+    const nodeWithLongAlias = [
+      {
+        external_ip: 'http://valid-ip',
+        alias: longAlias,
+        authToken: 'validToken'
+      }
+    ];
+
+    await postAllUsersToTribe(nodeWithLongAlias);
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      'http://valid-ip/profile',
+      expect.objectContaining({
+        body: expect.stringContaining(longAlias)
+      })
+    );
+  });
+
+  it('Node with Special Characters in AuthToken', async () => {
+    const mockFetch = jest.fn().mockResolvedValue({ ok: true });
+    global.fetch = mockFetch;
+
+    const specialAuthToken = '!@#$%^&*()+=-[]{}|;:,.<>?';
+    const nodeWithSpecialAuthToken = [
+      {
+        external_ip: 'http://valid-ip',
+        alias: 'testAlias',
+        authToken: specialAuthToken
+      }
+    ];
+
+    await postAllUsersToTribe(nodeWithSpecialAuthToken);
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      'http://valid-ip/profile',
+      expect.objectContaining({
+        headers: { 'x-user-token': specialAuthToken }
+      })
+    );
+  });
+
+  it('Node with Long AuthToken', async () => {
+    const mockFetch = jest.fn().mockResolvedValue({ ok: true });
+    global.fetch = mockFetch;
+
+    const longAuthToken = 'a'.repeat(1000);
+    const nodeWithLongAuthToken = [
+      {
+        external_ip: 'http://valid-ip',
+        alias: 'testAlias',
+        authToken: longAuthToken
+      }
+    ];
+
+    await postAllUsersToTribe(nodeWithLongAuthToken);
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      'http://valid-ip/profile',
+      expect.objectContaining({
+        headers: { 'x-user-token': longAuthToken }
+      })
+    );
   });
 });
