@@ -73,7 +73,7 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
               <Route path="/feature/:feature_uuid/phase/:phase_uuid/planner">
                 <PhasePlannerView />
               </Route>
-              <Route path="/feature/:feature_uuid/stories/:socket_id">
+              <Route path="/feature/:feature_uuid/stories/:socket_id?">
                 <GenerateStoriesView />
               </Route>
               <Route path="/feature/:feature_uuid">
