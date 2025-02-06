@@ -5,10 +5,10 @@ import rehypeRaw from 'rehype-raw';
 import styled from 'styled-components';
 import { colors } from '../../config';
 
-const MarkdownContainer = styled.div`
+const MarkdownContainer = styled.div<{ textColor?: string }>`
   font-size: 1rem;
   line-height: 1.6;
-  color: #3c3f41;
+  color: ${(props: any) => props.textColor || '#3c3f41'};
 
   ul,
   ol {
@@ -99,7 +99,7 @@ export function renderMarkdown(markdown: any, customStyles?: CustomStyles) {
   } = customStyles || {};
 
   return (
-    <MarkdownContainer>
+    <MarkdownContainer textColor={textColor}>
       <ReactMarkdown
         children={markdown}
         remarkPlugins={[remarkGfm]}
