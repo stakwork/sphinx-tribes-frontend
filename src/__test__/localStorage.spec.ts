@@ -240,4 +240,108 @@ describe('Local Storage', () => {
       expect(localStorageMock.getItem(-123)).toBe('negative number value');
     });
   });
+
+  describe('removeItem', () => {
+    it('should remove an item from local storage', () => {
+      const key = 'testKey';
+      const value = 'testValue';
+
+      localStorageMock.setItem(key, value);
+      localStorageMock.removeItem(key);
+
+      expect(localStorageMock.getItem(key)).toBeUndefined();
+    });
+
+    it('should remove item with numeric key', () => {
+      const key = 123;
+      const value = 'numberValue';
+
+      localStorageMock.setItem(key, value);
+      localStorageMock.removeItem(key);
+
+      expect(localStorageMock.getItem(key)).toBeUndefined();
+    });
+
+    it('should not remove item if key does not exist (string)', () => {
+      localStorageMock.setItem('existingKey', 'value');
+      localStorageMock.removeItem('nonExistingKey');
+
+      expect(localStorageMock.getItem('existingKey')).toBe('value');
+      expect(localStorageMock.getItem('nonExistingKey')).toBeUndefined();
+    });
+
+    it('should not remove item if key does not exist (numeric)', () => {
+      localStorageMock.setItem(123, 'value');
+      localStorageMock.removeItem(456);
+
+      expect(localStorageMock.getItem(123)).toBe('value');
+      expect(localStorageMock.getItem(456)).toBeUndefined();
+    });
+
+    it('should do nothing when removing from empty store', () => {
+      localStorageMock.removeItem('anyKey');
+      expect(Object.keys(localStorageMock.getAll()).length).toBe(0);
+    });
+
+    it('should handle null key', () => {
+      localStorageMock.setItem('null', 'nullValue');
+      localStorageMock.removeItem(null as any);
+      expect(localStorageMock.getItem('null')).toBeUndefined();
+    });
+
+    it('should handle undefined key', () => {
+      localStorageMock.setItem('undefined', 'undefinedValue');
+      localStorageMock.removeItem(undefined as any);
+      expect(localStorageMock.getItem('undefined')).toBeUndefined();
+    });
+
+    it('should handle object key by converting to string', () => {
+      const objKey = { toString: () => 'objKey' };
+      localStorageMock.setItem(objKey as any, 'objValue');
+      localStorageMock.removeItem(objKey as any);
+      expect(localStorageMock.getItem('objKey')).toBeUndefined();
+    });
+
+    it('should remove item from large store', () => {
+      // Populate store with many items
+      for (let i = 0; i < 10000; i++) {
+        localStorageMock.setItem(`key${i}`, `value${i}`);
+      }
+      const keyToRemove = 'key5000';
+      localStorageMock.removeItem(keyToRemove);
+      expect(localStorageMock.getItem(keyToRemove)).toBeUndefined();
+      // Check adjacent keys to ensure they remain
+      expect(localStorageMock.getItem('key4999')).toBe('value4999');
+      expect(localStorageMock.getItem('key5001')).toBe('value5001');
+    });
+
+    it('should handle special character keys', () => {
+      const key = '!@#$%^&*()';
+      localStorageMock.setItem(key, 'specialValue');
+      localStorageMock.removeItem(key);
+      expect(localStorageMock.getItem(key)).toBeUndefined();
+    });
+
+    it('should handle numeric string keys', () => {
+      const key = '123';
+      localStorageMock.setItem(key, 'numericStringValue');
+      localStorageMock.removeItem(key);
+      expect(localStorageMock.getItem(key)).toBeUndefined();
+    });
+
+    it('should handle boolean keys by converting to string', () => {
+      localStorageMock.setItem('true', 'booleanValue');
+      localStorageMock.removeItem(true as any);
+      expect(localStorageMock.getItem('true')).toBeUndefined();
+    });
+
+    it('should handle symbol keys by converting to string', () => {
+      const symbolKey = Symbol('test');
+      localStorageMock.setItem(symbolKey as any, 'symbolValue');
+      localStorageMock.removeItem(symbolKey as any);
+      waitFor(() => {
+        expect(localStorageMock.getItem(symbolKey.toString())).toBeUndefined();
+      });
+    });
+  });
 });
