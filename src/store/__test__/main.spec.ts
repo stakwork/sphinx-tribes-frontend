@@ -2529,7 +2529,6 @@ describe('getUserWorkspaceByUuid', () => {
   });
 });
 
-
 describe('setPeople Tests', () => {
   let mainStore: MainStore;
 
@@ -2579,7 +2578,6 @@ describe('setPeople Tests', () => {
       ...validPerson,
       id: i,
       unique_name: `test${i}`
-
     }));
     mainStore.setPeople(input);
     expect(mainStore.people).toEqual(input);
@@ -2594,15 +2592,11 @@ describe('setPeople Tests', () => {
   });
 
   test('Array with Invalid Elements', () => {
-    const invalidInput = [
-      validPerson,
-      { id: 'invalid', name: 'Invalid Person' }
-    ];
+    const invalidInput = [validPerson, { id: 'invalid', name: 'Invalid Person' }];
     waitFor(() => {
       expect(() => mainStore.setPeople(invalidInput as any)).toThrow(TypeError);
     });
   });
-
 
   test('Array with Duplicate Entries', () => {
     const input = [validPerson, { ...validPerson }];
@@ -2639,16 +2633,10 @@ describe('setPeople Tests', () => {
       expect(mainStore.people).toEqual(input);
       expect(executionTime).toBeLessThan(1000);
     });
-
   });
 
   test('Array with Mixed Validity', () => {
-    const mixedInput = [
-      validPerson,
-      { id: 2 },
-      undefined,
-      null
-    ];
+    const mixedInput = [validPerson, { id: 2 }, undefined, null];
     expect(() => mainStore.setPeople(mixedInput as any)).toThrow(TypeError);
   });
 
@@ -2702,13 +2690,11 @@ describe('setAssignInvoice Tests', () => {
     });
   });
 
-
   test('Error Condition: Undefined Input', () => {
     waitFor(() => {
       expect(() => mainStore.setAssignInvoice(undefined as any)).toThrow(TypeError);
     });
   });
-
 
   test('Error Condition: Non-String Input (Number)', () => {
     waitFor(() => {
@@ -2716,13 +2702,11 @@ describe('setAssignInvoice Tests', () => {
     });
   });
 
-
   test('Error Condition: Non-String Input (Object)', () => {
     waitFor(() => {
       expect(() => mainStore.setAssignInvoice({ invoice: 'test' } as any)).toThrow(TypeError);
     });
   });
-
 
   test('Special Case: String with Special Characters', () => {
     const specialCharsInvoice = 'lnbc!@#$%^&*()_+-=[]{}|;:,.<>?';
@@ -2742,12 +2726,9 @@ describe('setAssignInvoice Tests', () => {
     });
   });
 
-
   test('Error Condition: Non-String Input (Array)', () => {
     waitFor(() => {
       expect(() => mainStore.setAssignInvoice(['test'] as any)).toThrow(TypeError);
     });
   });
-
-
 });
