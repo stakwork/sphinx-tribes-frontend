@@ -25,9 +25,11 @@ import addBounty from '../../../pages/tickets/workspace/workspaceHeader/Icons/ad
 import { userCanManageBounty } from '../../../helpers';
 import { PostModal } from '../postBounty/PostModal';
 import WidgetSwitchViewer from '../WidgetSwitchViewer';
+import { Ticket } from '../../../store/interface';
 import { BountyStatus, phaseBountyLimit } from '../../../store/interface';
 import { Phase, PhaseOperationMessage, PhaseOperationType, Toast } from './interface';
 import { AddPhaseModal, DeletePhaseModal, EditPhaseModal } from './WorkspacePhasingModals';
+import PhaseTicketGroups from './PhaseTicketGroups';
 
 const Container = styled.div`
   padding: 20px;
@@ -121,6 +123,7 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
   const [page, setPage] = useState<number>(1);
   const [currentItems, setCurrentItems] = useState<number>(phaseBountyLimit);
   const [totalBounties, setTotalBounties] = useState(0);
+  const [phaseTickets, setPhaseTickets] = useState<Ticket[]>([]);
 
   const checkboxIdToSelectedMap: BountyStatus = useMemo(
     () => ({
@@ -225,6 +228,25 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
       })();
     }
   }, [phases, selectedIndex, main, checkboxIdToSelectedMap, languageString, getTotalBounties]);
+
+  useEffect(() => {
+    const fetchPhaseTickets = async () => {
+      if (phases[selectedIndex]) {
+        try {
+          const tickets = await main.getTicketDataByPhase(
+            phases[selectedIndex].feature_uuid,
+            phases[selectedIndex].uuid
+          );
+          setPhaseTickets(tickets || []);
+        } catch (error) {
+          console.error('Error fetching phase tickets:', error);
+          setPhaseTickets([]);
+        }
+      }
+    };
+
+    fetchPhaseTickets();
+  }, [phases, selectedIndex, main]);
 
   const handlePhaseNameChange = (name: string) => setPhaseName(name);
 
@@ -347,23 +369,28 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
                   overflowY: 'auto'
                 }}
               >
-                {totalBounties > 0 ? (
-                  <WidgetSwitchViewer
-                    onPanelClick={onPanelClick}
-                    checkboxIdToSelectedMap={checkboxIdToSelectedMap}
-                    checkboxIdToSelectedMapLanguage={checkboxIdToSelectedMapLanguage}
-                    fromBountyPage={true}
-                    selectedWidget={selectedWidget}
-                    loading={loading}
-                    currentItems={currentItems}
-                    setCurrentItems={setCurrentItems}
-                    page={page}
-                    setPage={setPage}
-                    languageString={languageString}
-                    phaseTotalBounties={totalBounties}
-                    featureUuid={phases[selectedIndex].feature_uuid}
-                    phaseUuid={phases[selectedIndex].uuid}
-                  />
+                {totalBounties > 0 || phaseTickets.length > 0 ? (
+                  <>
+                    {totalBounties > 0 && (
+                      <WidgetSwitchViewer
+                        onPanelClick={onPanelClick}
+                        checkboxIdToSelectedMap={checkboxIdToSelectedMap}
+                        checkboxIdToSelectedMapLanguage={checkboxIdToSelectedMapLanguage}
+                        fromBountyPage={true}
+                        selectedWidget={selectedWidget}
+                        loading={loading}
+                        currentItems={currentItems}
+                        setCurrentItems={setCurrentItems}
+                        page={page}
+                        setPage={setPage}
+                        languageString={languageString}
+                        phaseTotalBounties={totalBounties}
+                        featureUuid={phases[selectedIndex].feature_uuid}
+                        phaseUuid={phases[selectedIndex].uuid}
+                      />
+                    )}
+                    <PhaseTicketGroups tickets={phaseTickets} />
+                  </>
                 ) : (
                   <p>No Bounties Yet!</p>
                 )}
@@ -383,7 +410,8 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
       loading,
       currentItems,
       page,
-      selectedIndex
+      selectedIndex,
+      phaseTickets
     ]
   );
 
