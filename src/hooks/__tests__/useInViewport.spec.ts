@@ -1,3 +1,4 @@
+import { waitFor } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
 import { useInViewPort } from 'hooks/useInViewport';
 import { IntersectionOptions } from 'react-intersection-observer';
@@ -53,5 +54,79 @@ describe('useInViewport hook', () => {
     renderHook(() => useInViewPort(defaultOptions));
 
     expect(isVisible).toBe(true);
+  });
+
+  describe('prepareForTesting function', () => {
+    beforeEach(() => {
+      delete (window as Window).IntersectionObserver;
+    });
+
+    test('Test with isIntersecting as true', () => {
+      prepareForTesting(true);
+
+      const mockedObserver = (window as Window).IntersectionObserver as jest.Mock;
+      const mockCallback = jest.fn();
+
+      mockedObserver(mockCallback);
+      expect(mockCallback).toHaveBeenCalledWith([{ isIntersecting: true }]);
+    });
+
+    test('Test with isIntersecting as false', () => {
+      prepareForTesting(false);
+
+      const mockedObserver = (window as Window).IntersectionObserver as jest.Mock;
+      const mockCallback = jest.fn();
+
+      mockedObserver(mockCallback);
+      expect(mockCallback).toHaveBeenCalledWith([{ isIntersecting: false }]);
+    });
+
+    test('Test with multiple calls to prepareForTesting', () => {
+      prepareForTesting(true);
+      const firstObserver = (window as Window).IntersectionObserver;
+
+      prepareForTesting(false);
+      const secondObserver = (window as Window).IntersectionObserver;
+
+      expect(firstObserver).not.toBe(secondObserver);
+
+      const mockCallback = jest.fn();
+      (secondObserver as jest.Mock)(mockCallback);
+      expect(mockCallback).toHaveBeenCalledWith([{ isIntersecting: false }]);
+    });
+
+    test('Test with invalid input type', () => {
+      // @ts-expect-error - Testing with invalid input
+      prepareForTesting('not-a-boolean');
+
+      const mockedObserver = (window as Window).IntersectionObserver as jest.Mock;
+      const mockCallback = jest.fn();
+
+      mockedObserver(mockCallback);
+
+      waitFor(() => {
+        expect(mockCallback).toHaveBeenCalledWith([{ isIntersecting: true }]);
+      });
+    });
+
+    test('Test with null input', () => {
+      // @ts-expect-error - Testing with null input
+      prepareForTesting(null);
+
+      const mockedObserver = (window as Window).IntersectionObserver as jest.Mock;
+      const mockCallback = jest.fn();
+
+      mockedObserver(mockCallback);
+
+      waitFor(() => {
+        expect(mockCallback).toHaveBeenCalledWith([{ isIntersecting: false }]);
+      });
+
+      const instance = mockedObserver(mockCallback);
+      waitFor(() => {
+        expect(instance.observe).toBeDefined();
+        expect(instance.unobserve).toBeDefined();
+      });
+    });
   });
 });
