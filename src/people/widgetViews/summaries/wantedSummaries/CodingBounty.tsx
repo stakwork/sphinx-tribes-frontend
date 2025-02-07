@@ -91,6 +91,7 @@ function MobileView(props: CodingBountiesProps) {
     assigneeHandlerOpen,
     setCreatorStep,
     awards,
+    owner_id,
     setExtrasPropertyAndSaveMultiple,
     handleAssigneeDetails,
     peopleList,
@@ -493,6 +494,8 @@ function MobileView(props: CodingBountiesProps) {
 
   const isAssigner = person?.owner_pubkey === uiStore._meInfo?.owner_pubkey;
 
+  const hasOwnership = owner_id === uiStore._meInfo?.owner_pubkey;
+
   const handleStatusUpdate = async (proofId: string, status: BountyReviewStatus) => {
     try {
       console.log(proofId, status);
@@ -744,7 +747,7 @@ function MobileView(props: CodingBountiesProps) {
           hasAccess &&
           userAssigned && (
             <>
-              {!bountyCompleted && (
+              {hasOwnership && !bountyCompleted && (
                 <Button
                   disabled={paymentLoading || payBountyDisable || !created}
                   iconSize={14}
@@ -763,28 +766,31 @@ function MobileView(props: CodingBountiesProps) {
                 />
               )}
 
-              <IconButton
-                width={'100%'}
-                height={48}
-                disabled={
-                  paymentLoading || payBountyDisable || pendingPaymentLoading || bountyPending
-                }
-                style={{
-                  bottom: '10px'
-                }}
-                text={'Pay Bounty'}
-                loading={saving === 'paid' || updatingPayment}
-                textStyle={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  fontFamily: 'Barlow',
-                  fontSize: '15px',
-                  marginLeft: '30px'
-                }}
-                hovercolor={color.button_secondary.hover}
-                shadowcolor={color.button_secondary.shadow}
-                onClick={confirmPaymentHandler}
-              />
+              {hasOwnership && (
+                <IconButton
+                  width={'100%'}
+                  height={48}
+                  disabled={
+                    paymentLoading || payBountyDisable || pendingPaymentLoading || bountyPending
+                  }
+                  style={{
+                    bottom: '10px'
+                  }}
+                  text={'Pay Bounty'}
+                  loading={saving === 'paid' || updatingPayment}
+                  textStyle={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    fontFamily: 'Barlow',
+                    fontSize: '15px',
+                    marginLeft: '30px'
+                  }}
+                  hovercolor={color.button_secondary.hover}
+                  shadowcolor={color.button_secondary.shadow}
+                  onClick={confirmPaymentHandler}
+                />
+              )}
+
               {isOpenProofModal && (
                 <CodingBountyProofModal
                   closeModal={() => setIsOpenProofModal(false)}
