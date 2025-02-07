@@ -85,6 +85,7 @@ const MarkdownContainer = styled.div<{ textColor?: string }>`
 interface CustomStyles {
   codeBlockBackground?: string;
   codeBlockFont?: string;
+  bubbleTextColor?: string;
   textColor?: string;
   borderColor?: string;
 }
@@ -94,12 +95,13 @@ export function renderMarkdown(markdown: any, customStyles?: CustomStyles) {
   const {
     codeBlockBackground = '#050038',
     codeBlockFont = 'monospace',
+    bubbleTextColor = '',
     textColor = '#ffffff',
     borderColor = '#444'
   } = customStyles || {};
 
   return (
-    <MarkdownContainer textColor={textColor}>
+    <MarkdownContainer textColor={bubbleTextColor}>
       <ReactMarkdown
         children={markdown}
         remarkPlugins={[remarkGfm]}

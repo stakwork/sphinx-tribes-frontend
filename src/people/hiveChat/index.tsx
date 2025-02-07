@@ -598,7 +598,8 @@ export const HiveChatView: React.FC = observer(() => {
             <MessageBubble key={msg.id} isUser={msg.role === 'user'}>
               {renderMarkdown(msg.message, {
                 codeBlockBackground: '#282c34',
-                textColor: msg.role === 'user' ? 'white' : '',
+                textColor: '#abb2bf',
+                bubbleTextColor: msg.role === 'user' ? 'white' : '',
                 borderColor: '#444',
                 codeBlockFont: 'Courier New'
               })}
