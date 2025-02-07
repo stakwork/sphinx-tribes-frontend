@@ -36,6 +36,7 @@ import MaterialIcon from '@material/react-material-icon';
 import { EuiOverlayMask, EuiModalHeader, EuiModalFooter, EuiText } from '@elastic/eui';
 import { Box } from '@mui/system';
 import { userHasRole } from 'helpers/helpers-extended';
+import { createSocketInstance, SOCKET_MSG } from '../../config/socket.ts';
 import { useDeleteConfirmationModal } from '../../components/common';
 import {
   ActionButton,
@@ -408,6 +409,7 @@ const WorkspaceFeature = () => {
   const [editArchitecture, setEditArchitecture] = useState<boolean>(false);
   const [editRequirements, setEditRequirements] = useState<boolean>(false);
   const [displayBriefOptions, setDisplayBriefOptions] = useState<boolean>(false);
+  const [websocketSessionId, setWebsocketSessionId] = useState('');
   const [displayArchitectureOptions, setDisplayArchitectureOptions] = useState<boolean>(false);
   const [displayRequirementsOptions, setDisplayRequirementsOptions] = useState<boolean>(false);
   const [displayUserStoryOptions, setDisplayUserStoryOptions] = useState<Record<number, boolean>>(
@@ -494,6 +496,46 @@ const WorkspaceFeature = () => {
   useEffect(() => {
     getWorkspaceData();
   }, [getWorkspaceData]);
+
+  useEffect(() => {
+    let socket = createSocketInstance();
+
+    socket.onmessage = async (event: MessageEvent) => {
+      console.log('Raw websocket message received:', event.data);
+
+      try {
+        const data = JSON.parse(event.data);
+        console.log('Parsed websocket message:', data);
+
+        if (data.msg === SOCKET_MSG.user_connect) {
+          const sessionId = data.body;
+          setWebsocketSessionId(sessionId);
+          console.log(`Websocket Session ID: ${sessionId}`);
+        } else if (data.action === 'message' && data.message) {
+          await getFeatureStoryData();
+        } else if (data.action === 'process' && data.message) {
+          await getFeatureStoryData();
+        }
+      } catch (error) {
+        console.error('Error processing websocket message:', error);
+      }
+    };
+
+    socket.onclose = () => {
+      console.log('Socket disconnected user feature stories');
+    };
+
+    socket.onerror = (error: Event) => {
+      console.error('WebSocket error:', error);
+      ui.setToasts([
+        {
+          title: 'Connection Error',
+          color: 'danger',
+          text: 'Failed to connect to featureStory server'
+        }
+      ]);
+    };
+  }, [ui, getFeatureStoryData]);
 
   const getUserRoles = useCallback(
     async (user: any) => {
@@ -587,7 +629,7 @@ const WorkspaceFeature = () => {
   };
 
   const handleGenerateClick = () => {
-    history.push(`/feature/${feature_uuid}/stories`);
+    history.push(`/feature/${feature_uuid}/stories/${websocketSessionId}`);
   };
 
   const deleteUserStory = async () => {

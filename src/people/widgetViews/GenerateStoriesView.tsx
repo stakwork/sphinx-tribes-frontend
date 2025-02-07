@@ -21,7 +21,7 @@ import {
 const GenerateStoriesView: React.FC = () => {
   const history = useHistory();
   const { main } = useStores();
-  const { feature_uuid } = useParams<{ feature_uuid: string }>();
+  const { feature_uuid, socket_id } = useParams<{ feature_uuid: string; socket_id: string }>();
   const [featureName, setFeatureName] = useState<string | undefined>('');
   const [featureBrief, setFeatureBrief] = useState<string | undefined>('');
   const [mission, setMission] = useState<string | undefined>('');
@@ -52,13 +52,19 @@ const GenerateStoriesView: React.FC = () => {
     fetchData();
   }, [feature_uuid, main]);
 
+  let socketId = socket_id;
+  if (socketId === '') {
+    socketId = localStorage.getItem('websocket_token') || '';
+  }
+
   const postData = {
     productBrief: `Product: ${featureName}. \nProduct Brief: \n* Mission: ${mission} \n* Objectives: \n${tactics}`,
     featureName: featureName,
     description: featureBrief,
     examples: [],
     webhook_url: `https://${getHost()}/features/stories`,
-    featureUUID: feature_uuid ?? ''
+    featureUUID: feature_uuid ?? '',
+    sourceWebsocketId: socketId
   };
 
   const submitStories = async () => {
