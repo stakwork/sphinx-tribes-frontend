@@ -581,11 +581,13 @@ export interface FeaturedBounty {
 }
 
 export interface ConnectionCodesList {
+  id?: number;
   connection_string: string;
   pubkey: string;
   sats_amount: number;
   date_created: string;
   is_used: boolean;
+  route_hint?: string;
 }
 
 export interface ConnectionCodesListResponse {
