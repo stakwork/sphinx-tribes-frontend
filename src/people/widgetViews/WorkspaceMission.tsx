@@ -289,6 +289,32 @@ const DragIcon = styled.img`
   margin: 0;
 `;
 
+const CodeGraphDetails = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-left: 24px;
+`;
+
+const CodeGraphRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #666;
+`;
+
+const CodeGraphLabel = styled.span`
+  font-size: 0.9em;
+  min-width: 80px;
+  color: #888;
+`;
+
+const CodeGraphValue = styled.span`
+  color: #333;
+  font-size: 0.9em;
+  word-break: break-all;
+`;
+
 const WorkspaceMission = () => {
   const { main, ui } = useStores();
   const { uuid } = useParams<{ uuid: string }>();
@@ -323,6 +349,7 @@ const WorkspaceMission = () => {
   const [selectedCodeGraph, setSelectedCodeGraph] = useState<{
     name: string;
     url: string;
+    secret_alias: string;
   }>();
   const history = useHistory();
   const { chat } = useStores();
@@ -369,7 +396,8 @@ const WorkspaceMission = () => {
       if (graph) {
         setSelectedCodeGraph({
           name: graph.name,
-          url: graph.url
+          url: graph.url,
+          secret_alias: graph.secret_alias
         });
       }
       setCurrentCodeGraphUuid(graph.uuid);
@@ -383,7 +411,8 @@ const WorkspaceMission = () => {
   const closeCodeGraphModal = () => {
     setSelectedCodeGraph({
       name: '',
-      url: ''
+      url: '',
+      secret_alias: ''
     });
     setCurrentCodeGraphUuid('');
     setCodeGraphModal(false);
@@ -1177,12 +1206,23 @@ const WorkspaceMission = () => {
                               </EditPopover>
                             )}
                           </OptionsWrap>
-                          <RepoName>{graph.name} :</RepoName>
-                          <EuiToolTip position="top" content={graph.url}>
-                            <a href={graph.url} target="_blank" rel="noreferrer">
-                              {graph.url}
-                            </a>
-                          </EuiToolTip>
+                          <RepoName>{graph.name}</RepoName>
+                          <CodeGraphDetails>
+                            <CodeGraphRow>
+                              <CodeGraphLabel>URL:</CodeGraphLabel>
+                              <EuiToolTip position="top" content={graph.url}>
+                                <a href={graph.url} target="_blank" rel="noreferrer">
+                                  {graph.url}
+                                </a>
+                              </EuiToolTip>
+                            </CodeGraphRow>
+                            {graph.secret_alias && (
+                              <CodeGraphRow>
+                                <CodeGraphLabel>Secret Alias:</CodeGraphLabel>
+                                <CodeGraphValue>{graph.secret_alias}</CodeGraphValue>
+                              </CodeGraphRow>
+                            )}
+                          </CodeGraphDetails>
                         </StyledListElement>
                       ))}
                   </StyledList>
@@ -1668,7 +1708,7 @@ const WorkspaceMission = () => {
             zIndex: 20,
             maxHeight: '100%',
             borderRadius: '10px',
-            minWidth: isMobile ? '100%' : '25%',
+            minWidth: isMobile ? '100%' : '30%',
             minHeight: isMobile ? '100%' : '20%'
           }}
           overlayClick={closeCodeGraphModal}
@@ -1689,6 +1729,7 @@ const WorkspaceMission = () => {
             handleDelete={handleDeleteCodeGraph}
             name={selectedCodeGraph?.name}
             url={selectedCodeGraph?.url}
+            secret_alias={selectedCodeGraph?.secret_alias}
           />
         </Modal>
         <Modal
