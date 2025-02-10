@@ -1671,6 +1671,207 @@ describe('getUserRoles', () => {
   });
 });
 
+describe('getPeople', () => {
+  let mainStore: MainStore;
+  let fetchStub: sinon.SinonStub;
+
+  const mockPerson: Person = {
+    id: 1,
+    unique_name: 'test123',
+    owner_pubkey: 'pubkey1',
+    uuid: 'uuid1',
+    owner_alias: 'TestOwner',
+    description: 'Test Description',
+    img: 'https://example.com/test.jpg',
+    tags: ['tag1'],
+    photo_url: 'https://example.com/photo_test.jpg',
+    alias: 'Test',
+    route_hint: 'route_hint1',
+    contact_key: 'contact_key1',
+    price_to_meet: 100,
+    url: 'https://example.com/test',
+    verification_signature: 'signature1',
+    extras: {}
+  };
+
+  beforeEach(() => {
+    mainStore = new MainStore();
+    fetchStub = sinon.stub(window, 'fetch');
+    uiStore.setMeInfo(null);
+    uiStore.setSearchText('');
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  test('Standard Input with No Query Params', async () => {
+    const mockResponse = [mockPerson];
+    fetchStub.resolves({
+      ok: true,
+      json: () => Promise.resolve(mockResponse)
+    } as Response);
+
+    const result = await mainStore.getPeople();
+    expect(result).toEqual(mockResponse);
+    expect(mainStore.people).toEqual(mockResponse);
+  });
+
+  test('Standard Input with Query Params', async () => {
+    const queryParams = { limit: 10, page: 1, sortBy: 'created' };
+    const mockResponse = [mockPerson];
+    fetchStub.resolves({
+      ok: true,
+      json: () => Promise.resolve(mockResponse)
+    } as Response);
+
+    const result = await mainStore.getPeople(queryParams);
+    expect(result).toEqual(mockResponse);
+    expect(mainStore.people).toEqual(mockResponse);
+  });
+
+  test('Empty People List', async () => {
+    fetchStub.resolves({
+      ok: true,
+      json: () => Promise.resolve([])
+    } as Response);
+
+    const result = await mainStore.getPeople();
+    waitFor(() => {
+      expect(result).toEqual([]);
+      expect(mainStore.people).toEqual([]);
+    });
+  });
+
+  test('Single Person in List', async () => {
+    const mockResponse = [mockPerson];
+    fetchStub.resolves({
+      ok: true,
+      json: () => Promise.resolve(mockResponse)
+    } as Response);
+
+    const result = await mainStore.getPeople();
+    expect(result).toEqual(mockResponse);
+    expect(mainStore.people).toEqual(mockResponse);
+  });
+
+  test('Person Matching meInfo', async () => {
+    const meInfo = { ...mockPerson, id: 1 };
+    uiStore.setMeInfo(meInfo as any);
+    const mockResponse = [{ ...mockPerson, id: 1 }];
+    fetchStub.resolves({
+      ok: true,
+      json: () => Promise.resolve(mockResponse)
+    } as Response);
+
+    const result = await mainStore.getPeople();
+    expect(result[0].hide).toBe(true);
+  });
+
+  test('Invalid Query Params', async () => {
+    const invalidParams = { invalid: 'param' };
+    const mockResponse = [mockPerson];
+    fetchStub.resolves({
+      ok: true,
+      json: () => Promise.resolve(mockResponse)
+    } as Response);
+
+    const result = await mainStore.getPeople(invalidParams);
+    expect(result).toEqual(mockResponse);
+  });
+
+  test('Null uiStore.meInfo', async () => {
+    uiStore.setMeInfo(null);
+    const mockResponse = [mockPerson];
+    fetchStub.resolves({
+      ok: true,
+      json: () => Promise.resolve(mockResponse)
+    } as Response);
+
+    const result = await mainStore.getPeople();
+    waitFor(() => {
+      expect(result[0].hide).toBeUndefined();
+    });
+  });
+
+  test('Large List of People', async () => {
+    const largeMockResponse = Array.from({ length: 100 }, (_: any, i: number) => ({
+      ...mockPerson,
+      id: i + 1,
+      uuid: `uuid${i + 1}`
+    }));
+    fetchStub.resolves({
+      ok: true,
+      json: () => Promise.resolve(largeMockResponse)
+    } as Response);
+
+    const result = await mainStore.getPeople();
+    waitFor(() => {
+      expect(result.length).toBe(100);
+      expect(mainStore.people.length).toBe(100);
+    });
+  });
+
+  test('Reset Page Parameter', async () => {
+    const mockResponse = [mockPerson];
+    fetchStub.resolves({
+      ok: true,
+      json: () => Promise.resolve(mockResponse)
+    } as Response);
+
+    const result = await mainStore.getPeople({ resetPage: true });
+    expect(result).toEqual(mockResponse);
+    expect(uiStore.peoplePageNumber).toBe(1);
+  });
+
+  test('Merge People Lists', async () => {
+    mainStore.setPeople([{ ...mockPerson, id: 1, uuid: 'uuid1' }]);
+
+    const newPerson = { ...mockPerson, id: 2, uuid: 'uuid2' };
+    fetchStub.resolves({
+      ok: true,
+      json: () => Promise.resolve([newPerson])
+    } as Response);
+
+    const result = await mainStore.getPeople({ resetPage: false });
+    waitFor(() => {
+      expect(mainStore.people.length).toBe(2);
+      expect(result).toEqual([newPerson]);
+    });
+  });
+
+  test('No searchText in uiStore', async () => {
+    uiStore.setSearchText('');
+    const mockResponse = [mockPerson];
+    fetchStub.resolves({
+      ok: true,
+      json: () => Promise.resolve(mockResponse)
+    } as Response);
+
+    const result = await mainStore.getPeople();
+    expect(result).toEqual(mockResponse);
+  });
+
+  test('Multiple People Matching meInfo', async () => {
+    const meInfo = { ...mockPerson, id: 1 };
+    uiStore.setMeInfo(meInfo as any);
+
+    const mockResponse = [
+      { ...mockPerson, id: 1 },
+      { ...mockPerson, id: 1, uuid: 'uuid2' }
+    ];
+    fetchStub.resolves({
+      ok: true,
+      json: () => Promise.resolve(mockResponse)
+    } as Response);
+
+    const result = await mainStore.getPeople();
+    waitFor(() => {
+      expect(result.filter((p: Person) => p.hide).length).toBe(2);
+    });
+  });
+});
+
 describe('setDropDownWorkspaces', () => {
   let mainStore: MainStore;
 
