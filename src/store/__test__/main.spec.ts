@@ -2959,3 +2959,321 @@ describe('setAssignInvoice Tests', () => {
     });
   });
 });
+
+describe('saveProfile', () => {
+  let mainStore: MainStore;
+  const mockMeInfo = {
+    id: 1,
+    tribe_jwt: 'test_jwt',
+    alias: 'test_user'
+  };
+
+  beforeEach(() => {
+    mainStore = new MainStore();
+    uiStore.setMeInfo(mockMeInfo as any);
+    jest.clearAllMocks();
+  });
+
+  it('should convert price_to_meet to an integer and save profile successfully', async () => {
+    const mockResponse = { status: 200, json: () => Promise.resolve({ id: 1, name: 'Test' }) };
+    mainStore.saveBountyPerson = jest.fn().mockResolvedValue(mockResponse);
+    mainStore.getSelf = jest.fn();
+
+    await mainStore.saveProfile({ price_to_meet: '100' });
+
+    waitFor(() => {
+      expect(mainStore.saveBountyPerson).toHaveBeenCalledWith({ price_to_meet: 100 });
+      expect(uiStore.meInfo).toEqual({ ...mockMeInfo, id: 1, name: 'Test' });
+    });
+  });
+
+  it('should handle valid input without price_to_meet', async () => {
+    const mockResponse = { status: 200, json: () => Promise.resolve({ id: 1 }) };
+    mainStore.saveBountyPerson = jest.fn().mockResolvedValue(mockResponse);
+
+    await mainStore.saveProfile({ name: 'Test User' });
+
+    waitFor(() => {
+      expect(mainStore.saveBountyPerson).toHaveBeenCalledWith({ name: 'Test User' });
+    });
+  });
+
+  it('should handle empty body and return early', async () => {
+    mainStore.saveBountyPerson = jest.fn();
+
+    await mainStore.saveProfile(null);
+
+    expect(mainStore.saveBountyPerson).not.toHaveBeenCalled();
+  });
+
+  it('should handle non-numeric price_to_meet', async () => {
+    const mockResponse = { status: 200, json: () => Promise.resolve({}) };
+    mainStore.saveBountyPerson = jest.fn().mockResolvedValue(mockResponse);
+
+    await mainStore.saveProfile({ price_to_meet: 'invalid' });
+
+    waitFor(() => {
+      expect(mainStore.saveBountyPerson).toHaveBeenCalledWith({ price_to_meet: NaN });
+    });
+  });
+
+  it('should handle negative price_to_meet', async () => {
+    const mockResponse = { status: 200, json: () => Promise.resolve({}) };
+    mainStore.saveBountyPerson = jest.fn().mockResolvedValue(mockResponse);
+
+    await mainStore.saveProfile({ price_to_meet: '-100' });
+
+    waitFor(() => {
+      expect(mainStore.saveBountyPerson).toHaveBeenCalledWith({ price_to_meet: -100 });
+    });
+  });
+
+  it('should return null if uiStore.meInfo is null', async () => {
+    uiStore.setMeInfo(null);
+    mainStore.saveBountyPerson = jest.fn();
+
+    const result = await mainStore.saveProfile({ name: 'Test' });
+
+    expect(result).toBeNull();
+    expect(mainStore.saveBountyPerson).not.toHaveBeenCalled();
+  });
+
+  it('should handle saveBountyPerson returning null', async () => {
+    mainStore.saveBountyPerson = jest.fn().mockResolvedValue(null);
+
+    await mainStore.saveProfile({ name: 'Test' });
+
+    waitFor(() => {
+      expect(uiStore.toasts[0]).toEqual({
+        id: '1',
+        title: 'Profile saving failed'
+      });
+    });
+  });
+
+  it('should handle saveBountyPerson throwing an error', async () => {
+    mainStore.saveBountyPerson = jest.fn().mockRejectedValue(new Error('Network error'));
+
+    await mainStore.saveProfile({ name: 'Test' });
+
+    waitFor(() => {
+      expect(uiStore.toasts[0]).toEqual({
+        id: '1',
+        title: 'Failed to save profile'
+      });
+    });
+  });
+
+  it('should handle response status not 200', async () => {
+    const mockResponse = { status: 400 };
+    mainStore.saveBountyPerson = jest.fn().mockResolvedValue(mockResponse);
+
+    await mainStore.saveProfile({ name: 'Test' });
+
+    waitFor(() => {
+      expect(mainStore.getSelf).not.toHaveBeenCalled();
+    });
+  });
+
+  it('should handle large body object', async () => {
+    const mockResponse = { status: 200, json: () => Promise.resolve({}) };
+    mainStore.saveBountyPerson = jest.fn().mockResolvedValue(mockResponse);
+
+    const largeBody = {
+      name: 'Test',
+      price_to_meet: '1000',
+      description: 'x'.repeat(1000),
+      tags: Array(100).fill('tag'),
+      metadata: { key: 'x'.repeat(1000) }
+    };
+
+    await mainStore.saveProfile(largeBody);
+
+    waitFor(() => {
+      expect(mainStore.saveBountyPerson).toHaveBeenCalledWith({
+        ...largeBody,
+        price_to_meet: 1000
+      });
+    });
+  });
+
+  it('should convert float string price_to_meet to integer', async () => {
+    const mockResponse = { status: 200, json: () => Promise.resolve({}) };
+    mainStore.saveBountyPerson = jest.fn().mockResolvedValue(mockResponse);
+
+    await mainStore.saveProfile({ price_to_meet: '100.75' });
+
+    waitFor(() => {
+      expect(mainStore.saveBountyPerson).toHaveBeenCalledWith({ price_to_meet: 100 });
+    });
+  });
+
+  it('should handle large integer string price_to_meet', async () => {
+    const mockResponse = { status: 200, json: () => Promise.resolve({}) };
+    mainStore.saveBountyPerson = jest.fn().mockResolvedValue(mockResponse);
+
+    await mainStore.saveProfile({ price_to_meet: '999999999' });
+    waitFor(() => {
+      expect(mainStore.saveBountyPerson).toHaveBeenCalledWith({ price_to_meet: 999999999 });
+    });
+  });
+
+  it('should ignore unrelated fields in body', async () => {
+    const mockResponse = { status: 200, json: () => Promise.resolve({ id: 1 }) };
+    mainStore.saveBountyPerson = jest.fn().mockResolvedValue(mockResponse);
+
+    const body = {
+      name: 'Test',
+      price_to_meet: '100',
+      _internal: 'should be ignored',
+      __proto__: { malicious: true }
+    };
+
+    await mainStore.saveProfile(body);
+
+    waitFor(() => {
+      expect(mainStore.saveBountyPerson).toHaveBeenCalledWith({
+        name: 'Test',
+        price_to_meet: 100
+      });
+    });
+  });
+});
+
+describe('MainStore.setPeople', () => {
+  let mainStore: MainStore;
+
+  beforeEach(() => {
+    mainStore = new MainStore();
+  });
+
+  const validPerson: Person = {
+    id: 1,
+    unique_name: 'test123',
+    owner_pubkey: 'pubkey1',
+    uuid: 'uuid1',
+    owner_alias: 'TestOwner',
+    description: 'Test Description',
+    img: 'https://example.com/test.jpg',
+    tags: ['tag1'],
+    photo_url: 'https://example.com/photo_test.jpg',
+    alias: 'Test',
+    route_hint: 'route_hint1',
+    contact_key: 'contact_key1',
+    price_to_meet: 100,
+    url: 'https://example.com/test',
+    verification_signature: 'signature1',
+    extras: {}
+  };
+
+  it('should handle standard input', () => {
+    const input = [validPerson];
+    mainStore.setPeople(input);
+    expect(mainStore.people).toEqual(input);
+  });
+
+  it('should handle empty array', () => {
+    const input: Person[] = [];
+    mainStore.setPeople(input);
+    expect(mainStore.people).toEqual([]);
+  });
+
+  it('should handle single element array', () => {
+    const input = [validPerson];
+    mainStore.setPeople(input);
+    expect(mainStore.people).toEqual(input);
+  });
+
+  it('should handle large array', () => {
+    const input = Array.from({ length: 1000 }, (_: any, i: number) => ({
+      ...validPerson,
+      id: i,
+      unique_name: `test${i}`
+    }));
+    mainStore.setPeople(input);
+    expect(mainStore.people).toEqual(input);
+  });
+
+  it('should throw error for null input', () => {
+    expect(() => mainStore.setPeople(null as any)).toThrow(
+      'Input must be an array of Person objects.'
+    );
+  });
+
+  it('should throw error for invalid data type', () => {
+    expect(() => mainStore.setPeople('not an array' as any)).toThrow(
+      'Input must be an array of Person objects.'
+    );
+  });
+
+  it('should throw error for array with invalid elements', () => {
+    const invalidInput = [validPerson, { name: 'Invalid Person' }];
+    expect(() => mainStore.setPeople(invalidInput as any)).toThrow(
+      'Each item in the array must be a valid Person object.'
+    );
+  });
+
+  it('should handle array with duplicate entries', () => {
+    const input = [validPerson, { ...validPerson }];
+    mainStore.setPeople(input);
+    expect(mainStore.people).toEqual(input);
+  });
+
+  it('should handle array with complex objects', () => {
+    const complexPerson = {
+      ...validPerson,
+      extras: {
+        skills: ['JavaScript', 'TypeScript'],
+        languages: ['English', 'Spanish'],
+        certifications: ['AWS', 'Azure']
+      }
+    };
+    const input = [complexPerson];
+    mainStore.setPeople(input as any);
+    expect(mainStore.people).toEqual(input);
+  });
+
+  it('should handle stress test with maximum capacity', () => {
+    const input = Array.from({ length: 10000 }, (_: any, i: number) => ({
+      ...validPerson,
+      id: i,
+      unique_name: `test${i}`
+    }));
+
+    const start = performance.now();
+    mainStore.setPeople(input);
+    const end = performance.now();
+    const executionTime = end - start;
+
+    waitFor(() => {
+      expect(mainStore.people).toEqual(input);
+      expect(executionTime).toBeLessThan(1000);
+    });
+  });
+
+  it('should throw error for array with mixed validity', () => {
+    const mixedInput = [validPerson, { id: 2 }, undefined, null];
+    expect(() => mainStore.setPeople(mixedInput as any)).toThrow(
+      'Each item in the array must be a valid Person object.'
+    );
+  });
+
+  it('should handle array with edge age values', () => {
+    const edgeCases = [
+      {
+        ...validPerson,
+        id: Number.MAX_SAFE_INTEGER
+      },
+      {
+        ...validPerson,
+        id: Number.MIN_SAFE_INTEGER
+      },
+      {
+        ...validPerson,
+        id: 0
+      }
+    ];
+    mainStore.setPeople(edgeCases);
+    expect(mainStore.people).toEqual(edgeCases);
+  });
+});
