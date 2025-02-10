@@ -47,6 +47,8 @@ interface WorkspacePlannerHeaderProps {
   setFilterToggle: (a: boolean) => void;
   searchText: string;
   setSearchText: React.Dispatch<React.SetStateAction<string>>;
+  inverseSearch: boolean;
+  onToggleInverse: () => void;
 }
 
 interface FeatureOption {
@@ -216,7 +218,9 @@ export const WorkspacePlannerHeader = observer(
     filterToggle,
     setFilterToggle,
     searchText,
-    setSearchText
+    setSearchText,
+    inverseSearch,
+    onToggleInverse
   }: WorkspacePlannerHeaderProps) => {
     const { main, ui } = useStores();
     const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
@@ -248,10 +252,6 @@ export const WorkspacePlannerHeader = observer(
       setSearchText('');
       bountyCardStore.clearSearch();
       bountyCardStore.loadWorkspaceBounties();
-    };
-
-    const handleToggleInverse = () => {
-      bountyCardStore.toggleInverseSearch();
     };
 
     useEffect(() => {
@@ -731,8 +731,8 @@ export const WorkspacePlannerHeader = observer(
                 value={searchText}
                 onChange={handleSearchChange}
                 onClear={handleClearSearch}
-                inverseSearch={bountyCardStore.inverseSearch}
-                onToggleInverse={handleToggleInverse}
+                inverseSearch={inverseSearch}
+                onToggleInverse={onToggleInverse}
               />
             </FiltersRight>
           </Filters>
