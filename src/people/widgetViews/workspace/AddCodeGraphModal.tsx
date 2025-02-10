@@ -68,6 +68,7 @@ interface AddCodeGraphProps {
   currentUuid?: string;
   name?: string;
   url?: string;
+  secret_alias?: string;
 }
 
 const AddCodeGraph: React.FC<AddCodeGraphProps> = ({
@@ -78,15 +79,24 @@ const AddCodeGraph: React.FC<AddCodeGraphProps> = ({
   currentUuid,
   handleDelete,
   name = '',
-  url = ''
+  url = '',
+  secret_alias = ''
 }: AddCodeGraphProps) => {
   const [graphName, setGraphName] = useState(name);
   const [graphNameError, setGraphNameError] = useState(false);
   const [graphUrl, setGraphUrl] = useState(url);
   const [graphUrlError, setGraphUrlError] = useState(false);
+  const [secretAlias, setSecretAlias] = useState(secret_alias);
+  const [secretAliasError, setSecretAliasError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { main } = useStores();
   const [toasts, setToasts] = useState<Toast[]>([]);
+
+  const handleSecretAliasChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setSecretAlias(newValue);
+    setSecretAliasError(!newValue.match(/^{{.*}}$/));
+  };
 
   const handleGraphNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
@@ -137,7 +147,8 @@ const AddCodeGraph: React.FC<AddCodeGraphProps> = ({
         workspace_uuid,
         uuid: currentUuid || '',
         name: normalizeInput(graphName),
-        url: graphUrl
+        url: graphUrl,
+        secret_alias: secretAlias
       };
 
       await main.createOrUpdateCodeGraph(codeGraph);
@@ -184,6 +195,19 @@ const AddCodeGraph: React.FC<AddCodeGraphProps> = ({
             style={{ borderColor: graphUrlError ? errcolor : '' }}
           />
         </WorkspaceInputContainer>
+        <WorkspaceInputContainer feature={true} style={{ color: secretAliasError ? errcolor : '' }}>
+          <WorkspaceLabel style={{ color: secretAliasError ? errcolor : '' }}>
+            Secret Alias *
+          </WorkspaceLabel>
+          <TextInput
+            placeholder="{{2b_SWARm38}}"
+            value={secretAlias}
+            feature={true}
+            data-testid="secret-alias-input"
+            onChange={handleSecretAliasChange}
+            style={{ borderColor: secretAliasError ? errcolor : '' }}
+          />
+        </WorkspaceInputContainer>
       </WorkspaceDetailsContainer>
       <FooterContainer>
         <ButtonWrap>
@@ -191,7 +215,7 @@ const AddCodeGraph: React.FC<AddCodeGraphProps> = ({
             Cancel
           </ActionButton>
           <ActionButton
-            disabled={graphNameError || !graphName || !graphUrl}
+            disabled={graphNameError || secretAliasError || !graphName || !graphUrl || !secretAlias}
             data-testid="add-codegraph-btn"
             color="primary"
             onClick={handleSave}
