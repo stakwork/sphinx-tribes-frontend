@@ -513,6 +513,7 @@ export interface CodeGraph {
   workspace_uuid: string;
   name: string;
   url: string;
+  secret_alias: string;
   created?: string;
   updated?: string;
 }
