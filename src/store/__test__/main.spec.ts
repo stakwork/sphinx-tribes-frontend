@@ -2095,6 +2095,206 @@ describe('MainStore.setPersonBounties', () => {
   });
 });
 
+describe('getBadgeList', () => {
+  let mainStore: MainStore;
+  let fetchStub: sinon.SinonStub;
+  const URL = 'https://liquid.sphinx.chat';
+
+  beforeEach(() => {
+    mainStore = new MainStore();
+    fetchStub = sinon.stub(window, 'fetch');
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it('should successfully fetch and parse badge list', async () => {
+    const mockBadges = [
+      { id: 1, name: 'Badge 1' },
+      { id: 2, name: 'Badge 2' }
+    ];
+
+    fetchStub.resolves({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve(mockBadges)
+    } as Response);
+
+    const result = await mainStore.getBadgeList();
+
+    waitFor(() => {
+      expect(fetchStub.calledOnce).toBe(true);
+      expect(fetchStub.firstCall.args[0]).toBe(`${URL}/list?limit=100000`);
+      expect(result).toEqual(mockBadges);
+      expect(uiStore.setBadgeList).toHaveBeenCalledWith(mockBadges);
+    });
+  });
+
+  it('should handle empty badge list', async () => {
+    fetchStub.resolves({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve([])
+    } as Response);
+
+    const result = await mainStore.getBadgeList();
+
+    waitFor(() => {
+      expect(result).toEqual([]);
+      expect(uiStore.setBadgeList).toHaveBeenCalledWith([]);
+    });
+  });
+
+  it('should handle large badge list', async () => {
+    const largeBadgeList = Array.from({ length: 10000 }, (_: any, i: number) => ({
+      id: i,
+      name: `Badge ${i}`
+    }));
+
+    fetchStub.resolves({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve(largeBadgeList)
+    } as Response);
+
+    const result = await mainStore.getBadgeList();
+
+    waitFor(() => {
+      expect(result).toEqual(largeBadgeList);
+      expect(result.length).toBe(10000);
+      expect(uiStore.setBadgeList).toHaveBeenCalledWith(largeBadgeList);
+    });
+  });
+
+  it('should handle network error', async () => {
+    fetchStub.rejects(new Error('Network error'));
+
+    const result = await mainStore.getBadgeList();
+
+    waitFor(() => {
+      expect(result).toBeUndefined();
+      expect(uiStore.setBadgeList).not.toHaveBeenCalled();
+    });
+  });
+
+  it('should handle invalid JSON response', async () => {
+    fetchStub.resolves({
+      ok: true,
+      status: 200,
+      json: () => Promise.reject(new Error('Invalid JSON'))
+    } as Response);
+
+    const result = await mainStore.getBadgeList();
+
+    waitFor(() => {
+      expect(result).toBeUndefined();
+      expect(uiStore.setBadgeList).not.toHaveBeenCalled();
+    });
+  });
+
+  it('should handle non-200 HTTP status code', async () => {
+    fetchStub.resolves({
+      ok: false,
+      status: 404,
+      json: () => Promise.resolve({ error: 'Not found' })
+    } as Response);
+
+    const result = await mainStore.getBadgeList();
+
+    waitFor(() => {
+      expect(result).toBeUndefined();
+      expect(uiStore.setBadgeList).not.toHaveBeenCalled();
+    });
+  });
+
+  it('should handle request timeout', async () => {
+    fetchStub.rejects(new Error('TimeoutError'));
+
+    const result = await mainStore.getBadgeList();
+
+    waitFor(() => {
+      expect(result).toBeUndefined();
+      expect(uiStore.setBadgeList).not.toHaveBeenCalled();
+    });
+  });
+
+  it('should handle malformed badge data', async () => {
+    const malformedBadges = [{ id: 1 }, { name: 'Badge 2' }, null, undefined, {}];
+
+    fetchStub.resolves({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve(malformedBadges)
+    } as Response);
+
+    const result = await mainStore.getBadgeList();
+
+    waitFor(() => {
+      expect(result).toEqual(malformedBadges);
+      expect(uiStore.setBadgeList).toHaveBeenCalledWith(malformedBadges);
+    });
+  });
+
+  it('should handle server error (500)', async () => {
+    fetchStub.resolves({
+      ok: false,
+      status: 500,
+      json: () => Promise.resolve({ error: 'Internal server error' })
+    } as Response);
+
+    const result = await mainStore.getBadgeList();
+
+    waitFor(() => {
+      expect(result).toBeUndefined();
+      expect(uiStore.setBadgeList).not.toHaveBeenCalled();
+    });
+  });
+
+  it('should handle unauthorized access (401)', async () => {
+    fetchStub.resolves({
+      ok: false,
+      status: 401,
+      json: () => Promise.resolve({ error: 'Unauthorized' })
+    } as Response);
+
+    const result = await mainStore.getBadgeList();
+
+    waitFor(() => {
+      expect(result).toBeUndefined();
+      expect(uiStore.setBadgeList).not.toHaveBeenCalled();
+    });
+  });
+
+  it('should handle AbortSignal timeout', async () => {
+    fetchStub.rejects(new Error('The operation was aborted'));
+
+    const result = await mainStore.getBadgeList();
+
+    waitFor(() => {
+      expect(result).toBeUndefined();
+      expect(uiStore.setBadgeList).not.toHaveBeenCalled();
+    });
+  });
+
+  it('should make request with correct parameters', async () => {
+    fetchStub.resolves({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve([])
+    } as Response);
+
+    await mainStore.getBadgeList();
+
+    waitFor(() => {
+      expect(fetchStub.firstCall.args[1]).toEqual({
+        method: 'GET',
+        signal: expect.any(AbortSignal)
+      });
+    });
+  });
+});
+
 describe('MainStore.setPeopleBounties', () => {
   let mainStore: MainStore;
 
