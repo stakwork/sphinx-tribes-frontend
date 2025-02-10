@@ -148,6 +148,7 @@ const HeroSection: React.FC = () => {
         <VideoContainer>
           <video
             autoPlay
+            muted
             loop
             controls
             playsInline

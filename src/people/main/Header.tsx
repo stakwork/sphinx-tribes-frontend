@@ -143,7 +143,8 @@ const MTab = styled(Link)<TagProps>`
   }
 `;
 
-const LoggedInBtn = styled.div`
+const LoggedInBtn = styled.button`
+  all: unset;
   max-width: 130px;
   height: 40px;
   border-radius: 50%;
@@ -206,7 +207,7 @@ const GetSphinxsBtn = styled.button`
   }
 `;
 
-const LoginBtn = styled.div`
+const LoginBtn = styled.button`
   display: flex;
   flex-wrap: nowrap;
   width: 120px;
@@ -218,6 +219,8 @@ const LoginBtn = styled.div`
   line-height: 17px;
   cursor: pointer;
   margin-left: 18px;
+  background: transparent;
+  border: none;
   span {
     margin-right: 8px;
   }
@@ -361,7 +364,12 @@ function Header() {
           <div className="container">
             <Row style={{ justifyContent: 'space-between' }}>
               <EuiHeaderSection grow={false}>
-                <Img src="/static/people_logo.svg" style={{ width: 190 }} />
+                <Img
+                  src="/static/people_logo.svg"
+                  style={{ width: 190 }}
+                  role="img"
+                  aria-label="Sphinx Community"
+                />
               </EuiHeaderSection>
 
               <Corner>
@@ -387,6 +395,8 @@ function Header() {
                     onClick={() => {
                       goToEditSelf();
                     }}
+                    role="button"
+                    tabIndex={0}
                   />
                 ) : (
                   <Button
@@ -460,7 +470,7 @@ function Header() {
         >
           <Row style={{ height: '100%', marginBottom: '-2px', flex: 2 }}>
             <EuiHeaderSection grow={false}>
-              <Img src="/static/people_logo.svg" />
+              <Img src="/static/people_logo.svg" role="img" aria-label="Sphinx Community" />
             </EuiHeaderSection>
 
             <Tabs>
@@ -542,7 +552,12 @@ function Header() {
             ) : (
               <LoginBtn onClick={() => ui.setShowSignIn(true)}>
                 <span>Sign in</span>
-                <MaterialIcon icon={'login'} style={{ fontSize: 18 }} />
+                <MaterialIcon
+                  icon={'login'}
+                  style={{ fontSize: 18 }}
+                  role="img"
+                  aria-hidden="true"
+                />
               </LoginBtn>
             )}
           </Corner>

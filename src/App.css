@@ -51,8 +51,14 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
-button:focus {
-  outline: none !important;
+/* Default focus style for all buttons */
+button:focus-visible {
+  outline: 2px solid #608aff !important; /* Solid blue outline for high contrast */
+  outline-offset: 2px;
+  box-shadow: 0 0 8px rgba(96, 138, 255, 0.5); /* Blue glow for visibility */
+  transition:
+    box-shadow 0.2s ease,
+    outline 0.2s ease;
 }
 
 .app {

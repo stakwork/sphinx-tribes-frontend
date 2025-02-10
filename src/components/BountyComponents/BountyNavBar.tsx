@@ -71,7 +71,7 @@ const Corner = styled.div`
   align-items: center;
 `;
 
-const LoginBtn = styled.div<{ isMobile?: boolean }>`
+const LoginBtn = styled.button<{ isMobile?: boolean }>`
   display: flex;
   flex-wrap: nowrap;
   width: ${(props: any) => (props.isMobile ? '100%' : '120px')};
@@ -84,6 +84,8 @@ const LoginBtn = styled.div<{ isMobile?: boolean }>`
   line-height: 17px;
   margin: ${(props: any) => (props.isMobile ? '0' : '0 0 0 18px')};
   padding: ${(props: any) => (props.isMobile ? '10px 0' : '0')};
+  background: transparent;
+  border: none;
 
   span {
     margin-right: 8px;
@@ -116,7 +118,8 @@ const Alias = styled.span<{ isMobile?: boolean }>`
   margin-left: ${(props: any) => (props.isMobile ? '5px' : '0')};
 `;
 
-const LoggedInBtn = styled.div<{ isMobile?: boolean }>`
+const LoggedInBtn = styled.button<{ isMobile?: boolean }>`
+  all: unset;
   max-width: ${(props: any) => (props.isMobile ? '50%' : '130px')};
   height: 40px;
   border-radius: 32px;
@@ -363,7 +366,12 @@ const BountyNavBar: React.FC = () => {
             ) : (
               <LoginBtn onClick={handleLoginClick}>
                 <span>Sign in</span>
-                <MaterialIcon icon={'login'} style={{ fontSize: 18 }} />
+                <MaterialIcon
+                  icon={'login'}
+                  style={{ fontSize: 18 }}
+                  role="img"
+                  aria-hidden="true"
+                />
               </LoginBtn>
             )}
           </Corner>
@@ -390,7 +398,12 @@ const BountyNavBar: React.FC = () => {
             ) : (
               <LoginBtn onClick={handleLoginClick} isMobile={true}>
                 <span>Sign in</span>
-                <MaterialIcon icon={'login'} style={{ fontSize: 18 }} />
+                <MaterialIcon
+                  icon={'login'}
+                  style={{ fontSize: 18 }}
+                  role="img"
+                  aria-hidden="true"
+                />
               </LoginBtn>
             )}
           </Corner>
