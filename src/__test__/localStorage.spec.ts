@@ -303,7 +303,6 @@ describe('Local Storage', () => {
     });
 
     it('should remove item from large store', () => {
-      // Populate store with many items
       for (let i = 0; i < 10000; i++) {
         localStorageMock.setItem(`key${i}`, `value${i}`);
       }
@@ -342,6 +341,161 @@ describe('Local Storage', () => {
       waitFor(() => {
         expect(localStorageMock.getItem(symbolKey.toString())).toBeUndefined();
       });
+    });
+  });
+
+  describe('getAll', () => {
+    it('should return empty object for empty store', () => {
+      expect(localStorageMock.getAll()).toEqual({});
+    });
+
+    it('should return all items in non-empty store', () => {
+      localStorageMock.setItem('key1', 'value1');
+      localStorageMock.setItem('key2', 'value2');
+
+      expect(localStorageMock.getAll()).toEqual({
+        key1: 'value1',
+        key2: 'value2'
+      });
+    });
+
+    it('should handle large store', () => {
+      const expectedStore = {};
+
+      for (let i = 0; i < 1000; i++) {
+        localStorageMock.setItem(`key${i}`, `value${i}`);
+        expectedStore[`key${i}`] = `value${i}`;
+      }
+
+      expect(localStorageMock.getAll()).toEqual(expectedStore);
+    });
+
+    it('should handle nested objects', () => {
+      const nestedObj = {
+        level1: {
+          level2: {
+            level3: 'deep value'
+          },
+          array: [1, 2, { nested: 'array value' }]
+        }
+      };
+
+      localStorageMock.setItem('nested', nestedObj);
+      expect(localStorageMock.getAll()).toEqual({ nested: nestedObj });
+    });
+
+    it('should handle circular references', () => {
+      const circularObj: any = { name: 'circular' };
+      circularObj.self = circularObj;
+
+      localStorageMock.setItem('circular', circularObj);
+      const result: Record<string, any> = localStorageMock.getAll();
+
+      expect(result.circular.name).toBe('circular');
+      expect(result.circular.self).toBe(result.circular);
+    });
+
+    it('should handle null values', () => {
+      localStorageMock.setItem('nullKey', null);
+      expect(localStorageMock.getAll()).toEqual({ nullKey: null });
+    });
+
+    it('should handle undefined values', () => {
+      localStorageMock.setItem('undefinedKey', undefined);
+      expect(localStorageMock.getAll()).toEqual({ undefinedKey: undefined });
+    });
+
+    it('should handle maximum capacity store', () => {
+      const largeString = 'x'.repeat(1024 * 1024);
+      localStorageMock.setItem('largeKey', largeString);
+
+      expect(localStorageMock.getAll()).toEqual({ largeKey: largeString });
+    });
+
+    it('should handle special characters in keys and values', () => {
+      const specialChars = {
+        '!@#$%^&*()': '特殊字符',
+        'emoji🎉': '🌟✨⭐️',
+        'unicode™': 'über'
+      };
+
+      Object.entries(specialChars).forEach(([key, value]: [string, string]) => {
+        localStorageMock.setItem(key, value);
+      });
+
+      expect(localStorageMock.getAll()).toEqual(specialChars);
+    });
+
+    it('should handle different data types', () => {
+      const testData: Record<string, any> = {
+        string: 'text',
+        number: 123,
+        boolean: true,
+        array: [1, 2, 3],
+        object: { key: 'value' },
+        null: null,
+        undefined: undefined,
+        date: new Date('2024-01-01'),
+        regexp: /test/,
+        function: function () {
+          return 'test';
+        }.toString()
+      };
+
+      Object.entries(testData).forEach(([key, value]: [string, any]) => {
+        localStorageMock.setItem(key, value);
+      });
+
+      expect(localStorageMock.getAll()).toEqual(testData);
+    });
+
+    it('should handle immutable data structures', () => {
+      const frozenObj = Object.freeze({ frozen: true });
+      const sealedObj = Object.seal({ sealed: true });
+      const nonExtensibleObj = Object.preventExtensions({ nonExtensible: true });
+
+      localStorageMock.setItem('frozen', frozenObj);
+      localStorageMock.setItem('sealed', sealedObj);
+      localStorageMock.setItem('nonExtensible', nonExtensibleObj);
+
+      const result: Record<string, any> = localStorageMock.getAll();
+      expect(result).toEqual({
+        frozen: frozenObj,
+        sealed: sealedObj,
+        nonExtensible: nonExtensibleObj
+      });
+
+      expect(Object.isFrozen(result.frozen)).toBe(true);
+      expect(Object.isSealed(result.sealed)).toBe(true);
+      expect(Object.isExtensible(result.nonExtensible)).toBe(false);
+    });
+
+    it('should return a new object instance each time', () => {
+      localStorageMock.setItem('key', 'value');
+      const result1 = localStorageMock.getAll();
+      const result2 = localStorageMock.getAll();
+
+      waitFor(() => {
+        expect(result1).toEqual(result2);
+        expect(result1).not.toBe(result2);
+      });
+    });
+
+    it('should reflect changes to store', () => {
+      localStorageMock.setItem('key1', 'value1');
+      expect(localStorageMock.getAll()).toEqual({ key1: 'value1' });
+
+      localStorageMock.setItem('key2', 'value2');
+      expect(localStorageMock.getAll()).toEqual({
+        key1: 'value1',
+        key2: 'value2'
+      });
+
+      localStorageMock.removeItem('key1');
+      expect(localStorageMock.getAll()).toEqual({ key2: 'value2' });
+
+      localStorageMock.clear();
+      expect(localStorageMock.getAll()).toEqual({});
     });
   });
 });
