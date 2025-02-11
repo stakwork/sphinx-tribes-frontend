@@ -23,7 +23,8 @@ import {
   normalizeInput,
   normalizeTextValue,
   normalizeUrl,
-  ManageBountiesGroup
+  ManageBountiesGroup,
+  formatRelayPerson
 } from '../helpers-extended';
 
 beforeAll(() => {
@@ -772,6 +773,214 @@ describe('testing helpers', () => {
       }));
 
       expect(userHasManageBountyRoles(bountyRoles, userRoles)).toBe(false);
+    });
+  });
+
+  describe('formatRelayPerson', () => {
+    test('Standard Input - should format complete person object correctly', () => {
+      const input = {
+        owner_pubkey: 'pub123',
+        alias: 'testAlias',
+        contact_key: 'contact123',
+        route_hint: 'hint123',
+        description: 'test description',
+        extras: { key: 'value' },
+        price_to_meet: 1000,
+        img: 'image.jpg'
+      };
+
+      const expected = {
+        owner_pubkey: 'pub123',
+        owner_alias: 'testAlias',
+        owner_contact_key: 'contact123',
+        owner_route_hint: 'hint123',
+        description: 'test description',
+        extras: { key: 'value' },
+        price_to_meet: 1000,
+        img: 'image.jpg',
+        tags: [],
+        route_hint: 'hint123'
+      };
+
+      expect(formatRelayPerson(input)).toEqual(expected);
+    });
+
+    test('Missing Optional Fields - should handle missing optional fields', () => {
+      const input = {
+        owner_pubkey: 'pub123',
+        alias: 'testAlias',
+        contact_key: 'contact123',
+        description: 'test description'
+      };
+
+      const expected = {
+        owner_pubkey: 'pub123',
+        owner_alias: 'testAlias',
+        owner_contact_key: 'contact123',
+        owner_route_hint: '',
+        description: 'test description',
+        extras: undefined,
+        price_to_meet: undefined,
+        img: undefined,
+        tags: [],
+        route_hint: undefined
+      };
+
+      expect(formatRelayPerson(input)).toEqual(expected);
+    });
+
+    test('Empty Strings and Zero Values - should handle empty strings and zero values', () => {
+      const input = {
+        owner_pubkey: '',
+        alias: '',
+        contact_key: '',
+        route_hint: '',
+        description: '',
+        extras: {},
+        price_to_meet: 0,
+        img: ''
+      };
+
+      const expected = {
+        owner_pubkey: '',
+        owner_alias: '',
+        owner_contact_key: '',
+        owner_route_hint: '',
+        description: '',
+        extras: {},
+        price_to_meet: 0,
+        img: '',
+        tags: [],
+        route_hint: ''
+      };
+
+      expect(formatRelayPerson(input)).toEqual(expected);
+    });
+
+    test('Null Input - should handle null input gracefully', () => {
+      const input = null;
+      waitFor(() => {
+        expect(formatRelayPerson(input)).toEqual({
+          owner_pubkey: undefined,
+          owner_alias: undefined,
+          owner_contact_key: undefined,
+          owner_route_hint: '',
+          description: undefined,
+          extras: undefined,
+          price_to_meet: undefined,
+          img: undefined,
+          tags: [],
+          route_hint: undefined
+        });
+      });
+    });
+
+    test('Invalid Data Types - should handle invalid data types', () => {
+      const input = {
+        owner_pubkey: 123,
+        alias: true,
+        contact_key: {},
+        route_hint: [],
+        description: null,
+        extras: 'invalid',
+        price_to_meet: '1000',
+        img: 42
+      };
+
+      const expected = {
+        owner_pubkey: 123,
+        owner_alias: true,
+        owner_contact_key: {},
+        owner_route_hint: '',
+        description: null,
+        extras: 'invalid',
+        price_to_meet: '1000',
+        img: 42,
+        tags: [],
+        route_hint: undefined
+      };
+
+      waitFor(() => {
+        expect(formatRelayPerson(input)).toEqual(expected);
+      });
+    });
+
+    test('Large Input Data - should handle large input data', () => {
+      const largeString = 'a'.repeat(1000000);
+      const input = {
+        owner_pubkey: largeString,
+        alias: largeString,
+        contact_key: largeString,
+        route_hint: largeString,
+        description: largeString,
+        extras: { largeKey: largeString },
+        price_to_meet: Number.MAX_SAFE_INTEGER,
+        img: largeString
+      };
+
+      const expected = {
+        owner_pubkey: largeString,
+        owner_alias: largeString,
+        owner_contact_key: largeString,
+        owner_route_hint: largeString,
+        description: largeString,
+        extras: { largeKey: largeString },
+        price_to_meet: Number.MAX_SAFE_INTEGER,
+        img: largeString,
+        tags: [],
+        route_hint: largeString
+      };
+
+      expect(formatRelayPerson(input)).toEqual(expected);
+    });
+
+    test('Undefined Fields - should handle undefined fields', () => {
+      const input = {
+        owner_pubkey: undefined,
+        alias: undefined,
+        contact_key: undefined,
+        route_hint: undefined,
+        description: undefined,
+        extras: undefined,
+        price_to_meet: undefined,
+        img: undefined
+      };
+
+      const expected = {
+        owner_pubkey: undefined,
+        owner_alias: undefined,
+        owner_contact_key: undefined,
+        owner_route_hint: '',
+        description: undefined,
+        extras: undefined,
+        price_to_meet: undefined,
+        img: undefined,
+        tags: [],
+        route_hint: undefined
+      };
+
+      expect(formatRelayPerson(input)).toEqual(expected);
+    });
+
+    test('Minimal Valid Input - should handle minimal valid input', () => {
+      const input = {
+        owner_pubkey: 'pub123'
+      };
+
+      const expected = {
+        owner_pubkey: 'pub123',
+        owner_alias: undefined,
+        owner_contact_key: undefined,
+        owner_route_hint: '',
+        description: undefined,
+        extras: undefined,
+        price_to_meet: undefined,
+        img: undefined,
+        tags: [],
+        route_hint: undefined
+      };
+
+      expect(formatRelayPerson(input)).toEqual(expected);
     });
   });
 });
