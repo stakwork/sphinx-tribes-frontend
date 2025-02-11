@@ -59,6 +59,7 @@
     "bootstrap": "^4.5.0",
     "clsx": "^2.0.0",
     "compose-function": "^3.0.3",
+    "cypress-real-events": "^1.14.0",
     "date-fns": "^3.2.0",
     "dateformat": "^3.0.3",
     "elliptic": "^6.5.4",
