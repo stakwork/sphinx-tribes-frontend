@@ -32,8 +32,10 @@ const Time = styled.span`
 `;
 
 const ElapsedTimerBase: React.FC<ElapsedTimerProps> = ({ bountyId }: ElapsedTimerProps) => {
-  const [elapsedTime, setElapsedTime] = useState<string>('00h 00m');
+  const [elapsedTime, setElapsedTime] = useState<string>('00h 00m 00s');
   const [firstAssignedAt, setFirstAssignedAt] = useState<string | null>(null);
+  const [lastPowAt, setLastPowAt] = useState<string | null>(null);
+  const [isPaused, setIsPaused] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
   const timerRef = useRef<ReturnType<typeof setInterval>>();
 
@@ -45,23 +47,30 @@ const ElapsedTimerBase: React.FC<ElapsedTimerProps> = ({ bountyId }: ElapsedTime
       }
 
       try {
-        await bountyReviewStore.getTiming(bountyId);
-        const timing = bountyReviewStore.timings[bountyId];
+        const timing = await bountyReviewStore.getBountyTiming(bountyId);
 
         if (timing?.first_assigned_at) {
           setFirstAssignedAt(timing.first_assigned_at);
-          setElapsedTime(formatElapsedTime(timing.first_assigned_at));
+          setLastPowAt(timing.last_pow_at || null);
+          setIsPaused(timing.is_paused || false);
+          setElapsedTime(
+            formatElapsedTime(timing.first_assigned_at, timing.last_pow_at, timing.is_paused)
+          );
           setError(false);
         } else {
           setFirstAssignedAt(null);
-          setElapsedTime('00h 00m');
+          setLastPowAt(null);
+          setIsPaused(false);
+          setElapsedTime('00h 00m 00s');
           setError(false);
         }
       } catch (error) {
         console.error('Error fetching timing:', error);
         setError(true);
         setFirstAssignedAt(null);
-        setElapsedTime('00h 00m');
+        setLastPowAt(null);
+        setIsPaused(false);
+        setElapsedTime('00h 00m 00s');
       }
     };
 
@@ -69,7 +78,7 @@ const ElapsedTimerBase: React.FC<ElapsedTimerProps> = ({ bountyId }: ElapsedTime
   }, [bountyId]);
 
   useEffect(() => {
-    if (!firstAssignedAt) {
+    if (!firstAssignedAt || lastPowAt || isPaused) {
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
@@ -77,18 +86,18 @@ const ElapsedTimerBase: React.FC<ElapsedTimerProps> = ({ bountyId }: ElapsedTime
     }
 
     const updateTimer = () => {
-      setElapsedTime(formatElapsedTime(firstAssignedAt));
+      setElapsedTime(formatElapsedTime(firstAssignedAt, lastPowAt, isPaused));
     };
 
     updateTimer();
-    timerRef.current = setInterval(updateTimer, 60000);
+    timerRef.current = setInterval(updateTimer, 1000);
 
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
     };
-  }, [firstAssignedAt]);
+  }, [firstAssignedAt, lastPowAt, isPaused]);
 
   if (error) {
     return null;

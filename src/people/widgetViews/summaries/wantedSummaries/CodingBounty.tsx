@@ -457,6 +457,7 @@ function MobileView(props: CodingBountiesProps) {
 
   const updateCompletedStatus = async (created: number) => {
     await main.updateBountyCompletedStatus(created);
+    await bountyReviewStore.closeBountyTiming(bountyID);
     await setExtrasPropertyAndSaveMultiple('completed', {
       completed: true
     });
