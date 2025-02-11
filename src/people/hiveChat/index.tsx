@@ -608,7 +608,11 @@ export const HiveChatView: React.FC = observer(() => {
           {isChainVisible && (
             <MessageBubble isUser={false}>
               <h6>Hive - Chain of Thought</h6>
-              <p>{lastLogLine}</p>
+              <p>
+                {lastLogLine
+                  ? lastLogLine
+                  : `Hi ${ui.meInfo?.owner_alias}, I've got your message. Let me have a think.`}
+              </p>
             </MessageBubble>
           )}
         </ChatHistory>
