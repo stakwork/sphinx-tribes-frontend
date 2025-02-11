@@ -598,3 +598,41 @@ export interface ConnectionCodesListResponse {
     total: number;
   };
 }
+
+export type AuthorType = 'human' | 'hive';
+
+export type ContentType =
+  | 'feature_creation'
+  | 'story_update'
+  | 'requirement_change'
+  | 'general_update';
+
+export interface IActivity {
+  id: string;
+  threadId: string | null;
+  sequence: number;
+  contentType: ContentType;
+  content: string;
+  workspace: string;
+  featureUUID: string;
+  phaseUUID: string;
+  feedback?: string;
+  actions: string[];
+  questions: string[];
+  timeCreated: string;
+  timeUpdated: string;
+  status: string;
+  author: AuthorType;
+  authorRef: string;
+}
+
+export interface INewActivity {
+  content: string;
+  contentType: ContentType;
+  workspace: string;
+  featureUUID: string;
+  phaseUUID: string;
+  author: AuthorType;
+  authorRef: string;
+  threadId?: string;
+}
