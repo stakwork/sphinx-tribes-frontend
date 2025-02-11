@@ -3540,3 +3540,149 @@ describe('saveProfile', () => {
     });
   });
 });
+
+describe('MainStore.getBalances', () => {
+  let mainStore: MainStore;
+  let fetchStub: sinon.SinonStub;
+
+  beforeEach(() => {
+    mainStore = new MainStore();
+    fetchStub = sinon.stub(window, 'fetch');
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it('Valid Public Key', async () => {
+    const mockBalances = [{ asset: 'BTC', amount: 100 }];
+    fetchStub.resolves({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve(mockBalances)
+    } as Response);
+
+    waitFor(async () => {
+      const result = await mainStore.getBalances('validPubKey123');
+      expect(result).toEqual(mockBalances);
+    });
+  });
+
+  it('Valid Public Key with No Balances', async () => {
+    fetchStub.resolves({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve([])
+    } as Response);
+
+    waitFor(async () => {
+      const result = await mainStore.getBalances('validPubKey123');
+      expect(result).toEqual([]);
+    });
+  });
+
+  it('Empty Public Key', async () => {
+    const result = await mainStore.getBalances('');
+    expect(result).toBeUndefined();
+  });
+
+  it('Extremely Long Public Key', async () => {
+    const longPubKey = 'a'.repeat(10000);
+    const mockBalances = [{ asset: 'BTC', amount: 100 }];
+    fetchStub.resolves({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve(mockBalances)
+    } as Response);
+
+    waitFor(async () => {
+      const result = await mainStore.getBalances(longPubKey);
+      expect(result).toEqual(mockBalances);
+    });
+  });
+
+  it('Invalid Public Key Format', async () => {
+    const result = await mainStore.getBalances('invalid!@#$%');
+    expect(result).toBeUndefined();
+  });
+
+  it('Null Public Key', async () => {
+    const result = await mainStore.getBalances(null);
+    expect(result).toBeUndefined();
+  });
+
+  it('Network Error', async () => {
+    fetchStub.rejects(new Error('Network error'));
+    const result = await mainStore.getBalances('validPubKey123');
+    expect(result).toBeUndefined();
+  });
+
+  it('Non-JSON Response', async () => {
+    fetchStub.resolves({
+      ok: true,
+      status: 200,
+      json: () => Promise.reject(new Error('Invalid JSON'))
+    } as Response);
+
+    const result = await mainStore.getBalances('validPubKey123');
+    expect(result).toBeUndefined();
+  });
+
+  it('High Volume of Balances', async () => {
+    const largeBalancesArray = Array.from({ length: 1000 }, (_: any, i: number) => ({
+      asset: `Asset${i}`,
+      amount: i * 100
+    }));
+    fetchStub.resolves({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve(largeBalancesArray)
+    } as Response);
+
+    waitFor(async () => {
+      const result = await mainStore.getBalances('validPubKey123');
+      expect(result).toEqual(largeBalancesArray);
+      expect(result.length).toBe(1000);
+    });
+  });
+
+  it('Server Timeout', async () => {
+    fetchStub.rejects(new Error('TimeoutError'));
+    const result = await mainStore.getBalances('validPubKey123');
+    expect(result).toBeUndefined();
+  });
+
+  it('Server Returns Error Code', async () => {
+    fetchStub.resolves({
+      ok: false,
+      status: 500,
+      json: () => Promise.resolve({ error: 'Internal server error' })
+    } as Response);
+
+    const result = await mainStore.getBalances('validPubKey123');
+    expect(result).toBeUndefined();
+  });
+
+  it('Malformed URL', async () => {
+    const invalidPubKey = 'invalid pubkey with spaces';
+    const result = await mainStore.getBalances(invalidPubKey);
+    expect(result).toBeUndefined();
+  });
+
+  it('Unexpected Data Structure', async () => {
+    const unexpectedData = {
+      notAnArray: true,
+      someOtherField: 'value'
+    };
+    fetchStub.resolves({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve(unexpectedData)
+    } as Response);
+
+    waitFor(async () => {
+      const result = await mainStore.getBalances('validPubKey123');
+      expect(result).toEqual(unexpectedData);
+    });
+  });
+});

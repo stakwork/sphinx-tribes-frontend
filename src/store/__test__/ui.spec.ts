@@ -892,3 +892,53 @@ describe('setToasts', () => {
     expect(uiStore.toasts).toEqual(emptyToasts);
   });
 });
+
+describe('UiStore.setUsdToSatsExchangeRate', () => {
+  let uiStore: UiStore;
+
+  beforeEach(() => {
+    uiStore = new UiStore();
+  });
+
+  it('Basic Functionality: Positive Integer', () => {
+    uiStore.setUsdToSatsExchangeRate(100);
+    expect(uiStore.usdToSatsExchangeRate).toBe(100);
+  });
+
+  it('Basic Functionality: Zero', () => {
+    uiStore.setUsdToSatsExchangeRate(0);
+    expect(uiStore.usdToSatsExchangeRate).toBe(0);
+  });
+
+  it('Basic Functionality: Negative Integer', () => {
+    uiStore.setUsdToSatsExchangeRate(-100);
+    expect(uiStore.usdToSatsExchangeRate).toBe(-100);
+  });
+
+  it('Edge Case: Very Large Number', () => {
+    const largeNumber = Number.MAX_SAFE_INTEGER;
+    uiStore.setUsdToSatsExchangeRate(largeNumber);
+    expect(uiStore.usdToSatsExchangeRate).toBe(largeNumber);
+  });
+
+  it('Edge Case: Very Small Positive Number', () => {
+    const smallNumber = 0.00000001;
+    uiStore.setUsdToSatsExchangeRate(smallNumber);
+    expect(uiStore.usdToSatsExchangeRate).toBe(smallNumber);
+  });
+
+  it('Special Case: Floating Point Number', () => {
+    uiStore.setUsdToSatsExchangeRate(3.14159);
+    expect(uiStore.usdToSatsExchangeRate).toBe(3.14159);
+  });
+
+  it('Special Case: NaN (Not a Number)', () => {
+    uiStore.setUsdToSatsExchangeRate(NaN);
+    expect(uiStore.usdToSatsExchangeRate).toBe(NaN);
+  });
+
+  it('Special Case: Negative Floating Point Number', () => {
+    uiStore.setUsdToSatsExchangeRate(-3.14159);
+    expect(uiStore.usdToSatsExchangeRate).toBe(-3.14159);
+  });
+});
