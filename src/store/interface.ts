@@ -559,6 +559,7 @@ export interface CreateBountyResponse {
   bounty_id: number;
   success: boolean;
   message?: string;
+  messages?: string[];
 }
 
 export interface Endpoint {
