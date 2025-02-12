@@ -90,9 +90,14 @@ interface Connection {
   status: 'disconnected' | 'connected' | 'error';
 }
 
-const StakworkLogsPanel = ({ swwfLinks }: { swwfLinks: Record<string, string> }) => {
+interface StakworkLogsPanelProps {
+  swwfLinks: Record<string, string>;
+  logs: LogEntry[];
+  setLogs: React.Dispatch<React.SetStateAction<LogEntry[]>>;
+}
+
+const StakworkLogsPanel = ({ swwfLinks, logs, setLogs }: StakworkLogsPanelProps) => {
   const [collapsed, setCollapsed] = useState(true);
-  const [logs, setLogs] = useState<LogEntry[]>([]);
   const [connections, setConnections] = useState<Connection[]>([]);
   const { isEnabled: isVerboseLoggingEnabled } = useFeatureFlag('verbose_logging_sw');
 
@@ -172,7 +177,7 @@ const StakworkLogsPanel = ({ swwfLinks }: { swwfLinks: Record<string, string> })
         }
       });
     };
-  }, [connections, swwfLinks, isVerboseLoggingEnabled]);
+  }, [connections, swwfLinks, isVerboseLoggingEnabled, setLogs]);
 
   return (
     <PanelWrapper collapsed={collapsed}>

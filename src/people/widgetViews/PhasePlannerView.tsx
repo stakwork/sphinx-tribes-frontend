@@ -44,6 +44,13 @@ interface PhasePlannerParams {
   phase_uuid: string;
 }
 
+interface LogEntry {
+  timestamp: string;
+  projectId: string;
+  ticketUUID: string;
+  message: string;
+}
+
 const PhasePlannerView: React.FC = observer(() => {
   const { feature_uuid, phase_uuid } = useParams<PhasePlannerParams>();
   const [featureData, setFeatureData] = useState<Feature | null>(null);
@@ -69,6 +76,7 @@ const PhasePlannerView: React.FC = observer(() => {
   const [page, setPage] = useState<number>(1);
   const [loading, setLoading] = useState(true);
   const [totalBounties, setTotalBounties] = useState(0);
+  const [logs, setLogs] = useState<LogEntry[]>([]);
   const selectedWidget = 'bounties';
 
   const checkboxIdToSelectedMap: BountyStatus = useMemo(
@@ -663,6 +671,7 @@ const PhasePlannerView: React.FC = observer(() => {
                           <TicketEditor
                             index={index}
                             ticketData={ticket}
+                            logs={logs}
                             websocketSessionId={websocketSessionId}
                             draggableId={ticket.uuid}
                             hasInteractiveChildren
@@ -719,7 +728,7 @@ const PhasePlannerView: React.FC = observer(() => {
             </DisplayBounties>
           </PhaseFlexContainer>
         </FieldWrap>
-        <StakworkLogsPanel swwfLinks={swwfLinks} />
+        <StakworkLogsPanel swwfLinks={swwfLinks} logs={logs} setLogs={setLogs} />
       </FeatureDataWrap>
       {toastsEl}
     </FeatureBody>
