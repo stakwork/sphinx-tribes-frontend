@@ -4525,8 +4525,9 @@ export class MainStore {
         method: 'GET',
         mode: 'cors',
         headers: {
+          'x-jwt': uiStore.meInfo?.tribe_jwt || '',
           'Content-Type': 'application/json',
-          'x-session-id': this.getSessionId()
+          'x-session-id': this.sessionId || ''
         }
       });
       if (!response.ok) throw new Error('Failed to fetch activities');
@@ -4543,8 +4544,9 @@ export class MainStore {
         method: 'POST',
         mode: 'cors',
         headers: {
+          'x-jwt': uiStore.meInfo?.tribe_jwt || '',
           'Content-Type': 'application/json',
-          'x-session-id': this.getSessionId()
+          'x-session-id': this.sessionId || ''
         },
         body: JSON.stringify(newActivity)
       });
@@ -4565,8 +4567,9 @@ export class MainStore {
         method: 'PATCH',
         mode: 'cors',
         headers: {
+          'x-jwt': uiStore.meInfo?.tribe_jwt || '',
           'Content-Type': 'application/json',
-          'x-session-id': this.getSessionId()
+          'x-session-id': this.sessionId || ''
         },
         body: JSON.stringify(updates)
       });
@@ -4584,8 +4587,9 @@ export class MainStore {
         method: 'DELETE',
         mode: 'cors',
         headers: {
+          'x-jwt': uiStore.meInfo?.tribe_jwt || '',
           'Content-Type': 'application/json',
-          'x-session-id': this.getSessionId()
+          'x-session-id': this.sessionId || ''
         }
       });
       if (!response.ok) throw new Error('Failed to delete activity');
