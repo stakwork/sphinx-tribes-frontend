@@ -497,6 +497,10 @@ const WorkspaceMission = () => {
     window.open(`/workspace/bounties/${uuid}`, '_target');
   };
 
+  const handleActivities = () => {
+    window.open(`/workspace/${uuid}/activities`, '_target');
+  };
+
   const handleUserRepoOptionClick = (repositoryId: number) => {
     setDisplayUserRepoOptions((prev: Record<number, boolean>) => ({
       ...prev,
@@ -1283,6 +1287,25 @@ const WorkspaceMission = () => {
                 />
               </WorkspaceFieldWrap>
             )}
+            <WorkspaceFieldWrap>
+              <Button
+                style={{
+                  borderRadius: '5px',
+                  margin: 0,
+                  padding: '10px 20px',
+                  width: '100%',
+                  backgroundColor: '#4285f4',
+                  color: 'white',
+                  textAlign: 'center',
+                  border: 'none',
+                  fontSize: '16px',
+                  cursor: 'pointer'
+                }}
+                onClick={handleActivities}
+                dataTestId="workspace-activities-btn"
+                text="Activities"
+              />
+            </WorkspaceFieldWrap>
             <WorkspaceFieldWrap>
               <Button
                 style={{
