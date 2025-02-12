@@ -10,6 +10,7 @@ import PeopleHeader from '../people/main/Header';
 import TokenRefresh from '../people/utils/TokenRefresh';
 import GenerateStoriesView from '../people/widgetViews/GenerateStoriesView';
 import PhasePlannerView from '../people/widgetViews/PhasePlannerView';
+import Activities from '../people/widgetViews/workspace/Activities/Activities';
 import WorkspaceTicketView from '../people/widgetViews/workspace/WorkspaceTicketView';
 import { HiveChatView } from '../people/hiveChat/index';
 import WorkSpacePlanner from '../people/WorkSpacePlanner/index';
@@ -63,6 +64,9 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
               </Route>
               <Route path="/workspace/:uuid/planner">
                 <WorkSpacePlanner />
+              </Route>
+              <Route path="/workspace/:uuid/activities">
+                <Activities />
               </Route>
               <Route path="/workspace/:uuid/hivechat/:chatId">
                 <HiveChatView />
