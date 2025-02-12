@@ -1,22 +1,45 @@
 export const formatElapsedTime = (
   firstAssignedAt: string,
   lastPowAt: string | null,
-  isPaused: boolean
+  isPaused: boolean,
+  closedAt: string | null,
+  accumulatedPauseSeconds: number
 ): string => {
   try {
-    const startTime = new Date(firstAssignedAt);
+    let startTime = new Date(firstAssignedAt);
     const currentTime = new Date();
 
     if (isNaN(startTime.getTime())) {
       return '00h 00m 00s';
     }
 
-    const stopTime = lastPowAt || isPaused ? new Date(lastPowAt || currentTime) : currentTime;
+    if (!isPaused && lastPowAt) {
+      startTime = new Date(lastPowAt); // Restart timer from lastPowAt
+    }
 
-    const elapsed = Math.max(0, stopTime.getTime() - startTime.getTime());
-    const hours = Math.floor(elapsed / (1000 * 60 * 60));
-    const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((elapsed % (1000 * 60)) / 1000);
+    const isBountyComplete = !!closedAt && !!lastPowAt && isPaused;
+
+    let stopTime: Date;
+
+    if (isBountyComplete) {
+      stopTime = new Date(closedAt as string);
+    } else if (isPaused && lastPowAt) {
+      stopTime = new Date(lastPowAt);
+    } else {
+      stopTime = currentTime;
+    }
+
+    const elapsedMilliseconds = Math.max(0, stopTime.getTime() - startTime.getTime());
+
+    const effectiveElapsedSeconds = Math.max(
+      0,
+      Math.floor(elapsedMilliseconds / 1000) -
+        (isPaused || !lastPowAt ? accumulatedPauseSeconds : 0)
+    );
+
+    const hours = Math.floor(effectiveElapsedSeconds / 3600);
+    const minutes = Math.floor((effectiveElapsedSeconds % 3600) / 60);
+    const seconds = effectiveElapsedSeconds % 60;
 
     return `${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m ${seconds
       .toString()

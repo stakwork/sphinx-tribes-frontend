@@ -555,6 +555,7 @@ export interface BountyTiming {
   is_paused: boolean;
   is_paused_at: string | null;
   closed_at: string | null;
+  accumulated_pause_seconds: number;
 }
 
 export interface CreateBountyResponse {
