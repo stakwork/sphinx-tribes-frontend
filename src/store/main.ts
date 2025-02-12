@@ -3259,7 +3259,6 @@ export class MainStore {
       const info = uiStore.meInfo;
 
       const queryParams: QueryParams = {
-        limit: featureLimit,
         sortBy: 'priority',
         direction: 'asc',
         search: '',
@@ -3269,11 +3268,7 @@ export class MainStore {
       };
 
       // if we don't pass the params, we should use previous params for invalidate query
-      const query = this.appendQueryParams(
-        `features/forworkspace/${uuid}`,
-        featureLimit,
-        queryParams
-      );
+      const query = this.appendQueryParams(`features/forworkspace/${uuid}`, 0, queryParams);
 
       const r: any = await fetch(`${TribesURL}/${query}`, {
         method: 'GET',

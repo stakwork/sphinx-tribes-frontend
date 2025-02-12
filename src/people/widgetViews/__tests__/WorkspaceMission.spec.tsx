@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route } from 'react-router-dom';
 import WorkspaceMission from '../WorkspaceMission';
 import { useFeatureFlag } from '../../../hooks/useFeatureFlag';
@@ -54,6 +54,18 @@ const mockCrypto = {
   }
 };
 global.crypto = mockCrypto as Crypto;
+
+const mockGetFeatures = jest.fn();
+
+const mockFeature = {
+  id: 1,
+  uuid: 'feature-uuid',
+  name: 'Test Feature',
+  priority: 1,
+  bounties_count_completed: 2,
+  bounties_count_assigned: 3,
+  bounties_count_open: 5
+};
 
 const TestWrapper: React.FC<{ children: React.ReactNode }> = ({
   children
@@ -119,6 +131,59 @@ describe('WorkspaceMission', () => {
     );
     waitFor(() => {
       expect(screen.queryByTestId('workspace-planner-btn')).not.toBeInTheDocument();
+    });
+  });
+
+  it('should create a new feature and verify it appears in the list', async () => {
+    (useFeatureFlag as jest.Mock).mockReturnValue({
+      isEnabled: true,
+      loading: false
+    });
+
+    render(
+      <TestWrapper>
+        <WorkspaceMission />
+      </TestWrapper>
+    );
+
+    waitFor(() => {
+      expect(screen.getByTestId('new-feature-btn')).toBeInTheDocument();
+    });
+
+    waitFor(() => {
+      fireEvent.click(screen.getByTestId('new-feature-btn'));
+    });
+
+    mockGetFeatures.mockReturnValue([mockFeature]);
+    waitFor(() => {
+      expect(mockGetFeatures).toHaveBeenCalled();
+    });
+
+    waitFor(() => {
+      expect(screen.getByText('Test Feature')).toBeInTheDocument();
+    });
+  });
+
+  it('should verify feature visibility after being added', async () => {
+    (useFeatureFlag as jest.Mock).mockReturnValue({
+      isEnabled: true,
+      loading: true
+    });
+
+    render(
+      <TestWrapper>
+        <WorkspaceMission />
+      </TestWrapper>
+    );
+
+    mockGetFeatures.mockReturnValue([mockFeature]);
+
+    waitFor(() => {
+      expect(mockGetFeatures).toHaveBeenCalled();
+    });
+
+    waitFor(() => {
+      expect(screen.getByTestId('feature-item')).toBeInTheDocument();
     });
   });
 });

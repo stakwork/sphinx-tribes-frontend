@@ -360,11 +360,8 @@ const WorkspaceMission = () => {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [permissionsChecked, setPermissionsChecked] = useState<boolean>(false);
   const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
-  const [loadLimit, setLoadLimit] = useState(100);
-
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const ITEMS_PER_PAGE = 4;
   const [isSnippetModalVisible, setSnippetModalVisible] = useState(false);
 
   const openSnippetModal = () => {
@@ -646,8 +643,7 @@ const WorkspaceMission = () => {
       try {
         const featuresRes = await main.getWorkspaceFeatures(uuid, {
           page,
-          status: 'active',
-          limit: ITEMS_PER_PAGE
+          status: 'active'
         });
 
         if (featuresRes && Array.isArray(featuresRes)) {
@@ -673,28 +669,6 @@ const WorkspaceMission = () => {
   }, [getFeatures]);
 
   const observerTarget = useRef(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !isLoadingMore && features.length < 20) {
-          setCurrentPage((prev) => prev + 1);
-          getFeatures(currentPage + 1);
-        }
-      },
-      { threshold: 1.0 }
-    );
-
-    if (observerTarget.current) {
-      observer.observe(observerTarget.current);
-    }
-
-    return () => {
-      if (observerTarget.current) {
-        observer.unobserve(observerTarget.current);
-      }
-    };
-  }, [currentPage, isLoadingMore, features.length, getFeatures]);
 
   const handleWebsiteButton = (websiteUrl: string) => {
     window.open(websiteUrl, '_blank');
@@ -1579,7 +1553,6 @@ const WorkspaceMission = () => {
                   <Button
                     text="Load More"
                     onClick={() => {
-                      setLoadLimit(100);
                       setCurrentPage((prev) => prev + 1);
                       getFeatures(currentPage + 1, true);
                     }}
