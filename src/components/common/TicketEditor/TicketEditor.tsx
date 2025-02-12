@@ -30,19 +30,8 @@ import { TicketStatus, Ticket, Author } from '../../../store/interface';
 import { Toast } from '../../../people/widgetViews/workspace/interface';
 import { uiStore } from '../../../store/ui';
 import { Select, Option } from '../../../people/widgetViews/workspace/style.ts';
-import { useDeleteConfirmationModal } from '../../../components/common/DeleteConfirmationModal/DeleteConfirmationModal.tsx';
+import { useDeleteConfirmationModal } from '../DeleteConfirmationModal';
 import { TicketTextAreaComp } from './TicketTextArea.tsx';
-interface TicketEditorProps {
-  ticketData: Ticket;
-  index: number;
-  websocketSessionId: string;
-  draggableId: string;
-  hasInteractiveChildren: boolean;
-  dragHandleProps?: Record<string, any>;
-  swwfLink?: string;
-  getPhaseTickets: () => Promise<Ticket[] | undefined>;
-  workspaceUUID: string;
-}
 
 interface LogEntry {
   timestamp: string;
@@ -51,11 +40,17 @@ interface LogEntry {
   message: string;
 }
 
-interface Connection {
-  projectId: string;
-  ticketUUID: string;
-  websocket: WebSocket;
-  status: 'disconnected' | 'connected' | 'error';
+interface TicketEditorProps {
+  ticketData: Ticket;
+  logs: LogEntry[];
+  index: number;
+  websocketSessionId: string;
+  draggableId: string;
+  hasInteractiveChildren: boolean;
+  dragHandleProps?: Record<string, any>;
+  swwfLink?: string;
+  getPhaseTickets: () => Promise<Ticket[] | undefined>;
+  workspaceUUID: string;
 }
 
 const SwitcherContainer = styled.div`
@@ -144,7 +139,7 @@ const EditorWrapper = styled.div`
 const ChainOfThought = styled.div`
   max-width: 100%;
   margin: 12px auto 8px 5px;
-  padding: 10px 20px 0px 20px;
+  padding: 10px 20px 0 20px;
   border-radius: 16px;
   word-wrap: break-word;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -158,7 +153,8 @@ const TicketEditor = observer(
     dragHandleProps,
     swwfLink,
     getPhaseTickets,
-    workspaceUUID
+    workspaceUUID,
+    logs
   }: TicketEditorProps) => {
     const [toasts, setToasts] = useState<Toast[]>([]);
     const [versions, setVersions] = useState<number[]>([]);
@@ -173,8 +169,6 @@ const TicketEditor = observer(
     const { main } = useStores();
     const [isCreatingBounty, setIsCreatingBounty] = useState(false);
     const [isOptionsMenuVisible, setIsOptionsMenuVisible] = useState(false);
-    const [logs, setLogs] = useState<LogEntry[]>([]);
-    const [connections, setConnections] = useState<Connection[]>([]);
     const [lastLogLine, setLastLogLine] = useState('');
     const ui = uiStore;
     const { openDeleteConfirmation } = useDeleteConfirmationModal();
@@ -219,78 +213,6 @@ const TicketEditor = observer(
         ticketData.description.trim() !== versionTicketData.description.trim();
       setIsButtonDisabled(!isChanged);
     }, [ticketData, versionTicketData]);
-
-    useEffect(() => {
-      const connectToLogWebSocket = (projectId: string, ticketUUID: string) => {
-        const ws = new WebSocket('wss://jobs.stakwork.com/cable?channel=ProjectLogChannel');
-
-        ws.onopen = () => {
-          const command = {
-            command: 'subscribe',
-            identifier: JSON.stringify({ channel: 'ProjectLogChannel', id: projectId })
-          };
-          ws.send(JSON.stringify(command));
-        };
-
-        ws.onmessage = (event: any) => {
-          const data = JSON.parse(event.data);
-          if (data.type === 'ping') return;
-
-          const messageData = data?.message;
-          if (
-            messageData &&
-            (messageData.type === 'on_step_start' || messageData.type === 'on_step_complete')
-          ) {
-            setLogs((prev: LogEntry[]) => [
-              {
-                timestamp: new Date().toISOString(),
-                projectId,
-                ticketUUID,
-                message: messageData.message
-              },
-              ...prev
-            ]);
-          }
-        };
-
-        ws.onerror = () => {
-          setConnections((prev: Connection[]) =>
-            prev.map((conn: Connection) =>
-              conn.projectId === projectId ? { ...conn, status: 'error' } : conn
-            )
-          );
-        };
-
-        ws.onclose = () => {
-          setConnections((prev: Connection[]) =>
-            prev.map((conn: Connection) =>
-              conn.projectId === projectId ? { ...conn, status: 'disconnected' } : conn
-            )
-          );
-        };
-
-        setConnections((prev: Connection[]) => [
-          ...prev,
-          { projectId, ticketUUID, websocket: ws, status: 'connected' }
-        ]);
-      };
-
-      if (
-        ticketData.ticketUUID &&
-        swwfLink &&
-        !connections.some((conn: Connection) => conn.projectId === swwfLink)
-      ) {
-        connectToLogWebSocket(swwfLink, ticketData.ticketUUID);
-      }
-
-      return () => {
-        connections.forEach((conn: Connection) => {
-          if (conn.projectId !== swwfLink) {
-            conn.websocket.close();
-          }
-        });
-      };
-    }, [connections, swwfLink, ticketData.ticketUUID]);
 
     useEffect(() => {
       if (logs.length > 0) {
