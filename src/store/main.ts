@@ -53,7 +53,9 @@ import {
   CreateBountyResponse,
   FeatureFlag,
   FeaturedBounty,
-  ConnectionCodesListResponse
+  ConnectionCodesListResponse,
+  IActivity,
+  INewActivity
 } from './interface';
 
 function makeTorSaveURL(host: string, key: string) {
@@ -4518,6 +4520,83 @@ export class MainStore {
       return true;
     } catch (error) {
       console.error('Error deleting snippet:', error);
+      return false;
+    }
+  }
+
+  async fetchWorkspaceActivities(workspace: string): Promise<IActivity[]> {
+    try {
+      const response = await fetch(`${TribesURL}/activities?workspace=${workspace}`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-session-id': this.getSessionId()
+        }
+      });
+      if (!response.ok) throw new Error('Failed to fetch activities');
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching activities:', error);
+      return [];
+    }
+  }
+
+  async createActivity(newActivity: INewActivity): Promise<IActivity | null> {
+    try {
+      const response = await fetch(`${TribesURL}/activities`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-session-id': this.getSessionId()
+        },
+        body: JSON.stringify(newActivity)
+      });
+      if (!response.ok) throw new Error('Failed to create activity');
+      return await response.json();
+    } catch (error) {
+      console.error('Error creating activity:', error);
+      return null;
+    }
+  }
+
+  async updateActivity(
+    id: string,
+    updates: Partial<Omit<IActivity, 'id' | 'threadId' | 'sequence'>>
+  ): Promise<boolean> {
+    try {
+      const response = await fetch(`${TribesURL}/activities/${id}`, {
+        method: 'PATCH',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-session-id': this.getSessionId()
+        },
+        body: JSON.stringify(updates)
+      });
+      if (!response.ok) throw new Error('Failed to update activity');
+      return true;
+    } catch (error) {
+      console.error('Error updating activity:', error);
+      return false;
+    }
+  }
+
+  async deleteActivity(id: string): Promise<boolean> {
+    try {
+      const response = await fetch(`${TribesURL}/activities/${id}`, {
+        method: 'DELETE',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-session-id': this.getSessionId()
+        }
+      });
+      if (!response.ok) throw new Error('Failed to delete activity');
+      return true;
+    } catch (error) {
+      console.error('Error deleting activity:', error);
       return false;
     }
   }
