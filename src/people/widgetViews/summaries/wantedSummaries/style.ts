@@ -144,8 +144,8 @@ export const NormalUser = styled.div`
 `;
 
 export const CreatorDescription = styled.div<styleProps>`
-  min-width: 60vw;
-  max-width: 60vw;
+  min-width: 38vw;
+  max-width: 70vw;
   overflow: auto;
   height: 100vh;
   border-right: ${(p: any) =>
