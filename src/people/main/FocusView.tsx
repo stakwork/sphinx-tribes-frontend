@@ -45,7 +45,8 @@ function FocusedView(props: FocusViewProps) {
     setRemoveNextAndPrev,
     setAfterEdit,
     getBounty,
-    phase_uuid
+    phase_uuid,
+    feature_uuid
   } = props;
   const { ui, main } = useStores();
 
@@ -280,6 +281,10 @@ function FocusedView(props: FocusViewProps) {
         newBody.phase_uuid = phase_uuid;
       }
 
+      if (props.feature_uuid) {
+        newBody.feature_uuid = feature_uuid;
+      }
+
       await main.saveBounty(newBody);
       if (newBody.assignee === '' && getBounty) {
         setAfterEdit && setAfterEdit(true);
@@ -326,7 +331,9 @@ function FocusedView(props: FocusViewProps) {
   }
 
   let initialValues: any = {
-    org_uuid: orgToAppend
+    org_uuid: orgToAppend,
+    phase_uuid: phase_uuid || '',
+    feature_uuid: feature_uuid || ''
   };
 
   const personInfo = canEdit ? ui.meInfo : person;
@@ -360,6 +367,14 @@ function FocusedView(props: FocusViewProps) {
             return {
               [s.name]: coding_languages
             };
+          } else if (s.name === 'phase_uuid') {
+            return {
+              [s.name]: wanted['phase_uuid'] || phase_uuid || ''
+            };
+          } else if (s.name === 'feature_uuid') {
+            return {
+              [s.name]: wanted['feature_uuid'] || feature_uuid || ''
+            };
           }
           return {
             [s.name]: wanted[s.name]
@@ -371,7 +386,13 @@ function FocusedView(props: FocusViewProps) {
       } else {
         const dynamicSchema = config?.schema?.find((f: any) => f.defaultSchema);
         dynamicSchema?.defaultSchema?.forEach((s: any) => {
-          initialValues[s.name] = wanted[s.name];
+          if (s.name === 'phase_uuid') {
+            initialValues[s.name] = wanted['phase_uuid'] || phase_uuid || '';
+          } else if (s.name === 'feature_uuid') {
+            initialValues[s.name] = wanted['feature_uuid'] || feature_uuid || '';
+          } else {
+            initialValues[s.name] = wanted[s.name];
+          }
         });
       }
     }

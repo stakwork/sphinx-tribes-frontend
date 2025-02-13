@@ -57,8 +57,8 @@ function WantedSummary(props: WantedSummaryProps) {
     formSubmit,
     title,
     org_uuid,
-    feature_id,
-    phase_id,
+    feature_uuid,
+    phase_uuid,
     id,
     isEditButtonDisable
   } = props;
@@ -167,8 +167,8 @@ function WantedSummary(props: WantedSummaryProps) {
         type: type,
         created: created,
         org_uuid,
-        phase_id,
-        feature_id
+        phase_uuid,
+        feature_uuid
       };
 
       if (id) await bountyReviewStore.startBountyTiming(id.toString());
@@ -190,8 +190,8 @@ function WantedSummary(props: WantedSummaryProps) {
       titleString,
       type,
       wanted_type,
-      phase_id,
-      feature_id
+      phase_uuid,
+      feature_uuid
     ]
   );
 
@@ -220,8 +220,8 @@ function WantedSummary(props: WantedSummaryProps) {
       type: type,
       created: created,
       org_uuid,
-      phase_id,
-      feature_id
+      phase_uuid,
+      feature_uuid
     };
     formSubmit && formSubmit(newValue, true);
   }, [
@@ -240,8 +240,8 @@ function WantedSummary(props: WantedSummaryProps) {
     titleString,
     type,
     wanted_type,
-    phase_id,
-    feature_id
+    phase_uuid,
+    feature_uuid
   ]);
 
   useEffect(() => {
@@ -619,8 +619,8 @@ function WantedSummary(props: WantedSummaryProps) {
           actionButtons={actionButtons}
           assigneeLabel={assigneeLabel}
           isEditButtonDisable={isEditButtonDisable}
-          phase_id={phase_id}
-          feature_id={feature_id}
+          phase_uuid={phase_uuid}
+          feature_uuid={feature_uuid}
         />
       );
     }

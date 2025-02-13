@@ -21,7 +21,7 @@ export const BountyDetailsCreationData = {
     schemaName: 'Freelance Job Request',
     heading: 'Basic info',
     sub_heading: ' ',
-    schema: ['org_uuid', 'one_sentence_summary', 'ticket_url', 'phase_id', 'feature_id'],
+    schema: ['org_uuid', 'one_sentence_summary', 'ticket_url', 'phase_uuid', 'feature_uuid'],
     schema2: ['wanted_type', 'coding_languages'],
     required: ['one_sentence_summary', 'wanted_type'],
     outerContainerStyle: {

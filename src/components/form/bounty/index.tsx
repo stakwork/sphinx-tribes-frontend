@@ -297,11 +297,11 @@ function Form(props: FormProps) {
   // replace schema with dynamic schema if there is one
   schema = dynamicSchema || schema;
   if (schema && Array.isArray(schema)) {
-    const featureFieldIndex = schema.findIndex((field: FormField) => field.name === 'feature_id');
+    const featureFieldIndex = schema.findIndex((field: FormField) => field.name === 'feature_uuid');
     if (featureFieldIndex !== -1) {
       schema[featureFieldIndex].options = workspaceFeature;
     }
-    const phaseFieldIndex = schema.findIndex((field: FormField) => field.name === 'phase_id');
+    const phaseFieldIndex = schema.findIndex((field: FormField) => field.name === 'phase_uuid');
     if (phaseFieldIndex !== -1) {
       schema[phaseFieldIndex].options = featurePhase;
     }
@@ -357,7 +357,7 @@ function Form(props: FormProps) {
         );
 
         if (values.org_uuid !== '') {
-          setFeatureid(values.feature_id);
+          setFeatureid(values.feature_uuid);
           setWorskspaceid(values.org_uuid);
         }
 
