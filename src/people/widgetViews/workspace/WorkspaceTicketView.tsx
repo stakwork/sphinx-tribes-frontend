@@ -8,14 +8,15 @@ import { createSocketInstance, SOCKET_MSG } from 'config/socket';
 import WorkspaceTicketEditor from 'components/common/TicketEditor/WorkspaceTicketEditor';
 import { workspaceTicketStore } from '../../../store/workspace-ticket';
 import { Feature, Ticket, TicketMessage } from '../../../store/interface';
+import { FeatureBody, FeatureDataWrap, LabelValue, StyledLink } from '../../../pages/tickets/style';
 import {
-  FeatureBody,
-  FeatureDataWrap,
-  LabelValue,
-  PhaseLabel,
-  StyledLink
-} from '../../../pages/tickets/style';
-import { FeatureHeadWrap, FeatureHeadNameWrap, WorkspaceName } from './style';
+  FeatureHeadWrap,
+  FeatureHeadNameWrap,
+  WorkspaceName,
+  StyledSelect,
+  SelectLabel,
+  SelectWrapper
+} from './style';
 import { Phase } from './interface.ts';
 
 const WorkspaceTicketView: React.FC = observer(() => {
@@ -239,10 +240,11 @@ const WorkspaceTicketView: React.FC = observer(() => {
     const updatedTicket: Partial<Ticket> = {
       ...currentTicket,
       feature_uuid: featureUuid,
-      phase_uuid: undefined // Reset phase when feature changes
+      phase_uuid: undefined
     };
 
     workspaceTicketStore.updateTicket(currentTicket.uuid, updatedTicket);
+    setCurrentTicketId(currentTicket.uuid);
   };
 
   const handlePhaseChange = async (phaseUuid: string | undefined) => {
@@ -254,7 +256,26 @@ const WorkspaceTicketView: React.FC = observer(() => {
     };
 
     workspaceTicketStore.updateTicket(currentTicket.uuid, updatedTicket);
+    setCurrentTicketId(currentTicket.uuid);
   };
+
+  useEffect(() => {
+    const currentTicket = workspaceTicketStore.getTicket(currentTicketId);
+    if (currentTicket?.feature_uuid) {
+      const loadPhases = async () => {
+        setIsLoadingPhases(true);
+        try {
+          const featurePhases = await main.getFeaturePhases(currentTicket.feature_uuid as string);
+          setPhases(featurePhases);
+        } catch (error) {
+          console.error('Error loading phases:', error);
+        } finally {
+          setIsLoadingPhases(false);
+        }
+      };
+      loadPhases();
+    }
+  }, [currentTicketId, main]);
 
   if (isLoading) {
     return (
@@ -324,9 +345,9 @@ const WorkspaceTicketView: React.FC = observer(() => {
         </FeatureHeadNameWrap>
       </FeatureHeadWrap>
       <FeatureDataWrap>
-        <PhaseLabel>
-          Feature:{' '}
-          <select
+        <SelectWrapper>
+          <SelectLabel>Feature:</SelectLabel>
+          <StyledSelect
             value={currentTicket?.feature_uuid || ''}
             onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
               handleFeatureChange(e.target.value || undefined)
@@ -339,30 +360,33 @@ const WorkspaceTicketView: React.FC = observer(() => {
                 {feature.name}
               </option>
             ))}
-          </select>
-        </PhaseLabel>
-        <PhaseLabel>
-          Phase:{' '}
-          <select
-            value={currentTicket?.phase_uuid || ''}
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-              handlePhaseChange(e.target.value || undefined)
-            }
-            disabled={isLoadingPhases || !currentTicket?.feature_uuid}
-          >
-            <option value="">Select Phase</option>
-            {phases.map((phase: Phase) => (
-              <option key={phase.uuid} value={phase.uuid}>
-                {phase.name}
-              </option>
-            ))}
-          </select>
-          {currentTicket?.feature_uuid && currentTicket?.phase_uuid && (
-            <LabelValue>
-              <StyledLink onClick={handleLinkClick}>[Phase Planner]</StyledLink>
-            </LabelValue>
-          )}
-        </PhaseLabel>
+          </StyledSelect>
+        </SelectWrapper>
+
+        <SelectWrapper>
+          <SelectLabel>Phase:</SelectLabel>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <StyledSelect
+              value={currentTicket?.phase_uuid || ''}
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                handlePhaseChange(e.target.value || undefined)
+              }
+              disabled={isLoadingPhases || !currentTicket?.feature_uuid}
+            >
+              <option value="">Select Phase</option>
+              {phases.map((phase: Phase) => (
+                <option key={phase.uuid} value={phase.uuid}>
+                  {phase.name}
+                </option>
+              ))}
+            </StyledSelect>
+            {currentTicket?.feature_uuid && currentTicket?.phase_uuid && (
+              <LabelValue>
+                <StyledLink onClick={handleLinkClick}>[Phase Planner]</StyledLink>
+              </LabelValue>
+            )}
+          </div>
+        </SelectWrapper>
         <WorkspaceTicketEditor
           ticketData={currentTicket}
           websocketSessionId={websocketSessionId}
@@ -371,6 +395,10 @@ const WorkspaceTicketView: React.FC = observer(() => {
           hasInteractiveChildren={false}
           swwfLink={swwfLinks[currentTicket.uuid]}
           getPhaseTickets={getTickets}
+          onTicketUpdate={(updatedTicket: Ticket) => {
+            workspaceTicketStore.updateTicket(updatedTicket.uuid, updatedTicket);
+            setCurrentTicketId(updatedTicket.uuid);
+          }}
         />
       </FeatureDataWrap>
     </FeatureBody>
