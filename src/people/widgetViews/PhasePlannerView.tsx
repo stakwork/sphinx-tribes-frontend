@@ -131,7 +131,7 @@ const PhasePlannerView: React.FC = observer(() => {
         console.log('Parsed websocket message:', data);
 
         if (data.msg === SOCKET_MSG.user_connect) {
-          const sessionId = data.body;
+          const sessionId = data.body || localStorage.getItem('websocket_token');
           setWebsocketSessionId(sessionId);
           console.log(`Websocket Session ID: ${sessionId}`);
           return;

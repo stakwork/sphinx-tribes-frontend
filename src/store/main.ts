@@ -4430,7 +4430,7 @@ export class MainStore {
         headers: {
           'Content-Type': 'application/json',
           'x-jwt': uiStore.meInfo?.tribe_jwt || '',
-          'x-session-id': this.sessionId || ''
+          'x-session-id': this.getSessionId() || ''
         },
         body: JSON.stringify({ title, snippet })
       });
@@ -4451,7 +4451,7 @@ export class MainStore {
         headers: {
           'x-jwt': uiStore.meInfo?.tribe_jwt || '',
           'Content-Type': 'application/json',
-          'x-session-id': this.sessionId || ''
+          'x-session-id': this.getSessionId() || ''
         }
       });
 
@@ -4471,7 +4471,7 @@ export class MainStore {
         headers: {
           'x-jwt': uiStore.meInfo?.tribe_jwt || '',
           'Content-Type': 'application/json',
-          'x-session-id': this.sessionId || ''
+          'x-session-id': this.getSessionId() || ''
         }
       });
 
@@ -4491,7 +4491,7 @@ export class MainStore {
         headers: {
           'Content-Type': 'application/json',
           'x-jwt': uiStore.meInfo?.tribe_jwt || '',
-          'x-session-id': this.sessionId || ''
+          'x-session-id': this.getSessionId() || ''
         },
         body: JSON.stringify({ title, snippet })
       });
@@ -4512,7 +4512,7 @@ export class MainStore {
         headers: {
           'x-jwt': uiStore.meInfo?.tribe_jwt || '',
           'Content-Type': 'application/json',
-          'x-session-id': this.sessionId || ''
+          'x-session-id': this.getSessionId() || ''
         }
       });
 
