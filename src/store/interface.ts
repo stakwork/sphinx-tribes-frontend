@@ -608,31 +608,37 @@ export type ContentType =
   | 'general_update';
 
 export interface IActivity {
-  id: string;
-  threadId: string | null;
+  ID: string;
+  thread_id: string | null;
   sequence: number;
-  contentType: ContentType;
+  content_type: ContentType;
   content: string;
   workspace: string;
-  featureUUID: string;
-  phaseUUID: string;
+  feature_uuid: string;
+  phase_uuid: string;
   feedback?: string;
   actions: string[];
   questions: string[];
-  timeCreated: string;
-  timeUpdated: string;
+  time_created: string;
+  time_updated: string;
   status: string;
   author: AuthorType;
-  authorRef: string;
+  author_ref: string;
 }
 
 export interface INewActivity {
   content: string;
-  contentType: ContentType;
+  content_type: ContentType;
   workspace: string;
-  featureUUID: string;
-  phaseUUID: string;
+  feature_uuid: string;
+  phase_uuid: string;
   author: AuthorType;
-  authorRef: string;
-  threadId?: string;
+  author_ref: string;
+  thread_id?: string;
+  question?: string;
+}
+
+export interface IActivityResponse {
+  data: IActivity[];
+  success: boolean;
 }

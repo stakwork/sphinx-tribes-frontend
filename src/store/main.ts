@@ -4521,7 +4521,7 @@ export class MainStore {
 
   async fetchWorkspaceActivities(workspace: string): Promise<IActivity[]> {
     try {
-      const response = await fetch(`${TribesURL}/activities?workspace=${workspace}`, {
+      const response = await fetch(`${TribesURL}/activities/workspace/${workspace}`, {
         method: 'GET',
         mode: 'cors',
         headers: {

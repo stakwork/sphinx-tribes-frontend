@@ -1,5 +1,5 @@
 import { makeAutoObservable, runInAction } from 'mobx';
-import { IActivity, INewActivity } from './interface';
+import { IActivity, INewActivity, IActivityResponse } from './interface';
 import { mainStore } from './main';
 
 export class ActivityStore {
@@ -14,7 +14,7 @@ export class ActivityStore {
   get threadedActivities(): { [key: string]: IActivity[] } {
     const grouped: { [key: string]: IActivity[] } = {};
     Array.from(this.activities.values()).forEach((activity: IActivity) => {
-      const threadId = activity.threadId || activity.id;
+      const threadId = activity.thread_id || activity.ID;
       if (!grouped[threadId]) {
         grouped[threadId] = [];
       }
@@ -27,17 +27,22 @@ export class ActivityStore {
   }
 
   get rootActivities(): IActivity[] {
-    return Array.from(this.activities.values())
-      .filter((activity: IActivity) => !activity.threadId)
-      .sort(
-        (a: IActivity, b: IActivity) =>
-          new Date(b.timeCreated).getTime() - new Date(a.timeCreated).getTime()
-      );
+    const allActivities = Array.from(this.activities.values());
+    const rootActivities = allActivities.filter((activity: IActivity) => {
+      // thread_id should be null for root activities
+      const isRoot = activity.thread_id;
+      return isRoot;
+    });
+
+    return rootActivities.sort(
+      (a: IActivity, b: IActivity) =>
+        new Date(b.time_created).getTime() - new Date(a.time_created).getTime()
+    );
   }
 
   getThreadResponses(threadId: string): IActivity[] {
     return Array.from(this.activities.values())
-      .filter((activity: IActivity) => activity.threadId === threadId)
+      .filter((activity: IActivity) => activity.thread_id === threadId)
       .sort((a: IActivity, b: IActivity) => a.sequence - b.sequence);
   }
 
@@ -45,11 +50,25 @@ export class ActivityStore {
     this.loading = true;
     this.error = null;
     try {
-      const activities = await mainStore.fetchWorkspaceActivities(workspace);
+      const response = await mainStore.fetchWorkspaceActivities(workspace);
+      console.log('Raw response:', response); // Debug log
+
+      // Handle both IActivity[] and IActivityResponse cases
+      const activities = Array.isArray(response)
+        ? (response as IActivity[])
+        : response && typeof response === 'object' && 'data' in response
+        ? (response as IActivityResponse).data
+        : [];
+      console.log('Processed activities:', activities);
+
       runInAction(() => {
         this.activities.clear();
         activities.forEach((activity: IActivity) => {
-          this.activities.set(activity.id, activity);
+          if (!activity.ID) {
+            console.warn('Activity missing id:', activity);
+            return;
+          }
+          this.activities.set(activity.ID, activity);
         });
         this.loading = false;
       });
@@ -66,7 +85,7 @@ export class ActivityStore {
       const activity = await mainStore.createActivity(newActivity);
       if (activity) {
         runInAction(() => {
-          this.activities.set(activity.id, activity);
+          this.activities.set(activity.ID, activity);
         });
       }
       return activity;
@@ -80,9 +99,9 @@ export class ActivityStore {
 
   async createThreadResponse(
     threadId: string,
-    newActivity: Omit<INewActivity, 'threadId'>
+    newActivity: Omit<INewActivity, 'thread_id'>
   ): Promise<IActivity | null> {
-    return this.createActivity({ ...newActivity, threadId });
+    return this.createActivity({ ...newActivity, thread_id: threadId });
   }
 
   async updateActivity(

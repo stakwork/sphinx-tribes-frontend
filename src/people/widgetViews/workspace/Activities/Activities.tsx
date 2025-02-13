@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/typedef */
 import { observer } from 'mobx-react-lite';
 import React, { useEffect, useState } from 'react';
-import { Key, ReactChild, ReactFragment, ReactPortal } from 'react';
 import { activityStore } from 'store/activityStore';
 import styled from 'styled-components';
-import { uiStore } from 'store/ui';
+import { AuthorType, ContentType, Feature, IActivity } from 'store/interface';
+import { useStores } from 'store';
+import { useParams } from 'react-router-dom';
+import { Phase } from '../interface';
 import ActivitiesHeader from './header';
 
 export const ActivitiesContainer = styled.div`
@@ -118,16 +120,21 @@ const ModalOverlay = styled.div`
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   z-index: 1000;
+  overflow: auto;
+  padding: 20px;
 `;
 
 const ModalContent = styled.div`
   background: white;
-  padding: 2rem;
+  padding: 20px;
   border-radius: 8px;
-  width: 500px;
-  max-width: 90%;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  margin: 20px 0;
 `;
 
 const Form = styled.form`
@@ -198,140 +205,299 @@ const EditButton = styled(Button)`
   }
 `;
 
-export interface Activity {
-  timeCreated: JSX.Element;
-  id: string;
-  title: string;
-  date: string;
-  type: 'call' | 'pr' | 'issue';
-  details: {
-    transcript?: string;
-    notes?: string;
-    bulletPoints?: string[];
-    nextActions?: string[];
-  };
-}
+const CharacterCount = styled.div`
+  font-size: 0.8rem;
+  color: ${(props) => props.theme.textSecondary};
+  margin-top: 0.5rem;
+
+  &.error {
+    color: red;
+    font-weight: bold;
+  }
+`;
+
+const ItemList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+`;
+
+const Item = styled.div`
+  background: #f0f0f0;
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
+const RemoveButton = styled.button`
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+  line-height: 1;
+
+  &:hover {
+    color: #ff0000;
+  }
+`;
 
 const Activities = observer(() => {
-  const ui = uiStore;
-  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
+  const { uuid } = useParams<{ uuid: string }>();
+  const { main, ui } = useStores();
+  const [phases, setPhases] = useState<Phase[]>([]);
+  const [features, setFeatures] = useState<Feature[]>([]);
+  const [isLoadingPhases, setIsLoadingPhases] = useState(false);
+  const [selectedActivity, setSelectedActivity] = useState<IActivity | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newActivity, setNewActivity] = useState({
+    workspace: uuid || '',
+    content: '',
+    content_type: '',
+    feature_uuid: '',
+    phase_uuid: '',
+    author: 'human',
+    author_ref: ui._meInfo?.owner_pubkey || '',
+    question: '',
     title: '',
     description: '',
     details: '',
-    notes: [],
-    nextActions: []
+    notes: [] as string[],
+    nextActions: [] as string[],
+    thread_id: '',
+    feedback: '',
+    actions: [] as string[],
+    questions: [] as string[],
+    actions_input: '',
+    questions_input: ''
   });
 
-  const handleInputChange = (e) => {
+  useEffect(() => {
+    if (uuid) {
+      activityStore.fetchWorkspaceActivities(uuid);
+    }
+  }, [uuid]);
+
+  useEffect(() => {
+    const fetchFeatures = async () => {
+      try {
+        const response = await main.getWorkspaceFeatures(uuid || '', {
+          page: 1,
+          status: 'active'
+        });
+        setFeatures(Array.isArray(response) ? response : response || response || []);
+      } catch (error) {
+        console.error('Error fetching features:', error);
+        setFeatures([]);
+      }
+    };
+    fetchFeatures();
+  }, [main, uuid]);
+
+  useEffect(() => {
+    const fetchPhasesForFeature = async () => {
+      if (newActivity.feature_uuid) {
+        setIsLoadingPhases(true);
+        try {
+          const response = await main.getFeaturePhases(newActivity.feature_uuid);
+          setPhases(Array.isArray(response) ? response : response || response || []);
+        } catch (error) {
+          console.error('Error fetching phases:', error);
+          setPhases([]);
+        } finally {
+          setIsLoadingPhases(false);
+        }
+      } else {
+        setPhases([]);
+      }
+    };
+    fetchPhasesForFeature();
+  }, [newActivity.feature_uuid, main]);
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setNewActivity((prev) => ({ ...prev, [name]: value }));
+    setNewActivity((prev) => ({
+      ...prev,
+      [name]: value,
+      ...(name === 'feature_uuid' && { phase_uuid: '' })
+    }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleArrayInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    field: 'actions' | 'questions'
+  ) => {
+    const inputValue = e.target.value;
+
+    // Process input immediately
+    const newArray = inputValue
+      .split(',')
+      .map((item) => item.trim())
+      .filter((item) => item.length > 0);
+
+    setNewActivity((prev) => ({
+      ...prev,
+      [field]: newArray,
+      [`${field}_input`]: inputValue
+    }));
+  };
+
+  const handleEditClick = (activity: IActivity) => {
+    setNewActivity({
+      notes: [],
+      nextActions: [],
+      question: '',
+      content: activity.content,
+      content_type: activity.content_type,
+      workspace: activity.workspace,
+      feature_uuid: activity.feature_uuid,
+      phase_uuid: activity.phase_uuid,
+      author: activity.author,
+      author_ref: activity.author_ref,
+      thread_id: activity.thread_id || '',
+      feedback: activity.feedback || '',
+      actions: activity.actions || [],
+      questions: activity.questions || [],
+      actions_input: activity.actions?.join(', ') || '',
+      questions_input: activity.questions?.join(', ') || '',
+      title: '',
+      description: '',
+      details: ''
+    });
+    setIsModalOpen(true);
+    setSelectedActivity(activity);
+  };
+
+  const resetForm = () => {
+    setNewActivity({
+      title: '',
+      description: '',
+      details: '',
+      notes: [],
+      nextActions: [],
+      question: '',
+      content: '',
+      content_type: '',
+      workspace: uuid || '',
+      feature_uuid: '',
+      phase_uuid: '',
+      author: 'human',
+      author_ref: ui._meInfo?.owner_pubkey || '',
+      thread_id: '',
+      feedback: '',
+      actions: [],
+      questions: [],
+      actions_input: '',
+      questions_input: ''
+    });
+    setSelectedActivity(null);
+  };
+
+  const handleCreateActivityClick = () => {
+    resetForm();
+    setSelectedActivity(null);
+    setIsModalOpen(true);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!uuid) {
+      alert('Workspace UUID is missing');
+      return;
+    }
+
+    const trimmedContent = newActivity.content.trim();
+
+    if (!trimmedContent) {
+      alert('Content must not be empty');
+      return;
+    }
+
+    if (trimmedContent.length > 10000) {
+      alert('Content must be less than 10000 characters');
+      return;
+    }
+
     try {
-      await activityStore.createActivity({
-        ...newActivity,
-        workspace: 'ctrus0kopisngc0ehip0',
-        content: 'skfjkadfkshf',
-        contentType: 'feature_creation',
-        featureUUID: '',
-        phaseUUID: '',
-        author: 'human',
-        authorRef: ui._meInfo?.owner_pubkey || ''
-      });
-      setIsModalOpen(false);
-      setNewActivity({
-        title: '',
-        description: '',
-        details: '',
-        notes: [],
-        nextActions: []
-      });
+      if (selectedActivity) {
+        // Update existing activity
+        const success = await activityStore.updateActivity(selectedActivity.ID, {
+          ...newActivity,
+          workspace: uuid,
+          content: trimmedContent,
+          content_type: newActivity.content_type as ContentType,
+          author: newActivity.author as AuthorType // Fix type error by casting to AuthorType
+        });
+
+        if (success) {
+          setIsModalOpen(false);
+          resetForm();
+          await activityStore.fetchWorkspaceActivities(uuid);
+        } else {
+          alert('Failed to update activity');
+        }
+      } else {
+        const response = await activityStore.createActivity({
+          ...newActivity,
+          workspace: uuid,
+          content: trimmedContent,
+          content_type: newActivity.content_type as ContentType,
+          author: newActivity.author as AuthorType
+        });
+
+        if (response) {
+          setIsModalOpen(false);
+          resetForm();
+          await activityStore.fetchWorkspaceActivities(uuid);
+        }
+      }
     } catch (error) {
-      console.error('Error creating activity:', error);
+      console.error('Error:', error);
+      alert('Failed to save activity');
     }
   };
 
-  const activities = [
-    {
-      id: 1,
-      title: 'Call with Tom - 01/02/25',
-      date: '01/02/25',
-      type: 'call',
-      details: {
-        transcript: 'The transcript from the call is.....',
-        notes: `I was reviewing you call with Tom yesterday.
-
-You had a question about the next phase of Hive Product graph to 
-build out and sync a graph representation of the Hive Product 
-Methodology, that wasn't resolved.
-
-I had a look and built out a plan for you as a draft plan to implement 
-this feature.`,
-        bulletPoints: [
-          'Setup workflow in Stakwork',
-          'Endpoint to process and submit to stakwork',
-          'Trigger deltas on Product Information'
-        ],
-        nextActions: ['Review proposed workflow', 'Schedule follow-up meeting']
-      }
-    },
-    {
-      id: 2,
-      title: 'Call with Paul - 01/02/25',
-      date: '01/02/25',
-      type: 'call',
-      details: {
-        transcript: 'Call transcript with Paul...',
-        notes: 'Discussion about upcoming features',
-        nextActions: ['Update documentation', 'Share meeting notes']
-      }
-    },
-    {
-      id: 3,
-      title: 'New PR received "End point /build-draft-feature"',
-      date: '01/02/25',
-      type: 'pr',
-      details: {
-        notes: 'Pull request for new endpoint implementation',
-        bulletPoints: [
-          'API endpoint implementation',
-          'Test coverage added',
-          'Documentation updated'
-        ],
-        nextActions: ['Review code', 'Run integration tests']
-      }
-    },
-    {
-      id: 4,
-      title: "Feature x doesn't match spec in current release",
-      date: '01/02/25',
-      type: 'issue',
-      details: {
-        notes: 'Discrepancy found between implementation and specification',
-        bulletPoints: [
-          'Identified mismatched behavior',
-          'Current vs expected behavior documented',
-          'Impact assessment needed'
-        ],
-        nextActions: ['Review specification', 'Update implementation']
-      }
-    }
-  ];
-
-  console.log(ui._meInfo?.owner_pubkey);
+  console.log(ui._meInfo?.owner_pubkey, activityStore.rootActivities);
 
   const handleActivityClick = (activity) => {
     setSelectedActivity(activity);
   };
 
-  useEffect(() => {
-    const workspace = 'ctrus0kopisngc0ehip0';
-    activityStore.fetchWorkspaceActivities(workspace);
-  }, []);
+  const handleDeleteActivity = async (activityId: string) => {
+    if (window.confirm('Are you sure you want to delete this activity?')) {
+      try {
+        const success = await activityStore.deleteActivity(activityId);
+        if (success) {
+          // If the deleted activity was selected, clear the selection
+          if (selectedActivity?.ID === activityId) {
+            setSelectedActivity(null);
+          }
+          // Refresh the activities list
+          await activityStore.fetchWorkspaceActivities(uuid);
+        } else {
+          alert('Failed to delete activity');
+        }
+      } catch (error) {
+        console.error('Error deleting activity:', error);
+        alert('Failed to delete activity');
+      }
+    }
+  };
+
+  const removeItem = (field: 'actions' | 'questions', index: number) => {
+    setNewActivity((prev) => ({
+      ...prev,
+      [field]: prev[field].filter((_, i) => i !== index),
+      [`${field}_input`]: prev[field].filter((_, i) => i !== index).join(', ')
+    }));
+  };
 
   const renderDetailsPanel = () => {
     if (!selectedActivity) {
@@ -345,33 +511,20 @@ this feature.`,
 
     return (
       <>
-        {selectedActivity.details.transcript && (
+        {selectedActivity.questions && (
           <DetailCard>
-            <Title>Transcript</Title>
-            <p>{selectedActivity.details.transcript}</p>
+            <p>
+              {selectedActivity.questions.map((question: string) => (
+                <p key={question}>{question}</p>
+              ))}
+            </p>
           </DetailCard>
         )}
 
         <DetailCard>
-          {selectedActivity.details.notes && (
+          {selectedActivity.feedback && (
             <>
-              <p>{selectedActivity.details.notes}</p>
-              <br />
-            </>
-          )}
-
-          {selectedActivity.details.bulletPoints && (
-            <>
-              <BulletList>
-                {selectedActivity.details.bulletPoints.map(
-                  (
-                    point: boolean | ReactChild | ReactFragment | ReactPortal | null | undefined,
-                    index: Key | null | undefined
-                  ) => (
-                    <li key={index}>{point}</li>
-                  )
-                )}
-              </BulletList>
+              <p>{selectedActivity.feedback}</p>
               <br />
             </>
           )}
@@ -379,14 +532,14 @@ this feature.`,
 
         <NextActionsSection>
           <Title>Next actions</Title>
-          {selectedActivity.details.nextActions?.map((action: any, index: any) => (
+          {selectedActivity.actions?.map((action: any, index: any) => (
             <ActionItem key={index}>{action}</ActionItem>
           )) || <ActionItem>No actions defined</ActionItem>}
         </NextActionsSection>
 
         <ActionButtons>
-          <EditButton onClick={() => console.log('Edit', selectedActivity.id)}>Edit</EditButton>
-          <DeleteButton onClick={() => console.log('Delete', selectedActivity.id)}>
+          <EditButton onClick={() => handleEditClick(selectedActivity)}>Edit</EditButton>
+          <DeleteButton onClick={() => handleDeleteActivity(selectedActivity.ID)}>
             Delete
           </DeleteButton>
         </ActionButtons>
@@ -397,39 +550,160 @@ this feature.`,
   return (
     <div style={{ backgroundColor: '#f8f9fa', height: '100%' }}>
       <ActivitiesHeader />
-      <AddActivityButton onClick={() => setIsModalOpen(true)}>Add New Activity</AddActivityButton>
+      <AddActivityButton
+        onClick={handleCreateActivityClick}
+        disabled={!uuid} // Disable if workspace UUID is not available
+      >
+        Add New Activity
+      </AddActivityButton>
       <ActivitiesContainer>
         {isModalOpen && (
-          <ModalOverlay onClick={() => setIsModalOpen(false)}>
+          <ModalOverlay
+            onClick={() => {
+              setIsModalOpen(false);
+              resetForm();
+            }}
+          >
             <ModalContent onClick={(e) => e.stopPropagation()}>
               <h2>Create New Activity</h2>
               <Form onSubmit={handleSubmit}>
                 <FormField>
-                  <label>Title</label>
+                  <label>Workspace</label>
                   <Input
-                    name="title"
-                    value={newActivity.title}
+                    name="workspace"
+                    value={uuid}
                     onChange={handleInputChange}
+                    disabled
                     required
                   />
                 </FormField>
                 <FormField>
-                  <label>Description</label>
-                  <TextArea
-                    name="description"
-                    value={newActivity.description}
+                  <label>Content Type</label>
+                  <select
+                    name="content_type"
+                    value={newActivity.content_type}
                     onChange={handleInputChange}
                     required
+                  >
+                    <option value="">Select content type</option>
+                    <option value="feature_creation">Feature Creation</option>
+                    <option value="story_update">Story Update</option>
+                    <option value="requirement_change">Requirement Change</option>
+                    <option value="general_update">General Update</option>
+                  </select>
+                </FormField>
+                <FormField>
+                  <label>Content</label>
+                  <TextArea
+                    name="content"
+                    value={newActivity.content}
+                    onChange={handleInputChange}
+                    required
+                    maxLength={10000}
+                    minLength={1}
+                  />
+                  <CharacterCount
+                    className={newActivity.content.trim().length > 10000 ? 'error' : ''}
+                  >
+                    {newActivity.content.trim().length}/10000 characters
+                  </CharacterCount>
+                </FormField>
+                <FormField>
+                  <label>Question</label>
+                  <Input
+                    name="question"
+                    value={newActivity.question}
+                    onChange={handleInputChange}
                   />
                 </FormField>
                 <FormField>
-                  <label>Details</label>
+                  <label>Feedback</label>
                   <TextArea
-                    name="details"
-                    value={newActivity.details}
+                    name="feedback"
+                    value={newActivity.feedback}
+                    onChange={handleInputChange}
+                  />
+                </FormField>
+                <FormField>
+                  <label>Actions (comma separated)</label>
+                  <Input
+                    name="actions"
+                    value={newActivity.actions_input}
+                    onChange={(e) => handleArrayInputChange(e, 'actions')}
+                    placeholder="Enter actions separated by commas"
+                  />
+                  <ItemList>
+                    {newActivity.actions.map((action, index) => (
+                      <Item key={index}>
+                        <span>{action}</span>
+                        <RemoveButton onClick={() => removeItem('actions', index)}>×</RemoveButton>
+                      </Item>
+                    ))}
+                  </ItemList>
+                </FormField>
+                <FormField>
+                  <label>Questions (comma separated)</label>
+                  <Input
+                    name="questions"
+                    value={newActivity.questions_input}
+                    onChange={(e) => handleArrayInputChange(e, 'questions')}
+                    placeholder="Enter questions separated by commas"
+                  />
+                  <ItemList>
+                    {newActivity.questions.map((question, index) => (
+                      <Item key={index}>
+                        <span>{question}</span>
+                        <RemoveButton onClick={() => removeItem('questions', index)}>
+                          ×
+                        </RemoveButton>
+                      </Item>
+                    ))}
+                  </ItemList>
+                </FormField>
+                <FormField>
+                  <label>Thread ID</label>
+                  <Input
+                    name="thread_id"
+                    value={newActivity.thread_id}
+                    onChange={handleInputChange}
+                  />
+                </FormField>
+                <FormField>
+                  <label>Feature</label>
+                  <select
+                    name="feature_uuid"
+                    value={newActivity.feature_uuid}
                     onChange={handleInputChange}
                     required
-                  />
+                  >
+                    <option value="">Select a feature</option>
+                    {features.map((feature) => (
+                      <option key={feature.uuid} value={feature.uuid}>
+                        {feature.name}
+                      </option>
+                    ))}
+                  </select>
+                </FormField>
+                <FormField>
+                  <label>Phase</label>
+                  <select
+                    name="phase_uuid"
+                    value={newActivity.phase_uuid}
+                    onChange={handleInputChange}
+                    required
+                    disabled={!newActivity.feature_uuid || isLoadingPhases}
+                  >
+                    <option value="">Select a phase</option>
+                    {isLoadingPhases ? (
+                      <option>Loading phases...</option>
+                    ) : (
+                      phases.map((phase) => (
+                        <option key={phase.uuid} value={phase.uuid}>
+                          {phase.name}
+                        </option>
+                      ))
+                    )}
+                  </select>
                 </FormField>
                 <Button type="submit">Create Activity</Button>
               </Form>
@@ -439,16 +713,16 @@ this feature.`,
 
         <ActivitiesList>
           <Title style={{ fontSize: '2.25rem' }}>Activities</Title>
-          {activities.length === 0 ? (
+          {activityStore.rootActivities.length === 0 ? (
             <div>No activities available</div>
           ) : (
-            activities.map((activity: any) => (
+            activityStore.rootActivities.map((activity: any) => (
               <ActivityItem
                 key={activity.id}
-                isSelected={selectedActivity?.id === activity.id}
+                isSelected={selectedActivity?.ID === activity.ID}
                 onClick={() => handleActivityClick(activity)}
               >
-                {activity.title}
+                {activity.content}
                 {activity.timeCreated && (
                   <span>{new Date(activity.timeCreated).toLocaleString()}</span>
                 )}
