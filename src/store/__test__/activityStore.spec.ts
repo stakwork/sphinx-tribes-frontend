@@ -96,25 +96,35 @@ describe('ActivityStore', () => {
 
   describe('createThreadResponse', () => {
     it('should create a thread response', async () => {
-      const threadResponse: INewActivity = {
-        workspace: 'test',
-        content: 'Thread response',
-        content_type: 'general_update',
+      const mockResponse = {
+        ID: '2',
+        actions: [],
+        author: 'human',
+        author_ref: 'user1',
+        content: 'Test activity',
+        content_type: 'feature_creation',
         feature_uuid: 'feature1',
         phase_uuid: 'phase1',
-        author: 'human',
-        author_ref: 'user1'
-      };
-
-      const mockResponse = {
-        ...mockActivity,
-        id: '2',
-        thread_id: '1'
+        questions: [],
+        sequence: 1,
+        status: 'active',
+        thread_id: '1',
+        time_created: '2025-02-13T02:02:05.221Z',
+        time_updated: '2025-02-13T02:02:05.221Z',
+        workspace: 'test'
       };
 
       (mainStore.createActivity as jest.Mock).mockResolvedValue(mockResponse);
 
-      const result = await activityStore.createThreadResponse('1', threadResponse);
+      const result = await activityStore.createThreadResponse('1', {
+        content: 'Test activity',
+        content_type: 'feature_creation',
+        feature_uuid: 'feature1',
+        phase_uuid: 'phase1',
+        author: 'human',
+        author_ref: 'user1',
+        workspace: 'test'
+      });
 
       expect(result).toEqual(mockResponse);
       expect(activityStore.activities.get('2')).toEqual(mockResponse);
@@ -191,19 +201,30 @@ describe('ActivityStore', () => {
 
   describe('rootActivities', () => {
     it('should return root activities sorted by date', () => {
-      const olderActivity: IActivity = {
-        ...mockActivity,
+      const activity1 = {
+        ID: '1',
+        thread_id: null,
+        time_created: '2025-02-13T02:02:05.221Z'
+      };
+      const activity2 = {
         ID: '2',
-        time_created: new Date('2023-01-01').toISOString()
+        thread_id: null,
+        time_created: '2025-02-14T02:02:05.221Z'
+      };
+      const activity3 = {
+        ID: '3',
+        thread_id: '1',
+        time_created: '2025-02-15T02:02:05.221Z'
       };
 
-      activityStore.activities.set('1', mockActivity);
-      activityStore.activities.set('2', olderActivity);
+      activityStore.activities.set('1', activity1 as IActivity);
+      activityStore.activities.set('2', activity2 as IActivity);
+      activityStore.activities.set('3', activity3 as IActivity);
 
       const roots = activityStore.rootActivities;
       expect(roots.length).toBe(2);
-      expect(roots[0].ID).toBe('1');
-      expect(roots[1].ID).toBe('2');
+      expect(roots[0].ID).toBe('2');
+      expect(roots[1].ID).toBe('1');
     });
   });
 

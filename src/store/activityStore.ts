@@ -28,11 +28,11 @@ export class ActivityStore {
 
   get rootActivities(): IActivity[] {
     const allActivities = Array.from(this.activities.values());
-    const rootActivities = allActivities.filter((activity: IActivity) => {
-      // thread_id should be null for root activities
-      const isRoot = activity.thread_id;
-      return isRoot;
-    });
+    const rootActivities = allActivities.filter(
+      (activity: IActivity) =>
+        // Root activities should have no thread_id or have thread_id equal to their own ID
+        !activity.thread_id || activity.thread_id === activity.ID
+    );
 
     return rootActivities.sort(
       (a: IActivity, b: IActivity) =>
@@ -101,7 +101,24 @@ export class ActivityStore {
     threadId: string,
     newActivity: Omit<INewActivity, 'thread_id'>
   ): Promise<IActivity | null> {
-    return this.createActivity({ ...newActivity, thread_id: threadId });
+    try {
+      const activity = await this.createActivity({
+        ...newActivity,
+        thread_id: threadId
+      });
+      if (activity) {
+        runInAction(() => {
+          this.activities.set(activity.ID, activity);
+        });
+        return activity;
+      }
+      return null;
+    } catch (error) {
+      runInAction(() => {
+        this.error = error instanceof Error ? error.message : 'Unknown error';
+      });
+      return null;
+    }
   }
 
   async updateActivity(

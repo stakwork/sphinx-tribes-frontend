@@ -433,7 +433,7 @@ const Activities = observer(() => {
           workspace: uuid,
           content: trimmedContent,
           content_type: newActivity.content_type as ContentType,
-          author: newActivity.author as AuthorType // Fix type error by casting to AuthorType
+          author: newActivity.author as AuthorType
         });
 
         if (success) {
