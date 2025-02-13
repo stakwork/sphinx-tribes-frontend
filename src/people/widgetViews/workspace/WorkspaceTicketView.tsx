@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/typedef */
 import React, { useCallback, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useParams, useHistory } from 'react-router-dom';
 import { useStores } from 'store';
-import { EuiFlexGroup, EuiFlexItem, EuiLoadingSpinner } from '@elastic/eui';
+import { EuiFlexGroup, EuiFlexItem, EuiLoadingSpinner, EuiSelect } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
 import { createSocketInstance, SOCKET_MSG } from 'config/socket';
 import WorkspaceTicketEditor from 'components/common/TicketEditor/WorkspaceTicketEditor';
@@ -28,6 +29,8 @@ const WorkspaceTicketView: React.FC = observer(() => {
   const { main } = useStores();
   const history = useHistory();
   const [currentTicketId, setCurrentTicketId] = useState<string>(ticketId);
+  const [availableFeatures, setAvailableFeatures] = useState<Feature[]>([]);
+  const [availablePhases, setAvailablePhases] = useState<Phase[]>([]);
 
   useEffect(() => {
     const socket = createSocketInstance();
@@ -195,6 +198,72 @@ const WorkspaceTicketView: React.FC = observer(() => {
     );
   };
 
+  // Fetch available features when component mounts
+  useEffect(() => {
+    const fetchFeatures = async () => {
+      try {
+        const features = await main.getFeatures();
+        setAvailableFeatures(features);
+      } catch (error) {
+        console.error('Error fetching features:', error);
+      }
+    };
+    fetchFeatures();
+  }, [main]);
+
+  // Fetch phases when feature is selected
+  useEffect(() => {
+    const fetchPhases = async () => {
+      if (currentTicket?.feature_uuid) {
+        try {
+          const phases = await main.getFeaturePhases(currentTicket.feature_uuid);
+          setAvailablePhases(phases);
+        } catch (error) {
+          console.error('Error fetching phases:', error);
+        }
+      }
+    };
+    fetchPhases();
+  }, [currentTicket?.feature_uuid, main]);
+
+  const handleFeatureChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const featureUuid = e.target.value;
+    const selectedFeature = availableFeatures.find((f) => f.uuid === featureUuid);
+
+    if (selectedFeature) {
+      setFeatureData(selectedFeature);
+      // Clear phase data when feature changes
+      setPhaseData(null);
+      setAvailablePhases([]);
+    }
+  };
+
+  const handlePhaseChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const phaseUuid = e.target.value;
+    const selectedPhase = availablePhases.find((p) => p.uuid === phaseUuid);
+    if (selectedPhase) {
+      setPhaseData(selectedPhase);
+    }
+  };
+
+  const handleSave = async () => {
+    if (currentTicket) {
+      try {
+        await main.createUpdateTicket({
+          metadata: { source: 'workspace', id: currentTicket.uuid },
+          ticket: {
+            ...currentTicket,
+            feature_uuid: featureData?.uuid || '',
+            phase_uuid: phaseData?.uuid || ''
+          }
+        });
+        // Show success notification or refresh data
+      } catch (error) {
+        console.error('Error updating ticket:', error);
+      }
+    }
+  };
+
   if (isLoading) {
     return (
       <FeatureBody>
@@ -264,13 +333,32 @@ const WorkspaceTicketView: React.FC = observer(() => {
       </FeatureHeadWrap>
       <FeatureDataWrap>
         <PhaseLabel>
-          Feature: <LabelValue>{featureData?.name}</LabelValue>
+          Feature:
+          <EuiSelect
+            options={[
+              { value: '', text: 'Select Feature' },
+              ...availableFeatures.map((f) => ({ value: f.uuid, text: f.name }))
+            ]}
+            value={featureData?.uuid || ''}
+            onChange={handleFeatureChange}
+          />
         </PhaseLabel>
         <PhaseLabel>
-          Phase: <LabelValue>{phaseData?.name}</LabelValue>{' '}
-          <LabelValue>
-            <StyledLink onClick={handleLinkClick}>[Phase Planner]</StyledLink>
-          </LabelValue>
+          Phase:
+          <EuiSelect
+            options={[
+              { value: '', text: 'Select Phase' },
+              ...availablePhases.map((p) => ({ value: p.uuid, text: p.name }))
+            ]}
+            value={phaseData?.uuid || ''}
+            onChange={handlePhaseChange}
+            disabled={!featureData}
+          />
+          {featureData && phaseData && (
+            <LabelValue>
+              <StyledLink onClick={handleLinkClick}>[Phase Planner]</StyledLink>
+            </LabelValue>
+          )}
         </PhaseLabel>
         <WorkspaceTicketEditor
           ticketData={currentTicket}
@@ -280,6 +368,7 @@ const WorkspaceTicketView: React.FC = observer(() => {
           hasInteractiveChildren={false}
           swwfLink={swwfLinks[currentTicket.uuid]}
           getPhaseTickets={getTickets}
+          // onSave={handleSave}
         />
       </FeatureDataWrap>
     </FeatureBody>
