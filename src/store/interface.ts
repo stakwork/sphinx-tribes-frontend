@@ -117,8 +117,8 @@ export interface PersonBounty {
   estimated_session_length: string;
   bounty_expires?: string;
   commitment_fee?: number;
-  feature_id?: string;
-  phase_id?: string;
+  feature_uuid?: string;
+  phase_uuid?: string;
   text_snippet_id?: string;
 }
 

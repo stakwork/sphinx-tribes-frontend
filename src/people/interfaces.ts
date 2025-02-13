@@ -43,6 +43,7 @@ export interface FocusViewProps {
   setAfterEdit?: (boolean) => void;
   getBounty?: () => Promise<void>;
   phase_uuid?: string;
+  feature_uuid?: string;
 }
 
 export interface PeopleMobileeHeaderProps {
@@ -258,8 +259,8 @@ export interface WantedSummaryProps {
   formSubmit: (any, notEdit?: boolean) => void;
   title: string;
   org_uuid?: string;
-  phase_id?: string;
-  feature_id?: string;
+  phase_uuid?: string;
+  feature_uuid?: string;
   id?: number;
   owner_id?: string;
   markPaidOrUnpaid?: ReactNode;

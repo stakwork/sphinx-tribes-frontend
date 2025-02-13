@@ -693,14 +693,14 @@ export const wantedCodingTaskSchema: FormField[] = [
     testId: 'Github'
   },
   {
-    name: 'feature_id',
+    name: 'feature_uuid',
     label: 'Feature',
     type: 'select',
     options: [],
     validator: strValidatorNotRequired
   },
   {
-    name: 'phase_id',
+    name: 'phase_uuid',
     label: 'Phase',
     type: 'select',
     options: [],
