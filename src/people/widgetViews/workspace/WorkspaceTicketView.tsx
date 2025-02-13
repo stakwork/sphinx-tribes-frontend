@@ -362,25 +362,25 @@ const WorkspaceTicketView: React.FC = observer(() => {
         </SelectWrapper>
 
         <SelectWrapper>
-            <StyledSelect
-              value={currentTicket?.phase_uuid || ''}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                handlePhaseChange(e.target.value || undefined)
-              }
-              disabled={isLoadingPhases || !currentTicket?.feature_uuid}
-            >
-              <option value="">Select Phase</option>
-              {phases.map((phase: Phase) => (
-                <option key={phase.uuid} value={phase.uuid}>
-                  {phase.name}
-                </option>
-              ))}
-            </StyledSelect>
-            {currentTicket?.feature_uuid && currentTicket?.phase_uuid && (
-              <LabelValue style={{ marginTop: '10px' }}>
-                <StyledLink onClick={handleLinkClick}>[Phase Planner]</StyledLink>
-              </LabelValue>
-            )}
+          <StyledSelect
+            value={currentTicket?.phase_uuid || ''}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+              handlePhaseChange(e.target.value || undefined)
+            }
+            disabled={isLoadingPhases || !currentTicket?.feature_uuid}
+          >
+            <option value="">Select Phase</option>
+            {phases.map((phase: Phase) => (
+              <option key={phase.uuid} value={phase.uuid}>
+                {phase.name}
+              </option>
+            ))}
+          </StyledSelect>
+          {currentTicket?.feature_uuid && currentTicket?.phase_uuid && (
+            <LabelValue style={{ marginTop: '10px' }}>
+              <StyledLink onClick={handleLinkClick}>[Phase Planner]</StyledLink>
+            </LabelValue>
+          )}
         </SelectWrapper>
         <WorkspaceTicketEditor
           ticketData={currentTicket}
