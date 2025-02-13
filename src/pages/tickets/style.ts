@@ -538,7 +538,6 @@ export const StyledLink = styled.a`
   color: #648dff;
   text-decoration: none;
   cursor: pointer;
-  margin-left: 20px;
 
   &:hover {
     text-decoration: underline;

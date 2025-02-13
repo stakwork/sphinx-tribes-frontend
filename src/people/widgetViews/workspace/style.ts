@@ -1863,3 +1863,56 @@ export const ProofActionButton = styled.button<ButtonProps>`
     }
   }
 `;
+
+export const SelectWrapper = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 300px;
+  margin-bottom: 16px;
+`;
+
+export const StyledSelect = styled.select`
+  width: 100%;
+  padding: 12px 40px 12px 16px;
+  font-size: 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  background-color: #ffffff;
+  color: #1f2937;
+  appearance: none;
+  cursor: pointer;
+  transition: 0.2s ease all;
+
+  &:hover {
+    border-color: #3b82f6;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  &:disabled {
+    background-color: #f3f4f6;
+    border-color: #d1d5db;
+    color: #9ca3af;
+    cursor: not-allowed;
+  }
+
+  option {
+    padding: 12px;
+  }
+
+  /* Style for the placeholder option */
+  option:first-child {
+    color: #6b7280;
+  }
+
+  /* Change color when an actual option is selected */
+  &:not(:invalid) {
+    color: #1f2937;
+  }
+`;

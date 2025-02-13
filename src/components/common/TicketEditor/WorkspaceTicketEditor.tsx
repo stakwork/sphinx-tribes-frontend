@@ -40,6 +40,7 @@ interface TicketEditorProps {
   dragHandleProps?: Record<string, any>;
   swwfLink?: string;
   getPhaseTickets: () => Promise<Ticket[] | undefined>;
+  onSave?: (ticket: Ticket) => void;
 }
 
 const SwitcherContainer = styled.div`
@@ -126,7 +127,7 @@ const EditorWrapper = styled.div`
 `;
 
 const WorkspaceTicketEditor = observer(
-  ({ ticketData, websocketSessionId, dragHandleProps, swwfLink }: TicketEditorProps) => {
+  ({ ticketData, websocketSessionId, dragHandleProps, swwfLink, onSave }: TicketEditorProps) => {
     const [toasts, setToasts] = useState<Toast[]>([]);
     const [versions, setVersions] = useState<number[]>([]);
     const latestTicket = workspaceTicketStore.getLatestVersionFromGroup(
@@ -245,6 +246,10 @@ const WorkspaceTicketEditor = observer(
               updatedTicket.uuid = updatedTicket.UUID;
             }
             workspaceTicketStore.addTicket(updatedTicket);
+
+            if (updatedTicket.version === ticketData.version + 1) {
+              onSave?.(updatedTicket);
+            }
           }
         }
 
