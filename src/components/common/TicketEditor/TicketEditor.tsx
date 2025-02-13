@@ -179,7 +179,13 @@ const TicketEditor = observer(
     );
 
     useEffect(() => {
-      snippetStore.loadSnippets(workspaceUUID);
+      if (!workspaceUUID) return;
+
+      const fetchSnippets = async () => {
+        await snippetStore.loadSnippets(workspaceUUID);
+      };
+
+      fetchSnippets();
     }, [workspaceUUID]);
 
     const snippets = snippetStore.getAllSnippets();
