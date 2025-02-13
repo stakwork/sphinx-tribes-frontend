@@ -92,6 +92,50 @@ describe('ActivityStore', () => {
       expect(result).toBeNull();
       expect(activityStore.error).toBe('Creation failed');
     });
+
+    it('should create activity with title', async () => {
+      const newActivity: INewActivity = {
+        workspace: 'test',
+        content: 'New activity',
+        contentType: 'feature_creation',
+        featureUUID: 'feature1',
+        phaseUUID: 'phase1',
+        author: 'human',
+        authorRef: 'user1',
+        title: 'Test Title'
+      };
+
+      const mockResponseActivity = {
+        ...mockActivity,
+        title: 'Test Title'
+      };
+
+      (mainStore.createActivity as jest.Mock).mockResolvedValue(mockResponseActivity);
+
+      const result = await activityStore.createActivity(newActivity);
+
+      expect(result).toEqual(mockResponseActivity);
+      expect(activityStore.activities.get('1')?.title).toBe('Test Title');
+    });
+
+    it('should create activity without title', async () => {
+      const newActivity: INewActivity = {
+        workspace: 'test',
+        content: 'New activity',
+        contentType: 'feature_creation',
+        featureUUID: 'feature1',
+        phaseUUID: 'phase1',
+        author: 'human',
+        authorRef: 'user1'
+      };
+
+      (mainStore.createActivity as jest.Mock).mockResolvedValue(mockActivity);
+
+      const result = await activityStore.createActivity(newActivity);
+
+      expect(result).toEqual(mockActivity);
+      expect(activityStore.activities.get('1')?.title).toBeUndefined();
+    });
   });
 
   describe('createThreadResponse', () => {
@@ -144,6 +188,37 @@ describe('ActivityStore', () => {
 
       expect(result).toBe(false);
       expect(activityStore.error).toBe('Update failed');
+    });
+
+    it('should update activity title', async () => {
+      activityStore.activities.set('1', mockActivity);
+      const updates = { title: 'Updated Title' };
+
+      (mainStore.updateActivity as jest.Mock).mockResolvedValue(true);
+
+      const result = await activityStore.updateActivity('1', updates);
+
+      expect(result).toBe(true);
+      expect(activityStore.activities.get('1')?.title).toBe('Updated Title');
+    });
+
+    it('should update activity without title', async () => {
+      const activityWithTitle = { ...mockActivity, title: 'Initial Title' };
+      activityStore.activities.set('1', activityWithTitle);
+
+      const updates = { content: 'Updated content' };
+
+      (mainStore.updateActivity as jest.Mock).mockResolvedValue(true);
+
+      const result = await activityStore.updateActivity('1', updates);
+
+      expect(result).toBe(true);
+      expect(activityStore.activities.get('1')).toEqual({
+        ...activityWithTitle,
+        content: 'Updated content'
+      });
+
+      expect(activityStore.activities.get('1')?.title).toBe('Initial Title');
     });
   });
 
