@@ -616,6 +616,7 @@ export interface IActivity {
   sequence: number;
   contentType: ContentType;
   content: string;
+  title?: string;
   workspace: string;
   featureUUID: string;
   phaseUUID: string;
@@ -638,4 +639,5 @@ export interface INewActivity {
   author: AuthorType;
   authorRef: string;
   threadId?: string;
+  title?: string;
 }
