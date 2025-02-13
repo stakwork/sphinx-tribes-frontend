@@ -7,7 +7,7 @@ import MaterialIcon from '@material/react-material-icon';
 import { createSocketInstance, SOCKET_MSG } from 'config/socket';
 import WorkspaceTicketEditor from 'components/common/TicketEditor/WorkspaceTicketEditor';
 import { workspaceTicketStore } from '../../../store/workspace-ticket';
-import { Feature, TicketMessage } from '../../../store/interface';
+import { Feature, Ticket, TicketMessage } from '../../../store/interface';
 import {
   FeatureBody,
   FeatureDataWrap,
@@ -22,12 +22,15 @@ const WorkspaceTicketView: React.FC = observer(() => {
   const { workspaceId, ticketId } = useParams<{ workspaceId: string; ticketId: string }>();
   const [websocketSessionId, setWebsocketSessionId] = useState<string>('');
   const [swwfLinks, setSwwfLinks] = useState<Record<string, string>>({});
-  const [featureData, setFeatureData] = useState<Feature | null>(null);
-  const [phaseData, setPhaseData] = useState<Phase | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { main } = useStores();
   const history = useHistory();
   const [currentTicketId, setCurrentTicketId] = useState<string>(ticketId);
+  const [features, setFeatures] = useState<Feature[]>([]);
+  const [phases, setPhases] = useState<Phase[]>([]);
+
+  const [isLoadingFeatures, setIsLoadingFeatures] = useState(false);
+  const [isLoadingPhases, setIsLoadingPhases] = useState(false);
 
   useEffect(() => {
     const socket = createSocketInstance();
@@ -177,8 +180,8 @@ const WorkspaceTicketView: React.FC = observer(() => {
         const feature = await getFeatureData();
         const phase = await getPhaseData();
         if (feature && phase) {
-          setFeatureData(feature);
-          setPhaseData(phase);
+          // setFeatureData(feature);
+          // setPhaseData(phase);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -193,6 +196,64 @@ const WorkspaceTicketView: React.FC = observer(() => {
       `/feature/${currentTicket?.feature_uuid}/phase/${currentTicket?.phase_uuid}/planner`,
       '_target'
     );
+  };
+
+  useEffect(() => {
+    const loadFeatures = async () => {
+      setIsLoadingFeatures(true);
+      try {
+        const workspaceFeatures = await main.getWorkspaceFeatures(workspaceId, {});
+        setFeatures(workspaceFeatures);
+      } catch (error) {
+        console.error('Error loading features:', error);
+      } finally {
+        setIsLoadingFeatures(false);
+      }
+    };
+    loadFeatures();
+  }, [workspaceId, main]);
+
+  useEffect(() => {
+    const loadPhases = async () => {
+      if (!currentTicket?.feature_uuid) {
+        setPhases([]);
+        return;
+      }
+
+      setIsLoadingPhases(true);
+      try {
+        const featurePhases = await main.getFeaturePhases(currentTicket.feature_uuid);
+        setPhases(featurePhases);
+      } catch (error) {
+        console.error('Error loading phases:', error);
+      } finally {
+        setIsLoadingPhases(false);
+      }
+    };
+    loadPhases();
+  }, [currentTicket?.feature_uuid, main]);
+
+  const handleFeatureChange = async (featureUuid: string | undefined) => {
+    if (!currentTicket) return;
+
+    const updatedTicket: Partial<Ticket> = {
+      ...currentTicket,
+      feature_uuid: featureUuid,
+      phase_uuid: undefined // Reset phase when feature changes
+    };
+
+    workspaceTicketStore.updateTicket(currentTicket.uuid, updatedTicket);
+  };
+
+  const handlePhaseChange = async (phaseUuid: string | undefined) => {
+    if (!currentTicket) return;
+
+    const updatedTicket: Partial<Ticket> = {
+      ...currentTicket,
+      phase_uuid: phaseUuid
+    };
+
+    workspaceTicketStore.updateTicket(currentTicket.uuid, updatedTicket);
   };
 
   if (isLoading) {
@@ -264,13 +325,43 @@ const WorkspaceTicketView: React.FC = observer(() => {
       </FeatureHeadWrap>
       <FeatureDataWrap>
         <PhaseLabel>
-          Feature: <LabelValue>{featureData?.name}</LabelValue>
+          Feature:{' '}
+          <select
+            value={currentTicket?.feature_uuid || ''}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+              handleFeatureChange(e.target.value || undefined)
+            }
+            disabled={isLoadingFeatures}
+          >
+            <option value="">Select Feature</option>
+            {features.map((feature: Feature) => (
+              <option key={feature.uuid} value={feature.uuid}>
+                {feature.name}
+              </option>
+            ))}
+          </select>
         </PhaseLabel>
         <PhaseLabel>
-          Phase: <LabelValue>{phaseData?.name}</LabelValue>{' '}
-          <LabelValue>
-            <StyledLink onClick={handleLinkClick}>[Phase Planner]</StyledLink>
-          </LabelValue>
+          Phase:{' '}
+          <select
+            value={currentTicket?.phase_uuid || ''}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+              handlePhaseChange(e.target.value || undefined)
+            }
+            disabled={isLoadingPhases || !currentTicket?.feature_uuid}
+          >
+            <option value="">Select Phase</option>
+            {phases.map((phase: Phase) => (
+              <option key={phase.uuid} value={phase.uuid}>
+                {phase.name}
+              </option>
+            ))}
+          </select>
+          {currentTicket?.feature_uuid && currentTicket?.phase_uuid && (
+            <LabelValue>
+              <StyledLink onClick={handleLinkClick}>[Phase Planner]</StyledLink>
+            </LabelValue>
+          )}
         </PhaseLabel>
         <WorkspaceTicketEditor
           ticketData={currentTicket}
