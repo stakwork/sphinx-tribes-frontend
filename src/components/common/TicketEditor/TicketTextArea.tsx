@@ -117,16 +117,39 @@ export const TicketTextAreaComp = ({
   };
 
   const handlePaste = async (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
-    const { items } = e.clipboardData;
-    for (const item of Array.from(items)) {
-      if (item.type.startsWith('image/')) {
+    const { items, files } = e.clipboardData;
+
+    console.log('=== Paste Debug Info ===');
+    console.log(
+      'Files:',
+      Array.from(files).map((f: File) => ({ type: f.type, size: f.size }))
+    );
+    console.log(
+      'Items:',
+      Array.from(items).map((item: DataTransferItem) => ({ kind: item.kind, type: item.type }))
+    );
+
+    if (files.length > 0) {
+      const file = files[0];
+      if (file.type.startsWith('image/')) {
         e.preventDefault();
+        await handleImageUpload(file);
+        return;
+      }
+    }
+
+    for (const item of Array.from(items)) {
+      if (item.kind === 'file' && item.type.startsWith('image/')) {
         const file = item.getAsFile();
         if (file) {
+          e.preventDefault();
           await handleImageUpload(file);
+          return;
         }
       }
     }
+
+    console.log('No image found in clipboard');
   };
 
   const { getRootProps, getInputProps } = useDropzone({
