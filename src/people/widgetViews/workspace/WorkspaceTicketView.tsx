@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useParams, useHistory } from 'react-router-dom';
 import { useStores } from 'store';
@@ -7,14 +7,23 @@ import MaterialIcon from '@material/react-material-icon';
 import { createSocketInstance, SOCKET_MSG } from 'config/socket';
 import WorkspaceTicketEditor from 'components/common/TicketEditor/WorkspaceTicketEditor';
 import { workspaceTicketStore } from '../../../store/workspace-ticket';
-import { TicketMessage } from '../../../store/interface';
-import { FeatureBody, FeatureDataWrap } from '../../../pages/tickets/style';
+import { Feature, TicketMessage } from '../../../store/interface';
+import {
+  FeatureBody,
+  FeatureDataWrap,
+  LabelValue,
+  PhaseLabel,
+  StyledLink
+} from '../../../pages/tickets/style';
 import { FeatureHeadWrap, FeatureHeadNameWrap, WorkspaceName } from './style';
+import { Phase } from './interface.ts';
 
 const WorkspaceTicketView: React.FC = observer(() => {
   const { workspaceId, ticketId } = useParams<{ workspaceId: string; ticketId: string }>();
   const [websocketSessionId, setWebsocketSessionId] = useState<string>('');
   const [swwfLinks, setSwwfLinks] = useState<Record<string, string>>({});
+  const [featureData, setFeatureData] = useState<Feature | null>(null);
+  const [phaseData, setPhaseData] = useState<Phase | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { main } = useStores();
   const history = useHistory();
@@ -147,6 +156,45 @@ const WorkspaceTicketView: React.FC = observer(() => {
 
   const currentTicket = workspaceTicketStore.getTicket(currentTicketId);
 
+  const getFeatureData = useCallback(async () => {
+    if (!currentTicket?.feature_uuid) return;
+    const data = await main.getFeaturesByUuid(currentTicket?.feature_uuid);
+    return data;
+  }, [currentTicket?.feature_uuid, main]);
+
+  const getPhaseData = useCallback(async () => {
+    if (!currentTicket?.feature_uuid || !currentTicket?.phase_uuid) return;
+    const data = await main.getFeaturePhaseByUUID(
+      currentTicket.feature_uuid,
+      currentTicket.phase_uuid
+    );
+    return data;
+  }, [currentTicket?.feature_uuid, currentTicket?.phase_uuid, main]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const feature = await getFeatureData();
+        const phase = await getPhaseData();
+        if (feature && phase) {
+          setFeatureData(feature);
+          setPhaseData(phase);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, [getFeatureData, getPhaseData]);
+
+  const handleLinkClick = () => {
+    window.open(
+      `/feature/${currentTicket?.feature_uuid}/phase/${currentTicket?.phase_uuid}/planner`,
+      '_target'
+    );
+  };
+
   if (isLoading) {
     return (
       <FeatureBody>
@@ -215,6 +263,15 @@ const WorkspaceTicketView: React.FC = observer(() => {
         </FeatureHeadNameWrap>
       </FeatureHeadWrap>
       <FeatureDataWrap>
+        <PhaseLabel>
+          Feature: <LabelValue>{featureData?.name}</LabelValue>
+        </PhaseLabel>
+        <PhaseLabel>
+          Phase: <LabelValue>{phaseData?.name}</LabelValue>{' '}
+          <LabelValue>
+            <StyledLink onClick={handleLinkClick}>[Phase Planner]</StyledLink>
+          </LabelValue>
+        </PhaseLabel>
         <WorkspaceTicketEditor
           ticketData={currentTicket}
           websocketSessionId={websocketSessionId}
