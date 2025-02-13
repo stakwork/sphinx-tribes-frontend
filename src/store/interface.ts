@@ -398,7 +398,7 @@ export const queryLimit = 25;
 export const orgQuerLimit = 500;
 export const paginationQueryLimit = 25;
 export const peopleQueryLimit = 500;
-export const featureLimit = 4;
+export const featureLimit = 500;
 export const phaseBountyLimit = 3;
 
 export type TicketStatus =
