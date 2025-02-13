@@ -2,6 +2,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
+import { bountyReviewStore } from 'store/bountyReviewStore';
 import api from '../../../api';
 import { colors } from '../../../config/colors';
 import Form from '../../../components/form/bounty';
@@ -128,6 +129,8 @@ function WantedSummary(props: WantedSummaryProps) {
   useEffect(() => {
     if (assignee?.owner_alias) {
       setIsAssigned(true);
+    } else {
+      setIsAssigned(false);
     }
   }, [assignee]);
 
@@ -143,7 +146,7 @@ function WantedSummary(props: WantedSummaryProps) {
   }, []);
 
   const handleAssigneeDetails = useCallback(
-    (value: any) => {
+    async (value: any) => {
       setIsAssigned(true);
       setAssignedPerson(value);
       assigneeHandlerOpen();
@@ -168,6 +171,7 @@ function WantedSummary(props: WantedSummaryProps) {
         feature_id
       };
 
+      if (id) await bountyReviewStore.startBountyTiming(id.toString());
       formSubmit && formSubmit(newValue, true);
     },
     [
@@ -191,10 +195,15 @@ function WantedSummary(props: WantedSummaryProps) {
     ]
   );
 
-  const changeAssignedPerson = useCallback(() => {
+  const changeAssignedPerson = useCallback(async () => {
     setIsAssigned(false);
 
     setAssignedPerson(null);
+
+    if (id) {
+      await bountyReviewStore.deleteBountyTiming(id?.toString());
+    }
+
     const newValue = {
       id,
       title: titleString,

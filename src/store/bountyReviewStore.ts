@@ -22,6 +22,14 @@ export class BountyReviewStore {
     this.timings[bountyId] = timing;
   }
 
+  removeTiming(bountyId: string) {
+    delete this.timings[bountyId];
+  }
+
+  getTiming(bountyId: string) {
+    return this.timings[bountyId];
+  }
+
   setLoading(loading: boolean) {
     this.loading = loading;
   }
@@ -68,7 +76,7 @@ export class BountyReviewStore {
       this.setLoading(true);
 
       // Submit proof
-      let response = await fetch(`${TribesURL}/gobounties/${bountyId}/proof`, {
+      const response = await fetch(`${TribesURL}/gobounties/${bountyId}/proof`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -77,29 +85,14 @@ export class BountyReviewStore {
         body: JSON.stringify({ description })
       });
 
-      console.log(info?.tribe_jwt);
-
       if (!response.ok) {
         throw new Error(`Failed to submit proof: ${response.statusText}`);
       }
 
       const proof = (await response.json()) as ProofOfWork;
 
-      // Pause timer
-      response = await fetch(`${TribesURL}/gobounties/${bountyId}/timing/close`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-jwt': info?.tribe_jwt || ''
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to pause timer: ${response.statusText}`);
-      }
-
-      // Update local state
       const proofs = [...(this.proofs[bountyId] || []), proof];
+      this.closeBountyTiming(bountyId);
       this.setProofs(bountyId, proofs);
     } catch (error: any) {
       this.setError(error.message);
@@ -108,7 +101,7 @@ export class BountyReviewStore {
     }
   }
 
-  async getTiming(bountyId: string) {
+  async getBountyTiming(bountyId: string): Promise<BountyTiming | null> {
     try {
       if (!uiStore._meInfo) return null;
       const info = uiStore.meInfo;
@@ -125,8 +118,87 @@ export class BountyReviewStore {
         throw new Error(`Failed to load timing stats: ${response.statusText}`);
       }
 
+      const data: BountyTiming = await response.json();
+      this.setTiming(bountyId, data);
+      return data;
+    } catch (error: any) {
+      this.setError(error.message);
+      return null;
+    } finally {
+      this.setLoading(false);
+    }
+  }
+
+  async startBountyTiming(bountyId: string) {
+    try {
+      if (!uiStore._meInfo) return null;
+      const info = uiStore.meInfo;
+      this.setLoading(true);
+      const response = await fetch(`${TribesURL}/gobounties/${bountyId}/timing/start`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-jwt': info?.tribe_jwt || ''
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to load timing stats: ${response.statusText}`);
+      }
+
       const data = await response.json();
       this.setTiming(bountyId, data);
+    } catch (error: any) {
+      this.setError(error.message);
+    } finally {
+      this.setLoading(false);
+    }
+  }
+
+  async closeBountyTiming(bountyId: string) {
+    try {
+      if (!uiStore._meInfo) return null;
+      const info = uiStore.meInfo;
+      this.setLoading(true);
+
+      const response = await fetch(`${TribesURL}/gobounties/${bountyId}/timing/close`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-jwt': info?.tribe_jwt || ''
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to load timing stats: ${response.statusText}`);
+      }
+
+      this.removeTiming(bountyId);
+    } catch (error: any) {
+      this.setError(error.message);
+    } finally {
+      this.setLoading(false);
+    }
+  }
+
+  async deleteBountyTiming(bountyId: string) {
+    try {
+      if (!uiStore._meInfo) return null;
+      const info = uiStore.meInfo;
+      this.setLoading(true);
+      const response = await fetch(`${TribesURL}/gobounties/${bountyId}/timing`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-jwt': info?.tribe_jwt || ''
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to load timing stats: ${response.statusText}`);
+      }
+
+      this.removeTiming(bountyId);
     } catch (error: any) {
       this.setError(error.message);
     } finally {

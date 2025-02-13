@@ -7,6 +7,7 @@ import { EuiGlobalToastList } from '@elastic/eui';
 import { Workspace } from 'store/interface';
 import { Box } from '@mui/system';
 import { uiStore } from 'store/ui';
+import { bountyReviewStore } from 'store/bountyReviewStore';
 import { useStores } from '../../store';
 import Form from '../../components/form/bounty';
 import {
@@ -150,6 +151,7 @@ function FocusedView(props: FocusViewProps) {
       setDeleting(true);
       try {
         if (delBounty.body.created) {
+          await bountyReviewStore.deleteBountyTiming(delBounty.body.id);
           await main.deleteBounty(delBounty.body.created, delBounty.body.owner_id);
           afterDeleteHandler(delBounty.body.title, delBounty.body.ticket_url);
           closeModal();
