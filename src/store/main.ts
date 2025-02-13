@@ -4074,7 +4074,7 @@ export class MainStore {
     }
   }
 
-  async getWorkspaceCodeGraph(workspace_uuid: string): Promise<CodeGraph[] | null> {
+  async getWorkspaceCodeGraph(workspace_uuid: string): Promise<CodeGraph | null> {
     try {
       if (!uiStore.meInfo) return null;
       const info = uiStore.meInfo;
