@@ -16,6 +16,7 @@ export interface TicketStore {
   clearPhaseTickets: (phase_uuid: string) => void;
   organizeTicketsByGroup: (tickets: Ticket[]) => Ticket[];
   getLatestVersionFromGroup: (groupId: string) => Ticket | undefined;
+  getTicketByVersion: (groupId: string, version: number) => Ticket | undefined;
 }
 
 export class PhaseTicketStore implements TicketStore {
@@ -103,6 +104,22 @@ export class PhaseTicketStore implements TicketStore {
     return ticketsInGroup.reduce((latest: Ticket, current: Ticket) =>
       current.version > latest.version ? current : latest
     );
+  }
+
+  getTicketByVersion(groupId: string, version: number): Ticket | undefined {
+    const ticketsInGroup = Array.from(this.tickets.values()).filter(
+      (ticket: Ticket) => ticket.ticket_group === groupId || ticket.uuid === groupId
+    );
+
+    const ticket = ticketsInGroup.find((ticket: Ticket) => {
+      return Number(ticket.version) === Number(version);
+    });
+
+    if (!ticket) {
+      console.warn(`No ticket found with version ${version} in group ${groupId}`);
+    }
+
+    return ticket;
   }
 }
 
