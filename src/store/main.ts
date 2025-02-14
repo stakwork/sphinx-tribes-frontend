@@ -3260,6 +3260,7 @@ export class MainStore {
 
       const queryParams: QueryParams = {
         sortBy: 'priority',
+        limit: featureLimit,
         direction: 'asc',
         search: '',
         page: 1,
@@ -3268,7 +3269,11 @@ export class MainStore {
       };
 
       // if we don't pass the params, we should use previous params for invalidate query
-      const query = this.appendQueryParams(`features/forworkspace/${uuid}`, 0, queryParams);
+      const query = this.appendQueryParams(
+        `features/forworkspace/${uuid}`,
+        featureLimit,
+        queryParams
+      );
 
       const r: any = await fetch(`${TribesURL}/${query}`, {
         method: 'GET',
@@ -4069,7 +4074,7 @@ export class MainStore {
     }
   }
 
-  async getWorkspaceCodeGraph(workspace_uuid: string): Promise<CodeGraph[] | null> {
+  async getWorkspaceCodeGraph(workspace_uuid: string): Promise<CodeGraph | null> {
     try {
       if (!uiStore.meInfo) return null;
       const info = uiStore.meInfo;
@@ -4425,7 +4430,7 @@ export class MainStore {
         headers: {
           'Content-Type': 'application/json',
           'x-jwt': uiStore.meInfo?.tribe_jwt || '',
-          'x-session-id': this.sessionId || ''
+          'x-session-id': this.getSessionId() || ''
         },
         body: JSON.stringify({ title, snippet })
       });
@@ -4446,7 +4451,7 @@ export class MainStore {
         headers: {
           'x-jwt': uiStore.meInfo?.tribe_jwt || '',
           'Content-Type': 'application/json',
-          'x-session-id': this.sessionId || ''
+          'x-session-id': this.getSessionId() || ''
         }
       });
 
@@ -4466,7 +4471,7 @@ export class MainStore {
         headers: {
           'x-jwt': uiStore.meInfo?.tribe_jwt || '',
           'Content-Type': 'application/json',
-          'x-session-id': this.sessionId || ''
+          'x-session-id': this.getSessionId() || ''
         }
       });
 
@@ -4486,7 +4491,7 @@ export class MainStore {
         headers: {
           'Content-Type': 'application/json',
           'x-jwt': uiStore.meInfo?.tribe_jwt || '',
-          'x-session-id': this.sessionId || ''
+          'x-session-id': this.getSessionId() || ''
         },
         body: JSON.stringify({ title, snippet })
       });
@@ -4507,7 +4512,7 @@ export class MainStore {
         headers: {
           'x-jwt': uiStore.meInfo?.tribe_jwt || '',
           'Content-Type': 'application/json',
-          'x-session-id': this.sessionId || ''
+          'x-session-id': this.getSessionId() || ''
         }
       });
 

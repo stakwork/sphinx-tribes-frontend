@@ -117,8 +117,8 @@ export interface PersonBounty {
   estimated_session_length: string;
   bounty_expires?: string;
   commitment_fee?: number;
-  feature_id?: string;
-  phase_id?: string;
+  feature_uuid?: string;
+  phase_uuid?: string;
   text_snippet_id?: string;
 }
 
@@ -398,7 +398,7 @@ export const queryLimit = 25;
 export const orgQuerLimit = 500;
 export const paginationQueryLimit = 25;
 export const peopleQueryLimit = 500;
-export const featureLimit = 4;
+export const featureLimit = 500;
 export const phaseBountyLimit = 3;
 
 export type TicketStatus =
@@ -552,7 +552,10 @@ export interface BountyTiming {
   total_attempts: number;
   first_assigned_at: string;
   last_pow_at: string | null;
+  is_paused: boolean;
+  is_paused_at: string | null;
   closed_at: string | null;
+  accumulated_pause_seconds: number;
 }
 
 export interface CreateBountyResponse {
@@ -613,6 +616,7 @@ export interface IActivity {
   sequence: number;
   content_type: ContentType;
   content: string;
+  title?: string;
   workspace: string;
   feature_uuid: string;
   phase_uuid: string;
@@ -624,7 +628,6 @@ export interface IActivity {
   status: string;
   author: AuthorType;
   author_ref: string;
-  title?: string;
 }
 
 export interface INewActivity {

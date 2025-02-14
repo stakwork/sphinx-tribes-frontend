@@ -26,6 +26,7 @@ import { SOCKET_MSG } from 'config/socket';
 import { createSocketInstance } from 'config/socket';
 import { phaseTicketStore } from '../../store/phase';
 import StakworkLogsPanel from '../../components/common/TicketEditor/StakworkLogsPanel.tsx';
+import { useFeatureFlag } from '../../hooks/useFeatureFlag.ts';
 import {
   FeatureHeadNameWrap,
   FeatureHeadWrap,
@@ -78,6 +79,7 @@ const PhasePlannerView: React.FC = observer(() => {
   const [totalBounties, setTotalBounties] = useState(0);
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const selectedWidget = 'bounties';
+  const { isEnabled } = useFeatureFlag('display_planner_logs');
 
   const checkboxIdToSelectedMap: BountyStatus = useMemo(
     () => ({
@@ -131,7 +133,7 @@ const PhasePlannerView: React.FC = observer(() => {
         console.log('Parsed websocket message:', data);
 
         if (data.msg === SOCKET_MSG.user_connect) {
-          const sessionId = data.body;
+          const sessionId = data.body || localStorage.getItem('websocket_token');
           setWebsocketSessionId(sessionId);
           console.log(`Websocket Session ID: ${sessionId}`);
           return;
@@ -728,7 +730,7 @@ const PhasePlannerView: React.FC = observer(() => {
             </DisplayBounties>
           </PhaseFlexContainer>
         </FieldWrap>
-        <StakworkLogsPanel swwfLinks={swwfLinks} logs={logs} setLogs={setLogs} />
+        {isEnabled && <StakworkLogsPanel swwfLinks={swwfLinks} logs={logs} setLogs={setLogs} />}
       </FeatureDataWrap>
       {toastsEl}
     </FeatureBody>

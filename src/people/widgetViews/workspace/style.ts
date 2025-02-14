@@ -1863,3 +1863,44 @@ export const ProofActionButton = styled.button<ButtonProps>`
     }
   }
 `;
+
+export const SelectWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+`;
+
+export const SelectLabel = styled.label`
+  font-weight: 500;
+  min-width: 70px;
+`;
+
+export const StyledSelect = styled.select`
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+  font-size: 14px;
+  min-width: 200px;
+  height: 36px;
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+
+  &:hover {
+    border-color: #b3d4fc;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: #2196f3;
+    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
+  }
+
+  &:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+  }
+`;

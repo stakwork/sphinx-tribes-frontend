@@ -179,7 +179,13 @@ const TicketEditor = observer(
     );
 
     useEffect(() => {
-      snippetStore.loadSnippets(workspaceUUID);
+      if (!workspaceUUID) return;
+
+      const fetchSnippets = async () => {
+        await snippetStore.loadSnippets(workspaceUUID);
+      };
+
+      fetchSnippets();
     }, [workspaceUUID]);
 
     const snippets = snippetStore.getAllSnippets();
@@ -352,22 +358,23 @@ const TicketEditor = observer(
       }
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const version = Number(e.target.value);
-      if (version !== selectedVersion) {
-        setSelectedVersion(version);
-
-        const selectedVerionTicket = groupTickets.find(
-          (ticket: Ticket) => ticket.version === version
+    useEffect(() => {
+      const updateTicketData = () => {
+        const selectedTicket = phaseTicketStore.getTicketByVersion(
+          ticketData.ticket_group as string,
+          selectedVersion
         );
+        console.log(selectedTicket, selectedVersion);
+        setVersionTicketData(selectedTicket || ticketData);
+      };
 
-        if (selectedVerionTicket) {
-          setVersionTicketData({
-            ...selectedVerionTicket
-          });
-        }
-      }
+      updateTicketData();
+    }, [selectedVersion, ticketData, ticketData.ticket_group]);
+
+    const handleVersionChange = (newVersion) => {
+      setSelectedVersion(newVersion);
     };
+
     const handleCopy = async () => {
       if (isCopying) return;
 
@@ -516,7 +523,10 @@ const TicketEditor = observer(
                 }
                 placeholder="Enter ticket name..."
               />
-              <VersionSelect value={selectedVersion} onChange={handleChange}>
+              <VersionSelect
+                value={selectedVersion}
+                onChange={(e) => handleVersionChange(e.target.value)}
+              >
                 {Array.from(new Set(versions)).map((version: number) => (
                   <Option key={version} value={version}>
                     Version {version}

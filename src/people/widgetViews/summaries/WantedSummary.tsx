@@ -2,6 +2,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
+import { bountyReviewStore } from 'store/bountyReviewStore';
 import api from '../../../api';
 import { colors } from '../../../config/colors';
 import Form from '../../../components/form/bounty';
@@ -56,8 +57,8 @@ function WantedSummary(props: WantedSummaryProps) {
     formSubmit,
     title,
     org_uuid,
-    feature_id,
-    phase_id,
+    feature_uuid,
+    phase_uuid,
     id,
     isEditButtonDisable
   } = props;
@@ -128,6 +129,8 @@ function WantedSummary(props: WantedSummaryProps) {
   useEffect(() => {
     if (assignee?.owner_alias) {
       setIsAssigned(true);
+    } else {
+      setIsAssigned(false);
     }
   }, [assignee]);
 
@@ -143,7 +146,7 @@ function WantedSummary(props: WantedSummaryProps) {
   }, []);
 
   const handleAssigneeDetails = useCallback(
-    (value: any) => {
+    async (value: any) => {
       setIsAssigned(true);
       setAssignedPerson(value);
       assigneeHandlerOpen();
@@ -164,10 +167,11 @@ function WantedSummary(props: WantedSummaryProps) {
         type: type,
         created: created,
         org_uuid,
-        phase_id,
-        feature_id
+        phase_uuid,
+        feature_uuid
       };
 
+      if (id) await bountyReviewStore.startBountyTiming(id.toString());
       formSubmit && formSubmit(newValue, true);
     },
     [
@@ -186,15 +190,20 @@ function WantedSummary(props: WantedSummaryProps) {
       titleString,
       type,
       wanted_type,
-      phase_id,
-      feature_id
+      phase_uuid,
+      feature_uuid
     ]
   );
 
-  const changeAssignedPerson = useCallback(() => {
+  const changeAssignedPerson = useCallback(async () => {
     setIsAssigned(false);
 
     setAssignedPerson(null);
+
+    if (id) {
+      await bountyReviewStore.deleteBountyTiming(id?.toString());
+    }
+
     const newValue = {
       id,
       title: titleString,
@@ -211,8 +220,8 @@ function WantedSummary(props: WantedSummaryProps) {
       type: type,
       created: created,
       org_uuid,
-      phase_id,
-      feature_id
+      phase_uuid,
+      feature_uuid
     };
     formSubmit && formSubmit(newValue, true);
   }, [
@@ -231,8 +240,8 @@ function WantedSummary(props: WantedSummaryProps) {
     titleString,
     type,
     wanted_type,
-    phase_id,
-    feature_id
+    phase_uuid,
+    feature_uuid
   ]);
 
   useEffect(() => {
@@ -610,8 +619,8 @@ function WantedSummary(props: WantedSummaryProps) {
           actionButtons={actionButtons}
           assigneeLabel={assigneeLabel}
           isEditButtonDisable={isEditButtonDisable}
-          phase_id={phase_id}
-          feature_id={feature_id}
+          phase_uuid={phase_uuid}
+          feature_uuid={feature_uuid}
         />
       );
     }
