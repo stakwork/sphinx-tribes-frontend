@@ -97,7 +97,6 @@ export interface Phase {
   phase_purpose?: string;
   phase_outcome?: string;
   phase_scope?: string;
-  phase_design?: string;
 }
 
 export type PhaseOperationType = 'create' | 'edit' | 'delete';
