@@ -273,6 +273,14 @@ function Header() {
     });
   }
 
+  if (isAdmin) {
+    tabs.push({
+      label: 'Hive',
+      name: 'hive',
+      path: '/hive'
+    });
+  }
+
   useEffect(() => {
     (async () => {
       try {
@@ -282,7 +290,7 @@ function Header() {
         console.log('e', e);
       }
     })();
-  }, [ui.meInfo]);
+  }, [ui.meInfo, main]);
 
   const [showWelcome, setShowWelcome] = useState(false);
 
