@@ -4599,6 +4599,32 @@ export class MainStore {
       return false;
     }
   }
+
+  async createThreadResponse(
+    activity_id: string,
+    activity: INewActivity
+  ): Promise<IActivity | null> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+      const response = await fetch(`${TribesURL}/activities/thread?source_id=${activity_id}`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt || '',
+          'Content-Type': 'application/json',
+          'x-session-id': this.sessionId || ''
+        },
+        body: JSON.stringify(activity)
+      });
+
+      if (!response.ok) throw new Error('Failed to create thread response');
+      return await response.json();
+    } catch (error) {
+      console.error('Error creating thread response:', error);
+      return null;
+    }
+  }
 }
 
 export const mainStore = new MainStore();

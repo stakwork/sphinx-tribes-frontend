@@ -102,10 +102,7 @@ export class ActivityStore {
     newActivity: Omit<INewActivity, 'thread_id'>
   ): Promise<IActivity | null> {
     try {
-      const activity = await this.createActivity({
-        ...newActivity,
-        thread_id: threadId
-      });
+      const activity = await mainStore.createThreadResponse(threadId, newActivity);
       if (activity) {
         runInAction(() => {
           this.activities.set(activity.ID, activity);

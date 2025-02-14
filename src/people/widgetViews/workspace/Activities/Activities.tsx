@@ -16,7 +16,9 @@ export const ActivitiesContainer = styled.div`
   padding-top: 0rem !important;
   padding: 3.5rem;
   background-color: #f8f9fa;
-  height: 100%;
+  height: calc(100vh - 120px);
+  overflow-y: auto;
+  margin-bottom: 50px;
 `;
 
 export const ActivitiesList = styled.div`
@@ -143,6 +145,45 @@ const Form = styled.form`
   gap: 1rem;
 `;
 
+const Content = styled.p`
+  font-size: 1rem;
+  color: #4a5568;
+  margin-bottom: 1rem;
+`;
+
+const Feedback = styled.div`
+  font-style: italic;
+  color: #718096;
+  margin-bottom: 1rem;
+`;
+
+const QuestionList = styled.ul`
+  list-style-type: none;
+  padding: 0;
+  margin-bottom: 1rem;
+`;
+
+const Question = styled.li`
+  color: #4a5568;
+  margin-bottom: 0.5rem;
+  padding-left: 1rem;
+  position: relative;
+
+  &:before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: #4299e1;
+  }
+`;
+
+const TimeInfo = styled.div`
+  display: flex;
+  justify-content: space-between;
+  color: #718096;
+  font-size: 0.875rem;
+`;
+
 const FormField = styled.div`
   display: flex;
   flex-direction: column;
@@ -246,6 +287,23 @@ const RemoveButton = styled.button`
   }
 `;
 
+const ThreadResponseCard = styled.div`
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+`;
+
+const MainContainer = styled.div`
+  background-color: #f8f9fa;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+`;
+
 const Activities = observer(() => {
   const { uuid } = useParams<{ uuid: string }>();
   const { main, ui } = useStores();
@@ -275,6 +333,7 @@ const Activities = observer(() => {
     actions_input: '',
     questions_input: ''
   });
+  const [threadResponses, setThreadResponses] = useState<IActivity[]>([]);
 
   useEffect(() => {
     if (uuid) {
@@ -318,6 +377,31 @@ const Activities = observer(() => {
     fetchPhasesForFeature();
   }, [newActivity.feature_uuid, main]);
 
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+
+    if (selectedActivity?.ID) {
+      const fetchThreadResponses = async () => {
+        try {
+          const responses = await activityStore.getThreadResponses(selectedActivity.ID);
+          setThreadResponses(responses.filter((response) => response.ID !== selectedActivity.ID));
+        } catch (error) {
+          console.error('Error fetching thread responses:', error);
+        }
+      };
+
+      fetchThreadResponses();
+
+      interval = setInterval(fetchThreadResponses, 10000);
+    }
+
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [selectedActivity]);
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
@@ -335,7 +419,6 @@ const Activities = observer(() => {
   ) => {
     const inputValue = e.target.value;
 
-    // Process input immediately
     const newArray = inputValue
       .split(',')
       .map((item) => item.trim())
@@ -353,7 +436,7 @@ const Activities = observer(() => {
       notes: [],
       nextActions: [],
       question: '',
-      content: activity.content,
+      content: '',
       content_type: activity.content_type,
       workspace: activity.workspace,
       feature_uuid: activity.feature_uuid,
@@ -427,8 +510,7 @@ const Activities = observer(() => {
 
     try {
       if (selectedActivity) {
-        // Update existing activity
-        const success = await activityStore.updateActivity(selectedActivity.ID, {
+        const response = await activityStore.createThreadResponse(selectedActivity.ID, {
           ...newActivity,
           workspace: uuid,
           content: trimmedContent,
@@ -436,12 +518,14 @@ const Activities = observer(() => {
           author: newActivity.author as AuthorType
         });
 
-        if (success) {
+        if (response) {
           setIsModalOpen(false);
           resetForm();
+          const updatedResponses = await activityStore.getThreadResponses(selectedActivity.ID);
+          setThreadResponses(
+            updatedResponses.filter((response) => response.ID !== selectedActivity.ID)
+          );
           await activityStore.fetchWorkspaceActivities(uuid);
-        } else {
-          alert('Failed to update activity');
         }
       } else {
         const response = await activityStore.createActivity({
@@ -464,8 +548,6 @@ const Activities = observer(() => {
     }
   };
 
-  console.log(ui._meInfo?.owner_pubkey, activityStore.rootActivities);
-
   const handleActivityClick = (activity) => {
     setSelectedActivity(activity);
   };
@@ -475,11 +557,9 @@ const Activities = observer(() => {
       try {
         const success = await activityStore.deleteActivity(activityId);
         if (success) {
-          // If the deleted activity was selected, clear the selection
           if (selectedActivity?.ID === activityId) {
             setSelectedActivity(null);
           }
-          // Refresh the activities list
           await activityStore.fetchWorkspaceActivities(uuid);
         } else {
           alert('Failed to delete activity');
@@ -511,24 +591,41 @@ const Activities = observer(() => {
 
     return (
       <>
-        {selectedActivity.questions && (
-          <DetailCard>
-            <p>
-              {selectedActivity.questions.map((question: string) => (
-                <p key={question}>{question}</p>
-              ))}
-            </p>
-          </DetailCard>
-        )}
-
         <DetailCard>
-          {selectedActivity.feedback && (
+          <Title>{selectedActivity.title}</Title>
+          <Content>{selectedActivity.content}</Content>
+          {selectedActivity.feedback && <Feedback>Feedback: {selectedActivity.feedback}</Feedback>}
+          {selectedActivity.questions?.length > 0 && (
             <>
-              <p>{selectedActivity.feedback}</p>
-              <br />
+              <h3>Questions:</h3>
+              <QuestionList>
+                {selectedActivity.questions.map((question, index) => (
+                  <Question key={index}>{question}</Question>
+                ))}
+              </QuestionList>
             </>
           )}
+          <TimeInfo>
+            <span>Created: {new Date(selectedActivity.time_created).toLocaleString()}</span>
+            <span>Updated: {new Date(selectedActivity.time_updated).toLocaleString()}</span>
+          </TimeInfo>
         </DetailCard>
+
+        {/* thread responses section */}
+        {threadResponses.length > 0 && (
+          <DetailCard>
+            <Title>Thread Responses</Title>
+            {threadResponses.map((response) => (
+              <ThreadResponseCard key={response.ID}>
+                <Content>{response.content}</Content>
+                <TimeInfo>
+                  <span>By: {response.author_ref}</span>
+                  <span>{new Date(response.time_created).toLocaleString()}</span>
+                </TimeInfo>
+              </ThreadResponseCard>
+            ))}
+          </DetailCard>
+        )}
 
         <NextActionsSection>
           <Title>Next actions</Title>
@@ -538,7 +635,7 @@ const Activities = observer(() => {
         </NextActionsSection>
 
         <ActionButtons>
-          <EditButton onClick={() => handleEditClick(selectedActivity)}>Edit</EditButton>
+          <EditButton onClick={() => handleEditClick(selectedActivity)}>Reply</EditButton>
           <DeleteButton onClick={() => handleDeleteActivity(selectedActivity.ID)}>
             Delete
           </DeleteButton>
@@ -548,12 +645,9 @@ const Activities = observer(() => {
   };
 
   return (
-    <div style={{ backgroundColor: '#f8f9fa', height: '100%' }}>
+    <MainContainer>
       <ActivitiesHeader />
-      <AddActivityButton
-        onClick={handleCreateActivityClick}
-        disabled={!uuid} // Disable if workspace UUID is not available
-      >
+      <AddActivityButton onClick={handleCreateActivityClick} disabled={!uuid}>
         Add New Activity
       </AddActivityButton>
       <ActivitiesContainer>
@@ -567,6 +661,15 @@ const Activities = observer(() => {
             <ModalContent onClick={(e) => e.stopPropagation()}>
               <h2>Create New Activity</h2>
               <Form onSubmit={handleSubmit}>
+                <FormField>
+                  <label>Title</label>
+                  <Input
+                    name="title"
+                    value={newActivity.title}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </FormField>
                 <FormField>
                   <label>Workspace</label>
                   <Input
@@ -661,22 +764,13 @@ const Activities = observer(() => {
                   </ItemList>
                 </FormField>
                 <FormField>
-                  <label>Thread ID</label>
-                  <Input
-                    name="thread_id"
-                    value={newActivity.thread_id}
-                    onChange={handleInputChange}
-                  />
-                </FormField>
-                <FormField>
                   <label>Feature</label>
                   <select
                     name="feature_uuid"
                     value={newActivity.feature_uuid}
                     onChange={handleInputChange}
-                    required
                   >
-                    <option value="">Select a feature</option>
+                    <option value="">Select a feature (optional)</option>
                     {features.map((feature) => (
                       <option key={feature.uuid} value={feature.uuid}>
                         {feature.name}
@@ -690,10 +784,9 @@ const Activities = observer(() => {
                     name="phase_uuid"
                     value={newActivity.phase_uuid}
                     onChange={handleInputChange}
-                    required
                     disabled={!newActivity.feature_uuid || isLoadingPhases}
                   >
-                    <option value="">Select a phase</option>
+                    <option value="">Select a phase (optional)</option>
                     {isLoadingPhases ? (
                       <option>Loading phases...</option>
                     ) : (
@@ -722,7 +815,7 @@ const Activities = observer(() => {
                 isSelected={selectedActivity?.ID === activity.ID}
                 onClick={() => handleActivityClick(activity)}
               >
-                {activity.content}
+                {activity.title}
                 {activity.timeCreated && (
                   <span>{new Date(activity.timeCreated).toLocaleString()}</span>
                 )}
@@ -732,7 +825,7 @@ const Activities = observer(() => {
         </ActivitiesList>
         <DetailsPanel>{renderDetailsPanel()}</DetailsPanel>
       </ActivitiesContainer>
-    </div>
+    </MainContainer>
   );
 });
 

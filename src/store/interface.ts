@@ -624,18 +624,20 @@ export interface IActivity {
   status: string;
   author: AuthorType;
   author_ref: string;
+  title?: string;
 }
 
 export interface INewActivity {
   content: string;
   content_type: ContentType;
   workspace: string;
-  feature_uuid: string;
-  phase_uuid: string;
+  feature_uuid?: string;
+  phase_uuid?: string;
   author: AuthorType;
   author_ref: string;
   thread_id?: string;
   question?: string;
+  title?: string;
 }
 
 export interface IActivityResponse {
