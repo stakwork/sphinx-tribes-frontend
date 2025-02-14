@@ -97,11 +97,11 @@ describe('ActivityStore', () => {
       const newActivity: INewActivity = {
         workspace: 'test',
         content: 'New activity',
-        contentType: 'feature_creation',
-        featureUUID: 'feature1',
-        phaseUUID: 'phase1',
+        content_type: 'feature_creation',
+        feature_uuid: 'feature1',
+        phase_uuid: 'phase1',
         author: 'human',
-        authorRef: 'user1',
+        author_ref: 'user1',
         title: 'Test Title'
       };
 
@@ -122,11 +122,11 @@ describe('ActivityStore', () => {
       const newActivity: INewActivity = {
         workspace: 'test',
         content: 'New activity',
-        contentType: 'feature_creation',
-        featureUUID: 'feature1',
-        phaseUUID: 'phase1',
+        content_type: 'feature_creation',
+        feature_uuid: 'feature1',
+        phase_uuid: 'phase1',
         author: 'human',
-        authorRef: 'user1'
+        author_ref: 'user1'
       };
 
       (mainStore.createActivity as jest.Mock).mockResolvedValue(mockActivity);
