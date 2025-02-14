@@ -6,22 +6,22 @@ jest.mock('../main');
 
 describe('ActivityStore', () => {
   const mockActivity: IActivity = {
-    id: '1',
-    threadId: null,
+    ID: '1',
+    thread_id: null,
     sequence: 1,
-    contentType: 'feature_creation',
+    content_type: 'feature_creation',
     content: 'Test activity',
     workspace: 'test',
-    featureUUID: 'feature1',
-    phaseUUID: 'phase1',
+    feature_uuid: 'feature1',
+    phase_uuid: 'phase1',
     feedback: undefined,
     actions: [],
     questions: [],
-    timeCreated: new Date().toISOString(),
-    timeUpdated: new Date().toISOString(),
+    time_created: new Date().toISOString(),
+    time_updated: new Date().toISOString(),
     status: 'active',
     author: 'human',
-    authorRef: 'user1'
+    author_ref: 'user1'
   };
 
   beforeEach(() => {
@@ -59,11 +59,11 @@ describe('ActivityStore', () => {
       const newActivity: INewActivity = {
         workspace: 'test',
         content: 'New activity',
-        contentType: 'feature_creation',
-        featureUUID: 'feature1',
-        phaseUUID: 'phase1',
+        content_type: 'feature_creation',
+        feature_uuid: 'feature1',
+        phase_uuid: 'phase1',
         author: 'human',
-        authorRef: 'user1'
+        author_ref: 'user1'
       };
 
       (mainStore.createActivity as jest.Mock).mockResolvedValue(mockActivity);
@@ -78,11 +78,11 @@ describe('ActivityStore', () => {
       const newActivity: INewActivity = {
         workspace: 'test',
         content: 'New activity',
-        contentType: 'feature_creation',
-        featureUUID: 'feature1',
-        phaseUUID: 'phase1',
+        content_type: 'feature_creation',
+        feature_uuid: 'feature1',
+        phase_uuid: 'phase1',
         author: 'human',
-        authorRef: 'user1'
+        author_ref: 'user1'
       };
 
       (mainStore.createActivity as jest.Mock).mockRejectedValue(new Error('Creation failed'));
@@ -97,11 +97,11 @@ describe('ActivityStore', () => {
       const newActivity: INewActivity = {
         workspace: 'test',
         content: 'New activity',
-        contentType: 'feature_creation',
-        featureUUID: 'feature1',
-        phaseUUID: 'phase1',
+        content_type: 'feature_creation',
+        feature_uuid: 'feature1',
+        phase_uuid: 'phase1',
         author: 'human',
-        authorRef: 'user1',
+        author_ref: 'user1',
         title: 'Test Title'
       };
 
@@ -122,11 +122,11 @@ describe('ActivityStore', () => {
       const newActivity: INewActivity = {
         workspace: 'test',
         content: 'New activity',
-        contentType: 'feature_creation',
-        featureUUID: 'feature1',
-        phaseUUID: 'phase1',
+        content_type: 'feature_creation',
+        feature_uuid: 'feature1',
+        phase_uuid: 'phase1',
         author: 'human',
-        authorRef: 'user1'
+        author_ref: 'user1'
       };
 
       (mainStore.createActivity as jest.Mock).mockResolvedValue(mockActivity);
@@ -140,25 +140,35 @@ describe('ActivityStore', () => {
 
   describe('createThreadResponse', () => {
     it('should create a thread response', async () => {
-      const threadResponse: INewActivity = {
-        workspace: 'test',
-        content: 'Thread response',
-        contentType: 'general_update',
-        featureUUID: 'feature1',
-        phaseUUID: 'phase1',
-        author: 'human',
-        authorRef: 'user1'
-      };
-
       const mockResponse = {
-        ...mockActivity,
-        id: '2',
-        threadId: '1'
+        ID: '2',
+        actions: [],
+        author: 'human',
+        author_ref: 'user1',
+        content: 'Test activity',
+        content_type: 'feature_creation',
+        feature_uuid: 'feature1',
+        phase_uuid: 'phase1',
+        questions: [],
+        sequence: 1,
+        status: 'active',
+        thread_id: '1',
+        time_created: '2025-02-13T02:02:05.221Z',
+        time_updated: '2025-02-13T02:02:05.221Z',
+        workspace: 'test'
       };
 
-      (mainStore.createActivity as jest.Mock).mockResolvedValue(mockResponse);
+      (mainStore.createThreadResponse as jest.Mock).mockResolvedValue(mockResponse);
 
-      const result = await activityStore.createThreadResponse('1', threadResponse);
+      const result = await activityStore.createThreadResponse('1', {
+        content: 'Test activity',
+        content_type: 'feature_creation',
+        feature_uuid: 'feature1',
+        phase_uuid: 'phase1',
+        author: 'human',
+        author_ref: 'user1',
+        workspace: 'test'
+      });
 
       expect(result).toEqual(mockResponse);
       expect(activityStore.activities.get('2')).toEqual(mockResponse);
@@ -250,8 +260,8 @@ describe('ActivityStore', () => {
     it('should group activities by thread', () => {
       const threadActivity: IActivity = {
         ...mockActivity,
-        threadId: '1',
-        id: '2'
+        thread_id: '1',
+        ID: '2'
       };
 
       activityStore.activities.set('1', mockActivity);
@@ -266,19 +276,30 @@ describe('ActivityStore', () => {
 
   describe('rootActivities', () => {
     it('should return root activities sorted by date', () => {
-      const olderActivity: IActivity = {
-        ...mockActivity,
-        id: '2',
-        timeCreated: new Date('2023-01-01').toISOString()
+      const activity1 = {
+        ID: '1',
+        thread_id: null,
+        time_created: '2025-02-13T02:02:05.221Z'
+      };
+      const activity2 = {
+        ID: '2',
+        thread_id: null,
+        time_created: '2025-02-14T02:02:05.221Z'
+      };
+      const activity3 = {
+        ID: '3',
+        thread_id: '1',
+        time_created: '2025-02-15T02:02:05.221Z'
       };
 
-      activityStore.activities.set('1', mockActivity);
-      activityStore.activities.set('2', olderActivity);
+      activityStore.activities.set('1', activity1 as IActivity);
+      activityStore.activities.set('2', activity2 as IActivity);
+      activityStore.activities.set('3', activity3 as IActivity);
 
       const roots = activityStore.rootActivities;
       expect(roots.length).toBe(2);
-      expect(roots[0].id).toBe('1');
-      expect(roots[1].id).toBe('2');
+      expect(roots[0].ID).toBe('2');
+      expect(roots[1].ID).toBe('1');
     });
   });
 
@@ -286,8 +307,8 @@ describe('ActivityStore', () => {
     it('should return responses for a thread', () => {
       const threadResponse: IActivity = {
         ...mockActivity,
-        id: '2',
-        threadId: '1'
+        ID: '2',
+        thread_id: '1'
       };
 
       activityStore.activities.set('1', mockActivity);

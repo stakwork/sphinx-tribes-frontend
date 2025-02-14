@@ -4526,12 +4526,13 @@ export class MainStore {
 
   async fetchWorkspaceActivities(workspace: string): Promise<IActivity[]> {
     try {
-      const response = await fetch(`${TribesURL}/activities?workspace=${workspace}`, {
+      const response = await fetch(`${TribesURL}/activities/workspace/${workspace}`, {
         method: 'GET',
         mode: 'cors',
         headers: {
+          'x-jwt': uiStore.meInfo?.tribe_jwt || '',
           'Content-Type': 'application/json',
-          'x-session-id': this.getSessionId()
+          'x-session-id': this.sessionId || ''
         }
       });
       if (!response.ok) throw new Error('Failed to fetch activities');
@@ -4548,8 +4549,9 @@ export class MainStore {
         method: 'POST',
         mode: 'cors',
         headers: {
+          'x-jwt': uiStore.meInfo?.tribe_jwt || '',
           'Content-Type': 'application/json',
-          'x-session-id': this.getSessionId()
+          'x-session-id': this.sessionId || ''
         },
         body: JSON.stringify(newActivity)
       });
@@ -4570,8 +4572,9 @@ export class MainStore {
         method: 'PATCH',
         mode: 'cors',
         headers: {
+          'x-jwt': uiStore.meInfo?.tribe_jwt || '',
           'Content-Type': 'application/json',
-          'x-session-id': this.getSessionId()
+          'x-session-id': this.sessionId || ''
         },
         body: JSON.stringify(updates)
       });
@@ -4589,8 +4592,9 @@ export class MainStore {
         method: 'DELETE',
         mode: 'cors',
         headers: {
+          'x-jwt': uiStore.meInfo?.tribe_jwt || '',
           'Content-Type': 'application/json',
-          'x-session-id': this.getSessionId()
+          'x-session-id': this.sessionId || ''
         }
       });
       if (!response.ok) throw new Error('Failed to delete activity');
@@ -4598,6 +4602,32 @@ export class MainStore {
     } catch (error) {
       console.error('Error deleting activity:', error);
       return false;
+    }
+  }
+
+  async createThreadResponse(
+    activity_id: string,
+    activity: INewActivity
+  ): Promise<IActivity | null> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+      const response = await fetch(`${TribesURL}/activities/thread?source_id=${activity_id}`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt || '',
+          'Content-Type': 'application/json',
+          'x-session-id': this.sessionId || ''
+        },
+        body: JSON.stringify(activity)
+      });
+
+      if (!response.ok) throw new Error('Failed to create thread response');
+      return await response.json();
+    } catch (error) {
+      console.error('Error creating thread response:', error);
+      return null;
     }
   }
 }
