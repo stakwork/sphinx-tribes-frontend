@@ -158,7 +158,7 @@ describe('ActivityStore', () => {
         workspace: 'test'
       };
 
-      (mainStore.createActivity as jest.Mock).mockResolvedValue(mockResponse);
+      (mainStore.createThreadResponse as jest.Mock).mockResolvedValue(mockResponse);
 
       const result = await activityStore.createThreadResponse('1', {
         content: 'Test activity',
