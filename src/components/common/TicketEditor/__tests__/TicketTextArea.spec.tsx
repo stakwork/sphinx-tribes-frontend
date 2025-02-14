@@ -62,6 +62,11 @@ describe('TicketTextAreaComp', () => {
   });
 
   test('handles image paste', async () => {
+    document.querySelector = jest.fn().mockImplementation(() => ({
+      value: '',
+      selectionStart: 0
+    }));
+
     mockUploadFile.mockResolvedValueOnce({
       ok: true,
       json: () => Promise.resolve('https://example.com/image.png')
@@ -72,30 +77,71 @@ describe('TicketTextAreaComp', () => {
 
     const file = new File(['dummy content'], 'test.png', { type: 'image/png' });
     const clipboardData = {
-      items: [{ type: 'image/png', getAsFile: () => file }]
+      items: [
+        {
+          kind: 'file',
+          type: 'image/png',
+          getAsFile: () => file
+        }
+      ],
+      files: [file],
+      getData: () => ''
     };
 
-    fireEvent.paste(textarea, { clipboardData });
+    fireEvent.paste(textarea, {
+      clipboardData,
+      preventDefault: () => {
+        ('');
+      }
+    });
 
-    await waitFor(() => {
-      expect(mockOnChange).toHaveBeenCalled();
+    waitFor(() => {
+      expect(mockOnChange).toHaveBeenCalledWith(expect.stringContaining('![Uploading'));
+    });
+
+    waitFor(() => {
+      expect(mockOnChange).toHaveBeenCalledWith(
+        expect.stringContaining('![image](https://example.com/image.png)')
+      );
     });
   });
 
   test('handles non-image paste normally', () => {
+    document.querySelector = jest.fn().mockImplementation(() => ({
+      value: '',
+      selectionStart: 0
+    }));
+
     render(<TicketTextAreaComp {...defaultProps} />);
     const textarea = screen.getByTestId('ticket-textarea');
 
     const clipboardData = {
-      items: [{ type: 'text/plain', getAsFile: () => null }]
+      items: [
+        {
+          kind: 'string',
+          type: 'text/plain',
+          getAsFile: () => null
+        }
+      ],
+      files: [],
+      getData: () => 'plain text'
     };
 
-    fireEvent.paste(textarea, { clipboardData });
+    fireEvent.paste(textarea, {
+      clipboardData,
+      preventDefault: () => {
+        ('');
+      }
+    });
 
     expect(mockOnChange).not.toHaveBeenCalled();
   });
 
   test('handles failed image upload', async () => {
+    document.querySelector = jest.fn().mockImplementation(() => ({
+      value: '',
+      selectionStart: 0
+    }));
     mockUploadFile.mockRejectedValueOnce(new Error('Upload failed'));
 
     render(<TicketTextAreaComp {...defaultProps} />);
@@ -103,10 +149,23 @@ describe('TicketTextAreaComp', () => {
 
     const file = new File(['dummy content'], 'test.png', { type: 'image/png' });
     const clipboardData = {
-      items: [{ type: 'image/png', getAsFile: () => file }]
+      items: [
+        {
+          kind: 'file',
+          type: 'image/png',
+          getAsFile: () => file
+        }
+      ],
+      files: [file],
+      getData: () => ''
     };
 
-    fireEvent.paste(textarea, { clipboardData });
+    fireEvent.paste(textarea, {
+      clipboardData,
+      preventDefault: () => {
+        ('');
+      }
+    });
 
     waitFor(() => {
       expect(mockOnChange).toHaveBeenCalledWith(expect.stringContaining('![Upload failed]()'));
@@ -114,6 +173,10 @@ describe('TicketTextAreaComp', () => {
   });
 
   test('handles successful image upload', async () => {
+    document.querySelector = jest.fn().mockImplementation(() => ({
+      value: '',
+      selectionStart: 0
+    }));
     mockUploadFile.mockResolvedValueOnce({
       ok: true,
       json: () => Promise.resolve('https://example.com/image.png')
@@ -124,10 +187,23 @@ describe('TicketTextAreaComp', () => {
 
     const file = new File(['dummy content'], 'test.png', { type: 'image/png' });
     const clipboardData = {
-      items: [{ type: 'image/png', getAsFile: () => file }]
+      items: [
+        {
+          kind: 'file',
+          type: 'image/png',
+          getAsFile: () => file
+        }
+      ],
+      files: [file],
+      getData: () => ''
     };
 
-    fireEvent.paste(textarea, { clipboardData });
+    fireEvent.paste(textarea, {
+      clipboardData,
+      preventDefault: () => {
+        ('');
+      }
+    });
 
     waitFor(() => {
       expect(mockOnChange).toHaveBeenCalledWith(
@@ -147,6 +223,10 @@ describe('TicketTextAreaComp', () => {
   });
 
   test('handles multiple simultaneous image uploads', async () => {
+    document.querySelector = jest.fn().mockImplementation(() => ({
+      value: '',
+      selectionStart: 0
+    }));
     mockUploadFile
       .mockResolvedValueOnce({
         ok: true,
@@ -165,13 +245,35 @@ describe('TicketTextAreaComp', () => {
 
     fireEvent.paste(textarea, {
       clipboardData: {
-        items: [{ type: 'image/png', getAsFile: () => file1 }]
+        items: [
+          {
+            kind: 'file',
+            type: 'image/png',
+            getAsFile: () => file1
+          }
+        ],
+        files: [file1],
+        getData: () => ''
+      },
+      preventDefault: () => {
+        ('');
       }
     });
 
     fireEvent.paste(textarea, {
       clipboardData: {
-        items: [{ type: 'image/png', getAsFile: () => file2 }]
+        items: [
+          {
+            kind: 'file',
+            type: 'image/png',
+            getAsFile: () => file2
+          }
+        ],
+        files: [file2],
+        getData: () => ''
+      },
+      preventDefault: () => {
+        ('');
       }
     });
 
@@ -181,6 +283,10 @@ describe('TicketTextAreaComp', () => {
   });
 
   test('handles large image files', async () => {
+    document.querySelector = jest.fn().mockImplementation(() => ({
+      value: '',
+      selectionStart: 0
+    }));
     const largeFile = new File([new ArrayBuffer(5 * 1024 * 1024)], 'large.png', {
       type: 'image/png'
     });
@@ -194,7 +300,18 @@ describe('TicketTextAreaComp', () => {
 
     fireEvent.paste(textarea, {
       clipboardData: {
-        items: [{ type: 'image/png', getAsFile: () => largeFile }]
+        items: [
+          {
+            kind: 'file',
+            type: 'image/png',
+            getAsFile: () => largeFile
+          }
+        ],
+        files: [largeFile],
+        getData: () => ''
+      },
+      preventDefault: () => {
+        ('');
       }
     });
 
@@ -206,6 +323,10 @@ describe('TicketTextAreaComp', () => {
   });
 
   test('handles network error during upload', async () => {
+    document.querySelector = jest.fn().mockImplementation(() => ({
+      value: '',
+      selectionStart: 0
+    }));
     mockUploadFile.mockRejectedValueOnce(new Error('Network error'));
 
     render(<TicketTextAreaComp {...defaultProps} />);
@@ -214,7 +335,18 @@ describe('TicketTextAreaComp', () => {
     const file = new File(['content'], 'test.png', { type: 'image/png' });
     fireEvent.paste(textarea, {
       clipboardData: {
-        items: [{ type: 'image/png', getAsFile: () => file }]
+        items: [
+          {
+            kind: 'file',
+            type: 'image/png',
+            getAsFile: () => file
+          }
+        ],
+        files: [file],
+        getData: () => ''
+      },
+      preventDefault: () => {
+        ('');
       }
     });
 
@@ -224,6 +356,10 @@ describe('TicketTextAreaComp', () => {
   });
 
   test('handles server error response', async () => {
+    document.querySelector = jest.fn().mockImplementation(() => ({
+      value: '',
+      selectionStart: 0
+    }));
     mockUploadFile.mockResolvedValueOnce({
       ok: false,
       status: 500,
@@ -236,7 +372,18 @@ describe('TicketTextAreaComp', () => {
     const file = new File(['content'], 'test.png', { type: 'image/png' });
     fireEvent.paste(textarea, {
       clipboardData: {
-        items: [{ type: 'image/png', getAsFile: () => file }]
+        items: [
+          {
+            kind: 'file',
+            type: 'image/png',
+            getAsFile: () => file
+          }
+        ],
+        files: [file],
+        getData: () => ''
+      },
+      preventDefault: () => {
+        ('');
       }
     });
 
@@ -246,12 +393,27 @@ describe('TicketTextAreaComp', () => {
   });
 
   test('handles empty file paste', () => {
+    document.querySelector = jest.fn().mockImplementation(() => ({
+      value: '',
+      selectionStart: 0
+    }));
     render(<TicketTextAreaComp {...defaultProps} />);
     const textarea = screen.getByTestId('ticket-textarea');
 
     fireEvent.paste(textarea, {
       clipboardData: {
-        items: [{ type: 'image/png', getAsFile: () => null }]
+        items: [
+          {
+            kind: 'file',
+            type: 'image/png',
+            getAsFile: () => null
+          }
+        ],
+        files: [],
+        getData: () => ''
+      },
+      preventDefault: () => {
+        ('');
       }
     });
 
@@ -259,13 +421,28 @@ describe('TicketTextAreaComp', () => {
   });
 
   test('handles unsupported file types', () => {
+    document.querySelector = jest.fn().mockImplementation(() => ({
+      value: '',
+      selectionStart: 0
+    }));
     render(<TicketTextAreaComp {...defaultProps} />);
     const textarea = screen.getByTestId('ticket-textarea');
 
     const file = new File(['content'], 'test.pdf', { type: 'application/pdf' });
     fireEvent.paste(textarea, {
       clipboardData: {
-        items: [{ type: 'application/pdf', getAsFile: () => file }]
+        items: [
+          {
+            kind: 'file',
+            type: 'application/pdf',
+            getAsFile: () => file
+          }
+        ],
+        files: [file],
+        getData: () => ''
+      },
+      preventDefault: () => {
+        ('');
       }
     });
 

@@ -17,7 +17,6 @@ import {
   FieldWrap,
   Label,
   Data,
-  OptionsWrap,
   InputField,
   Input,
   UserStoryOptionWrap,
@@ -40,7 +39,6 @@ import { createSocketInstance, SOCKET_MSG } from '../../config/socket.ts';
 import { useDeleteConfirmationModal } from '../../components/common';
 import {
   ActionButton,
-  ButtonWrap,
   FeatureHeadNameWrap,
   FeatureHeadWrap,
   WorkspaceName,
@@ -198,8 +196,6 @@ const WorkspaceEditableField = ({
   setValue,
   isEditing,
   setIsEditing,
-  displayOptions,
-  setDisplayOptions,
   placeholder,
   dataTestIdPrefix,
   onSubmit,
@@ -210,11 +206,6 @@ const WorkspaceEditableField = ({
   setPreviewMode,
   workspaceUUID
 }: WSEditableFieldProps) => {
-  const handleEditClick = () => {
-    setIsEditing(!isEditing);
-    setDisplayOptions(false);
-  };
-
   const handleCancelClick = () => {
     setIsEditing(false);
   };
@@ -268,24 +259,6 @@ const WorkspaceEditableField = ({
         )}
       </FlexContainer>
       <Data>
-        <OptionsWrap>
-          <MaterialIcon
-            icon="more_horiz"
-            className="MaterialIcon"
-            onClick={() => setDisplayOptions(!displayOptions)}
-            data-testid={`${dataTestIdPrefix}-option-btn`}
-          />
-          {displayOptions && (
-            <EditPopover>
-              <EditPopoverTail />
-              <EditPopoverContent onClick={handleEditClick}>
-                <MaterialIcon icon="edit" style={{ fontSize: '20px', marginTop: '2px' }} />
-                <EditPopoverText data-testid={`${dataTestIdPrefix}-edit-btn`}>Edit</EditPopoverText>
-              </EditPopoverContent>
-            </EditPopover>
-          )}
-        </OptionsWrap>
-
         <EditableField
           value={value}
           setValue={setValue}
@@ -295,26 +268,9 @@ const WorkspaceEditableField = ({
           placeholder={placeholder}
           dataTestIdPrefix={dataTestIdPrefix}
           workspaceUUID={workspaceUUID}
+          onCancel={handleCancelClick}
+          onUpdate={onSubmit}
         />
-
-        {isEditing && (
-          <ButtonWrap>
-            <ActionButton
-              onClick={handleCancelClick}
-              data-testid={`${dataTestIdPrefix}-cancel-btn`}
-              color="cancel"
-            >
-              Cancel
-            </ActionButton>
-            <ActionButton
-              color="primary"
-              onClick={onSubmit}
-              data-testid={`${dataTestIdPrefix}-update-btn`}
-            >
-              Update
-            </ActionButton>
-          </ButtonWrap>
-        )}
       </Data>
     </FieldWrap>
   );
@@ -405,9 +361,9 @@ const WorkspaceFeature = () => {
   const [phases, setPhases] = useState<Phase[]>([]);
   const [architecture, setArchitecture] = useState<string>('');
   const [requirements, setRequirements] = useState<string>('');
-  const [editBrief, setEditBrief] = useState<boolean>(false);
-  const [editArchitecture, setEditArchitecture] = useState<boolean>(false);
-  const [editRequirements, setEditRequirements] = useState<boolean>(false);
+  const [editBrief, setEditBrief] = useState<boolean>(true);
+  const [editArchitecture, setEditArchitecture] = useState<boolean>(true);
+  const [editRequirements, setEditRequirements] = useState<boolean>(true);
   const [displayBriefOptions, setDisplayBriefOptions] = useState<boolean>(false);
   const [websocketSessionId, setWebsocketSessionId] = useState('');
   const [displayArchitectureOptions, setDisplayArchitectureOptions] = useState<boolean>(false);
@@ -423,12 +379,12 @@ const WorkspaceFeature = () => {
   const [editFeatureName, setEditFeatureName] = useState<string>(featureData?.name || '');
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [displayNameOptions, setDisplayNameOptions] = useState<boolean>(false);
-  const [briefPreviewMode, setBriefPreviewMode] = useState<'preview' | 'edit'>('edit');
+  const [briefPreviewMode, setBriefPreviewMode] = useState<'preview' | 'edit'>('preview');
   const [architecturePreviewMode, setArchitecturePreviewMode] = useState<'preview' | 'edit'>(
-    'edit'
+    'preview'
   );
   const [requirementsPreviewMode, setRequirementsPreviewMode] = useState<'preview' | 'edit'>(
-    'edit'
+    'preview'
   );
   const [permissionsChecked, setPermissionsChecked] = useState<boolean>(false);
 
@@ -570,7 +526,7 @@ const WorkspaceFeature = () => {
     };
     await main.addWorkspaceFeature(body);
     await getFeatureData();
-    setIsEditing(false);
+    setIsEditing(true);
   };
 
   const handleUserStorySubmit = async () => {

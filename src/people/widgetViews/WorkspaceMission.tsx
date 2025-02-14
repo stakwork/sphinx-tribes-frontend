@@ -989,6 +989,8 @@ const WorkspaceMission = () => {
                   placeholder="Mission"
                   dataTestIdPrefix="mission"
                   workspaceUUID={workspaceData?.uuid}
+                  onCancel={() => setEditMission(false)}
+                  onUpdate={submitMission}
                 />
                 {editMission && (
                   <ButtonWrap>
@@ -1039,6 +1041,8 @@ const WorkspaceMission = () => {
                   placeholder="Tactics"
                   dataTestIdPrefix="tactics"
                   workspaceUUID={workspaceData?.uuid}
+                  onCancel={() => setEditTactics(false)}
+                  onUpdate={submitTactics}
                 />
                 {editTactics && (
                   <ButtonWrap>
