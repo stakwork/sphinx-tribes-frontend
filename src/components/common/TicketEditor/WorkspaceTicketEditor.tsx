@@ -31,9 +31,17 @@ import { Select, Option } from '../../../people/widgetViews/workspace/style.ts';
 import { useDeleteConfirmationModal } from '../../../components/common/DeleteConfirmationModal/DeleteConfirmationModal.tsx';
 import { TicketTextAreaComp } from './TicketTextArea.tsx';
 
+interface LogEntry {
+  timestamp: string;
+  projectId: string;
+  ticketUUID: string;
+  message: string;
+}
+
 interface TicketEditorProps {
   ticketData: Ticket;
   index: number;
+  logs: LogEntry[];
   websocketSessionId: string;
   draggableId: string;
   hasInteractiveChildren: boolean;
@@ -126,12 +134,23 @@ const EditorWrapper = styled.div`
   background-color: white;
 `;
 
+const ChainOfThought = styled.div`
+  max-width: 100%;
+  margin: 12px auto 8px 5px;
+  padding: 10px 20px 0 20px;
+  border-radius: 16px;
+  word-wrap: break-word;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: white;
+`;
+
 const WorkspaceTicketEditor = observer(
   ({
     ticketData,
     websocketSessionId,
     dragHandleProps,
     swwfLink,
+    logs,
     onTicketUpdate
   }: TicketEditorProps) => {
     const [toasts, setToasts] = useState<Toast[]>([]);
@@ -146,6 +165,7 @@ const WorkspaceTicketEditor = observer(
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
     const { main } = useStores();
     const [isCreatingBounty, setIsCreatingBounty] = useState(false);
+    const [lastLogLine, setLastLogLine] = useState('');
     const [isOptionsMenuVisible, setIsOptionsMenuVisible] = useState(false);
     const ui = uiStore;
     const { openDeleteConfirmation } = useDeleteConfirmationModal();
@@ -188,6 +208,14 @@ const WorkspaceTicketEditor = observer(
         ticketData.description.trim() !== versionTicketData.description.trim();
       setIsButtonDisabled(!isChanged);
     }, [ticketData, versionTicketData]);
+
+    useEffect(() => {
+      if (logs.length > 0) {
+        setLastLogLine(logs[logs.length - 1]?.message || '');
+      } else {
+        setLastLogLine('');
+      }
+    }, [logs]);
 
     const addUpdateSuccessToast = () => {
       setToasts([
@@ -552,6 +580,16 @@ const WorkspaceTicketEditor = observer(
               )}
             </EditorWrapper>
             <TicketButtonGroup>
+              {swwfLink && (
+                <ChainOfThought>
+                  <h6>Hive - Chain of Thought</h6>
+                  <p>
+                    {lastLogLine
+                      ? lastLogLine
+                      : `Hi ${ui.meInfo?.owner_alias}, let me see if I can improve this ticket.`}
+                  </p>
+                </ChainOfThought>
+              )}
               {swwfLink && (
                 <ActionButton
                   as="a"

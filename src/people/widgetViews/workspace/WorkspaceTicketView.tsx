@@ -19,6 +19,20 @@ import {
 } from './style';
 import { Phase } from './interface.ts';
 
+interface LogEntry {
+  timestamp: string;
+  projectId: string;
+  ticketUUID: string;
+  message: string;
+}
+
+interface Connection {
+  projectId: string;
+  ticketUUID: string;
+  websocket: WebSocket;
+  status: 'disconnected' | 'connected' | 'error';
+}
+
 const WorkspaceTicketView: React.FC = observer(() => {
   const { workspaceId, ticketId } = useParams<{ workspaceId: string; ticketId: string }>();
   const [websocketSessionId, setWebsocketSessionId] = useState<string>('');
@@ -29,7 +43,8 @@ const WorkspaceTicketView: React.FC = observer(() => {
   const [currentTicketId, setCurrentTicketId] = useState<string>(ticketId);
   const [features, setFeatures] = useState<Feature[]>([]);
   const [phases, setPhases] = useState<Phase[]>([]);
-
+  const [logs, setLogs] = useState<LogEntry[]>([]);
+  const [connections, setConnections] = useState<Connection[]>([]);
   const [isLoadingFeatures, setIsLoadingFeatures] = useState(false);
   const [isLoadingPhases, setIsLoadingPhases] = useState(false);
 
@@ -113,6 +128,76 @@ const WorkspaceTicketView: React.FC = observer(() => {
       }
     };
   }, [main]);
+
+  useEffect(() => {
+    const connectToLogWebSocket = (projectId: string, ticketUUID: string) => {
+      const ws = new WebSocket('wss://jobs.stakwork.com/cable?channel=ProjectLogChannel');
+
+      ws.onopen = () => {
+        const command = {
+          command: 'subscribe',
+          identifier: JSON.stringify({ channel: 'ProjectLogChannel', id: projectId })
+        };
+        ws.send(JSON.stringify(command));
+      };
+
+      ws.onmessage = (event: any) => {
+        const data = JSON.parse(event.data);
+        if (data.type === 'ping') return;
+
+        const messageData = data?.message;
+        if (
+          messageData &&
+          (messageData.type === 'on_step_start' || messageData.type === 'on_step_complete')
+        ) {
+          setLogs((prev: LogEntry[]) => [
+            {
+              timestamp: new Date().toISOString(),
+              projectId,
+              ticketUUID,
+              message: messageData.message
+            },
+            ...prev
+          ]);
+        }
+      };
+
+      ws.onerror = () => {
+        setConnections((prev: Connection[]) =>
+          prev.map((conn: Connection) =>
+            conn.projectId === projectId ? { ...conn, status: 'error' } : conn
+          )
+        );
+      };
+
+      ws.onclose = () => {
+        setConnections((prev: Connection[]) =>
+          prev.map((conn: Connection) =>
+            conn.projectId === projectId ? { ...conn, status: 'disconnected' } : conn
+          )
+        );
+      };
+
+      setConnections((prev: Connection[]) => [
+        ...prev,
+        { projectId, ticketUUID, websocket: ws, status: 'connected' }
+      ]);
+    };
+
+    Object.entries(swwfLinks).forEach(([ticketUUID, projectId]: [string, string]) => {
+      if (!connections.some((conn: Connection) => conn.projectId === projectId)) {
+        connectToLogWebSocket(projectId, ticketUUID);
+      }
+    });
+
+    return () => {
+      connections.forEach((conn: Connection) => {
+        if (!Object.values(swwfLinks).includes(conn.projectId)) {
+          conn.websocket.close();
+        }
+      });
+    };
+  }, [connections, swwfLinks, setLogs]);
 
   useEffect(() => {
     const fetchTicketAndVersions = async () => {
@@ -390,6 +475,7 @@ const WorkspaceTicketView: React.FC = observer(() => {
         <WorkspaceTicketEditor
           ticketData={currentTicket}
           websocketSessionId={websocketSessionId}
+          logs={logs}
           index={0}
           draggableId={currentTicket.uuid}
           hasInteractiveChildren={false}
