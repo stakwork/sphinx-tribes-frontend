@@ -24,7 +24,6 @@ import { TicketsPage } from './tickets';
 import { WorkspaceTicketsPage } from './tickets/workspace';
 import { LeaderboardPage } from './leaderboard';
 import { SuperAdmin } from './superadmin/index';
-import { Hive } from './hive/index';
 import BountiesLandingPage from './BountiesLandingPage';
 
 const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
@@ -89,9 +88,6 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
               </Route>
               <Route path="/admin">
                 <SuperAdmin />
-              </Route>
-              <Route path="/hive">
-                <Hive />
               </Route>
             </Switch>
           </MainLayout>
