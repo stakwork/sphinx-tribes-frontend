@@ -531,6 +531,8 @@ const PhasePlannerView: React.FC = observer(() => {
                   placeholder="Purpose"
                   dataTestIdPrefix="purpose"
                   workspaceUUID={featureData?.workspace_uuid ?? ''}
+                  onCancel={() => setEditPurpose(false)}
+                  onUpdate={submitPurpose}
                 />
                 {editPurpose && (
                   <ButtonWrap>
@@ -582,6 +584,8 @@ const PhasePlannerView: React.FC = observer(() => {
                   placeholder="Outcome"
                   dataTestIdPrefix="outcome"
                   workspaceUUID={featureData?.workspace_uuid}
+                  onCancel={() => setEditOutcome(false)}
+                  onUpdate={submitOutcome}
                 />
                 {editOutcome && (
                   <ButtonWrap>
@@ -633,6 +637,8 @@ const PhasePlannerView: React.FC = observer(() => {
                   placeholder="Scope"
                   dataTestIdPrefix="scope"
                   workspaceUUID={featureData?.workspace_uuid}
+                  onCancel={() => setEditScope(false)}
+                  onUpdate={submitScope}
                 />
                 {editScope && (
                   <ButtonWrap>
