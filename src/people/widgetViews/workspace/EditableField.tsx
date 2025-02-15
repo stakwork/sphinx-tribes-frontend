@@ -30,7 +30,7 @@ interface EditableFieldProps {
 }
 
 const PreviewContainer = styled.div<{ height?: string }>`
-  height: ${(props: { height?: string }) => props.height || '250px'};
+  height: ${(props: { height?: string }) => props.height || ''};
   overflow-y: auto;
   background-color: white;
   padding: 1rem;

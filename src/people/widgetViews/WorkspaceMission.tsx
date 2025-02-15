@@ -962,6 +962,7 @@ const WorkspaceMission = () => {
                   workspaceUUID={workspaceData?.uuid}
                   onCancel={() => setEditMission(false)}
                   onUpdate={submitMission}
+                  defaultHeight="250px"
                 />
               </Data>
             </FieldWrap>
@@ -979,6 +980,7 @@ const WorkspaceMission = () => {
                   workspaceUUID={workspaceData?.uuid}
                   onCancel={() => setEditTactics(false)}
                   onUpdate={submitTactics}
+                  defaultHeight="250px"
                 />
               </Data>
             </FieldWrap>
