@@ -320,13 +320,11 @@ const WorkspaceMission = () => {
   const { uuid } = useParams<{ uuid: string }>();
   const [workspaceData, setWorkspaceData] = useState<Workspace>();
   const [loading, setLoading] = useState(true);
-  const [displayMission, setDidplayMission] = useState(false);
   const [visibleFeatureStatus, setVisibleFeatureStatus] = useState<{ [key: string]: boolean }>({});
   const [visibleChatMenu, setVisibleChatMenu] = useState<{ [key: string]: boolean }>({});
-  const [editMission, setEditMission] = useState(false);
+  const [editMission, setEditMission] = useState<boolean>(true);
   const [displaySchematic, setDidplaySchematic] = useState(false);
-  const [editTactics, setEditTactics] = useState(false);
-  const [displayTactics, setDidplayTactics] = useState(false);
+  const [editTactics, setEditTactics] = useState<boolean>(true);
   const [mission, setMission] = useState(workspaceData?.mission);
   const [schematicModal, setSchematicModal] = useState(false);
   const [tactics, setTactics] = useState(workspaceData?.tactics);
@@ -355,8 +353,8 @@ const WorkspaceMission = () => {
   const { chat } = useStores();
   const [chats, setChats] = React.useState<Chat[]>([]);
   const [isLoadingChats, setIsLoadingChats] = useState(true);
-  const [missionPreviewMode, setMissionPreviewMode] = useState<'preview' | 'edit'>('edit');
-  const [tacticsPreviewMode, setTacticsPreviewMode] = useState<'preview' | 'edit'>('edit');
+  const [missionPreviewMode, setMissionPreviewMode] = useState<'preview' | 'edit'>('preview');
+  const [tacticsPreviewMode, setTacticsPreviewMode] = useState<'preview' | 'edit'>('preview');
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [permissionsChecked, setPermissionsChecked] = useState<boolean>(false);
   const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
@@ -682,16 +680,6 @@ const WorkspaceMission = () => {
     window.open(githubUrl, '_blank');
   };
 
-  const editTacticsActions = () => {
-    setEditTactics(!editTactics);
-    setDidplayTactics(false);
-  };
-
-  const editMissionActions = () => {
-    setEditMission(!editMission);
-    setDidplayMission(false);
-  };
-
   const toggleFeatureStatus = (uuid: string) => {
     setVisibleFeatureStatus((prevState: { [key: string]: boolean }) => ({
       ...prevState,
@@ -731,7 +719,7 @@ const WorkspaceMission = () => {
       };
       await main.workspaceUpdateMission(body);
       await getWorkspaceData();
-      setEditMission(false);
+      setEditMission(true);
       setToasts([
         {
           id: `${Date.now()}-mission-success`,
@@ -761,7 +749,7 @@ const WorkspaceMission = () => {
       };
       await main.workspaceUpdateTactics(body);
       await getWorkspaceData();
-      setEditTactics(false);
+      setEditTactics(true);
       setToasts([
         {
           id: `${Date.now()}-tactics-success`,
@@ -963,23 +951,6 @@ const WorkspaceMission = () => {
             <FieldWrap>
               <Label>Mission</Label>
               <Data>
-                <OptionsWrap>
-                  <MaterialIcon
-                    icon={'more_horiz'}
-                    className="MaterialIcon"
-                    onClick={() => setDidplayMission(!displayMission)}
-                    data-testid="mission-option-btn"
-                  />
-                  {displayMission && (
-                    <EditPopover>
-                      <EditPopoverTail />
-                      <EditPopoverContent onClick={editMissionActions}>
-                        <MaterialIcon icon="edit" style={{ fontSize: '20px', marginTop: '2px' }} />
-                        <EditPopoverText data-testid="mission-edit-btn">Edit</EditPopoverText>
-                      </EditPopoverContent>
-                    </EditPopover>
-                  )}
-                </OptionsWrap>
                 <EditableField
                   value={mission ?? workspaceData?.mission ?? ''}
                   setValue={setMission}
@@ -992,46 +963,11 @@ const WorkspaceMission = () => {
                   onCancel={() => setEditMission(false)}
                   onUpdate={submitMission}
                 />
-                {editMission && (
-                  <ButtonWrap>
-                    <ActionButton
-                      onClick={() => setEditMission(!editMission)}
-                      data-testid="mission-cancel-btn"
-                      color="cancel"
-                    >
-                      Cancel
-                    </ActionButton>
-                    <ActionButton
-                      color="primary"
-                      onClick={submitMission}
-                      data-testid="mission-update-btn"
-                    >
-                      Update
-                    </ActionButton>
-                  </ButtonWrap>
-                )}
               </Data>
             </FieldWrap>
             <FieldWrap>
               <Label>Tactics and Objectives</Label>
               <Data>
-                <OptionsWrap>
-                  <MaterialIcon
-                    onClick={() => setDidplayTactics(!displayTactics)}
-                    icon={'more_horiz'}
-                    className="MaterialIcon"
-                    data-testid="tactics-option-btn"
-                  />
-                  {displayTactics && (
-                    <EditPopover>
-                      <EditPopoverTail />
-                      <EditPopoverContent onClick={editTacticsActions}>
-                        <MaterialIcon icon="edit" style={{ fontSize: '20px', marginTop: '2px' }} />
-                        <EditPopoverText data-testid="tactics-edit-btn">Edit</EditPopoverText>
-                      </EditPopoverContent>
-                    </EditPopover>
-                  )}
-                </OptionsWrap>
                 <EditableField
                   value={tactics ?? workspaceData?.tactics ?? ''}
                   setValue={setTactics}
@@ -1044,24 +980,6 @@ const WorkspaceMission = () => {
                   onCancel={() => setEditTactics(false)}
                   onUpdate={submitTactics}
                 />
-                {editTactics && (
-                  <ButtonWrap>
-                    <ActionButton
-                      data-testid="tactics-cancel-btn"
-                      onClick={() => setEditTactics(!editTactics)}
-                      color="cancel"
-                    >
-                      Cancel
-                    </ActionButton>
-                    <ActionButton
-                      data-testid="tactics-update-btn"
-                      color="primary"
-                      onClick={submitTactics}
-                    >
-                      Update
-                    </ActionButton>
-                  </ButtonWrap>
-                )}
               </Data>
             </FieldWrap>
             <HorizontalGrayLine />
