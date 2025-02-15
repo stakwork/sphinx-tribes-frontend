@@ -61,15 +61,18 @@ const PhasePlannerView: React.FC = observer(() => {
   const [purpose, setPurpose] = useState<string>(phaseData?.phase_purpose || '');
   const [outcome, setOutcome] = useState<string>(phaseData?.phase_outcome || '');
   const [scope, setScope] = useState<string>(phaseData?.phase_scope || '');
+  const [design, setDesign] = useState<string>(phaseData?.phase_design || '');
   const [editPurpose, setEditPurpose] = useState<boolean>(false);
   const [editOutcome, setEditOutcome] = useState<boolean>(false);
   const [editScope, setEditScope] = useState<boolean>(false);
+  const [editDesign, setEditDesign] = useState<boolean>(true);
   const [displayPurpose, setDisplayPurpose] = useState<boolean>(false);
   const [displayOutcome, setDisplayOutcome] = useState<boolean>(false);
   const [displayScope, setDisplayScope] = useState<boolean>(false);
   const [purposePreviewMode, setPurposePreviewMode] = useState<'preview' | 'edit'>('edit');
   const [outcomePreviewMode, setOutcomePreviewMode] = useState<'preview' | 'edit'>('edit');
   const [scopePreviewMode, setScopePreviewMode] = useState<'preview' | 'edit'>('edit');
+  const [designPreviewMode, setDesignPreviewMode] = useState<'preview' | 'edit'>('preview');
   const [toasts, setToasts] = useState<Toast[]>([]);
   const { main } = useStores();
   const history = useHistory();
@@ -307,6 +310,39 @@ const PhasePlannerView: React.FC = observer(() => {
     }
   };
 
+  const submitDesign = async () => {
+    if (!phaseData) return;
+    try {
+      const updatedPhase = await main.createOrUpdatePhase({
+        ...phaseData,
+        phase_design: design
+      });
+      if (updatedPhase) {
+        setPhaseData(updatedPhase);
+        setDesign(updatedPhase.phase_design || '');
+        setEditDesign(true);
+        setToasts([
+          {
+            id: `${Date.now()}-design-success`,
+            title: 'Success',
+            color: 'success',
+            text: 'Design updated successfully!'
+          }
+        ]);
+      }
+    } catch (error) {
+      console.error('Error updating phase design:', error);
+      setToasts([
+        {
+          id: `${Date.now()}-design-error`,
+          title: 'Error',
+          color: 'danger',
+          text: 'Failed to update design'
+        }
+      ]);
+    }
+  };
+
   const getFeatureData = useCallback(async () => {
     if (!feature_uuid) return;
     const data = await main.getFeaturesByUuid(feature_uuid);
@@ -364,6 +400,7 @@ const PhasePlannerView: React.FC = observer(() => {
           setPurpose(phase.phase_purpose || '');
           setOutcome(phase.phase_outcome || '');
           setScope(phase.phase_scope || '');
+          setDesign(phase.phase_design || '');
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -660,6 +697,25 @@ const PhasePlannerView: React.FC = observer(() => {
                 )}
               </Data>
             </FieldWrap>
+
+            <FieldWrap>
+              <Label>Design</Label>
+              <Data>
+                <EditableField
+                  value={design ?? phaseData?.phase_design ?? ''}
+                  setValue={setDesign}
+                  isEditing={editDesign}
+                  previewMode={designPreviewMode}
+                  setPreviewMode={setDesignPreviewMode}
+                  placeholder="Design"
+                  dataTestIdPrefix="design"
+                  workspaceUUID={featureData?.workspace_uuid}
+                  onCancel={() => setEditDesign(false)}
+                  onUpdate={submitDesign}
+                />
+              </Data>
+            </FieldWrap>
+
             <EuiDragDropContext onDragEnd={onDragEnd}>
               <EuiDroppable droppableId="ticketDroppable" spacing="m">
                 {phaseTicketStore
