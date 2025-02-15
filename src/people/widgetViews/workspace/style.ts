@@ -1742,7 +1742,6 @@ export const SwitcherContainer = styled.div`
   padding: 4px;
   width: fit-content;
   margin-bottom: 12px;
-  align-self: flex-end;
 `;
 
 export const SwitcherButton = styled.button<{ isActive: boolean }>`
@@ -1775,13 +1774,14 @@ export const PreviewButtonGroup = styled.div`
   gap: 10px;
   align-items: center;
   justify-content: flex-end;
-  margin-left: auto;
   margin-top: calc(100px - 110px);
   margin-right: 3px;
+  width: 100%;
 
   ${ActionButton} {
     transition: background-color 0.2s ease;
     width: auto;
+    margin-top: calc(100px - 110px);
     min-width: 100px;
 
     &[color='primary'] {
@@ -1903,4 +1903,16 @@ export const StyledSelect = styled.select`
     background-color: #f5f5f5;
     cursor: not-allowed;
   }
+`;
+
+export const SnippetContainer = styled.div`
+  display: flex;
+  align-items: center;
+  margin-right: auto;
+`;
+
+export const ActionButtonGroup = styled.div`
+  display: flex;
+  gap: 10px;
+  align-items: center;
 `;

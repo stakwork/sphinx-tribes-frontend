@@ -743,7 +743,7 @@ const Activities = observer(() => {
 
   return (
     <MainContainer>
-      <ActivitiesHeader />
+      <ActivitiesHeader uuid={uuid} />
       <ActivitiesContainer>
         {isModalOpen && (
           <ModalOverlay
