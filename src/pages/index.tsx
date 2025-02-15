@@ -59,7 +59,7 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
               >
                 <WorkspaceTicketsPage />
               </Route>
-              <Route path="/workspace/:workspaceId/ticket/:ticketId">
+              <Route path="/workspace/:workspaceId/ticket/:ticketId?">
                 <WorkspaceTicketView />
               </Route>
               <Route path="/workspace/:uuid/planner">
