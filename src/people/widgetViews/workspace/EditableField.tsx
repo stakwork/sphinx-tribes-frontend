@@ -68,6 +68,7 @@ export const EditableField: React.FC<EditableFieldProps> = ({
     setValue(originalValue);
     setHasChanges(false);
     onCancel?.();
+    setPreviewMode('preview');
   };
 
   const handleUpdate = async () => {

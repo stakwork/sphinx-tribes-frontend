@@ -527,7 +527,7 @@ const PhasePlannerView: React.FC = observer(() => {
                   placeholder="Purpose"
                   dataTestIdPrefix="purpose"
                   workspaceUUID={featureData?.workspace_uuid ?? ''}
-                  onCancel={() => setEditPurpose(false)}
+                  onCancel={() => setEditPurpose(true)}
                   onUpdate={submitPurpose}
                 />
               </Data>
@@ -545,7 +545,7 @@ const PhasePlannerView: React.FC = observer(() => {
                   placeholder="Outcome"
                   dataTestIdPrefix="outcome"
                   workspaceUUID={featureData?.workspace_uuid}
-                  onCancel={() => setEditOutcome(false)}
+                  onCancel={() => setEditOutcome(true)}
                   onUpdate={submitOutcome}
                 />
               </Data>
@@ -563,7 +563,7 @@ const PhasePlannerView: React.FC = observer(() => {
                   placeholder="Scope"
                   dataTestIdPrefix="scope"
                   workspaceUUID={featureData?.workspace_uuid}
-                  onCancel={() => setEditScope(false)}
+                  onCancel={() => setEditScope(true)}
                   onUpdate={submitScope}
                 />
               </Data>
@@ -581,7 +581,7 @@ const PhasePlannerView: React.FC = observer(() => {
                   placeholder="Design"
                   dataTestIdPrefix="design"
                   workspaceUUID={featureData?.workspace_uuid}
-                  onCancel={() => setEditDesign(false)}
+                  onCancel={() => setEditDesign(true)}
                   onUpdate={submitDesign}
                 />
               </Data>

@@ -960,7 +960,7 @@ const WorkspaceMission = () => {
                   placeholder="Mission"
                   dataTestIdPrefix="mission"
                   workspaceUUID={workspaceData?.uuid}
-                  onCancel={() => setEditMission(false)}
+                  onCancel={() => setEditMission(true)}
                   onUpdate={submitMission}
                   defaultHeight="250px"
                 />
@@ -978,7 +978,7 @@ const WorkspaceMission = () => {
                   placeholder="Tactics"
                   dataTestIdPrefix="tactics"
                   workspaceUUID={workspaceData?.uuid}
-                  onCancel={() => setEditTactics(false)}
+                  onCancel={() => setEditTactics(true)}
                   onUpdate={submitTactics}
                   defaultHeight="250px"
                 />
