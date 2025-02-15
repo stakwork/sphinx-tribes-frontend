@@ -14,11 +14,6 @@ import {
   PhaseLabel,
   LabelValue,
   AddTicketButton,
-  EditPopoverText,
-  EditPopoverContent,
-  EditPopoverTail,
-  EditPopover,
-  OptionsWrap,
   Data,
   Label
 } from 'pages/tickets/style';
@@ -32,7 +27,6 @@ import {
   FeatureHeadWrap,
   WorkspaceName,
   PhaseFlexContainer,
-  ButtonWrap,
   ActionButton,
   DisplayBounties
 } from './workspace/style';
@@ -62,16 +56,13 @@ const PhasePlannerView: React.FC = observer(() => {
   const [outcome, setOutcome] = useState<string>(phaseData?.phase_outcome || '');
   const [scope, setScope] = useState<string>(phaseData?.phase_scope || '');
   const [design, setDesign] = useState<string>(phaseData?.phase_design || '');
-  const [editPurpose, setEditPurpose] = useState<boolean>(false);
-  const [editOutcome, setEditOutcome] = useState<boolean>(false);
-  const [editScope, setEditScope] = useState<boolean>(false);
+  const [editPurpose, setEditPurpose] = useState<boolean>(true);
+  const [editOutcome, setEditOutcome] = useState<boolean>(true);
+  const [editScope, setEditScope] = useState<boolean>(true);
   const [editDesign, setEditDesign] = useState<boolean>(true);
-  const [displayPurpose, setDisplayPurpose] = useState<boolean>(false);
-  const [displayOutcome, setDisplayOutcome] = useState<boolean>(false);
-  const [displayScope, setDisplayScope] = useState<boolean>(false);
-  const [purposePreviewMode, setPurposePreviewMode] = useState<'preview' | 'edit'>('edit');
-  const [outcomePreviewMode, setOutcomePreviewMode] = useState<'preview' | 'edit'>('edit');
-  const [scopePreviewMode, setScopePreviewMode] = useState<'preview' | 'edit'>('edit');
+  const [purposePreviewMode, setPurposePreviewMode] = useState<'preview' | 'edit'>('preview');
+  const [outcomePreviewMode, setOutcomePreviewMode] = useState<'preview' | 'edit'>('preview');
+  const [scopePreviewMode, setScopePreviewMode] = useState<'preview' | 'edit'>('preview');
   const [designPreviewMode, setDesignPreviewMode] = useState<'preview' | 'edit'>('preview');
   const [toasts, setToasts] = useState<Toast[]>([]);
   const { main } = useStores();
@@ -196,21 +187,6 @@ const PhasePlannerView: React.FC = observer(() => {
     };
   }, [main]);
 
-  const editPurposeActions = () => {
-    setEditPurpose(!editPurpose);
-    setDisplayPurpose(false);
-  };
-
-  const editOutcomeActions = () => {
-    setEditOutcome(!editOutcome);
-    setDisplayOutcome(false);
-  };
-
-  const editScopeActions = () => {
-    setEditScope(!editScope);
-    setDisplayScope(false);
-  };
-
   const submitPurpose = async () => {
     if (!phaseData) return;
     try {
@@ -221,7 +197,7 @@ const PhasePlannerView: React.FC = observer(() => {
       if (updatedPhase) {
         setPhaseData(updatedPhase);
         setPurpose(updatedPhase.phase_purpose || '');
-        setEditPurpose(false);
+        setEditPurpose(true);
         setToasts([
           {
             id: `${Date.now()}-purpose-success`,
@@ -254,7 +230,7 @@ const PhasePlannerView: React.FC = observer(() => {
       if (updatedPhase) {
         setPhaseData(updatedPhase);
         setOutcome(updatedPhase.phase_outcome || '');
-        setEditOutcome(false);
+        setEditOutcome(true);
         setToasts([
           {
             id: `${Date.now()}-outcome-success`,
@@ -287,7 +263,7 @@ const PhasePlannerView: React.FC = observer(() => {
       if (updatedPhase) {
         setPhaseData(updatedPhase);
         setScope(updatedPhase.phase_scope || '');
-        setEditScope(false);
+        setEditScope(true);
         setToasts([
           {
             id: `${Date.now()}-scope-success`,
@@ -542,23 +518,6 @@ const PhasePlannerView: React.FC = observer(() => {
             <FieldWrap>
               <Label>Purpose</Label>
               <Data>
-                <OptionsWrap>
-                  <MaterialIcon
-                    icon={'more_horiz'}
-                    className="MaterialIcon"
-                    onClick={() => setDisplayPurpose(!displayPurpose)}
-                    data-testid="purpose-option-btn"
-                  />
-                  {displayPurpose && (
-                    <EditPopover>
-                      <EditPopoverTail />
-                      <EditPopoverContent onClick={editPurposeActions}>
-                        <MaterialIcon icon="edit" style={{ fontSize: '20px', marginTop: '2px' }} />
-                        <EditPopoverText data-testid="purpose-edit-btn">Edit</EditPopoverText>
-                      </EditPopoverContent>
-                    </EditPopover>
-                  )}
-                </OptionsWrap>
                 <EditableField
                   value={purpose ?? phaseData?.phase_purpose ?? ''}
                   setValue={setPurpose}
@@ -568,50 +527,15 @@ const PhasePlannerView: React.FC = observer(() => {
                   placeholder="Purpose"
                   dataTestIdPrefix="purpose"
                   workspaceUUID={featureData?.workspace_uuid ?? ''}
-                  onCancel={() => setEditPurpose(false)}
+                  onCancel={() => setEditPurpose(true)}
                   onUpdate={submitPurpose}
                 />
-                {editPurpose && (
-                  <ButtonWrap>
-                    <ActionButton
-                      onClick={() => setEditPurpose(!editPurpose)}
-                      data-testid="purpose-cancel-btn"
-                      color="cancel"
-                    >
-                      Cancel
-                    </ActionButton>
-                    <ActionButton
-                      color="primary"
-                      onClick={submitPurpose}
-                      data-testid="purpose-update-btn"
-                    >
-                      Update
-                    </ActionButton>
-                  </ButtonWrap>
-                )}
               </Data>
             </FieldWrap>
 
             <FieldWrap>
               <Label>Outcome</Label>
               <Data>
-                <OptionsWrap>
-                  <MaterialIcon
-                    icon={'more_horiz'}
-                    className="MaterialIcon"
-                    onClick={() => setDisplayOutcome(!displayOutcome)}
-                    data-testid="outcome-option-btn"
-                  />
-                  {displayOutcome && (
-                    <EditPopover>
-                      <EditPopoverTail />
-                      <EditPopoverContent onClick={editOutcomeActions}>
-                        <MaterialIcon icon="edit" style={{ fontSize: '20px', marginTop: '2px' }} />
-                        <EditPopoverText data-testid="outcome-edit-btn">Edit</EditPopoverText>
-                      </EditPopoverContent>
-                    </EditPopover>
-                  )}
-                </OptionsWrap>
                 <EditableField
                   value={outcome ?? phaseData?.phase_outcome ?? ''}
                   setValue={setOutcome}
@@ -621,50 +545,15 @@ const PhasePlannerView: React.FC = observer(() => {
                   placeholder="Outcome"
                   dataTestIdPrefix="outcome"
                   workspaceUUID={featureData?.workspace_uuid}
-                  onCancel={() => setEditOutcome(false)}
+                  onCancel={() => setEditOutcome(true)}
                   onUpdate={submitOutcome}
                 />
-                {editOutcome && (
-                  <ButtonWrap>
-                    <ActionButton
-                      onClick={() => setEditOutcome(!editOutcome)}
-                      data-testid="outcome-cancel-btn"
-                      color="cancel"
-                    >
-                      Cancel
-                    </ActionButton>
-                    <ActionButton
-                      color="primary"
-                      onClick={submitOutcome}
-                      data-testid="outcome-update-btn"
-                    >
-                      Update
-                    </ActionButton>
-                  </ButtonWrap>
-                )}
               </Data>
             </FieldWrap>
 
             <FieldWrap>
               <Label>Scope</Label>
               <Data>
-                <OptionsWrap>
-                  <MaterialIcon
-                    icon={'more_horiz'}
-                    className="MaterialIcon"
-                    onClick={() => setDisplayScope(!displayScope)}
-                    data-testid="scope-option-btn"
-                  />
-                  {displayScope && (
-                    <EditPopover>
-                      <EditPopoverTail />
-                      <EditPopoverContent onClick={editScopeActions}>
-                        <MaterialIcon icon="edit" style={{ fontSize: '20px', marginTop: '2px' }} />
-                        <EditPopoverText data-testid="scope-edit-btn">Edit</EditPopoverText>
-                      </EditPopoverContent>
-                    </EditPopover>
-                  )}
-                </OptionsWrap>
                 <EditableField
                   value={scope ?? phaseData?.phase_scope ?? ''}
                   setValue={setScope}
@@ -674,27 +563,9 @@ const PhasePlannerView: React.FC = observer(() => {
                   placeholder="Scope"
                   dataTestIdPrefix="scope"
                   workspaceUUID={featureData?.workspace_uuid}
-                  onCancel={() => setEditScope(false)}
+                  onCancel={() => setEditScope(true)}
                   onUpdate={submitScope}
                 />
-                {editScope && (
-                  <ButtonWrap>
-                    <ActionButton
-                      onClick={() => setEditScope(!editScope)}
-                      data-testid="scope-cancel-btn"
-                      color="cancel"
-                    >
-                      Cancel
-                    </ActionButton>
-                    <ActionButton
-                      color="primary"
-                      onClick={submitScope}
-                      data-testid="scope-update-btn"
-                    >
-                      Update
-                    </ActionButton>
-                  </ButtonWrap>
-                )}
               </Data>
             </FieldWrap>
 
@@ -710,7 +581,7 @@ const PhasePlannerView: React.FC = observer(() => {
                   placeholder="Design"
                   dataTestIdPrefix="design"
                   workspaceUUID={featureData?.workspace_uuid}
-                  onCancel={() => setEditDesign(false)}
+                  onCancel={() => setEditDesign(true)}
                   onUpdate={submitDesign}
                 />
               </Data>

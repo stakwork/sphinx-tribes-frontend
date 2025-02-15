@@ -207,7 +207,7 @@ const WorkspaceEditableField = ({
   workspaceUUID
 }: WSEditableFieldProps) => {
   const handleCancelClick = () => {
-    setIsEditing(false);
+    setIsEditing(true);
   };
 
   const [showAudioModal, setShowAudioModal] = useState(false);
