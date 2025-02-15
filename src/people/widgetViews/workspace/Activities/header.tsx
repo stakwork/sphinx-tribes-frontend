@@ -1,5 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
+import { useStores } from 'store';
+import { PostModal } from 'people/widgetViews/postBounty/PostModal';
+import addBounty from 'pages/tickets/workspace/workspaceHeader/Icons/addBounty.svg';
 
 const HeaderContainer = styled.header`
   background: #1a1b23;
@@ -53,6 +56,28 @@ const PostBountyButton = styled.button`
 `;
 
 export default function ActivitiesHeader() {
+  const { main, ui } = useStores();
+  const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
+  const [canPostBounty, setCanPostBounty] = useState(false);
+
+  React.useEffect(() => {
+    const checkUserPermissions = async () => {
+      const isLoggedIn = !!ui.meInfo;
+      const hasPermission = isLoggedIn;
+      setCanPostBounty(hasPermission);
+    };
+
+    if (ui.meInfo) {
+      checkUserPermissions();
+    }
+  }, [ui.meInfo, main]);
+
+  const handlePostBountyClick = () => {
+    if (canPostBounty) {
+      setIsPostBountyModalOpen(true);
+    }
+  };
+
   return (
     <HeaderContainer>
       <SubHeader>
@@ -65,9 +90,20 @@ export default function ActivitiesHeader() {
             </p>
           </BountiesInfo>
 
-          <PostBountyButton>Post a Bounty</PostBountyButton>
+          {canPostBounty && (
+            <PostBountyButton onClick={handlePostBountyClick}>
+              {' '}
+              <img src={addBounty} alt="Add Bounty" />
+              Post a Bounty
+            </PostBountyButton>
+          )}
         </BountiesHeader>
       </SubHeader>
+      <PostModal
+        isOpen={isPostBountyModalOpen}
+        onClose={() => setIsPostBountyModalOpen(false)}
+        widget="bounties"
+      />
     </HeaderContainer>
   );
 }

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/typedef */
 import { observer } from 'mobx-react-lite';
 import React, { useEffect, useState } from 'react';
@@ -19,6 +20,7 @@ export const ActivitiesContainer = styled.div`
   height: calc(100vh - 120px);
   overflow-y: auto;
   margin-bottom: 50px;
+  margin-top: 50px;
 `;
 
 export const ActivitiesList = styled.div`
@@ -220,7 +222,6 @@ const Button = styled.button`
 const AddActivityButton = styled(Button)`
   margin-left: auto;
   display: block;
-  margin-right: 60px;
   margin-bottom: 10px;
   margin-top: 10px;
 `;
@@ -304,6 +305,25 @@ const MainContainer = styled.div`
   flex-direction: column;
 `;
 
+const CommentInput = styled.textarea`
+  padding: 0.5rem;
+  border: 1px dashed #94a3b8;
+  border-radius: 4px;
+  min-height: 100px;
+  width: 100%;
+  margin-top: 1rem;
+  resize: vertical;
+`;
+
+const PostButton = styled(Button)`
+  margin-top: 0.5rem;
+  display: none;
+
+  &.visible {
+    display: block;
+  }
+`;
+
 const Activities = observer(() => {
   const { uuid } = useParams<{ uuid: string }>();
   const { main, ui } = useStores();
@@ -334,6 +354,9 @@ const Activities = observer(() => {
     questions_input: ''
   });
   const [threadResponses, setThreadResponses] = useState<IActivity[]>([]);
+  const [comment, setComment] = useState('');
+  const [isCommentChanged, setIsCommentChanged] = useState(false);
+  const [isPosting, setIsPosting] = useState(false);
 
   useEffect(() => {
     if (uuid) {
@@ -401,6 +424,12 @@ const Activities = observer(() => {
       }
     };
   }, [selectedActivity]);
+
+  useEffect(() => {
+    if (activityStore.rootActivities.length > 0 && !selectedActivity) {
+      setSelectedActivity(activityStore.rootActivities[0]);
+    }
+  }, [activityStore.rootActivities]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -509,38 +538,42 @@ const Activities = observer(() => {
     }
 
     try {
+      let response;
       if (selectedActivity) {
-        const response = await activityStore.createThreadResponse(selectedActivity.ID, {
+        response = await activityStore.createThreadResponse(selectedActivity.ID, {
           ...newActivity,
           workspace: uuid,
           content: trimmedContent,
           content_type: newActivity.content_type as ContentType,
           author: newActivity.author as AuthorType
         });
-
-        if (response) {
-          setIsModalOpen(false);
-          resetForm();
-          const updatedResponses = await activityStore.getThreadResponses(selectedActivity.ID);
-          setThreadResponses(
-            updatedResponses.filter((response) => response.ID !== selectedActivity.ID)
-          );
-          await activityStore.fetchWorkspaceActivities(uuid);
-        }
       } else {
-        const response = await activityStore.createActivity({
+        response = await activityStore.createActivity({
           ...newActivity,
           workspace: uuid,
           content: trimmedContent,
           content_type: newActivity.content_type as ContentType,
           author: newActivity.author as AuthorType
         });
+      }
 
-        if (response) {
-          setIsModalOpen(false);
-          resetForm();
-          await activityStore.fetchWorkspaceActivities(uuid);
+      if (response) {
+        await activityStore.fetchWorkspaceActivities(uuid);
+
+        const createdActivity = activityStore.rootActivities.find(
+          (a) =>
+            a.content === trimmedContent &&
+            new Date(a.time_created).getTime() - new Date().getTime() < 5000
+        );
+
+        if (createdActivity) {
+          setSelectedActivity(createdActivity);
+        } else {
+          setSelectedActivity(activityStore.rootActivities[0]);
         }
+
+        setIsModalOpen(false);
+        resetForm();
       }
     } catch (error) {
       console.error('Error:', error);
@@ -579,6 +612,70 @@ const Activities = observer(() => {
     }));
   };
 
+  const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setComment(e.target.value);
+    setIsCommentChanged(e.target.value.trim() !== '');
+  };
+
+  const handlePostComment = async () => {
+    if (!uuid || !ui._meInfo?.owner_alias || isPosting) return;
+
+    try {
+      setIsPosting(true);
+      const newActivity = {
+        workspace: uuid,
+        content: comment,
+        content_type: 'general_update' as ContentType,
+        author: 'human' as AuthorType,
+        author_ref: ui._meInfo?.owner_pubkey || '',
+        title: `${ui._meInfo.owner_alias} - ${new Date().toLocaleString('en-GB', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        })}`,
+        description: '',
+        details: '',
+        notes: [],
+        nextActions: [],
+        question: '',
+        feature_uuid: '',
+        phase_uuid: '',
+        thread_id: '',
+        feedback: '',
+        actions: [],
+        questions: [],
+        actions_input: '',
+        questions_input: ''
+      };
+
+      const response = await activityStore.createActivity(newActivity);
+      if (response) {
+        setComment('');
+        setIsCommentChanged(false);
+
+        await activityStore.fetchWorkspaceActivities(uuid);
+
+        const createdActivity = activityStore.rootActivities.find(
+          (a) =>
+            a.content === newActivity.content &&
+            new Date(a.time_created).getTime() - new Date().getTime() < 5000
+        );
+
+        if (createdActivity) {
+          setSelectedActivity(createdActivity);
+        } else {
+          setSelectedActivity(activityStore.rootActivities[0]);
+        }
+      }
+    } catch (error) {
+      console.error('Error posting comment:', error);
+    } finally {
+      setIsPosting(false);
+    }
+  };
+
   const renderDetailsPanel = () => {
     if (!selectedActivity) {
       return (
@@ -614,7 +711,7 @@ const Activities = observer(() => {
         {/* thread responses section */}
         {threadResponses.length > 0 && (
           <DetailCard>
-            <Title>Thread Responses</Title>
+            <Title>Thread Respnses</Title>
             {threadResponses.map((response) => (
               <ThreadResponseCard key={response.ID}>
                 <Content>{response.content}</Content>
@@ -647,9 +744,6 @@ const Activities = observer(() => {
   return (
     <MainContainer>
       <ActivitiesHeader />
-      <AddActivityButton onClick={handleCreateActivityClick} disabled={!uuid}>
-        Add New Activity
-      </AddActivityButton>
       <ActivitiesContainer>
         {isModalOpen && (
           <ModalOverlay
@@ -805,7 +899,16 @@ const Activities = observer(() => {
         )}
 
         <ActivitiesList>
-          <Title style={{ fontSize: '2.25rem' }}>Activities</Title>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Title style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Activities</Title>
+            <AddActivityButton
+              onClick={handleCreateActivityClick}
+              disabled={!uuid}
+              style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
+            >
+              Add Activity
+            </AddActivityButton>
+          </div>
           {activityStore.rootActivities.length === 0 ? (
             <div>No activities available</div>
           ) : (
@@ -822,8 +925,20 @@ const Activities = observer(() => {
               </ActivityItem>
             ))
           )}
+          <CommentInput
+            placeholder="Add a comment or question..."
+            value={comment}
+            onChange={handleCommentChange}
+          />
+          <PostButton
+            onClick={handlePostComment}
+            className={isCommentChanged ? 'visible' : ''}
+            disabled={isPosting}
+          >
+            {isPosting ? 'Posting...' : 'Post'}
+          </PostButton>
         </ActivitiesList>
-        <DetailsPanel>{renderDetailsPanel()}</DetailsPanel>
+        <DetailsPanel>{selectedActivity ? renderDetailsPanel() : <></>}</DetailsPanel>
       </ActivitiesContainer>
     </MainContainer>
   );
