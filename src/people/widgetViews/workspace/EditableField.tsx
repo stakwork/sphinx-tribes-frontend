@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
 import { renderMarkdown } from 'people/utils/RenderMarkdown';
 import { TicketTextAreaComp } from 'components/common/TicketEditor/TicketTextArea';
 import { useStores } from 'store';
@@ -25,7 +26,17 @@ interface EditableFieldProps {
   workspaceUUID?: string;
   onCancel: () => void;
   onUpdate: () => void;
+  defaultHeight?: string;
 }
+
+const PreviewContainer = styled.div<{ height?: string }>`
+  height: ${(props: { height?: string }) => props.height || '250px'};
+  overflow-y: auto;
+  background-color: white;
+  padding: 1rem;
+  border: 2px solid #dde1e5;
+  border-radius: 0.375rem;
+`;
 
 export const EditableField: React.FC<EditableFieldProps> = ({
   value,
@@ -37,7 +48,8 @@ export const EditableField: React.FC<EditableFieldProps> = ({
   dataTestIdPrefix,
   workspaceUUID,
   onCancel,
-  onUpdate
+  onUpdate,
+  defaultHeight
 }: EditableFieldProps) => {
   const [originalValue, setOriginalValue] = useState(value);
   const [hasChanges, setHasChanges] = useState(false);
@@ -87,7 +99,7 @@ export const EditableField: React.FC<EditableFieldProps> = ({
     if (!value?.trim()) {
       return <EmptyState>{`No ${placeholder?.toLowerCase() ?? 'content'} yet`}</EmptyState>;
     }
-    return <div className="p-4">{renderMarkdown(value)}</div>;
+    return <PreviewContainer height={defaultHeight}>{renderMarkdown(value)}</PreviewContainer>;
   }
 
   return (
@@ -140,11 +152,11 @@ export const EditableField: React.FC<EditableFieldProps> = ({
           data-testid={`${dataTestIdPrefix}-textarea`}
         />
       ) : (
-        <div className="p-4 border rounded-md">
+        <PreviewContainer height={defaultHeight}>
           {value?.trim()
             ? renderMarkdown(value)
             : `No ${placeholder?.toLowerCase() ?? 'content'} yet`}
-        </div>
+        </PreviewContainer>
       )}
     </>
   );
