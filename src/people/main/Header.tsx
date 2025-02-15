@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { EuiHeader, EuiHeaderSection } from '@elastic/eui';
 import { Link, useHistory, useLocation } from 'react-router-dom';
@@ -265,11 +265,34 @@ function Header() {
 
   const resolveTabsToBounties = ['b', 't'];
 
+  const getUserWorkspaces = useCallback(async () => {
+    const id = ui._meInfo?.id || 0;
+    if (id != 0) {
+      await main.getUserWorkspaces(id);
+    }
+  }, [main, ui.selectedPerson]);
+
+  useEffect(() => {
+    getUserWorkspaces();
+  }, [getUserWorkspaces]);
+
+  const workspaceLength = main.workspaces ? main.workspaces.length : 0;
+
   if (isAdmin) {
     tabs.unshift({
       label: 'Admin',
       name: 'admin',
       path: '/admin'
+    });
+  }
+
+  if (isAdmin && workspaceLength > 0) {
+    const space = main.workspaces[0];
+
+    tabs.push({
+      label: 'Hive',
+      name: 'hive',
+      path: `/workspace/${space.uuid}/activities`
     });
   }
 
@@ -282,7 +305,7 @@ function Header() {
         console.log('e', e);
       }
     })();
-  }, [ui.meInfo]);
+  }, [ui.meInfo, main]);
 
   const [showWelcome, setShowWelcome] = useState(false);
 
