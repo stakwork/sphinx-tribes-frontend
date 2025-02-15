@@ -646,7 +646,7 @@ const Activities = observer(() => {
 
   return (
     <MainContainer>
-      <ActivitiesHeader />
+      <ActivitiesHeader uuid={uuid} />
       <AddActivityButton onClick={handleCreateActivityClick} disabled={!uuid}>
         Add New Activity
       </AddActivityButton>
