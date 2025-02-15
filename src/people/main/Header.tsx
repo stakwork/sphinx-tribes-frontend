@@ -101,7 +101,7 @@ const MTabs = styled.div`
 interface TagProps {
   selected: boolean;
 }
-const Tab = styled(Link)<TagProps>`
+const Tab = styled(Link) <TagProps>`
   display: flex;
   padding: 0 8px;
   color: ${(p: any) => (p.selected ? '#fff' : '#6B7A8D')};
@@ -124,7 +124,7 @@ const Tab = styled(Link)<TagProps>`
   }
 `;
 
-const MTab = styled(Link)<TagProps>`
+const MTab = styled(Link) <TagProps>`
   display: flex;
   margin: 25px 5px 0;
   color: ${(p: any) => (p.selected ? '#fff' : '#6B7A8D')};
@@ -276,7 +276,7 @@ function Header() {
     getUserWorkspaces();
   }, [getUserWorkspaces]);
 
-  const workspaceLength = main.workspaces.length;
+  const workspaceLength = main.workspaces ? main.workspaces.length : 0;
 
   if (isAdmin) {
     tabs.unshift({
