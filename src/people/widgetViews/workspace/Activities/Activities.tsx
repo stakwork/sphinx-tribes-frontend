@@ -2,10 +2,13 @@
 import { observer } from 'mobx-react-lite';
 import React, { useEffect, useState } from 'react';
 import { activityStore } from 'store/activityStore';
+import MaterialIcon from '@material/react-material-icon';
 import styled from 'styled-components';
 import { AuthorType, ContentType, Feature, IActivity } from 'store/interface';
 import { useStores } from 'store';
 import { useParams } from 'react-router-dom';
+import { useHistory } from 'react-router';
+import { EuiDragDropContext, EuiDraggable, EuiDroppable } from '@elastic/eui';
 import { Phase } from '../interface';
 import ActivitiesHeader from './header';
 
@@ -13,7 +16,6 @@ export const ActivitiesContainer = styled.div`
   display: grid;
   grid-template-columns: 1fr 1.5fr;
   gap: 2rem;
-  padding-top: 0rem !important;
   padding: 3.5rem;
   background-color: #f8f9fa;
   height: calc(100vh - 120px);
@@ -74,23 +76,6 @@ export const Title = styled.h2`
   margin-bottom: 1rem;
 `;
 
-export const BulletList = styled.ul`
-  list-style: none;
-  padding-left: 1rem;
-
-  li {
-    position: relative;
-    padding-left: 1rem;
-    margin-bottom: 0.5rem;
-
-    &:before {
-      content: '-';
-      position: absolute;
-      left: -1rem;
-    }
-  }
-`;
-
 export const EmptyState = styled.div`
   display: flex;
   flex-direction: column;
@@ -113,19 +98,16 @@ export const SelectActivityState = styled(EmptyState)`
   justify-content: center;
 `;
 
-const ModalOverlay = styled.div`
-  position: fixed;
+const ModalOverlay = styled.div<{ collapsed: boolean }>`
+  position: ${({ collapsed }) => (collapsed ? 'static' : 'fixed')};
   top: 0;
   left: 0;
-  width: 100%;
+  width: ${({ collapsed }) => (collapsed ? '0' : '100%')};
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  z-index: 1000;
-  overflow: auto;
-  padding: 20px;
+  z-index: 999;
+  transition: all 0.3s ease;
+  display: ${({ collapsed }) => (collapsed ? 'none' : 'block')};
 `;
 
 const ModalContent = styled.div`
@@ -297,18 +279,73 @@ const ThreadResponseCard = styled.div`
 `;
 
 const MainContainer = styled.div`
-  background-color: #f8f9fa;
-  height: 100vh;
-  overflow: hidden;
+  margin-left: 0;
+  padding: 20px;
+  transition: margin-left 0.3s ease;
+  position: relative;
+`;
+
+const SidebarContainer = styled.div<{ collapsed: boolean }>`
+  position: fixed;
+  top: 65px;
+  left: 0;
+  height: 100%;
+  width: ${({ collapsed }) => (collapsed ? '60px' : '250px')};
+  background-color: white;
+  color: #333;
+  transition: width 0.3s ease;
+  z-index: 1000;
+`;
+
+const HamburgerButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin: 10px;
+`;
+
+const NavItem = styled.div<{ collapsed: boolean; active?: boolean }>`
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  padding: 15px;
+  cursor: pointer;
+  background-color: ${(props) => (props.active ? '#e0e0e0' : 'transparent')};
+  &:hover {
+    background-color: #e0e0e0;
+  }
+  span {
+    margin-left: ${(props) => (props.collapsed ? '0' : '10px')};
+    display: ${(props) => (props.collapsed ? 'none' : 'inline')};
+  }
+`;
+
+const FeaturesSection = styled.div`
+  margin-top: 20px;
+`;
+
+const FeatureData = styled.div`
+  min-width: calc(100% - 7%);
+  font-size: 0.6rem;
+  font-weight: 400;
+  display: flex;
+  margin-left: 4%;
+  color: #333;
+`;
+
+const MissionRowFlex = styled.div`
+  display: flex;
+  width: 100%;
+  align-items: center;
+  left: 18px;
 `;
 
 const Activities = observer(() => {
   const { uuid } = useParams<{ uuid: string }>();
   const { main, ui } = useStores();
+  const history = useHistory();
   const [phases, setPhases] = useState<Phase[]>([]);
   const [features, setFeatures] = useState<Feature[]>([]);
+  const [collapsed, setCollapsed] = useState(false);
   const [isLoadingPhases, setIsLoadingPhases] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<IActivity | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -334,6 +371,15 @@ const Activities = observer(() => {
     questions_input: ''
   });
   const [threadResponses, setThreadResponses] = useState<IActivity[]>([]);
+  const [activeItem, setActiveItem] = useState('activities');
+
+  const handleItemClick = (item: string) => {
+    setActiveItem(item);
+  };
+
+  const handleOpenWorkspace = () => {
+    history.push(`/workspace/${uuid}`);
+  };
 
   useEffect(() => {
     if (uuid) {
@@ -429,6 +475,39 @@ const Activities = observer(() => {
       [field]: newArray,
       [`${field}_input`]: inputValue
     }));
+  };
+
+  const handleReorderFeatures = async (feat: Feature, priority: number) => {
+    await main.addWorkspaceFeature({
+      workspace_uuid: feat.workspace_uuid,
+      uuid: feat.uuid,
+      priority: priority
+    });
+  };
+
+  const onDragEnd = ({ source, destination }: any) => {
+    if (source && destination && source.index !== destination.index) {
+      const updatedFeatures = [...features];
+
+      const [movedItem] = updatedFeatures.splice(source.index, 1);
+      const dropItem = features[destination.index];
+
+      if (destination.index !== updatedFeatures.length) {
+        updatedFeatures.splice(destination.index, 0, movedItem);
+      } else {
+        updatedFeatures[source.index] = dropItem;
+        updatedFeatures.splice(updatedFeatures.length, 1, movedItem);
+      }
+
+      setFeatures(updatedFeatures);
+
+      const dragIndex = updatedFeatures.findIndex((feat: Feature) => feat.uuid === movedItem.uuid);
+
+      const dropIndex = updatedFeatures.findIndex((feat: Feature) => feat.uuid === dropItem.uuid);
+
+      handleReorderFeatures(movedItem, dragIndex + 1);
+      handleReorderFeatures(dropItem, dropIndex + 1);
+    }
   };
 
   const handleEditClick = (activity: IActivity) => {
@@ -645,187 +724,255 @@ const Activities = observer(() => {
   };
 
   return (
-    <MainContainer>
-      <ActivitiesHeader uuid={uuid} />
-      <AddActivityButton onClick={handleCreateActivityClick} disabled={!uuid}>
-        Add New Activity
-      </AddActivityButton>
-      <ActivitiesContainer>
-        {isModalOpen && (
-          <ModalOverlay
-            onClick={() => {
-              setIsModalOpen(false);
-              resetForm();
-            }}
-          >
-            <ModalContent onClick={(e) => e.stopPropagation()}>
-              <h2>Create New Activity</h2>
-              <Form onSubmit={handleSubmit}>
-                <FormField>
-                  <label>Title</label>
-                  <Input
-                    name="title"
-                    value={newActivity.title}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </FormField>
-                <FormField>
-                  <label>Workspace</label>
-                  <Input
-                    name="workspace"
-                    value={uuid}
-                    onChange={handleInputChange}
-                    disabled
-                    required
-                  />
-                </FormField>
-                <FormField>
-                  <label>Content Type</label>
-                  <select
-                    name="content_type"
-                    value={newActivity.content_type}
-                    onChange={handleInputChange}
-                    required
-                  >
-                    <option value="">Select content type</option>
-                    <option value="feature_creation">Feature Creation</option>
-                    <option value="story_update">Story Update</option>
-                    <option value="requirement_change">Requirement Change</option>
-                    <option value="general_update">General Update</option>
-                  </select>
-                </FormField>
-                <FormField>
-                  <label>Content</label>
-                  <TextArea
-                    name="content"
-                    value={newActivity.content}
-                    onChange={handleInputChange}
-                    required
-                    maxLength={10000}
-                    minLength={1}
-                  />
-                  <CharacterCount
-                    className={newActivity.content.trim().length > 10000 ? 'error' : ''}
-                  >
-                    {newActivity.content.trim().length}/10000 characters
-                  </CharacterCount>
-                </FormField>
-                <FormField>
-                  <label>Question</label>
-                  <Input
-                    name="question"
-                    value={newActivity.question}
-                    onChange={handleInputChange}
-                  />
-                </FormField>
-                <FormField>
-                  <label>Feedback</label>
-                  <TextArea
-                    name="feedback"
-                    value={newActivity.feedback}
-                    onChange={handleInputChange}
-                  />
-                </FormField>
-                <FormField>
-                  <label>Actions (comma separated)</label>
-                  <Input
-                    name="actions"
-                    value={newActivity.actions_input}
-                    onChange={(e) => handleArrayInputChange(e, 'actions')}
-                    placeholder="Enter actions separated by commas"
-                  />
-                  <ItemList>
-                    {newActivity.actions.map((action, index) => (
-                      <Item key={index}>
-                        <span>{action}</span>
-                        <RemoveButton onClick={() => removeItem('actions', index)}>×</RemoveButton>
-                      </Item>
-                    ))}
-                  </ItemList>
-                </FormField>
-                <FormField>
-                  <label>Questions (comma separated)</label>
-                  <Input
-                    name="questions"
-                    value={newActivity.questions_input}
-                    onChange={(e) => handleArrayInputChange(e, 'questions')}
-                    placeholder="Enter questions separated by commas"
-                  />
-                  <ItemList>
-                    {newActivity.questions.map((question, index) => (
-                      <Item key={index}>
-                        <span>{question}</span>
-                        <RemoveButton onClick={() => removeItem('questions', index)}>
-                          ×
-                        </RemoveButton>
-                      </Item>
-                    ))}
-                  </ItemList>
-                </FormField>
-                <FormField>
-                  <label>Feature</label>
-                  <select
-                    name="feature_uuid"
-                    value={newActivity.feature_uuid}
-                    onChange={handleInputChange}
-                  >
-                    <option value="">Select a feature (optional)</option>
-                    {features.map((feature) => (
-                      <option key={feature.uuid} value={feature.uuid}>
-                        {feature.name}
-                      </option>
-                    ))}
-                  </select>
-                </FormField>
-                <FormField>
-                  <label>Phase</label>
-                  <select
-                    name="phase_uuid"
-                    value={newActivity.phase_uuid}
-                    onChange={handleInputChange}
-                    disabled={!newActivity.feature_uuid || isLoadingPhases}
-                  >
-                    <option value="">Select a phase (optional)</option>
-                    {isLoadingPhases ? (
-                      <option>Loading phases...</option>
-                    ) : (
-                      phases.map((phase) => (
-                        <option key={phase.uuid} value={phase.uuid}>
-                          {phase.name}
+    <>
+      <SidebarContainer collapsed={collapsed}>
+        <HamburgerButton onClick={() => setCollapsed(!collapsed)}>
+          <MaterialIcon icon="menu" style={{ fontSize: 28 }} />
+        </HamburgerButton>
+        <NavItem
+          active={activeItem === 'activities'}
+          onClick={() => handleItemClick('activities')}
+          collapsed={collapsed}
+        >
+          <MaterialIcon icon="home" />
+          <span>Activities</span>
+        </NavItem>
+        <NavItem onClick={handleOpenWorkspace} collapsed={collapsed}>
+          <MaterialIcon icon="settings" />
+          <span>Workspace</span>
+        </NavItem>
+        <FeaturesSection>
+          <h6 style={{ display: collapsed ? 'none' : 'block', paddingLeft: '15px' }}>Features</h6>
+          <div style={{ overflowY: 'auto', maxHeight: 'calc(80vh - 150px)' }}>
+            <EuiDragDropContext onDragEnd={onDragEnd}>
+              <EuiDroppable droppableId="features_droppable_area" spacing="m">
+                {features &&
+                  features.map((feat: Feature, i: number) => (
+                    <EuiDraggable
+                      spacing="m"
+                      key={feat.id}
+                      index={i}
+                      draggableId={feat.uuid}
+                      customDragHandle
+                      hasInteractiveChildren
+                    >
+                      {(provided: any) => (
+                        <NavItem
+                          onClick={() => history.push(`/feature/${feat.uuid}`)}
+                          key={feat.id}
+                          collapsed={collapsed}
+                        >
+                          <MissionRowFlex>
+                            <MaterialIcon
+                              icon="menu"
+                              color="transparent"
+                              className="drag-handle"
+                              paddingSize="s"
+                              {...provided.dragHandleProps}
+                              data-testid={`drag-handle-${feat.priority}`}
+                              aria-label="Drag Handle"
+                              style={{ fontSize: 20, marginBottom: '6px' }}
+                            />
+                          </MissionRowFlex>
+                          {!collapsed && (
+                            <FeatureData>
+                              <h6 style={{ marginLeft: '1rem' }}>{feat.name}</h6>
+                            </FeatureData>
+                          )}
+                        </NavItem>
+                      )}
+                    </EuiDraggable>
+                  ))}
+              </EuiDroppable>
+            </EuiDragDropContext>
+          </div>
+        </FeaturesSection>
+      </SidebarContainer>
+      <MainContainer>
+        <ActivitiesHeader uuid={uuid} />
+        <AddActivityButton onClick={handleCreateActivityClick} disabled={!uuid}>
+          Add New Activity
+        </AddActivityButton>
+        <ActivitiesContainer>
+          {isModalOpen && (
+            <ModalOverlay
+              collapsed={collapsed}
+              onClick={() => {
+                setIsModalOpen(false);
+                resetForm();
+              }}
+            >
+              <ModalContent onClick={(e) => e.stopPropagation()}>
+                <h2>Create New Activity</h2>
+                <Form onSubmit={handleSubmit}>
+                  <FormField>
+                    <label>Title</label>
+                    <Input
+                      name="title"
+                      value={newActivity.title}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </FormField>
+                  <FormField>
+                    <label>Workspace</label>
+                    <Input
+                      name="workspace"
+                      value={uuid}
+                      onChange={handleInputChange}
+                      disabled
+                      required
+                    />
+                  </FormField>
+                  <FormField>
+                    <label>Content Type</label>
+                    <select
+                      name="content_type"
+                      value={newActivity.content_type}
+                      onChange={handleInputChange}
+                      required
+                    >
+                      <option value="">Select content type</option>
+                      <option value="feature_creation">Feature Creation</option>
+                      <option value="story_update">Story Update</option>
+                      <option value="requirement_change">Requirement Change</option>
+                      <option value="general_update">General Update</option>
+                    </select>
+                  </FormField>
+                  <FormField>
+                    <label>Content</label>
+                    <TextArea
+                      name="content"
+                      value={newActivity.content}
+                      onChange={handleInputChange}
+                      required
+                      maxLength={10000}
+                      minLength={1}
+                    />
+                    <CharacterCount
+                      className={newActivity.content.trim().length > 10000 ? 'error' : ''}
+                    >
+                      {newActivity.content.trim().length}/10000 characters
+                    </CharacterCount>
+                  </FormField>
+                  <FormField>
+                    <label>Question</label>
+                    <Input
+                      name="question"
+                      value={newActivity.question}
+                      onChange={handleInputChange}
+                    />
+                  </FormField>
+                  <FormField>
+                    <label>Feedback</label>
+                    <TextArea
+                      name="feedback"
+                      value={newActivity.feedback}
+                      onChange={handleInputChange}
+                    />
+                  </FormField>
+                  <FormField>
+                    <label>Actions (comma separated)</label>
+                    <Input
+                      name="actions"
+                      value={newActivity.actions_input}
+                      onChange={(e) => handleArrayInputChange(e, 'actions')}
+                      placeholder="Enter actions separated by commas"
+                    />
+                    <ItemList>
+                      {newActivity.actions.map((action, index) => (
+                        <Item key={index}>
+                          <span>{action}</span>
+                          <RemoveButton onClick={() => removeItem('actions', index)}>
+                            ×
+                          </RemoveButton>
+                        </Item>
+                      ))}
+                    </ItemList>
+                  </FormField>
+                  <FormField>
+                    <label>Questions (comma separated)</label>
+                    <Input
+                      name="questions"
+                      value={newActivity.questions_input}
+                      onChange={(e) => handleArrayInputChange(e, 'questions')}
+                      placeholder="Enter questions separated by commas"
+                    />
+                    <ItemList>
+                      {newActivity.questions.map((question, index) => (
+                        <Item key={index}>
+                          <span>{question}</span>
+                          <RemoveButton onClick={() => removeItem('questions', index)}>
+                            ×
+                          </RemoveButton>
+                        </Item>
+                      ))}
+                    </ItemList>
+                  </FormField>
+                  <FormField>
+                    <label>Feature</label>
+                    <select
+                      name="feature_uuid"
+                      value={newActivity.feature_uuid}
+                      onChange={handleInputChange}
+                    >
+                      <option value="">Select a feature (optional)</option>
+                      {features.map((feature) => (
+                        <option key={feature.uuid} value={feature.uuid}>
+                          {feature.name}
                         </option>
-                      ))
-                    )}
-                  </select>
-                </FormField>
-                <Button type="submit">Create Activity</Button>
-              </Form>
-            </ModalContent>
-          </ModalOverlay>
-        )}
-
-        <ActivitiesList>
-          <Title style={{ fontSize: '2.25rem' }}>Activities</Title>
-          {activityStore.rootActivities.length === 0 ? (
-            <div>No activities available</div>
-          ) : (
-            activityStore.rootActivities.map((activity: any) => (
-              <ActivityItem
-                key={activity.id}
-                isSelected={selectedActivity?.ID === activity.ID}
-                onClick={() => handleActivityClick(activity)}
-              >
-                {activity.title}
-                {activity.timeCreated && (
-                  <span>{new Date(activity.timeCreated).toLocaleString()}</span>
-                )}
-              </ActivityItem>
-            ))
+                      ))}
+                    </select>
+                  </FormField>
+                  <FormField>
+                    <label>Phase</label>
+                    <select
+                      name="phase_uuid"
+                      value={newActivity.phase_uuid}
+                      onChange={handleInputChange}
+                      disabled={!newActivity.feature_uuid || isLoadingPhases}
+                    >
+                      <option value="">Select a phase (optional)</option>
+                      {isLoadingPhases ? (
+                        <option>Loading phases...</option>
+                      ) : (
+                        phases.map((phase) => (
+                          <option key={phase.uuid} value={phase.uuid}>
+                            {phase.name}
+                          </option>
+                        ))
+                      )}
+                    </select>
+                  </FormField>
+                  <Button type="submit">Create Activity</Button>
+                </Form>
+              </ModalContent>
+            </ModalOverlay>
           )}
-        </ActivitiesList>
-        <DetailsPanel>{renderDetailsPanel()}</DetailsPanel>
-      </ActivitiesContainer>
-    </MainContainer>
+
+          <ActivitiesList>
+            <Title style={{ fontSize: '2.25rem' }}>Activities</Title>
+            {activityStore.rootActivities.length === 0 ? (
+              <div>No activities available</div>
+            ) : (
+              activityStore.rootActivities.map((activity: any) => (
+                <ActivityItem
+                  key={activity.id}
+                  isSelected={selectedActivity?.ID === activity.ID}
+                  onClick={() => handleActivityClick(activity)}
+                >
+                  {activity.title}
+                  {activity.timeCreated && (
+                    <span>{new Date(activity.timeCreated).toLocaleString()}</span>
+                  )}
+                </ActivityItem>
+              ))
+            )}
+          </ActivitiesList>
+          <DetailsPanel>{renderDetailsPanel()}</DetailsPanel>
+        </ActivitiesContainer>
+      </MainContainer>
+    </>
   );
 });
 
