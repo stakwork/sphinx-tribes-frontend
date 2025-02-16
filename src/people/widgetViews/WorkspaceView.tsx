@@ -17,7 +17,7 @@ import AddWorkspace from './workspace/AddWorkspace';
 
 const color = colors['light'];
 
-const Container = styled.div`
+export const Container = styled.div`
   display: flex;
   flex-flow: column wrap;
   min-width: 100%;
@@ -33,7 +33,7 @@ const Container = styled.div`
   }
 `;
 
-const WorkspaceWrap = styled.a`
+export const WorkspaceWrap = styled.a`
   display: flex;
   flex-direction: row;
   width: 100%;
@@ -57,7 +57,7 @@ const WorkspaceWrap = styled.a`
   }
 `;
 
-const ButtonIconLeft = styled.button`
+export const ButtonIconLeft = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -81,12 +81,12 @@ const ButtonIconLeft = styled.button`
   }
 `;
 
-const IconImg = styled.img`
+export const IconImg = styled.img`
   width: 1.25rem;
   height: 1.25rem;
 `;
 
-const WorkspaceData = styled.div`
+export const WorkspaceData = styled.div`
   display: flex;
   align-items: center;
   flex-direction: row;
@@ -100,7 +100,7 @@ const WorkspaceData = styled.div`
   }
 `;
 
-const WorkspaceImg = styled.img`
+export const WorkspaceImg = styled.img`
   width: 4rem;
   height: 4rem;
   border-radius: 50%;
@@ -119,21 +119,22 @@ const WorkspaceImg = styled.img`
   }
 `;
 
-const WorkspaceContainer = styled.div`
+export const WorkspaceContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
   gap: 1rem;
 `;
 
-const WorkspaceHeadWrap = styled.div`
+export const WorkspaceHeadWrap = styled.div`
+  width: 100%;
   display: flex;
   align-items: center;
   margin-top: 5px;
   margin-bottom: 20px;
 `;
 
-const WorkspaceText = styled.div`
+export const WorkspaceText = styled.div`
   color: #3c3f41;
   font-family: 'Barlow';
   font-size: 1.5rem;
@@ -147,7 +148,8 @@ const WorkspaceText = styled.div`
     font-size: 0.95rem;
   }
 `;
-const WorkspaceActionWrap = styled.div`
+
+export const WorkspaceActionWrap = styled.div`
   margin-left: auto;
   display: flex;
   align-items: center;
