@@ -201,7 +201,6 @@ const Button = styled.button`
   }
 `;
 
-
 const ActionButtons = styled.div`
   display: flex;
   justify-content: flex-end;
@@ -907,7 +906,9 @@ const Activities = observer(() => {
                     />
                   </FormField>
                   <FormField>
-                    <label>Content Type</label>The sidebar implementation doesn’t align with the expected design. Right now, it’s not a standalone component but is instead embedded directly into the activity view.
+                    <label>Content Type</label>The sidebar implementation doesn’t align with the
+                    expected design. Right now, it’s not a standalone component but is instead
+                    embedded directly into the activity view.
                     <select
                       name="content_type"
                       value={newActivity.content_type}
@@ -965,7 +966,9 @@ const Activities = observer(() => {
                       {newActivity.actions.map((action, index) => (
                         <Item key={index}>
                           <span>{action}</span>
-                          <RemoveButton onClick={() => removeItem('actions', index)}>×</RemoveButton>
+                          <RemoveButton onClick={() => removeItem('actions', index)}>
+                            ×
+                          </RemoveButton>
                         </Item>
                       ))}
                     </ItemList>
@@ -1067,7 +1070,6 @@ const Activities = observer(() => {
         </ActivitiesContainer>
       </MainContainer>
     </>
-
   );
 });
 
