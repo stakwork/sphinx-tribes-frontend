@@ -51,7 +51,7 @@ export class ActivityStore {
     this.error = null;
     try {
       const response = await mainStore.fetchWorkspaceActivities(workspace);
-      console.log('Raw response:', response); // Debug log
+      console.log('Raw response:', response);
 
       // Handle both IActivity[] and IActivityResponse cases
       const activities = Array.isArray(response)
