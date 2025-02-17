@@ -3,13 +3,11 @@
 import { observer } from 'mobx-react-lite';
 import React, { useEffect, useState } from 'react';
 import { activityStore } from 'store/activityStore';
-import MaterialIcon from '@material/react-material-icon';
 import styled from 'styled-components';
 import { AuthorType, ContentType, Feature, IActivity } from 'store/interface';
 import { useStores } from 'store';
 import { useParams } from 'react-router-dom';
-import { useHistory } from 'react-router';
-import { EuiDragDropContext, EuiDraggable, EuiDroppable } from '@elastic/eui';
+import SidebarComponent from 'components/common/SidebarComponent';
 import { Phase } from '../interface';
 import ActivitiesHeader from './header';
 
@@ -128,79 +126,19 @@ const RemoveButton = styled.button`
   }
 `;
 
-const MainContainer = styled.div<{ collapsed: boolean }>`
+const MainContainer = styled.div`
   flex-grow: 1;
   transition:
     margin-left 0.3s ease-in-out,
     width 0.3s ease-in-out;
-  margin-left: ${({ collapsed }) => (collapsed ? '60px' : '250px')};
-  width: ${({ collapsed }) => (collapsed ? 'calc(100% - 60px)' : 'calc(100% - 250px)')};
   overflow: hidden;
-`;
-
-const SidebarContainer = styled.div<{ collapsed: boolean }>`
-  width: ${({ collapsed }) => (collapsed ? '60px' : '250px')};
-  transition: width 0.3s ease-in-out;
-  overflow: hidden;
-  position: fixed;
-  height: 100vh;
-  left: 0;
-  top: 0;
-  background: #f4f4f4;
-  box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
-`;
-
-const HamburgerButton = styled.button`
-  background: none;
-  border: none;
-  cursor: pointer;
-  margin-top: 80px;
-  margin-left: 10px;
-  z-index: 1000;
-`;
-
-const NavItem = styled.div<{ collapsed: boolean; active?: boolean }>`
-  display: flex;
-  align-items: center;
-  padding: 15px;
-  cursor: pointer;
-  background-color: ${(props) => (props.active ? '#e0e0e0' : 'transparent')};
-  &:hover {
-    background-color: #e0e0e0;
-  }
-  span {
-    margin-left: ${(props) => (props.collapsed ? '0' : '10px')};
-    display: ${(props) => (props.collapsed ? 'none' : 'inline')};
-  }
-`;
-
-const FeaturesSection = styled.div`
-  margin-top: 20px;
-`;
-
-const FeatureData = styled.div`
-  min-width: calc(100% - 7%);
-  font-size: 0.6rem;
-  font-weight: 400;
-  display: flex;
-  margin-left: 4%;
-  color: #333;
-`;
-
-const MissionRowFlex = styled.div`
-  display: flex;
-  width: 100%;
-  align-items: center;
-  left: 18px;
 `;
 
 const HiveFeaturesView = observer(() => {
   const { workspace_uuid } = useParams<{ workspace_uuid: string }>();
   const { main, ui } = useStores();
-  const history = useHistory();
   const [phases, setPhases] = useState<Phase[]>([]);
   const [features, setFeatures] = useState<Feature[]>([]);
-  const [collapsed, setCollapsed] = useState(false);
   const [isLoadingPhases, setIsLoadingPhases] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<IActivity | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -225,15 +163,6 @@ const HiveFeaturesView = observer(() => {
     actions_input: '',
     questions_input: ''
   });
-  const [activeItem, setActiveItem] = useState('activities');
-
-  const handleItemClick = (item: string) => {
-    setActiveItem(item);
-  };
-
-  const handleOpenWorkspace = () => {
-    history.push(`/workspace/${workspace_uuid}`);
-  };
 
   useEffect(() => {
     const fetchFeatures = async () => {
@@ -298,39 +227,6 @@ const HiveFeaturesView = observer(() => {
       [field]: newArray,
       [`${field}_input`]: inputValue
     }));
-  };
-
-  const handleReorderFeatures = async (feat: Feature, priority: number) => {
-    await main.addWorkspaceFeature({
-      workspace_uuid: feat.workspace_uuid,
-      uuid: feat.uuid,
-      priority: priority
-    });
-  };
-
-  const onDragEnd = ({ source, destination }: any) => {
-    if (source && destination && source.index !== destination.index) {
-      const updatedFeatures = [...features];
-
-      const [movedItem] = updatedFeatures.splice(source.index, 1);
-      const dropItem = features[destination.index];
-
-      if (destination.index !== updatedFeatures.length) {
-        updatedFeatures.splice(destination.index, 0, movedItem);
-      } else {
-        updatedFeatures[source.index] = dropItem;
-        updatedFeatures.splice(updatedFeatures.length, 1, movedItem);
-      }
-
-      setFeatures(updatedFeatures);
-
-      const dragIndex = updatedFeatures.findIndex((feat: Feature) => feat.uuid === movedItem.uuid);
-
-      const dropIndex = updatedFeatures.findIndex((feat: Feature) => feat.uuid === dropItem.uuid);
-
-      handleReorderFeatures(movedItem, dragIndex + 1);
-      handleReorderFeatures(dropItem, dropIndex + 1);
-    }
   };
 
   const resetForm = () => {
@@ -432,70 +328,8 @@ const HiveFeaturesView = observer(() => {
 
   return (
     <>
-      <SidebarContainer collapsed={collapsed}>
-        <HamburgerButton onClick={() => setCollapsed(!collapsed)}>
-          <MaterialIcon icon="menu" style={{ fontSize: 28 }} />
-        </HamburgerButton>
-        <NavItem
-          active={activeItem === 'activities'}
-          onClick={() => handleItemClick('activities')}
-          collapsed={collapsed}
-        >
-          <MaterialIcon icon="home" />
-          <span>Activities</span>
-        </NavItem>
-        <NavItem onClick={handleOpenWorkspace} collapsed={collapsed}>
-          <MaterialIcon icon="settings" />
-          <span>Workspace</span>
-        </NavItem>
-        <FeaturesSection>
-          <h6 style={{ display: collapsed ? 'none' : 'block', paddingLeft: '15px' }}>Features</h6>
-          <div style={{ overflowY: 'auto', maxHeight: 'calc(80vh - 150px)' }}>
-            <EuiDragDropContext onDragEnd={onDragEnd}>
-              <EuiDroppable droppableId="features_droppable_area" spacing="m">
-                {features &&
-                  features.map((feat: Feature, i: number) => (
-                    <EuiDraggable
-                      spacing="m"
-                      key={feat.id}
-                      index={i}
-                      draggableId={feat.uuid}
-                      customDragHandle
-                      hasInteractiveChildren
-                    >
-                      {(provided: any) => (
-                        <NavItem
-                          onClick={() => history.push(`/feature/${feat.uuid}`)}
-                          key={feat.id}
-                          collapsed={collapsed}
-                        >
-                          <MissionRowFlex>
-                            <MaterialIcon
-                              icon="menu"
-                              color="transparent"
-                              className="drag-handle"
-                              paddingSize="s"
-                              {...provided.dragHandleProps}
-                              data-testid={`drag-handle-${feat.priority}`}
-                              aria-label="Drag Handle"
-                              style={{ fontSize: 20, marginBottom: '6px' }}
-                            />
-                          </MissionRowFlex>
-                          {!collapsed && (
-                            <FeatureData>
-                              <h6 style={{ marginLeft: '1rem' }}>{feat.name}</h6>
-                            </FeatureData>
-                          )}
-                        </NavItem>
-                      )}
-                    </EuiDraggable>
-                  ))}
-              </EuiDroppable>
-            </EuiDragDropContext>
-          </div>
-        </FeaturesSection>
-      </SidebarContainer>
-      <MainContainer collapsed={collapsed}>
+      <MainContainer>
+        <SidebarComponent />
         <ActivitiesHeader uuid={workspace_uuid} />
         <ActivitiesContainer>
           {isModalOpen && (
@@ -529,9 +363,7 @@ const HiveFeaturesView = observer(() => {
                     />
                   </FormField>
                   <FormField>
-                    <label>Content Type</label>The sidebar implementation doesn’t align with the
-                    expected design. Right now, it’s not a standalone component but is instead
-                    embedded directly into the activity view.
+                    <label>Content Type</label>
                     <select
                       name="content_type"
                       value={newActivity.content_type}
