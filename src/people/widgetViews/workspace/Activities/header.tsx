@@ -72,6 +72,7 @@ export default function ActivitiesHeader({ uuid }: { uuid: string }) {
   const { main, ui } = useStores();
   const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
   const [canPostBounty, setCanPostBounty] = useState(false);
+  const [workspaceName, setWorkspaceName] = useState('Bounties');
 
   React.useEffect(() => {
     const checkUserPermissions = async () => {
@@ -90,6 +91,15 @@ export default function ActivitiesHeader({ uuid }: { uuid: string }) {
       setIsPostBountyModalOpen(true);
     }
   };
+
+  useEffect(() => {
+    const fetchWorkspace = async () => {
+      const workspace = await main.getUserWorkspaceByUuid(uuid);
+      if (workspace) setWorkspaceName(workspace.name);
+    };
+
+    fetchWorkspace();
+  }, [uuid, main]);
 
   const DraftTicketButton = styled.button`
     background: #4285f4;
@@ -191,7 +201,7 @@ export default function ActivitiesHeader({ uuid }: { uuid: string }) {
       <SubHeader>
         <BountiesHeader>
           <BountiesInfo>
-            <h1>Bounties</h1>
+            <h1>{workspaceName}</h1>
             <DropdownMenu>
               <MaterialIcon
                 icon={'more_horiz'}
