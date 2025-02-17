@@ -1,8 +1,12 @@
+/* eslint-disable react/prop-types */
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useHistory } from 'react-router-dom';
+import { useStores } from 'store';
+import { PostModal } from 'people/widgetViews/postBounty/PostModal';
+import addBounty from 'pages/tickets/workspace/workspaceHeader/Icons/addBounty.svg';
 import MaterialIcon from '@material/react-material-icon';
-import { useStores } from '../../../../store';
+import { useHistory } from 'react-router-dom';
 import { Workspace } from '../../../../store/interface.ts';
 
 const HeaderContainer = styled.header`
@@ -64,74 +68,95 @@ const PostBountyButton = styled.button`
   }
 `;
 
-const DraftTicketButton = styled.button`
-  background: #4285f4;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: background-color 0.2s ease;
+export default function ActivitiesHeader({ uuid }: { uuid: string }) {
+  const { main, ui } = useStores();
+  const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
+  const [canPostBounty, setCanPostBounty] = useState(false);
 
-  &:hover {
-    background: #2c76f1;
-  }
-`;
+  React.useEffect(() => {
+    const checkUserPermissions = async () => {
+      const isLoggedIn = !!ui.meInfo;
+      const hasPermission = isLoggedIn;
+      setCanPostBounty(hasPermission);
+    };
 
-const WorkspacePlannerButton = styled.button`
-  background: #4285f4;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: background-color 0.2s ease;
+    if (ui.meInfo) {
+      checkUserPermissions();
+    }
+  }, [ui.meInfo, main]);
 
-  &:hover {
-    background: #2c76f1;
-  }
-`;
+  const handlePostBountyClick = () => {
+    if (canPostBounty) {
+      setIsPostBountyModalOpen(true);
+    }
+  };
 
-const DropdownMenu = styled.div`
-  position: relative;
-  margin-top: 8px;
-  display: inline-block;
-`;
-
-const DropdownContent = styled.div<{ open: boolean }>`
-  display: ${(props: any) => (props.open ? 'block' : 'none')};
-  position: absolute;
-  background-color: white;
-  color: #1e1f25;
-  min-width: 200px;
-  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-  z-index: 1;
-  border-radius: 4px;
-  overflow: hidden;
-
-  a {
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-    color: #1a1b23;
+  const DraftTicketButton = styled.button`
+    background: #4285f4;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.2s ease;
 
     &:hover {
-      background-color: #f1f1f1;
+      background: #2c76f1;
     }
-  }
-`;
+  `;
 
-export default function ActivitiesHeader({ uuid }: { uuid: string }) {
+  const WorkspacePlannerButton = styled.button`
+    background: #4285f4;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background: #2c76f1;
+    }
+  `;
+
+  const DropdownMenu = styled.div`
+    position: relative;
+    margin-top: 8px;
+    display: inline-block;
+  `;
+
+  const DropdownContent = styled.div<{ open: boolean }>`
+    display: ${(props: any) => (props.open ? 'block' : 'none')};
+    position: absolute;
+    background-color: white;
+    color: #1e1f25;
+    min-width: 200px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    border-radius: 4px;
+    overflow: hidden;
+
+    a {
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+      color: #1a1b23;
+
+      &:hover {
+        background-color: #f1f1f1;
+      }
+    }
+  `;
+
   const history = useHistory();
-  const { main, ui } = useStores();
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleWorkspacePlanner = () => {
@@ -185,7 +210,13 @@ export default function ActivitiesHeader({ uuid }: { uuid: string }) {
           </BountiesInfo>
 
           <ButtonGroup>
-            <PostBountyButton>Post a Bounty</PostBountyButton>
+            {canPostBounty && (
+              <PostBountyButton onClick={handlePostBountyClick}>
+                {' '}
+                <img src={addBounty} alt="Add Bounty" />
+                Post a Bounty
+              </PostBountyButton>
+            )}
             <DraftTicketButton onClick={handleDraftTicket}>Draft a Ticket</DraftTicketButton>
             <WorkspacePlannerButton onClick={handleWorkspacePlanner}>
               Track your work
@@ -193,6 +224,11 @@ export default function ActivitiesHeader({ uuid }: { uuid: string }) {
           </ButtonGroup>
         </BountiesHeader>
       </SubHeader>
+      <PostModal
+        isOpen={isPostBountyModalOpen}
+        onClose={() => setIsPostBountyModalOpen(false)}
+        widget="bounties"
+      />
     </HeaderContainer>
   );
 }
