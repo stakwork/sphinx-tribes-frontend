@@ -10,6 +10,7 @@ import { useStores } from 'store';
 import { useParams } from 'react-router-dom';
 import { useHistory } from 'react-router';
 import { EuiDragDropContext, EuiDraggable, EuiDroppable } from '@elastic/eui';
+import { renderMarkdown } from 'people/utils/RenderMarkdown';
 import { Phase } from '../interface';
 import ActivitiesHeader from './header';
 
@@ -57,6 +58,10 @@ export const DetailCard = styled.div`
   border-radius: 4px;
   padding: 1.5rem;
   min-height: 200px;
+
+  .markdown-content {
+    margin-top: 1rem;
+  }
 `;
 
 export const NextActionsSection = styled.div`
@@ -127,12 +132,6 @@ const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: 1rem;
-`;
-
-const Content = styled.p`
-  font-size: 1rem;
-  color: #4a5568;
-  margin-bottom: 1rem;
 `;
 
 const Feedback = styled.div`
@@ -761,14 +760,16 @@ const Activities = observer(() => {
       <>
         <DetailCard>
           <Title>{selectedActivity.title}</Title>
-          <Content>{selectedActivity.content}</Content>
-          {selectedActivity.feedback && <Feedback>Feedback: {selectedActivity.feedback}</Feedback>}
+          <div className="markdown-content">{renderMarkdown(selectedActivity.content)}</div>
+          {selectedActivity.feedback && (
+            <Feedback>Feedback: {renderMarkdown(selectedActivity.feedback)}</Feedback>
+          )}
           {selectedActivity.questions?.length > 0 && (
             <>
               <h3>Questions:</h3>
               <QuestionList>
                 {selectedActivity.questions.map((question, index) => (
-                  <Question key={index}>{question}</Question>
+                  <Question key={index}>{renderMarkdown(question)}</Question>
                 ))}
               </QuestionList>
             </>
@@ -782,10 +783,10 @@ const Activities = observer(() => {
         {/* thread responses section */}
         {threadResponses.length > 0 && (
           <DetailCard>
-            <Title>Thread Respnses</Title>
+            <Title>Thread Responses</Title>
             {threadResponses.map((response) => (
               <ThreadResponseCard key={response.ID}>
-                <Content>{response.content}</Content>
+                <div className="markdown-content">{renderMarkdown(response.content)}</div>
                 <TimeInfo>
                   <span>By: {response.author_ref}</span>
                   <span>{new Date(response.time_created).toLocaleString()}</span>
@@ -798,7 +799,7 @@ const Activities = observer(() => {
         <NextActionsSection>
           <Title>Next actions</Title>
           {selectedActivity.actions?.map((action: any, index: any) => (
-            <ActionItem key={index}>{action}</ActionItem>
+            <ActionItem key={index}>{renderMarkdown(action)}</ActionItem>
           )) || <ActionItem>No actions defined</ActionItem>}
         </NextActionsSection>
 
