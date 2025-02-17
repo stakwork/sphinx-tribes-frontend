@@ -11,6 +11,7 @@ import { useParams } from 'react-router-dom';
 import { useHistory } from 'react-router';
 import { EuiDragDropContext, EuiDraggable, EuiDroppable } from '@elastic/eui';
 import { Phase } from '../interface';
+import { quickBountyTicketStore } from '../../../../store/quickBountyTicketStore.ts';
 import ActivitiesHeader from './header';
 
 export const ActivitiesContainer = styled.div`
@@ -195,7 +196,10 @@ const MissionRowFlex = styled.div`
 `;
 
 const HiveFeaturesView = observer(() => {
-  const { workspace_uuid } = useParams<{ workspace_uuid: string }>();
+  const { workspace_uuid, feature_uuid } = useParams<{
+    workspace_uuid: string;
+    feature_uuid: string;
+  }>();
   const { main, ui } = useStores();
   const history = useHistory();
   const [phases, setPhases] = useState<Phase[]>([]);
@@ -429,6 +433,15 @@ const HiveFeaturesView = observer(() => {
       [`${field}_input`]: prev[field].filter((_, i) => i !== index).join(', ')
     }));
   };
+
+  useEffect(() => {
+    const fetchdata = async () => {
+      const data = await quickBountyTicketStore.fetchAndSetQuickData(feature_uuid);
+      console.log('data', data);
+    };
+
+    fetchdata();
+  }, [feature_uuid]);
 
   return (
     <>
