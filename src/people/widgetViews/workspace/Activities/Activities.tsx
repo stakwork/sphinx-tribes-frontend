@@ -277,8 +277,7 @@ const MainContainer = styled.div<{ collapsed: boolean }>`
   transition:
     margin-left 0.3s ease-in-out,
     width 0.3s ease-in-out;
-  margin-left: ${({ collapsed }) =>
-    collapsed ? '60px' : '250px'}; // Adjust this based on sidebar width
+  margin-left: ${({ collapsed }) => (collapsed ? '60px' : '250px')};
   width: ${({ collapsed }) => (collapsed ? 'calc(100% - 60px)' : 'calc(100% - 250px)')};
   overflow: hidden;
 `;
