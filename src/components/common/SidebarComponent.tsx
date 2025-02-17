@@ -108,7 +108,9 @@ const WorkspaceTitle = styled.div<{ collapsed: boolean }>`
   padding: 15px;
   margin-top: 20px;
   border-bottom: 1px solid #e0e0e0;
-  ${({ collapsed }) => collapsed && `
+  ${({ collapsed }) =>
+    collapsed &&
+    `
     justify-content: center;
     padding: 15px 0;
   `}
@@ -120,7 +122,9 @@ const WorkspaceImage = styled.img`
   border-radius: 50%;
   object-fit: cover;
   margin-right: 10px;
-  ${({ collapsed }: { collapsed?: boolean }) => collapsed && `
+  ${({ collapsed }: { collapsed?: boolean }) =>
+    collapsed &&
+    `
     margin-right: 0;
   `}
 `;
@@ -251,14 +255,12 @@ export default function SidebarComponent() {
           .filter((workspace: Workspace) => workspace.uuid === uuid)
           .map((workspace: Workspace) => (
             <React.Fragment key={workspace.id}>
-              <WorkspaceImage 
-                src={workspace.img || avatarIcon} 
+              <WorkspaceImage
+                src={workspace.img || avatarIcon}
                 alt={workspace.name}
                 collapsed={collapsed}
               />
-              <WorkspaceName collapsed={collapsed}>
-                {workspace.name}
-              </WorkspaceName>
+              <WorkspaceName collapsed={collapsed}>{workspace.name}</WorkspaceName>
             </React.Fragment>
           ))}
       </WorkspaceTitle>
