@@ -12,6 +12,8 @@ export interface QuickBountyTicket {
   Title: string;
   status: QuickStatus;
   assignedAlias: string | null;
+  bountyID?: number;
+  ticketUUID?: string;
 }
 
 class QuickBountyTicketStore {
@@ -38,7 +40,8 @@ class QuickBountyTicketStore {
               phaseID: item.phaseID || '',
               Title: item.bountyTitle,
               status: item.status as QuickStatus,
-              assignedAlias: item.assignedAlias || null
+              assignedAlias: item.assignedAlias || null,
+              bountyID: item.bountyID
             });
           });
         }
@@ -54,7 +57,8 @@ class QuickBountyTicketStore {
               phaseID: item.phaseID || '',
               Title: item.ticketTitle,
               status: item.status as QuickStatus,
-              assignedAlias: item.assignedAlias || null
+              assignedAlias: item.assignedAlias || null,
+              ticketUUID: item.ticketUUID
             });
           });
         }
