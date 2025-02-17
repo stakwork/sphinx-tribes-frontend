@@ -272,30 +272,36 @@ const ThreadResponseCard = styled.div`
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 `;
 
-const MainContainer = styled.div`
-  margin-left: 0;
-  padding: 20px;
-  transition: margin-left 0.3s ease;
-  position: relative;
+const MainContainer = styled.div<{ collapsed: boolean }>`
+  flex-grow: 1;
+  transition:
+    margin-left 0.3s ease-in-out,
+    width 0.3s ease-in-out;
+  margin-left: ${({ collapsed }) =>
+    collapsed ? '60px' : '250px'}; // Adjust this based on sidebar width
+  width: ${({ collapsed }) => (collapsed ? 'calc(100% - 60px)' : 'calc(100% - 250px)')};
+  overflow: hidden;
 `;
 
 const SidebarContainer = styled.div<{ collapsed: boolean }>`
-  position: fixed;
-  top: 65px;
-  left: 0;
-  height: 100%;
   width: ${({ collapsed }) => (collapsed ? '60px' : '250px')};
-  background-color: white;
-  color: #333;
-  transition: width 0.3s ease;
-  z-index: 1000;
+  transition: width 0.3s ease-in-out;
+  overflow: hidden;
+  position: fixed;
+  height: 100vh;
+  left: 0;
+  top: 0;
+  background: #f4f4f4;
+  box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
 `;
 
 const HamburgerButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
-  margin: 10px;
+  margin-top: 80px;
+  margin-left: 10px;
+  z-index: 1000;
 `;
 
 const NavItem = styled.div<{ collapsed: boolean; active?: boolean }>`
@@ -872,7 +878,7 @@ const Activities = observer(() => {
           </div>
         </FeaturesSection>
       </SidebarContainer>
-      <MainContainer>
+      <MainContainer collapsed={collapsed}>
         <ActivitiesHeader uuid={uuid} />
         <ActivitiesContainer>
           {isModalOpen && (
@@ -1054,7 +1060,7 @@ const Activities = observer(() => {
               ))
             )}
             <CommentInput
-              placeholder="Record a new activity"
+              placeholder="Add a comment or question..."
               value={comment}
               onChange={handleCommentChange}
             />
