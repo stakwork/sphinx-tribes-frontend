@@ -847,7 +847,7 @@ const Activities = observer(() => {
                     >
                       {(provided: any) => (
                         <NavItem
-                          onClick={() => history.push(`/workspace/${uuid}/feature/${feat.uuid}`)}
+                          onClick={() => history.push(`/feature/${feat.uuid}`)}
                           key={feat.id}
                           collapsed={collapsed}
                         >

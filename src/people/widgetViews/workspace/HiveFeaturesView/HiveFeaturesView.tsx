@@ -465,9 +465,7 @@ const HiveFeaturesView = observer(() => {
                     >
                       {(provided: any) => (
                         <NavItem
-                          onClick={() =>
-                            history.push(`/workspace/${workspace_uuid}/feature/${feat.uuid}`)
-                          }
+                          onClick={() => history.push(`/feature/${feat.uuid}`)}
                           key={feat.id}
                           collapsed={collapsed}
                         >
