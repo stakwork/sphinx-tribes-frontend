@@ -1054,7 +1054,7 @@ const Activities = observer(() => {
               ))
             )}
             <CommentInput
-              placeholder="Add a comment or question..."
+              placeholder="Record a new activity"
               value={comment}
               onChange={handleCommentChange}
             />
