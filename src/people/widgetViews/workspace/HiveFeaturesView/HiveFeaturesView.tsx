@@ -9,6 +9,7 @@ import { useStores } from 'store';
 import { useParams } from 'react-router-dom';
 import { useHistory } from 'react-router';
 import { EuiDragDropContext, EuiDraggable, EuiDroppable } from '@elastic/eui';
+
 import {
   QuickBountyTicket,
   quickBountyTicketStore
@@ -338,18 +339,20 @@ const HiveFeaturesView = observer(() => {
                     <thead>
                       <tr>
                         <Th>Name</Th>
-                        <Th>Status</Th>
-                        <Th>Assigned</Th>
+                        <Th style={{ textAlign: 'center' }}>Status</Th>
+                        <Th style={{ textAlign: 'center' }}>Assigned</Th>
                       </tr>
                     </thead>
                     <tbody>
                       {items.map((item) => (
                         <tr key={item.ID}>
-                          <Td onClick={() => handleTitleClick(item)}>{item.Title || 'Unnamed'}</Td>
-                          <Td>
+                          <Td onClick={() => handleTitleClick(item)} style={{ cursor: 'pointer' }}>
+                            {item.Title || 'Unnamed'}
+                          </Td>
+                          <Td style={{ textAlign: 'center' }}>
                             <StatusBadge status={item.status}>{item.status}</StatusBadge>
                           </Td>
-                          <Td>{item.assignedAlias || '...'}</Td>
+                          <Td style={{ textAlign: 'center' }}>{item.assignedAlias || '...'}</Td>
                         </tr>
                       ))}
                     </tbody>
