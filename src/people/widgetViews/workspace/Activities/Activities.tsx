@@ -205,6 +205,12 @@ const ActionButtons = styled.div`
   justify-content: flex-end;
   gap: 0.5rem;
   margin-top: 1rem;
+  position: sticky;
+  bottom: 0;
+  background: white;
+  padding: 0.5rem 0;
+  z-index: 1;
+  border-radius: 5%;
 `;
 
 const DeleteButton = styled(Button)`
@@ -212,6 +218,8 @@ const DeleteButton = styled(Button)`
   &:hover {
     background: #b91c1c;
   }
+  margin-bottom: 10px;
+  margin-right: 10px;
 `;
 
 const EditButton = styled(Button)`
@@ -219,6 +227,7 @@ const EditButton = styled(Button)`
   &:hover {
     background: #1d4ed8;
   }
+  margin-bottom: 10px;
 `;
 
 const CharacterCount = styled.div`
@@ -912,9 +921,7 @@ const Activities = observer(() => {
                     />
                   </FormField>
                   <FormField>
-                    <label>Content Type</label>The sidebar implementation doesn’t align with the
-                    expected design. Right now, it’s not a standalone component but is instead
-                    embedded directly into the activity view.
+                    <label>Content Type</label>
                     <select
                       name="content_type"
                       value={newActivity.content_type}
