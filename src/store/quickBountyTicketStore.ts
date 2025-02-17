@@ -62,7 +62,7 @@ class QuickBountyTicketStore {
 
       return (this.quickBountyTickets = processedData);
     } catch (error) {
-      console.error('Failed to fetch quick bounty and ticket data:', error);
+      console.error('Failed to fetch quick bounties and ticket data:', error);
     }
   }
 }
