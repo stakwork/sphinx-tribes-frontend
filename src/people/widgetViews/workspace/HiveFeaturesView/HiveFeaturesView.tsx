@@ -11,7 +11,7 @@ import { useParams } from 'react-router-dom';
 import { useHistory } from 'react-router';
 import { EuiDragDropContext, EuiDraggable, EuiDroppable } from '@elastic/eui';
 import { Phase } from '../interface';
-import { quickBountyTicketStore } from '../../../../store/quickBountyTicketStore.ts';
+import { quickBountyTicketStore } from '../../../../store/quickBountyTicketStore.tsx';
 import ActivitiesHeader from './header';
 
 export const ActivitiesContainer = styled.div`
