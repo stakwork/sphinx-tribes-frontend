@@ -6,6 +6,7 @@ import MaterialIcon from '@material/react-material-icon';
 import { observer } from 'mobx-react-lite';
 import styled from 'styled-components';
 import { Workspace, Feature, BountyCard, BountyCardStatus } from 'store/interface';
+import { useHistory, useParams } from 'react-router-dom';
 import { useStores } from '../../../store';
 import { userCanManageBounty } from '../../../helpers';
 import { PostModal } from '../../widgetViews/postBounty/PostModal';
@@ -28,13 +29,13 @@ import {
   InnerContainer,
   EuiPopOverCheckbox,
   FilterCount,
-  Formatter
+  Formatter,
+  DraftButton
 } from '../../../pages/tickets/workspace/workspaceHeader/WorkspaceHeaderStyles';
 import { Header, Leftheader } from '../../../pages/tickets/style';
 import addBounty from '../../../pages/tickets/workspace/workspaceHeader/Icons/addBounty.svg';
 import websiteIcon from '../../../pages/tickets/workspace/workspaceHeader/Icons/websiteIcon.svg';
 import githubIcon from '../../../pages/tickets/workspace/workspaceHeader/Icons/githubIcon.svg';
-import { Phase } from '../../widgetViews/workspace/interface.ts';
 
 const color = colors['light'];
 
@@ -222,6 +223,7 @@ export const WorkspacePlannerHeader = observer(
     inverseSearch,
     onToggleInverse
   }: WorkspacePlannerHeaderProps) => {
+    const { uuid } = useParams<{ uuid: string }>();
     const { main, ui } = useStores();
     const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
     const [canPostBounty, setCanPostBounty] = useState(false);
@@ -231,6 +233,7 @@ export const WorkspacePlannerHeader = observer(
     const [isStatusPopoverOpen, setIsStatusPopoverOpen] = useState<boolean>(false);
     const bountyCardStore = useBountyCardStore(workspace_uuid);
     const [debouncedSearch, setDebouncedSearch] = useState('');
+    const history = useHistory();
 
     const checkUserPermissions = useCallback(async () => {
       const hasPermission = await userCanManageBounty(workspace_uuid, ui.meInfo?.pubkey, main);
@@ -278,6 +281,14 @@ export const WorkspacePlannerHeader = observer(
 
     const handleGithubButton = (githubUrl: string) => {
       window.open(githubUrl, '_blank');
+    };
+
+    const handleDraftTicketClick = () => {
+      const ticketUrl = history.createHref({
+        pathname: `/workspace/${uuid}/ticket`,
+        state: { from: `/workspace/${uuid}/planner` }
+      });
+      window.open(ticketUrl, '_blank');
     };
 
     const { name, img, description, website, github } = workspaceData || {};
@@ -375,12 +386,17 @@ export const WorkspacePlannerHeader = observer(
             </Leftheader>
             <RightHeader>
               <CompanyDescription>{description}</CompanyDescription>
-              {canPostBounty && (
-                <Button onClick={handlePostBountyClick}>
-                  <img src={addBounty} alt="" />
-                  Post a Bounty
-                </Button>
-              )}
+              <div style={{ display: 'flex', gap: '12px' }}>
+                {canPostBounty && (
+                  <>
+                    <Button onClick={handlePostBountyClick}>
+                      <img src={addBounty} alt="" />
+                      Post a Bounty
+                    </Button>
+                    <DraftButton onClick={handleDraftTicketClick}>Draft a ticket</DraftButton>
+                  </>
+                )}
+              </div>
             </RightHeader>
           </Header>
         </FillContainer>
