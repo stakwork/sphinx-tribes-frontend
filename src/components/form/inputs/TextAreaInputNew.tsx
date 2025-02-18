@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { SwitcherButton, SwitcherContainer } from 'people/widgetViews/workspace/style';
+import { ErrorText, SwitcherButton, SwitcherContainer } from 'people/widgetViews/workspace/style';
 import { renderMarkdown } from 'people/utils/RenderMarkdown';
 import { snippetStore } from 'store/snippetStore';
 import { colors } from '../../../config/colors';
@@ -122,6 +122,8 @@ export default function TextAreaInputNew({
           </SwitcherButton>
         </SwitcherContainer>
       </div>
+
+      {characterError && <ErrorText>Description is too long</ErrorText>}
 
       <InputOuterBox
         color={color}
