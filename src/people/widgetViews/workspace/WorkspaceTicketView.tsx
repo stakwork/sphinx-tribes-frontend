@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/typedef */
 import React, { useCallback, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useParams, useHistory } from 'react-router-dom';
@@ -6,6 +7,8 @@ import { EuiFlexGroup, EuiFlexItem, EuiLoadingSpinner } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
 import { createSocketInstance, SOCKET_MSG } from 'config/socket';
 import WorkspaceTicketEditor from 'components/common/TicketEditor/WorkspaceTicketEditor';
+import SidebarComponent from 'components/common/SidebarComponent.tsx';
+import styled from 'styled-components';
 import { workspaceTicketStore } from '../../../store/workspace-ticket';
 import { Feature, Ticket, TicketMessage } from '../../../store/interface';
 import { FeatureBody, FeatureDataWrap, LabelValue, StyledLink } from '../../../pages/tickets/style';
@@ -18,6 +21,7 @@ import {
   SelectWrapper
 } from './style';
 import { Phase } from './interface.ts';
+import ActivitiesHeader from './Activities/header.tsx';
 
 interface LogEntry {
   timestamp: string;
@@ -33,6 +37,12 @@ interface Connection {
   status: 'disconnected' | 'connected' | 'error';
 }
 
+const MainContent = styled.div<{ collapsed: boolean }>`
+  margin-left: ${({ collapsed }) => (collapsed ? '60px' : '250px')};
+  transition: margin-left 0.3s ease-in-out;
+  width: ${({ collapsed }) => (collapsed ? 'calc(100% - 60px)' : 'calc(100% - 250px)')};
+`;
+
 const WorkspaceTicketView: React.FC = observer(() => {
   const { workspaceId, ticketId } = useParams<{ workspaceId: string; ticketId: string }>();
   const [websocketSessionId, setWebsocketSessionId] = useState<string>('');
@@ -47,6 +57,7 @@ const WorkspaceTicketView: React.FC = observer(() => {
   const [connections, setConnections] = useState<Connection[]>([]);
   const [isLoadingFeatures, setIsLoadingFeatures] = useState(false);
   const [isLoadingPhases, setIsLoadingPhases] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
     const socket = createSocketInstance();
@@ -389,38 +400,80 @@ const WorkspaceTicketView: React.FC = observer(() => {
     }
   }, [currentTicketId, main]);
 
+  useEffect(() => {
+    const handleCollapseChange = (e: Event) => {
+      const customEvent = e as CustomEvent<{ collapsed: boolean }>;
+      setCollapsed(customEvent.detail.collapsed);
+    };
+
+    window.addEventListener('sidebarCollapse', handleCollapseChange as EventListener);
+
+    return () => {
+      window.removeEventListener('sidebarCollapse', handleCollapseChange as EventListener);
+    };
+  }, []);
+
   if (isLoading) {
     return (
-      <FeatureBody>
-        <FeatureHeadWrap>
-          <FeatureHeadNameWrap>
-            <MaterialIcon
-              onClick={handleClose}
-              icon={'arrow_back'}
-              style={{
-                fontSize: 25,
-                cursor: 'pointer'
-              }}
-            />
-            <WorkspaceName>Ticket Editor</WorkspaceName>
-          </FeatureHeadNameWrap>
-        </FeatureHeadWrap>
-        <EuiFlexGroup
-          alignItems="center"
-          justifyContent="center"
-          style={{ height: 'calc(100vh - 100px)' }}
-        >
-          <EuiFlexItem grow={false}>
-            <EuiLoadingSpinner size="xl" />
-          </EuiFlexItem>
-        </EuiFlexGroup>
-      </FeatureBody>
+      <MainContent collapsed={collapsed}>
+        <FeatureBody>
+          <FeatureHeadWrap>
+            <FeatureHeadNameWrap>
+              <MaterialIcon
+                onClick={handleClose}
+                icon={'arrow_back'}
+                style={{
+                  fontSize: 25,
+                  cursor: 'pointer'
+                }}
+              />
+              <WorkspaceName>Ticket Editor</WorkspaceName>
+            </FeatureHeadNameWrap>
+          </FeatureHeadWrap>
+          <EuiFlexGroup
+            alignItems="center"
+            justifyContent="center"
+            style={{ height: 'calc(100vh - 100px)' }}
+          >
+            <EuiFlexItem grow={false}>
+              <EuiLoadingSpinner size="xl" />
+            </EuiFlexItem>
+          </EuiFlexGroup>
+        </FeatureBody>
+      </MainContent>
     );
   }
 
   if (!currentTicket) {
     return (
+      <MainContent collapsed={collapsed}>
+        <FeatureBody>
+          <FeatureHeadWrap>
+            <FeatureHeadNameWrap>
+              <MaterialIcon
+                onClick={handleClose}
+                icon={'arrow_back'}
+                style={{
+                  fontSize: 25,
+                  cursor: 'pointer'
+                }}
+              />
+              <WorkspaceName>Ticket Editor</WorkspaceName>
+            </FeatureHeadNameWrap>
+          </FeatureHeadWrap>
+          <FeatureDataWrap>
+            <div>Ticket not found</div>
+          </FeatureDataWrap>
+        </FeatureBody>
+      </MainContent>
+    );
+  }
+
+  return (
+    <MainContent collapsed={collapsed}>
       <FeatureBody>
+        <SidebarComponent uuid={workspaceId} />
+        <ActivitiesHeader uuid={workspaceId} />
         <FeatureHeadWrap>
           <FeatureHeadNameWrap>
             <MaterialIcon
@@ -435,86 +488,65 @@ const WorkspaceTicketView: React.FC = observer(() => {
           </FeatureHeadNameWrap>
         </FeatureHeadWrap>
         <FeatureDataWrap>
-          <div>Ticket not found</div>
-        </FeatureDataWrap>
-      </FeatureBody>
-    );
-  }
-
-  return (
-    <FeatureBody>
-      <FeatureHeadWrap>
-        <FeatureHeadNameWrap>
-          <MaterialIcon
-            onClick={handleClose}
-            icon={'arrow_back'}
-            style={{
-              fontSize: 25,
-              cursor: 'pointer'
-            }}
-          />
-          <WorkspaceName>Ticket Editor</WorkspaceName>
-        </FeatureHeadNameWrap>
-      </FeatureHeadWrap>
-      <FeatureDataWrap>
-        <SelectWrapper>
-          <SelectLabel>Feature:</SelectLabel>
-          <StyledSelect
-            value={currentTicket?.feature_uuid || ''}
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-              handleFeatureChange(e.target.value || undefined)
-            }
-            disabled={isLoadingFeatures}
-          >
-            <option value="">Select Feature</option>
-            {features.map((feature: Feature) => (
-              <option key={feature.uuid} value={feature.uuid}>
-                {feature.name}
-              </option>
-            ))}
-          </StyledSelect>
-        </SelectWrapper>
-
-        <SelectWrapper>
-          <SelectLabel>Phase:</SelectLabel>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <SelectWrapper>
+            <SelectLabel>Feature:</SelectLabel>
             <StyledSelect
-              value={currentTicket?.phase_uuid || ''}
+              value={currentTicket?.feature_uuid || ''}
               onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                handlePhaseChange(e.target.value || undefined)
+                handleFeatureChange(e.target.value || undefined)
               }
-              disabled={isLoadingPhases || !currentTicket?.feature_uuid}
+              disabled={isLoadingFeatures}
             >
-              <option value="">Select Phase</option>
-              {phases.map((phase: Phase) => (
-                <option key={phase.uuid} value={phase.uuid}>
-                  {phase.name}
+              <option value="">Select Feature</option>
+              {features.map((feature: Feature) => (
+                <option key={feature.uuid} value={feature.uuid}>
+                  {feature.name}
                 </option>
               ))}
             </StyledSelect>
-            {currentTicket?.feature_uuid && currentTicket?.phase_uuid && (
-              <LabelValue>
-                <StyledLink onClick={handleLinkClick}>[Phase Planner]</StyledLink>
-              </LabelValue>
-            )}
-          </div>
-        </SelectWrapper>
-        <WorkspaceTicketEditor
-          ticketData={currentTicket}
-          websocketSessionId={websocketSessionId}
-          logs={logs}
-          index={0}
-          draggableId={currentTicket.uuid}
-          hasInteractiveChildren={false}
-          swwfLink={swwfLinks[currentTicket.uuid]}
-          getPhaseTickets={getTickets}
-          onTicketUpdate={(updatedTicket: Ticket) => {
-            workspaceTicketStore.updateTicket(updatedTicket.uuid, updatedTicket);
-            setCurrentTicketId(updatedTicket.uuid);
-          }}
-        />
-      </FeatureDataWrap>
-    </FeatureBody>
+          </SelectWrapper>
+
+          <SelectWrapper>
+            <SelectLabel>Phase:</SelectLabel>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <StyledSelect
+                value={currentTicket?.phase_uuid || ''}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                  handlePhaseChange(e.target.value || undefined)
+                }
+                disabled={isLoadingPhases || !currentTicket?.feature_uuid}
+              >
+                <option value="">Select Phase</option>
+                {phases.map((phase: Phase) => (
+                  <option key={phase.uuid} value={phase.uuid}>
+                    {phase.name}
+                  </option>
+                ))}
+              </StyledSelect>
+              {currentTicket?.feature_uuid && currentTicket?.phase_uuid && (
+                <LabelValue>
+                  <StyledLink onClick={handleLinkClick}>[Phase Planner]</StyledLink>
+                </LabelValue>
+              )}
+            </div>
+          </SelectWrapper>
+          <WorkspaceTicketEditor
+            ticketData={currentTicket}
+            websocketSessionId={websocketSessionId}
+            logs={logs}
+            index={0}
+            draggableId={currentTicket.uuid}
+            hasInteractiveChildren={false}
+            swwfLink={swwfLinks[currentTicket.uuid]}
+            getPhaseTickets={getTickets}
+            onTicketUpdate={(updatedTicket: Ticket) => {
+              workspaceTicketStore.updateTicket(updatedTicket.uuid, updatedTicket);
+              setCurrentTicketId(updatedTicket.uuid);
+            }}
+          />
+        </FeatureDataWrap>
+      </FeatureBody>
+    </MainContent>
   );
 });
 

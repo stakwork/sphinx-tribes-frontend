@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/typedef */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useParams, useHistory } from 'react-router-dom';
@@ -19,6 +20,8 @@ import {
 } from 'pages/tickets/style';
 import { SOCKET_MSG } from 'config/socket';
 import { createSocketInstance } from 'config/socket';
+import SidebarComponent from 'components/common/SidebarComponent.tsx';
+import styled from 'styled-components';
 import { phaseTicketStore } from '../../store/phase';
 import StakworkLogsPanel from '../../components/common/TicketEditor/StakworkLogsPanel.tsx';
 import { useFeatureFlag } from '../../hooks/useFeatureFlag.ts';
@@ -33,6 +36,7 @@ import {
 import { Phase, Toast } from './workspace/interface';
 import { EditableField } from './workspace/EditableField.tsx';
 import WidgetSwitchViewer from './WidgetSwitchViewer.tsx';
+import ActivitiesHeader from './workspace/Activities/header.tsx';
 
 interface PhasePlannerParams {
   feature_uuid: string;
@@ -45,6 +49,12 @@ interface LogEntry {
   ticketUUID: string;
   message: string;
 }
+
+const MainContent = styled.div<{ collapsed: boolean }>`
+  margin-left: ${({ collapsed }) => (collapsed ? '60px' : '250px')};
+  transition: margin-left 0.3s ease-in-out;
+  width: ${({ collapsed }) => (collapsed ? 'calc(100% - 60px)' : 'calc(100% - 250px)')};
+`;
 
 const PhasePlannerView: React.FC = observer(() => {
   const { feature_uuid, phase_uuid } = useParams<PhasePlannerParams>();
@@ -74,6 +84,7 @@ const PhasePlannerView: React.FC = observer(() => {
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const selectedWidget = 'bounties';
   const { isEnabled } = useFeatureFlag('display_planner_logs');
+  const [collapsed, setCollapsed] = useState(false);
 
   const checkboxIdToSelectedMap: BountyStatus = useMemo(
     () => ({
@@ -491,182 +502,199 @@ const PhasePlannerView: React.FC = observer(() => {
     <EuiGlobalToastList toasts={toasts} dismissToast={() => setToasts([])} toastLifeTimeMs={3000} />
   );
 
+  useEffect(() => {
+    const handleCollapseChange = (e: Event) => {
+      const customEvent = e as CustomEvent<{ collapsed: boolean }>;
+      setCollapsed(customEvent.detail.collapsed);
+    };
+
+    window.addEventListener('sidebarCollapse', handleCollapseChange as EventListener);
+
+    return () => {
+      window.removeEventListener('sidebarCollapse', handleCollapseChange as EventListener);
+    };
+  }, []);
+
   return (
-    <FeatureBody>
-      <FeatureHeadWrap>
-        <FeatureHeadNameWrap>
-          <MaterialIcon
-            onClick={handleClose}
-            icon={'arrow_back'}
-            style={{
-              fontSize: 25,
-              cursor: 'pointer'
-            }}
-          />
-          <WorkspaceName>Phase Planner</WorkspaceName>
-        </FeatureHeadNameWrap>
-      </FeatureHeadWrap>
-      <FeatureDataWrap>
-        <FieldWrap>
-          <PhaseFlexContainer>
-            <PhaseLabel>
-              Feature Name: <LabelValue>{featureData?.name}</LabelValue>
-            </PhaseLabel>
-            <PhaseLabel>
-              Phase: <LabelValue>{phaseData?.name}</LabelValue>
-            </PhaseLabel>
-            <FieldWrap>
-              <Label>Purpose</Label>
-              <Data>
-                <EditableField
-                  value={purpose ?? phaseData?.phase_purpose ?? ''}
-                  setValue={setPurpose}
-                  isEditing={editPurpose}
-                  previewMode={purposePreviewMode}
-                  setPreviewMode={setPurposePreviewMode}
-                  placeholder="Purpose"
-                  dataTestIdPrefix="purpose"
-                  workspaceUUID={featureData?.workspace_uuid ?? ''}
-                  onCancel={() => setEditPurpose(true)}
-                  onUpdate={submitPurpose}
-                />
-              </Data>
-            </FieldWrap>
-
-            <FieldWrap>
-              <Label>Outcome</Label>
-              <Data>
-                <EditableField
-                  value={outcome ?? phaseData?.phase_outcome ?? ''}
-                  setValue={setOutcome}
-                  isEditing={editOutcome}
-                  previewMode={outcomePreviewMode}
-                  setPreviewMode={setOutcomePreviewMode}
-                  placeholder="Outcome"
-                  dataTestIdPrefix="outcome"
-                  workspaceUUID={featureData?.workspace_uuid}
-                  onCancel={() => setEditOutcome(true)}
-                  onUpdate={submitOutcome}
-                />
-              </Data>
-            </FieldWrap>
-
-            <FieldWrap>
-              <Label>Scope</Label>
-              <Data>
-                <EditableField
-                  value={scope ?? phaseData?.phase_scope ?? ''}
-                  setValue={setScope}
-                  isEditing={editScope}
-                  previewMode={scopePreviewMode}
-                  setPreviewMode={setScopePreviewMode}
-                  placeholder="Scope"
-                  dataTestIdPrefix="scope"
-                  workspaceUUID={featureData?.workspace_uuid}
-                  onCancel={() => setEditScope(true)}
-                  onUpdate={submitScope}
-                />
-              </Data>
-            </FieldWrap>
-
-            <FieldWrap>
-              <Label>Design</Label>
-              <Data>
-                <EditableField
-                  value={design ?? phaseData?.phase_design ?? ''}
-                  setValue={setDesign}
-                  isEditing={editDesign}
-                  previewMode={designPreviewMode}
-                  setPreviewMode={setDesignPreviewMode}
-                  placeholder="Design"
-                  dataTestIdPrefix="design"
-                  workspaceUUID={featureData?.workspace_uuid}
-                  onCancel={() => setEditDesign(true)}
-                  onUpdate={submitDesign}
-                />
-              </Data>
-            </FieldWrap>
-
-            <EuiDragDropContext onDragEnd={onDragEnd}>
-              <EuiDroppable droppableId="ticketDroppable" spacing="m">
-                {phaseTicketStore
-                  .organizeTicketsByGroup(tickets)
-                  .sort((a: Ticket, b: Ticket) => a.sequence - b.sequence)
-                  .map((ticket: Ticket, index: number) => (
-                    <EuiDraggable
-                      spacing="m"
-                      key={ticket.uuid}
-                      index={index}
-                      draggableId={ticket.uuid}
-                      customDragHandle
-                      hasInteractiveChildren
-                    >
-                      {(provided: any) => (
-                        <div {...provided.dragHandleProps} ref={provided.innerRef}>
-                          <TicketEditor
-                            index={index}
-                            ticketData={ticket}
-                            logs={logs}
-                            websocketSessionId={websocketSessionId}
-                            draggableId={ticket.uuid}
-                            hasInteractiveChildren
-                            dragHandleProps={provided.dragHandleProps}
-                            swwfLink={swwfLinks[ticket.uuid]}
-                            getPhaseTickets={getPhaseTickets}
-                            workspaceUUID={featureData?.workspace_uuid || ''}
-                          />
-                        </div>
-                      )}
-                    </EuiDraggable>
-                  ))}
-              </EuiDroppable>
-            </EuiDragDropContext>
-            <AddTicketButton>
-              <ActionButton
-                color="primary"
-                onClick={addTicketHandler}
-                data-testid="audio-generation-btn"
-              >
-                Add Ticket
-              </ActionButton>
-            </AddTicketButton>
-            <DisplayBounties>
-              <div
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  height: '100%',
-                  overflowY: 'auto'
-                }}
-              >
-                {totalBounties > 0 ? (
-                  <WidgetSwitchViewer
-                    onPanelClick={onPanelClick}
-                    checkboxIdToSelectedMap={checkboxIdToSelectedMap}
-                    checkboxIdToSelectedMapLanguage={checkboxIdToSelectedMapLanguage}
-                    fromBountyPage={true}
-                    selectedWidget={selectedWidget}
-                    loading={loading}
-                    page={page}
-                    setPage={setPage}
-                    languageString={languageString}
-                    phaseTotalBounties={totalBounties}
-                    featureUuid={feature_uuid}
-                    phaseUuid={phase_uuid}
+    <MainContent collapsed={collapsed}>
+      <FeatureBody>
+        <ActivitiesHeader uuid={featureData?.workspace_uuid || ''} />
+        <SidebarComponent uuid={featureData?.workspace_uuid || ''} />
+        <FeatureHeadWrap>
+          <FeatureHeadNameWrap>
+            <MaterialIcon
+              onClick={handleClose}
+              icon={'arrow_back'}
+              style={{
+                fontSize: 25,
+                cursor: 'pointer'
+              }}
+            />
+            <WorkspaceName>Phase Plannerdsgds</WorkspaceName>
+          </FeatureHeadNameWrap>
+        </FeatureHeadWrap>
+        <FeatureDataWrap>
+          <FieldWrap>
+            <PhaseFlexContainer>
+              <PhaseLabel>
+                Feature Name: <LabelValue>{featureData?.name}</LabelValue>
+              </PhaseLabel>
+              <PhaseLabel>
+                Phase: <LabelValue>{phaseData?.name}</LabelValue>
+              </PhaseLabel>
+              <FieldWrap>
+                <Label>Purpose</Label>
+                <Data>
+                  <EditableField
+                    value={purpose ?? phaseData?.phase_purpose ?? ''}
+                    setValue={setPurpose}
+                    isEditing={editPurpose}
+                    previewMode={purposePreviewMode}
+                    setPreviewMode={setPurposePreviewMode}
+                    placeholder="Purpose"
+                    dataTestIdPrefix="purpose"
+                    workspaceUUID={featureData?.workspace_uuid ?? ''}
+                    onCancel={() => setEditPurpose(true)}
+                    onUpdate={submitPurpose}
                   />
-                ) : (
-                  <p>No Bounties Yet!</p>
-                )}
-              </div>
-            </DisplayBounties>
-          </PhaseFlexContainer>
-        </FieldWrap>
-        {isEnabled && <StakworkLogsPanel swwfLinks={swwfLinks} logs={logs} setLogs={setLogs} />}
-      </FeatureDataWrap>
-      {toastsEl}
-    </FeatureBody>
+                </Data>
+              </FieldWrap>
+
+              <FieldWrap>
+                <Label>Outcome</Label>
+                <Data>
+                  <EditableField
+                    value={outcome ?? phaseData?.phase_outcome ?? ''}
+                    setValue={setOutcome}
+                    isEditing={editOutcome}
+                    previewMode={outcomePreviewMode}
+                    setPreviewMode={setOutcomePreviewMode}
+                    placeholder="Outcome"
+                    dataTestIdPrefix="outcome"
+                    workspaceUUID={featureData?.workspace_uuid}
+                    onCancel={() => setEditOutcome(true)}
+                    onUpdate={submitOutcome}
+                  />
+                </Data>
+              </FieldWrap>
+
+              <FieldWrap>
+                <Label>Scope</Label>
+                <Data>
+                  <EditableField
+                    value={scope ?? phaseData?.phase_scope ?? ''}
+                    setValue={setScope}
+                    isEditing={editScope}
+                    previewMode={scopePreviewMode}
+                    setPreviewMode={setScopePreviewMode}
+                    placeholder="Scope"
+                    dataTestIdPrefix="scope"
+                    workspaceUUID={featureData?.workspace_uuid}
+                    onCancel={() => setEditScope(true)}
+                    onUpdate={submitScope}
+                  />
+                </Data>
+              </FieldWrap>
+
+              <FieldWrap>
+                <Label>Design</Label>
+                <Data>
+                  <EditableField
+                    value={design ?? phaseData?.phase_design ?? ''}
+                    setValue={setDesign}
+                    isEditing={editDesign}
+                    previewMode={designPreviewMode}
+                    setPreviewMode={setDesignPreviewMode}
+                    placeholder="Design"
+                    dataTestIdPrefix="design"
+                    workspaceUUID={featureData?.workspace_uuid}
+                    onCancel={() => setEditDesign(true)}
+                    onUpdate={submitDesign}
+                  />
+                </Data>
+              </FieldWrap>
+
+              <EuiDragDropContext onDragEnd={onDragEnd}>
+                <EuiDroppable droppableId="ticketDroppable" spacing="m">
+                  {phaseTicketStore
+                    .organizeTicketsByGroup(tickets)
+                    .sort((a: Ticket, b: Ticket) => a.sequence - b.sequence)
+                    .map((ticket: Ticket, index: number) => (
+                      <EuiDraggable
+                        spacing="m"
+                        key={ticket.uuid}
+                        index={index}
+                        draggableId={ticket.uuid}
+                        customDragHandle
+                        hasInteractiveChildren
+                      >
+                        {(provided: any) => (
+                          <div {...provided.dragHandleProps} ref={provided.innerRef}>
+                            <TicketEditor
+                              index={index}
+                              ticketData={ticket}
+                              logs={logs}
+                              websocketSessionId={websocketSessionId}
+                              draggableId={ticket.uuid}
+                              hasInteractiveChildren
+                              dragHandleProps={provided.dragHandleProps}
+                              swwfLink={swwfLinks[ticket.uuid]}
+                              getPhaseTickets={getPhaseTickets}
+                              workspaceUUID={featureData?.workspace_uuid || ''}
+                            />
+                          </div>
+                        )}
+                      </EuiDraggable>
+                    ))}
+                </EuiDroppable>
+              </EuiDragDropContext>
+              <AddTicketButton>
+                <ActionButton
+                  color="primary"
+                  onClick={addTicketHandler}
+                  data-testid="audio-generation-btn"
+                >
+                  Add Ticket
+                </ActionButton>
+              </AddTicketButton>
+              <DisplayBounties>
+                <div
+                  style={{
+                    width: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    height: '100%',
+                    overflowY: 'auto'
+                  }}
+                >
+                  {totalBounties > 0 ? (
+                    <WidgetSwitchViewer
+                      onPanelClick={onPanelClick}
+                      checkboxIdToSelectedMap={checkboxIdToSelectedMap}
+                      checkboxIdToSelectedMapLanguage={checkboxIdToSelectedMapLanguage}
+                      fromBountyPage={true}
+                      selectedWidget={selectedWidget}
+                      loading={loading}
+                      page={page}
+                      setPage={setPage}
+                      languageString={languageString}
+                      phaseTotalBounties={totalBounties}
+                      featureUuid={feature_uuid}
+                      phaseUuid={phase_uuid}
+                    />
+                  ) : (
+                    <p>No Bounties Yet!</p>
+                  )}
+                </div>
+              </DisplayBounties>
+            </PhaseFlexContainer>
+          </FieldWrap>
+          {isEnabled && <StakworkLogsPanel swwfLinks={swwfLinks} logs={logs} setLogs={setLogs} />}
+        </FeatureDataWrap>
+        {toastsEl}
+      </FeatureBody>
+    </MainContent>
   );
 });
 

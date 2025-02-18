@@ -139,7 +139,7 @@ const HiveFeaturesView = observer(() => {
   return (
     <>
       <MainContainer>
-        <SidebarComponent />
+        <SidebarComponent uuid={uuid} />
         <ActivitiesHeader uuid={uuid} />
         <ActivitiesContainer>
           {Object.values(groupedData).length === 0 ? (
