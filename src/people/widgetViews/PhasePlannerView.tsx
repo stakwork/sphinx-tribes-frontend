@@ -530,7 +530,7 @@ const PhasePlannerView: React.FC = observer(() => {
                 cursor: 'pointer'
               }}
             />
-            <WorkspaceName>Phase Plannerdsgds</WorkspaceName>
+            <WorkspaceName>Phase Planner</WorkspaceName>
           </FeatureHeadNameWrap>
         </FeatureHeadWrap>
         <FeatureDataWrap>
