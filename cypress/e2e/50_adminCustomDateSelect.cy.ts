@@ -63,13 +63,6 @@ describe('Admin Statistics Custom Date Range', () => {
       '0'
     )} ${startDate.toLocaleString('default', { month: 'short' })}`;
 
-    if (startDate.getMonth() === 0) {
-      expectedStartDateFormat = `${String(startDate.getDate()).padStart(
-        2,
-        '0'
-      )} ${startDate.toLocaleString('default', { month: 'short' })} ${endDate.getFullYear()}`;
-    }
-
     const expectedEndDateFormat = `${String(endDate.getDate()).padStart(
       2,
       '0'
