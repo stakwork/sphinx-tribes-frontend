@@ -150,7 +150,7 @@ const WorkspaceName = styled.span<{ collapsed: boolean }>`
 `;
 
 interface SidebarComponentProps {
-  uuid: string;
+  uuid?: string;
 }
 
 export default function SidebarComponent({ uuid }: SidebarComponentProps) {
