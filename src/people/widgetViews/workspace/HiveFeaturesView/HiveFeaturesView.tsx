@@ -3,7 +3,6 @@
 import { observer } from 'mobx-react-lite';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { Feature } from 'store/interface';
 import { useStores } from 'store';
 import { useParams } from 'react-router-dom';
 import SidebarComponent from 'components/common/SidebarComponent';
