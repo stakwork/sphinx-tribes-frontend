@@ -12,6 +12,7 @@ import GenerateStoriesView from '../people/widgetViews/GenerateStoriesView';
 import PhasePlannerView from '../people/widgetViews/PhasePlannerView';
 import Activities from '../people/widgetViews/workspace/Activities/Activities';
 import WorkspaceTicketView from '../people/widgetViews/workspace/WorkspaceTicketView';
+import WorkspaceTicketCreateView from '../people/widgetViews/workspace/WorkspaceTicketCreateView.tsx';
 import { HiveChatView } from '../people/hiveChat/index';
 import WorkSpacePlanner from '../people/WorkSpacePlanner/index';
 import HiveFeaturesView from '../people/widgetViews/workspace/HiveFeaturesView/HiveFeaturesView.tsx';
@@ -60,8 +61,11 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
               >
                 <WorkspaceTicketsPage />
               </Route>
-              <Route path="/workspace/:workspaceId/ticket/:ticketId?">
+              <Route path="/workspace/:workspaceId/ticket/:ticketId">
                 <WorkspaceTicketView />
+              </Route>
+              <Route path="/workspace/:workspaceId/ticket">
+                <WorkspaceTicketCreateView />
               </Route>
               <Route path="/workspace/:uuid/planner">
                 <WorkSpacePlanner />

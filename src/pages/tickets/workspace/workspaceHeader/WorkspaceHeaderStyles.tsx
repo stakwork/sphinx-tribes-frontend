@@ -510,3 +510,33 @@ export const BountyHeaderContent = styled.div`
   letter-spacing: 0.8px;
   line-height: 20px;
 `;
+
+export const DraftButton = styled.button`
+  border-radius: 6px;
+  background: var(--Primary-Blue, #608aff);
+  box-shadow: 0px 2px 10px 0px rgba(96, 138, 255, 0.5);
+  border: none;
+  display: flex;
+  width: auto;
+  height: 40px;
+  padding: 8px 16px;
+  justify-content: flex-end;
+  align-items: center;
+  color: var(--White, #fff);
+  text-align: center;
+  font-family: Barlow;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 0px;
+  letter-spacing: 0.14px;
+  cursor: pointer;
+
+  &:hover {
+    background: #4a75f2;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+`;

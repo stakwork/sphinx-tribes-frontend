@@ -203,25 +203,50 @@ const WorkspaceTicketView: React.FC = observer(() => {
     const fetchTicketAndVersions = async () => {
       try {
         setIsLoading(true);
-        const groupTickets = await main.getTicketsByGroup(ticketId);
 
-        if (groupTickets && Array.isArray(groupTickets) && groupTickets.length > 0) {
-          workspaceTicketStore.clearTickets();
+        const ticket = await main.getTicketDetails(ticketId);
 
-          for (const ticket of groupTickets) {
-            if (ticket.UUID) {
-              ticket.uuid = ticket.UUID;
-            }
-            workspaceTicketStore.addTicket(ticket);
+        if (ticket) {
+          if (ticket.UUID) {
+            ticket.uuid = ticket.UUID;
           }
 
-          const groupId = groupTickets[0].ticket_group || ticketId;
+          workspaceTicketStore.clearTickets();
+          workspaceTicketStore.addTicket(ticket);
+          setCurrentTicketId(ticket.uuid);
 
-          const latestVersion = workspaceTicketStore.getLatestVersionFromGroup(groupId);
+          if (ticket.ticket_group) {
+            const groupTickets = await main.getTicketsByGroup(ticket.ticket_group);
 
-          if (latestVersion) {
-            workspaceTicketStore.addTicket(latestVersion);
-            setCurrentTicketId(latestVersion.uuid);
+            if (groupTickets && Array.isArray(groupTickets)) {
+              for (const groupTicket of groupTickets) {
+                if (groupTicket.UUID) {
+                  groupTicket.uuid = groupTicket.UUID;
+                }
+                workspaceTicketStore.addTicket(groupTicket);
+              }
+            }
+          }
+        } else {
+          const groupTickets = await main.getTicketsByGroup(ticketId);
+
+          if (groupTickets && Array.isArray(groupTickets) && groupTickets.length > 0) {
+            workspaceTicketStore.clearTickets();
+
+            for (const ticket of groupTickets) {
+              if (ticket.UUID) {
+                ticket.uuid = ticket.UUID;
+              }
+              workspaceTicketStore.addTicket(ticket);
+            }
+
+            const groupId = groupTickets[0].ticket_group || ticketId;
+            const latestVersion = workspaceTicketStore.getLatestVersionFromGroup(groupId);
+
+            if (latestVersion) {
+              workspaceTicketStore.addTicket(latestVersion);
+              setCurrentTicketId(latestVersion.uuid);
+            }
           }
         }
       } catch (error) {
@@ -231,7 +256,9 @@ const WorkspaceTicketView: React.FC = observer(() => {
       }
     };
 
-    fetchTicketAndVersions();
+    if (ticketId) {
+      fetchTicketAndVersions();
+    }
   }, [ticketId, main]);
 
   const handleClose = () => {
