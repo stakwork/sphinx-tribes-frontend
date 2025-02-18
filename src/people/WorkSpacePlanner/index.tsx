@@ -19,7 +19,7 @@ const PlannerContainer = styled.div<{ collapsed: boolean }>`
   background: ${colors.light.grayish.G950};
   overflow-y: auto;
   overflow-x: hidden;
-  margin-left: ${({ collapsed }: { collapsed: boolean }) => (collapsed ? '10px' : '200px')};
+  margin-left: ${({ collapsed }: { collapsed: boolean }) => (collapsed ? '50px' : '250px')};
   transition: margin-left 0.3s ease-in-out;
 `;
 
