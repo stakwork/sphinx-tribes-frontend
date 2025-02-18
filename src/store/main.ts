@@ -55,7 +55,9 @@ import {
   FeaturedBounty,
   ConnectionCodesListResponse,
   IActivity,
-  INewActivity
+  INewActivity,
+  QuickBountiesResponse,
+  QuickTicketsResponse
 } from './interface';
 
 function makeTorSaveURL(host: string, key: string) {
@@ -4627,6 +4629,60 @@ export class MainStore {
       return await response.json();
     } catch (error) {
       console.error('Error creating thread response:', error);
+      return null;
+    }
+  }
+
+  async fetchQuickBounties(featureUUID: string): Promise<QuickBountiesResponse | null> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+
+      const response = await fetch(`${TribesURL}/features/${featureUUID}/quick-bounties`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt || '',
+          'Content-Type': 'application/json',
+          'x-session-id': this.getSessionId()
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch quick bounties');
+      }
+
+      const responseData: QuickBountiesResponse = await response.json();
+      return responseData;
+    } catch (error) {
+      console.error('Error fetching quick bounties:', error);
+      return null;
+    }
+  }
+
+  async fetchQuickTickets(featureUUID: string): Promise<QuickTicketsResponse | null> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+
+      const response = await fetch(`${TribesURL}/features/${featureUUID}/quick-tickets`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt || '',
+          'Content-Type': 'application/json',
+          'x-session-id': this.getSessionId()
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch quick tickets');
+      }
+
+      const responseData: QuickTicketsResponse = await response.json();
+      return responseData;
+    } catch (error) {
+      console.error('Error fetching quick tickets:', error);
       return null;
     }
   }

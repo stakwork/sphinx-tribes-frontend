@@ -647,3 +647,31 @@ export interface IActivityResponse {
   data: IActivity[];
   success: boolean;
 }
+
+export interface QuickBountyItem {
+  bountyID: number;
+  bountyTitle: string;
+  status: string;
+  assignedAlias?: string;
+  phaseID?: string;
+}
+
+export interface QuickBountiesResponse {
+  featureID: string;
+  phases: { [key: string]: QuickBountyItem[] };
+  unphased: QuickBountyItem[];
+}
+
+export interface QuickTicketItem {
+  ticketUUID: string;
+  ticketTitle: string;
+  status: string;
+  assignedAlias?: string;
+  phaseID?: string;
+}
+
+export interface QuickTicketsResponse {
+  featureID: string;
+  phases: { [key: string]: QuickTicketItem[] };
+  unphased: QuickTicketItem[];
+}
