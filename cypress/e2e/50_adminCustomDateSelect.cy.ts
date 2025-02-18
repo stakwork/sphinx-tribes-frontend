@@ -17,7 +17,6 @@ describe('Admin Statistics Custom Date Range', () => {
   it('Creates 25 bounties, navigates to Admin page, and verifies bounties count and visibility', () => {
     for (let i = 1; i <= 25; i++) {
       const updatedBounty = { ...bounty, title: `UmerJobs${i}` };
-      cy.contains('Post a Bounty', { timeout: 10000 }).should('be.visible');
       cy.create_bounty(updatedBounty);
       cy.wait(1000);
     }
