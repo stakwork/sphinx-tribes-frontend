@@ -19,38 +19,103 @@ export const SOCKET_MSG = {
   budget_success: 'budget_success'
 };
 
-let socket: WebSocket | null = null;
+class WebSocketManager {
+  public socket: WebSocket | null = null;
+  private sessionId: string | null = null;
+  private lastActiveTime: number = Date.now();
+  private readonly STALE_THRESHOLD = 5 * 60 * 1000;
+  private reconnectInterval: number = 3 * 1000;
+  private reconnectTimeout: NodeJS.Timeout | null = null;
 
-export const createSocketInstance = (): WebSocket => {
-  if (!socket || !socket.OPEN) {
-    socket = new WebSocket(URL);
-    // get socket from localStorage
-    const webssocketToken = localStorage.getItem('websocket_token');
-    let uniqueID = webssocketToken;
+  constructor() {
+    this.initializeFromStorage();
+    this.setupVisibilityHandler();
+    this.connect();
+    this.startStaleCheck();
+  }
 
-    if (uniqueID === null || uniqueID === '') {
-      uniqueID = uuidv4();
-      localStorage.setItem('websocket_token', uniqueID!);
+  private initializeFromStorage() {
+    this.sessionId = localStorage.getItem('websocket_token') || uuidv4();
+    localStorage.setItem('websocket_token', this.sessionId);
+  }
+
+  private setupVisibilityHandler() {
+    document.addEventListener('visibilitychange', this.handleVisibilityChange);
+    window.addEventListener('focus', this.checkConnectionFreshness);
+  }
+
+  private handleVisibilityChange = () => {
+    if (document.visibilityState === 'visible') {
+      this.checkConnectionFreshness();
+    }
+  };
+
+  private checkConnectionFreshness = () => {
+    const now = Date.now();
+    if (now - this.lastActiveTime > this.STALE_THRESHOLD) {
+      console.warn('WebSocket connection stale, reconnecting...');
+      this.reconnect();
+    }
+  };
+
+  private startStaleCheck() {
+    setInterval(() => {
+      this.checkConnectionFreshness();
+    }, this.STALE_THRESHOLD);
+  }
+
+  private updateLastActive() {
+    this.lastActiveTime = Date.now();
+    localStorage.setItem('websocket_last_active', this.lastActiveTime.toString());
+  }
+
+  public connect() {
+    if (this.socket) {
+      this.socket.close();
     }
 
-    socket = new WebSocket(URL + `?uniqueId=${uniqueID}`);
+    this.socket = new WebSocket(`${URL}?uniqueId=${this.sessionId}`);
 
-    socket.onclose = () => {
-      console.log('WebSocket connection closed from index');
-      setTimeout(createSocketInstance, 500);
+    this.socket.onopen = () => {
+      console.log('WebSocket connected');
+      this.updateLastActive();
     };
-    socket.onerror = (error: any) => {
+
+    this.socket.onmessage = (event: MessageEvent) => {
+      this.updateLastActive();
+      try {
+        const data = JSON.parse(event.data);
+        if (data.msg === SOCKET_MSG.user_connect) {
+          this.sessionId = data.body || this.sessionId;
+          localStorage.setItem('websocket_token', this.sessionId as string);
+        }
+      } catch (error) {
+        console.error('Error processing WebSocket message:', error);
+      }
+    };
+
+    this.socket.onerror = (error: Event) => {
       console.error('WebSocket error:', error);
-      setTimeout(createSocketInstance, 1000);
+      this.scheduleReconnect();
+    };
+
+    this.socket.onclose = () => {
+      console.warn('WebSocket disconnected, attempting reconnect...');
+      this.scheduleReconnect();
     };
   }
 
-  return socket;
-};
-
-export const getSocketInstance = (): WebSocket => {
-  if (!socket) {
-    throw new Error('Socket instance not created. Call createSocketInstance first.');
+  private scheduleReconnect() {
+    if (this.reconnectTimeout) {
+      clearTimeout(this.reconnectTimeout);
+    }
+    this.reconnectTimeout = setTimeout(() => this.reconnect(), this.reconnectInterval);
   }
-  return socket;
-};
+
+  public reconnect() {
+    console.log('Reconnecting WebSocket...');
+    this.connect();
+  }
+}
+
+export const websocketManager = new WebSocketManager();

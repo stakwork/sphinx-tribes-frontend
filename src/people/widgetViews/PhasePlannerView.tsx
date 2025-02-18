@@ -18,8 +18,7 @@ import {
   Data,
   Label
 } from 'pages/tickets/style';
-import { SOCKET_MSG } from 'config/socket';
-import { createSocketInstance } from 'config/socket';
+import { SOCKET_MSG, websocketManager } from 'config/socket';
 import SidebarComponent from 'components/common/SidebarComponent.tsx';
 import styled from 'styled-components';
 import { phaseTicketStore } from '../../store/phase';
@@ -102,7 +101,12 @@ const PhasePlannerView: React.FC = observer(() => {
   const languageString = '';
 
   useEffect(() => {
-    const socket = createSocketInstance();
+    const { socket } = websocketManager;
+
+    if (!socket) {
+      console.error('WebSocket instance not available');
+      return;
+    }
 
     socket.onopen = () => {
       console.log('Socket connected in Phase Planner');

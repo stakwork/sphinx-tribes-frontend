@@ -5,7 +5,7 @@ import { useParams, useHistory } from 'react-router-dom';
 import { useStores } from 'store';
 import { EuiFlexGroup, EuiFlexItem, EuiLoadingSpinner } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
-import { createSocketInstance, SOCKET_MSG } from 'config/socket';
+import { SOCKET_MSG, websocketManager } from 'config/socket';
 import WorkspaceTicketEditor from 'components/common/TicketEditor/WorkspaceTicketEditor';
 import SidebarComponent from 'components/common/SidebarComponent.tsx';
 import styled from 'styled-components';
@@ -60,7 +60,12 @@ const WorkspaceTicketView: React.FC = observer(() => {
   const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
-    const socket = createSocketInstance();
+    const { socket } = websocketManager;
+
+    if (!socket) {
+      console.error('WebSocket instance not available');
+      return;
+    }
 
     socket.onopen = () => {
       console.log('Socket connected in Workspace Ticket View');

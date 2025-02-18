@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite';
 import { useHistory, useParams } from 'react-router-dom';
 import { ChatMessage } from 'store/interface';
 import { useStores } from 'store';
-import { createSocketInstance } from 'config/socket';
+import { websocketManager } from 'config/socket';
 import { SOCKET_MSG } from 'config/socket';
 import styled from 'styled-components';
 import { EuiLoadingSpinner } from '@elastic/eui';
@@ -378,7 +378,12 @@ export const HiveChatView: React.FC = observer(() => {
 
   useEffect(() => {
     // eslint-disable-next-line prefer-const
-    let socket = createSocketInstance();
+    const { socket } = websocketManager;
+
+    if (!socket) {
+      console.error('WebSocket instance not available');
+      return;
+    }
 
     socket.onmessage = async (event: MessageEvent) => {
       console.log('Raw websocket message received:', event.data);
