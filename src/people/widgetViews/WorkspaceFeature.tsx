@@ -12,7 +12,7 @@ import {
 import { DispatchSetStateAction } from 'components/common/WorkspaceEditableFeild';
 import {
   Body,
-  FeatureBody,
+  WorkspaceFeatureBody,
   FeatureDataWrap,
   FieldWrap,
   Label,
@@ -37,6 +37,7 @@ import { Box } from '@mui/system';
 import { userHasRole } from 'helpers/helpers-extended';
 import { createSocketInstance, SOCKET_MSG } from '../../config/socket.ts';
 import { useDeleteConfirmationModal } from '../../components/common';
+import SidebarComponent from '../../components/common/SidebarComponent.tsx';
 import {
   ActionButton,
   FeatureHeadNameWrap,
@@ -62,6 +63,7 @@ import {
 } from './workspace/style';
 import WorkspacePhasingTabs from './workspace/WorkspacePhase';
 import { Phase, Toast } from './workspace/interface';
+import ActivitiesHeader from './workspace/Activities/header';
 import { EditableField } from './workspace/EditableField';
 
 interface AudioRecordingModalProps {
@@ -351,7 +353,7 @@ const UserStoryModal: React.FC<UserStoryModalProps> = ({
 
 const WorkspaceFeature = () => {
   const { main, ui } = useStores();
-  const { feature_uuid } = useParams<{ feature_uuid: string }>();
+  const { feature_uuid, workspaceId } = useParams<{ feature_uuid: string; workspaceId: string }>();
   const [featureData, setFeatureData] = useState<Feature | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [userStory, setUserStory] = useState<string>('');
@@ -376,6 +378,7 @@ const WorkspaceFeature = () => {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [userRoles, setUserRoles] = useState<any[]>([]);
   const [workspaceData, setWorkspaceData] = useState<Workspace>();
+  const [collapsed, setCollapsed] = useState(false);
   const [editFeatureName, setEditFeatureName] = useState<string>(featureData?.name || '');
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [displayNameOptions, setDisplayNameOptions] = useState<boolean>(false);
@@ -397,6 +400,46 @@ const WorkspaceFeature = () => {
     const isWorkspaceAdmin = workspaceData.owner_pubkey === ui.meInfo.owner_pubkey;
     return !isWorkspaceAdmin && !userHasRole(main.bountyRoles, userRoles, 'EDIT ORGANIZATION');
   }, [workspaceData, ui.meInfo, userRoles, main.bountyRoles]);
+
+  useEffect(() => {
+    const handleCollapseChange = (e: Event) => {
+      const customEvent = e as CustomEvent<{ collapsed: boolean }>;
+      setCollapsed(customEvent.detail.collapsed);
+    };
+
+    window.addEventListener('sidebarCollapse', handleCollapseChange as EventListener);
+
+    return () => {
+      window.removeEventListener('sidebarCollapse', handleCollapseChange as EventListener);
+    };
+  }, []);
+
+  useEffect(() => {
+    const loadWorkspace = async () => {
+      if (!workspaceId) return;
+
+      try {
+        const workspaceData = await main.getUserWorkspaceByUuid(workspaceId);
+        if (workspaceData) {
+          setWorkspaceData(workspaceData);
+        } else {
+          console.error('Failed to load workspace data');
+          setToasts([
+            {
+              id: `error-${Date.now()}`,
+              title: 'Error',
+              color: 'danger',
+              text: 'Failed to load workspace data'
+            }
+          ]);
+        }
+      } catch (error) {
+        console.error('Error loading workspace:', error);
+      }
+    };
+
+    loadWorkspace();
+  }, [workspaceId, main]);
 
   const getFeatureData = useCallback(async () => {
     if (!feature_uuid) return;
@@ -717,238 +760,242 @@ const WorkspaceFeature = () => {
   };
 
   return (
-    <FeatureBody>
-      <FeatureHeadWrap>
-        <FeatureHeadNameWrap>
-          <MaterialIcon
-            onClick={() => history.push(`/workspace/${workspaceData?.uuid}`)}
-            icon={'arrow_back'}
-            style={{
-              fontSize: 25,
-              cursor: 'pointer'
-            }}
-          />
-          <WorkspaceName>{featureData?.name}</WorkspaceName>
-          <FeatureOptionsWrap>
+    <>
+      <SidebarComponent />
+      <WorkspaceFeatureBody collapsed={collapsed}>
+        <ActivitiesHeader uuid={workspaceData?.uuid || ''} />
+        <FeatureHeadWrap>
+          <FeatureHeadNameWrap>
             <MaterialIcon
-              icon="more_horiz"
-              className="MaterialIcon"
-              onClick={() => setDisplayNameOptions(!displayNameOptions)}
-              data-testid="feature-name-btn"
+              onClick={() => history.push(`/workspace/${workspaceData?.uuid}`)}
+              icon={'arrow_back'}
+              style={{
+                fontSize: 25,
+                cursor: 'pointer'
+              }}
             />
-            {displayNameOptions && (
-              <EditPopover>
-                <EditPopoverTail />
-                <EditPopoverContent
-                  onClick={() => {
-                    openEditModal();
-                    setDisplayNameOptions(false);
-                  }}
-                >
-                  <MaterialIcon icon="edit" style={{ fontSize: '20px', marginTop: '2px' }} />
-                  <EditPopoverText data-testid="feature-name-edit-btn">Edit</EditPopoverText>
-                </EditPopoverContent>
-              </EditPopover>
-            )}
-          </FeatureOptionsWrap>
-        </FeatureHeadNameWrap>
-        {isEditModalOpen && (
-          <EuiOverlayMask>
-            <StyledModal>
-              <EuiModalHeader>
-                <EuiText>
-                  <h2>Edit Feature Name</h2>
-                </EuiText>
-              </EuiModalHeader>
-              <FeatureModalBody>
-                <Label>Feature Name</Label>
+            <WorkspaceName>{featureData?.name}</WorkspaceName>
+            <FeatureOptionsWrap>
+              <MaterialIcon
+                icon="more_horiz"
+                className="MaterialIcon"
+                onClick={() => setDisplayNameOptions(!displayNameOptions)}
+                data-testid="feature-name-btn"
+              />
+              {displayNameOptions && (
+                <EditPopover>
+                  <EditPopoverTail />
+                  <EditPopoverContent
+                    onClick={() => {
+                      openEditModal();
+                      setDisplayNameOptions(false);
+                    }}
+                  >
+                    <MaterialIcon icon="edit" style={{ fontSize: '20px', marginTop: '2px' }} />
+                    <EditPopoverText data-testid="feature-name-edit-btn">Edit</EditPopoverText>
+                  </EditPopoverContent>
+                </EditPopover>
+              )}
+            </FeatureOptionsWrap>
+          </FeatureHeadNameWrap>
+          {isEditModalOpen && (
+            <EuiOverlayMask>
+              <StyledModal>
+                <EuiModalHeader>
+                  <EuiText>
+                    <h2>Edit Feature Name</h2>
+                  </EuiText>
+                </EuiModalHeader>
+                <FeatureModalBody>
+                  <Label>Feature Name</Label>
+                  <Input
+                    placeholder="Edit Feature Name"
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setEditFeatureName(e.target.value)
+                    }
+                    value={editFeatureName}
+                    data-testid="edit-feature-name-input"
+                  />
+                </FeatureModalBody>
+                <FeatureModalFooter>
+                  <StoriesButtonGroup>
+                    <ActionButton color="cancel" onClick={closeEditModal}>
+                      Cancel
+                    </ActionButton>
+                    <ActionButton
+                      data-testid="feature-name-save-btn"
+                      onClick={handleUpdateFeatureName}
+                      color="primary"
+                    >
+                      Update
+                    </ActionButton>
+                  </StoriesButtonGroup>
+                </FeatureModalFooter>
+              </StyledModal>
+            </EuiOverlayMask>
+          )}
+        </FeatureHeadWrap>
+        <FeatureDataWrap>
+          <WorkspaceEditableField
+            label="Feature Brief"
+            value={brief}
+            setValue={setBrief}
+            isEditing={editBrief}
+            setIsEditing={setEditBrief}
+            displayOptions={displayBriefOptions}
+            setDisplayOptions={setDisplayBriefOptions}
+            placeholder="Brief"
+            dataTestIdPrefix="brief"
+            onSubmit={() => submitField('brief', brief, setEditBrief)}
+            main={main}
+            showAudioButton={true}
+            feature_uuid={feature_uuid}
+            previewMode={briefPreviewMode}
+            setPreviewMode={setBriefPreviewMode}
+            workspaceUUID={featureData?.workspace_uuid ?? ''}
+          />
+          <FieldWrap>
+            <Label>User Stories</Label>
+            <UserStoryWrapper>
+              <EuiDragDropContext onDragEnd={onDragEnd}>
+                <EuiDroppable droppableId="user_story_droppable_area" spacing="m">
+                  {featureStories.map((story: FeatureStory, idx: number) => (
+                    <EuiDraggable
+                      spacing="m"
+                      key={story.id}
+                      index={idx}
+                      draggableId={story.uuid}
+                      customDragHandle
+                      hasInteractiveChildren
+                    >
+                      {(provided: any) => (
+                        <UserStoryPanel paddingSize="l">
+                          <EuiFlexGroup alignItems="center" gutterSize="s">
+                            <EuiFlexItem grow={false}>
+                              <EuiPanel
+                                color="transparent"
+                                className="drag-handle"
+                                paddingSize="s"
+                                {...provided.dragHandleProps}
+                                data-testid={`drag-handle-${story.priority}`}
+                                aria-label="Drag Handle"
+                              >
+                                <EuiIcon type="grab" />
+                              </EuiPanel>
+                            </EuiFlexItem>
+                            <EuiFlexItem>
+                              <UserStoryField>{story.description}</UserStoryField>
+                            </EuiFlexItem>
+                          </EuiFlexGroup>
+                          <UserStoryOptionWrap>
+                            <MaterialIcon
+                              icon="more_horiz"
+                              onClick={() => handleUserStoryOptionClick(story.id as number)}
+                              data-testid={`${story.priority}-user-story-option-btn`}
+                            />
+                            {displayUserStoryOptions[story?.id as number] && (
+                              <EditPopover>
+                                <EditPopoverTail />
+                                <EditPopoverContent onClick={() => handleUserStoryEdit(story)}>
+                                  <MaterialIcon
+                                    icon="edit"
+                                    style={{ fontSize: '20px', marginTop: '2px' }}
+                                  />
+                                  <EditPopoverText data-testid="user-story-edit-btn">
+                                    Edit
+                                  </EditPopoverText>
+                                </EditPopoverContent>
+                              </EditPopover>
+                            )}
+                          </UserStoryOptionWrap>
+                        </UserStoryPanel>
+                      )}
+                    </EuiDraggable>
+                  ))}
+                </EuiDroppable>
+              </EuiDragDropContext>
+              <InputField>
                 <Input
-                  placeholder="Edit Feature Name"
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setEditFeatureName(e.target.value)
-                  }
-                  value={editFeatureName}
-                  data-testid="edit-feature-name-input"
+                  placeholder="Enter new user story"
+                  onChange={handleChange}
+                  value={userStory}
+                  data-testid="story-input"
+                  style={{ height: '40px', width: '100%', maxHeight: 'unset' }}
                 />
-              </FeatureModalBody>
-              <FeatureModalFooter>
                 <StoriesButtonGroup>
-                  <ActionButton color="cancel" onClick={closeEditModal}>
-                    Cancel
+                  <ActionButton
+                    marginTop="0"
+                    height="40px"
+                    color="primary"
+                    onClick={handleUserStorySubmit}
+                    data-testid="story-input-update-btn"
+                  >
+                    Create
                   </ActionButton>
                   <ActionButton
-                    data-testid="feature-name-save-btn"
-                    onClick={handleUpdateFeatureName}
+                    marginTop="0"
+                    height="40px"
                     color="primary"
+                    onClick={handleGenerateClick}
+                    data-testid="story-generate-btn"
                   >
-                    Update
+                    Generate
                   </ActionButton>
                 </StoriesButtonGroup>
-              </FeatureModalFooter>
-            </StyledModal>
-          </EuiOverlayMask>
-        )}
-      </FeatureHeadWrap>
-      <FeatureDataWrap>
-        <WorkspaceEditableField
-          label="Feature Brief"
-          value={brief}
-          setValue={setBrief}
-          isEditing={editBrief}
-          setIsEditing={setEditBrief}
-          displayOptions={displayBriefOptions}
-          setDisplayOptions={setDisplayBriefOptions}
-          placeholder="Brief"
-          dataTestIdPrefix="brief"
-          onSubmit={() => submitField('brief', brief, setEditBrief)}
-          main={main}
-          showAudioButton={true}
-          feature_uuid={feature_uuid}
-          previewMode={briefPreviewMode}
-          setPreviewMode={setBriefPreviewMode}
-          workspaceUUID={featureData?.workspace_uuid ?? ''}
-        />
-        <FieldWrap>
-          <Label>User Stories</Label>
-          <UserStoryWrapper>
-            <EuiDragDropContext onDragEnd={onDragEnd}>
-              <EuiDroppable droppableId="user_story_droppable_area" spacing="m">
-                {featureStories.map((story: FeatureStory, idx: number) => (
-                  <EuiDraggable
-                    spacing="m"
-                    key={story.id}
-                    index={idx}
-                    draggableId={story.uuid}
-                    customDragHandle
-                    hasInteractiveChildren
-                  >
-                    {(provided: any) => (
-                      <UserStoryPanel paddingSize="l">
-                        <EuiFlexGroup alignItems="center" gutterSize="s">
-                          <EuiFlexItem grow={false}>
-                            <EuiPanel
-                              color="transparent"
-                              className="drag-handle"
-                              paddingSize="s"
-                              {...provided.dragHandleProps}
-                              data-testid={`drag-handle-${story.priority}`}
-                              aria-label="Drag Handle"
-                            >
-                              <EuiIcon type="grab" />
-                            </EuiPanel>
-                          </EuiFlexItem>
-                          <EuiFlexItem>
-                            <UserStoryField>{story.description}</UserStoryField>
-                          </EuiFlexItem>
-                        </EuiFlexGroup>
-                        <UserStoryOptionWrap>
-                          <MaterialIcon
-                            icon="more_horiz"
-                            onClick={() => handleUserStoryOptionClick(story.id as number)}
-                            data-testid={`${story.priority}-user-story-option-btn`}
-                          />
-                          {displayUserStoryOptions[story?.id as number] && (
-                            <EditPopover>
-                              <EditPopoverTail />
-                              <EditPopoverContent onClick={() => handleUserStoryEdit(story)}>
-                                <MaterialIcon
-                                  icon="edit"
-                                  style={{ fontSize: '20px', marginTop: '2px' }}
-                                />
-                                <EditPopoverText data-testid="user-story-edit-btn">
-                                  Edit
-                                </EditPopoverText>
-                              </EditPopoverContent>
-                            </EditPopover>
-                          )}
-                        </UserStoryOptionWrap>
-                      </UserStoryPanel>
-                    )}
-                  </EuiDraggable>
-                ))}
-              </EuiDroppable>
-            </EuiDragDropContext>
-            <InputField>
-              <Input
-                placeholder="Enter new user story"
-                onChange={handleChange}
-                value={userStory}
-                data-testid="story-input"
-                style={{ height: '40px', width: '100%', maxHeight: 'unset' }}
-              />
-              <StoriesButtonGroup>
-                <ActionButton
-                  marginTop="0"
-                  height="40px"
-                  color="primary"
-                  onClick={handleUserStorySubmit}
-                  data-testid="story-input-update-btn"
-                >
-                  Create
-                </ActionButton>
-                <ActionButton
-                  marginTop="0"
-                  height="40px"
-                  color="primary"
-                  onClick={handleGenerateClick}
-                  data-testid="story-generate-btn"
-                >
-                  Generate
-                </ActionButton>
-              </StoriesButtonGroup>
-            </InputField>
-          </UserStoryWrapper>
-        </FieldWrap>
-        <WorkspaceEditableField
-          label="Requirements"
-          value={requirements}
-          setValue={setRequirements}
-          isEditing={editRequirements}
-          setIsEditing={setEditRequirements}
-          displayOptions={displayRequirementsOptions}
-          setDisplayOptions={setDisplayRequirementsOptions}
-          placeholder="Requirements"
-          dataTestIdPrefix="requirements"
-          onSubmit={() => submitField('requirements', requirements, setEditRequirements)}
-          main={main}
-          previewMode={requirementsPreviewMode}
-          setPreviewMode={setRequirementsPreviewMode}
-          workspaceUUID={featureData?.workspace_uuid ?? ''}
-        />
-        <WorkspaceEditableField
-          label="Architecture"
-          value={architecture}
-          setValue={setArchitecture}
-          isEditing={editArchitecture}
-          setIsEditing={setEditArchitecture}
-          displayOptions={displayArchitectureOptions}
-          setDisplayOptions={setDisplayArchitectureOptions}
-          placeholder="Architecture"
-          dataTestIdPrefix="architecture"
-          onSubmit={() => submitField('architecture', architecture, setEditArchitecture)}
-          main={main}
-          previewMode={architecturePreviewMode}
-          setPreviewMode={setArchitecturePreviewMode}
-          workspaceUUID={featureData?.workspace_uuid ?? ''}
-        />
-        <UserStoryModal
-          open={modalOpen}
-          storyDescription={editUserStory?.description as string}
-          handleClose={handleModalClose}
-          handleSave={handleModalSave}
-          handleDelete={handleModalDelete}
-        />
-      </FeatureDataWrap>
-      <FeatureDataWrap>
-        <WorkspacePhasingTabs
-          featureId={feature_uuid}
-          phases={phases}
-          updateFeaturePhase={updateFeaturePhase}
-          workspace_uuid={featureData?.workspace_uuid ?? ''}
-        />
-      </FeatureDataWrap>
-      {toastsEl}
-    </FeatureBody>
+              </InputField>
+            </UserStoryWrapper>
+          </FieldWrap>
+          <WorkspaceEditableField
+            label="Requirements"
+            value={requirements}
+            setValue={setRequirements}
+            isEditing={editRequirements}
+            setIsEditing={setEditRequirements}
+            displayOptions={displayRequirementsOptions}
+            setDisplayOptions={setDisplayRequirementsOptions}
+            placeholder="Requirements"
+            dataTestIdPrefix="requirements"
+            onSubmit={() => submitField('requirements', requirements, setEditRequirements)}
+            main={main}
+            previewMode={requirementsPreviewMode}
+            setPreviewMode={setRequirementsPreviewMode}
+            workspaceUUID={featureData?.workspace_uuid ?? ''}
+          />
+          <WorkspaceEditableField
+            label="Architecture"
+            value={architecture}
+            setValue={setArchitecture}
+            isEditing={editArchitecture}
+            setIsEditing={setEditArchitecture}
+            displayOptions={displayArchitectureOptions}
+            setDisplayOptions={setDisplayArchitectureOptions}
+            placeholder="Architecture"
+            dataTestIdPrefix="architecture"
+            onSubmit={() => submitField('architecture', architecture, setEditArchitecture)}
+            main={main}
+            previewMode={architecturePreviewMode}
+            setPreviewMode={setArchitecturePreviewMode}
+            workspaceUUID={featureData?.workspace_uuid ?? ''}
+          />
+          <UserStoryModal
+            open={modalOpen}
+            storyDescription={editUserStory?.description as string}
+            handleClose={handleModalClose}
+            handleSave={handleModalSave}
+            handleDelete={handleModalDelete}
+          />
+        </FeatureDataWrap>
+        <FeatureDataWrap>
+          <WorkspacePhasingTabs
+            featureId={feature_uuid}
+            phases={phases}
+            updateFeaturePhase={updateFeaturePhase}
+            workspace_uuid={featureData?.workspace_uuid ?? ''}
+          />
+        </FeatureDataWrap>
+        {toastsEl}
+      </WorkspaceFeatureBody>
+    </>
   );
 };
 
