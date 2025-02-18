@@ -38,6 +38,17 @@ export const FeatureBody = styled.div`
   overflow-x: hidden;
 `;
 
+export const WorkspaceFeatureBody = styled.div<{ collapsed: boolean }>`
+  display: flex;
+  flex-direction: column;
+  background: var(--Search-bar-background, #f2f3f5);
+  height: 100vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  margin-left: ${({ collapsed }: { collapsed: boolean }) => (collapsed ? '50px' : '250px')};
+  transition: margin-left 0.3s ease-in-out;
+`;
+
 export const Header = styled.div`
   height: 130px;
   width: 65%;
