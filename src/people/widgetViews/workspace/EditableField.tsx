@@ -172,12 +172,14 @@ export const EditableField: React.FC<EditableFieldProps> = ({
               <SwitcherContainer>
                 <SwitcherButton
                   isActive={previewMode === 'preview'}
+                  data-testid={`${dataTestIdPrefix}-preview-btn`}
                   onClick={() => setPreviewMode('preview')}
                 >
                   View
                 </SwitcherButton>
                 <SwitcherButton
                   isActive={previewMode === 'edit'}
+                  data-testid={`${dataTestIdPrefix}-edit-btn`}
                   onClick={() => setPreviewMode('edit')}
                 >
                   Edit
