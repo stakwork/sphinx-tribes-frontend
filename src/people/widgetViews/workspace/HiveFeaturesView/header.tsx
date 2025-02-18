@@ -20,12 +20,14 @@ const SubHeader = styled.div`
   border-bottom: 1px solid #e2e8f0;
 `;
 
-const BountiesHeader = styled.div`
+const BountiesHeader = styled.div<{ collapsed: boolean }>`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1400px;
-  margin: 0 0 0 20%;
+  width: auto;
+  margin: 0;
+  margin-left: ${({ collapsed }: { collapsed: boolean }) => (collapsed ? '50px' : '250px')};
+  transition: margin-left 0.3s ease-in-out;
 `;
 
 const BountiesInfo = styled.div`
@@ -68,7 +70,13 @@ const PostBountyButton = styled.button`
   }
 `;
 
-export default function ActivitiesHeader({ uuid }: { uuid: string }) {
+export default function ActivitiesHeader({
+  uuid,
+  collapsed
+}: {
+  uuid: string;
+  collapsed: boolean;
+}) {
   const { main, ui } = useStores();
   const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
   const [canPostBounty, setCanPostBounty] = useState(false);
@@ -199,7 +207,7 @@ export default function ActivitiesHeader({ uuid }: { uuid: string }) {
   return (
     <HeaderContainer>
       <SubHeader>
-        <BountiesHeader>
+        <BountiesHeader collapsed={collapsed}>
           <BountiesInfo>
             <h1>{workspaceName}</h1>
             <DropdownMenu>
