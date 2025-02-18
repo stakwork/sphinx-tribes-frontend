@@ -32,15 +32,15 @@ describe('Create Workspace And Update Mission', () => {
     cy.contains('No mission yet');
     cy.contains('No tactics yet');
 
-    cy.get('[data-testid="mission-option-btn"]').click();
     cy.get('[data-testid="mission-edit-btn"]').click();
+    cy.wait(1000);
 
     const missionStatment = 'This is my Mission';
     cy.get('[data-testid="mission-textarea"]').type(missionStatment);
     cy.get('[data-testid="mission-update-btn"]').click();
 
-    cy.get('[data-testid="tactics-option-btn"]').click();
     cy.get('[data-testid="tactics-edit-btn"]').click();
+    cy.wait(1000);
 
     const tacticsStatment = 'This is my Tactics';
     cy.get('[data-testid="tactics-textarea"]').type(tacticsStatment);
