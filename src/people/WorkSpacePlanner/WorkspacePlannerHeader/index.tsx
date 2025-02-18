@@ -1,27 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-unused-vars */
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { EuiText, EuiPopover, EuiCheckboxGroup } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
 import { observer } from 'mobx-react-lite';
 import styled from 'styled-components';
 import { Workspace, Feature, BountyCard, BountyCardStatus } from 'store/interface';
-import { useHistory, useParams } from 'react-router-dom';
-import { useStores } from '../../../store';
-import { userCanManageBounty } from '../../../helpers';
-import { PostModal } from '../../widgetViews/postBounty/PostModal';
+import { useParams } from 'react-router-dom';
 import { colors } from '../../../config';
 import { useBountyCardStore } from '../../../store/bountyCard';
 import {
   FillContainer,
-  ImageContainer,
-  CompanyNameAndLink,
-  CompanyLabel,
-  UrlButtonContainer,
-  UrlButton,
-  RightHeader,
-  CompanyDescription,
-  Button,
   Filters,
   FiltersRight,
   NewStatusContainer,
@@ -29,13 +18,9 @@ import {
   InnerContainer,
   EuiPopOverCheckbox,
   FilterCount,
-  Formatter,
-  DraftButton
+  Formatter
 } from '../../../pages/tickets/workspace/workspaceHeader/WorkspaceHeaderStyles';
-import { Header, Leftheader } from '../../../pages/tickets/style';
-import addBounty from '../../../pages/tickets/workspace/workspaceHeader/Icons/addBounty.svg';
-import websiteIcon from '../../../pages/tickets/workspace/workspaceHeader/Icons/websiteIcon.svg';
-import githubIcon from '../../../pages/tickets/workspace/workspaceHeader/Icons/githubIcon.svg';
+import ActivitiesHeader from '../../widgetViews/workspace/Activities/header';
 
 const color = colors['light'];
 
@@ -215,7 +200,6 @@ const CustomEuiPopOverCheckbox = styled(EuiPopOverCheckbox)`
 export const WorkspacePlannerHeader = observer(
   ({
     workspace_uuid,
-    workspaceData,
     filterToggle,
     setFilterToggle,
     searchText,
@@ -224,21 +208,12 @@ export const WorkspacePlannerHeader = observer(
     onToggleInverse
   }: WorkspacePlannerHeaderProps) => {
     const { uuid } = useParams<{ uuid: string }>();
-    const { main, ui } = useStores();
-    const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
-    const [canPostBounty, setCanPostBounty] = useState(false);
     const [isFeaturePopoverOpen, setIsFeaturePopoverOpen] = useState<boolean>(false);
     const [isPhasePopoverOpen, setIsPhasePopoverOpen] = useState<boolean>(false);
     const [isAssigneePopoverOpen, setIsAssigneePopoverOpen] = useState<boolean>(false);
     const [isStatusPopoverOpen, setIsStatusPopoverOpen] = useState<boolean>(false);
     const bountyCardStore = useBountyCardStore(workspace_uuid);
     const [debouncedSearch, setDebouncedSearch] = useState('');
-    const history = useHistory();
-
-    const checkUserPermissions = useCallback(async () => {
-      const hasPermission = await userCanManageBounty(workspace_uuid, ui.meInfo?.pubkey, main);
-      setCanPostBounty(hasPermission);
-    }, [workspace_uuid, ui.meInfo, main]);
 
     useEffect(() => {
       const handler = setTimeout(() => setDebouncedSearch(searchText), 300);
@@ -266,33 +241,6 @@ export const WorkspacePlannerHeader = observer(
     useEffect(() => {
       sessionStorage.setItem('workspaceSearchText', searchText);
     }, [searchText]);
-
-    useEffect(() => {
-      checkUserPermissions();
-    }, [checkUserPermissions]);
-
-    const handlePostBountyClick = () => {
-      setIsPostBountyModalOpen(true);
-    };
-
-    const handleWebsiteButton = (websiteUrl: string) => {
-      window.open(websiteUrl, '_blank');
-    };
-
-    const handleGithubButton = (githubUrl: string) => {
-      window.open(githubUrl, '_blank');
-    };
-
-    const handleDraftTicketClick = () => {
-      const ticketUrl = history.createHref({
-        pathname: `/workspace/${uuid}/ticket`,
-        state: { from: `/workspace/${uuid}/planner` }
-      });
-      window.open(ticketUrl, '_blank');
-    };
-
-    const { name, img, description, website, github } = workspaceData || {};
-    const selectedWidget = 'bounties';
 
     const onFeatureButtonClick = (): void => {
       setIsFeaturePopoverOpen((isPopoverOpen: boolean) => !isPopoverOpen);
@@ -362,45 +310,7 @@ export const WorkspacePlannerHeader = observer(
 
     return (
       <>
-        <FillContainer>
-          <Header>
-            <Leftheader>
-              {img && <ImageContainer src={img} width="72px" height="72px" alt="workspace icon" />}
-              <CompanyNameAndLink>
-                <CompanyLabel>{name}</CompanyLabel>
-                <UrlButtonContainer data-testid="url-button-container">
-                  {website && (
-                    <UrlButton onClick={() => handleWebsiteButton(website)}>
-                      <img src={websiteIcon} alt="" />
-                      Website
-                    </UrlButton>
-                  )}
-                  {github && (
-                    <UrlButton onClick={() => handleGithubButton(github)}>
-                      <img src={githubIcon} alt="" />
-                      Github
-                    </UrlButton>
-                  )}
-                </UrlButtonContainer>
-              </CompanyNameAndLink>
-            </Leftheader>
-            <RightHeader>
-              <CompanyDescription>{description}</CompanyDescription>
-              <div style={{ display: 'flex', gap: '12px' }}>
-                {canPostBounty && (
-                  <>
-                    <Button onClick={handlePostBountyClick}>
-                      <img src={addBounty} alt="" />
-                      Post a Bounty
-                    </Button>
-                    <DraftButton onClick={handleDraftTicketClick}>Draft a ticket</DraftButton>
-                  </>
-                )}
-              </div>
-            </RightHeader>
-          </Header>
-        </FillContainer>
-
+        <ActivitiesHeader uuid={uuid} />
         <FillContainer>
           <Filters>
             <FiltersRight>
@@ -753,12 +663,6 @@ export const WorkspacePlannerHeader = observer(
             </FiltersRight>
           </Filters>
         </FillContainer>
-
-        <PostModal
-          widget={selectedWidget}
-          isOpen={isPostBountyModalOpen}
-          onClose={() => setIsPostBountyModalOpen(false)}
-        />
       </>
     );
   }

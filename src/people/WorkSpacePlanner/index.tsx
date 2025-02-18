@@ -9,15 +9,18 @@ import history from 'config/history';
 import { autorun } from 'mobx';
 import { useStores } from '../../store';
 import { colors } from '../../config';
+import SidebarComponent from '../../components/common/SidebarComponent';
 import { WorkspacePlannerHeader } from './WorkspacePlannerHeader';
 import BountyCardComp from './BountyCard';
 
-const PlannerContainer = styled.div`
+const PlannerContainer = styled.div<{ collapsed: boolean }>`
   padding: 0;
   height: calc(100vh - 65px);
   background: ${colors.light.grayish.G950};
   overflow-y: auto;
   overflow-x: hidden;
+  margin-left: ${({ collapsed }: { collapsed: boolean }) => (collapsed ? '10px' : '200px')};
+  transition: margin-left 0.3s ease-in-out;
 `;
 
 const ContentArea = styled.div`
@@ -27,6 +30,7 @@ const ContentArea = styled.div`
   border-radius: 8px;
   text-align: center;
   padding: 20px;
+  transition: width 0.3s ease-in-out;
 `;
 
 const ColumnsContainer = styled.div`
@@ -146,7 +150,21 @@ const WorkspacePlanner = observer(() => {
   const [workspaceData, setWorkspaceData] = useState<any>(null);
   const [filterToggle, setFilterToggle] = useState(false);
   const [searchText, setSearchText] = useState('');
+  const [collapsed, setCollapsed] = useState(false);
   const bountyCardStore = useBountyCardStore(uuid);
+
+  useEffect(() => {
+    const handleCollapseChange = (e: Event) => {
+      const customEvent = e as CustomEvent<{ collapsed: boolean }>;
+      setCollapsed(customEvent.detail.collapsed);
+    };
+
+    window.addEventListener('sidebarCollapse', handleCollapseChange as EventListener);
+
+    return () => {
+      window.removeEventListener('sidebarCollapse', handleCollapseChange as EventListener);
+    };
+  }, []);
 
   useEffect(() => {
     bountyCardStore.restoreFilterState();
@@ -180,7 +198,7 @@ const WorkspacePlanner = observer(() => {
 
   if (loading) {
     return (
-      <PlannerContainer>
+      <PlannerContainer collapsed={collapsed}>
         <LoadingContainer>
           <EuiLoadingSpinner size="xl" />
         </LoadingContainer>
@@ -226,56 +244,59 @@ const WorkspacePlanner = observer(() => {
   };
 
   return (
-    <PlannerContainer>
-      <WorkspacePlannerHeader
-        workspace_uuid={uuid}
-        workspaceData={workspaceData}
-        filterToggle={filterToggle}
-        setFilterToggle={setFilterToggle}
-        searchText={searchText}
-        setSearchText={setSearchText}
-        inverseSearch={bountyCardStore.inverseSearch}
-        onToggleInverse={handleToggleInverse}
-      />
-      <ContentArea>
-        <ColumnsContainer>
-          {COLUMN_CONFIGS.map(({ id, title }: { id: string; title: string }) => (
-            <Column key={id} hidden={!shouldShowColumn(id as BountyCardStatus)}>
-              <ColumnHeader>
-                <ColumnTitle>
-                  {title}
-                  <CardCount>({groupedBounties[id]?.length || 0})</CardCount>
-                </ColumnTitle>
-              </ColumnHeader>
+    <>
+      <SidebarComponent />
+      <PlannerContainer collapsed={collapsed}>
+        <WorkspacePlannerHeader
+          workspace_uuid={uuid}
+          workspaceData={workspaceData}
+          filterToggle={filterToggle}
+          setFilterToggle={setFilterToggle}
+          searchText={searchText}
+          setSearchText={setSearchText}
+          inverseSearch={bountyCardStore.inverseSearch}
+          onToggleInverse={handleToggleInverse}
+        />
+        <ContentArea>
+          <ColumnsContainer>
+            {COLUMN_CONFIGS.map(({ id, title }: { id: string; title: string }) => (
+              <Column key={id} hidden={!shouldShowColumn(id as BountyCardStatus)}>
+                <ColumnHeader>
+                  <ColumnTitle>
+                    {title}
+                    <CardCount>({groupedBounties[id]?.length || 0})</CardCount>
+                  </ColumnTitle>
+                </ColumnHeader>
 
-              <ColumnContent>
-                {bountyCardStore.loading ? (
-                  <LoadingContainer>
-                    <EuiLoadingSpinner size="m" />
-                  </LoadingContainer>
-                ) : bountyCardStore.error ? (
-                  <ErrorMessage>{bountyCardStore.error}</ErrorMessage>
-                ) : (
-                  groupedBounties[id]
-                    ?.filter((card: BountyCard) =>
-                      bountyCardStore.inverseSearch
-                        ? !card.title.toLowerCase().includes(searchText.toLowerCase())
-                        : card.title.toLowerCase().includes(searchText.toLowerCase())
-                    )
-                    .map((card: BountyCard) => (
-                      <BountyCardComp
-                        key={card.id}
-                        {...card}
-                        onclick={() => handleCardClick(card.id, card.status, card.ticket_group)}
-                      />
-                    ))
-                )}
-              </ColumnContent>
-            </Column>
-          ))}
-        </ColumnsContainer>
-      </ContentArea>
-    </PlannerContainer>
+                <ColumnContent>
+                  {bountyCardStore.loading ? (
+                    <LoadingContainer>
+                      <EuiLoadingSpinner size="m" />
+                    </LoadingContainer>
+                  ) : bountyCardStore.error ? (
+                    <ErrorMessage>{bountyCardStore.error}</ErrorMessage>
+                  ) : (
+                    groupedBounties[id]
+                      ?.filter((card: BountyCard) =>
+                        bountyCardStore.inverseSearch
+                          ? !card.title.toLowerCase().includes(searchText.toLowerCase())
+                          : card.title.toLowerCase().includes(searchText.toLowerCase())
+                      )
+                      .map((card: BountyCard) => (
+                        <BountyCardComp
+                          key={card.id}
+                          {...card}
+                          onclick={() => handleCardClick(card.id, card.status, card.ticket_group)}
+                        />
+                      ))
+                  )}
+                </ColumnContent>
+              </Column>
+            ))}
+          </ColumnsContainer>
+        </ContentArea>
+      </PlannerContainer>
+    </>
   );
 });
 
