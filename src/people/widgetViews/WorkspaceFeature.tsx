@@ -761,7 +761,7 @@ const WorkspaceFeature = () => {
 
   return (
     <>
-      <SidebarComponent />
+      <SidebarComponent uuid={workspaceData?.uuid || ''} />
       <WorkspaceFeatureBody collapsed={collapsed}>
         <ActivitiesHeader uuid={workspaceData?.uuid || ''} />
         <FeatureHeadWrap>

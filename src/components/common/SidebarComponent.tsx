@@ -10,7 +10,7 @@ import { EuiDragDropContext } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
 import React, { useCallback, useEffect } from 'react';
 import { useState } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { useStores } from 'store';
 import { Feature, Workspace } from 'store/interface';
 import styled from 'styled-components';
@@ -149,13 +149,16 @@ const WorkspaceName = styled.span<{ collapsed: boolean }>`
   font-size: 1.2rem;
 `;
 
-export default function SidebarComponent() {
+interface SidebarComponentProps {
+  uuid?: string;
+}
+
+export default function SidebarComponent({ uuid }: SidebarComponentProps) {
   const { ui, main } = useStores();
   const [activeItem, setActiveItem] = useState('activities');
   const [features, setFeatures] = useState<Feature[]>([]);
   const [collapsed, setCollapsed] = useState(false);
   const history = useHistory();
-  const { uuid } = useParams<{ uuid: string }>();
   const [isFeaturesExpanded, setIsFeaturesExpanded] = useState(true);
   const [isWorkspaceExpanded, setIsWorkspaceExpanded] = useState(false);
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
