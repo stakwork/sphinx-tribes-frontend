@@ -45,8 +45,8 @@ describe('Update Requirements in Workspace Feature', () => {
     cy.contains(newFeature).should('exist', { timeout: 3000 });
     cy.wait(1000);
 
-    cy.get('[data-testid="requirements-option-btn"]').click();
     cy.get('[data-testid="requirements-edit-btn"]').click();
+    cy.wait(1000);
 
     const updatedRequirements = 'Feature Requirements';
     cy.get('[data-testid="requirements-textarea"]').type(updatedRequirements);
