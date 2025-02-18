@@ -8,7 +8,7 @@ describe('Alice Create a Workspace and then Edit to validate characters the limi
   const orgExceedingLimits = {
     name: 'ThisNameIsWayTooLongForAnWorkspace',
     description:
-      'This description is intentionally made longer than one hundred and twenty characters to test the validation functionality of the workspace creation form.'
+      'This description is intentionally made longer than one hundred and twenty characters to test the be validation functionality of the workspace creation form.'
   };
 
   it('should not allow editing a workspace with excessive character limits', () => {
