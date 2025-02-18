@@ -58,6 +58,20 @@ describe('Admin Statistics Custom Date Range', () => {
     cy.contains('25').should('exist');
     cy.wait(1000);
 
+    let expectedStartDateFormat = `${String(startDate.getDate()).padStart(
+      2,
+      '0'
+    )} ${startDate.toLocaleString('default', { month: 'short' })} ${startDate.getFullYear()}`;
+
+    const expectedEndDateFormat = `${String(endDate.getDate()).padStart(
+      2,
+      '0'
+    )} ${endDate.toLocaleString('default', { month: 'short' })} ${endDate.getFullYear()}`;
+
+    const expectedDateRange = `${expectedStartDateFormat} - ${expectedEndDateFormat}`;
+
+    cy.get('[data-testid="month"]').should('have.text', expectedDateRange);
+
     cy.logout(activeUser);
   });
 });
