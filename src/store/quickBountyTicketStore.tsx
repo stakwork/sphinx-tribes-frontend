@@ -2,7 +2,7 @@ import { makeAutoObservable } from 'mobx';
 import { mainStore } from './main.ts';
 import { QuickBountyItem, QuickTicketItem } from './interface.ts';
 
-type QuickStatus = 'ToDo' | 'In Progress' | 'In Review' | 'Paid';
+type QuickStatus = 'TODO' | 'IN_PROGRESS' | 'IN_REVIEW' | 'PAID';
 
 export interface QuickBountyTicket {
   ID: string;
