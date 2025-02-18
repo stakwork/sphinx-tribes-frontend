@@ -50,9 +50,7 @@ describe('Alice Create a Workspace and then Edit to validate characters the limi
       cy.wrap($input.closest('div')).find('p').should('contain.text', 'name is too long');
     });
 
-    cy.get('textarea#description').then(($textarea) => {
-      cy.wrap($textarea.closest('div')).find('p').should('contain.text', 'Description is too long');
-    });
+    cy.get('[placeholder="Description Text..."]').parent().contains('Description is too long.');
 
     cy.get('body').click(0, 0);
     cy.logout(worksapce.loggedInAs);
