@@ -24,8 +24,8 @@ const BountiesHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1400px;
-  margin: 0 0 0 20%;
+  width: 100%;
+  margin: 0;
 `;
 
 const BountiesInfo = styled.div`
