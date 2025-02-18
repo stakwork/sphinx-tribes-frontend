@@ -26,6 +26,20 @@ const SidebarContainer = styled.div<{ collapsed: boolean }>`
   top: 0;
   background: #f4f4f4;
   box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #c1c1c1;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f4f4f4;
+  }
 `;
 
 const HamburgerButton = styled.button`
@@ -288,7 +302,7 @@ export default function SidebarComponent() {
           />
         </WorkspaceHeader>
         {isWorkspaceExpanded && (
-          <div style={{ overflowY: 'auto', maxHeight: 'calc(80vh - 150px)' }}>
+          <div>
             {workspaces.map((workspace) => (
               <NavItem
                 key={workspace.uuid}
@@ -312,7 +326,7 @@ export default function SidebarComponent() {
           />
         </FeatureHeader>
         {isFeaturesExpanded && (
-          <div style={{ overflowY: 'auto', maxHeight: 'calc(80vh - 150px)' }}>
+          <div>
             <EuiDragDropContext onDragEnd={onDragEnd}>
               <EuiDroppable droppableId="features_droppable_area" spacing="m">
                 {features &&
