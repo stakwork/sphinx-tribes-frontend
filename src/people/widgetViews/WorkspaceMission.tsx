@@ -905,7 +905,7 @@ const WorkspaceMission = () => {
     !loading &&
     !editWorkspaceDisabled && (
       <>
-        <SidebarComponent />
+        <SidebarComponent uuid={uuid} />
         <WorkspaceMissionBody collapsed={collapsed}>
           <ActivitiesHeader uuid={uuid} />
           <DataWrap
