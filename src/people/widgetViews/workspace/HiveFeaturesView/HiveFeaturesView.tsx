@@ -64,7 +64,7 @@ const StatusBadge = styled.span<{ status: string }>`
       : 'black'};
 `;
 
-export const ActivitiesContainer = styled.div`
+export const ActivitiesContainer = styled.div<{ collapsed: boolean }>`
   display: grid;
   grid-template-columns: 1fr;
   gap: 2rem;
@@ -74,6 +74,8 @@ export const ActivitiesContainer = styled.div`
   overflow-y: auto;
   margin-bottom: 50px;
   margin-top: 50px;
+  margin-left: ${({ collapsed }: { collapsed: boolean }) => (collapsed ? '50px' : '250px')};
+  transition: margin-left 0.3s ease-in-out;
 `;
 
 const MainContainer = styled.div`
@@ -85,14 +87,29 @@ const MainContainer = styled.div`
 `;
 
 const HiveFeaturesView = observer(() => {
-  const { uuid, feature_uuid } = useParams<{
+  const { uuid, feature_uuid, workspace_uuid } = useParams<{
     uuid: string;
     feature_uuid: string;
+    workspace_uuid: string;
   }>();
   const history = useHistory();
   const [phaseNames, setPhaseNames] = useState<{ [key: string]: string }>({});
+  const [collapsed, setCollapsed] = useState(false);
   const [data, setData] = useState<QuickBountyTicket[]>([]);
   const { main } = useStores();
+
+  useEffect(() => {
+    const handleCollapseChange = (e: Event) => {
+      const customEvent = e as CustomEvent<{ collapsed: boolean }>;
+      setCollapsed(customEvent.detail.collapsed);
+    };
+
+    window.addEventListener('sidebarCollapse', handleCollapseChange as EventListener);
+
+    return () => {
+      window.removeEventListener('sidebarCollapse', handleCollapseChange as EventListener);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -139,9 +156,9 @@ const HiveFeaturesView = observer(() => {
   return (
     <>
       <MainContainer>
-        <SidebarComponent uuid={uuid} />
-        <ActivitiesHeader uuid={uuid} />
-        <ActivitiesContainer>
+        <SidebarComponent uuid={workspace_uuid} />
+        <ActivitiesHeader uuid={workspace_uuid} collapsed={collapsed} />
+        <ActivitiesContainer collapsed={collapsed}>
           {Object.values(groupedData).length === 0 ? (
             <p>No phases available</p>
           ) : (
