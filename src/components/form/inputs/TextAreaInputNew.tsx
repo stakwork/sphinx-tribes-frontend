@@ -123,8 +123,6 @@ export default function TextAreaInputNew({
         </SwitcherContainer>
       </div>
 
-      {characterError && <ErrorText>Description is too long</ErrorText>}
-
       <InputOuterBox
         color={color}
         borderColor={characterError || isError ? color.red2 : color.grayish.G600}
@@ -200,6 +198,7 @@ export default function TextAreaInputNew({
         >
           {labeltext}
         </label>
+        {characterError ? <ErrorText>Description is too long</ErrorText> : null}
       </InputOuterBox>
     </div>
   );
