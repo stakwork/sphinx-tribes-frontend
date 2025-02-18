@@ -29,6 +29,17 @@ export const WorkspaceBody = styled.div`
   overflow-x: hidden;
 `;
 
+export const WorkspaceMissionBody = styled.div<{ collapsed: boolean }>`
+  display: flex;
+  flex-direction: column;
+  background: var(--Search-bar-background, #f2f3f5);
+  height: 100vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  margin-left: ${({ collapsed }: { collapsed: boolean }) => (collapsed ? '50px' : '250px')};
+  transition: margin-left 0.3s ease-in-out;
+`;
+
 export const FeatureBody = styled.div`
   display: flex;
   flex-direction: column;
@@ -79,7 +90,7 @@ export const DataWrap = styled.div`
   display: flex;
   justify-content: space-between;
   padding: 20px 50px;
-  width: 75%;
+  width: 90%;
   margin: 0 auto;
   align-items: left;
   justify-content: center;

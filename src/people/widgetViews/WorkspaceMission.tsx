@@ -13,10 +13,7 @@ import {
 } from '@elastic/eui';
 import {
   Body,
-  WorkspaceBody,
-  Leftheader,
-  Header,
-  HeaderWrap,
+  WorkspaceMissionBody,
   DataWrap,
   DataWrap2,
   LeftSection,
@@ -45,17 +42,6 @@ import { Box } from '@mui/system';
 import { Feature, Person, Workspace } from 'store/interface';
 import MaterialIcon from '@material/react-material-icon';
 import { Button, Modal } from 'components/common';
-import {
-  ImageContainer,
-  CompanyNameAndLink,
-  CompanyLabel,
-  UrlButtonContainer,
-  UrlButton,
-  RightHeader,
-  CompanyDescription
-} from 'pages/tickets/workspace/workspaceHeader/WorkspaceHeaderStyles';
-import githubIcon from 'pages/tickets/workspace/workspaceHeader/Icons/githubIcon.svg';
-import websiteIcon from 'pages/tickets/workspace/workspaceHeader/Icons/websiteIcon.svg';
 import { EuiToolTip } from '@elastic/eui';
 import { useIsMobile } from 'hooks';
 import styled from 'styled-components';
@@ -67,16 +53,14 @@ import { SchematicPreview } from 'people/SchematicPreviewer';
 import { PostModal } from 'people/widgetViews/postBounty/PostModal';
 import { chatService } from 'services';
 import { archiveIcon } from 'components/common/DeleteConfirmationModal/archiveIcon';
-import avatarIcon from '../../public/static/profile_avatar.svg';
 import { colors } from '../../config/colors';
 import dragIcon from '../../pages/superadmin/header/icons/drag_indicator.svg';
+import SidebarComponent from '../../components/common/SidebarComponent.tsx';
 import { useFeatureFlag } from '../../hooks/useFeatureFlag';
 import AddCodeGraph from './workspace/AddCodeGraphModal';
 import AddFeature from './workspace/AddFeatureModal';
 import {
-  ActionButton,
   RowFlex,
-  ButtonWrap,
   RepoName,
   MissionRowFlex,
   FullNoBudgetWrap,
@@ -90,6 +74,7 @@ import { BudgetWrapComponent } from './BudgetWrap';
 import { EditableField } from './workspace/EditableField';
 import { Toast } from './workspace/interface';
 import TextSnippetModal from './workspace/TextSnippetModal.tsx';
+import ActivitiesHeader from './workspace/Activities/header.tsx';
 
 const color = colors['light'];
 
@@ -356,6 +341,7 @@ const WorkspaceMission = () => {
   const [missionPreviewMode, setMissionPreviewMode] = useState<'preview' | 'edit'>('preview');
   const [tacticsPreviewMode, setTacticsPreviewMode] = useState<'preview' | 'edit'>('preview');
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const [collapsed, setCollapsed] = useState(false);
   const [permissionsChecked, setPermissionsChecked] = useState<boolean>(false);
   const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -402,6 +388,19 @@ const WorkspaceMission = () => {
     setCodeGraphModalType(type);
     setCodeGraphModal(true);
   };
+
+  useEffect(() => {
+    const handleCollapseChange = (e: Event) => {
+      const customEvent = e as CustomEvent<{ collapsed: boolean }>;
+      setCollapsed(customEvent.detail.collapsed);
+    };
+
+    window.addEventListener('sidebarCollapse', handleCollapseChange as EventListener);
+
+    return () => {
+      window.removeEventListener('sidebarCollapse', handleCollapseChange as EventListener);
+    };
+  }, []);
 
   const closeCodeGraphModal = () => {
     setSelectedCodeGraph({
@@ -905,285 +904,275 @@ const WorkspaceMission = () => {
   return (
     !loading &&
     !editWorkspaceDisabled && (
-      <WorkspaceBody>
-        <HeaderWrap>
-          <Header>
-            <Leftheader>
-              <ImageContainer
-                src={workspaceData?.img || avatarIcon}
-                width="72px"
-                height="72px"
-                alt="workspace icon"
-              />
-              <CompanyNameAndLink>
-                <CompanyLabel>{workspaceData?.name}</CompanyLabel>
-                <UrlButtonContainer data-testid="url-button-container">
-                  {workspaceData?.website !== '' ? (
-                    <UrlButton onClick={() => handleWebsiteButton(workspaceData?.website ?? '')}>
-                      <img src={websiteIcon} alt="" />
-                      Website
-                    </UrlButton>
-                  ) : (
-                    ''
-                  )}
-                  {workspaceData?.github !== '' ? (
-                    <UrlButton onClick={() => handleGithubButton(workspaceData?.github ?? '')}>
-                      <img src={githubIcon} alt="" />
-                      Github
-                    </UrlButton>
-                  ) : (
-                    ''
-                  )}
-                </UrlButtonContainer>
-              </CompanyNameAndLink>
-            </Leftheader>
-            <RightHeader>
-              <CompanyDescription>{workspaceData?.description}</CompanyDescription>
-            </RightHeader>
-          </Header>
-        </HeaderWrap>
-        <DataWrap
-          style={{
-            marginTop: '20px'
-          }}
-        >
-          <LeftSection>
-            <FieldWrap>
-              <Label>Mission</Label>
-              <Data>
-                <EditableField
-                  value={mission ?? workspaceData?.mission ?? ''}
-                  setValue={setMission}
-                  isEditing={editMission}
-                  previewMode={missionPreviewMode}
-                  setPreviewMode={setMissionPreviewMode}
-                  placeholder="Mission"
-                  dataTestIdPrefix="mission"
-                  workspaceUUID={workspaceData?.uuid}
-                  onCancel={() => setEditMission(true)}
-                  onUpdate={submitMission}
-                  defaultHeight="250px"
-                />
-              </Data>
-            </FieldWrap>
-            <FieldWrap>
-              <Label>Tactics and Objectives</Label>
-              <Data>
-                <EditableField
-                  value={tactics ?? workspaceData?.tactics ?? ''}
-                  setValue={setTactics}
-                  isEditing={editTactics}
-                  previewMode={tacticsPreviewMode}
-                  setPreviewMode={setTacticsPreviewMode}
-                  placeholder="Tactics"
-                  dataTestIdPrefix="tactics"
-                  workspaceUUID={workspaceData?.uuid}
-                  onCancel={() => setEditTactics(true)}
-                  onUpdate={submitTactics}
-                  defaultHeight="250px"
-                />
-              </Data>
-            </FieldWrap>
-            <HorizontalGrayLine />
-            <FieldWrap style={{ marginTop: '20px' }}>
-              <DataWrap2>
-                <RowFlex>
-                  <Label>Repositories</Label>
-                  <Button
-                    onClick={() => openModal('add')}
-                    style={{
-                      borderRadius: '5px',
-                      margin: 0,
-                      marginLeft: 'auto'
-                    }}
-                    dataTestId="new-repository-btn"
-                    text="Add Repository"
+      <>
+        <SidebarComponent />
+        <WorkspaceMissionBody collapsed={collapsed}>
+          <ActivitiesHeader uuid={uuid} />
+          <DataWrap
+            style={{
+              marginTop: '20px'
+            }}
+          >
+            <LeftSection>
+              <FieldWrap>
+                <Label>Mission</Label>
+                <Data>
+                  <EditableField
+                    value={mission ?? workspaceData?.mission ?? ''}
+                    setValue={setMission}
+                    isEditing={editMission}
+                    previewMode={missionPreviewMode}
+                    setPreviewMode={setMissionPreviewMode}
+                    placeholder="Mission"
+                    dataTestIdPrefix="mission"
+                    workspaceUUID={workspaceData?.uuid}
+                    onCancel={() => setEditMission(true)}
+                    onUpdate={submitMission}
+                    defaultHeight="250px"
                   />
-                </RowFlex>
-                <StyledList>
-                  {repositories.map((repository: any) => (
-                    <StyledListElement key={repository?.id}>
-                      <OptionsWrap style={{ position: 'unset', display: 'contents' }}>
-                        <MaterialIcon
-                          icon={'more_horiz'}
-                          onClick={() => handleUserRepoOptionClick(repository?.id as number)}
-                          className="MaterialIcon"
-                          data-testid="repository-option-btn"
-                          style={{ transform: 'rotate(90deg)' }}
-                        />
-                        {displayUserRepoOptions[repository?.id as number] && (
-                          <EditPopover>
-                            <EditPopoverTail bottom="-30px" left="-27px" />
-                            <EditPopoverContent
-                              onClick={() => {
-                                openModal('edit', repository);
-                                setDisplayUserRepoOptions((prev: Record<number, boolean>) => ({
-                                  ...prev,
-                                  [repository?.id]: !prev[repository?.id]
-                                }));
-                              }}
-                              bottom="-60px"
-                              transform="translateX(-90%)"
-                            >
-                              <MaterialIcon
-                                icon="edit"
-                                style={{ fontSize: '20px', marginTop: '2px' }}
-                              />
-                              <EditPopoverText data-testid="repository-edit-btn">
-                                Edit
-                              </EditPopoverText>
-                            </EditPopoverContent>
-                          </EditPopover>
-                        )}
-                      </OptionsWrap>
-                      <RepoName>{repository.name} : </RepoName>
-                      <EuiToolTip position="top" content={repository.url}>
-                        <a href={repository.url} target="_blank" rel="noreferrer">
-                          {repository.url}
-                        </a>
-                      </EuiToolTip>
-                    </StyledListElement>
-                  ))}
-                </StyledList>
-              </DataWrap2>
-            </FieldWrap>
-
-            <FieldWrap style={{ marginTop: '20px' }}>
-              <DataWrap2>
-                <RowFlex>
-                  <Label>Code Graph</Label>
-
-                  {!codeGraph && (
+                </Data>
+              </FieldWrap>
+              <FieldWrap>
+                <Label>Tactics and Objectives</Label>
+                <Data>
+                  <EditableField
+                    value={tactics ?? workspaceData?.tactics ?? ''}
+                    setValue={setTactics}
+                    isEditing={editTactics}
+                    previewMode={tacticsPreviewMode}
+                    setPreviewMode={setTacticsPreviewMode}
+                    placeholder="Tactics"
+                    dataTestIdPrefix="tactics"
+                    workspaceUUID={workspaceData?.uuid}
+                    onCancel={() => setEditTactics(true)}
+                    onUpdate={submitTactics}
+                    defaultHeight="250px"
+                  />
+                </Data>
+              </FieldWrap>
+              <HorizontalGrayLine />
+              <FieldWrap style={{ marginTop: '20px' }}>
+                <DataWrap2>
+                  <RowFlex>
+                    <Label>Repositories</Label>
                     <Button
-                      onClick={() => openCodeGraphModal('add')}
+                      onClick={() => openModal('add')}
                       style={{
                         borderRadius: '5px',
                         margin: 0,
                         marginLeft: 'auto'
                       }}
-                      dataTestId="new-codegraph-btn"
-                      text="Add Code Graph"
+                      dataTestId="new-repository-btn"
+                      text="Add Repository"
                     />
-                  )}
-                </RowFlex>
-                {codeGraph && (
+                  </RowFlex>
                   <StyledList>
-                    <StyledListElement key={codeGraph.id}>
-                      <OptionsWrap style={{ position: 'unset', display: 'contents' }}>
-                        <MaterialIcon
-                          icon={'more_horiz'}
-                          onClick={() => handleUserRepoOptionClick(codeGraph.id as number)}
-                          className="MaterialIcon"
-                          data-testid={`codegraph-option-btn-${codeGraph.id}`}
-                          style={{ transform: 'rotate(90deg)' }}
-                        />
-                        {displayUserRepoOptions[codeGraph.id as number] && (
-                          <EditPopover>
-                            <EditPopoverTail bottom="-30px" left="-27px" />
-                            <EditPopoverContent
-                              onClick={() => {
-                                openCodeGraphModal('edit', codeGraph);
-                                setDisplayUserRepoOptions((prev: Record<number, boolean>) => ({
-                                  ...prev,
-                                  [codeGraph.id as number]: !prev[codeGraph.id as number]
-                                }));
-                              }}
-                              bottom="-60px"
-                              transform="translateX(-90%)"
-                            >
-                              <MaterialIcon
-                                icon="edit"
-                                style={{ fontSize: '20px', marginTop: '2px' }}
-                              />
-                              <EditPopoverText data-testid={`codegraph-edit-btn-${codeGraph.id}`}>
-                                Edit
-                              </EditPopoverText>
-                            </EditPopoverContent>
-                          </EditPopover>
-                        )}
-                      </OptionsWrap>
-                      <RepoName>{codeGraph.name}</RepoName>
-                      <CodeGraphDetails>
-                        <CodeGraphRow>
-                          <CodeGraphLabel>URL: </CodeGraphLabel>
-                          <EuiToolTip position="top" content={codeGraph.url}>
-                            <a href={codeGraph.url} target="_blank" rel="noreferrer">
-                              {codeGraph.url}
-                            </a>
-                          </EuiToolTip>
-                        </CodeGraphRow>
-                        {codeGraph.secret_alias && (
-                          <CodeGraphRow>
-                            <CodeGraphLabel>Secret Alias:</CodeGraphLabel>
-                            <CodeGraphValue>{codeGraph.secret_alias}</CodeGraphValue>
-                          </CodeGraphRow>
-                        )}
-                      </CodeGraphDetails>
-                    </StyledListElement>
+                    {repositories.map((repository: any) => (
+                      <StyledListElement key={repository?.id}>
+                        <OptionsWrap style={{ position: 'unset', display: 'contents' }}>
+                          <MaterialIcon
+                            icon={'more_horiz'}
+                            onClick={() => handleUserRepoOptionClick(repository?.id as number)}
+                            className="MaterialIcon"
+                            data-testid="repository-option-btn"
+                            style={{ transform: 'rotate(90deg)' }}
+                          />
+                          {displayUserRepoOptions[repository?.id as number] && (
+                            <EditPopover>
+                              <EditPopoverTail bottom="-30px" left="-27px" />
+                              <EditPopoverContent
+                                onClick={() => {
+                                  openModal('edit', repository);
+                                  setDisplayUserRepoOptions((prev: Record<number, boolean>) => ({
+                                    ...prev,
+                                    [repository?.id]: !prev[repository?.id]
+                                  }));
+                                }}
+                                bottom="-60px"
+                                transform="translateX(-90%)"
+                              >
+                                <MaterialIcon
+                                  icon="edit"
+                                  style={{ fontSize: '20px', marginTop: '2px' }}
+                                />
+                                <EditPopoverText data-testid="repository-edit-btn">
+                                  Edit
+                                </EditPopoverText>
+                              </EditPopoverContent>
+                            </EditPopover>
+                          )}
+                        </OptionsWrap>
+                        <RepoName>{repository.name} : </RepoName>
+                        <EuiToolTip position="top" content={repository.url}>
+                          <a href={repository.url} target="_blank" rel="noreferrer">
+                            {repository.url}
+                          </a>
+                        </EuiToolTip>
+                      </StyledListElement>
+                    ))}
                   </StyledList>
-                )}
-              </DataWrap2>
-            </FieldWrap>
-          </LeftSection>
-          <VerticalGrayLine />
-          <RightSection>
-            <FieldWrap>
-              <Label>Schematic</Label>
-              <Data style={{ border: 'none', paddingLeft: '0px', padding: '5px 5px' }}>
-                <SchematicPreview
-                  schematicImg={workspaceData?.schematic_img || ''}
-                  schematicUrl={workspaceData?.schematic_url || ''}
-                />
-                <RowWrap>
-                  <OptionsWrap style={{ position: 'unset', display: 'contents' }}>
-                    <MaterialIcon
-                      icon={'more_horiz'}
-                      className="MaterialIcon"
-                      onClick={() => setDidplaySchematic(!displaySchematic)}
-                      data-testid="schematic-option-btn"
-                      style={{ transform: 'rotate(90deg)' }}
-                    />
-                    <EditPopover style={{ display: displaySchematic ? 'block' : 'none' }}>
-                      <EditPopoverTail bottom="-30px" left="-27px" />
-                      <EditPopoverContent
-                        onClick={toggleSchematicModal}
-                        bottom="-60px"
-                        transform="translateX(-90%)"
-                      >
-                        <MaterialIcon icon="edit" style={{ fontSize: '20px', marginTop: '2px' }} />
-                        <EditPopoverText data-testid="schematic-edit-btn">Edit</EditPopoverText>
-                      </EditPopoverContent>
-                    </EditPopover>
-                  </OptionsWrap>
-                  {workspaceData?.schematic_url ? (
-                    <a
-                      href={workspaceData?.schematic_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      data-testid="schematic-url"
-                      style={{ marginLeft: '0.5rem' }}
-                    >
-                      schematic
-                    </a>
-                  ) : (
-                    <span style={{ marginLeft: '0.5rem' }}>No schematic url yet</span>
-                  )}
-                </RowWrap>
-              </Data>
-            </FieldWrap>
-            <HorizontalGrayLine />
-            <FieldWrap style={{ marginTop: '20px' }}>
-              <RowFlex style={{ gap: '25px', marginBottom: '15px' }}>
-                <Label style={{ margin: 0 }}>People</Label>
-                <EuiLinkStyled isMobile={isMobile} onClick={toggleManageUserModal}>
-                  Manage
-                </EuiLinkStyled>
-              </RowFlex>
-              <AvatarGroup avatarList={avatarList} avatarSize="xl" maxGroupSize={5} />
-            </FieldWrap>
+                </DataWrap2>
+              </FieldWrap>
 
-            <HorizontalGrayLine />
-            {uuid && isPlannerEnabled && !isPlannerLoading && (
+              <FieldWrap style={{ marginTop: '20px' }}>
+                <DataWrap2>
+                  <RowFlex>
+                    <Label>Code Graph</Label>
+
+                    {!codeGraph && (
+                      <Button
+                        onClick={() => openCodeGraphModal('add')}
+                        style={{
+                          borderRadius: '5px',
+                          margin: 0,
+                          marginLeft: 'auto'
+                        }}
+                        dataTestId="new-codegraph-btn"
+                        text="Add Code Graph"
+                      />
+                    )}
+                  </RowFlex>
+                  {codeGraph && (
+                    <StyledList>
+                      <StyledListElement key={codeGraph.id}>
+                        <OptionsWrap style={{ position: 'unset', display: 'contents' }}>
+                          <MaterialIcon
+                            icon={'more_horiz'}
+                            onClick={() => handleUserRepoOptionClick(codeGraph.id as number)}
+                            className="MaterialIcon"
+                            data-testid={`codegraph-option-btn-${codeGraph.id}`}
+                            style={{ transform: 'rotate(90deg)' }}
+                          />
+                          {displayUserRepoOptions[codeGraph.id as number] && (
+                            <EditPopover>
+                              <EditPopoverTail bottom="-30px" left="-27px" />
+                              <EditPopoverContent
+                                onClick={() => {
+                                  openCodeGraphModal('edit', codeGraph);
+                                  setDisplayUserRepoOptions((prev: Record<number, boolean>) => ({
+                                    ...prev,
+                                    [codeGraph.id as number]: !prev[codeGraph.id as number]
+                                  }));
+                                }}
+                                bottom="-60px"
+                                transform="translateX(-90%)"
+                              >
+                                <MaterialIcon
+                                  icon="edit"
+                                  style={{ fontSize: '20px', marginTop: '2px' }}
+                                />
+                                <EditPopoverText data-testid={`codegraph-edit-btn-${codeGraph.id}`}>
+                                  Edit
+                                </EditPopoverText>
+                              </EditPopoverContent>
+                            </EditPopover>
+                          )}
+                        </OptionsWrap>
+                        <RepoName>{codeGraph.name}</RepoName>
+                        <CodeGraphDetails>
+                          <CodeGraphRow>
+                            <CodeGraphLabel>URL: </CodeGraphLabel>
+                            <EuiToolTip position="top" content={codeGraph.url}>
+                              <a href={codeGraph.url} target="_blank" rel="noreferrer">
+                                {codeGraph.url}
+                              </a>
+                            </EuiToolTip>
+                          </CodeGraphRow>
+                          {codeGraph.secret_alias && (
+                            <CodeGraphRow>
+                              <CodeGraphLabel>Secret Alias:</CodeGraphLabel>
+                              <CodeGraphValue>{codeGraph.secret_alias}</CodeGraphValue>
+                            </CodeGraphRow>
+                          )}
+                        </CodeGraphDetails>
+                      </StyledListElement>
+                    </StyledList>
+                  )}
+                </DataWrap2>
+              </FieldWrap>
+            </LeftSection>
+            <VerticalGrayLine />
+            <RightSection>
+              <FieldWrap>
+                <Label>Schematic</Label>
+                <Data style={{ border: 'none', paddingLeft: '0px', padding: '5px 5px' }}>
+                  <SchematicPreview
+                    schematicImg={workspaceData?.schematic_img || ''}
+                    schematicUrl={workspaceData?.schematic_url || ''}
+                  />
+                  <RowWrap>
+                    <OptionsWrap style={{ position: 'unset', display: 'contents' }}>
+                      <MaterialIcon
+                        icon={'more_horiz'}
+                        className="MaterialIcon"
+                        onClick={() => setDidplaySchematic(!displaySchematic)}
+                        data-testid="schematic-option-btn"
+                        style={{ transform: 'rotate(90deg)' }}
+                      />
+                      <EditPopover style={{ display: displaySchematic ? 'block' : 'none' }}>
+                        <EditPopoverTail bottom="-30px" left="-27px" />
+                        <EditPopoverContent
+                          onClick={toggleSchematicModal}
+                          bottom="-60px"
+                          transform="translateX(-90%)"
+                        >
+                          <MaterialIcon
+                            icon="edit"
+                            style={{ fontSize: '20px', marginTop: '2px' }}
+                          />
+                          <EditPopoverText data-testid="schematic-edit-btn">Edit</EditPopoverText>
+                        </EditPopoverContent>
+                      </EditPopover>
+                    </OptionsWrap>
+                    {workspaceData?.schematic_url ? (
+                      <a
+                        href={workspaceData?.schematic_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        data-testid="schematic-url"
+                        style={{ marginLeft: '0.5rem' }}
+                      >
+                        schematic
+                      </a>
+                    ) : (
+                      <span style={{ marginLeft: '0.5rem' }}>No schematic url yet</span>
+                    )}
+                  </RowWrap>
+                </Data>
+              </FieldWrap>
+              <HorizontalGrayLine />
+              <FieldWrap style={{ marginTop: '20px' }}>
+                <RowFlex style={{ gap: '25px', marginBottom: '15px' }}>
+                  <Label style={{ margin: 0 }}>People</Label>
+                  <EuiLinkStyled isMobile={isMobile} onClick={toggleManageUserModal}>
+                    Manage
+                  </EuiLinkStyled>
+                </RowFlex>
+                <AvatarGroup avatarList={avatarList} avatarSize="xl" maxGroupSize={5} />
+              </FieldWrap>
+
+              <HorizontalGrayLine />
+              {uuid && isPlannerEnabled && !isPlannerLoading && (
+                <WorkspaceFieldWrap>
+                  <Button
+                    style={{
+                      borderRadius: '5px',
+                      margin: 0,
+                      padding: '10px 20px',
+                      width: '100%',
+                      backgroundColor: '#4285f4',
+                      color: 'white',
+                      textAlign: 'center',
+                      border: 'none',
+                      fontSize: '16px',
+                      cursor: 'pointer'
+                    }}
+                    onClick={handleWorkspacePlanner}
+                    dataTestId="workspace-planner-btn"
+                    text="Workspace Planner"
+                  />
+                </WorkspaceFieldWrap>
+              )}
               <WorkspaceFieldWrap>
                 <Button
                   style={{
@@ -1198,508 +1187,491 @@ const WorkspaceMission = () => {
                     fontSize: '16px',
                     cursor: 'pointer'
                   }}
-                  onClick={handleWorkspacePlanner}
-                  dataTestId="workspace-planner-btn"
-                  text="Workspace Planner"
+                  onClick={handleActivities}
+                  dataTestId="workspace-activities-btn"
+                  text="Activities"
                 />
               </WorkspaceFieldWrap>
-            )}
-            <WorkspaceFieldWrap>
-              <Button
-                style={{
-                  borderRadius: '5px',
-                  margin: 0,
-                  padding: '10px 20px',
-                  width: '100%',
-                  backgroundColor: '#4285f4',
-                  color: 'white',
-                  textAlign: 'center',
-                  border: 'none',
-                  fontSize: '16px',
-                  cursor: 'pointer'
-                }}
-                onClick={handleActivities}
-                dataTestId="workspace-activities-btn"
-                text="Activities"
-              />
-            </WorkspaceFieldWrap>
-            <WorkspaceFieldWrap>
-              <Button
-                style={{
-                  borderRadius: '5px',
-                  margin: 0,
-                  padding: '10px 20px',
-                  width: '100%',
-                  backgroundColor: '#4285f4',
-                  color: 'white',
-                  textAlign: 'center',
-                  border: 'none',
-                  fontSize: '16px',
-                  cursor: 'pointer'
-                }}
-                onClick={handleViewBounties}
-                dataTestId="workspace-planner-btn"
-                text="View Bounties"
-              />
-            </WorkspaceFieldWrap>
-            <WorkspaceFieldWrap>
-              <Button
-                style={{
-                  borderRadius: '5px',
-                  margin: 0,
-                  padding: '10px 20px',
-                  width: '100%',
-                  backgroundColor: '#4285f4',
-                  color: 'white',
-                  textAlign: 'center',
-                  border: 'none',
-                  fontSize: '16px',
-                  cursor: 'pointer'
-                }}
-                onClick={() => openSnippetModal()}
-                dataTestId="workspace-planner-btn"
-                text="Manage Text snippets"
-              />
-            </WorkspaceFieldWrap>
-            <WorkspaceFieldWrap>
-              <Button
-                style={{
-                  borderRadius: '5px',
-                  margin: 0,
-                  padding: '10px 20px',
-                  width: '100%',
-                  backgroundColor: '#49C998',
-                  color: 'white',
-                  textAlign: 'center',
-                  border: 'none',
-                  fontSize: '16px',
-                  cursor: 'pointer'
-                }}
-                onClick={handlePostBountyClick}
-                dataTestId="post-bounty-btn"
-                text="Post Bounty"
-              />
-            </WorkspaceFieldWrap>
-            <HorizontalGrayLine />
-            <FieldWrap style={{ marginTop: '10px' }}>
-              <Label>Talk to Hive</Label>
-              <Button
-                style={{
-                  borderRadius: '5px',
-                  margin: 0,
-                  padding: '10px 20px',
-                  width: '100%',
-                  backgroundColor: '#4285f4',
-                  color: 'white',
-                  textAlign: 'center',
-                  border: 'none',
-                  fontSize: '16px',
-                  cursor: 'pointer'
-                }}
-                onClick={handleNewChat}
-                dataTestId="new-chat-btn"
-                text="New Chat"
-              />
-              <ChatListContainer>
-                {isLoadingChats ? (
+              <WorkspaceFieldWrap>
+                <Button
+                  style={{
+                    borderRadius: '5px',
+                    margin: 0,
+                    padding: '10px 20px',
+                    width: '100%',
+                    backgroundColor: '#4285f4',
+                    color: 'white',
+                    textAlign: 'center',
+                    border: 'none',
+                    fontSize: '16px',
+                    cursor: 'pointer'
+                  }}
+                  onClick={handleViewBounties}
+                  dataTestId="workspace-planner-btn"
+                  text="View Bounties"
+                />
+              </WorkspaceFieldWrap>
+              <WorkspaceFieldWrap>
+                <Button
+                  style={{
+                    borderRadius: '5px',
+                    margin: 0,
+                    padding: '10px 20px',
+                    width: '100%',
+                    backgroundColor: '#4285f4',
+                    color: 'white',
+                    textAlign: 'center',
+                    border: 'none',
+                    fontSize: '16px',
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => openSnippetModal()}
+                  dataTestId="workspace-planner-btn"
+                  text="Manage Text snippets"
+                />
+              </WorkspaceFieldWrap>
+              <WorkspaceFieldWrap>
+                <Button
+                  style={{
+                    borderRadius: '5px',
+                    margin: 0,
+                    padding: '10px 20px',
+                    width: '100%',
+                    backgroundColor: '#49C998',
+                    color: 'white',
+                    textAlign: 'center',
+                    border: 'none',
+                    fontSize: '16px',
+                    cursor: 'pointer'
+                  }}
+                  onClick={handlePostBountyClick}
+                  dataTestId="post-bounty-btn"
+                  text="Post Bounty"
+                />
+              </WorkspaceFieldWrap>
+              <HorizontalGrayLine />
+              <FieldWrap style={{ marginTop: '10px' }}>
+                <Label>Talk to Hive</Label>
+                <Button
+                  style={{
+                    borderRadius: '5px',
+                    margin: 0,
+                    padding: '10px 20px',
+                    width: '100%',
+                    backgroundColor: '#4285f4',
+                    color: 'white',
+                    textAlign: 'center',
+                    border: 'none',
+                    fontSize: '16px',
+                    cursor: 'pointer'
+                  }}
+                  onClick={handleNewChat}
+                  dataTestId="new-chat-btn"
+                  text="New Chat"
+                />
+                <ChatListContainer>
+                  {isLoadingChats ? (
+                    <LoadingContainer>
+                      <EuiLoadingSpinner size="m" />
+                      <LoadingText>Loading chats...</LoadingText>
+                    </LoadingContainer>
+                  ) : chats.length > 0 ? (
+                    <StyledList>
+                      {chats.map((chat: Chat) => (
+                        <ChatListItem key={chat.id} onClick={() => handleChatClick(chat.id)}>
+                          <ChatItemContent>
+                            <ChatRowFlex>
+                              <ChatTitle>{chat.title || 'Untitled Chat'}</ChatTitle>
+                              <ChatTimestamp>
+                                {chat.updatedAt || chat.createdAt
+                                  ? new Date(chat.updatedAt || chat.createdAt).toLocaleString()
+                                  : 'No date'}
+                              </ChatTimestamp>
+                            </ChatRowFlex>
+                            <OptionsWrap style={{ top: 'unset' }}>
+                              <MaterialIcon
+                                icon={'more_horiz'}
+                                className="MaterialIcon"
+                                onClick={(e: React.MouseEvent) => toggleChatMenu(chat.id, e)}
+                                data-testid={`chat-option-btn-${chat.id}`}
+                              />
+                              {visibleChatMenu[chat.id] && (
+                                <EditPopover>
+                                  <EditPopoverTail />
+                                  <EditPopoverContent
+                                    onClick={(e: React.MouseEvent) =>
+                                      confirmArchiveChat(chat.id, e)
+                                    }
+                                  >
+                                    <EditPopoverText data-testid={`chat-archive-btn-${chat.id}`}>
+                                      Archive
+                                    </EditPopoverText>
+                                  </EditPopoverContent>
+                                </EditPopover>
+                              )}
+                            </OptionsWrap>
+                          </ChatItemContent>
+                        </ChatListItem>
+                      ))}
+                    </StyledList>
+                  ) : (
+                    <EmptyStateMessage>
+                      No chats yet. Click &ldquo;New Chat&rdquo; to start a conversation.
+                    </EmptyStateMessage>
+                  )}
+                </ChatListContainer>
+              </FieldWrap>
+            </RightSection>
+          </DataWrap>
+
+          <DataWrap style={{ marginTop: '20px', padding: '0px' }}>
+            <FieldWrap style={{ background: 'white' }}>
+              <BudgetWrapComponent uuid={uuid} org={workspaceData} />
+            </FieldWrap>
+          </DataWrap>
+          <DataWrap style={{ marginTop: '20px' }}>
+            <FieldWrap style={{ marginBottom: '5rem' }}>
+              <RowFlex>
+                <Label>Features</Label>
+                <Button
+                  onClick={toggleFeatureModal}
+                  style={{
+                    borderRadius: '5px',
+                    margin: 0,
+                    marginLeft: 'auto'
+                  }}
+                  dataTestId="new-feature-btn"
+                  text="New Feature"
+                />
+              </RowFlex>
+              <FeaturesWrap>
+                <EuiDragDropContext onDragEnd={onDragEnd}>
+                  <EuiDroppable droppableId="features_droppable_area" spacing="m">
+                    {features &&
+                      features
+                        // .sort((a: Feature, b: Feature) => a.priority - b.priority)
+                        .map((feat: Feature, i: number) => (
+                          <EuiDraggable
+                            spacing="m"
+                            key={feat.id}
+                            index={i}
+                            draggableId={feat.uuid}
+                            customDragHandle
+                            hasInteractiveChildren
+                          >
+                            {(provided: any) => (
+                              <FeatureDataWrap key={i} data-testid="feature-item">
+                                <MissionRowFlex>
+                                  <DragIcon
+                                    src={dragIcon}
+                                    color="transparent"
+                                    className="drag-handle"
+                                    paddingSize="s"
+                                    {...provided.dragHandleProps}
+                                    data-testid={`drag-handle-${feat.priority}`}
+                                    aria-label="Drag Handle"
+                                  />
+                                  <FeatureCount>{i + 1}</FeatureCount>
+                                </MissionRowFlex>
+                                <FeatureData>
+                                  <FeatureLink
+                                    href={`/feature/${feat.uuid}`}
+                                    style={{ marginLeft: '1rem' }}
+                                  >
+                                    {feat.name}
+                                  </FeatureLink>
+                                  <OptionsWrap>
+                                    <MaterialIcon
+                                      icon={'more_horiz'}
+                                      className="MaterialIcon"
+                                      onClick={() => toggleFeatureStatus(feat.uuid)}
+                                      data-testid="mission-option-btn"
+                                    />
+                                    {visibleFeatureStatus[feat.uuid] && (
+                                      <EditPopover>
+                                        <EditPopoverTail />
+                                        <EditPopoverContent
+                                          onClick={() => archiveFeatureStatus(feat.uuid)}
+                                        >
+                                          <EditPopoverText data-testid="mission-edit-btn">
+                                            Archive
+                                          </EditPopoverText>
+                                        </EditPopoverContent>
+                                      </EditPopover>
+                                    )}
+                                  </OptionsWrap>
+                                  <StatusWrap>
+                                    <StatusBox type="completed">
+                                      Completed
+                                      <BudgetCount color="#9157F6">
+                                        {feat.bounties_count_completed
+                                          ? feat.bounties_count_completed.toLocaleString()
+                                          : 0}
+                                      </BudgetCount>
+                                      <BudgetBountyLink>
+                                        <Link target="_blank" to={''}>
+                                          <EuiIcon type="popout" color="#9157F6" />
+                                        </Link>
+                                      </BudgetBountyLink>
+                                    </StatusBox>
+                                    <StatusBox type="assigned">
+                                      Assigned
+                                      <BudgetCount color="#2FB379">
+                                        {feat.bounties_count_assigned
+                                          ? feat.bounties_count_assigned.toLocaleString()
+                                          : 0}
+                                      </BudgetCount>
+                                      <BudgetBountyLink>
+                                        <Link target="_blank" to={''}>
+                                          <EuiIcon type="popout" color="#2FB379" />
+                                        </Link>
+                                      </BudgetBountyLink>
+                                    </StatusBox>
+                                    <StatusBox type="open">
+                                      Open
+                                      <BudgetCount color="#5078F2">
+                                        {feat.bounties_count_open
+                                          ? feat.bounties_count_open.toLocaleString()
+                                          : 0}
+                                      </BudgetCount>
+                                      <BudgetBountyLink>
+                                        <Link target="_blank" to={''}>
+                                          <EuiIcon size="m" type="popout" color="#5078F2" />
+                                        </Link>
+                                      </BudgetBountyLink>
+                                    </StatusBox>
+                                  </StatusWrap>
+                                </FeatureData>
+                              </FeatureDataWrap>
+                            )}
+                          </EuiDraggable>
+                        ))}
+                  </EuiDroppable>
+                </EuiDragDropContext>
+
+                {/* Observer target for infinite scroll */}
+                <div ref={observerTarget} style={{ height: '20px' }} />
+
+                <div
+                  style={{
+                    width: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                >
+                  {features.length >= 20 && features.length < featuresCount && (
+                    <Button
+                      text="Load More"
+                      onClick={() => {
+                        setCurrentPage((prev) => prev + 1);
+                        getFeatures(currentPage + 1, true);
+                      }}
+                    />
+                  )}
+                </div>
+
+                {/* Loading indicator */}
+                {isLoadingMore && (
                   <LoadingContainer>
                     <EuiLoadingSpinner size="m" />
-                    <LoadingText>Loading chats...</LoadingText>
+                    <LoadingText>Loading more features...</LoadingText>
                   </LoadingContainer>
-                ) : chats.length > 0 ? (
-                  <StyledList>
-                    {chats.map((chat: Chat) => (
-                      <ChatListItem key={chat.id} onClick={() => handleChatClick(chat.id)}>
-                        <ChatItemContent>
-                          <ChatRowFlex>
-                            <ChatTitle>{chat.title || 'Untitled Chat'}</ChatTitle>
-                            <ChatTimestamp>
-                              {chat.updatedAt || chat.createdAt
-                                ? new Date(chat.updatedAt || chat.createdAt).toLocaleString()
-                                : 'No date'}
-                            </ChatTimestamp>
-                          </ChatRowFlex>
-                          <OptionsWrap style={{ top: 'unset' }}>
-                            <MaterialIcon
-                              icon={'more_horiz'}
-                              className="MaterialIcon"
-                              onClick={(e: React.MouseEvent) => toggleChatMenu(chat.id, e)}
-                              data-testid={`chat-option-btn-${chat.id}`}
-                            />
-                            {visibleChatMenu[chat.id] && (
-                              <EditPopover>
-                                <EditPopoverTail />
-                                <EditPopoverContent
-                                  onClick={(e: React.MouseEvent) => confirmArchiveChat(chat.id, e)}
-                                >
-                                  <EditPopoverText data-testid={`chat-archive-btn-${chat.id}`}>
-                                    Archive
-                                  </EditPopoverText>
-                                </EditPopoverContent>
-                              </EditPopover>
-                            )}
-                          </OptionsWrap>
-                        </ChatItemContent>
-                      </ChatListItem>
-                    ))}
-                  </StyledList>
-                ) : (
-                  <EmptyStateMessage>
-                    No chats yet. Click &ldquo;New Chat&rdquo; to start a conversation.
-                  </EmptyStateMessage>
                 )}
-              </ChatListContainer>
+              </FeaturesWrap>
             </FieldWrap>
-          </RightSection>
-        </DataWrap>
+          </DataWrap>
+          <Modal
+            visible={featureModal}
+            style={{
+              height: '100%',
+              flexDirection: 'column'
+            }}
+            envStyle={{
+              marginTop: isMobile ? 64 : 0,
+              background: color.pureWhite,
+              zIndex: 20,
+              maxHeight: '100%',
+              borderRadius: '10px',
+              minWidth: isMobile ? '100%' : '25%',
+              minHeight: isMobile ? '100%' : '20%'
+            }}
+            overlayClick={toggleFeatureModal}
+            bigCloseImage={toggleFeatureModal}
+            bigCloseImageStyle={{
+              top: '-18px',
+              right: '-18px',
+              background: '#000',
+              borderRadius: '50%'
+            }}
+          >
+            <AddFeature
+              closeHandler={toggleFeatureModal}
+              getFeatures={() => getFeatures(1, true)}
+              workspace_uuid={uuid}
+              priority={featuresCount}
+            />
+          </Modal>
+          <Modal
+            visible={isModalVisible}
+            style={{
+              height: '100%',
+              flexDirection: 'column'
+            }}
+            envStyle={{
+              marginTop: isMobile ? 64 : 0,
+              background: color.pureWhite,
+              zIndex: 20,
+              maxHeight: '100%',
+              borderRadius: '10px',
+              minWidth: isMobile ? '100%' : '25%',
+              minHeight: isMobile ? '100%' : '20%'
+            }}
+            overlayClick={closeRepoModal}
+            bigCloseImage={closeRepoModal}
+            bigCloseImageStyle={{
+              top: '-18px',
+              right: '-18px',
+              background: '#000',
+              borderRadius: '50%'
+            }}
+          >
+            <AddRepoModal
+              closeHandler={closeRepoModal}
+              getRepositories={fetchRepositories}
+              workspace_uuid={uuid}
+              currentUuid={currentuuid}
+              modalType={modalType}
+              handleDelete={deleteHandler}
+              name={repoName}
+              url={repoUrl}
+            />
+          </Modal>
+          <Modal
+            visible={schematicModal}
+            style={{
+              height: '100%',
+              flexDirection: 'column'
+            }}
+            envStyle={{
+              marginTop: isMobile ? 64 : 0,
+              background: color.pureWhite,
+              zIndex: 20,
+              maxHeight: '100%',
+              borderRadius: '10px',
+              minWidth: isMobile ? '100%' : '25%',
+              minHeight: isMobile ? '100%' : '20%'
+            }}
+            overlayClick={toggleSchematicModal}
+            bigCloseImage={toggleSchematicModal}
+            bigCloseImageStyle={{
+              top: '-18px',
+              right: '-18px',
+              background: '#000',
+              borderRadius: '50%'
+            }}
+          >
+            <EditSchematic
+              closeHandler={toggleSchematicModal}
+              getSchematic={getWorkspaceData}
+              uuid={workspaceData?.uuid}
+              owner_pubkey={ui.meInfo?.owner_pubkey}
+              schematic_url={workspaceData?.schematic_url ?? ''}
+              schematic_img={workspaceData?.schematic_img ?? ''}
+            />
+          </Modal>
+          <Modal
+            visible={codeGraphModal}
+            style={{
+              height: '100%',
+              flexDirection: 'column'
+            }}
+            envStyle={{
+              marginTop: isMobile ? 64 : 0,
+              background: color.pureWhite,
+              zIndex: 20,
+              maxHeight: '100%',
+              borderRadius: '10px',
+              minWidth: isMobile ? '100%' : '30%',
+              minHeight: isMobile ? '100%' : '20%'
+            }}
+            overlayClick={closeCodeGraphModal}
+            bigCloseImage={closeCodeGraphModal}
+            bigCloseImageStyle={{
+              top: '-18px',
+              right: '-18px',
+              background: '#000',
+              borderRadius: '50%'
+            }}
+          >
+            <AddCodeGraph
+              closeHandler={closeCodeGraphModal}
+              getCodeGraph={fetchCodeGraph}
+              workspace_uuid={uuid}
+              modalType={codeGraphModalType}
+              currentUuid={currentCodeGraphUuid}
+              handleDelete={handleDeleteCodeGraph}
+              name={selectedCodeGraph?.name}
+              url={selectedCodeGraph?.url}
+              secret_alias={selectedCodeGraph?.secret_alias}
+            />
+          </Modal>
+          <Modal
+            visible={isSnippetModalVisible}
+            style={{
+              height: '100%',
+              flexDirection: 'column'
+            }}
+            envStyle={{
+              marginTop: isMobile ? 64 : 0,
+              background: color.pureWhite,
+              zIndex: 20,
+              maxHeight: '60%',
+              borderRadius: '10px',
+              minWidth: isMobile ? '100%' : '60%',
+              minHeight: isMobile ? '100%' : '50%',
+              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
+              overflowX: 'hidden'
+            }}
+            overlayClick={closeSnippetModal}
+            bigCloseImage={closeSnippetModal}
+            bigCloseImageStyle={{
+              position: 'absolute',
+              top: '-1%',
+              right: '-1%',
+              background: '#000',
+              borderRadius: '50%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              cursor: 'pointer'
+            }}
+          >
+            <TextSnippetModal isVisible={isSnippetModalVisible} workspaceUUID={uuid} />
+          </Modal>
 
-        <DataWrap style={{ marginTop: '20px', padding: '0px' }}>
-          <FieldWrap style={{ background: 'white' }}>
-            <BudgetWrapComponent uuid={uuid} org={workspaceData} />
-          </FieldWrap>
-        </DataWrap>
-        <DataWrap style={{ marginTop: '20px' }}>
-          <FieldWrap style={{ marginBottom: '5rem' }}>
-            <RowFlex>
-              <Label>Features</Label>
-              <Button
-                onClick={toggleFeatureModal}
-                style={{
-                  borderRadius: '5px',
-                  margin: 0,
-                  marginLeft: 'auto'
-                }}
-                dataTestId="new-feature-btn"
-                text="New Feature"
-              />
-            </RowFlex>
-            <FeaturesWrap>
-              <EuiDragDropContext onDragEnd={onDragEnd}>
-                <EuiDroppable droppableId="features_droppable_area" spacing="m">
-                  {features &&
-                    features
-                      // .sort((a: Feature, b: Feature) => a.priority - b.priority)
-                      .map((feat: Feature, i: number) => (
-                        <EuiDraggable
-                          spacing="m"
-                          key={feat.id}
-                          index={i}
-                          draggableId={feat.uuid}
-                          customDragHandle
-                          hasInteractiveChildren
-                        >
-                          {(provided: any) => (
-                            <FeatureDataWrap key={i} data-testid="feature-item">
-                              <MissionRowFlex>
-                                <DragIcon
-                                  src={dragIcon}
-                                  color="transparent"
-                                  className="drag-handle"
-                                  paddingSize="s"
-                                  {...provided.dragHandleProps}
-                                  data-testid={`drag-handle-${feat.priority}`}
-                                  aria-label="Drag Handle"
-                                />
-                                <FeatureCount>{i + 1}</FeatureCount>
-                              </MissionRowFlex>
-                              <FeatureData>
-                                <FeatureLink
-                                  href={`/feature/${feat.uuid}`}
-                                  style={{ marginLeft: '1rem' }}
-                                >
-                                  {feat.name}
-                                </FeatureLink>
-                                <OptionsWrap>
-                                  <MaterialIcon
-                                    icon={'more_horiz'}
-                                    className="MaterialIcon"
-                                    onClick={() => toggleFeatureStatus(feat.uuid)}
-                                    data-testid="mission-option-btn"
-                                  />
-                                  {visibleFeatureStatus[feat.uuid] && (
-                                    <EditPopover>
-                                      <EditPopoverTail />
-                                      <EditPopoverContent
-                                        onClick={() => archiveFeatureStatus(feat.uuid)}
-                                      >
-                                        <EditPopoverText data-testid="mission-edit-btn">
-                                          Archive
-                                        </EditPopoverText>
-                                      </EditPopoverContent>
-                                    </EditPopover>
-                                  )}
-                                </OptionsWrap>
-                                <StatusWrap>
-                                  <StatusBox type="completed">
-                                    Completed
-                                    <BudgetCount color="#9157F6">
-                                      {feat.bounties_count_completed
-                                        ? feat.bounties_count_completed.toLocaleString()
-                                        : 0}
-                                    </BudgetCount>
-                                    <BudgetBountyLink>
-                                      <Link target="_blank" to={''}>
-                                        <EuiIcon type="popout" color="#9157F6" />
-                                      </Link>
-                                    </BudgetBountyLink>
-                                  </StatusBox>
-                                  <StatusBox type="assigned">
-                                    Assigned
-                                    <BudgetCount color="#2FB379">
-                                      {feat.bounties_count_assigned
-                                        ? feat.bounties_count_assigned.toLocaleString()
-                                        : 0}
-                                    </BudgetCount>
-                                    <BudgetBountyLink>
-                                      <Link target="_blank" to={''}>
-                                        <EuiIcon type="popout" color="#2FB379" />
-                                      </Link>
-                                    </BudgetBountyLink>
-                                  </StatusBox>
-                                  <StatusBox type="open">
-                                    Open
-                                    <BudgetCount color="#5078F2">
-                                      {feat.bounties_count_open
-                                        ? feat.bounties_count_open.toLocaleString()
-                                        : 0}
-                                    </BudgetCount>
-                                    <BudgetBountyLink>
-                                      <Link target="_blank" to={''}>
-                                        <EuiIcon size="m" type="popout" color="#5078F2" />
-                                      </Link>
-                                    </BudgetBountyLink>
-                                  </StatusBox>
-                                </StatusWrap>
-                              </FeatureData>
-                            </FeatureDataWrap>
-                          )}
-                        </EuiDraggable>
-                      ))}
-                </EuiDroppable>
-              </EuiDragDropContext>
-
-              {/* Observer target for infinite scroll */}
-              <div ref={observerTarget} style={{ height: '20px' }} />
-
-              <div
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-              >
-                {features.length >= 20 && features.length < featuresCount && (
-                  <Button
-                    text="Load More"
-                    onClick={() => {
-                      setCurrentPage((prev) => prev + 1);
-                      getFeatures(currentPage + 1, true);
-                    }}
-                  />
-                )}
-              </div>
-
-              {/* Loading indicator */}
-              {isLoadingMore && (
-                <LoadingContainer>
-                  <EuiLoadingSpinner size="m" />
-                  <LoadingText>Loading more features...</LoadingText>
-                </LoadingContainer>
-              )}
-            </FeaturesWrap>
-          </FieldWrap>
-        </DataWrap>
-        <Modal
-          visible={featureModal}
-          style={{
-            height: '100%',
-            flexDirection: 'column'
-          }}
-          envStyle={{
-            marginTop: isMobile ? 64 : 0,
-            background: color.pureWhite,
-            zIndex: 20,
-            maxHeight: '100%',
-            borderRadius: '10px',
-            minWidth: isMobile ? '100%' : '25%',
-            minHeight: isMobile ? '100%' : '20%'
-          }}
-          overlayClick={toggleFeatureModal}
-          bigCloseImage={toggleFeatureModal}
-          bigCloseImageStyle={{
-            top: '-18px',
-            right: '-18px',
-            background: '#000',
-            borderRadius: '50%'
-          }}
-        >
-          <AddFeature
-            closeHandler={toggleFeatureModal}
-            getFeatures={() => getFeatures(1, true)}
-            workspace_uuid={uuid}
-            priority={featuresCount}
+          {isOpenUserManage && (
+            <ManageWorkspaceUsersModal
+              isOpen={isOpenUserManage}
+              close={() => setIsOpenUserManage(!isOpenUserManage)}
+              uuid={uuid}
+              org={workspaceData}
+              users={users}
+              updateUsers={updateWorkspaceUsers}
+            />
+          )}
+          <EuiGlobalToastList
+            toasts={toasts}
+            dismissToast={() => setToasts([])}
+            toastLifeTimeMs={3000}
           />
-        </Modal>
-        <Modal
-          visible={isModalVisible}
-          style={{
-            height: '100%',
-            flexDirection: 'column'
-          }}
-          envStyle={{
-            marginTop: isMobile ? 64 : 0,
-            background: color.pureWhite,
-            zIndex: 20,
-            maxHeight: '100%',
-            borderRadius: '10px',
-            minWidth: isMobile ? '100%' : '25%',
-            minHeight: isMobile ? '100%' : '20%'
-          }}
-          overlayClick={closeRepoModal}
-          bigCloseImage={closeRepoModal}
-          bigCloseImageStyle={{
-            top: '-18px',
-            right: '-18px',
-            background: '#000',
-            borderRadius: '50%'
-          }}
-        >
-          <AddRepoModal
-            closeHandler={closeRepoModal}
-            getRepositories={fetchRepositories}
-            workspace_uuid={uuid}
-            currentUuid={currentuuid}
-            modalType={modalType}
-            handleDelete={deleteHandler}
-            name={repoName}
-            url={repoUrl}
+          <PostModal
+            widget="bounties"
+            isOpen={isPostBountyModalOpen}
+            onClose={() => setIsPostBountyModalOpen(false)}
           />
-        </Modal>
-        <Modal
-          visible={schematicModal}
-          style={{
-            height: '100%',
-            flexDirection: 'column'
-          }}
-          envStyle={{
-            marginTop: isMobile ? 64 : 0,
-            background: color.pureWhite,
-            zIndex: 20,
-            maxHeight: '100%',
-            borderRadius: '10px',
-            minWidth: isMobile ? '100%' : '25%',
-            minHeight: isMobile ? '100%' : '20%'
-          }}
-          overlayClick={toggleSchematicModal}
-          bigCloseImage={toggleSchematicModal}
-          bigCloseImageStyle={{
-            top: '-18px',
-            right: '-18px',
-            background: '#000',
-            borderRadius: '50%'
-          }}
-        >
-          <EditSchematic
-            closeHandler={toggleSchematicModal}
-            getSchematic={getWorkspaceData}
-            uuid={workspaceData?.uuid}
-            owner_pubkey={ui.meInfo?.owner_pubkey}
-            schematic_url={workspaceData?.schematic_url ?? ''}
-            schematic_img={workspaceData?.schematic_img ?? ''}
-          />
-        </Modal>
-        <Modal
-          visible={codeGraphModal}
-          style={{
-            height: '100%',
-            flexDirection: 'column'
-          }}
-          envStyle={{
-            marginTop: isMobile ? 64 : 0,
-            background: color.pureWhite,
-            zIndex: 20,
-            maxHeight: '100%',
-            borderRadius: '10px',
-            minWidth: isMobile ? '100%' : '30%',
-            minHeight: isMobile ? '100%' : '20%'
-          }}
-          overlayClick={closeCodeGraphModal}
-          bigCloseImage={closeCodeGraphModal}
-          bigCloseImageStyle={{
-            top: '-18px',
-            right: '-18px',
-            background: '#000',
-            borderRadius: '50%'
-          }}
-        >
-          <AddCodeGraph
-            closeHandler={closeCodeGraphModal}
-            getCodeGraph={fetchCodeGraph}
-            workspace_uuid={uuid}
-            modalType={codeGraphModalType}
-            currentUuid={currentCodeGraphUuid}
-            handleDelete={handleDeleteCodeGraph}
-            name={selectedCodeGraph?.name}
-            url={selectedCodeGraph?.url}
-            secret_alias={selectedCodeGraph?.secret_alias}
-          />
-        </Modal>
-        <Modal
-          visible={isSnippetModalVisible}
-          style={{
-            height: '100%',
-            flexDirection: 'column'
-          }}
-          envStyle={{
-            marginTop: isMobile ? 64 : 0,
-            background: color.pureWhite,
-            zIndex: 20,
-            maxHeight: '60%',
-            borderRadius: '10px',
-            minWidth: isMobile ? '100%' : '60%',
-            minHeight: isMobile ? '100%' : '50%',
-            boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
-            overflowX: 'hidden'
-          }}
-          overlayClick={closeSnippetModal}
-          bigCloseImage={closeSnippetModal}
-          bigCloseImageStyle={{
-            position: 'absolute',
-            top: '-1%',
-            right: '-1%',
-            background: '#000',
-            borderRadius: '50%',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            cursor: 'pointer'
-          }}
-        >
-          <TextSnippetModal isVisible={isSnippetModalVisible} workspaceUUID={uuid} />
-        </Modal>
-
-        {isOpenUserManage && (
-          <ManageWorkspaceUsersModal
-            isOpen={isOpenUserManage}
-            close={() => setIsOpenUserManage(!isOpenUserManage)}
-            uuid={uuid}
-            org={workspaceData}
-            users={users}
-            updateUsers={updateWorkspaceUsers}
-          />
-        )}
-        <EuiGlobalToastList
-          toasts={toasts}
-          dismissToast={() => setToasts([])}
-          toastLifeTimeMs={3000}
-        />
-        <PostModal
-          widget="bounties"
-          isOpen={isPostBountyModalOpen}
-          onClose={() => setIsPostBountyModalOpen(false)}
-        />
-      </WorkspaceBody>
+        </WorkspaceMissionBody>
+      </>
     )
   );
 };
