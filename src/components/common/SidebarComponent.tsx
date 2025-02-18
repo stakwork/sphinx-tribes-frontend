@@ -8,13 +8,18 @@ import { EuiDroppable } from '@elastic/eui';
 
 import { EuiDragDropContext } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
+import { Modal } from 'components/common';
+import AddFeature from 'people/widgetViews/workspace/AddFeatureModal';
 import React, { useCallback, useEffect } from 'react';
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useStores } from 'store';
 import { Feature, Workspace } from 'store/interface';
 import styled from 'styled-components';
+import { colors } from '../../config/colors';
 import avatarIcon from '../../public/static/profile_avatar.svg';
+
+const color = colors['light'];
 
 const SidebarContainer = styled.div<{ collapsed: boolean }>`
   width: ${({ collapsed }) => (collapsed ? '60px' : '250px')};
@@ -163,6 +168,7 @@ export default function SidebarComponent({ uuid }: SidebarComponentProps) {
   const [isWorkspaceExpanded, setIsWorkspaceExpanded] = useState(false);
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [featureModal, setFeatureModal] = useState(false);
 
   const getUserWorkspaces = useCallback(async () => {
     setIsLoading(true);
@@ -200,21 +206,22 @@ export default function SidebarComponent({ uuid }: SidebarComponentProps) {
     });
   };
 
-  useEffect(() => {
-    const fetchFeatures = async () => {
-      try {
-        const response = await main.getWorkspaceFeatures(uuid || '', {
-          page: 1,
-          status: 'active'
-        });
-        setFeatures(Array.isArray(response) ? response : response || response || []);
-      } catch (error) {
-        console.error('Error fetching features:', error);
-        setFeatures([]);
-      }
-    };
-    fetchFeatures();
+  const fetchFeatures = useCallback(async () => {
+    try {
+      const response = await main.getWorkspaceFeatures(uuid || '', {
+        page: 1,
+        status: 'active'
+      });
+      setFeatures(Array.isArray(response) ? response : []);
+    } catch (error) {
+      console.error('Error fetching features:', error);
+      setFeatures([]);
+    }
   }, [main, uuid]);
+
+  useEffect(() => {
+    fetchFeatures();
+  }, [fetchFeatures]);
 
   const onDragEnd = ({ source, destination }: any) => {
     if (source && destination && source.index !== destination.index) {
@@ -259,6 +266,14 @@ export default function SidebarComponent({ uuid }: SidebarComponentProps) {
       detail: { collapsed }
     });
     window.dispatchEvent(event);
+  };
+
+  const toggleFeatureModal = () => {
+    setFeatureModal(!featureModal);
+  };
+
+  const handleAddFeature = () => {
+    toggleFeatureModal();
   };
 
   return (
@@ -323,10 +338,20 @@ export default function SidebarComponent({ uuid }: SidebarComponentProps) {
       <FeaturesSection>
         <FeatureHeader onClick={toggleFeatures}>
           <h6 style={{ display: collapsed ? 'none' : 'block' }}>Features</h6>
-          <MaterialIcon
-            icon={isFeaturesExpanded ? 'arrow_drop_down' : 'arrow_right'}
-            style={{ marginRight: '5px' }}
-          />
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <MaterialIcon
+              icon="add"
+              style={{ marginRight: '10px', cursor: 'pointer' }}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleAddFeature();
+              }}
+            />
+            <MaterialIcon
+              icon={isFeaturesExpanded ? 'arrow_drop_down' : 'arrow_right'}
+              style={{ marginRight: '5px' }}
+            />
+          </div>
         </FeatureHeader>
         {isFeaturesExpanded && (
           <div>
@@ -374,6 +399,43 @@ export default function SidebarComponent({ uuid }: SidebarComponentProps) {
           </div>
         )}
       </FeaturesSection>
+
+      {featureModal && (
+        <Modal
+          visible={featureModal}
+          style={{
+            height: '100%',
+            flexDirection: 'column'
+          }}
+          envStyle={{
+            marginTop: 0,
+            background: color.pureWhite,
+            zIndex: 20,
+            maxHeight: '100%',
+            borderRadius: '10px',
+            minWidth: '25%',
+            minHeight: '20%'
+          }}
+          overlayClick={toggleFeatureModal}
+          bigCloseImage={toggleFeatureModal}
+          bigCloseImageStyle={{
+            top: '-18px',
+            right: '-18px',
+            background: '#000',
+            borderRadius: '50%'
+          }}
+        >
+          <AddFeature
+            closeHandler={toggleFeatureModal}
+            getFeatures={() => {
+              fetchFeatures();
+              toggleFeatureModal();
+            }}
+            workspace_uuid={uuid}
+            priority={features.length}
+          />
+        </Modal>
+      )}
     </SidebarContainer>
   );
 }
