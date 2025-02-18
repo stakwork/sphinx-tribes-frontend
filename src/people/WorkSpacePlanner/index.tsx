@@ -245,7 +245,7 @@ const WorkspacePlanner = observer(() => {
 
   return (
     <>
-      <SidebarComponent />
+      <SidebarComponent uuid={uuid} />
       <PlannerContainer collapsed={collapsed}>
         <WorkspacePlannerHeader
           workspace_uuid={uuid}

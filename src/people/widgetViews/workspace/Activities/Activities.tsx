@@ -736,7 +736,7 @@ const Activities = observer(() => {
 
   return (
     <>
-      <SidebarComponent />
+      <SidebarComponent uuid={uuid} />
       <MainContainer collapsed={collapsed}>
         <ActivitiesHeader uuid={uuid} />
         <ActivitiesContainer>

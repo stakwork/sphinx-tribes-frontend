@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/typedef */
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useParams, useHistory } from 'react-router-dom';
@@ -10,6 +11,8 @@ import { SOCKET_MSG } from 'config/socket';
 import { createSocketInstance } from 'config/socket';
 import { EuiGlobalToastList } from '@elastic/eui';
 import NewTicketEditor from 'components/common/TicketEditor/NewTicketEditor';
+import SidebarComponent from 'components/common/SidebarComponent';
+import styled from 'styled-components';
 import { phaseTicketStore } from '../../../store/phase';
 import StakworkLogsPanel from '../../../components/common/TicketEditor/StakworkLogsPanel';
 import {
@@ -22,6 +25,7 @@ import {
   PhaseFlexContainer
 } from './style';
 import { Phase, Toast } from './interface';
+import ActivitiesHeader from './Activities/header';
 
 interface WorkspaceParams {
   workspaceId: string;
@@ -33,6 +37,12 @@ interface LogEntry {
   ticketUUID: string;
   message: string;
 }
+
+const MainContent = styled.div<{ collapsed: boolean }>`
+  margin-left: ${({ collapsed }) => (collapsed ? '60px' : '250px')};
+  transition: margin-left 0.3s ease-in-out;
+  width: ${({ collapsed }) => (collapsed ? 'calc(100% - 60px)' : 'calc(100% - 250px)')};
+`;
 
 const WorkspaceTicketCreateView: React.FC = observer(() => {
   const { workspaceId } = useParams<WorkspaceParams>();
@@ -49,6 +59,7 @@ const WorkspaceTicketCreateView: React.FC = observer(() => {
   const history = useHistory();
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [workspace, setWorkspace] = useState<any>(null);
+  const [collapsed, setCollapsed] = useState(false);
 
   const emptyTicket = useMemo(
     () => ({
@@ -285,75 +296,92 @@ const WorkspaceTicketCreateView: React.FC = observer(() => {
     <EuiGlobalToastList toasts={toasts} dismissToast={() => setToasts([])} toastLifeTimeMs={3000} />
   );
 
+  useEffect(() => {
+    const handleCollapseChange = (e: Event) => {
+      const customEvent = e as CustomEvent<{ collapsed: boolean }>;
+      setCollapsed(customEvent.detail.collapsed);
+    };
+
+    window.addEventListener('sidebarCollapse', handleCollapseChange as EventListener);
+
+    return () => {
+      window.removeEventListener('sidebarCollapse', handleCollapseChange as EventListener);
+    };
+  }, []);
+
   return (
-    <FeatureBody>
-      <FeatureHeadWrap>
-        <FeatureHeadNameWrap>
-          <MaterialIcon
-            onClick={handleClose}
-            icon={'arrow_back'}
-            style={{
-              fontSize: 25,
-              cursor: 'pointer'
-            }}
-          />
-          <WorkspaceName>Create New Ticket</WorkspaceName>
-        </FeatureHeadNameWrap>
-      </FeatureHeadWrap>
-      <FeatureDataWrap>
-        <FieldWrap>
-          <SelectWrapper>
-            <SelectLabel>Feature:</SelectLabel>
-            <StyledSelect
-              value={selectedFeature}
-              onChange={handleFeatureChange}
-              disabled={isLoadingFeatures}
-            >
-              <option value="">Select Feature</option>
-              {features.map((feature: Feature) => (
-                <option key={feature.uuid} value={feature.uuid}>
-                  {feature.name}
-                </option>
-              ))}
-            </StyledSelect>
-          </SelectWrapper>
-
-          <SelectWrapper>
-            <SelectLabel>Phase:</SelectLabel>
-            <StyledSelect
-              value={selectedPhase}
-              onChange={handlePhaseChange}
-              disabled={isLoadingPhases || !selectedFeature}
-            >
-              <option value="">Select Phase</option>
-              {phases.map((phase: Phase) => (
-                <option key={phase.uuid} value={phase.uuid}>
-                  {phase.name}
-                </option>
-              ))}
-            </StyledSelect>
-          </SelectWrapper>
-
-          <PhaseFlexContainer style={{ height: '600px' }}>
-            <NewTicketEditor
-              key={emptyTicket.uuid}
-              index={0}
-              ticketData={emptyTicket}
-              logs={logs}
-              websocketSessionId={websocketSessionId}
-              swwfLink={swwfLinks[emptyTicket.uuid]}
-              getPhaseTickets={getPhaseTickets}
-              workspaceUUID={workspaceId}
-              draggableId={emptyTicket.uuid}
-              hasInteractiveChildren={false}
-              onTicketSaved={handleTicketSaved}
+    <MainContent collapsed={collapsed}>
+      <FeatureBody>
+        <SidebarComponent uuid={workspaceId} />
+        <ActivitiesHeader uuid={workspaceId} />
+        <FeatureHeadWrap>
+          <FeatureHeadNameWrap>
+            <MaterialIcon
+              onClick={handleClose}
+              icon={'arrow_back'}
+              style={{
+                fontSize: 25,
+                cursor: 'pointer'
+              }}
             />
-          </PhaseFlexContainer>
-        </FieldWrap>
-        <StakworkLogsPanel swwfLinks={swwfLinks} logs={logs} setLogs={setLogs} />
-      </FeatureDataWrap>
-      {toastsEl}
-    </FeatureBody>
+            <WorkspaceName>Create New Ticket</WorkspaceName>
+          </FeatureHeadNameWrap>
+        </FeatureHeadWrap>
+        <FeatureDataWrap>
+          <FieldWrap>
+            <SelectWrapper>
+              <SelectLabel>Feature:</SelectLabel>
+              <StyledSelect
+                value={selectedFeature}
+                onChange={handleFeatureChange}
+                disabled={isLoadingFeatures}
+              >
+                <option value="">Select Feature</option>
+                {features.map((feature: Feature) => (
+                  <option key={feature.uuid} value={feature.uuid}>
+                    {feature.name}
+                  </option>
+                ))}
+              </StyledSelect>
+            </SelectWrapper>
+
+            <SelectWrapper>
+              <SelectLabel>Phase:</SelectLabel>
+              <StyledSelect
+                value={selectedPhase}
+                onChange={handlePhaseChange}
+                disabled={isLoadingPhases || !selectedFeature}
+              >
+                <option value="">Select Phase</option>
+                {phases.map((phase: Phase) => (
+                  <option key={phase.uuid} value={phase.uuid}>
+                    {phase.name}
+                  </option>
+                ))}
+              </StyledSelect>
+            </SelectWrapper>
+
+            <PhaseFlexContainer style={{ height: '600px' }}>
+              <NewTicketEditor
+                key={emptyTicket.uuid}
+                index={0}
+                ticketData={emptyTicket}
+                logs={logs}
+                websocketSessionId={websocketSessionId}
+                swwfLink={swwfLinks[emptyTicket.uuid]}
+                getPhaseTickets={getPhaseTickets}
+                workspaceUUID={workspaceId}
+                draggableId={emptyTicket.uuid}
+                hasInteractiveChildren={false}
+                onTicketSaved={handleTicketSaved}
+              />
+            </PhaseFlexContainer>
+          </FieldWrap>
+          <StakworkLogsPanel swwfLinks={swwfLinks} logs={logs} setLogs={setLogs} />
+        </FeatureDataWrap>
+        {toastsEl}
+      </FeatureBody>
+    </MainContent>
   );
 });
 

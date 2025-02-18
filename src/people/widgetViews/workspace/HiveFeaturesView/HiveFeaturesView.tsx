@@ -156,7 +156,7 @@ const HiveFeaturesView = observer(() => {
   return (
     <>
       <MainContainer>
-        <SidebarComponent />
+        <SidebarComponent uuid={workspace_uuid} />
         <ActivitiesHeader uuid={workspace_uuid} collapsed={collapsed} />
         <ActivitiesContainer collapsed={collapsed}>
           {Object.values(groupedData).length === 0 ? (
