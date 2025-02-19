@@ -314,13 +314,15 @@ export default function SidebarComponent({
             ? 'Track your work'
             : window.location.pathname.includes('/activities')
             ? 'Activities'
-            : 'Workspace'}
+            : 'Settings'}
         </span>
       </NavItem>
-      <NavItem onClick={handleOpenWorkspace} collapsed={collapsed}>
-        <MaterialIcon icon="settings" />
-        <span>Settings</span>
-      </NavItem>
+      {!window.location.pathname.match(/\/workspace\/[^/]+\/?$/) && (
+        <NavItem onClick={handleOpenWorkspace} collapsed={collapsed}>
+          <MaterialIcon icon="settings" />
+          <span>Settings</span>
+        </NavItem>
+      )}
 
       {/* Workspace Section */}
       <WorkspaceSection>
