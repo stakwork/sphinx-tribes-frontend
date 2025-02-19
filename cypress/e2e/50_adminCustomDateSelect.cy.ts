@@ -17,7 +17,6 @@ describe('Admin Statistics Custom Date Range', () => {
   it('Creates 25 bounties, navigates to Admin page, and verifies bounties count and visibility', () => {
     for (let i = 1; i <= 25; i++) {
       const updatedBounty = { ...bounty, title: `UmerJobs${i}` };
-      cy.contains('Post a Bounty', { timeout: 10000 }).should('be.visible');
       cy.create_bounty(updatedBounty);
       cy.wait(1000);
     }
@@ -62,14 +61,7 @@ describe('Admin Statistics Custom Date Range', () => {
     let expectedStartDateFormat = `${String(startDate.getDate()).padStart(
       2,
       '0'
-    )} ${startDate.toLocaleString('default', { month: 'short' })}`;
-
-    if (startDate.getMonth() === 0) {
-      expectedStartDateFormat = `${String(startDate.getDate()).padStart(
-        2,
-        '0'
-      )} ${startDate.toLocaleString('default', { month: 'short' })} ${endDate.getFullYear()}`;
-    }
+    )} ${startDate.toLocaleString('default', { month: 'short' })} ${startDate.getFullYear()}`;
 
     const expectedEndDateFormat = `${String(endDate.getDate()).padStart(
       2,

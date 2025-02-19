@@ -45,8 +45,8 @@ describe('Update feature To Workspace', () => {
     cy.contains(newFeature).should('exist', { timeout: 3000 });
     cy.wait(1000);
 
-    cy.get('[data-testid="brief-option-btn"]').click();
     cy.get('[data-testid="brief-edit-btn"]').click();
+    cy.wait(1000);
 
     const updatedFeature = 'Feature Brief';
     cy.get('[data-testid="brief-textarea"]').type(updatedFeature);
