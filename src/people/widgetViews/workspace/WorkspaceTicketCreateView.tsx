@@ -7,8 +7,7 @@ import MaterialIcon from '@material/react-material-icon';
 import { useStores } from 'store';
 import { v4 as uuidv4 } from 'uuid';
 import { FeatureBody, FeatureDataWrap, FieldWrap } from 'pages/tickets/style';
-import { SOCKET_MSG } from 'config/socket';
-import { createSocketInstance } from 'config/socket';
+import { SOCKET_MSG, websocketManager } from 'config/socket';
 import { EuiGlobalToastList } from '@elastic/eui';
 import NewTicketEditor from 'components/common/TicketEditor/NewTicketEditor';
 import SidebarComponent from 'components/common/SidebarComponent';
@@ -165,7 +164,12 @@ const WorkspaceTicketCreateView: React.FC = observer(() => {
   }, [selectedFeature, main]);
 
   useEffect(() => {
-    const socket = createSocketInstance();
+    const { socket } = websocketManager;
+
+    if (!socket) {
+      console.error('WebSocket instance not available');
+      return;
+    }
 
     socket.onopen = () => {
       console.log('Socket connected in Workspace Ticket Create View');

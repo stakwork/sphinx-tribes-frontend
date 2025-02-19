@@ -35,7 +35,7 @@ import MaterialIcon from '@material/react-material-icon';
 import { EuiOverlayMask, EuiModalHeader, EuiModalFooter, EuiText } from '@elastic/eui';
 import { Box } from '@mui/system';
 import { userHasRole } from 'helpers/helpers-extended';
-import { createSocketInstance, SOCKET_MSG } from '../../config/socket.ts';
+import { SOCKET_MSG, websocketManager } from '../../config/socket.ts';
 import { useDeleteConfirmationModal } from '../../components/common';
 import SidebarComponent from '../../components/common/SidebarComponent.tsx';
 import {
@@ -497,7 +497,12 @@ const WorkspaceFeature = () => {
   }, [getWorkspaceData]);
 
   useEffect(() => {
-    let socket = createSocketInstance();
+    const { socket } = websocketManager;
+
+    if (!socket) {
+      console.error('WebSocket instance not available');
+      return;
+    }
 
     socket.onmessage = async (event: MessageEvent) => {
       console.log('Raw websocket message received:', event.data);
