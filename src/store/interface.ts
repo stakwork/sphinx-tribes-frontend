@@ -425,6 +425,8 @@ export interface Ticket {
   status: TicketStatus;
   version: number;
   ticket_group?: string;
+  amount?: number;
+  category?: string;
   author?: Author;
   author_id?: string;
   created_at?: Date;

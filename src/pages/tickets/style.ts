@@ -242,7 +242,7 @@ export const OptionsWrap = styled.div`
 
 export const BountyOptionsWrap = styled.div`
   position: absolute;
-  margin-left: 58%;
+  margin-left: 60%;
   margin-bottom: 1% !important;
   cursor: pointer;
   display: flex;

@@ -51,6 +51,8 @@ interface TicketEditorProps {
   swwfLink?: string;
   getPhaseTickets: () => Promise<Ticket[] | undefined>;
   workspaceUUID: string;
+  selectedTickets: Record<string, boolean>;
+  onSelectTicket: (ticketId: string) => void;
 }
 
 const SwitcherContainer = styled.div`
@@ -146,6 +148,21 @@ const ChainOfThought = styled.div`
   background-color: white;
 `;
 
+const StyledCheckbox = styled.input`
+  width: 20px;
+  height: 20px;
+  margin-bottom: 10px;
+  margin-left: -30px;
+  cursor: pointer;
+`;
+
+const CATEGORY_OPTIONS = [
+  { value: 'Web development', label: 'Web Development' },
+  { value: 'Backend development', label: 'Backend Development' },
+  { value: 'Design', label: 'Design' },
+  { value: 'Other', label: 'Other' }
+];
+
 const TicketEditor = observer(
   ({
     ticketData,
@@ -154,7 +171,9 @@ const TicketEditor = observer(
     swwfLink,
     getPhaseTickets,
     workspaceUUID,
-    logs
+    logs,
+    selectedTickets,
+    onSelectTicket
   }: TicketEditorProps) => {
     const [toasts, setToasts] = useState<Toast[]>([]);
     const [versions, setVersions] = useState<number[]>([]);
@@ -268,6 +287,8 @@ const TicketEditor = observer(
             description: versionTicketData.description,
             status: 'DRAFT' as TicketStatus,
             version: ticketData.version + 1,
+            amount: versionTicketData.amount,
+            category: versionTicketData.category,
             author: 'HUMAN' as Author,
             author_id: uiStore.meInfo?.pubkey,
             ticket_group: ticketData.ticket_group || ticketData.uuid
@@ -515,6 +536,11 @@ const TicketEditor = observer(
           </EuiFlexItem>
           <EuiFlexItem>
             <TicketHeaderInputWrap>
+              <StyledCheckbox
+                type="checkbox"
+                checked={!!selectedTickets[ticketData.uuid]}
+                onChange={() => onSelectTicket(ticketData.uuid)}
+              />
               <TicketHeader>Ticket:</TicketHeader>
               <TicketInput
                 value={versionTicketData.name}
@@ -579,6 +605,38 @@ const TicketEditor = observer(
                   </SwitcherButton>
                 </SwitcherContainer>
               </CopyButtonGroup>
+            </TicketHeaderInputWrap>
+            <TicketHeaderInputWrap>
+              <h6>Amount:</h6>
+              <TicketInput
+                type="number"
+                value={versionTicketData.amount || ''}
+                onChange={(e) => {
+                  const newValue = Number(e.target.value);
+                  setVersionTicketData({
+                    ...versionTicketData,
+                    amount: newValue >= 0 ? newValue : 0
+                  });
+                }}
+                placeholder="Enter amount..."
+                min="0"
+              />
+              <VersionSelect
+                value={versionTicketData.category || ''}
+                onChange={(e) =>
+                  setVersionTicketData({
+                    ...versionTicketData,
+                    category: e.target.value || undefined
+                  })
+                }
+              >
+                <Option value="">Select category...</Option>
+                {CATEGORY_OPTIONS.map((option) => (
+                  <Option key={option.value} value={option.value}>
+                    {option.label}
+                  </Option>
+                ))}
+              </VersionSelect>
             </TicketHeaderInputWrap>
             <EditorWrapper>
               {activeMode === 'edit' ? (
