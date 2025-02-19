@@ -111,9 +111,9 @@ export class PhaseTicketStore implements TicketStore {
       (ticket: Ticket) => ticket.ticket_group === groupId || ticket.uuid === groupId
     );
 
-    const ticket = ticketsInGroup.find((ticket: Ticket) => {
-      return Number(ticket.version) === Number(version);
-    });
+    const ticket = ticketsInGroup.find(
+      (ticket: Ticket) => Number(ticket.version) === Number(version)
+    );
 
     if (!ticket) {
       console.warn(`No ticket found with version ${version} in group ${groupId}`);
