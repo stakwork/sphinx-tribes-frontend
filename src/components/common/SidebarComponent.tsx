@@ -303,7 +303,15 @@ export default function SidebarComponent({ uuid }: SidebarComponentProps) {
         collapsed={collapsed}
       >
         <MaterialIcon icon="home" />
-        <span>Activities</span>
+        <span>
+          {window.location.pathname.includes('/feature/')
+            ? 'Feature'
+            : window.location.pathname.includes('/planner')
+            ? 'Track your work'
+            : window.location.pathname.includes('/activities')
+            ? 'Activities'
+            : 'Settings'}
+        </span>
       </NavItem>
       <NavItem onClick={handleOpenWorkspace} collapsed={collapsed}>
         <MaterialIcon icon="settings" />
