@@ -412,6 +412,15 @@ export type TicketStatus =
 
 export type Author = 'HUMAN' | 'AGENT';
 
+export type TicketCategory = 'Web development' | 'Backend development' | 'Design' | 'Other';
+
+export const TICKET_CATEGORIES = {
+  WEB_DEV: 'Web development',
+  BACKEND_DEV: 'Backend development',
+  DESIGN: 'Design',
+  OTHER: 'Other'
+} as const;
+
 export interface Ticket {
   uuid: string;
   UUID?: string;
@@ -429,6 +438,8 @@ export interface Ticket {
   author_id?: string;
   created_at?: Date;
   updated_at?: Date;
+  amount?: number;
+  category?: TicketCategory;
 }
 
 export interface CreateTicketInput {
@@ -449,6 +460,8 @@ export interface UpdateTicketInput {
   dependency?: string[];
   status?: TicketStatus;
   version?: number;
+  amount?: number;
+  category?: TicketCategory;
 }
 
 export interface TicketMessage {
