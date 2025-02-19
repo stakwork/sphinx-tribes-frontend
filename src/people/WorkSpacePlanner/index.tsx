@@ -150,7 +150,7 @@ const WorkspacePlanner = observer(() => {
   const [workspaceData, setWorkspaceData] = useState<any>(null);
   const [filterToggle, setFilterToggle] = useState(false);
   const [searchText, setSearchText] = useState('');
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const bountyCardStore = useBountyCardStore(uuid);
 
   useEffect(() => {
@@ -245,7 +245,7 @@ const WorkspacePlanner = observer(() => {
 
   return (
     <>
-      <SidebarComponent uuid={uuid} />
+      <SidebarComponent uuid={uuid} defaultCollapsed={true} />
       <PlannerContainer collapsed={collapsed}>
         <WorkspacePlannerHeader
           workspace_uuid={uuid}

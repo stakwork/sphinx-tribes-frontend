@@ -156,13 +156,17 @@ const WorkspaceName = styled.span<{ collapsed: boolean }>`
 
 interface SidebarComponentProps {
   uuid?: string;
+  defaultCollapsed?: boolean;
 }
 
-export default function SidebarComponent({ uuid }: SidebarComponentProps) {
+export default function SidebarComponent({
+  uuid,
+  defaultCollapsed = false
+}: SidebarComponentProps) {
   const { ui, main } = useStores();
   const [activeItem, setActiveItem] = useState('activities');
   const [features, setFeatures] = useState<Feature[]>([]);
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(defaultCollapsed);
   const history = useHistory();
   const [isFeaturesExpanded, setIsFeaturesExpanded] = useState(true);
   const [isWorkspaceExpanded, setIsWorkspaceExpanded] = useState(false);
@@ -310,7 +314,7 @@ export default function SidebarComponent({ uuid }: SidebarComponentProps) {
             ? 'Track your work'
             : window.location.pathname.includes('/activities')
             ? 'Activities'
-            : 'Settings'}
+            : 'Workspace'}
         </span>
       </NavItem>
       <NavItem onClick={handleOpenWorkspace} collapsed={collapsed}>
