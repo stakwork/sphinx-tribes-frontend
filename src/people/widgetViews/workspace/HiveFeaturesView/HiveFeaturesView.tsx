@@ -141,7 +141,7 @@ const HiveFeaturesView = observer(() => {
     if (item.bountyTicket === 'bounty') {
       return `/bounty/${item.bountyID}`;
     } else if (item.bountyTicket === 'ticket') {
-      return `/workspace/${uuid}/ticket/${item.ticketUUID}`;
+      return `/workspace/${workspace_uuid}/ticket/${item.ticketUUID}`;
     }
     return '';
   };
