@@ -3,7 +3,7 @@ import { useObserver } from 'mobx-react-lite';
 import styled from 'styled-components';
 import { observer } from 'mobx-react-lite';
 import { AuthProps } from 'people/interfaces';
-import { SOCKET_MSG, websocketManager } from 'config/socket';
+import { SOCKET_MSG, createSocketInstance } from 'config/socket';
 import { useStores } from '../../store';
 import { Divider, QR, IconButton } from '../../components/common';
 import { useIsMobile } from '../../hooks';
@@ -107,13 +107,7 @@ function SignIn(props: AuthProps) {
   };
 
   useEffect(() => {
-    const { socket } = websocketManager;
-
-    if (!socket) {
-      console.error('WebSocket instance not available');
-      return;
-    }
-
+    const socket: WebSocket = createSocketInstance();
     socket.onopen = () => {
       console.log('Socket connected');
     };
