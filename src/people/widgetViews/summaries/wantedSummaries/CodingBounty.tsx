@@ -4,7 +4,7 @@ import { EuiText, EuiFieldText, EuiGlobalToastList, EuiLoadingSpinner } from '@e
 import { observer } from 'mobx-react-lite';
 import moment from 'moment';
 import { isInvoiceExpired, userCanManageBounty } from 'helpers';
-import { SOCKET_MSG, websocketManager } from 'config/socket';
+import { SOCKET_MSG, createSocketInstance } from 'config/socket';
 import { Box } from '@mui/system';
 import { bountyReviewStore } from 'store/bountyReviewStore';
 import { uiStore } from 'store/ui';
@@ -601,13 +601,7 @@ function MobileView(props: CodingBountiesProps) {
       }
     };
 
-    const { socket } = websocketManager;
-
-    if (!socket) {
-      console.error('WebSocket instance not available');
-      return;
-    }
-
+    const socket: WebSocket = createSocketInstance();
     socket.onopen = () => {
       console.log('Socket connected');
     };
