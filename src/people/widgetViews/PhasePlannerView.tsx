@@ -84,6 +84,14 @@ const PhasePlannerView: React.FC = observer(() => {
   const selectedWidget = 'bounties';
   const { isEnabled } = useFeatureFlag('display_planner_logs');
   const [collapsed, setCollapsed] = useState(false);
+  const [selectedTickets, setSelectedTickets] = useState<Record<string, boolean>>({});
+
+  const handleSelectTicket = (ticketId: string) => {
+    setSelectedTickets((prev) => ({
+      ...prev,
+      [ticketId]: !prev[ticketId]
+    }));
+  };
 
   const checkboxIdToSelectedMap: BountyStatus = useMemo(
     () => ({
@@ -645,6 +653,8 @@ const PhasePlannerView: React.FC = observer(() => {
                               swwfLink={swwfLinks[ticket.uuid]}
                               getPhaseTickets={getPhaseTickets}
                               workspaceUUID={featureData?.workspace_uuid || ''}
+                              selectedTickets={selectedTickets}
+                              onSelectTicket={handleSelectTicket}
                             />
                           </div>
                         )}
