@@ -743,6 +743,7 @@ const PhasePlannerView: React.FC = observer(() => {
                               workspaceUUID={featureData?.workspace_uuid || ''}
                               selectedTickets={selectedTickets}
                               onSelectTicket={handleSelectTicket}
+                              collapsed={collapsed}
                             />
                           </div>
                         )}
