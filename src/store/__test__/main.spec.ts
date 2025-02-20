@@ -3686,3 +3686,115 @@ describe('MainStore.getBalances', () => {
     });
   });
 });
+
+describe('convertTicketsToBounties', () => {
+  let mainStore: MainStore;
+  let fetchStub: sinon.SinonStub;
+  const validPayload = {
+    tickets_to_bounties: [{ ticketUUID: 'test-uuid-1' }]
+  };
+
+  beforeEach(() => {
+    mainStore = new MainStore();
+    mainStore.initializeSessionId();
+    fetchStub = sinon.stub(global, 'fetch');
+  });
+
+  afterEach(() => {
+    fetchStub.restore();
+  });
+
+  it('should successfully convert tickets to bounties', async () => {
+    const url = `${TribesURL}/bounties/ticket/bounty/bulk`;
+    const expectedResponse = {
+      success: true,
+      converted_bounties: [1, 2, 3],
+      message: 'Successfully converted tickets to bounties'
+    };
+
+    const expectedRequestOptions: RequestInit = {
+      method: 'POST',
+      mode: 'cors',
+      body: JSON.stringify(validPayload),
+      headers: {
+        'x-jwt': user.tribe_jwt || '',
+        'Content-Type': 'application/json',
+        'x-session-id': mainStore.sessionId
+      }
+    };
+
+    fetchStub.resolves({
+      ok: true,
+      json: () => Promise.resolve(expectedResponse)
+    } as Response);
+
+    const result = await mainStore.convertTicketsToBounties(validPayload);
+    waitFor(() => {
+      expect(result).toEqual(expectedResponse);
+      expect(fetchStub.calledOnce).toBe(true);
+      expect(fetchStub.firstCall.args[0]).toBe(url);
+      expect(fetchStub.firstCall.args[1]).toMatchObject(expectedRequestOptions);
+    });
+  });
+
+  it('should return null when user is not authenticated', async () => {
+    uiStore.meInfo = null;
+    const result = await mainStore.convertTicketsToBounties(validPayload);
+    expect(result).toBeNull();
+  });
+
+  it('should return null when API request fails', async () => {
+    fetchStub.resolves({
+      ok: false,
+      json: () => Promise.resolve({ message: 'Failed to convert tickets' })
+    } as Response);
+
+    const result = await mainStore.convertTicketsToBounties(validPayload);
+    expect(result).toBeNull();
+  });
+
+  it('should return null when network error occurs', async () => {
+    fetchStub.rejects(new Error('Network error'));
+
+    const result = await mainStore.convertTicketsToBounties(validPayload);
+    expect(result).toBeNull();
+  });
+
+  it('should handle empty tickets array', async () => {
+    const emptyPayload = { tickets_to_bounties: [] };
+
+    fetchStub.resolves({
+      ok: true,
+      json: () => Promise.resolve({ success: true, converted_bounties: [] })
+    } as Response);
+
+    const result = await mainStore.convertTicketsToBounties(emptyPayload);
+    waitFor(() => {
+      expect(result?.converted_bounties).toEqual([]);
+    });
+  });
+
+  it('should handle multiple tickets', async () => {
+    const multiPayload = {
+      tickets_to_bounties: [
+        { ticketUUID: 'test-uuid-1' },
+        { ticketUUID: 'test-uuid-2' },
+        { ticketUUID: 'test-uuid-3' }
+      ]
+    };
+
+    fetchStub.resolves({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          success: true,
+          converted_bounties: [1, 2, 3]
+        })
+    } as Response);
+
+    const result = await mainStore.convertTicketsToBounties(multiPayload);
+    waitFor(() => {
+      expect(result?.converted_bounties?.length).toBe(3);
+    });
+  });
+});

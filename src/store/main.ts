@@ -57,7 +57,9 @@ import {
   IActivity,
   INewActivity,
   QuickBountiesResponse,
-  QuickTicketsResponse
+  QuickTicketsResponse,
+  BulkConversionPayload,
+  BulkConversionResponse
 } from './interface';
 
 function makeTorSaveURL(host: string, key: string) {
@@ -4683,6 +4685,36 @@ export class MainStore {
       return responseData;
     } catch (error) {
       console.error('Error fetching quick tickets:', error);
+      return null;
+    }
+  }
+
+  async convertTicketsToBounties(
+    payload: BulkConversionPayload
+  ): Promise<BulkConversionResponse | null> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+
+      const response = await fetch(`${TribesURL}/bounties/ticket/bounty/bulk`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt || '',
+          'Content-Type': 'application/json',
+          'x-session-id': this.getSessionId()
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to convert tickets to bounties');
+      }
+
+      const responseData: BulkConversionResponse = await response.json();
+      return responseData;
+    } catch (error) {
+      console.error('Error converting tickets to bounties:', error);
       return null;
     }
   }
