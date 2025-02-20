@@ -156,6 +156,17 @@ const StyledCheckbox = styled.input`
   cursor: pointer;
 `;
 
+const MarkdownWrapper = styled.div`
+  position: relative;
+  height: 600px;
+  min-height: 600px;
+  max-height: 600px;
+  overflow-y: auto;
+  border: 2px solid #dde1e5;
+  border-radius: 0.375rem;
+  padding: 0.5rem 1rem;
+`;
+
 const CATEGORY_OPTIONS = [
   { value: 'Web development', label: 'Web Development' },
   { value: 'Backend development', label: 'Backend Development' },
@@ -654,9 +665,7 @@ const TicketEditor = observer(
                   />
                 </>
               ) : (
-                <div className="p-4 border rounded-md">
-                  {renderMarkdown(versionTicketData.description)}
-                </div>
+                <MarkdownWrapper>{renderMarkdown(versionTicketData.description)}</MarkdownWrapper>
               )}
             </EditorWrapper>
             <TicketButtonGroup>
