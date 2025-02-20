@@ -164,7 +164,7 @@ export default function SidebarComponent({
   defaultCollapsed = false
 }: SidebarComponentProps) {
   const { ui, main } = useStores();
-  const [activeItem, setActiveItem] = useState('activities');
+  const [activeItem, setActiveItem] = useState<'activities' | 'settings' | 'feature' | null>(null);
   const [features, setFeatures] = useState<Feature[]>([]);
   const [collapsed, setCollapsed] = useState(defaultCollapsed);
   const history = useHistory();
@@ -194,12 +194,26 @@ export default function SidebarComponent({
     getUserWorkspaces();
   }, [getUserWorkspaces]);
 
-  const handleItemClick = (item: string) => {
-    setActiveItem(item);
-  };
+  useEffect(() => {
+    const path = window.location.pathname;
+    if (path.includes('/activities')) {
+      setActiveItem('activities');
+    } else if (path === `/workspace/${uuid}`) {
+      setActiveItem('settings');
+    } else if (path.includes('/feature/')) {
+      setActiveItem('feature');
+    } else {
+      setActiveItem(null);
+    }
+  }, [uuid]);
 
-  const handleOpenWorkspace = () => {
-    history.push(`/workspace/${uuid}`);
+  const handleItemClick = (item: 'activities' | 'settings') => {
+    setActiveItem(item);
+    if (item === 'activities') {
+      history.push(`/workspace/${uuid}/activities`);
+    } else if (item === 'settings') {
+      history.push(`/workspace/${uuid}`);
+    }
   };
 
   const handleReorderFeatures = async (feat: Feature, priority: number) => {
@@ -307,22 +321,17 @@ export default function SidebarComponent({
         collapsed={collapsed}
       >
         <MaterialIcon icon="home" />
-        <span>
-          {window.location.pathname.includes('/feature/')
-            ? 'Feature'
-            : window.location.pathname.includes('/planner')
-            ? 'Track your work'
-            : window.location.pathname.includes('/activities')
-            ? 'Activities'
-            : 'Settings'}
-        </span>
+        <span>Activities</span>
       </NavItem>
-      {!window.location.pathname.match(/\/workspace\/[^/]+\/?$/) && (
-        <NavItem onClick={handleOpenWorkspace} collapsed={collapsed}>
-          <MaterialIcon icon="settings" />
-          <span>Settings</span>
-        </NavItem>
-      )}
+
+      <NavItem
+        active={activeItem === 'settings'}
+        onClick={() => handleItemClick('settings')}
+        collapsed={collapsed}
+      >
+        <MaterialIcon icon="settings" />
+        <span>Settings</span>
+      </NavItem>
 
       {/* Workspace Section */}
       <WorkspaceSection>
@@ -383,9 +392,15 @@ export default function SidebarComponent({
                     >
                       {(provided: any) => (
                         <NavItem
-                          onClick={() => history.push(`/feature/${feat.uuid}`)}
+                          onClick={() => {
+                            setActiveItem('feature');
+                            history.push(`/feature/${feat.uuid}`);
+                          }}
                           key={feat.id}
                           collapsed={collapsed}
+                          active={
+                            activeItem === 'feature' && window.location.pathname.includes(feat.uuid)
+                          }
                         >
                           <MissionRowFlex>
                             <MaterialIcon
