@@ -151,12 +151,29 @@ const DraftButton = styled.button`
   }
 `;
 
-const HiveFeaturesView = observer(() => {
-  const { feature_uuid, workspace_uuid } = useParams<{
-    uuid: string;
-    feature_uuid: string;
-    workspace_uuid: string;
+interface HiveFeaturesViewProps {
+  features: Array<{
+    id: string;
+    title: string;
+    icon: string;
+    description: string;
+    status: string;
+  }>;
+  isLoading: boolean;
+  error: string | null;
+  onFeatureClick: (featureId: string) => void;
+}
+
+const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
+  const params = useParams<{
+    uuid?: string;
+    feature_uuid?: string;
+    workspace_uuid?: string;
   }>();
+
+  const featureUuid = params.feature_uuid ?? '';
+  const workspaceUuid = params.workspace_uuid ?? '';
+
   const history = useHistory();
   const [phaseNames, setPhaseNames] = useState<{ [key: string]: string }>({});
   const [collapsed, setCollapsed] = useState(false);
@@ -184,11 +201,11 @@ const HiveFeaturesView = observer(() => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await quickBountyTicketStore.fetchAndSetQuickData(feature_uuid);
+      const response = await quickBountyTicketStore.fetchAndSetQuickData(featureUuid);
       setData(response || []);
     };
     fetchData();
-  }, [feature_uuid]);
+  }, [featureUuid]);
 
   const groupedData = data.reduce<{ [key: string]: QuickBountyTicket[] }>((acc, item) => {
     if (!acc[item.phaseID]) acc[item.phaseID] = [];
@@ -200,24 +217,24 @@ const HiveFeaturesView = observer(() => {
     const fetchPhaseNames = async () => {
       const names: { [key: string]: string } = {};
       for (const phaseID of Object.keys(groupedData)) {
-        const phase = await main.getFeaturePhaseByUUID(feature_uuid, phaseID);
+        const phase = await main.getFeaturePhaseByUUID(featureUuid, phaseID);
         names[phaseID] = phase?.name || 'Untitled Phase';
       }
       setPhaseNames(names);
     };
     fetchPhaseNames();
-  }, [groupedData, feature_uuid, main]);
+  }, [groupedData, featureUuid, main]);
 
   useEffect(() => {
-    const savedState = localStorage.getItem(`expandedPhases_${feature_uuid}`);
+    const savedState = localStorage.getItem(`expandedPhases_${featureUuid}`);
     if (savedState) {
       setExpandedPhases(JSON.parse(savedState));
     }
-  }, [feature_uuid]);
+  }, [featureUuid]);
 
   useEffect(() => {
-    localStorage.setItem(`expandedPhases_${feature_uuid}`, JSON.stringify(expandedPhases));
-  }, [expandedPhases, feature_uuid]);
+    localStorage.setItem(`expandedPhases_${featureUuid}`, JSON.stringify(expandedPhases));
+  }, [expandedPhases, featureUuid]);
 
   useEffect(() => {
     const socket = createSocketInstance();
@@ -262,7 +279,7 @@ const HiveFeaturesView = observer(() => {
     if (item.bountyTicket === 'bounty') {
       return `/bounty/${item.bountyID}`;
     } else if (item.bountyTicket === 'ticket') {
-      return `/workspace/${workspace_uuid}/ticket/${item.ticketUUID}`;
+      return `/workspace/${workspaceUuid}/ticket/${item.ticketUUID}`;
     }
     return '';
   };
@@ -330,7 +347,7 @@ const HiveFeaturesView = observer(() => {
           status: 'DRAFT' as TicketStatus,
           author: 'HUMAN' as Author,
           author_id: uiStore.meInfo?.pubkey,
-          feature_uuid: feature_uuid,
+          feature_uuid: featureUuid,
           phase_uuid: phaseID,
           uuid: uuidv4(),
           sequence: 0,
@@ -345,7 +362,7 @@ const HiveFeaturesView = observer(() => {
       }
 
       if (response.UUID) {
-        const updatedData = await quickBountyTicketStore.fetchAndSetQuickData(feature_uuid);
+        const updatedData = await quickBountyTicketStore.fetchAndSetQuickData(featureUuid);
         setData(updatedData || []);
         addSuccessToast('Ticket created successfully!');
       } else {
@@ -365,8 +382,8 @@ const HiveFeaturesView = observer(() => {
   return (
     <>
       <MainContainer>
-        <SidebarComponent uuid={workspace_uuid} />
-        <ActivitiesHeader uuid={workspace_uuid} collapsed={collapsed} />
+        <SidebarComponent uuid={workspaceUuid} />
+        <ActivitiesHeader uuid={workspaceUuid} collapsed={collapsed} />
         <ActivitiesContainer collapsed={collapsed}>
           {Object.values(groupedData).length === 0 ? (
             <p>No phases available</p>
