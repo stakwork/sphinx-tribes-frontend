@@ -8,7 +8,7 @@ import { SOCKET_MSG, createSocketInstance } from 'config/socket';
 import { Box } from '@mui/system';
 import { bountyReviewStore } from 'store/bountyReviewStore';
 import { uiStore } from 'store/ui';
-import { BountyReviewStatus } from 'store/interface';
+import { BountyReviewStatus, ProofOfWork } from 'store/interface';
 import StatusDropdown from 'components/common/ProofStatusDropDown';
 import { Button, Divider, Modal, usePaymentConfirmationModal } from '../../../../components/common';
 import { colors } from '../../../../config/colors';
@@ -138,6 +138,8 @@ function MobileView(props: CodingBountiesProps) {
   const [paymentError, setPaymentError] = useState('');
   const [isOpenProofModal, setIsOpenProofModal] = useState(false);
   const [value, setValue] = useState('');
+  const [isCompleteButtonClicked, setIsCompleteButtonClicked] = useState(false);
+  const [toastShown, setToastShown] = useState(true);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const bountyID = id?.toString() || '';
@@ -456,11 +458,20 @@ function MobileView(props: CodingBountiesProps) {
   };
 
   const updateCompletedStatus = async (created: number) => {
+    setIsCompleteButtonClicked(true);
     await main.updateBountyCompletedStatus(created);
     await bountyReviewStore.closeBountyTiming(bountyID);
     await setExtrasPropertyAndSaveMultiple('completed', {
       completed: true
     });
+
+    const proofs = bountyReviewStore.proofs[bountyID] || [];
+    await Promise.all(
+      proofs.map((proof: ProofOfWork) =>
+        bountyReviewStore.updateProofStatus(bountyID, proof.id, 'Accepted')
+      )
+    );
+    setIsCompleteButtonClicked(false);
     recallBounties();
   };
 
@@ -502,14 +513,17 @@ function MobileView(props: CodingBountiesProps) {
       console.log(proofId, status);
       await bountyReviewStore.updateProofStatus(bountyID, proofId, status);
 
-      setToasts([
-        {
-          id: `${Math.random()}`,
-          title: 'Status Updated',
-          color: 'success',
-          text: 'Proof status updated successfully'
-        }
-      ]);
+      if (!toastShown) {
+        setToasts([
+          {
+            id: `${Math.random()}`,
+            title: 'Status Updated',
+            color: 'success',
+            text: 'Proof status updated successfully'
+          }
+        ]);
+        setToastShown(false);
+      }
     } catch (error: any) {
       setToasts([
         {
@@ -636,7 +650,7 @@ function MobileView(props: CodingBountiesProps) {
 
   const { openPaymentConfirmation } = usePaymentConfirmationModal();
 
-  const confirmPaymentHandler = () => {
+  const confirmPaymentHandler = async () => {
     openPaymentConfirmation({
       onConfirmPayment: makePayment,
       children: (
@@ -648,6 +662,13 @@ function MobileView(props: CodingBountiesProps) {
         </Box>
       )
     });
+
+    const proofs = bountyReviewStore.proofs[bountyID] || [];
+    await Promise.all(
+      proofs.map((proof: ProofOfWork) =>
+        bountyReviewStore.updateProofStatus(bountyID, proof.id, 'Accepted')
+      )
+    );
   };
 
   const openModal = () => {
@@ -755,7 +776,10 @@ function MobileView(props: CodingBountiesProps) {
                   width={'100%'}
                   height={48}
                   color="withdraw"
-                  onClick={() => created && updateCompletedStatus(created)}
+                  onClick={() => {
+                    created && updateCompletedStatus(created);
+                    setToastShown(true);
+                  }}
                   style={{
                     marginBottom: '20px'
                   }}
@@ -1027,6 +1051,7 @@ function MobileView(props: CodingBountiesProps) {
                                   currentStatus={proof.status}
                                   isAssigner={isAssigner}
                                   onStatusUpdate={handleStatusUpdate}
+                                  shouldSetAccepted={isCompleteButtonClicked}
                                 />
                               </Status>
                             </div>
@@ -1192,7 +1217,10 @@ function MobileView(props: CodingBountiesProps) {
                             width={220}
                             height={48}
                             color="withdraw"
-                            onClick={() => updateCompletedStatus(created)}
+                            onClick={() => {
+                              updateCompletedStatus(created);
+                              setToastShown(true);
+                            }}
                             style={{ marginTop: '30px', marginBottom: '-20px', textAlign: 'left' }}
                             text="Complete Bounty"
                           />
@@ -1626,6 +1654,7 @@ function MobileView(props: CodingBountiesProps) {
                             currentStatus={proof.status}
                             isAssigner={isAssigner}
                             onStatusUpdate={handleStatusUpdate}
+                            shouldSetAccepted={isCompleteButtonClicked}
                           />
                         </div>
                       ))}

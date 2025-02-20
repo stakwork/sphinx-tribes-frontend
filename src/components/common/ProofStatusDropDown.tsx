@@ -12,10 +12,18 @@ interface StatusDropdownProps {
   isAssigner: boolean;
   onStatusUpdate: (proofId: string, status: BountyReviewStatus) => void;
   isMobile?: boolean;
+  shouldSetAccepted?: boolean;
 }
 
 const StatusDropdown: React.FC<StatusDropdownProps> = observer(
-  ({ proofId, currentStatus, isAssigner, onStatusUpdate, isMobile }: StatusDropdownProps) => {
+  ({
+    proofId,
+    currentStatus,
+    isAssigner,
+    onStatusUpdate,
+    isMobile,
+    shouldSetAccepted
+  }: StatusDropdownProps) => {
     const { reviewLoading } = bountyReviewStore;
     const isLoading = reviewLoading[proofId];
     const color = colors.light;
@@ -71,6 +79,14 @@ const StatusDropdown: React.FC<StatusDropdownProps> = observer(
       setNewCurrent(newStatus);
       onStatusUpdate(proofId, newStatus);
     };
+
+    React.useEffect(() => {
+      if (shouldSetAccepted) {
+        const acceptedStatus = 'Accepted' as BountyReviewStatus;
+        setNewCurrent(acceptedStatus);
+        onStatusUpdate(proofId, acceptedStatus);
+      }
+    }, [shouldSetAccepted, proofId, onStatusUpdate]);
 
     return (
       <div
