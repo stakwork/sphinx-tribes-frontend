@@ -152,16 +152,16 @@ const DraftButton = styled.button`
 `;
 
 interface HiveFeaturesViewProps {
-  features: Array<{
-    id: string;
-    title: string;
-    icon: string;
-    description: string;
-    status: string;
+  features?: Array<{
+    id?: string;
+    title?: string;
+    icon?: string;
+    description?: string;
+    status?: string;
   }>;
-  isLoading: boolean;
-  error: string | null;
-  onFeatureClick: (featureId: string) => void;
+  isLoading?: boolean;
+  error?: string | null;
+  onFeatureClick?: (featureId: string) => void;
 }
 
 const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
