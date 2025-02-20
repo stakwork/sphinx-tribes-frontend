@@ -20,7 +20,6 @@ import {
 import { Toast } from '../interface.ts';
 import ActivitiesHeader from './header';
 
-
 const TableContainer = styled.div`
   background: white;
   padding: 20px;
@@ -381,18 +380,22 @@ const HiveFeaturesView = observer(() => {
                 return (
                   <div key={index}>
                     <PhaseHeader onClick={() => togglePhase(phaseID)} style={{ cursor: 'pointer' }}>
-                      <div style={{ 
-                        display: 'flex',
-                        alignItems: 'center',
-                        minWidth: 0,
-                        flexGrow: 1
-                      }}>
-                        <span style={{ 
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          minWidth: 0
-                        }}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          minWidth: 0,
+                          flexGrow: 1
+                        }}
+                      >
+                        <span
+                          style={{
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            minWidth: 0
+                          }}
+                        >
                           Phase {index + 1}: {phaseNames[phaseID] || 'Untitled Phase'}
                         </span>
                       </div>

@@ -35,85 +35,91 @@ describe('HiveFeaturesView Component Tests', () => {
 
   test('Renders "No phases available" when no data', async () => {
     (quickBountyTicketStore.fetchAndSetQuickData as jest.Mock).mockResolvedValue([]);
-    
+
     render(<HiveFeaturesView />);
-    
+
     await waitFor(() => {
       expect(screen.getByText('No phases available')).toBeInTheDocument();
     });
   });
 
   test('Renders phase headers when data exists', async () => {
-    const mockData = [{
-      ID: 1,
-      phaseID: 'phase1',
-      Title: 'Test Ticket',
-      status: 'TODO',
-      assignedAlias: 'Test User'
-    }];
-    
+    const mockData = [
+      {
+        ID: 1,
+        phaseID: 'phase1',
+        Title: 'Test Ticket',
+        status: 'TODO',
+        assignedAlias: 'Test User'
+      }
+    ];
+
     (quickBountyTicketStore.fetchAndSetQuickData as jest.Mock).mockResolvedValue(mockData);
     (mainStore.getFeaturePhaseByUUID as jest.Mock).mockResolvedValue({ name: 'Test Phase' });
 
     render(<HiveFeaturesView />);
-    
+
     await waitFor(() => {
       expect(screen.getByText(/Phase 1: Test Phase/)).toBeInTheDocument();
     });
   });
 
   test('Toggles phase expansion when clicking header', async () => {
-    const mockData = [{
-      ID: 1,
-      phaseID: 'phase1',
-      Title: 'Test Ticket',
-      status: 'TODO',
-      assignedAlias: 'Test User'
-    }];
-    
+    const mockData = [
+      {
+        ID: 1,
+        phaseID: 'phase1',
+        Title: 'Test Ticket',
+        status: 'TODO',
+        assignedAlias: 'Test User'
+      }
+    ];
+
     (quickBountyTicketStore.fetchAndSetQuickData as jest.Mock).mockResolvedValue(mockData);
     (mainStore.getFeaturePhaseByUUID as jest.Mock).mockResolvedValue({ name: 'Test Phase' });
 
     render(<HiveFeaturesView />);
-    
+
     await waitFor(() => {
       const header = screen.getByText(/Phase 1: Test Phase/);
       fireEvent.click(header);
       expect(screen.getByText('Test Ticket')).toBeInTheDocument();
-      
+
       fireEvent.click(header);
       expect(screen.queryByText('Test Ticket')).not.toBeInTheDocument();
     });
   });
 
   test('Shows draft input and creates ticket', async () => {
-    const mockData = [{
-      ID: 1,
-      phaseID: 'phase1',
-      Title: 'Test Ticket',
-      status: 'TODO',
-      assignedAlias: 'Test User'
-    }];
-    
+    const mockData = [
+      {
+        ID: 1,
+        phaseID: 'phase1',
+        Title: 'Test Ticket',
+        status: 'TODO',
+        assignedAlias: 'Test User'
+      }
+    ];
+
     (quickBountyTicketStore.fetchAndSetQuickData as jest.Mock)
       .mockResolvedValueOnce(mockData)
       .mockResolvedValueOnce(mockData);
-      
+
     (mainStore.getFeaturePhaseByUUID as jest.Mock).mockResolvedValue({ name: 'Test Phase' });
     jest.spyOn(mainStore, 'createUpdateTicket').mockResolvedValue({ UUID: 'new-ticket' });
 
     render(<HiveFeaturesView />);
-    
+
     await waitFor(async () => {
       const header = screen.getByText(/Phase 1: Test Phase/);
       fireEvent.click(header);
-      
+
       const input = screen.getByPlaceholderText('Quick draft a new ticket...');
       fireEvent.change(input, { target: { value: 'New Ticket Draft' } });
-      
+
       const draftButton = screen.getByText('Draft');
       fireEvent.click(draftButton);
-      
+
       await waitFor(() => {
         expect(mainStore.createUpdateTicket).toHaveBeenCalled();
       });
