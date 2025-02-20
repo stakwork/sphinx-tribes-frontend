@@ -87,7 +87,7 @@ const MainContainer = styled.div`
 `;
 
 const HiveFeaturesView = observer(() => {
-  const { uuid, feature_uuid, workspace_uuid } = useParams<{
+  const { feature_uuid, workspace_uuid } = useParams<{
     uuid: string;
     feature_uuid: string;
     workspace_uuid: string;

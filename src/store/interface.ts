@@ -688,3 +688,17 @@ export interface QuickTicketsResponse {
   phases: { [key: string]: QuickTicketItem[] };
   unphased: QuickTicketItem[];
 }
+
+export interface TicketToBounty {
+  ticketUUID: string;
+}
+
+export interface BulkConversionPayload {
+  tickets_to_bounties: TicketToBounty[];
+}
+
+export interface BulkConversionResponse {
+  success: boolean;
+  message?: string;
+  converted_bounties?: number[];
+}
