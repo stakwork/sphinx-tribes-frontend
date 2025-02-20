@@ -506,6 +506,43 @@ const PhasePlannerView: React.FC = observer(() => {
     }
   };
 
+  useEffect(() => {
+    const refreshPhaseData = async () => {
+      try {
+        const updatedTickets = await getPhaseTickets();
+        if (Array.isArray(updatedTickets)) {
+          phaseTicketStore.clearPhaseTickets(phase_uuid);
+          for (const ticket of updatedTickets) {
+            if (ticket.UUID) {
+              ticket.uuid = ticket.UUID;
+            }
+            phaseTicketStore.addTicket(ticket);
+          }
+        }
+      } catch (error) {
+        console.error('Error refreshing phase data:', error);
+      }
+    };
+
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === 'visible') {
+        await refreshPhaseData();
+      }
+    };
+
+    const handleFocus = async () => {
+      await refreshPhaseData();
+    };
+
+    window.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      window.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [getPhaseTickets, phase_uuid]);
+
   const toastsEl = (
     <EuiGlobalToastList toasts={toasts} dismissToast={() => setToasts([])} toastLifeTimeMs={3000} />
   );
