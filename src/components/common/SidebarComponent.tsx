@@ -18,7 +18,6 @@ import { Feature, Workspace } from 'store/interface';
 import styled from 'styled-components';
 import { colors } from '../../config/colors';
 import avatarIcon from '../../public/static/profile_avatar.svg';
-import WorkspaceBudget from '../../people/widgetViews/workspace/WorkspaceBudget.tsx';
 
 const color = colors['light'];
 
@@ -122,10 +121,6 @@ const WorkspaceHeader = styled.div`
   padding-bottom: 10px;
 `;
 
-const IconWrapper = styled.div`
-  margin-bottom: 4px;
-`;
-
 const WorkspaceTitle = styled.div<{ collapsed: boolean }>`
   display: flex;
   align-items: center;
@@ -179,7 +174,6 @@ export default function SidebarComponent({
   const [isLoading, setIsLoading] = useState(false);
   const [featureModal, setFeatureModal] = useState(false);
 
-  const user_pubkey = ui.meInfo?.owner_pubkey;
   const getUserWorkspaces = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -356,10 +350,8 @@ export default function SidebarComponent({
                 onClick={() => handleWorkspaceClick(workspace.uuid)}
                 collapsed={collapsed}
               >
-                <IconWrapper>
-                  <MaterialIcon icon="folder" />
-                </IconWrapper>
-                <WorkspaceBudget org={workspace} user_pubkey={user_pubkey ?? ''} />
+                <MaterialIcon icon="folder" />
+                <span>{workspace.name}</span>
               </NavItem>
             ))}
           </div>
