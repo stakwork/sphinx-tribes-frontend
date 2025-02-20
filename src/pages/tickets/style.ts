@@ -10,6 +10,10 @@ interface EditPopoverTailProps {
   left?: string;
 }
 
+interface BountyOptionsWrapProps {
+  $collapsed?: boolean; // Using $ prefix to avoid DOM attribute warning
+}
+
 export const Body = styled.div`
   flex: 1;
   height: calc(100vh - 60px);
@@ -240,14 +244,15 @@ export const OptionsWrap = styled.div`
   }
 `;
 
-export const BountyOptionsWrap = styled.div`
+export const BountyOptionsWrap = styled.div<BountyOptionsWrapProps>`
   position: absolute;
-  margin-left: 60%;
+  margin-left: ${({ $collapsed }: BountyOptionsWrapProps) => ($collapsed ? '58%' : '63%')};
   margin-bottom: 1% !important;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
+  transition: margin-left 0.3s ease-in-out;
 
   button {
     border: 0.5px solid #000000;
