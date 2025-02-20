@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { v4 as uuidv4 } from 'uuid';
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, useRef } from 'react';
 import { UiStore } from 'store/ui';
 import { useDropzone } from 'react-dropzone';
 import { useStores } from 'store';
@@ -51,10 +51,9 @@ export const TicketTextAreaComp = ({
 }: TicketTextAreaProps) => {
   const { main } = useStores();
 
-  const textareaValue = () => {
-    const textArea = document.querySelector('textarea');
-    return textArea?.value || '';
-  };
+  const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  const textareaValue = () => textAreaRef.current?.value || '';
 
   const handleFailurePlaceHolder = (placeholder: string) => {
     const failurePlaceholder = `![Upload failed]()\n`;
@@ -90,23 +89,23 @@ export const TicketTextAreaComp = ({
 
   const handleImageUpload = async (file: File) => {
     const uniqueId = uuidv4();
-    const placeholder = `![Uploading ${uniqueId}...]()\n`;
+    const placeholderText = `![Uploading ${uniqueId}...]()\n`;
 
-    const textArea = document.querySelector('textarea');
-
-    const cursorPosition = textArea?.selectionStart || textArea?.value.length || value.length;
-    const newValue =
-      textareaValue().slice(0, cursorPosition) +
-      placeholder +
-      textareaValue().slice(cursorPosition);
-    onChange(newValue);
-
-    try {
-      uploadImage(file, placeholder);
-    } catch (error) {
-      const failurePlaceholder = `![Failed to upload ${uniqueId}...]()\n`;
-      const updatedValue = textareaValue().replace(placeholder, failurePlaceholder);
-      onChange(updatedValue);
+    if (textAreaRef.current) {
+      const cursorPosition = textAreaRef.current.selectionStart || textAreaRef.current.value.length;
+      const currentValue = textareaValue();
+      const newValue =
+        currentValue.slice(0, cursorPosition) +
+        placeholderText +
+        currentValue.slice(cursorPosition);
+      onChange(newValue);
+      try {
+        await uploadImage(file, placeholderText);
+      } catch (error) {
+        const failurePlaceholder = `![Failed to upload ${uniqueId}...]()\n`;
+        const updatedValue = textareaValue().replace(placeholderText, failurePlaceholder);
+        onChange(updatedValue);
+      }
     }
   };
 
@@ -165,6 +164,7 @@ export const TicketTextAreaComp = ({
     <div {...getRootProps()}>
       <input {...getInputProps()} />
       <StyledTextArea
+        ref={textAreaRef}
         value={value}
         onChange={(e: ChangeEvent<HTMLTextAreaElement>) => onChange(e.target.value)}
         onPaste={handlePaste}
