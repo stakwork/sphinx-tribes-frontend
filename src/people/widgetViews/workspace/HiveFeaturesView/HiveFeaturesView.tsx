@@ -9,12 +9,17 @@ import SidebarComponent from 'components/common/SidebarComponent';
 import { useHistory } from 'react-router';
 import { EuiGlobalToastList } from '@elastic/eui';
 import { Author, TicketStatus } from 'store/interface.ts';
+import { createSocketInstance } from 'config/socket';
+import { SOCKET_MSG } from 'config/socket';
+import { uiStore } from 'store/ui';
+import { v4 as uuidv4 } from 'uuid';
 import {
   QuickBountyTicket,
   quickBountyTicketStore
 } from '../../../../store/quickBountyTicketStore.tsx';
 import { Toast } from '../interface.ts';
 import ActivitiesHeader from './header';
+
 
 const TableContainer = styled.div`
   background: white;
@@ -32,6 +37,10 @@ const PhaseHeader = styled.h3`
   font-weight: 500;
   margin-bottom: 0;
   padding-left: 10px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: center;
 `;
 
 const Table = styled.table`
@@ -61,8 +70,10 @@ const Td = styled.td`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 0;
   &:first-child {
     width: 60%;
+    max-width: 60%;
   }
   &:nth-child(2) {
     width: 20%;
@@ -155,6 +166,9 @@ const HiveFeaturesView = observer(() => {
   const { main } = useStores();
   const [draftTexts, setDraftTexts] = useState<{ [phaseID: string]: string }>({});
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const [websocketSessionId, setWebsocketSessionId] = useState<string>('');
+
+  console.log('main', main.meInfo);
 
   useEffect(() => {
     const handleCollapseChange = (e: Event) => {
@@ -205,6 +219,38 @@ const HiveFeaturesView = observer(() => {
   useEffect(() => {
     localStorage.setItem(`expandedPhases_${feature_uuid}`, JSON.stringify(expandedPhases));
   }, [expandedPhases, feature_uuid]);
+
+  useEffect(() => {
+    const socket = createSocketInstance();
+
+    socket.onopen = () => {
+      console.log('Socket connected in Hive Features View');
+    };
+
+    socket.onmessage = async (event: MessageEvent) => {
+      try {
+        const data = JSON.parse(event.data);
+
+        if (data.msg === SOCKET_MSG.user_connect) {
+          const sessionId = data.body || localStorage.getItem('websocket_token');
+          setWebsocketSessionId(sessionId);
+          console.log(`Websocket Session ID: ${sessionId}`);
+        }
+      } catch (error) {
+        console.error('Error processing websocket message:', error);
+      }
+    };
+
+    socket.onclose = () => {
+      console.log('Socket disconnected in Hive Features View');
+    };
+
+    return () => {
+      if (socket.readyState === WebSocket.OPEN) {
+        socket.close();
+      }
+    };
+  }, []);
 
   const togglePhase = (phaseID: string) => {
     setExpandedPhases((prev) => ({
@@ -259,33 +305,39 @@ const HiveFeaturesView = observer(() => {
   };
 
   const handleCreateTicket = async (phaseID: string) => {
+    console.log('Create ticket clicked for phase:', phaseID);
     const text = draftTexts[phaseID];
-    if (!text) return;
+    if (!text) {
+      console.log('No text found for phase:', phaseID);
+      return;
+    }
 
     try {
-      if (!main.meInfo) return;
-      const info = main.meInfo;
+      if (!uiStore.meInfo?.pubkey) {
+        console.log('No user info found');
+        return;
+      }
+
+      console.log('Creating ticket with text:', text, uiStore.meInfo?.pubkey);
 
       const ticketPayload = {
         metadata: {
           source: 'hive-features-view',
-          id: ''
+          id: websocketSessionId
         },
         ticket: {
           name: text,
           description: text,
           status: 'DRAFT' as TicketStatus,
           author: 'HUMAN' as Author,
-          author_id: info.pubkey,
+          author_id: uiStore.meInfo?.pubkey,
           feature_uuid: feature_uuid,
           phase_uuid: phaseID,
-          uuid: '',
+          uuid: uuidv4(),
           sequence: 0,
           version: 0
         }
       };
-
-      console.log('Ticket payload:', ticketPayload);
 
       const response = await main.createUpdateTicket(ticketPayload);
 
@@ -329,8 +381,22 @@ const HiveFeaturesView = observer(() => {
                 return (
                   <div key={index}>
                     <PhaseHeader onClick={() => togglePhase(phaseID)} style={{ cursor: 'pointer' }}>
-                      Phase {index + 1}: {phaseNames[phaseID] || 'Untitled Phase'}
-                      <span style={{ float: 'right' }}>{isExpanded ? '▼' : '▶'}</span>
+                      <div style={{ 
+                        display: 'flex',
+                        alignItems: 'center',
+                        minWidth: 0,
+                        flexGrow: 1
+                      }}>
+                        <span style={{ 
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          minWidth: 0
+                        }}>
+                          Phase {index + 1}: {phaseNames[phaseID] || 'Untitled Phase'}
+                        </span>
+                      </div>
+                      <span>{isExpanded ? '▼' : '▶'}</span>
                     </PhaseHeader>
                     {isExpanded && (
                       <>
@@ -368,12 +434,14 @@ const HiveFeaturesView = observer(() => {
                             value={draftText}
                             onChange={(e) => handleDraftChange(phaseID, e.target.value)}
                           />
-                          <DraftButton
-                            onClick={() => handleCreateTicket(phaseID)}
-                            disabled={!draftText}
-                          >
-                            Draft
-                          </DraftButton>
+                          {draftText && (
+                            <DraftButton
+                              onClick={() => handleCreateTicket(phaseID)}
+                              disabled={!draftText}
+                            >
+                              Draft
+                            </DraftButton>
+                          )}
                         </DraftInputContainer>
                       </>
                     )}
