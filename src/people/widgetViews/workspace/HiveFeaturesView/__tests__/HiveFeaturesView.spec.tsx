@@ -4,7 +4,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { mainStore } from 'store/main';
 import { useParams } from 'react-router-dom';
 import { quickBountyTicketStore } from 'store/quickBountyTicketStore';
-import HiveFeaturesView from '../HiveFeaturesView/HiveFeaturesView';
+import HiveFeaturesView from '../HiveFeaturesView';
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -15,8 +15,19 @@ jest.mock('react-router-dom', () => ({
 jest.mock('store/main', () => ({
   mainStore: {
     getFeaturePhaseByUUID: jest.fn(),
-    meInfo: { pubkey: 'test-pubkey' }
-  },
+    meInfo: { pubkey: 'test-pubkey' },
+    createUpdateTicket: jest.fn(),
+    workspaces: [
+      {
+        id: 'workspace-1',
+        uuid: 'test-workspace-uuid',
+        name: 'Test Workspace'
+      }
+    ]
+  }
+}));
+
+jest.mock('store/quickBountyTicketStore', () => ({
   quickBountyTicketStore: {
     fetchAndSetQuickData: jest.fn()
   }
@@ -106,7 +117,7 @@ describe('HiveFeaturesView Component Tests', () => {
       .mockResolvedValueOnce(mockData);
 
     (mainStore.getFeaturePhaseByUUID as jest.Mock).mockResolvedValue({ name: 'Test Phase' });
-    jest.spyOn(mainStore, 'createUpdateTicket').mockResolvedValue({ UUID: 'new-ticket' });
+    (mainStore.createUpdateTicket as jest.Mock).mockResolvedValue({ UUID: 'new-ticket' });
 
     render(<HiveFeaturesView />);
 
