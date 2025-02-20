@@ -6,7 +6,17 @@ import { BountyStatus, Feature, Ticket, TicketMessage, TicketStatus } from 'stor
 import MaterialIcon from '@material/react-material-icon';
 import TicketEditor from 'components/common/TicketEditor/TicketEditor';
 import { useStores } from 'store';
-import { EuiDragDropContext, EuiDroppable, EuiDraggable, EuiGlobalToastList } from '@elastic/eui';
+import {
+  EuiDragDropContext,
+  EuiDroppable,
+  EuiDraggable,
+  EuiGlobalToastList,
+  EuiModal,
+  EuiModalHeader,
+  EuiModalHeaderTitle,
+  EuiModalBody,
+  EuiModalFooter
+} from '@elastic/eui';
 import { v4 as uuidv4 } from 'uuid';
 import {
   FeatureBody,
@@ -24,7 +34,7 @@ import SidebarComponent from 'components/common/SidebarComponent.tsx';
 import styled from 'styled-components';
 import { phaseTicketStore } from '../../store/phase';
 import StakworkLogsPanel from '../../components/common/TicketEditor/StakworkLogsPanel.tsx';
-import { useFeatureFlag } from '../../hooks/useFeatureFlag.ts';
+import { useFeatureFlag } from '../../hooks/useFeatureFlag';
 import {
   FeatureHeadNameWrap,
   FeatureHeadWrap,
@@ -54,6 +64,23 @@ const MainContent = styled.div<{ collapsed: boolean }>`
   margin-left: ${({ collapsed }) => (collapsed ? '60px' : '250px')};
   transition: margin-left 0.3s ease-in-out;
   width: ${({ collapsed }) => (collapsed ? 'calc(100% - 60px)' : 'calc(100% - 250px)')};
+`;
+
+const BulkConvertButton = styled(ActionButton)`
+  margin: 10px 0;
+  background-color: #49c998 !important;
+  width: 300px;
+
+  &:hover {
+    background-color: #3ab583 !important;
+    color: white;
+  }
+
+  &:disabled {
+    background-color: rgba(73, 201, 152, 0.5) !important;
+    border: none;
+    color: white;
+  }
 `;
 
 const PhasePlannerView: React.FC = observer(() => {
@@ -86,6 +113,9 @@ const PhasePlannerView: React.FC = observer(() => {
   const { isEnabled } = useFeatureFlag('display_planner_logs');
   const [collapsed, setCollapsed] = useState(false);
   const [selectedTickets, setSelectedTickets] = useState<Record<string, boolean>>({});
+  const { isEnabled: isBulkCreateEnabled } = useFeatureFlag('bulk_ticket_create');
+  const [isConversionModalOpen, setIsConversionModalOpen] = useState(false);
+  const [isConverting, setIsConverting] = useState(false);
 
   const handleSelectTicket = (ticketId: string) => {
     setSelectedTickets((prev) => ({
@@ -523,6 +553,59 @@ const PhasePlannerView: React.FC = observer(() => {
     };
   }, []);
 
+  const selectedTicketCount = Object.values(selectedTickets).filter(Boolean).length;
+
+  const handleBulkConvert = async () => {
+    if (isConverting) return;
+    setIsConverting(true);
+
+    try {
+      const ticketsToConvert = Object.entries(selectedTickets)
+        .filter(([, isSelected]) => isSelected)
+        .map(([uuid]) => ({ ticketUUID: uuid }));
+
+      const response = await main.convertTicketsToBounties({
+        tickets_to_bounties: ticketsToConvert
+      });
+
+      if (response?.success) {
+        setToasts([
+          {
+            id: `${Date.now()}-bulk-convert-success`,
+            title: 'Success',
+            color: 'success',
+            text: 'Successfully converted tickets to bounties'
+          }
+        ]);
+
+        setSelectedTickets({});
+
+        const phaseTickets = await getPhaseTickets();
+        if (Array.isArray(phaseTickets)) {
+          phaseTicketStore.clearPhaseTickets(phase_uuid);
+          for (const ticket of phaseTickets) {
+            phaseTicketStore.addTicket(ticket);
+          }
+        }
+      } else {
+        throw new Error(response?.message || 'Failed to convert tickets');
+      }
+    } catch (error) {
+      console.error('Error in bulk conversion:', error);
+      setToasts([
+        {
+          id: `${Date.now()}-bulk-convert-error`,
+          title: 'Error',
+          color: 'danger',
+          text: 'Failed to convert tickets to bounties'
+        }
+      ]);
+    } finally {
+      setIsConverting(false);
+      setIsConversionModalOpen(false);
+    }
+  };
+
   return (
     <MainContent collapsed={collapsed}>
       <FeatureBody>
@@ -622,6 +705,15 @@ const PhasePlannerView: React.FC = observer(() => {
                 </Data>
               </FieldWrap>
 
+              {isBulkCreateEnabled && selectedTicketCount >= 2 && (
+                <BulkConvertButton
+                  onClick={() => setIsConversionModalOpen(true)}
+                  disabled={isConverting}
+                >
+                  Convert Selected to Bounties ({selectedTicketCount})
+                </BulkConvertButton>
+              )}
+
               <EuiDragDropContext onDragEnd={onDragEnd}>
                 <EuiDroppable droppableId="ticketDroppable" spacing="m">
                   {phaseTicketStore
@@ -701,6 +793,93 @@ const PhasePlannerView: React.FC = observer(() => {
             </PhaseFlexContainer>
           </FieldWrap>
           {isEnabled && <StakworkLogsPanel swwfLinks={swwfLinks} logs={logs} setLogs={setLogs} />}
+          {isConversionModalOpen && (
+            <EuiModal
+              onClose={() => setIsConversionModalOpen(false)}
+              maxWidth={500}
+              style={{
+                backgroundColor: 'white',
+                color: '#333',
+                borderRadius: '8px',
+                padding: '24px'
+              }}
+            >
+              <EuiModalHeader>
+                <EuiModalHeaderTitle style={{ color: '#333' }}>
+                  Convert Tickets to Bounties
+                </EuiModalHeaderTitle>
+              </EuiModalHeader>
+
+              <EuiModalBody>
+                <p style={{ color: '#333', marginBottom: '16px' }}>
+                  Are you sure you want to convert these {selectedTicketCount} tickets to bounties?
+                </p>
+                <ul
+                  style={{
+                    listStyle: 'none',
+                    padding: '0',
+                    margin: '0'
+                  }}
+                >
+                  {Object.entries(selectedTickets)
+                    .filter(([, isSelected]) => isSelected)
+                    .map(([uuid]) => {
+                      const ticket = tickets.find((t) => t.uuid === uuid);
+                      return ticket ? (
+                        <li
+                          key={uuid}
+                          style={{
+                            padding: '8px 0',
+                            borderBottom: '1px solid #eee',
+                            color: '#333'
+                          }}
+                        >
+                          {ticket.name || 'Unnamed Ticket'}
+                        </li>
+                      ) : null;
+                    })}
+                </ul>
+              </EuiModalBody>
+
+              <EuiModalFooter
+                style={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: '15px'
+                }}
+              >
+                <ActionButton
+                  onClick={() => setIsConversionModalOpen(false)}
+                  color="cancel"
+                  style={{
+                    backgroundColor: '#f5f5f5',
+                    color: '#333',
+                    border: '1px solid #ddd',
+                    padding: '8px 24px',
+                    borderRadius: '4px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Cancel
+                </ActionButton>
+                <ActionButton
+                  color="primary"
+                  onClick={handleBulkConvert}
+                  disabled={isConverting}
+                  style={{
+                    backgroundColor: '#618aff',
+                    color: 'white',
+                    border: 'none',
+                    padding: '8px 24px',
+                    borderRadius: '4px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {isConverting ? 'Converting...' : 'Convert'}
+                </ActionButton>
+              </EuiModalFooter>
+            </EuiModal>
+          )}
         </FeatureDataWrap>
         {toastsEl}
       </FeatureBody>

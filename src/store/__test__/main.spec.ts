@@ -3770,7 +3770,7 @@ describe('convertTicketsToBounties', () => {
 
     const result = await mainStore.convertTicketsToBounties(emptyPayload);
     waitFor(() => {
-      expect(result?.converted_bounties).toEqual([]);
+      expect(result?.results).toEqual([]);
     });
   });
 
@@ -3794,7 +3794,7 @@ describe('convertTicketsToBounties', () => {
 
     const result = await mainStore.convertTicketsToBounties(multiPayload);
     waitFor(() => {
-      expect(result?.converted_bounties?.length).toBe(3);
+      expect(result?.results.length).toBe(3);
     });
   });
 });

@@ -58,8 +58,8 @@ import {
   INewActivity,
   QuickBountiesResponse,
   QuickTicketsResponse,
-  BulkConversionPayload,
-  BulkConversionResponse
+  BulkConversionResponse,
+  BulkTicketToBountyRequest
 } from './interface';
 
 function makeTorSaveURL(host: string, key: string) {
@@ -4690,7 +4690,7 @@ export class MainStore {
   }
 
   async convertTicketsToBounties(
-    payload: BulkConversionPayload
+    payload: BulkTicketToBountyRequest
   ): Promise<BulkConversionResponse | null> {
     try {
       if (!uiStore.meInfo) return null;
