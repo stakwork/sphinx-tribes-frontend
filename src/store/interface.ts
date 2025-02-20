@@ -689,16 +689,22 @@ export interface QuickTicketsResponse {
   unphased: QuickTicketItem[];
 }
 
-export interface TicketToBounty {
+export interface TicketToBountyItem {
   ticketUUID: string;
 }
 
-export interface BulkConversionPayload {
-  tickets_to_bounties: TicketToBounty[];
+export interface BulkTicketToBountyRequest {
+  tickets_to_bounties: TicketToBountyItem[];
+}
+
+export interface BulkConversionResult {
+  bounty_id?: number;
+  success: boolean;
+  message: string;
 }
 
 export interface BulkConversionResponse {
+  results: BulkConversionResult[];
   success: boolean;
-  message?: string;
-  converted_bounties?: number[];
+  message: string;
 }
