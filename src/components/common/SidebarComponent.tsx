@@ -156,13 +156,17 @@ const WorkspaceName = styled.span<{ collapsed: boolean }>`
 
 interface SidebarComponentProps {
   uuid?: string;
+  defaultCollapsed?: boolean;
 }
 
-export default function SidebarComponent({ uuid }: SidebarComponentProps) {
+export default function SidebarComponent({
+  uuid,
+  defaultCollapsed = false
+}: SidebarComponentProps) {
   const { ui, main } = useStores();
-  const [activeItem, setActiveItem] = useState('activities');
+  const [activeItem, setActiveItem] = useState<'activities' | 'settings' | 'feature' | null>(null);
   const [features, setFeatures] = useState<Feature[]>([]);
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(defaultCollapsed);
   const history = useHistory();
   const [isFeaturesExpanded, setIsFeaturesExpanded] = useState(true);
   const [isWorkspaceExpanded, setIsWorkspaceExpanded] = useState(false);
@@ -190,12 +194,26 @@ export default function SidebarComponent({ uuid }: SidebarComponentProps) {
     getUserWorkspaces();
   }, [getUserWorkspaces]);
 
-  const handleItemClick = (item: string) => {
-    setActiveItem(item);
-  };
+  useEffect(() => {
+    const path = window.location.pathname;
+    if (path.includes('/activities')) {
+      setActiveItem('activities');
+    } else if (path === `/workspace/${uuid}`) {
+      setActiveItem('settings');
+    } else if (path.includes('/feature/')) {
+      setActiveItem('feature');
+    } else {
+      setActiveItem(null);
+    }
+  }, [uuid]);
 
-  const handleOpenWorkspace = () => {
-    history.push(`/workspace/${uuid}`);
+  const handleItemClick = (item: 'activities' | 'settings') => {
+    setActiveItem(item);
+    if (item === 'activities') {
+      history.push(`/workspace/${uuid}/activities`);
+    } else if (item === 'settings') {
+      history.push(`/workspace/${uuid}`);
+    }
   };
 
   const handleReorderFeatures = async (feat: Feature, priority: number) => {
@@ -305,7 +323,12 @@ export default function SidebarComponent({ uuid }: SidebarComponentProps) {
         <MaterialIcon icon="home" />
         <span>Activities</span>
       </NavItem>
-      <NavItem onClick={handleOpenWorkspace} collapsed={collapsed}>
+
+      <NavItem
+        active={activeItem === 'settings'}
+        onClick={() => handleItemClick('settings')}
+        collapsed={collapsed}
+      >
         <MaterialIcon icon="settings" />
         <span>Settings</span>
       </NavItem>
@@ -369,9 +392,15 @@ export default function SidebarComponent({ uuid }: SidebarComponentProps) {
                     >
                       {(provided: any) => (
                         <NavItem
-                          onClick={() => history.push(`/feature/${feat.uuid}`)}
+                          onClick={() => {
+                            setActiveItem('feature');
+                            history.push(`/feature/${feat.uuid}`);
+                          }}
                           key={feat.id}
                           collapsed={collapsed}
+                          active={
+                            activeItem === 'feature' && window.location.pathname.includes(feat.uuid)
+                          }
                         >
                           <MissionRowFlex>
                             <MaterialIcon
