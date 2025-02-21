@@ -272,9 +272,6 @@ const WorkspaceTicketView: React.FC = observer(() => {
     }
   }, [ticketId, main]);
 
-  const handleClose = () => {
-    history.push(`/workspace/${workspaceId}/planner`);
-  };
 
   const getTickets = async () => {
     const ticket = workspaceTicketStore.getTicket(currentTicketId);
@@ -413,6 +410,14 @@ const WorkspaceTicketView: React.FC = observer(() => {
     };
   }, []);
 
+  const handleClose = () => {
+    if (currentTicket?.feature_uuid) {
+      history.push(`/workspace/${workspaceId}/feature/${currentTicket?.feature_uuid}`);
+    } else {
+      history.push(`/workspace/${workspaceId}/planner`);
+    }
+  };
+  
   if (isLoading) {
     return (
       <MainContent collapsed={collapsed}>
