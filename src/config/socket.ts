@@ -1,10 +1,17 @@
 import { v4 as uuidv4 } from 'uuid';
 import { getHost } from './host';
 
-export const URL =
-  process.env.NODE_ENV !== 'development'
+export const URL = (() => {
+  const isCodespaces = window.location.hostname.includes('app.github.dev');
+
+  if (isCodespaces) {
+    return `wss://${getHost()}/websocket`;
+  }
+
+  return process.env.NODE_ENV !== 'development'
     ? `wss://${getHost()}/websocket`
     : `ws://${getHost()}/websocket`;
+})();
 
 export const SOCKET_MSG = {
   keysend_error: 'keysend_error',
