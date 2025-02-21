@@ -67,32 +67,42 @@ const WorkspaceTicketCreateView: React.FC = observer(() => {
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [workspace, setWorkspace] = useState<any>(null);
   const [collapsed, setCollapsed] = useState(false);
+  const [ticketGroupId] = useState(uuidv4());
 
-  const DEFAULT_TICKET: Ticket = {
-    uuid: '',
-    name: '',
-    sequence: 1,
-    dependency: [],
-    description: '',
-    status: 'DRAFT' as TicketStatus,
-    version: 1,
-    feature_uuid: '',
-    phase_uuid: '',
-    category: '',
-    amount: 0,
-    ticket_group: '',
-    author: 'HUMAN' as Author,
-    author_id: ''
-  };
+  const defaultTicket = useMemo(
+    () => ({
+      uuid: uuidv4(),
+      name: '',
+      sequence: 1,
+      dependency: [],
+      description: '',
+      status: 'DRAFT' as TicketStatus,
+      version: 1,
+      feature_uuid: selectedFeature,
+      phase_uuid: selectedPhase,
+      category: '',
+      amount: 0,
+      ticket_group: ticketGroupId,
+      author: 'HUMAN' as Author,
+      author_id: ''
+    }),
+    [selectedFeature, selectedPhase, ticketGroupId]
+  );
+
+  useEffect(() => {
+    phaseTicketStore.addTicket(defaultTicket);
+    return () => phaseTicketStore.clearPhaseTickets(defaultTicket.uuid);
+  }, [defaultTicket]);
 
   const emptyTicket = useMemo(
     () => ({
-      ...DEFAULT_TICKET,
+      ...defaultTicket,
       uuid: uuidv4(),
       feature_uuid: selectedFeature,
-      phase_uuid: selectedPhase
+      phase_uuid: selectedPhase,
+      ticket_group: ticketGroupId
     }),
-    [selectedFeature, selectedPhase]
+    [defaultTicket, selectedFeature, selectedPhase, ticketGroupId]
   );
 
   useEffect(() => {
@@ -279,7 +289,10 @@ const WorkspaceTicketCreateView: React.FC = observer(() => {
     };
   }, [main]);
 
-  const getPhaseTickets = useCallback(async () => [emptyTicket], [emptyTicket]);
+  const getPhaseTickets = useCallback(async () => {
+    const storeTickets = phaseTicketStore.getPhaseTickets(selectedPhase);
+    return [...storeTickets, defaultTicket];
+  }, [selectedPhase, defaultTicket]);
 
   const handleFeatureChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const featureUuid = e.target.value;
@@ -415,6 +428,7 @@ const WorkspaceTicketCreateView: React.FC = observer(() => {
                 index={0}
                 selectedTickets={{}}
                 onSelectTicket={() => {}}
+                showCheckbox={false}
               />
             </PhaseFlexContainer>
           </FieldWrap>

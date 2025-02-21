@@ -748,6 +748,7 @@ const PhasePlannerView: React.FC = observer(() => {
                               showVersionSelector={true}
                               showDragHandle={true}
                               showSWWFLink={true}
+                              showCheckbox={true}
                             />
                           </div>
                         )}

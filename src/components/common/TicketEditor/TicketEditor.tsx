@@ -60,6 +60,7 @@ interface TicketEditorProps {
   showDragHandle?: boolean;
   showSWWFLink?: boolean;
   onTicketUpdate?: (updatedTicket: Ticket) => void;
+  showCheckbox?: boolean;
 }
 
 const SwitcherContainer = styled.div`
@@ -234,11 +235,10 @@ const TicketEditor = observer(
     selectedTickets,
     onSelectTicket,
     collapsed,
-    showFeaturePhaseDropdowns,
     showVersionSelector,
     showDragHandle,
     showSWWFLink,
-    onTicketUpdate
+    showCheckbox = true
   }: TicketEditorProps) => {
     const [toasts, setToasts] = useState<Toast[]>([]);
     const [versions, setVersions] = useState<number[]>([]);
@@ -603,11 +603,13 @@ const TicketEditor = observer(
           )}
           <EuiFlexItem>
             <TicketHeaderInputWrap>
-              <StyledCheckbox
-                type="checkbox"
-                checked={!!selectedTickets?.[ticketData.uuid]}
-                onChange={() => onSelectTicket?.(ticketData.uuid)}
-              />
+              {showCheckbox && (
+                <StyledCheckbox
+                  type="checkbox"
+                  checked={!!selectedTickets?.[ticketData.uuid]}
+                  onChange={() => onSelectTicket?.(ticketData.uuid)}
+                />
+              )}
               <TicketHeader>Ticket:</TicketHeader>
               <TicketInput
                 value={versionTicketData.name}
