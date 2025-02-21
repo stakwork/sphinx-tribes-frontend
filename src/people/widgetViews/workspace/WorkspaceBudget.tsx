@@ -105,7 +105,7 @@ const WorkspaceBudget = (props: { user_pubkey: string; org: any }) => {
         <WorkspaceBudgetText>
           {DollarConverter(org.budget ?? 0)}
           <CurrencyUnit>
-            {' SAT'}
+            {'SAT'}
             <SatsGap>/</SatsGap>
             {satToUsd(org.budget ?? 0)} USD
           </CurrencyUnit>

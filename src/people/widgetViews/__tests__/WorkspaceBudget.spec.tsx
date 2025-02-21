@@ -47,7 +47,7 @@ describe('WorkspaceBudget', () => {
     });
   });
 
-  test('renders workspace name and budget for workspace admin', async () => {
+  test('render workspace name and budget for workspace admin', async () => {
     render(<WorkspaceBudget {...defaultProps} />);
 
     waitFor(() => {
