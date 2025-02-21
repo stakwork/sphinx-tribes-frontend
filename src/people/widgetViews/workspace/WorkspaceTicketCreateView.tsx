@@ -316,7 +316,7 @@ const WorkspaceTicketCreateView: React.FC = observer(() => {
       setToasts([
         {
           id: `error-${Date.now()}`,
-          title: 'Error',
+          title: 'Something Wrong!',
           color: 'danger',
           text: 'Failed to get ticket details'
         }
