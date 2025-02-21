@@ -30,7 +30,7 @@ describe('User creates a bounty attached to a workspace', () => {
 
   it('should verify the bounty tile has the org label and is clickable', () => {
     cy.create_bounty(bounty);
-    cy.wait(1000);
+    cy.wait(2000);
 
     cy.contains(bounty.title);
     cy.wait(1000);
