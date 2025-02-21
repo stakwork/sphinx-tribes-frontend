@@ -1,8 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { BountyCard, BountyCardStatus } from '../../../store/interface';
+import { EditPopoverText } from 'pages/tickets/style';
+import { EditPopoverContent } from 'pages/tickets/style';
+import { EditPopoverTail } from 'pages/tickets/style';
+import { EditPopover } from 'pages/tickets/style';
+import MaterialIcon from '@material/react-material-icon';
+import { FeatureOptionsWrap } from 'pages/tickets/style';
+import { Box } from '@mui/system';
 import { colors } from '../../../config';
+import { BountyCard, BountyCardStatus } from '../../../store/interface';
+import { usePaymentConfirmationModal } from '../../../components/common';
 
 const truncate = (str: string, n: number) => (str.length > n ? `${str.substr(0, n - 1)}...` : str);
 
@@ -49,24 +57,6 @@ const CardTitle = styled.h3`
   display: flex;
   flex-direction: column;
   gap: 5px;
-`;
-
-const AssignerPic = styled.div`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 14px;
-  color: white;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
 `;
 
 const RowT = styled.div`
@@ -119,6 +109,7 @@ const StatusText = styled.span<{ status?: BountyCardStatus }>`
 
 interface BountyCardProps extends BountyCard {
   onclick: (bountyId: string, status?: BountyCardStatus, ticketGroup?: string) => void;
+  onPayBounty?: (bountyId: string) => Promise<void>;
 }
 
 const BountyCardComponent: React.FC<BountyCardProps> = ({
@@ -126,50 +117,88 @@ const BountyCardComponent: React.FC<BountyCardProps> = ({
   title,
   features,
   phase,
-  assignee_img,
   workspace,
   status,
   onclick,
   assignee_name,
-  ticket_group
-}: BountyCardProps) => (
-  <CardContainer isDraft={status === 'DRAFT'} onClick={() => onclick(id, status, ticket_group)}>
-    <CardHeader>
-      <CardTitle
-        role="button"
-        tabIndex={0}
-        onClick={(e: React.MouseEvent<HTMLHeadingElement>) => {
-          e.stopPropagation();
-          onclick(id, status, ticket_group);
-        }}
-      >
-        {title}
-        <span style={{ fontSize: '16px', marginTop: '10px' }}>{assignee_name}</span>
-      </CardTitle>
-      {assignee_img && (
-        <AssignerPic>
-          <img src={assignee_img} alt="Assigner" />
-        </AssignerPic>
-      )}
-    </CardHeader>
+  ticket_group,
+  onPayBounty
+}: BountyCardProps) => {
+  const [displayNameOptions, setDisplayNameOptions] = useState<boolean>(false);
+  const { openPaymentConfirmation } = usePaymentConfirmationModal();
 
-    <RowT>
-      <span title={features?.name ?? 'No Feature'}>
-        {truncate(features?.name ?? 'No Feature', 10)}
-      </span>
-      <span title={phase?.name ?? 'No Phase'}>{truncate(phase?.name ?? 'No Phase', 20)}</span>
-    </RowT>
-    <RowB>
-      <span title={id}>{id}</span>
-      <span title={workspace?.name ?? 'No Workspace'}>
-        {truncate(workspace?.name ?? 'No Workspace', 20)}
-      </span>
-      <StatusText className="last-span" status={status}>
-        {status}
-      </StatusText>
-    </RowB>
-  </CardContainer>
-);
+  const handleEditClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setDisplayNameOptions(false);
+
+    openPaymentConfirmation({
+      onConfirmPayment: () => onPayBounty?.(id),
+      children: (
+        <Box fontSize={20} textAlign="center">
+          Are you sure you want to <br />
+          <Box component="span" fontWeight="500">
+            Pay this Bounty?
+          </Box>
+        </Box>
+      )
+    });
+  };
+
+  const handleOptionsClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setDisplayNameOptions(!displayNameOptions);
+  };
+
+  return (
+    <CardContainer isDraft={status === 'DRAFT'} onClick={() => onclick(id, status, ticket_group)}>
+      <CardHeader>
+        <CardTitle
+          role="button"
+          tabIndex={0}
+          onClick={(e: React.MouseEvent<HTMLHeadingElement>) => {
+            e.stopPropagation();
+            onclick(id, status, ticket_group);
+          }}
+        >
+          {title}
+          <span style={{ fontSize: '16px', marginTop: '10px' }}>{assignee_name}</span>
+        </CardTitle>
+        <FeatureOptionsWrap>
+          <MaterialIcon
+            icon="more_horiz"
+            className="MaterialIcon"
+            onClick={handleOptionsClick}
+            data-testid="feature-name-btn"
+          />
+          {displayNameOptions && (
+            <EditPopover>
+              <EditPopoverTail />
+              <EditPopoverContent onClick={handleEditClick}>
+                <EditPopoverText data-testid="feature-name-edit-btn">Pay Bounty</EditPopoverText>
+              </EditPopoverContent>
+            </EditPopover>
+          )}
+        </FeatureOptionsWrap>
+      </CardHeader>
+
+      <RowT>
+        <span title={features?.name ?? 'No Feature'}>
+          {truncate(features?.name ?? 'No Feature', 10)}
+        </span>
+        <span title={phase?.name ?? 'No Phase'}>{truncate(phase?.name ?? 'No Phase', 20)}</span>
+      </RowT>
+      <RowB>
+        <span title={id}>{id}</span>
+        <span title={workspace?.name ?? 'No Workspace'}>
+          {truncate(workspace?.name ?? 'No Workspace', 20)}
+        </span>
+        <StatusText className="last-span" status={status}>
+          {status}
+        </StatusText>
+      </RowB>
+    </CardContainer>
+  );
+};
 
 BountyCardComponent.propTypes = {
   id: PropTypes.string.isRequired,
@@ -192,7 +221,8 @@ BountyCardComponent.propTypes = {
     'COMPLETED',
     'PAID'
   ] as BountyCardStatus[]),
-  onclick: PropTypes.func.isRequired
+  onclick: PropTypes.func.isRequired,
+  onPayBounty: PropTypes.func
 };
 
 export default BountyCardComponent;
