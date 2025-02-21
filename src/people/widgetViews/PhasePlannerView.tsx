@@ -744,6 +744,10 @@ const PhasePlannerView: React.FC = observer(() => {
                               selectedTickets={selectedTickets}
                               onSelectTicket={handleSelectTicket}
                               collapsed={collapsed}
+                              showFeaturePhaseDropdowns={false}
+                              showVersionSelector={true}
+                              showDragHandle={true}
+                              showSWWFLink={true}
                             />
                           </div>
                         )}

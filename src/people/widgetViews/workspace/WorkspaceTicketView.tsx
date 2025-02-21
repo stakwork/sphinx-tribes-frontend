@@ -6,9 +6,9 @@ import { useStores } from 'store';
 import { EuiFlexGroup, EuiFlexItem, EuiLoadingSpinner } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
 import { createSocketInstance, SOCKET_MSG } from 'config/socket';
-import WorkspaceTicketEditor from 'components/common/TicketEditor/WorkspaceTicketEditor';
 import SidebarComponent from 'components/common/SidebarComponent.tsx';
 import styled from 'styled-components';
+import TicketEditor from 'components/common/TicketEditor/TicketEditor';
 import { workspaceTicketStore } from '../../../store/workspace-ticket';
 import { Feature, Ticket, TicketMessage } from '../../../store/interface';
 import { FeatureBody, FeatureDataWrap, LabelValue, StyledLink } from '../../../pages/tickets/style';
@@ -534,7 +534,7 @@ const WorkspaceTicketView: React.FC = observer(() => {
               )}
             </div>
           </SelectWrapper>
-          <WorkspaceTicketEditor
+          <TicketEditor
             ticketData={currentTicket}
             websocketSessionId={websocketSessionId}
             logs={logs}
@@ -543,10 +543,15 @@ const WorkspaceTicketView: React.FC = observer(() => {
             hasInteractiveChildren={false}
             swwfLink={swwfLinks[currentTicket.uuid]}
             getPhaseTickets={getTickets}
+            workspaceUUID={workspaceId}
             onTicketUpdate={(updatedTicket: Ticket) => {
               workspaceTicketStore.updateTicket(updatedTicket.uuid, updatedTicket);
               setCurrentTicketId(updatedTicket.uuid);
             }}
+            showFeaturePhaseDropdowns={false}
+            showVersionSelector={true}
+            showDragHandle={false}
+            showSWWFLink={true}
           />
         </FeatureDataWrap>
       </FeatureBody>

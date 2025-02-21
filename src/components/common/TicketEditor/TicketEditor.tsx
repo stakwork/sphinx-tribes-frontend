@@ -44,7 +44,7 @@ interface LogEntry {
 interface TicketEditorProps {
   ticketData: Ticket;
   logs: LogEntry[];
-  index: number;
+  index?: number;
   websocketSessionId: string;
   draggableId: string;
   hasInteractiveChildren: boolean;
@@ -52,9 +52,14 @@ interface TicketEditorProps {
   swwfLink?: string;
   getPhaseTickets: () => Promise<Ticket[] | undefined>;
   workspaceUUID: string;
-  selectedTickets: Record<string, boolean>;
-  onSelectTicket: (ticketId: string) => void;
+  selectedTickets?: Record<string, boolean>;
+  onSelectTicket?: (ticketId: string) => void;
   collapsed?: boolean;
+  showFeaturePhaseDropdowns?: boolean;
+  showVersionSelector?: boolean;
+  showDragHandle?: boolean;
+  showSWWFLink?: boolean;
+  onTicketUpdate?: (updatedTicket: Ticket) => void;
 }
 
 const SwitcherContainer = styled.div`
@@ -200,6 +205,23 @@ const CATEGORY_OPTIONS = [
   { value: 'Other', label: 'Other' }
 ];
 
+const DEFAULT_TICKET: Ticket = {
+  uuid: '',
+  name: '',
+  sequence: 1,
+  dependency: [],
+  description: '',
+  status: 'DRAFT' as TicketStatus,
+  version: 1,
+  feature_uuid: '',
+  phase_uuid: '',
+  category: '',
+  amount: 0,
+  ticket_group: '',
+  author: 'HUMAN' as Author,
+  author_id: ''
+};
+
 const TicketEditor = observer(
   ({
     ticketData,
@@ -211,7 +233,12 @@ const TicketEditor = observer(
     logs,
     selectedTickets,
     onSelectTicket,
-    collapsed
+    collapsed,
+    showFeaturePhaseDropdowns,
+    showVersionSelector,
+    showDragHandle,
+    showSWWFLink,
+    onTicketUpdate
   }: TicketEditorProps) => {
     const [toasts, setToasts] = useState<Toast[]>([]);
     const [versions, setVersions] = useState<number[]>([]);
@@ -219,7 +246,9 @@ const TicketEditor = observer(
       ticketData.ticket_group as string
     );
     const [selectedVersion, setSelectedVersion] = useState<number>(latestTicket?.version as number);
-    const [versionTicketData, setVersionTicketData] = useState<Ticket>(latestTicket as Ticket);
+    const [versionTicketData, setVersionTicketData] = useState<Ticket>(
+      ticketData || DEFAULT_TICKET
+    );
     const [isCopying, setIsCopying] = useState(false);
     const [activeMode, setActiveMode] = useState<'preview' | 'edit'>('edit');
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
@@ -420,15 +449,13 @@ const TicketEditor = observer(
     useEffect(() => {
       const updateTicketData = () => {
         const selectedTicket = phaseTicketStore.getTicketByVersion(
-          ticketData.ticket_group as string,
+          ticketData?.ticket_group || '',
           selectedVersion
         );
-        console.log(selectedTicket, selectedVersion);
-        setVersionTicketData(selectedTicket || ticketData);
+        setVersionTicketData(selectedTicket || ticketData || DEFAULT_TICKET);
       };
-
       updateTicketData();
-    }, [selectedVersion, ticketData, ticketData.ticket_group]);
+    }, [selectedVersion, ticketData, ticketData?.ticket_group]);
 
     const handleVersionChange = (newVersion) => {
       setSelectedVersion(newVersion);
@@ -558,26 +585,28 @@ const TicketEditor = observer(
     return (
       <TicketContainer>
         <EuiFlexGroup alignItems="center" gutterSize="s">
-          <EuiFlexItem grow={false}>
-            <EuiPanel
-              style={{ backgroundColor: '#f2f3f5', border: 'none' }}
-              color="transparent"
-              className="drag-handle"
-              paddingSize="s"
-              {...dragHandleProps}
-              aria-label="Drag Handle"
-              key={ticketData.uuid}
-              data-testid={`drag-handle-${ticketData.uuid}`}
-            >
-              <EuiIcon type="grab" />
-            </EuiPanel>
-          </EuiFlexItem>
+          {showDragHandle && (
+            <EuiFlexItem grow={false}>
+              <EuiPanel
+                style={{ backgroundColor: '#f2f3f5', border: 'none' }}
+                color="transparent"
+                className="drag-handle"
+                paddingSize="s"
+                {...dragHandleProps}
+                aria-label="Drag Handle"
+                key={ticketData.uuid}
+                data-testid={`drag-handle-${ticketData.uuid}`}
+              >
+                <EuiIcon type="grab" />
+              </EuiPanel>
+            </EuiFlexItem>
+          )}
           <EuiFlexItem>
             <TicketHeaderInputWrap>
               <StyledCheckbox
                 type="checkbox"
-                checked={!!selectedTickets[ticketData.uuid]}
-                onChange={() => onSelectTicket(ticketData.uuid)}
+                checked={!!selectedTickets?.[ticketData.uuid]}
+                onChange={() => onSelectTicket?.(ticketData.uuid)}
               />
               <TicketHeader>Ticket:</TicketHeader>
               <TicketInput
@@ -587,16 +616,18 @@ const TicketEditor = observer(
                 }
                 placeholder="Enter ticket name..."
               />
-              <VersionSelect
-                value={selectedVersion}
-                onChange={(e) => handleVersionChange(e.target.value)}
-              >
-                {Array.from(new Set(versions)).map((version: number) => (
-                  <Option key={version} value={version}>
-                    Version {version}
-                  </Option>
-                ))}
-              </VersionSelect>
+              {showVersionSelector && (
+                <VersionSelect
+                  value={selectedVersion}
+                  onChange={(e) => handleVersionChange(e.target.value)}
+                >
+                  {Array.from(new Set(versions)).map((version: number) => (
+                    <Option key={version} value={version}>
+                      Version {version}
+                    </Option>
+                  ))}
+                </VersionSelect>
+              )}
               <BountyOptionsWrap $collapsed={collapsed}>
                 <MaterialIconStyled
                   icon={'more_horiz'}
@@ -698,7 +729,7 @@ const TicketEditor = observer(
               )}
             </EditorWrapper>
             <TicketButtonGroup>
-              {swwfLink && (
+              {showSWWFLink && (
                 <ChainOfThought>
                   <h6>Hive - Chain of Thought</h6>
                   <p>
@@ -708,7 +739,7 @@ const TicketEditor = observer(
                   </p>
                 </ChainOfThought>
               )}
-              {swwfLink && (
+              {showSWWFLink && (
                 <ActionButton
                   as="a"
                   href={`https://jobs.stakwork.com/admin/projects/${swwfLink}`}
