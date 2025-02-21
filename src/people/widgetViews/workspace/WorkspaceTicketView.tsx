@@ -272,7 +272,6 @@ const WorkspaceTicketView: React.FC = observer(() => {
     }
   }, [ticketId, main]);
 
-
   const getTickets = async () => {
     const ticket = workspaceTicketStore.getTicket(currentTicketId);
     return ticket ? [ticket] : [];
@@ -417,7 +416,7 @@ const WorkspaceTicketView: React.FC = observer(() => {
       history.push(`/workspace/${workspaceId}/planner`);
     }
   };
-  
+
   if (isLoading) {
     return (
       <MainContent collapsed={collapsed}>
