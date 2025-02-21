@@ -342,6 +342,8 @@ const Activities = observer(() => {
   const [isCommentChanged, setIsCommentChanged] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
 
+  let interval: NodeJS.Timeout | null = null;
+
   useEffect(() => {
     if (uuid) {
       activityStore.fetchWorkspaceActivities(uuid);
@@ -385,8 +387,6 @@ const Activities = observer(() => {
   }, [newActivity.feature_uuid, main]);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
-
     if (selectedActivity?.ID) {
       const fetchThreadResponses = async () => {
         try {
@@ -398,7 +398,6 @@ const Activities = observer(() => {
       };
 
       fetchThreadResponses();
-
       interval = setInterval(fetchThreadResponses, 10000);
     }
 
