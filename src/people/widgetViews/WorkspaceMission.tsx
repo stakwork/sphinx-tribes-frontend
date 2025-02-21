@@ -1375,7 +1375,7 @@ const WorkspaceMission = () => {
                                 </MissionRowFlex>
                                 <FeatureData>
                                   <FeatureLink
-                                    href={`/feature/${feat.uuid}`}
+                                    href={`/workspace/${uuid}/feature/${feat.uuid}`}
                                     style={{ marginLeft: '1rem' }}
                                   >
                                     {feat.name}
