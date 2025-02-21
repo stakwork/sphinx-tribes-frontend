@@ -100,6 +100,30 @@ const VersionSelect = styled(Select)`
   min-width: auto;
   height: 40px !important;
   margin-bottom: 9px;
+
+  @media (max-width: 1440px) {
+    max-width: 190px;
+  }
+
+  @media (max-width: 1366px) {
+    max-width: 160px;
+  }
+
+  @media (max-width: 1280px) {
+    max-width: 160px;
+  }
+
+  @media (max-width: 1024px) {
+    max-width: 130px;
+  }
+
+  @media (max-width: 768px) {
+    max-width: 100px;
+  }
+
+  @media (max-width: 480px) {
+    max-width: 80px;
+  }
 `;
 
 const MaterialIconStyled = styled(MaterialIcon)`
