@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { N } from 'people/utils/style';
 import { useIsMobile } from '../../hooks';
 
 const FooterContainer = styled.footer<{ isMobile: boolean }>`
@@ -16,6 +17,10 @@ const FooterContent = styled.div<{ isMobile: boolean }>`
   align-items: flex-start;
   flex-direction: ${(props: any) => (props.isMobile ? 'column' : 'row')};
   gap: ${(props: any) => (props.isMobile ? '10px' : '0')};
+`;
+
+const FooterNav = styled.nav`
+  display: contents;
 `;
 
 const LogoSection = styled.div<{ isMobile: boolean }>`
@@ -44,19 +49,21 @@ const BrandImage = styled.img`
   margin-left: -20px;
 `;
 
-const LinksSection = styled.div<{ isMobile: boolean }>`
+const LinksSection = styled.ul<{ isMobile: boolean }>`
   display: flex;
   margin-top: ${(props: any) => (props.isMobile ? '0' : '4%')};
   gap: ${(props: any) => (props.isMobile ? '20px' : '80px')};
   flex-direction: ${(props: any) => (props.isMobile ? 'column' : 'row')};
   align-items: flex-start;
+  list-style: none;
 `;
 
-const LinkGroup = styled.div<{ isMobile: boolean }>`
+const LinkGroup = styled.ul<{ isMobile: boolean }>`
   display: flex;
   flex-direction: column;
   gap: 6px;
   align-items: flex-start;
+  list-style: none;
 `;
 
 const Link = styled.a`
@@ -69,6 +76,12 @@ const Link = styled.a`
 
   &:hover {
     opacity: 0.7;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #005fcc;
+    outline-offset: 1px;
+    border-radius: 1px;
   }
 `;
 
@@ -106,14 +119,28 @@ const Footer: React.FC = () => {
               </Logo>
             </LogoSection>
 
-            <LinksSection isMobile={isMobile}>
-              <Link href="/bounties">Start Earning</Link>
-              <Link href="/bounties">View Bounties</Link>
-              <Link href="https://sphinx.chat">Get Sphinx</Link>
-              <Link href="https://www.stakwork.com">Stakwork</Link>
-              <Link href="mailto:support@stakwork.com">Support</Link>
-              <Link href="https://x.com/stakwork">X</Link>
-            </LinksSection>
+            <FooterNav aria-label="Footer Navigation">
+              <LinksSection isMobile={isMobile}>
+                <li>
+                  <Link href="/bounties">Start Earning</Link>
+                </li>
+                <li>
+                  <Link href="/bounties">View Bounties</Link>
+                </li>
+                <li>
+                  <Link href="https://sphinx.chat">Get Sphinx</Link>
+                </li>
+                <li>
+                  <Link href="https://www.stakwork.com">Stakwork</Link>
+                </li>
+                <li>
+                  <Link href="mailto:support@stakwork.com">Support</Link>
+                </li>
+                <li>
+                  <Link href="https://x.com/stakwork">X</Link>
+                </li>
+              </LinksSection>
+            </FooterNav>
 
             <Copyright isMobile={isMobile}>Stakwork © Copyright {currentYear}</Copyright>
           </>
@@ -133,19 +160,33 @@ const Footer: React.FC = () => {
               <Copyright isMobile={isMobile}>Stakwork © Copyright {currentYear}</Copyright>
             </LogoSection>
 
-            <LinksSection isMobile={isMobile}>
-              <LinkGroup isMobile={isMobile}>
-                <Link href="/bounties">Start Earning</Link>
-                <Link href="/bounties">View Bounties</Link>
-                <Link href="https://sphinx.chat">Get Sphinx</Link>
-              </LinkGroup>
+            <FooterNav aria-label="Footer Navigation">
+              <LinksSection isMobile={isMobile}>
+                <LinkGroup isMobile={isMobile}>
+                  <li>
+                    <Link href="/bounties">Start Earning</Link>
+                  </li>
+                  <li>
+                    <Link href="/bounties">View Bounties</Link>
+                  </li>
+                  <li>
+                    <Link href="https://sphinx.chat">Get Sphinx</Link>
+                  </li>
+                </LinkGroup>
 
-              <LinkGroup isMobile={isMobile}>
-                <Link href="https://www.stakwork.com">Stakwork</Link>
-                <Link href="mailto:support@stakwork.com">Support</Link>
-                <Link href="https://x.com/stakwork">X</Link>
-              </LinkGroup>
-            </LinksSection>
+                <LinkGroup isMobile={isMobile}>
+                  <li>
+                    <Link href="https://www.stakwork.com">Stakwork</Link>
+                  </li>
+                  <li>
+                    <Link href="mailto:support@stakwork.com">Support</Link>
+                  </li>
+                  <li>
+                    <Link href="https://x.com/stakwork">X</Link>
+                  </li>
+                </LinkGroup>
+              </LinksSection>
+            </FooterNav>
           </>
         )}
       </FooterContent>
