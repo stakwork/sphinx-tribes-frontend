@@ -12,6 +12,10 @@ export type LeaderItem = {
 };
 
 export class LeaderboardStore {
+  dailyBountiesCompleted: number = 0;
+  dailySatsEarned: number = 0;
+  isDailyLoading: boolean = false;
+  errorDaily: any = null;
   private leaders: LeaderItem[] = [];
 
   public isLoading = false;

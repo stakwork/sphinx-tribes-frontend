@@ -59,6 +59,7 @@ export const LeaderboardPage = observer(() => {
   const { leaderboard } = useStores();
   useEffect(() => {
     leaderboard.fetchLeaders();
+    leaderboard.fetchDailyBounty();
   }, [leaderboard]);
 
   if (leaderboard.isLoading) {
