@@ -29,6 +29,10 @@ const TableContainer = styled.div`
   margin-bottom: 7%;
 `;
 
+export const LabelValue = styled.span`
+  font-weight: normal;
+`;
+
 const PhaseHeader = styled.h3`
   margin-top: 20px;
   padding: 10px;
@@ -228,6 +232,7 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
   const [websocketSessionId, setWebsocketSessionId] = useState<string>('');
   const [showAddPhaseModal, setShowAddPhaseModal] = useState(false);
   const [phaseName, setPhaseName] = useState<string>('');
+  const [featureName, setFeatureName] = useState<string>('');
 
   console.log('main', main.meInfo);
 
@@ -321,6 +326,18 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
       }
     };
   }, []);
+
+  useEffect(() => {
+    const fetchFeatureName = async () => {
+      if (featureUuid) {
+        const feature = await main.getFeaturesByUuid(featureUuid);
+        if (feature) {
+          setFeatureName(feature.name || 'Feature');
+        }
+      }
+    };
+    fetchFeatureName();
+  }, [featureUuid]);
 
   const togglePhase = (phaseID: string) => {
     setExpandedPhases((prev) => ({
@@ -487,6 +504,9 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
             <p>No phases available</p>
           ) : (
             <TableContainer>
+              <h3>
+                Feature Name: <LabelValue>{featureName}</LabelValue>
+              </h3>
               {Object.entries(phaseNames).map(([phaseID, phaseName], index) => {
                 const items = groupedData[phaseID] || [];
                 const isExpanded = expandedPhases[phaseID] !== false;
