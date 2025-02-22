@@ -12,6 +12,10 @@ export type LeaderItem = {
 };
 
 export class LeaderboardStore {
+  dailyBountiesCompleted: number = 0;
+  dailySatsEarned: number = 0;
+  isDailyLoading: boolean = false;
+  errorDaily: any = null;
   private leaders: LeaderItem[] = [];
 
   public isLoading = false;
@@ -40,6 +44,19 @@ export class LeaderboardStore {
       this.error = e;
     } finally {
       this.isLoading = false;
+    }
+  }
+  
+  async fetchDailyBounty() {
+    this.isDailyLoading = true;
+    try {
+      const resp = (await api.get('people/bounty/daily')) as { daily_bounties_completed: number, daily_sats_earned: number };
+      this.dailyBountiesCompleted = resp.daily_bounties_completed;
+      this.dailySatsEarned = resp.daily_sats_earned;
+    } catch (e) {
+      this.errorDaily = e;
+    } finally {
+      this.isDailyLoading = false;
     }
   }
 

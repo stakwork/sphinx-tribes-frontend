@@ -59,6 +59,7 @@ export const LeaderboardPage = observer(() => {
   const { leaderboard } = useStores();
   useEffect(() => {
     leaderboard.fetchLeaders();
+    leaderboard.fetchDailyBounty();
   }, [leaderboard]);
 
   if (leaderboard.isLoading) {
@@ -76,6 +77,13 @@ export const LeaderboardPage = observer(() => {
             className="summary"
             bounties={leaderboard.total?.total_bounties_completed}
             sats={leaderboard.total?.total_sats_earned}
+          />
+        )}
+        {(leaderboard.dailyBountiesCompleted || leaderboard.dailySatsEarned) && (
+          <Summary
+            className="daily-summary"
+            bounties={leaderboard.dailyBountiesCompleted}
+            sats={leaderboard.dailySatsEarned}
           />
         )}
         <Top3 />
