@@ -497,7 +497,7 @@ const WorkspaceFeature = () => {
   }, [getWorkspaceData]);
 
   useEffect(() => {
-    let socket = createSocketInstance();
+    const socket = createSocketInstance();
 
     socket.onmessage = async (event: MessageEvent) => {
       console.log('Raw websocket message received:', event.data);

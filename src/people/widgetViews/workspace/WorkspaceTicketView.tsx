@@ -6,10 +6,11 @@ import { useStores } from 'store';
 import { EuiFlexGroup, EuiFlexItem, EuiLoadingSpinner } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
 import { createSocketInstance, SOCKET_MSG } from 'config/socket';
-import WorkspaceTicketEditor from 'components/common/TicketEditor/WorkspaceTicketEditor';
 import SidebarComponent from 'components/common/SidebarComponent.tsx';
 import styled from 'styled-components';
+import TicketEditor from 'components/common/TicketEditor/TicketEditor';
 import { workspaceTicketStore } from '../../../store/workspace-ticket';
+import { phaseTicketStore } from '../../../store/phase';
 import { Feature, Ticket, TicketMessage } from '../../../store/interface';
 import { FeatureBody, FeatureDataWrap, LabelValue, StyledLink } from '../../../pages/tickets/style';
 import {
@@ -218,64 +219,37 @@ const WorkspaceTicketView: React.FC = observer(() => {
         const ticket = await main.getTicketDetails(ticketId);
 
         if (ticket) {
-          if (ticket.UUID) {
-            ticket.uuid = ticket.UUID;
-          }
+          if (ticket.UUID) ticket.uuid = ticket.UUID;
 
-          workspaceTicketStore.clearTickets();
           workspaceTicketStore.addTicket(ticket);
-          setCurrentTicketId(ticket.uuid);
+          phaseTicketStore.addTicket(ticket);
 
-          if (ticket.ticket_group) {
-            const groupTickets = await main.getTicketsByGroup(ticket.ticket_group);
+          const groupTickets = ticket.ticket_group
+            ? await main.getTicketsByGroup(ticket.ticket_group)
+            : [];
 
-            if (groupTickets && Array.isArray(groupTickets)) {
-              for (const groupTicket of groupTickets) {
-                if (groupTicket.UUID) {
-                  groupTicket.uuid = groupTicket.UUID;
-                }
-                workspaceTicketStore.addTicket(groupTicket);
-              }
-            }
-          }
-        } else {
-          const groupTickets = await main.getTicketsByGroup(ticketId);
-
-          if (groupTickets && Array.isArray(groupTickets) && groupTickets.length > 0) {
-            workspaceTicketStore.clearTickets();
-
-            for (const ticket of groupTickets) {
-              if (ticket.UUID) {
-                ticket.uuid = ticket.UUID;
-              }
-              workspaceTicketStore.addTicket(ticket);
-            }
-
-            const groupId = groupTickets[0].ticket_group || ticketId;
-            const latestVersion = workspaceTicketStore.getLatestVersionFromGroup(groupId);
-
-            if (latestVersion) {
-              workspaceTicketStore.addTicket(latestVersion);
-              setCurrentTicketId(latestVersion.uuid);
-            }
+          if (groupTickets?.length) {
+            groupTickets.forEach((t) => {
+              if (t.UUID) t.uuid = t.UUID;
+              workspaceTicketStore.addTicket(t);
+              phaseTicketStore.addTicket(t);
+            });
           }
         }
       } catch (error) {
-        console.error('Error fetching ticket and versions:', error);
+        console.error('Error fetching ticket:', error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    if (ticketId) {
-      fetchTicketAndVersions();
-    }
+    if (ticketId) fetchTicketAndVersions();
   }, [ticketId, main]);
 
-  const getTickets = async () => {
-    const ticket = workspaceTicketStore.getTicket(currentTicketId);
-    return ticket ? [ticket] : [];
-  };
+  const getTickets = useCallback(
+    async () => phaseTicketStore.getTicketsByGroup(currentTicketId),
+    [currentTicketId]
+  );
 
   const currentTicket = workspaceTicketStore.getTicket(currentTicketId);
 
@@ -417,6 +391,15 @@ const WorkspaceTicketView: React.FC = observer(() => {
     }
   };
 
+  useEffect(
+    () => () => {
+      if (currentTicketId) {
+        phaseTicketStore.clearPhaseTickets(currentTicketId);
+      }
+    },
+    [currentTicketId]
+  );
+
   if (isLoading) {
     return (
       <MainContent collapsed={collapsed}>
@@ -534,7 +517,7 @@ const WorkspaceTicketView: React.FC = observer(() => {
               )}
             </div>
           </SelectWrapper>
-          <WorkspaceTicketEditor
+          <TicketEditor
             ticketData={currentTicket}
             websocketSessionId={websocketSessionId}
             logs={logs}
@@ -543,10 +526,16 @@ const WorkspaceTicketView: React.FC = observer(() => {
             hasInteractiveChildren={false}
             swwfLink={swwfLinks[currentTicket.uuid]}
             getPhaseTickets={getTickets}
+            workspaceUUID={workspaceId}
             onTicketUpdate={(updatedTicket: Ticket) => {
               workspaceTicketStore.updateTicket(updatedTicket.uuid, updatedTicket);
               setCurrentTicketId(updatedTicket.uuid);
             }}
+            showFeaturePhaseDropdowns={false}
+            showVersionSelector={true}
+            showDragHandle={false}
+            showSWWFLink={true}
+            showCheckbox={false}
           />
         </FeatureDataWrap>
       </FeatureBody>
