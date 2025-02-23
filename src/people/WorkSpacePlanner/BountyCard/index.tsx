@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/typedef */
 import React from 'react';
 import styled from 'styled-components';
@@ -290,12 +291,16 @@ const BountyCardComponent: React.FC<BountyCardProps> = ({
   assignee_name,
   ticket_group,
   onPayBounty,
-  bounty_price
+  bounty_price,
+  org_uuid
 }: BountyCardProps) => {
   const { ui, main } = useStores();
   const [isOpenPaymentConfirmation, setIsOpenPaymentConfirmation] = React.useState(false);
   const [toasts, setToasts] = React.useState<any[]>([]);
   const [paymentLoading, setPaymentLoading] = React.useState(false);
+  const [connectPersonBody, setConnectPersonBody] = React.useState<any>({});
+  const [activeBounty, setActiveBounty] = React.useState<any[]>([]);
+  let interval: NodeJS.Timeout;
 
   const addToast = (type: string) => {
     const toastId = Math.random();
@@ -328,25 +333,77 @@ const BountyCardComponent: React.FC<BountyCardProps> = ({
     setToasts([]);
   };
 
+  const getBounty = React.useCallback(async () => {
+    let bounty;
+    if (id) {
+      bounty = await main.getBountyById(Number(id));
+    }
+    const connectPerson = bounty?.length ? bounty[0].person : [];
+    setConnectPersonBody(connectPerson);
+    setActiveBounty(bounty || []);
+  }, [id, main]);
+
+  React.useEffect(() => {
+    getBounty();
+  }, [getBounty]);
+
+  const startPolling = React.useCallback(
+    async (paymentRequest: string) => {
+      let i = 0;
+      interval = setInterval(async () => {
+        try {
+          const invoiceData = await main.pollInvoice(paymentRequest);
+          if (invoiceData?.success && invoiceData.response.settled) {
+            clearInterval(interval);
+            addToast(SOCKET_MSG.invoice_success);
+            main.setKeysendInvoice('');
+          }
+          if (i++ > 22) clearInterval(interval);
+        } catch (e) {
+          console.warn('Invoice Polling Error', e);
+        }
+      }, 5000);
+    },
+    [main, addToast]
+  );
+
+  const generateInvoice = async (price: number) => {
+    if (activeBounty[0]?.created && ui.meInfo?.websocketToken) {
+      const data = await main.getLnInvoice({
+        amount: price || 0,
+        memo: '',
+        owner_pubkey: connectPersonBody.owner_pubkey,
+        user_pubkey: connectPersonBody.owner_pubkey,
+        route_hint: connectPersonBody.owner_route_hint ?? '',
+        created: activeBounty[0].created?.toString() || '',
+        type: 'KEYSEND'
+      });
+      if (data.response.invoice) {
+        main.setKeysendInvoice(data.response.invoice);
+        startPolling(data.response.invoice);
+      }
+    }
+  };
+
   const handlePayment = async () => {
     setPaymentLoading(true);
     try {
-      if (workspace.uuid) {
-        const workspaceBudget = await main.getWorkspaceBudget(workspace.uuid);
-        const budget = workspaceBudget.current_budget;
+      const price = Number(bounty_price);
 
-        if (Number(budget) >= Number(bounty_price)) {
+      if (org_uuid) {
+        const workspaceBudget = await main.getWorkspaceBudget(org_uuid);
+        if (Number(workspaceBudget.current_budget) >= price) {
           await main.makeBountyPayment({
             id: Number(id),
             websocket_token: ui.meInfo?.websocketToken || ''
           });
           addToast(SOCKET_MSG.keysend_success);
-          if (onPayBounty) {
-            onPayBounty(String(id));
-          }
+          onPayBounty?.(String(id));
         } else {
           addToast(SOCKET_MSG.keysend_failed);
         }
+      } else {
+        await generateInvoice(price);
       }
     } catch (error) {
       console.error('Payment failed:', error);
