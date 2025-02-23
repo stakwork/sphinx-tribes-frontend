@@ -237,7 +237,7 @@ const ActionMenu = ({ status, onPay }: { status?: BountyCardStatus; onPay: () =>
 
   const MenuItem = styled.button`
     width: 100%;
-    padding: 8px 15px;
+    padding: 8px 16px;
     border: none;
     background: none;
     text-align: left;
