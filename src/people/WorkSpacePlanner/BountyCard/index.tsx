@@ -1,14 +1,16 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/typedef */
 import React from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { Box } from '@mui/system';
+import { useStores } from 'store';
+import { SOCKET_MSG } from 'config/socket';
+import { PaymentConfirmationModal } from 'components/common';
 import { EuiGlobalToastList } from '@elastic/eui';
 import { BountyCard, BountyCardStatus } from '../../../store/interface';
 import { colors } from '../../../config';
-import { useStores } from '../../../store';
-import { SOCKET_MSG } from '../../../config/socket';
 
 const truncate = (str: string, n: number) => (str.length > n ? `${str.substr(0, n - 1)}...` : str);
 
@@ -109,115 +111,17 @@ const StatusText = styled.span<{ status?: BountyCardStatus }>`
 interface BountyCardProps extends BountyCard {
   onclick: (bountyId: string, status?: BountyCardStatus, ticketGroup?: string) => void;
   onPayBounty?: (bountyId: string) => void;
-  price?: number;
-  org_uuid?: string;
 }
 
-const PaymentConfirmationModal = ({
-  onClose,
-  onConfirm,
-  loading
-}: {
-  onClose: () => void;
-  onConfirm: () => void;
-  loading: boolean;
-}) => (
-  <div
-    style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: 'rgba(0,0,0,0.5)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 1000
-    }}
-  >
-    <div
-      style={{
-        backgroundColor: 'white',
-        padding: '24px',
-        borderRadius: '8px',
-        width: '400px'
-      }}
-    >
-      <Box fontSize={20} textAlign="center" mb={2}>
-        Are you sure you want to <br />
-        <Box component="span" fontWeight="500">
-          Pay this Bounty?
-        </Box>
-      </Box>
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', marginTop: '24px' }}>
-        <button
-          style={{
-            padding: '8px 16px',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
-          onClick={onClose}
-          disabled={loading}
-        >
-          Cancel
-        </button>
-        <button
-          style={{
-            padding: '8px 16px',
-            backgroundColor: loading ? '#a0c7e4' : '#2DAE67',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: loading ? 'not-allowed' : 'pointer',
-            position: 'relative',
-            opacity: loading ? 0.7 : 1
-          }}
-          onClick={onConfirm}
-          disabled={loading}
-        >
-          Confirm Payment
-          {loading && (
-            <div
-              style={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)'
-              }}
-            >
-              <div className="euiLoadingSpinner euiLoadingSpinner--medium" />
-            </div>
-          )}
-        </button>
-      </div>
-    </div>
-  </div>
-);
-
 const ActionMenu = ({ status, onPay }: { status?: BountyCardStatus; onPay: () => void }) => {
-  const [isOpen, setIsOpen] = React.useState(false);
-  const menuRef = React.useRef<HTMLDivElement>(null);
-
-  React.useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
   const showMenu = ['COMPLETED', 'IN_REVIEW', 'IN_PROGRESS'].includes(status || '');
 
   if (!showMenu) return null;
 
   const MenuButton = styled.button`
-    position: relative;
     border: none;
     background: none;
+    padding: 4px;
     cursor: pointer;
     color: ${colors.light.text2};
     &:hover {
@@ -228,12 +132,17 @@ const ActionMenu = ({ status, onPay }: { status?: BountyCardStatus; onPay: () =>
   const Dropdown = styled.div`
     position: absolute;
     right: 0;
-    top: calc(100% + 0px);
+    top: 100%;
     background: white;
     border: 1px solid ${colors.light.grayish.G300};
     border-radius: 4px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     z-index: 1;
+    display: none;
+
+    ${MenuButton}:focus-within & {
+      display: block;
+    }
   `;
 
   const MenuItem = styled.button`
@@ -243,40 +152,22 @@ const ActionMenu = ({ status, onPay }: { status?: BountyCardStatus; onPay: () =>
     background: none;
     text-align: left;
     cursor: pointer;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
     &:hover {
       background: ${colors.light.grayish.G100};
     }
   `;
 
   return (
-    <div ref={menuRef}>
-      <MenuButton
-        onClick={(e) => {
-          e.stopPropagation();
-          setIsOpen(!isOpen);
-        }}
-      >
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          data-testid="action-menu-button"
-        >
-          <path d="M6 12a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" fill="currentColor" />
-          <path d="M12 12a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" fill="currentColor" />
-          <path d="M18 12a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" fill="currentColor" />
-        </svg>
-        {isOpen && (
-          <Dropdown>
-            <MenuItem onClick={onPay}>1. Pay Bounty</MenuItem>
-          </Dropdown>
-        )}
-      </MenuButton>
-    </div>
+    <MenuButton onClick={(e) => e.stopPropagation()} data-testid="action-menu-button">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M6 12a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" fill="currentColor" />
+        <path d="M12 12a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" fill="currentColor" />
+        <path d="M18 12a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" fill="currentColor" />
+      </svg>
+      <Dropdown>
+        <MenuItem onClick={onPay}>Pay Bounty</MenuItem>
+      </Dropdown>
+    </MenuButton>
   );
 };
 
@@ -291,8 +182,7 @@ const BountyCardComponent: React.FC<BountyCardProps> = ({
   assignee_name,
   ticket_group,
   onPayBounty,
-  bounty_price,
-  org_uuid
+  bounty_price
 }: BountyCardProps) => {
   const { ui, main } = useStores();
   const [isOpenPaymentConfirmation, setIsOpenPaymentConfirmation] = React.useState(false);
@@ -300,7 +190,7 @@ const BountyCardComponent: React.FC<BountyCardProps> = ({
   const [paymentLoading, setPaymentLoading] = React.useState(false);
   const [connectPersonBody, setConnectPersonBody] = React.useState<any>({});
   const [activeBounty, setActiveBounty] = React.useState<any[]>([]);
-  let interval: NodeJS.Timeout;
+  let interval: number;
 
   const addToast = (type: string) => {
     const toastId = Math.random();
@@ -350,7 +240,7 @@ const BountyCardComponent: React.FC<BountyCardProps> = ({
   const startPolling = React.useCallback(
     async (paymentRequest: string) => {
       let i = 0;
-      interval = setInterval(async () => {
+      interval = window.setInterval(async () => {
         try {
           const invoiceData = await main.pollInvoice(paymentRequest);
           if (invoiceData?.success && invoiceData.response.settled) {
@@ -390,8 +280,8 @@ const BountyCardComponent: React.FC<BountyCardProps> = ({
     try {
       const price = Number(bounty_price);
 
-      if (org_uuid) {
-        const workspaceBudget = await main.getWorkspaceBudget(org_uuid);
+      if (workspace.uuid) {
+        const workspaceBudget = await main.getWorkspaceBudget(workspace.uuid);
         if (Number(workspaceBudget.current_budget) >= price) {
           await main.makeBountyPayment({
             id: Number(id),
@@ -460,8 +350,7 @@ const BountyCardComponent: React.FC<BountyCardProps> = ({
       {isOpenPaymentConfirmation && (
         <PaymentConfirmationModal
           onClose={() => setIsOpenPaymentConfirmation(false)}
-          onConfirm={handlePayment}
-          loading={paymentLoading}
+          onConfirmPayment={handlePayment}
         />
       )}
 
@@ -491,9 +380,7 @@ BountyCardComponent.propTypes = {
     'PAID'
   ] as BountyCardStatus[]),
   onclick: PropTypes.func.isRequired,
-  onPayBounty: PropTypes.func,
-  bounty_price: PropTypes.number,
-  org_uuid: PropTypes.string
+  onPayBounty: PropTypes.func
 };
 
 export default BountyCardComponent;
