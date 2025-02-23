@@ -337,22 +337,24 @@ const BountyCardComponent: React.FC<BountyCardProps> = ({
           {title}
           <span style={{ fontSize: '16px', marginTop: '10px' }}>{assignee_name}</span>
         </CardTitle>
-        <FeatureOptionsWrap>
-          <MaterialIcon
-            icon="more_horiz"
-            className="MaterialIcon"
-            onClick={handleOptionsClick}
-            data-testid="feature-name-btn"
-          />
-          {displayNameOptions && (
-            <EditPopover>
-              <EditPopoverTail />
-              <EditPopoverContent onClick={handleEditClick}>
-                <EditPopoverText data-testid="feature-name-edit-btn">Pay Bounty</EditPopoverText>
-              </EditPopoverContent>
-            </EditPopover>
-          )}
-        </FeatureOptionsWrap>
+        {(status === 'IN_PROGRESS' || status === 'IN_REVIEW' || status === 'COMPLETED') && (
+          <FeatureOptionsWrap style={{ marginLeft: 'auto', marginBottom: '30px' }}>
+            <MaterialIcon
+              icon="more_horiz"
+              className="MaterialIcon"
+              onClick={handleOptionsClick}
+              data-testid="feature-name-btn"
+            />
+            {displayNameOptions && (
+              <EditPopover>
+                <EditPopoverTail />
+                <EditPopoverContent onClick={handleEditClick}>
+                  <EditPopoverText data-testid="feature-name-edit-btn">Pay Bounty</EditPopoverText>
+                </EditPopoverContent>
+              </EditPopover>
+            )}
+          </FeatureOptionsWrap>
+        )}
       </CardHeader>
 
       <RowT>
