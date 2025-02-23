@@ -258,7 +258,13 @@ const ActionMenu = ({ status, onPay }: { status?: BountyCardStatus; onPay: () =>
           setIsOpen(!isOpen);
         }}
       >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          data-testid="action-menu-button"
+        >
           <path d="M6 12a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" fill="currentColor" />
           <path d="M12 12a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" fill="currentColor" />
           <path d="M18 12a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" fill="currentColor" />
