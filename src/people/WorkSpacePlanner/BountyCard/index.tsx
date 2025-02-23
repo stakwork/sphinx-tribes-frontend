@@ -152,7 +152,7 @@ const PaymentConfirmationModal = ({
       <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', marginTop: '24px' }}>
         <button
           style={{
-            padding: '8px 16px',
+            padding: '8px 15px',
             border: '1px solid #ccc',
             borderRadius: '4px',
             cursor: 'pointer'
