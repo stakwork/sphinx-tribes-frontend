@@ -1,19 +1,22 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
+import { SOCKET_MSG } from 'config/socket';
 import { EditPopoverText } from 'pages/tickets/style';
 import { EditPopoverContent } from 'pages/tickets/style';
+import { useStores } from 'store';
 import { EditPopoverTail } from 'pages/tickets/style';
 import { EditPopover } from 'pages/tickets/style';
 import MaterialIcon from '@material/react-material-icon';
 import { FeatureOptionsWrap } from 'pages/tickets/style';
 import { Box } from '@mui/system';
+import { EuiGlobalToastList } from '@elastic/eui';
 import { colors } from '../../../config';
-import { BountyCard, BountyCardStatus } from '../../../store/interface';
+import { BountyCard, BountyCardStatus, PersonBounty } from '../../../store/interface';
 import { usePaymentConfirmationModal } from '../../../components/common';
 
 const truncate = (str: string, n: number) => (str.length > n ? `${str.substr(0, n - 1)}...` : str);
-
+let interval;
 interface CardContainerProps {
   isDraft?: boolean;
 }
@@ -109,7 +112,6 @@ const StatusText = styled.span<{ status?: BountyCardStatus }>`
 
 interface BountyCardProps extends BountyCard {
   onclick: (bountyId: string, status?: BountyCardStatus, ticketGroup?: string) => void;
-  onPayBounty?: (bountyId: string) => Promise<void>;
 }
 
 const BountyCardComponent: React.FC<BountyCardProps> = ({
@@ -121,18 +123,184 @@ const BountyCardComponent: React.FC<BountyCardProps> = ({
   status,
   onclick,
   assignee_name,
-  ticket_group,
-  onPayBounty
+  ticket_group
 }: BountyCardProps) => {
   const [displayNameOptions, setDisplayNameOptions] = useState<boolean>(false);
   const { openPaymentConfirmation } = usePaymentConfirmationModal();
+  const [toasts, setToasts] = useState<any[]>([]);
+  const { main, ui } = useStores();
+  const [activeBounty, setActiveBounty] = useState<PersonBounty[]>([]);
+  const [connectPersonBody, setConnectPersonBody] = useState<any>();
 
-  const handleEditClick = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setDisplayNameOptions(false);
+  const getBounty = useCallback(async () => {
+    let bounty;
 
+    if (id) {
+      bounty = await main.getBountyById(Number(id));
+    }
+
+    const connectPerson = bounty && bounty.length ? bounty[0].person : [];
+
+    setConnectPersonBody(connectPerson);
+    setActiveBounty(bounty);
+  }, [id, main]);
+
+  useEffect(() => {
+    getBounty();
+  }, [getBounty]);
+
+  const recallBounties = async () => {
+    await main.getPeopleBounties({ resetPage: true, ...main.bountiesStatus });
+  };
+
+  const addToast = useCallback((type: string) => {
+    const toastId = Math.random();
+
+    switch (type) {
+      case SOCKET_MSG.invoice_success: {
+        return setToasts([
+          {
+            id: `${toastId}`,
+            title: 'Invoice has been paid',
+            color: 'success'
+          }
+        ]);
+      }
+      case SOCKET_MSG.keysend_failed: {
+        return setToasts([
+          {
+            id: `${toastId}`,
+            title: 'Keysend Payment failed',
+            toastLifeTimeMs: 10000,
+            color: 'error'
+          }
+        ]);
+      }
+      case SOCKET_MSG.keysend_error: {
+        return setToasts([
+          {
+            id: `${toastId}`,
+            title: 'Keysend Payment error',
+            toastLifeTimeMs: 10000,
+            color: 'error'
+          }
+        ]);
+      }
+      case SOCKET_MSG.keysend_success: {
+        return setToasts([
+          {
+            id: `${toastId}`,
+            title: 'Paid successfully',
+            color: 'success'
+          }
+        ]);
+      }
+      case SOCKET_MSG.keysend_pending: {
+        return setToasts([
+          {
+            id: `${toastId}`,
+            title: 'Payment is pending',
+            toastLifeTimeMs: 10000,
+            color: 'warning'
+          }
+        ]);
+      }
+    }
+  }, []);
+
+  const startPolling = useCallback(
+    async (paymentRequest: string) => {
+      let i = 0;
+      interval = setInterval(async () => {
+        try {
+          const invoiceData = await main.pollInvoice(paymentRequest);
+          if (invoiceData) {
+            if (invoiceData.success && invoiceData.response.settled) {
+              clearInterval(interval);
+
+              addToast(SOCKET_MSG.invoice_success);
+              main.setKeysendInvoice('');
+            }
+          }
+
+          i++;
+          if (i > 22) {
+            if (interval) clearInterval(interval);
+          }
+        } catch (e) {
+          console.warn('CodingBounty Invoice Polling Error', e);
+        }
+      }, 5000);
+    },
+    [main, addToast]
+  );
+
+  const removeToast = () => {
+    setToasts([]);
+  };
+
+  const generateInvoice = async (price: number) => {
+    if (activeBounty[0].created && ui.meInfo?.websocketToken) {
+      const data = await main.getLnInvoice({
+        amount: price || 0,
+        memo: '',
+        owner_pubkey: connectPersonBody.owner_pubkey,
+        user_pubkey: connectPersonBody.owner_pubkey,
+        route_hint: connectPersonBody.owner_route_hint ?? '',
+        created: activeBounty[0].created ? activeBounty[0].created?.toString() : '',
+        type: 'KEYSEND'
+      });
+
+      const paymentRequest = data.response.invoice;
+
+      if (paymentRequest) {
+        main.setKeysendInvoice(paymentRequest);
+        startPolling(paymentRequest);
+      }
+    }
+  };
+
+  const makePayments = async () => {
+    const price = Number(activeBounty[0].body.price);
+
+    if (activeBounty[0].body.org_uuid) {
+      const workspaceBudget = await main.getWorkspaceBudget(activeBounty[0].body.org_uuid);
+      const budget = workspaceBudget.current_budget;
+
+      if (activeBounty.length && Number(budget) >= Number(price)) {
+        const b = activeBounty[0];
+
+        if (!b.body.paid) {
+          // make keysend payment
+          const body = {
+            id: Number(id),
+            websocket_token: ui.meInfo?.websocketToken || ''
+          };
+
+          await main.makeBountyPayment(body);
+
+          recallBounties();
+        }
+      } else {
+        return setToasts([
+          {
+            id: `${Math.random()}`,
+            title: 'Insufficient funds in the workspace.',
+            color: 'danger',
+            toastLifeTimeMs: 10000
+          }
+        ]);
+      }
+    } else {
+      generateInvoice(price || 0);
+    }
+  };
+
+  const handlePayment = () => {
     openPaymentConfirmation({
-      onConfirmPayment: () => onPayBounty?.(id),
+      onConfirmPayment: async () => {
+        await makePayments();
+      },
       children: (
         <Box fontSize={20} textAlign="center">
           Are you sure you want to <br />
@@ -142,6 +310,12 @@ const BountyCardComponent: React.FC<BountyCardProps> = ({
         </Box>
       )
     });
+  };
+
+  const handleEditClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setDisplayNameOptions(false);
+    handlePayment();
   };
 
   const handleOptionsClick = (e: React.MouseEvent) => {
@@ -196,6 +370,7 @@ const BountyCardComponent: React.FC<BountyCardProps> = ({
           {status}
         </StatusText>
       </RowB>
+      <EuiGlobalToastList toasts={toasts} dismissToast={removeToast} toastLifeTimeMs={6000} />
     </CardContainer>
   );
 };
@@ -209,7 +384,6 @@ BountyCardComponent.propTypes = {
   phase: PropTypes.shape({
     name: PropTypes.string
   }) as PropTypes.Validator<BountyCard['phase']>,
-  assignee_img: PropTypes.string,
   workspace: PropTypes.shape({
     name: PropTypes.string
   }) as PropTypes.Validator<BountyCard['workspace']>,
@@ -221,8 +395,7 @@ BountyCardComponent.propTypes = {
     'COMPLETED',
     'PAID'
   ] as BountyCardStatus[]),
-  onclick: PropTypes.func.isRequired,
-  onPayBounty: PropTypes.func
+  onclick: PropTypes.func.isRequired
 };
 
 export default BountyCardComponent;
