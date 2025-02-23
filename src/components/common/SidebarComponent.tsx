@@ -403,7 +403,7 @@ export default function SidebarComponent({
                         <NavItem
                           onClick={() => {
                             setActiveItem('feature');
-                            history.push(`/feature/${feat.uuid}`);
+                            history.push(`/workspace/${uuid}/feature/${feat.uuid}`);
                           }}
                           key={feat.id}
                           collapsed={collapsed}

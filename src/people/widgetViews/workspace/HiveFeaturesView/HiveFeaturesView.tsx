@@ -18,6 +18,7 @@ import {
   quickBountyTicketStore
 } from '../../../../store/quickBountyTicketStore.tsx';
 import { Toast } from '../interface.ts';
+import { AddPhaseModal } from '../WorkspacePhasingModals.tsx';
 import ActivitiesHeader from './header';
 
 const TableContainer = styled.div`
@@ -25,6 +26,11 @@ const TableContainer = styled.div`
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 7%;
+`;
+
+export const LabelValue = styled.span`
+  font-weight: normal;
 `;
 
 const PhaseHeader = styled.h3`
@@ -37,7 +43,7 @@ const PhaseHeader = styled.h3`
   margin-bottom: 0;
   padding-left: 10px;
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr auto auto;
   gap: 8px;
   align-items: center;
 `;
@@ -105,6 +111,7 @@ export const ActivitiesContainer = styled.div<{ collapsed: boolean }>`
   grid-template-columns: 1fr;
   gap: 2rem;
   padding: 3.5rem;
+  padding-bottom: 0 !important;
   background-color: #f8f9fa;
   height: calc(100vh - 120px);
   overflow-y: auto;
@@ -151,6 +158,46 @@ const DraftButton = styled.button`
   }
 `;
 
+const PlannerButton = styled.button`
+  background-color: #49c998;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  &:hover {
+    background-color: #3ab584;
+  }
+`;
+
+const BottomButtonContainer = styled.div`
+  margin-top: 30px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+`;
+
+const FeatureButton = styled.button`
+  background-color: #49c998;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  &:hover {
+    background-color: #3ab584;
+  }
+`;
+
+const NewPhaseButton = styled(FeatureButton)`
+  background-color: #608aff;
+  &:hover {
+    background-color: #4a6fd1;
+  }
+`;
+
 interface HiveFeaturesViewProps {
   features?: Array<{
     id?: string;
@@ -183,6 +230,9 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
   const [draftTexts, setDraftTexts] = useState<{ [phaseID: string]: string }>({});
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [websocketSessionId, setWebsocketSessionId] = useState<string>('');
+  const [showAddPhaseModal, setShowAddPhaseModal] = useState(false);
+  const [phaseName, setPhaseName] = useState<string>('');
+  const [featureName, setFeatureName] = useState<string>('');
 
   console.log('main', main.meInfo);
 
@@ -214,16 +264,25 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
   }, {});
 
   useEffect(() => {
-    const fetchPhaseNames = async () => {
-      const names: { [key: string]: string } = {};
-      for (const phaseID of Object.keys(groupedData)) {
-        const phase = await main.getFeaturePhaseByUUID(featureUuid, phaseID);
-        names[phaseID] = phase?.name || 'Untitled Phase';
+    const fetchAllPhases = async () => {
+      if (featureUuid) {
+        const phases = await main.getFeaturePhases(featureUuid);
+        const names: { [key: string]: string } = {};
+        for (const phase of phases) {
+          names[phase.uuid] = phase.name || 'Untitled Phase';
+
+          if (!(phase.uuid in expandedPhases)) {
+            setExpandedPhases((prev) => ({
+              ...prev,
+              [phase.uuid]: true
+            }));
+          }
+        }
+        setPhaseNames(names);
       }
-      setPhaseNames(names);
     };
-    fetchPhaseNames();
-  }, [groupedData, featureUuid, main]);
+    fetchAllPhases();
+  }, [featureUuid, main]);
 
   useEffect(() => {
     const savedState = localStorage.getItem(`expandedPhases_${featureUuid}`);
@@ -267,6 +326,18 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
       }
     };
   }, []);
+
+  useEffect(() => {
+    const fetchFeatureName = async () => {
+      if (featureUuid) {
+        const feature = await main.getFeaturesByUuid(featureUuid);
+        if (feature) {
+          setFeatureName(feature.name || 'Feature');
+        }
+      }
+    };
+    fetchFeatureName();
+  }, [featureUuid]);
 
   const togglePhase = (phaseID: string) => {
     setExpandedPhases((prev) => ({
@@ -379,24 +450,80 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
     }
   };
 
+  const handleAddPhaseClick = () => {
+    setShowAddPhaseModal(true);
+  };
+
+  const handleAddPhaseModalClose = () => {
+    setShowAddPhaseModal(false);
+  };
+
+  const handleFeatureDetailsClick = () => {
+    history.push(`/feature/${featureUuid}`);
+  };
+
+  const handleCreatePhase = async () => {
+    try {
+      const body = {
+        uuid: '',
+        feature_uuid: featureUuid,
+        name: phaseName,
+        priority: 0
+      };
+
+      await main.createOrUpdatePhase(body);
+      const response = await quickBountyTicketStore.fetchAndSetQuickData(featureUuid);
+      setData(response || []);
+
+      setPhaseName('');
+
+      const updatedPhases = await main.getFeaturePhases(featureUuid);
+      const names: { [key: string]: string } = {};
+      for (const phase of updatedPhases) {
+        names[phase.uuid] = phase.name || 'Untitled Phase';
+      }
+      setPhaseNames(names);
+
+      addSuccessToast('Phase created successfully!');
+      handleAddPhaseModalClose();
+    } catch (error) {
+      console.error('Error creating phase:', error);
+      addErrorToast('Failed to create phase. Please try again.');
+    }
+  };
+
+  const handlePhaseNameChange = (name: string) => setPhaseName(name);
+
   return (
     <>
       <MainContainer>
         <SidebarComponent uuid={workspaceUuid} />
         <ActivitiesHeader uuid={workspaceUuid} collapsed={collapsed} />
         <ActivitiesContainer collapsed={collapsed}>
-          {Object.values(groupedData).length === 0 ? (
+          {Object.keys(phaseNames).length === 0 ? (
             <p>No phases available</p>
           ) : (
             <TableContainer>
-              {Object.values(groupedData).map((items, index) => {
-                const { phaseID } = items[0];
+              <h3>
+                Feature Name: <LabelValue>{featureName}</LabelValue>
+              </h3>
+              {Object.entries(phaseNames).map(([phaseID, phaseName], index) => {
+                const items = groupedData[phaseID] || [];
                 const isExpanded = expandedPhases[phaseID] !== false;
                 const draftText = draftTexts[phaseID] || '';
 
                 return (
-                  <div key={index}>
-                    <PhaseHeader onClick={() => togglePhase(phaseID)} style={{ cursor: 'pointer' }}>
+                  <div key={phaseID}>
+                    <PhaseHeader
+                      onClick={(e) => {
+                        if ((e.target as HTMLElement).closest('button')) {
+                          e.stopPropagation();
+                          return;
+                        }
+                        togglePhase(phaseID);
+                      }}
+                      style={{ cursor: 'pointer' }}
+                    >
                       <div
                         style={{
                           display: 'flex',
@@ -413,9 +540,17 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
                             minWidth: 0
                           }}
                         >
-                          Phase {index + 1}: {phaseNames[phaseID] || 'Untitled Phase'}
+                          Phase {index + 1}: {phaseName}
                         </span>
                       </div>
+                      <PlannerButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          history.push(`/feature/${featureUuid}/phase/${phaseID}/planner`);
+                        }}
+                      >
+                        Phase Planner
+                      </PlannerButton>
                       <span>{isExpanded ? '▼' : '▶'}</span>
                     </PhaseHeader>
                     {isExpanded && (
@@ -445,6 +580,13 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
                                 </Td>
                               </tr>
                             ))}
+                            {items.length === 0 && (
+                              <tr>
+                                <Td colSpan={3} style={{ textAlign: 'center' }}>
+                                  No tickets in this phase
+                                </Td>
+                              </tr>
+                            )}
                           </tbody>
                         </Table>
                         <DraftInputContainer>
@@ -468,9 +610,25 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
                   </div>
                 );
               })}
+              <BottomButtonContainer>
+                <FeatureButton onClick={handleFeatureDetailsClick}>Feature Details</FeatureButton>
+                <NewPhaseButton onClick={handleAddPhaseClick}>+ New Phase</NewPhaseButton>
+              </BottomButtonContainer>
             </TableContainer>
           )}
         </ActivitiesContainer>
+
+        {showAddPhaseModal && (
+          <AddPhaseModal
+            onSave={handleCreatePhase}
+            onEditPhase={handlePhaseNameChange}
+            onClose={handleAddPhaseModalClose}
+            onConfirmDelete={() => {
+              handleAddPhaseModalClose();
+            }}
+          />
+        )}
+
         <EuiGlobalToastList
           toasts={toasts}
           dismissToast={() => setToasts([])}

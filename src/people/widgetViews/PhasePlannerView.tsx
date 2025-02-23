@@ -437,7 +437,7 @@ const PhasePlannerView: React.FC = observer(() => {
   }, [getFeatureData, getPhaseData, history, getPhaseTickets, phase_uuid]);
 
   const handleClose = () => {
-    history.push(`/feature/${feature_uuid}`);
+    history.push(`/workspace/${featureData?.workspace_uuid}/feature/${feature_uuid}`);
   };
 
   const addTicketHandler = async () => {
