@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/typedef */
 import React from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
@@ -30,6 +31,7 @@ const CardHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
+  position: relative;
 `;
 
 const CardTitle = styled.h3`
@@ -49,24 +51,6 @@ const CardTitle = styled.h3`
   display: flex;
   flex-direction: column;
   gap: 5px;
-`;
-
-const AssignerPic = styled.div`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 14px;
-  color: white;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
 `;
 
 const RowT = styled.div`
@@ -119,19 +103,78 @@ const StatusText = styled.span<{ status?: BountyCardStatus }>`
 
 interface BountyCardProps extends BountyCard {
   onclick: (bountyId: string, status?: BountyCardStatus, ticketGroup?: string) => void;
+  onPayBounty?: (bountyId: string) => void;
 }
+
+const ActionMenu = ({ status, onPay }: { status?: BountyCardStatus; onPay: () => void }) => {
+  const showMenu = ['COMPLETED', 'IN_REVIEW', 'IN_PROGRESS'].includes(status || '');
+
+  if (!showMenu) return null;
+
+  const MenuButton = styled.button`
+    border: none;
+    background: none;
+    padding: 4px;
+    cursor: pointer;
+    color: ${colors.light.text2};
+    &:hover {
+      color: ${colors.light.primaryColor};
+    }
+  `;
+
+  const Dropdown = styled.div`
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background: white;
+    border: 1px solid ${colors.light.grayish.G300};
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+    display: none;
+
+    ${MenuButton}:focus-within & {
+      display: block;
+    }
+  `;
+
+  const MenuItem = styled.button`
+    width: 100%;
+    padding: 8px 16px;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    &:hover {
+      background: ${colors.light.grayish.G100};
+    }
+  `;
+
+  return (
+    <MenuButton onClick={(e) => e.stopPropagation()}>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M6 12a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" fill="currentColor" />
+        <path d="M12 12a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" fill="currentColor" />
+        <path d="M18 12a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" fill="currentColor" />
+      </svg>
+      <Dropdown>
+        <MenuItem onClick={onPay}>Pay Bounty</MenuItem>
+      </Dropdown>
+    </MenuButton>
+  );
+};
 
 const BountyCardComponent: React.FC<BountyCardProps> = ({
   id,
   title,
   features,
   phase,
-  assignee_img,
   workspace,
   status,
   onclick,
   assignee_name,
-  ticket_group
+  ticket_group,
+  onPayBounty
 }: BountyCardProps) => (
   <CardContainer isDraft={status === 'DRAFT'} onClick={() => onclick(id, status, ticket_group)}>
     <CardHeader>
@@ -146,11 +189,9 @@ const BountyCardComponent: React.FC<BountyCardProps> = ({
         {title}
         <span style={{ fontSize: '16px', marginTop: '10px' }}>{assignee_name}</span>
       </CardTitle>
-      {assignee_img && (
-        <AssignerPic>
-          <img src={assignee_img} alt="Assigner" />
-        </AssignerPic>
-      )}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <ActionMenu status={status} onPay={() => onPayBounty?.(id)} />
+      </div>
     </CardHeader>
 
     <RowT>
@@ -180,7 +221,6 @@ BountyCardComponent.propTypes = {
   phase: PropTypes.shape({
     name: PropTypes.string
   }) as PropTypes.Validator<BountyCard['phase']>,
-  assignee_img: PropTypes.string,
   workspace: PropTypes.shape({
     name: PropTypes.string
   }) as PropTypes.Validator<BountyCard['workspace']>,
@@ -192,7 +232,8 @@ BountyCardComponent.propTypes = {
     'COMPLETED',
     'PAID'
   ] as BountyCardStatus[]),
-  onclick: PropTypes.func.isRequired
+  onclick: PropTypes.func.isRequired,
+  onPayBounty: PropTypes.func
 };
 
 export default BountyCardComponent;
