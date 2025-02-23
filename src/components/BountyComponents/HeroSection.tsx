@@ -131,7 +131,7 @@ const HeroSection: React.FC = () => {
     <>
       <HeroContainer>
         <Content>
-          <h1>Complete tasks and get paid, instantly.</h1>
+          <h1>Earn rewards instantly for completing tasks</h1>
           <p>
             Welcome to the modern marketplace for work that gives you the freedom to earn Bitcoin
             for every bounty you complete.
