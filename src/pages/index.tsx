@@ -17,6 +17,7 @@ import { HiveChatView } from '../people/hiveChat/index';
 import WorkSpacePlanner from '../people/WorkSpacePlanner/index';
 import HiveFeaturesView from '../people/widgetViews/workspace/HiveFeaturesView/HiveFeaturesView.tsx';
 import FeatureBacklogView from '../people/widgetViews/workspace/FeatureBacklogView/FeatureBacklogView.tsx';
+import HiveBuildView from '../people/hiveBuild';
 import DailyBountyPage from './DailyBountyPage/index';
 import Body from './tribes/Body';
 import Header from './tribes/Header';
@@ -82,6 +83,9 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
               </Route>
               <Route path="/workspace/:uuid/hivechat/:chatId">
                 <HiveChatView />
+              </Route>
+              <Route path="/hivechat/:uuid/build">
+                <HiveBuildView />
               </Route>
               <Route path="/workspace/:uuid">
                 <WorkspaceMission />

@@ -4718,6 +4718,46 @@ export class MainStore {
       return null;
     }
   }
+
+  async createStakworkProject(chatQuestion: string): Promise<any | null> {
+    try {
+      const stakworkToken = 'SWWFTOKEN';
+      console.log('Using API token:', stakworkToken);
+
+      const response = await fetch('https://api.stakwork.com/api/v1/projects', {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          Authorization: `Token token="${stakworkToken}"`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: 'hive_autogen',
+          workflow_id: 43198,
+          workflow_params: {
+            set_var: {
+              attributes: {
+                vars: { query: chatQuestion }
+              }
+            }
+          }
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to create Stakwork project: ${response.status} ${response.statusText}`
+        );
+      }
+
+      const responseData = await response.json();
+      console.log('Response Data:', responseData);
+      return responseData;
+    } catch (error) {
+      console.error('Error creating Stakwork project:', error);
+      return null;
+    }
+  }
 }
 
 export const mainStore = new MainStore();
