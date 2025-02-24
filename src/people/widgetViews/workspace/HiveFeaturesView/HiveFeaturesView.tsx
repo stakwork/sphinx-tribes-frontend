@@ -768,7 +768,7 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
                               <Th>Name</Th>
                               <Th style={{ textAlign: 'center' }}>Status</Th>
                               <Th style={{ textAlign: 'center' }}>Assigned</Th>
-                              <Th style={{ width: '5%', textAlign: 'center' }}>Actions</Th>
+                              <Th style={{ width: '5%', textAlign: 'center' }}>Action</Th>
                             </tr>
                           </thead>
                           <tbody>
