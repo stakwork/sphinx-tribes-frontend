@@ -124,7 +124,7 @@ describe('BountyCardComponent', () => {
     expect(queryByTestId('feature-name-btn')).not.toBeInTheDocument();
   });
 
-  it('handles click on the card title', () => {
+  it('handles click on card title', () => {
     const { getByRole } = render(<BountyCardComponent {...mockBountyCard} />);
     fireEvent.click(getByRole('button'));
     expect(mockBountyCard.onclick).toHaveBeenCalledWith('123', 'IN_PROGRESS', 'group1');
