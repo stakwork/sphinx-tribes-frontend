@@ -500,14 +500,14 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
         <SidebarComponent uuid={workspaceUuid} />
         <ActivitiesHeader uuid={workspaceUuid} collapsed={collapsed} />
         <ActivitiesContainer collapsed={collapsed}>
-          {Object.keys(phaseNames).length === 0 ? (
-            <p>No phases available</p>
-          ) : (
-            <TableContainer>
-              <h3>
-                Feature Name: <LabelValue>{featureName}</LabelValue>
-              </h3>
-              {Object.entries(phaseNames).map(([phaseID, phaseName], index) => {
+          <TableContainer>
+            <h3>
+              Feature Name: <LabelValue>{featureName}</LabelValue>
+            </h3>
+            {Object.keys(phaseNames).length === 0 ? (
+              <p>No phases available</p>
+            ) : (
+              Object.entries(phaseNames).map(([phaseID, phaseName], index) => {
                 const items = groupedData[phaseID] || [];
                 const isExpanded = expandedPhases[phaseID] !== false;
                 const draftText = draftTexts[phaseID] || '';
@@ -609,13 +609,13 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
                     )}
                   </div>
                 );
-              })}
-              <BottomButtonContainer>
-                <FeatureButton onClick={handleFeatureDetailsClick}>Feature Details</FeatureButton>
-                <NewPhaseButton onClick={handleAddPhaseClick}>+ New Phase</NewPhaseButton>
-              </BottomButtonContainer>
-            </TableContainer>
-          )}
+              })
+            )}
+            <BottomButtonContainer>
+              <FeatureButton onClick={handleFeatureDetailsClick}>Feature Details</FeatureButton>
+              <NewPhaseButton onClick={handleAddPhaseClick}>+ New Phase</NewPhaseButton>
+            </BottomButtonContainer>
+          </TableContainer>
         </ActivitiesContainer>
 
         {showAddPhaseModal && (
