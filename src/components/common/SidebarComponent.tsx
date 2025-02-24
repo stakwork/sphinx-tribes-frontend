@@ -145,7 +145,6 @@ const WorkspaceImage = styled.img`
   height: 30px;
   border-radius: 50%;
   object-fit: cover;
-  margin-right: 10px;
   ${({ collapsed }: { collapsed?: boolean }) =>
     collapsed &&
     `
@@ -157,6 +156,43 @@ const WorkspaceName = styled.span<{ collapsed: boolean }>`
   font-weight: 500;
   display: ${({ collapsed }) => (collapsed ? 'none' : 'inline')};
   font-size: 1.2rem;
+`;
+
+const WorkspaceDropdown = styled.div<{ collapsed: boolean }>`
+  position: relative;
+  cursor: pointer;
+  margin-left: auto;
+  display: ${({ collapsed }) => (collapsed ? 'none' : 'block')};
+  z-index: 1001;
+`;
+
+const DropdownMenu = styled.div`
+  position: fixed;
+  top: 190px;
+  left: 0px;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1002;
+  min-width: 250px;
+`;
+
+const DropdownItem = styled.div`
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  &:hover {
+    background-color: #f0f0f0;
+  }
+`;
+
+const DropdownWorkspaceImage = styled.img`
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  object-fit: cover;
 `;
 
 interface SidebarComponentProps {
@@ -178,6 +214,7 @@ export default function SidebarComponent({
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [featureModal, setFeatureModal] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   const user_pubkey = ui.meInfo?.owner_pubkey;
 
@@ -283,6 +320,7 @@ export default function SidebarComponent({
 
   const handleWorkspaceClick = (uuid: string) => {
     window.location.href = `/workspace/${uuid}/activities`;
+    setShowDropdown(false);
   };
 
   const handleCollapse = (collapsed: boolean) => {
@@ -301,8 +339,26 @@ export default function SidebarComponent({
     toggleFeatureModal();
   };
 
+  const toggleDropdown = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowDropdown(!showDropdown);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (showDropdown) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [showDropdown]);
+
   return (
-    <SidebarContainer collapsed={collapsed}>
+    <SidebarContainer collapsed={collapsed} onClick={(e) => e.stopPropagation()}>
       <HamburgerButton onClick={() => handleCollapse(!collapsed)}>
         <MaterialIcon icon="menu" style={{ fontSize: 28 }} />
       </HamburgerButton>
@@ -316,8 +372,37 @@ export default function SidebarComponent({
                 src={workspace.img || avatarIcon}
                 alt={workspace.name}
                 collapsed={collapsed}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (collapsed) toggleDropdown(e);
+                }}
               />
-              <WorkspaceName collapsed={collapsed}>{workspace.name}</WorkspaceName>
+              {!collapsed && (
+                <>
+                  <WorkspaceBudget org={workspace} user_pubkey={user_pubkey ?? ''} />
+                  <WorkspaceDropdown collapsed={collapsed} onClick={toggleDropdown}>
+                    <MaterialIcon icon="arrow_drop_down" style={{ fontSize: 24 }} />
+                    {showDropdown && (
+                      <DropdownMenu>
+                        {main.workspaces
+                          .filter((w) => w.uuid !== uuid)
+                          .map((workspace) => (
+                            <DropdownItem
+                              key={workspace.uuid}
+                              onClick={() => handleWorkspaceClick(workspace.uuid)}
+                            >
+                              <DropdownWorkspaceImage
+                                src={workspace.img || avatarIcon}
+                                alt={workspace.name}
+                              />
+                              {workspace.name}
+                            </DropdownItem>
+                          ))}
+                      </DropdownMenu>
+                    )}
+                  </WorkspaceDropdown>
+                </>
+              )}
             </React.Fragment>
           ))}
       </WorkspaceTitle>
@@ -339,33 +424,6 @@ export default function SidebarComponent({
         <MaterialIcon icon="settings" />
         <span>Settings</span>
       </NavItem>
-
-      {/* Workspace Section */}
-      <WorkspaceSection>
-        <WorkspaceHeader onClick={toggleWorkspace}>
-          <h6 style={{ display: collapsed ? 'none' : 'block' }}>Workspace</h6>
-          <MaterialIcon
-            icon={isWorkspaceExpanded ? 'arrow_drop_down' : 'arrow_right'}
-            style={{ marginRight: '5px' }}
-          />
-        </WorkspaceHeader>
-        {isWorkspaceExpanded && (
-          <div>
-            {workspaces.map((workspace) => (
-              <NavItem
-                key={workspace.uuid}
-                onClick={() => handleWorkspaceClick(workspace.uuid)}
-                collapsed={collapsed}
-              >
-                <IconWrapper>
-                  <MaterialIcon icon="folder" />
-                </IconWrapper>
-                <WorkspaceBudget org={workspace} user_pubkey={user_pubkey ?? ''} />
-              </NavItem>
-            ))}
-          </div>
-        )}
-      </WorkspaceSection>
 
       <FeaturesSection>
         <FeatureHeader onClick={toggleFeatures}>
