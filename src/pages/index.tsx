@@ -16,6 +16,7 @@ import WorkspaceTicketCreateView from '../people/widgetViews/workspace/Workspace
 import { HiveChatView } from '../people/hiveChat/index';
 import WorkSpacePlanner from '../people/WorkSpacePlanner/index';
 import HiveFeaturesView from '../people/widgetViews/workspace/HiveFeaturesView/HiveFeaturesView.tsx';
+import FeatureBacklogView from '../people/widgetViews/workspace/FeatureBacklogView/FeatureBacklogView.tsx';
 import DailyBountyPage from './DailyBountyPage/index';
 import Body from './tribes/Body';
 import Header from './tribes/Header';
@@ -72,6 +73,9 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
               </Route>
               <Route path="/workspace/:uuid/activities">
                 <Activities />
+              </Route>
+              <Route path="/workspace/:workspace_uuid/feature_backlog">
+                <FeatureBacklogView />
               </Route>
               <Route path="/workspace/:workspace_uuid/feature/:feature_uuid">
                 <HiveFeaturesView />
