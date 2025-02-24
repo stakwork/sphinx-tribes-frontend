@@ -767,8 +767,8 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
                             <tr>
                               <Th>Name</Th>
                               <Th style={{ textAlign: 'center' }}>Status</Th>
-                              <Th style={{ width: '5%', textAlign: 'center' }}>Actions</Th>
                               <Th style={{ textAlign: 'center' }}>Assigned</Th>
+                              <Th style={{ width: '5%', textAlign: 'center' }}>Actions</Th>
                             </tr>
                           </thead>
                           <tbody>
@@ -784,6 +784,9 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
                                   <StatusBadge status={item.status}>{item.status}</StatusBadge>
                                 </Td>
                                 <Td style={{ textAlign: 'center' }}>
+                                  {item.assignedAlias || '...'}
+                                </Td>
+                                <Td style={{ textAlign: 'center' }}>
                                   {item.bountyTicket === 'bounty' && (
                                     <ActionMenu
                                       status={item.status}
@@ -791,9 +794,6 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
                                       onPay={confirmPaymentHandler}
                                     />
                                   )}
-                                </Td>
-                                <Td style={{ textAlign: 'center' }}>
-                                  {item.assignedAlias || '...'}
                                 </Td>
                               </tr>
                             ))}
