@@ -191,6 +191,13 @@ const FeatureButton = styled.button`
   }
 `;
 
+const FeatureBacklogButton = styled(FeatureButton)`
+  background-color: #49c998;
+  &:hover {
+    background-color: #3ab584;
+  }
+`;
+
 const NewPhaseButton = styled(FeatureButton)`
   background-color: #608aff;
   &:hover {
@@ -462,6 +469,10 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
     history.push(`/feature/${featureUuid}`);
   };
 
+  const handleFeatureBacklogClick = () => {
+    history.push(`/workspace/${workspaceUuid}/feature_backlog`);
+  };
+
   const handleCreatePhase = async () => {
     try {
       const body = {
@@ -612,6 +623,9 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
               })
             )}
             <BottomButtonContainer>
+              <FeatureBacklogButton onClick={handleFeatureBacklogClick}>
+                Feature Backlog
+              </FeatureBacklogButton>
               <FeatureButton onClick={handleFeatureDetailsClick}>Feature Details</FeatureButton>
               <NewPhaseButton onClick={handleAddPhaseClick}>+ New Phase</NewPhaseButton>
             </BottomButtonContainer>
