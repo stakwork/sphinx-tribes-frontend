@@ -42,11 +42,17 @@ const BountiesLandingPage: React.FC = () => {
   return (
     <Body isMobile={isMobile}>
       <ContentWrapper>
-        <BountyNavBar />
-        <HeroSection />
-        <CommunitySection />
-        <PaymentSection />
-        <Footer />
+        <header>
+          <BountyNavBar />
+        </header>
+        <main>
+          <HeroSection />
+          <CommunitySection />
+          <PaymentSection />
+        </main>
+        <footer>
+          <Footer />
+        </footer>
       </ContentWrapper>
     </Body>
   );

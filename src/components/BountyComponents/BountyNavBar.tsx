@@ -341,73 +341,108 @@ const BountyNavBar: React.FC = () => {
     <>
       <Nav>
         <Logo>
-          <HamburgerButton onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+          <HamburgerButton
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-menu"
+          >
             <MaterialIcon icon="menu" style={{ fontSize: 28 }} />
           </HamburgerButton>
           <Img />
           <span>SPHINX COMMUNITY</span>
         </Logo>
         <ButtonGroup>
-          <Button variant="primary" onClick={handleStartEarning}>
-            Start Earning
-          </Button>
-          <Button variant="secondary" onClick={handleViewBounties}>
-            View Bounties
-          </Button>
-          <Corner>
-            {ui.meInfo ? (
-              <LoggedInBtn data-testid="loggedInUser" onClick={handleProfileClick}>
-                <Imgg
-                  data-testid="userImg"
-                  src={ui.meInfo?.img || '/static/person_placeholder.png'}
-                />
-                <Alias>{ui.meInfo?.owner_alias}</Alias>
-              </LoggedInBtn>
-            ) : (
-              <LoginBtn onClick={handleLoginClick}>
-                <span>Sign in</span>
-                <MaterialIcon
-                  icon={'login'}
-                  style={{ fontSize: 18 }}
-                  role="img"
-                  aria-hidden="true"
-                />
-              </LoginBtn>
-            )}
-          </Corner>
+          <ul style={{ listStyle: 'none', display: 'flex', gap: '12px', padding: 0, margin: 0 }}>
+            <li>
+              <Button variant="primary" onClick={handleStartEarning}>
+                Start Earning
+              </Button>
+            </li>
+            <li>
+              <Button variant="secondary" onClick={handleViewBounties}>
+                View Bounties
+              </Button>
+            </li>
+            <li>
+              <Corner>
+                {ui.meInfo ? (
+                  <LoggedInBtn data-testid="loggedInUser" onClick={handleProfileClick}>
+                    <Imgg
+                      data-testid="userImg"
+                      src={ui.meInfo?.img || '/static/person_placeholder.png'}
+                    />
+                    <Alias>{ui.meInfo?.owner_alias}</Alias>
+                  </LoggedInBtn>
+                ) : (
+                  <LoginBtn onClick={handleLoginClick}>
+                    <span>Sign in</span>
+                    <MaterialIcon
+                      icon={'login'}
+                      style={{ fontSize: 18 }}
+                      role="img"
+                      aria-hidden="true"
+                    />
+                  </LoginBtn>
+                )}
+              </Corner>
+            </li>
+          </ul>
         </ButtonGroup>
       </Nav>
 
       <MobileMenu className={isMobileMenuOpen ? 'open' : ''}>
-        <ButtonGroup>
-          <Button variant="primary" onClick={handleStartEarning}>
-            Start Earning
-          </Button>
-          <Button variant="secondary" onClick={handleViewBounties}>
-            View Bounties
-          </Button>
-          <Corner style={{ width: '100%' }}>
-            {ui.meInfo ? (
-              <LoggedInBtn data-testid="loggedInUser" onClick={handleProfileClick} isMobile={true}>
-                <Imgg
-                  data-testid="userImg"
-                  src={ui.meInfo?.img || '/static/person_placeholder.png'}
-                />
-                <Alias isMobile={true}>{ui.meInfo?.owner_alias}</Alias>
-              </LoggedInBtn>
-            ) : (
-              <LoginBtn onClick={handleLoginClick} isMobile={true}>
-                <span>Sign in</span>
-                <MaterialIcon
-                  icon={'login'}
-                  style={{ fontSize: 18 }}
-                  role="img"
-                  aria-hidden="true"
-                />
-              </LoginBtn>
-            )}
-          </Corner>
-        </ButtonGroup>
+        <nav aria-label="Mobile Navigation">
+          <ButtonGroup as="div" id="mobile-menu">
+            <ul
+              style={{
+                listStyle: 'none',
+                padding: 0,
+                margin: 0,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px'
+              }}
+            >
+              <li>
+                <Button variant="primary" onClick={handleStartEarning}>
+                  Start Earning
+                </Button>
+              </li>
+              <li>
+                <Button variant="secondary" onClick={handleViewBounties}>
+                  View Bounties
+                </Button>
+              </li>
+              <li>
+                <Corner style={{ width: '100%' }}>
+                  {ui.meInfo ? (
+                    <LoggedInBtn
+                      data-testid="loggedInUser"
+                      onClick={handleProfileClick}
+                      isMobile={true}
+                    >
+                      <Imgg
+                        data-testid="userImg"
+                        src={ui.meInfo?.img || '/static/person_placeholder.png'}
+                      />
+                      <Alias isMobile={true}>{ui.meInfo?.owner_alias}</Alias>
+                    </LoggedInBtn>
+                  ) : (
+                    <LoginBtn onClick={handleLoginClick} isMobile={true}>
+                      <span>Sign in</span>
+                      <MaterialIcon
+                        icon={'login'}
+                        style={{ fontSize: 18 }}
+                        role="img"
+                        aria-hidden="true"
+                      />
+                    </LoginBtn>
+                  )}
+                </Corner>
+              </li>
+            </ul>
+          </ButtonGroup>
+        </nav>
       </MobileMenu>
 
       <StyledModal
