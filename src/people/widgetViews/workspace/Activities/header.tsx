@@ -8,6 +8,7 @@ import addBounty from 'pages/tickets/workspace/workspaceHeader/Icons/addBounty.s
 import MaterialIcon from '@material/react-material-icon';
 import { useHistory } from 'react-router-dom';
 import { Workspace } from '../../../../store/interface.ts';
+import { useFeatureFlag } from '../../../../hooks/useFeatureFlag.ts';
 
 const HeaderContainer = styled.header`
   background: #1a1b23;
@@ -68,11 +69,32 @@ const PostBountyButton = styled.button`
   }
 `;
 
+const WhatYouLikeToBuild = styled.button`
+  background: #3ad573;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background: #44dc7c;
+  }
+`;
+
 export default function ActivitiesHeader({ uuid }: { uuid: string }) {
   const { main, ui } = useStores();
   const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
   const [canPostBounty, setCanPostBounty] = useState(false);
   const [workspaceName, setWorkspaceName] = useState('Bounties');
+  const { isEnabled } = useFeatureFlag('buildtoday');
+
+  const history = useHistory();
 
   React.useEffect(() => {
     const checkUserPermissions = async () => {
@@ -90,6 +112,10 @@ export default function ActivitiesHeader({ uuid }: { uuid: string }) {
     if (canPostBounty) {
       setIsPostBountyModalOpen(true);
     }
+  };
+
+  const handleWhatYouWantToBuild = () => {
+    history.push(`/hivechat/${uuid}/build`);
   };
 
   useEffect(() => {
@@ -166,7 +192,6 @@ export default function ActivitiesHeader({ uuid }: { uuid: string }) {
     }
   `;
 
-  const history = useHistory();
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleWorkspacePlanner = () => {
@@ -220,6 +245,11 @@ export default function ActivitiesHeader({ uuid }: { uuid: string }) {
           </BountiesInfo>
 
           <ButtonGroup>
+            {isEnabled && (
+              <WhatYouLikeToBuild onClick={handleWhatYouWantToBuild}>
+                What would you like to build?
+              </WhatYouLikeToBuild>
+            )}
             {canPostBounty && (
               <PostBountyButton onClick={handlePostBountyClick}>
                 {' '}
