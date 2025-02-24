@@ -98,7 +98,7 @@ const WorkspaceBudget = (props: { user_pubkey: string; org: any }) => {
 
   return (
     <WorkspaceTextWrap className="org-text-wrap">
-      <WorkspaceText href={`/workspace/${org.uuid}`} hasAccess={hasAccess}>
+      <WorkspaceText href={`/workspace/${org.uuid}/activities`} hasAccess={hasAccess}>
         {org.name}
       </WorkspaceText>
       {hasAccess && (
