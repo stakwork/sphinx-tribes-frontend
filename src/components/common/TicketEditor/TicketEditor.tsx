@@ -731,7 +731,7 @@ const TicketEditor = observer(
               )}
             </EditorWrapper>
             <TicketButtonGroup>
-              {showSWWFLink && (
+              {showSWWFLink && swwfLink && (
                 <ChainOfThought>
                   <h6>Hive - Chain of Thought</h6>
                   <p>
@@ -741,7 +741,7 @@ const TicketEditor = observer(
                   </p>
                 </ChainOfThought>
               )}
-              {showSWWFLink && (
+              {showSWWFLink && swwfLink && (
                 <ActionButton
                   as="a"
                   href={`https://jobs.stakwork.com/admin/projects/${swwfLink}`}
