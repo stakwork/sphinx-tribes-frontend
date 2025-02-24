@@ -1,14 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/typedef */
 import { observer } from 'mobx-react-lite';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import styled from 'styled-components';
 import { useStores } from 'store';
 import { useParams } from 'react-router-dom';
 import SidebarComponent from 'components/common/SidebarComponent';
 import { useHistory } from 'react-router';
 import { EuiGlobalToastList } from '@elastic/eui';
-import { Author, TicketStatus } from 'store/interface.ts';
+import { Author, BountyCardStatus, TicketStatus } from 'store/interface.ts';
 import { createSocketInstance } from 'config/socket';
 import { SOCKET_MSG } from 'config/socket';
 import { uiStore } from 'store/ui';
@@ -17,8 +17,8 @@ import {
   QuickBountyTicket,
   quickBountyTicketStore
 } from '../../../../store/quickBountyTicketStore.tsx';
-import { Toast } from '../interface.ts';
 import { AddPhaseModal } from '../WorkspacePhasingModals.tsx';
+import { PaymentConfirmationModal } from '../../../../components/common';
 import ActivitiesHeader from './header';
 
 const TableContainer = styled.div`
@@ -27,6 +27,7 @@ const TableContainer = styled.div`
   border-radius: 8px;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
   margin-bottom: 7%;
+  overflow: visible;
 `;
 
 export const LabelValue = styled.span`
@@ -52,6 +53,7 @@ const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
+  overflow: visible;
 `;
 
 const Th = styled.th`
@@ -73,18 +75,19 @@ const Td = styled.td`
   padding: 10px;
   border-bottom: 1px solid #ddd;
   white-space: nowrap;
-  overflow: hidden;
   text-overflow: ellipsis;
+  position: relative;
+  overflow: visible !important;
   max-width: 0;
   &:first-child {
-    width: 60%;
+    width: 40%;
     max-width: 60%;
   }
   &:nth-child(2) {
-    width: 20%;
+    width: 30%;
   }
   &:nth-child(3) {
-    width: 20%;
+    width: 30%;
   }
 `;
 
@@ -198,6 +201,45 @@ const NewPhaseButton = styled(FeatureButton)`
   }
 `;
 
+const MenuContainer = styled.div`
+  position: relative;
+  display: inline-block;
+`;
+
+const MenuButton = styled.button`
+  border: none;
+  background: none;
+  padding: 4px;
+  cursor: pointer;
+`;
+
+const Dropdown = styled.div`
+  position: absolute;
+  right: 0;
+  top: 20px;
+  margin-top: 4px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  min-width: 120px;
+  z-index: 9999;
+`;
+
+const DropdownItem = styled.button`
+  display: block;
+  width: 100%;
+  padding: 8px;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+
+  &:hover {
+    background: #f0f0f0;
+  }
+`;
+
 interface HiveFeaturesViewProps {
   features?: Array<{
     id?: string;
@@ -226,15 +268,66 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
   const [collapsed, setCollapsed] = useState(false);
   const [data, setData] = useState<QuickBountyTicket[]>([]);
   const [expandedPhases, setExpandedPhases] = useState<{ [key: string]: boolean }>({});
-  const { main } = useStores();
+  const { ui, main } = useStores();
   const [draftTexts, setDraftTexts] = useState<{ [phaseID: string]: string }>({});
-  const [toasts, setToasts] = useState<Toast[]>([]);
+  const [toasts, setToasts] = React.useState<any[]>([]);
   const [websocketSessionId, setWebsocketSessionId] = useState<string>('');
   const [showAddPhaseModal, setShowAddPhaseModal] = useState(false);
   const [phaseName, setPhaseName] = useState<string>('');
   const [featureName, setFeatureName] = useState<string>('');
+  const [connectPersonBody, setConnectPersonBody] = React.useState<any>({});
+  const [isOpenPaymentConfirmation, setIsOpenPaymentConfirmation] = React.useState(false);
+  const [activeBounty, setActiveBounty] = React.useState<any[]>([]);
+  const [bountyID, setBountyID] = useState<number>();
 
-  console.log('main', main.meInfo);
+  let interval: number;
+
+  const addToast = (type: string) => {
+    const toastId = Math.random();
+    switch (type) {
+      case SOCKET_MSG.keysend_success:
+        setToasts([
+          {
+            id: `${toastId}`,
+            title: 'Paid successfully',
+            color: 'success'
+          }
+        ]);
+        break;
+      case SOCKET_MSG.keysend_failed:
+        setToasts([
+          {
+            id: `${toastId}`,
+            title: 'Insufficient funds in the workspace.',
+            color: 'error',
+            toastLifeTimeMs: 10000
+          }
+        ]);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const removeToast = () => {
+    setToasts([]);
+  };
+
+  const getBounty = useCallback(async () => {
+    let bounty;
+    if (bountyID) {
+      bounty = await main.getBountyById(Number(bountyID));
+    }
+    const connectPerson = bounty?.length ? bounty[0].person : [];
+    setConnectPersonBody(connectPerson);
+    setActiveBounty(bounty || []);
+  }, [bountyID, main]);
+
+  useEffect(() => {
+    if (bountyID) {
+      getBounty();
+    }
+  }, [bountyID, getBounty]);
 
   useEffect(() => {
     const handleCollapseChange = (e: Event) => {
@@ -494,6 +587,120 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
 
   const handlePhaseNameChange = (name: string) => setPhaseName(name);
 
+  const startPolling = React.useCallback(
+    async (paymentRequest: string) => {
+      let i = 0;
+      interval = window.setInterval(async () => {
+        try {
+          const invoiceData = await main.pollInvoice(paymentRequest);
+          if (invoiceData?.success && invoiceData.response.settled) {
+            clearInterval(interval);
+            addToast(SOCKET_MSG.invoice_success);
+            main.setKeysendInvoice('');
+          }
+          if (i++ > 22) clearInterval(interval);
+        } catch (e) {
+          console.warn('Invoice Polling Error', e);
+        }
+      }, 5000);
+    },
+    [main, addToast]
+  );
+
+  const generateInvoice = async (price: number) => {
+    if (activeBounty[0]?.created && ui.meInfo?.websocketToken) {
+      const data = await main.getLnInvoice({
+        amount: price || 0,
+        memo: '',
+        owner_pubkey: connectPersonBody.owner_pubkey,
+        user_pubkey: connectPersonBody.owner_pubkey,
+        route_hint: connectPersonBody.owner_route_hint ?? '',
+        created: activeBounty[0].created?.toString() || '',
+        type: 'KEYSEND'
+      });
+      if (data.response.invoice) {
+        main.setKeysendInvoice(data.response.invoice);
+        startPolling(data.response.invoice);
+      }
+    }
+  };
+
+  const handlePayment = async () => {
+    try {
+      const price = Number(activeBounty[0].body.price);
+
+      console.log('price', price);
+
+      if (workspaceUuid) {
+        const workspaceBudget = await main.getWorkspaceBudget(workspaceUuid);
+        if (Number(workspaceBudget.current_budget) >= price) {
+          await main.makeBountyPayment({
+            id: Number(bountyID),
+            websocket_token: ui.meInfo?.websocketToken || ''
+          });
+          addToast(SOCKET_MSG.keysend_success);
+        } else {
+          addToast(SOCKET_MSG.keysend_failed);
+        }
+      } else {
+        await generateInvoice(price);
+      }
+    } catch (error) {
+      console.error('Payment failed:', error);
+      addToast(SOCKET_MSG.keysend_failed);
+    } finally {
+      setIsOpenPaymentConfirmation(false);
+    }
+  };
+
+  const ActionMenu = ({
+    status,
+    bountyId,
+    onPay
+  }: {
+    status?: BountyCardStatus;
+    bountyId: number;
+    onPay: () => void;
+  }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const menuRef = useRef<HTMLDivElement | null>(null);
+
+    const toggleMenu = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      setBountyID(bountyId);
+      setIsOpen((prev) => !prev);
+    };
+    const closeMenu = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    useEffect(() => {
+      document.addEventListener('click', closeMenu);
+      return () => document.removeEventListener('click', closeMenu);
+    }, []);
+
+    const showMenu = ['COMPLETED', 'IN_REVIEW', 'IN_PROGRESS'].includes(status || '');
+
+    if (!showMenu) return null;
+
+    return (
+      <MenuContainer ref={menuRef}>
+        <MenuButton onClick={toggleMenu}>...</MenuButton>
+        {isOpen && (
+          <Dropdown>
+            <DropdownItem onClick={onPay}>Pay Bounty</DropdownItem>
+          </Dropdown>
+        )}
+      </MenuContainer>
+    );
+  };
+
+  const confirmPaymentHandler = () => {
+    setIsOpenPaymentConfirmation(true);
+  };
+
   return (
     <>
       <MainContainer>
@@ -560,12 +767,13 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
                             <tr>
                               <Th>Name</Th>
                               <Th style={{ textAlign: 'center' }}>Status</Th>
+                              <Th style={{ width: '5%', textAlign: 'center' }}>Actions</Th>
                               <Th style={{ textAlign: 'center' }}>Assigned</Th>
                             </tr>
                           </thead>
                           <tbody>
                             {items.map((item) => (
-                              <tr key={item.ID}>
+                              <tr key={item.ID} style={{ position: 'relative', zIndex: 1 }}>
                                 <Td
                                   onClick={() => handleTitleClick(item)}
                                   style={{ cursor: 'pointer' }}
@@ -574,6 +782,15 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
                                 </Td>
                                 <Td style={{ textAlign: 'center' }}>
                                   <StatusBadge status={item.status}>{item.status}</StatusBadge>
+                                </Td>
+                                <Td style={{ textAlign: 'center' }}>
+                                  {item.bountyTicket === 'bounty' && (
+                                    <ActionMenu
+                                      status={item.status}
+                                      bountyId={item.bountyID as number}
+                                      onPay={confirmPaymentHandler}
+                                    />
+                                  )}
                                 </Td>
                                 <Td style={{ textAlign: 'center' }}>
                                   {item.assignedAlias || '...'}
@@ -618,6 +835,13 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
           )}
         </ActivitiesContainer>
 
+        {isOpenPaymentConfirmation && (
+          <PaymentConfirmationModal
+            onClose={() => setIsOpenPaymentConfirmation(false)}
+            onConfirmPayment={handlePayment}
+          />
+        )}
+        <EuiGlobalToastList toasts={toasts} dismissToast={removeToast} toastLifeTimeMs={6000} />
         {showAddPhaseModal && (
           <AddPhaseModal
             onSave={handleCreatePhase}
