@@ -182,15 +182,14 @@ const DropdownItem = styled.div`
   padding: 8px 16px;
   display: flex;
   align-items: center;
-  gap: 8px;
   &:hover {
     background-color: #f0f0f0;
   }
 `;
 
 const DropdownWorkspaceImage = styled.img`
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   object-fit: cover;
 `;
@@ -395,7 +394,9 @@ export default function SidebarComponent({
                                 src={workspace.img || avatarIcon}
                                 alt={workspace.name}
                               />
-                              {workspace.name}
+                              <div onClick={(e) => e.stopPropagation()}>
+                                <WorkspaceBudget org={workspace} user_pubkey={user_pubkey ?? ''} />
+                              </div>
                             </DropdownItem>
                           ))}
                       </DropdownMenu>
