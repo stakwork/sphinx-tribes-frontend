@@ -414,7 +414,7 @@ export default function SidebarComponent({
         collapsed={collapsed}
       >
         <MaterialIcon icon="home" />
-        <span>Activities</span>
+        <span>Activities</span> {/* TODO: Add activities */}
       </NavItem>
 
       <NavItem
