@@ -131,6 +131,35 @@ export class FeaturesWorkspaceStore {
     }
   }
 
+  async updateFeaturePriority(uuid: string, priority: number): Promise<void> {
+    try {
+      this.setLoading(true);
+      const feature = this.state.features.get(uuid);
+
+      if (!feature) {
+        throw new Error('Feature not found');
+      }
+
+      const body = {
+        uuid,
+        priority,
+        workspace_uuid: feature.workspace_uuid,
+        name: feature.name
+      };
+
+      await mainStore.addWorkspaceFeature(body);
+
+      runInAction(() => {
+        feature.priority = priority;
+        this.state.features.set(uuid, feature);
+      });
+    } catch (error) {
+      this.setError(error instanceof Error ? error.message : 'Failed to update feature priority');
+    } finally {
+      this.setLoading(false);
+    }
+  }
+
   private setLoading(loading: boolean): void {
     this.state.loading = loading;
     this.state.error = null;
