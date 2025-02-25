@@ -14,10 +14,18 @@ import { useStores } from '../../store';
 import { Chat } from '../../store/interface';
 
 const Container = styled.div<{ collapsed: boolean }>`
-  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 0;
+  overflow: hidden;
+  background: var(--Search-bar-background, #f2f3f5);
   margin-left: ${({ collapsed }: { collapsed: boolean }) => (collapsed ? '50px' : '250px')};
-  transition: margin-left 0.3s ease;
-  height: 100%;
+  transition: margin-left 0.3s ease-in-out;
+`;
+
+const ChatHistoryContainer = styled.div`
+  padding: 20px;
 `;
 
 const Header = styled.div`
@@ -43,16 +51,18 @@ const ChatTable = styled.div`
 
 const TableHeader = styled.div`
   display: grid;
-  grid-template-columns: 2fr 1fr 100px;
+  grid-template-columns: 1fr 1fr 100px;
   padding: 16px;
   background: #f5f5f5;
-  font-weight: 600;
+  font-weight: 700;
   color: #333;
+  font-family: 'Barlow';
+  font-size: 20px;
 `;
 
 const ChatRow = styled.div`
   display: grid;
-  grid-template-columns: 2fr 1fr 100px;
+  grid-template-columns: 1fr 1fr 100px;
   padding: 16px;
   border-bottom: 1px solid #eee;
   align-items: center;
@@ -65,15 +75,20 @@ const ChatRow = styled.div`
 
 const ChatTitle = styled.div`
   cursor: pointer;
-  color: #4285f4;
-
+  color: #666;
+  font-weight: 500;
+  font-size: 18px;
+  font-family: 'Barlow';
   &:hover {
-    text-decoration: underline;
+    text-decoration: none;
   }
 `;
 
 const DateTime = styled.div`
   color: #666;
+  font-family: 'Barlow';
+  font-size: 16px;
+  font-weight: 500;
 `;
 
 const LoadingContainer = styled.div`
@@ -92,15 +107,18 @@ const EmptyState = styled.div`
 const ChatActions = styled.div`
   position: relative;
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
+  align-items: center;
+  margin-left: 10px;
 `;
 
 const EllipsesButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
-  padding: 8px;
   border-radius: 4px;
+  padding: 0 !important;
+  color: #666;
 
   &:hover {
     background: #f0f0f0;
@@ -126,6 +144,7 @@ const ModalContent = styled.div`
   border-radius: 8px;
   width: 400px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: relative;
 `;
 
 const ModalHeader = styled.div`
@@ -145,9 +164,22 @@ const CloseButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 20px;
+  font-size: 24px;
   color: #666;
-  padding: 4px;
+  padding: 8px;
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+
+  &:hover {
+    background-color: #f5f5f5;
+  }
 `;
 
 const Input = styled.input`
@@ -157,6 +189,12 @@ const Input = styled.input`
   border-radius: 4px;
   margin-bottom: 20px;
   font-size: 14px;
+
+  &:focus {
+    outline: none;
+    border-color: #4285f4;
+    box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+  }
 `;
 
 const ButtonGroup = styled.div`
@@ -167,16 +205,36 @@ const ButtonGroup = styled.div`
 
 const Button = styled.button<{ primary?: boolean }>`
   padding: 8px 16px;
-  border-radius: 4px;
+  border-radius: 20px;
   border: none;
-  cursor: pointer;
+  cursor: ${(props: { primary?: boolean; disabled?: boolean }) =>
+    props.disabled ? 'not-allowed' : 'pointer'};
   font-size: 14px;
-  background: ${(props: any) => (props.primary ? '#4285f4' : '#fff')};
-  color: ${(props: any) => (props.primary ? '#fff' : '#333')};
-  border: ${(props: any) => (props.primary ? 'none' : '1px solid #ddd')};
+  background: ${(props: { primary?: boolean; disabled?: boolean }) => {
+    if (props.disabled) return '#ccc';
+    return props.primary ? '#4285f4' : '#fff';
+  }};
+  color: ${(props: { primary?: boolean; disabled?: boolean }) => (props.primary ? '#fff' : '#333')};
+  border: ${(props: { primary?: boolean; disabled?: boolean }) =>
+    props.primary ? 'none' : '1px solid #ddd'};
+  transition: all 0.2s ease;
+  opacity: ${(props: { primary?: boolean; disabled?: boolean }) => (props.disabled ? 0.7 : 1)};
 
   &:hover {
-    background: ${(props: any) => (props.primary ? '#3367d6' : '#f5f5f5')};
+    background: ${(props: { primary?: boolean; disabled?: boolean }) => {
+      if (props.disabled) return '#ccc';
+      return props.primary ? '#3367d6' : '#f5f5f5';
+    }};
+    transform: ${(props: { primary?: boolean; disabled?: boolean }) =>
+      props.disabled ? 'none' : 'translateY(-1px)'};
+    box-shadow: ${(props: { primary?: boolean; disabled?: boolean }) =>
+      props.disabled ? 'none' : '0 2px 4px rgba(0, 0, 0, 0.1)'};
+  }
+
+  &:active {
+    transform: ${(props: { primary?: boolean; disabled?: boolean }) =>
+      props.disabled ? 'none' : 'translateY(0)'};
+    box-shadow: none;
   }
 `;
 
@@ -342,87 +400,92 @@ export const ChatHistoryView: React.FC = observer(() => {
       <SidebarComponent uuid={workspaceId} />
       <Container collapsed={collapsed}>
         <ActivitiesHeader uuid={workspaceId} />
-        <Header>
-          <MaterialIcon
-            onClick={handleBackClick}
-            icon="arrow_back"
-            style={{
-              fontSize: 25,
-              cursor: 'pointer',
-              color: '#5f6368'
-            }}
-          />
-          <Title>Hive Chat History</Title>
-        </Header>
+        <ChatHistoryContainer>
+          <Header>
+            <MaterialIcon
+              onClick={handleBackClick}
+              icon="arrow_back"
+              style={{
+                fontSize: 25,
+                cursor: 'pointer',
+                color: '#5f6368'
+              }}
+            />
+            <Title>Hive Chat History</Title>
+          </Header>
 
-        <ChatTable>
-          <TableHeader>
-            <div>Chats</div>
-            <div>Date Time</div>
-            <div>Actions</div>
-          </TableHeader>
-          {chats.length > 0 ? (
-            chats.map((chat: Chat) => (
-              <ChatRow key={chat.id}>
-                <ChatTitle onClick={() => handleChatClick(chat.id)}>
-                  {chat.title || 'Untitled Chat'}
-                </ChatTitle>
-                <DateTime>{formatDate(chat.updatedAt || chat.createdAt)}</DateTime>
-                <ChatActions>
-                  <EllipsesButton
-                    onClick={(e: React.MouseEvent) => toggleMenu(chat.id, e)}
-                    data-testid={`chat-options-${chat.id}`}
-                  >
-                    <MaterialIcon icon="more_horiz" />
-                  </EllipsesButton>
-                  {visibleMenu[chat.id] && (
-                    <ActionPopover onClick={(e: React.MouseEvent) => e.stopPropagation()}>
-                      <ActionItem
-                        onClick={(e: React.MouseEvent) =>
-                          handleRenameClick(chat.id, chat.title || '', e)
-                        }
-                        data-testid={`rename-chat-${chat.id}`}
-                      >
-                        <ActionIcon>
-                          <MaterialIcon icon="edit" style={{ fontSize: '16px' }} />
-                        </ActionIcon>
-                        Rename
-                      </ActionItem>
-                      <ActionItem
-                        onClick={(e: React.MouseEvent) => {
-                          e.stopPropagation();
-                          confirmArchiveChat(chat.id);
-                          setVisibleMenu((prev: { [key: string]: boolean }) => ({
-                            ...prev,
-                            [chat.id]: false
-                          }));
-                        }}
-                        data-testid={`archive-chat-${chat.id}`}
-                      >
-                        <ActionIcon>
-                          <MaterialIcon icon="archive" style={{ fontSize: '16px' }} />
-                        </ActionIcon>
-                        Archive
-                      </ActionItem>
-                    </ActionPopover>
-                  )}
-                </ChatActions>
-              </ChatRow>
-            ))
-          ) : (
-            <EmptyState>
-              <MaterialIcon icon="chat" style={{ fontSize: 48, color: '#ccc', marginBottom: 16 }} />
-              <p>No chat history found</p>
-            </EmptyState>
-          )}
-        </ChatTable>
+          <ChatTable>
+            <TableHeader>
+              <div>Chats</div>
+              <div>Date Time</div>
+              <div>Actions</div>
+            </TableHeader>
+            {chats.length > 0 ? (
+              chats.map((chat: Chat) => (
+                <ChatRow key={chat.id}>
+                  <ChatTitle onClick={() => handleChatClick(chat.id)}>
+                    {chat.title || 'Untitled Chat'}
+                  </ChatTitle>
+                  <DateTime>{formatDate(chat.updatedAt || chat.createdAt)}</DateTime>
+                  <ChatActions>
+                    <EllipsesButton
+                      onClick={(e: React.MouseEvent) => toggleMenu(chat.id, e)}
+                      data-testid={`chat-options-${chat.id}`}
+                    >
+                      <MaterialIcon icon="more_horiz" />
+                    </EllipsesButton>
+                    {visibleMenu[chat.id] && (
+                      <ActionPopover onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+                        <ActionItem
+                          onClick={(e: React.MouseEvent) =>
+                            handleRenameClick(chat.id, chat.title || '', e)
+                          }
+                          data-testid={`rename-chat-${chat.id}`}
+                        >
+                          <ActionIcon>
+                            <MaterialIcon icon="edit" style={{ fontSize: '16px' }} />
+                          </ActionIcon>
+                          Rename
+                        </ActionItem>
+                        <ActionItem
+                          onClick={(e: React.MouseEvent) => {
+                            e.stopPropagation();
+                            confirmArchiveChat(chat.id);
+                            setVisibleMenu((prev: { [key: string]: boolean }) => ({
+                              ...prev,
+                              [chat.id]: false
+                            }));
+                          }}
+                          data-testid={`archive-chat-${chat.id}`}
+                        >
+                          <ActionIcon>
+                            <MaterialIcon icon="archive" style={{ fontSize: '16px' }} />
+                          </ActionIcon>
+                          Archive
+                        </ActionItem>
+                      </ActionPopover>
+                    )}
+                  </ChatActions>
+                </ChatRow>
+              ))
+            ) : (
+              <EmptyState>
+                <MaterialIcon
+                  icon="chat"
+                  style={{ fontSize: 48, color: '#ccc', marginBottom: 16 }}
+                />
+                <p>No chat history found</p>
+              </EmptyState>
+            )}
+          </ChatTable>
+        </ChatHistoryContainer>
       </Container>
 
       {isRenameModalOpen && (
         <ModalOverlay onClick={() => setIsRenameModalOpen(false)}>
           <ModalContent onClick={(e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()}>
             <ModalHeader>
-              <ModalTitle>Rename Chat</ModalTitle>
+              <ModalTitle>Rename Chat Title</ModalTitle>
               <CloseButton onClick={() => setIsRenameModalOpen(false)}>×</CloseButton>
             </ModalHeader>
             <Input
@@ -433,7 +496,7 @@ export const ChatHistoryView: React.FC = observer(() => {
             />
             <ButtonGroup>
               <Button onClick={() => setIsRenameModalOpen(false)}>Cancel</Button>
-              <Button primary onClick={handleSave}>
+              <Button primary disabled={!newTitle.trim()} onClick={handleSave}>
                 Update
               </Button>
             </ButtonGroup>

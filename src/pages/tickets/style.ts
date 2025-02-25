@@ -679,19 +679,23 @@ export const BountiesHeader = styled.div`
 export const ActionPopover = styled.div`
   position: absolute;
   top: 0;
-  right: 40px;
+  right: 100%;
   background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.15);
   z-index: 1000;
-  min-width: 120px;
-  padding: 8px 0;
+  min-width: 140px;
+  padding: 4px;
+  margin-right: 8px;
+
+  border: 1px solid rgba(0, 0, 0, 0.05);
 `;
 
 export const ActionItem = styled.div`
   padding: 8px 16px;
   cursor: pointer;
   font-size: 14px;
+  font-weight: 500;
   color: #333;
   display: flex;
   align-items: center;
