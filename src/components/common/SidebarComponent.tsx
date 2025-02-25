@@ -8,17 +8,28 @@ import { EuiDroppable } from '@elastic/eui';
 
 import { EuiDragDropContext } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
-import { Modal } from 'components/common';
+import { Modal, useDeleteConfirmationModal } from 'components/common';
 import AddFeature from 'people/widgetViews/workspace/AddFeatureModal';
 import React, { useCallback, useEffect } from 'react';
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useStores } from 'store';
-import { Feature, Workspace } from 'store/interface';
+import { Chat, Feature, Workspace } from 'store/interface';
 import styled from 'styled-components';
+import { Box } from '@mui/system';
+import { EuiLoadingSpinner } from '@elastic/eui';
+import {
+  EditPopover,
+  EditPopoverText,
+  EditPopoverContent,
+  EditPopoverTail
+} from 'pages/tickets/style.ts';
 import { colors } from '../../config/colors';
 import avatarIcon from '../../public/static/profile_avatar.svg';
 import WorkspaceBudget from '../../people/widgetViews/workspace/WorkspaceBudget.tsx';
+import { chatService } from '../../services';
+import { Toast } from '../../people/widgetViews/workspace/interface.ts';
+import { archiveIcon } from './DeleteConfirmationModal/archiveIcon.tsx';
 
 const color = colors['light'];
 
@@ -98,7 +109,7 @@ const FeatureData = styled.div`
   font-size: 0.6rem;
   font-weight: 400;
   display: flex;
-  margin-left: 4%;
+  margin-left: 2%;
   color: #333;
 `;
 
@@ -135,9 +146,9 @@ const WorkspaceTitle = styled.div<{ collapsed: boolean }>`
   ${({ collapsed }) =>
     collapsed &&
     `
-    justify-content: center;
-    padding: 15px 0;
-  `}
+   justify-content: center;
+   padding: 15px 0;
+ `}
 `;
 
 const WorkspaceImage = styled.img`
@@ -148,8 +159,8 @@ const WorkspaceImage = styled.img`
   ${({ collapsed }: { collapsed?: boolean }) =>
     collapsed &&
     `
-    margin-right: 0;
-  `}
+   margin-right: 0;
+ `}
 `;
 
 const WorkspaceName = styled.span<{ collapsed: boolean }>`
@@ -194,6 +205,36 @@ const DropdownWorkspaceImage = styled.img`
   object-fit: cover;
 `;
 
+const LoadingContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+`;
+
+const ChatItemContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+`;
+
+const ChatItemContent = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const ChatTitle = styled.h6`
+  margin: 0;
+  margin-bottom: 4px;
+  font-weight: bold;
+`;
+
+const ChatTimestamp = styled.span`
+  font-size: 12px;
+  color: black;
+  margin-left: -1px !important;
+`;
+
 interface SidebarComponentProps {
   uuid?: string;
   defaultCollapsed?: boolean;
@@ -203,7 +244,7 @@ export default function SidebarComponent({
   uuid,
   defaultCollapsed = false
 }: SidebarComponentProps) {
-  const { ui, main } = useStores();
+  const { ui, main, chat } = useStores();
   const [activeItem, setActiveItem] = useState<'activities' | 'settings' | 'feature' | null>(null);
   const [features, setFeatures] = useState<Feature[]>([]);
   const [collapsed, setCollapsed] = useState(defaultCollapsed);
@@ -214,6 +255,11 @@ export default function SidebarComponent({
   const [isLoading, setIsLoading] = useState(false);
   const [featureModal, setFeatureModal] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [chats, setChats] = React.useState<Chat[]>([]);
+  const [toasts, setToasts] = useState<Toast[]>([]);
+  const [visibleChatMenu, setVisibleChatMenu] = useState<{ [key: string]: boolean }>({});
+  const [isLoadingChats, setIsLoadingChats] = useState(true);
+  const [isChatsExpanded, setIsChatsExpanded] = useState(false);
 
   const user_pubkey = ui.meInfo?.owner_pubkey;
 
@@ -356,6 +402,127 @@ export default function SidebarComponent({
     };
   }, [showDropdown]);
 
+  useEffect(() => {
+    const loadChats = async () => {
+      setIsLoadingChats(true);
+      try {
+        const workspaceChats = await chat.getWorkspaceChats(uuid as string);
+        if (workspaceChats && workspaceChats.length > 0) {
+          const sortedChats = workspaceChats
+            .filter((chat: Chat) => chat && chat.id)
+            .sort((a: Chat, b: Chat) => {
+              const dateA = new Date(a.updatedAt || a.createdAt || 0).getTime();
+              const dateB = new Date(b.updatedAt || b.createdAt || 0).getTime();
+              return dateB - dateA;
+            });
+          setChats(sortedChats);
+        }
+      } catch (error) {
+        console.error('Error loading chats:', error);
+        ui.setToasts([
+          {
+            title: 'Error',
+            color: 'danger',
+            text: 'Failed to load chats.'
+          }
+        ]);
+      } finally {
+        setIsLoadingChats(false);
+      }
+    };
+    loadChats();
+  }, [uuid, chat, ui]);
+
+  const handleArchiveChat = async (chatId: string) => {
+    try {
+      setIsLoadingChats(true);
+      await chatService.archiveChat(chatId);
+
+      const updatedChats = await chat.getWorkspaceChats(uuid as string);
+      setChats(updatedChats);
+
+      setToasts([
+        {
+          id: `${Date.now()}-archive-success`,
+          title: 'Success',
+          color: 'success',
+          text: 'Chat archived successfully!'
+        }
+      ]);
+    } catch (error) {
+      setToasts([
+        {
+          id: `${Date.now()}-archive-error`,
+          title: 'Error',
+          color: 'danger',
+          text: 'Failed to archive chat'
+        }
+      ]);
+    } finally {
+      setIsLoadingChats(false);
+    }
+  };
+
+  const { openDeleteConfirmation } = useDeleteConfirmationModal();
+
+  const toggleChatMenu = (chatId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    setVisibleChatMenu({ [chatId]: !visibleChatMenu[chatId] });
+  };
+
+  const confirmArchiveChat = (chatId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    openDeleteConfirmation({
+      onDelete: () => handleArchiveChat(chatId),
+      onCancel: () =>
+        setVisibleChatMenu((prev: Record<string, boolean>) => ({
+          ...prev,
+          [chatId]: false
+        })),
+      confirmButtonText: 'Confirm',
+      customIcon: archiveIcon,
+      children: (
+        <Box fontSize={20} textAlign="center">
+          Are you sure you want to <br />
+          <Box component="span" fontWeight="500">
+            Archive this Chat?
+          </Box>
+        </Box>
+      )
+    });
+  };
+
+  const toggleChats = () => {
+    setIsChatsExpanded(!isChatsExpanded);
+  };
+
+  const handleNewChat = async () => {
+    try {
+      const newChat = await chat.createChat(uuid as string, 'New Chat');
+      if (newChat && newChat.id) {
+        history.push(`/workspace/${uuid}/hivechat/${newChat.id}`);
+      } else {
+        ui.setToasts([
+          {
+            title: 'Error',
+            color: 'danger',
+            text: 'Failed to create new chat. Please try again.'
+          }
+        ]);
+      }
+    } catch (error) {
+      ui.setToasts([
+        {
+          title: 'Error',
+          color: 'danger',
+          text: 'An error occurred while creating the chat.'
+        }
+      ]);
+    }
+  };
+
   return (
     <SidebarContainer collapsed={collapsed} onClick={(e) => e.stopPropagation()}>
       <HamburgerButton onClick={() => handleCollapse(!collapsed)}>
@@ -425,6 +592,91 @@ export default function SidebarComponent({
         <MaterialIcon icon="settings" />
         <span>Settings</span>
       </NavItem>
+
+      <FeaturesSection>
+        <FeatureHeader onClick={toggleChats}>
+          <h6 style={{ display: collapsed ? 'none' : 'block' }}>Chats</h6>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <MaterialIcon
+              data-testid="add-chat-button"
+              icon="add"
+              style={{ marginRight: '10px', cursor: 'pointer' }}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleNewChat();
+              }}
+            />
+            <MaterialIcon
+              icon={isChatsExpanded ? 'arrow_drop_down' : 'arrow_right'}
+              style={{ marginRight: '5px' }}
+            />
+          </div>
+        </FeatureHeader>
+        {isChatsExpanded && (
+          <div data-testid="chat-list">
+            {isLoadingChats ? (
+              <LoadingContainer data-testid="chat-loading-spinner">
+                <EuiLoadingSpinner size="m" />
+              </LoadingContainer>
+            ) : (
+              <>
+                {chats.slice(0, 5).map((chat) => (
+                  <NavItem
+                    data-testid={`chat-item-${chat.id}`}
+                    key={chat.id}
+                    onClick={() => history.push(`/workspace/${uuid}/hivechat/${chat.id}`)}
+                    collapsed={collapsed}
+                    active={window.location.pathname.includes(`/hivechat/${chat.id}`)}
+                  >
+                    <MissionRowFlex>
+                      {!collapsed && (
+                        <FeatureData>
+                          <ChatItemContainer>
+                            <ChatItemContent>
+                              <ChatTitle>{chat.title || 'Untitled Chat'}</ChatTitle>
+                              <ChatTimestamp data-testid={`chat-timestamp-${chat.id}`}>
+                                {chat.updatedAt || chat.createdAt
+                                  ? new Date(chat.updatedAt || chat.createdAt).toLocaleString()
+                                  : 'No date'}
+                              </ChatTimestamp>
+                            </ChatItemContent>
+                            <MaterialIcon
+                              data-testid="chat-options-button"
+                              icon="more_horiz"
+                              onClick={(e) => toggleChatMenu(chat.id, e)}
+                              style={{ cursor: 'pointer' }}
+                            />
+                          </ChatItemContainer>
+                          {visibleChatMenu[chat.id] && (
+                            <EditPopover>
+                              <EditPopoverTail />
+                              <EditPopoverContent onClick={(e) => confirmArchiveChat(chat.id, e)}>
+                                <EditPopoverText>Archive</EditPopoverText>
+                              </EditPopoverContent>
+                            </EditPopover>
+                          )}
+                        </FeatureData>
+                      )}
+                    </MissionRowFlex>
+                  </NavItem>
+                ))}
+                {chats.length > 5 && !collapsed && (
+                  <NavItem collapsed={collapsed}>
+                    <MissionRowFlex>
+                      <span
+                        style={{ color: '#4285f4' }}
+                        onClick={() => history.push(`/workspace/${uuid}`)}
+                      >
+                        View More
+                      </span>
+                    </MissionRowFlex>
+                  </NavItem>
+                )}
+              </>
+            )}
+          </div>
+        )}
+      </FeaturesSection>
 
       <FeaturesSection>
         <FeatureHeader onClick={toggleFeatures}>
