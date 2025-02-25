@@ -523,6 +523,10 @@ export default function SidebarComponent({
     }
   };
 
+  const handleFeatureBacklogClick = () => {
+    history.push(`/workspace/${uuid}/feature_backlog`);
+  };
+
   return (
     <SidebarContainer collapsed={collapsed} onClick={(e) => e.stopPropagation()}>
       <HamburgerButton onClick={() => handleCollapse(!collapsed)}>
@@ -591,6 +595,24 @@ export default function SidebarComponent({
       >
         <MaterialIcon icon="settings" />
         <span>Settings</span>
+      </NavItem>
+
+      <NavItem
+        active={window.location.pathname.includes('feature_backlog')}
+        onClick={handleFeatureBacklogClick}
+        collapsed={collapsed}
+      >
+        <img
+          src="/static/backlog.png"
+          alt="feature_backlog"
+          style={{
+            width: '22px',
+            height: '22px',
+            marginBottom: '4px',
+            marginLeft: '2px'
+          }}
+        />
+        <span>Backlog</span>
       </NavItem>
 
       <FeaturesSection>
