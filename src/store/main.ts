@@ -4721,26 +4721,18 @@ export class MainStore {
 
   async createStakworkProject(chatQuestion: string): Promise<any | null> {
     try {
-      const stakworkToken = 'SWWFTOKEN';
-      console.log('Using API token:', stakworkToken);
-
-      const response = await fetch('https://api.stakwork.com/api/v1/projects', {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+      const response = await fetch(`${TribesURL}/hivechat/send/build/`, {
         method: 'POST',
         mode: 'cors',
         headers: {
-          Authorization: `Token token="${stakworkToken}"`,
-          'Content-Type': 'application/json'
+          'x-jwt': info.tribe_jwt || '',
+          'Content-Type': 'application/json',
+          'x-session-id': this.getSessionId()
         },
         body: JSON.stringify({
-          name: 'hive_autogen',
-          workflow_id: 43198,
-          workflow_params: {
-            set_var: {
-              attributes: {
-                vars: { query: chatQuestion }
-              }
-            }
-          }
+          question: chatQuestion
         })
       });
 
@@ -4751,7 +4743,6 @@ export class MainStore {
       }
 
       const responseData = await response.json();
-      console.log('Response Data:', responseData);
       return responseData;
     } catch (error) {
       console.error('Error creating Stakwork project:', error);
