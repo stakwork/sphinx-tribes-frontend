@@ -675,3 +675,39 @@ export const BountiesHeader = styled.div`
   justify-content: space-between;
   background: #fff;
 `;
+
+export const ActionPopover = styled.div`
+  position: absolute;
+  top: 0;
+  right: 40px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  min-width: 120px;
+  padding: 8px 0;
+`;
+
+export const ActionItem = styled.div`
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &:hover {
+    background-color: #f5f5f5;
+  }
+
+  &:not(:last-child) {
+    border-bottom: 1px solid #eee;
+  }
+`;
+
+export const ActionIcon = styled.span`
+  display: flex;
+  align-items: center;
+  color: #666;
+`;
