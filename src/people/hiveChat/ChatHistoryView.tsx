@@ -14,18 +14,19 @@ import { useStores } from '../../store';
 import { Chat } from '../../store/interface';
 
 const Container = styled.div<{ collapsed: boolean }>`
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  padding: 0;
-  overflow: hidden;
-  background: var(--Search-bar-background, #f2f3f5);
+  gap: 2rem;
+  padding-bottom: 0 !important;
+  background-color: #f8f9fa;
+  height: calc(100vh - 120px);
+  overflow-y: auto;
   margin-left: ${({ collapsed }: { collapsed: boolean }) => (collapsed ? '50px' : '250px')};
   transition: margin-left 0.3s ease-in-out;
 `;
 
 const ChatHistoryContainer = styled.div`
   padding: 20px;
+  display: flex;
+  flex-direction: column;
 `;
 
 const Header = styled.div`
@@ -238,6 +239,29 @@ const Button = styled.button<{ primary?: boolean }>`
   }
 `;
 
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+`;
+
+const NewChatButton = styled.button`
+  background-color: #49c998;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &:hover {
+    background-color: #3ab584;
+  }
+`;
+
 export const ChatHistoryView: React.FC = observer(() => {
   const { workspaceId } = useParams<{ uuid: string; workspaceId: string }>();
   const { chat } = useStores();
@@ -385,6 +409,17 @@ export const ChatHistoryView: React.FC = observer(() => {
     }
   };
 
+  const handleNewChat = async () => {
+    try {
+      const newChat = await chat.createChat(workspaceId, 'New Chat');
+      if (newChat && newChat.id) {
+        history.push(`/workspace/${workspaceId}/hivechat/${newChat.id}`);
+      }
+    } catch (error) {
+      console.error('Error creating new chat:', error);
+    }
+  };
+
   if (loading) {
     return (
       <Container collapsed={collapsed}>
@@ -478,6 +513,13 @@ export const ChatHistoryView: React.FC = observer(() => {
               </EmptyState>
             )}
           </ChatTable>
+
+          <ButtonContainer>
+            <NewChatButton onClick={handleNewChat}>
+              <MaterialIcon icon="add" style={{ fontSize: '20px' }} />
+              New Chat
+            </NewChatButton>
+          </ButtonContainer>
         </ChatHistoryContainer>
       </Container>
 
