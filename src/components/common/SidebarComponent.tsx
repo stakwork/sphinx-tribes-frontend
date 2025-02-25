@@ -212,35 +212,6 @@ const LoadingContainer = styled.div`
   height: 100%;
 `;
 
-// const EditPopover = styled.div`
-//   position: absolute;
-//   top: 100%;
-//   right: 0;
-//   background: white;
-//   border: 1px solid #e0e0e0;
-//   border-radius: 4px;
-//   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-//   z-index: 2003;
-//   min-width: 150px;
-// `;
-
-// const EditPopoverTail = styled.div`
-//   position: absolute;
-//   top: -10px;
-//   right: 10px;
-//   border: 10px solid transparent;
-//   border-bottom-color: white;
-// `;
-
-// const EditPopoverContent = styled.div`
-//   padding: 8px;
-// `;
-
-// const EditPopoverText = styled.span`
-//   color: #333;
-//   font-size: 0.8rem;
-// `;
-
 const ChatItemContainer = styled.div`
   display: flex;
   justify-content: space-between;
@@ -288,7 +259,7 @@ export default function SidebarComponent({
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [visibleChatMenu, setVisibleChatMenu] = useState<{ [key: string]: boolean }>({});
   const [isLoadingChats, setIsLoadingChats] = useState(true);
-  const [isChatsExpanded, setIsChatsExpanded] = useState(true);
+  const [isChatsExpanded, setIsChatsExpanded] = useState(false);
 
   const user_pubkey = ui.meInfo?.owner_pubkey;
 
