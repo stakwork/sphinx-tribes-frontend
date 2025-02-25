@@ -105,7 +105,11 @@ function FocusedView(props: FocusViewProps) {
   function closeModal() {
     if (!manualGoBackOnly) {
       ui.setEditMe(false);
-      if (props.goBack) props.goBack();
+      if (window.history.length > 1) {
+        window.history.back();
+      } else if (props.goBack) {
+        props.goBack();
+      }
     }
   }
 
