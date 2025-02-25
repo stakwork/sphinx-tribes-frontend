@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useParams, useHistory } from 'react-router-dom';
-import { EuiLoadingSpinner } from '@elastic/eui';
+import { EuiGlobalToastList, EuiLoadingSpinner } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
 import { useDeleteConfirmationModal } from 'components/common';
 import { Box } from '@mui/system';
 import SidebarComponent from 'components/common/SidebarComponent';
 import ActivitiesHeader from 'people/widgetViews/workspace/Activities/header';
+import { Toast } from 'people/widgetViews/workspace/interface';
 import styled from 'styled-components';
 import { ActionPopover, ActionItem, ActionIcon } from 'pages/tickets/style.ts';
 import { archiveIcon } from 'components/common/DeleteConfirmationModal/archiveIcon.tsx';
@@ -268,6 +269,7 @@ export const ChatHistoryView: React.FC = observer(() => {
   const history = useHistory();
   const [loading, setLoading] = useState(true);
   const [chats, setChats] = useState<Chat[]>([]);
+  const [toasts, setToasts] = useState<Toast[]>([]);
   const [collapsed, setCollapsed] = useState(false);
   const [visibleMenu, setVisibleMenu] = useState<{ [key: string]: boolean }>({});
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
@@ -403,8 +405,24 @@ export const ChatHistoryView: React.FC = observer(() => {
         );
         setIsRenameModalOpen(false);
         setSelectedChatId(null);
+        setToasts([
+          {
+            id: `${Date.now()}-title-success`,
+            title: 'Success',
+            color: 'success',
+            text: 'Chat title updated successfully!'
+          }
+        ]);
       } catch (error) {
         console.error('Error updating chat title:', error);
+        setToasts([
+          {
+            id: `${Date.now()}-title-error`,
+            title: 'Error',
+            color: 'danger',
+            text: 'Failed to update chat title'
+          }
+        ]);
       }
     }
   };
@@ -523,6 +541,11 @@ export const ChatHistoryView: React.FC = observer(() => {
         </ChatHistoryContainer>
       </Container>
 
+      <EuiGlobalToastList
+        toasts={toasts}
+        dismissToast={() => setToasts([])}
+        toastLifeTimeMs={3000}
+      />
       {isRenameModalOpen && (
         <ModalOverlay onClick={() => setIsRenameModalOpen(false)}>
           <ModalContent onClick={(e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()}>
