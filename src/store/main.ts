@@ -4723,7 +4723,7 @@ export class MainStore {
     try {
       if (!uiStore.meInfo) return null;
       const info = uiStore.meInfo;
-      const response = await fetch(`${TribesURL}/hivechat/send/build/`, {
+      const response = await fetch(`${TribesURL}/hivechat/send/build`, {
         method: 'POST',
         mode: 'cors',
         headers: {
