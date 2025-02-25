@@ -20,7 +20,7 @@
     "prepare": "husky install .husky",
     "test": "yarn run test-jest",
     "test-jest": "REACT_APP_IS_TEST=true NODE_ENV=test yarn jest --coverage --maxWorkers 2 --no-cache --transformIgnorePatterns \"./svg/\"",
-    "cypress:run": "npx cypress run"
+    "start:local": "Set REACT_APP_LOCAL_ENV=true && craco start"
   },
   "resolutions": {
     "react-error-overlay": "6.0.9",
