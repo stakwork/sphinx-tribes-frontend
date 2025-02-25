@@ -6,6 +6,7 @@ import { Route, Switch } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import WorkspaceMission from 'people/widgetViews/WorkspaceMission';
 import WorkspaceFeature from 'people/widgetViews/WorkspaceFeature';
+import { HiveChatHistory } from 'people/widgetViews/workspace/HiveChatHistory/index.tsx';
 import PeopleHeader from '../people/main/Header';
 import TokenRefresh from '../people/utils/TokenRefresh';
 import GenerateStoriesView from '../people/widgetViews/GenerateStoriesView';
@@ -80,6 +81,9 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
               </Route>
               <Route path="/workspace/:workspace_uuid/feature/:feature_uuid">
                 <HiveFeaturesView />
+              </Route>
+              <Route path="/workspace/:workspaceId/hivechat/history">
+                <HiveChatHistory />
               </Route>
               <Route path="/workspace/:uuid/hivechat/:chatId">
                 <HiveChatView />
