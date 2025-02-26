@@ -218,6 +218,11 @@ const FeatureCell = styled.div`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  cursor: pointer;
+
+  &:hover {
+    color: #1a73e8;
+  }
 `;
 
 interface BriefCellProps {
@@ -424,6 +429,10 @@ const FeatureBacklogView = observer(() => {
     }
   };
 
+  const handleFeatureClick = (featureUuid: string) => {
+    history.push(`/workspace/${workspaceUuid}/feature/${featureUuid}`);
+  };
+
   return (
     <MainContainer>
       <SidebarComponent uuid={workspaceUuid} />
@@ -502,7 +511,9 @@ const FeatureBacklogView = observer(() => {
                                 </PriorityCell>
                               </Td>
                               <Td>
-                                <FeatureCell>{feature.name}</FeatureCell>
+                                <FeatureCell onClick={() => handleFeatureClick(feature.uuid)}>
+                                  {feature.name}
+                                </FeatureCell>
                               </Td>
                               <Td collapsed={collapsed}>
                                 <BriefCell empty={!feature.brief} collapsed={collapsed}>
