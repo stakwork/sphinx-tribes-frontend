@@ -47,6 +47,7 @@ import { Phase, Toast } from './workspace/interface';
 import { EditableField } from './workspace/EditableField.tsx';
 import WidgetSwitchViewer from './WidgetSwitchViewer.tsx';
 import ActivitiesHeader from './workspace/Activities/header.tsx';
+import { GeneratePhasePlanButton } from './workspace/GeneratePhasePlan.tsx';
 
 interface PhasePlannerParams {
   feature_uuid: string;
@@ -623,6 +624,11 @@ const PhasePlannerView: React.FC = observer(() => {
             />
             <WorkspaceName>Phase Planner</WorkspaceName>
           </FeatureHeadNameWrap>
+          <GeneratePhasePlanButton
+            featureId={feature_uuid}
+            phaseId={phase_uuid}
+            sourceWebsocket={websocketSessionId}
+          />
         </FeatureHeadWrap>
         <FeatureDataWrap>
           <FieldWrap>
