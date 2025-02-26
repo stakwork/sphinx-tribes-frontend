@@ -235,6 +235,43 @@ const ChatTimestamp = styled.span`
   margin-left: -1px !important;
 `;
 
+const PaginationContainer = styled.div`
+  display: grid;
+  grid-template-columns: 24px auto 24px;
+  justify-content: center;
+  align-items: center;
+  padding: 15px 15px;
+  margin-left: -34px;
+  text-align: center;
+  gap: 12px;
+`;
+
+const PaginationButton = styled(MaterialIcon)`
+  cursor: pointer;
+  color: #4285f4;
+  font-size: 22px;
+  &:hover {
+    opacity: 0.8;
+  }
+  display: flex;
+  align-items: center;
+  height: 20px;
+`;
+
+const ViewMoreLink = styled.span`
+  color: #4285f4;
+  cursor: pointer;
+  font-weight: 600;
+  &:hover {
+    text-decoration: none;
+  }
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 20px;
+  margin: 0 8px;
+`;
+
 interface SidebarComponentProps {
   uuid?: string;
   defaultCollapsed?: boolean;
@@ -260,6 +297,8 @@ export default function SidebarComponent({
   const [visibleChatMenu, setVisibleChatMenu] = useState<{ [key: string]: boolean }>({});
   const [isLoadingChats, setIsLoadingChats] = useState(true);
   const [isChatsExpanded, setIsChatsExpanded] = useState(false);
+  const [chatOffset, setChatOffset] = useState(0);
+  const CHATS_PER_PAGE = 5;
 
   const user_pubkey = ui.meInfo?.owner_pubkey;
 
@@ -527,6 +566,24 @@ export default function SidebarComponent({
     history.push(`/workspace/${uuid}/feature_backlog`);
   };
 
+  const visibleChats = chats.slice(chatOffset, chatOffset + CHATS_PER_PAGE);
+  const hasNextPage = chatOffset + CHATS_PER_PAGE < chats.length;
+  const hasPreviousPage = chatOffset > 0;
+
+  const handleNextPage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (hasNextPage) {
+      setChatOffset(chatOffset + CHATS_PER_PAGE);
+    }
+  };
+
+  const handlePreviousPage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (hasPreviousPage) {
+      setChatOffset(chatOffset - CHATS_PER_PAGE);
+    }
+  };
+
   return (
     <SidebarContainer collapsed={collapsed} onClick={(e) => e.stopPropagation()}>
       <HamburgerButton onClick={() => handleCollapse(!collapsed)}>
@@ -642,7 +699,7 @@ export default function SidebarComponent({
               </LoadingContainer>
             ) : (
               <>
-                {chats.slice(0, 5).map((chat) => (
+                {visibleChats.map((chat) => (
                   <NavItem
                     data-testid={`chat-item-${chat.id}`}
                     key={chat.id}
@@ -682,17 +739,41 @@ export default function SidebarComponent({
                     </MissionRowFlex>
                   </NavItem>
                 ))}
-                {chats.length > 5 && !collapsed && (
-                  <NavItem collapsed={collapsed}>
-                    <MissionRowFlex>
-                      <span
-                        style={{ color: '#4285f4' }}
-                        onClick={() => history.push(`/workspace/${uuid}`)}
-                      >
-                        View More
-                      </span>
-                    </MissionRowFlex>
-                  </NavItem>
+                {!collapsed && chats.length > 0 && (
+                  <PaginationContainer>
+                    <div
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}
+                    >
+                      {hasPreviousPage && (
+                        <PaginationButton
+                          icon="chevron_left"
+                          onClick={handlePreviousPage}
+                          data-testid="previous-page-button"
+                        />
+                      )}
+                    </div>
+                    <ViewMoreLink
+                      onClick={() => history.push(`/workspace/${uuid}/hivechat/history`)}
+                      data-testid="view-more-link"
+                    >
+                      View More
+                    </ViewMoreLink>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'flex-start'
+                      }}
+                    >
+                      {hasNextPage && (
+                        <PaginationButton
+                          icon="chevron_right"
+                          onClick={handleNextPage}
+                          data-testid="next-page-button"
+                        />
+                      )}
+                    </div>
+                  </PaginationContainer>
                 )}
               </>
             )}
