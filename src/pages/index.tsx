@@ -45,7 +45,7 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
         <Route exact path={['/h', '/']}>
           <BountiesLandingPage />
         </Route>
-
+        {/* TODO: Work on this */}
         <Route path="/">
           <MainLayout header={<PeopleHeader />}>
             <Switch>
