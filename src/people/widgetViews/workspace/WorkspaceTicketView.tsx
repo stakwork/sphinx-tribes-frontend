@@ -60,6 +60,8 @@ const WorkspaceTicketView: React.FC = observer(() => {
   const [isLoadingPhases, setIsLoadingPhases] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
 
+  const currentTicket = workspaceTicketStore.getTicket(currentTicketId);
+
   useEffect(() => {
     const socket = createSocketInstance();
 
@@ -70,14 +72,24 @@ const WorkspaceTicketView: React.FC = observer(() => {
     const refreshSingleTicket = async (ticketUuid: string) => {
       try {
         const ticket = await main.getTicketDetails(ticketUuid);
+        if (!ticket) return;
 
-        if (ticket.UUID) {
-          ticket.uuid = ticket.UUID;
+        if (ticket.UUID) ticket.uuid = ticket.UUID;
+        const groupId = ticket.ticket_group || ticket.uuid;
+
+        const groupTickets = await main.getTicketsByGroup(groupId);
+
+        if (groupTickets?.length) {
+          groupTickets.forEach((t) => {
+            if (t.UUID) t.uuid = t.UUID;
+            workspaceTicketStore.addTicket(t);
+            phaseTicketStore.addTicket(t);
+          });
+        } else {
+          workspaceTicketStore.addTicket(ticket);
+          phaseTicketStore.addTicket(ticket);
         }
 
-        workspaceTicketStore.addTicket(ticket);
-
-        const groupId = ticket.ticket_group || ticket.uuid;
         const latestTicket = workspaceTicketStore.getLatestVersionFromGroup(groupId);
 
         if (latestTicket) {
@@ -94,9 +106,16 @@ const WorkspaceTicketView: React.FC = observer(() => {
         const data = JSON.parse(event.data);
 
         if (data.msg === SOCKET_MSG.user_connect) {
-          const sessionId = data.body;
+          const sessionId = data.body || localStorage.getItem('websocket_token');
           setWebsocketSessionId(sessionId);
           return;
+        }
+
+        if (data.ticket) {
+          const updatedTicket = data.ticket;
+          workspaceTicketStore.addTicket(updatedTicket);
+          phaseTicketStore.addTicket(updatedTicket);
+          setCurrentTicketId(updatedTicket.uuid);
         }
 
         if (data.action === 'swrun' && data.message && data.ticketDetails?.ticketUUID) {
@@ -121,12 +140,23 @@ const WorkspaceTicketView: React.FC = observer(() => {
 
         switch (ticketMessage.action) {
           case 'message':
-            console.log('Received ticket message:', ticketMessage.message);
+            if (ticketMessage.message) {
+              setLogs((prevLogs) => [
+                ...prevLogs,
+                {
+                  timestamp: new Date().toISOString(),
+                  projectId: '',
+                  ticketUUID: ticketMessage.ticketDetails?.ticketUUID || '',
+                  message: ticketMessage.message
+                }
+              ]);
+            }
             break;
 
           case 'process':
-            console.log('Processing ticket update:', ticketMessage.ticketDetails.ticketUUID);
-            await refreshSingleTicket(ticketMessage.ticketDetails.ticketUUID as string);
+            if (ticketMessage.ticketDetails?.ticketUUID) {
+              await refreshSingleTicket(ticketMessage.ticketDetails.ticketUUID);
+            }
             break;
         }
       } catch (error) {
@@ -139,7 +169,7 @@ const WorkspaceTicketView: React.FC = observer(() => {
         socket.close();
       }
     };
-  }, [main]);
+  }, [main, currentTicketId]);
 
   useEffect(() => {
     const connectToLogWebSocket = (projectId: string, ticketUUID: string) => {
@@ -217,24 +247,32 @@ const WorkspaceTicketView: React.FC = observer(() => {
         setIsLoading(true);
 
         const ticket = await main.getTicketDetails(ticketId);
+        if (!ticket) {
+          throw new Error('Ticket not found');
+        }
 
-        if (ticket) {
-          if (ticket.UUID) ticket.uuid = ticket.UUID;
+        if (ticket.UUID) ticket.uuid = ticket.UUID;
+        const groupId = ticket.ticket_group || ticket.uuid;
 
+        const groupTickets = await main.getTicketsByGroup(groupId);
+
+        workspaceTicketStore.clearTickets();
+        phaseTicketStore.clearPhaseTickets(ticket.phase_uuid);
+
+        if (groupTickets?.length) {
+          groupTickets.forEach((t) => {
+            if (t.UUID) t.uuid = t.UUID;
+            workspaceTicketStore.addTicket(t);
+            phaseTicketStore.addTicket(t);
+          });
+        } else {
           workspaceTicketStore.addTicket(ticket);
           phaseTicketStore.addTicket(ticket);
+        }
 
-          const groupTickets = ticket.ticket_group
-            ? await main.getTicketsByGroup(ticket.ticket_group)
-            : [];
-
-          if (groupTickets?.length) {
-            groupTickets.forEach((t) => {
-              if (t.UUID) t.uuid = t.UUID;
-              workspaceTicketStore.addTicket(t);
-              phaseTicketStore.addTicket(t);
-            });
-          }
+        const latestTicket = workspaceTicketStore.getLatestVersionFromGroup(groupId);
+        if (latestTicket) {
+          setCurrentTicketId(latestTicket.uuid);
         }
       } catch (error) {
         console.error('Error fetching ticket:', error);
@@ -246,12 +284,17 @@ const WorkspaceTicketView: React.FC = observer(() => {
     if (ticketId) fetchTicketAndVersions();
   }, [ticketId, main]);
 
-  const getTickets = useCallback(
-    async () => phaseTicketStore.getTicketsByGroup(currentTicketId),
-    [currentTicketId]
-  );
+  const getTickets = useCallback(async () => {
+    if (!currentTicket?.ticket_group) return [];
 
-  const currentTicket = workspaceTicketStore.getTicket(currentTicketId);
+    try {
+      const groupTickets = await main.getTicketsByGroup(currentTicket.ticket_group);
+      return groupTickets || [];
+    } catch (error) {
+      console.error('Error fetching group tickets:', error);
+      return [];
+    }
+  }, [currentTicket?.ticket_group, main]);
 
   const getFeatureData = useCallback(async () => {
     if (!currentTicket?.feature_uuid) return;
@@ -528,8 +571,14 @@ const WorkspaceTicketView: React.FC = observer(() => {
             getPhaseTickets={getTickets}
             workspaceUUID={workspaceId}
             onTicketUpdate={(updatedTicket: Ticket) => {
-              workspaceTicketStore.updateTicket(updatedTicket.uuid, updatedTicket);
-              setCurrentTicketId(updatedTicket.uuid);
+              const groupId = updatedTicket.ticket_group || updatedTicket.uuid;
+              workspaceTicketStore.addTicket(updatedTicket);
+              phaseTicketStore.addTicket(updatedTicket);
+
+              const latestTicket = workspaceTicketStore.getLatestVersionFromGroup(groupId);
+              if (latestTicket) {
+                setCurrentTicketId(latestTicket.uuid);
+              }
             }}
             showFeaturePhaseDropdowns={false}
             showVersionSelector={true}
