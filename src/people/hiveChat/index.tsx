@@ -12,7 +12,7 @@ import styled from 'styled-components';
 import { EuiLoadingSpinner } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
 import { chatHistoryStore } from 'store/chat.ts';
-import { useBrowserTabTitle } from '../../hooks';
+import { useBrowserTabTitle } from '../../hooks/useBrowserTabTitle';
 import { renderMarkdown } from '../utils/RenderMarkdown.tsx';
 import { UploadModal } from '../../components/UploadModal';
 import { useFeatureFlag } from '../../hooks/useFeatureFlag';

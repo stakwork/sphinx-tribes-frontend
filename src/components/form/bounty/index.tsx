@@ -3,7 +3,7 @@ import { EuiText } from '@elastic/eui';
 import { Formik } from 'formik';
 import { observer } from 'mobx-react-lite';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useIsMobile, useBrowserTabTitle } from 'hooks';
+import { useIsMobile } from 'hooks';
 import { RefineDescriptionModal } from 'components/common/RefineDescriptionModal';
 import { snippetStore } from 'store/snippetStore';
 import { toCapitalize } from '../../../helpers/helpers';
@@ -13,6 +13,7 @@ import { BountyDetailsCreationData } from '../../../people/utils/BountyCreationC
 import { formDropdownOptions } from '../../../people/utils/Constants';
 import { useStores } from '../../../store';
 import { Button, Divider } from '../../common';
+import { useBrowserTabTitle } from '../../../hooks/useBrowserTabTitle';
 import ImageButton from '../../common/ImageButton';
 import Input from '../inputs';
 import { dynamicSchemaAutofillFieldsByType, dynamicSchemasByType } from '../schema';

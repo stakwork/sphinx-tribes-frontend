@@ -11,7 +11,7 @@ import styled from 'styled-components';
 import TicketEditor from 'components/common/TicketEditor/TicketEditor';
 import { workspaceTicketStore } from '../../../store/workspace-ticket';
 import { phaseTicketStore } from '../../../store/phase';
-import { useBrowserTabTitle } from '../../../hooks';
+import { useBrowserTabTitle } from '../../../hooks/useBrowserTabTitle';
 import { Feature, Ticket, TicketMessage } from '../../../store/interface';
 import { FeatureBody, FeatureDataWrap, LabelValue, StyledLink } from '../../../pages/tickets/style';
 import {

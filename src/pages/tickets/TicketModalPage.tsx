@@ -3,12 +3,13 @@ import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { Modal } from 'components/common';
 import { EuiGlobalToastList } from '@elastic/eui';
 import { colors } from 'config';
-import { useIsMobile, useBrowserTabTitle } from 'hooks';
+import { useIsMobile } from 'hooks';
 import { observer } from 'mobx-react-lite';
 import FocusedView from '../../people/main/FocusView';
 import { widgetConfigs } from '../../people/utils/Constants';
 import { AlreadyDeleted } from '../../components/common/AfterDeleteNotification/AlreadyDeleted';
 import { useStores } from '../../store';
+import { useBrowserTabTitle } from '../../hooks/useBrowserTabTitle';
 import { PersonBounty } from '../../store/interface';
 
 const color = colors['light'];

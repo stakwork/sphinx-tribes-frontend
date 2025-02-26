@@ -35,7 +35,7 @@ import MaterialIcon from '@material/react-material-icon';
 import { EuiOverlayMask, EuiModalHeader, EuiModalFooter, EuiText } from '@elastic/eui';
 import { Box } from '@mui/system';
 import { userHasRole } from 'helpers/helpers-extended';
-import { useBrowserTabTitle } from '../../hooks';
+import { useBrowserTabTitle } from '../../hooks/useBrowserTabTitle';
 import { createSocketInstance, SOCKET_MSG } from '../../config/socket.ts';
 import { useDeleteConfirmationModal } from '../../components/common';
 import SidebarComponent from '../../components/common/SidebarComponent.tsx';

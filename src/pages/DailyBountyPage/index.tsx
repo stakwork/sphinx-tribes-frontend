@@ -3,7 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { EuiLoadingSpinner } from '@elastic/eui';
 import ReactMarkdown from 'react-markdown';
 import styled from 'styled-components';
-import { useIsMobile, useBrowserTabTitle } from '../../hooks';
+import { useIsMobile } from '../../hooks';
+import { useBrowserTabTitle } from '../../hooks/useBrowserTabTitle';
 import { colors } from '../../config/colors';
 
 interface ColumnProps {

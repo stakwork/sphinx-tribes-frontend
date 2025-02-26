@@ -54,7 +54,7 @@ import { PostModal } from 'people/widgetViews/postBounty/PostModal';
 import { chatService } from 'services';
 import { archiveIcon } from 'components/common/DeleteConfirmationModal/archiveIcon';
 import { colors } from '../../config/colors';
-import { useBrowserTabTitle } from '../../hooks';
+import { useBrowserTabTitle } from '../../hooks/useBrowserTabTitle';
 import dragIcon from '../../pages/superadmin/header/icons/drag_indicator.svg';
 import SidebarComponent from '../../components/common/SidebarComponent.tsx';
 import { useFeatureFlag } from '../../hooks/useFeatureFlag';

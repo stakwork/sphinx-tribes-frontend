@@ -34,7 +34,7 @@ import SidebarComponent from 'components/common/SidebarComponent.tsx';
 import styled from 'styled-components';
 import { phaseTicketStore } from '../../store/phase';
 import StakworkLogsPanel from '../../components/common/TicketEditor/StakworkLogsPanel.tsx';
-import { useBrowserTabTitle } from '../../hooks';
+import { useBrowserTabTitle } from '../../hooks/useBrowserTabTitle';
 import { useFeatureFlag } from '../../hooks/useFeatureFlag';
 import {
   FeatureHeadNameWrap,

@@ -11,7 +11,7 @@ import { Toast } from 'people/widgetViews/workspace/interface';
 import styled from 'styled-components';
 import { ActionPopover, ActionItem, ActionIcon } from 'pages/tickets/style.ts';
 import { archiveIcon } from 'components/common/DeleteConfirmationModal/archiveIcon.tsx';
-import { useBrowserTabTitle } from '../../hooks';
+import { useBrowserTabTitle } from '../../hooks/useBrowserTabTitle';
 import { useStores } from '../../store';
 import { Chat } from '../../store/interface';
 

@@ -5,7 +5,7 @@ import { useStores } from '../../store';
 import { getHost } from '../../config';
 import { FieldWrap } from '../../pages/tickets/style';
 import { Label } from '../../pages/tickets/style';
-import { useBrowserTabTitle } from '../../hooks';
+import { useBrowserTabTitle } from '../../hooks/useBrowserTabTitle';
 import { UserStoryWrapper } from './workspace/style';
 import {
   GenerateStoriesModal,

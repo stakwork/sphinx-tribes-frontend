@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ConnectCard from 'people/utils/ConnectCard';
 import { useParams } from 'react-router-dom';
-import { useBrowserTabTitle } from '../../../hooks';
+import { useBrowserTabTitle } from '../../../hooks/useBrowserTabTitle';
 import { TicketModalPage } from '../TicketModalPage';
 import WorkspaceTickets from './WorkspaceTickets';
 

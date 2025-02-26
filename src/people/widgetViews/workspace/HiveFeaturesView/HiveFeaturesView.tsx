@@ -22,7 +22,7 @@ import { AddPhaseModal } from '../WorkspacePhasingModals.tsx';
 import { PaymentConfirmationModal } from '../../../../components/common';
 import { WorkspaceName } from '../style.ts';
 import { FeatureHeadNameWrap } from '../style.ts';
-import { useBrowserTabTitle } from '../../../../hooks';
+import { useBrowserTabTitle } from '../../../../hooks/useBrowserTabTitle';
 import ActivitiesHeader from './header';
 
 const TableContainer = styled.div`

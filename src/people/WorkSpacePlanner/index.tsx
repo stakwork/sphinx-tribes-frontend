@@ -8,7 +8,7 @@ import { BountyCard, BountyCardStatus } from 'store/interface';
 import history from 'config/history';
 import { autorun } from 'mobx';
 import { useStores } from '../../store';
-import { useBrowserTabTitle } from '../../hooks';
+import { useBrowserTabTitle } from '../../hooks/useBrowserTabTitle';
 import { colors } from '../../config';
 import SidebarComponent from '../../components/common/SidebarComponent';
 import { WorkspacePlannerHeader } from './WorkspacePlannerHeader';

@@ -7,7 +7,7 @@ import { useStores } from 'store';
 import styled from 'styled-components';
 import { EuiLoadingSpinner } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
-import { useBrowserTabTitle } from '../../hooks';
+import { useBrowserTabTitle } from '../../hooks/useBrowserTabTitle';
 import { mainStore } from '../../store/main.ts';
 
 interface RouteParams {

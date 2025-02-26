@@ -21,7 +21,7 @@ import TicketEditor from 'components/common/TicketEditor/TicketEditor';
 import SidebarComponent from 'components/common/SidebarComponent';
 import styled from 'styled-components';
 import { phaseTicketStore } from '../../../store/phase';
-import { useBrowserTabTitle } from '../../../hooks';
+import { useBrowserTabTitle } from '../../../hooks/useBrowserTabTitle';
 import StakworkLogsPanel from '../../../components/common/TicketEditor/StakworkLogsPanel';
 import {
   FeatureHeadNameWrap,
