@@ -49,13 +49,15 @@ export const GeneratePhasePlanButton: React.FC<GeneratePhasePlanButtonProps> = (
       const ticketGroupIds = phaseTicketStore.getTicketGroupIds(phaseId);
       const requestUuid = crypto.randomUUID();
 
-      await main.sendPhasePlan({
+      const response = await main.sendPhasePlan({
         feature_id: featureId,
         phase_id: phaseId,
         ticket_group_ids: ticketGroupIds,
         source_websocket: sourceWebsocket,
         request_uuid: requestUuid
       });
+
+      console.log('Generate Phase Plan Response:', response);
 
       setToasts([
         {
