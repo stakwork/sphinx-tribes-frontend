@@ -8,7 +8,7 @@ import styled from 'styled-components';
 import { BountyMetrics, defaultSuperAdminBountyStatus, Person } from 'store/interface';
 import { useStores } from 'store';
 import moment from 'moment';
-import { useInViewPort, useBrowserTabTitle } from 'hooks';
+import { useInViewPort} from 'hooks';
 import { MyTable } from './tableComponent';
 import { Header } from './header';
 import { Statistics } from './statistics';
@@ -55,7 +55,6 @@ export const SuperAdmin = () => {
   const [toasts, setToasts]: any = useState([]);
   const [permissionsChecked, setPermissionsChecked] = useState(false);
 
-  useBrowserTabTitle('Super Admin');
 
   /**
    * Todo use the same date range,

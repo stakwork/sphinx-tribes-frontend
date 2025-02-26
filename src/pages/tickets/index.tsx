@@ -6,7 +6,7 @@ import Tickets from './Tickets';
 
 export const TicketsPage = () => {
   const [connectPerson, setConnectPerson] = useState<any>(null);
-  useBrowserTabTitle('Tickets');
+  useBrowserTabTitle('Bounties');
   return (
     <>
       <Tickets />

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { EuiOverlayMask } from '@elastic/eui';
+import { useBrowserTabTitle } from 'hooks';
 import { useStores } from '../../store';
 import { getHost } from '../../config';
 import { FieldWrap } from '../../pages/tickets/style';
@@ -27,6 +28,7 @@ const GenerateStoriesView: React.FC = () => {
   const [mission, setMission] = useState<string | undefined>('');
   const [tactics, setTactics] = useState<string | undefined>('');
   const [response, setResponse] = useState<any>(null);
+  useBrowserTabTitle("Stories")
 
   useEffect(() => {
     const fetchData = async () => {

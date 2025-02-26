@@ -10,6 +10,7 @@ import { autorun } from 'mobx';
 import { useStores } from '../../store';
 import { colors } from '../../config';
 import SidebarComponent from '../../components/common/SidebarComponent';
+import {useBrowserTabTitle} from '../../hooks';
 import { WorkspacePlannerHeader } from './WorkspacePlannerHeader';
 import BountyCardComp from './BountyCard';
 
@@ -152,6 +153,8 @@ const WorkspacePlanner = observer(() => {
   const [searchText, setSearchText] = useState('');
   const [collapsed, setCollapsed] = useState(true);
   const bountyCardStore = useBountyCardStore(uuid);
+
+  useBrowserTabTitle('Workspace Planner');
 
   useEffect(() => {
     const handleCollapseChange = (e: Event) => {
