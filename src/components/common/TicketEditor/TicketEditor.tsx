@@ -9,6 +9,7 @@ import history from 'config/history.ts';
 import MaterialIcon from '@material/react-material-icon';
 import { Box } from '@mui/system';
 import { snippetStore } from 'store/snippetStore.ts';
+import { workspaceTicketStore } from 'store/workspace-ticket.ts';
 import { SnippetDropdown } from 'components/form/inputs/SnippetDropDown.tsx';
 import { phaseTicketStore } from '../../../store/phase';
 import {
@@ -238,7 +239,8 @@ const TicketEditor = observer(
     showVersionSelector,
     showDragHandle,
     showSWWFLink,
-    showCheckbox = true
+    showCheckbox = true,
+    onTicketUpdate
   }: TicketEditorProps) => {
     const [toasts, setToasts] = useState<Toast[]>([]);
     const [versions, setVersions] = useState<number[]>([]);
@@ -288,6 +290,23 @@ const TicketEditor = observer(
         description: prevData.description ? `${prevData.description}\n${snippet}` : snippet
       }));
     };
+
+    useEffect(() => {
+      const groupTickets = workspaceTicketStore.getTicketsByGroup(
+        ticketData.ticket_group as string
+      );
+      const versions = groupTickets.map((ticket) => ticket.version || 0);
+      setVersions(versions);
+
+      const latestTicket = workspaceTicketStore.getLatestVersionFromGroup(
+        ticketData.ticket_group as string
+      );
+
+      if (latestTicket) {
+        setSelectedVersion(latestTicket.version as number);
+        setVersionTicketData(latestTicket);
+      }
+    }, [ticketData, ticketData.version]);
 
     useEffect(() => {
       const maxLimit = 21;
@@ -368,22 +387,33 @@ const TicketEditor = observer(
           throw new Error('Failed to update ticket');
         }
 
-        setSelectedVersion(ticketData.version + 1);
+        const updatedTicket = {
+          ...ticketPayload.ticket,
+          uuid: ticketData.uuid,
+          UUID: ticketData.UUID
+        };
 
-        const phaseTickets = await getPhaseTickets();
+        workspaceTicketStore.addTicket(updatedTicket);
+        phaseTicketStore.addTicket(updatedTicket);
 
-        if (!Array.isArray(phaseTickets)) {
-          console.error('Error: phaseTickets is not an array');
-          return;
-        }
+        setSelectedVersion(updatedTicket.version);
+        setVersionTicketData(updatedTicket);
 
-        // Update phase ticket store with the latest tickets
-        phaseTicketStore.clearPhaseTickets(ticketData.phase_uuid);
-        for (const updatedTicket of phaseTickets) {
-          if (updatedTicket.UUID) {
-            updatedTicket.uuid = updatedTicket.UUID;
+        onTicketUpdate?.(updatedTicket);
+
+        const updatedGroupTickets = await main.getTicketsByGroup(ticketData.ticket_group as string);
+
+        if (Array.isArray(updatedGroupTickets)) {
+          workspaceTicketStore.clearTickets();
+          phaseTicketStore.clearPhaseTickets(ticketData.phase_uuid);
+
+          for (const groupTicket of updatedGroupTickets) {
+            if (groupTicket.UUID) {
+              groupTicket.uuid = groupTicket.UUID;
+            }
+            workspaceTicketStore.addTicket(groupTicket);
+            phaseTicketStore.addTicket(groupTicket);
           }
-          phaseTicketStore.addTicket(updatedTicket);
         }
 
         addUpdateSuccessToast();
