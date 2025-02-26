@@ -21,6 +21,7 @@ import TicketEditor from 'components/common/TicketEditor/TicketEditor';
 import SidebarComponent from 'components/common/SidebarComponent';
 import styled from 'styled-components';
 import { phaseTicketStore } from '../../../store/phase';
+import { useBrowserTabTitle } from '../../../hooks';
 import StakworkLogsPanel from '../../../components/common/TicketEditor/StakworkLogsPanel';
 import {
   FeatureHeadNameWrap,
@@ -68,6 +69,7 @@ const WorkspaceTicketCreateView: React.FC = observer(() => {
   const [workspace, setWorkspace] = useState<any>(null);
   const [collapsed, setCollapsed] = useState(false);
   const [ticketGroupId] = useState(uuidv4());
+  useBrowserTabTitle('Quick Draft Ticket');
 
   const defaultTicket = useMemo(
     () => ({

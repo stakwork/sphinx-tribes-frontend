@@ -3,7 +3,7 @@ import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { Modal } from 'components/common';
 import { EuiGlobalToastList } from '@elastic/eui';
 import { colors } from 'config';
-import { useIsMobile } from 'hooks';
+import { useIsMobile, useBrowserTabTitle } from 'hooks';
 import { observer } from 'mobx-react-lite';
 import FocusedView from '../../people/main/FocusView';
 import { widgetConfigs } from '../../people/utils/Constants';
@@ -32,6 +32,7 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
   const [activeBounty, setActiveBounty] = useState<PersonBounty[]>([]);
   const [visible, setVisible] = useState(false);
   const [isDeleted, setisDeleted] = useState(false);
+  useBrowserTabTitle('Bounties');
 
   const [toasts, setToasts]: any = useState([]);
 

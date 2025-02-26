@@ -3,6 +3,7 @@ import moment from 'moment';
 import React, { useState } from 'react';
 import { QRCode } from 'react-qr-svg';
 import styled from 'styled-components';
+import { useBrowserTabTitle } from '../../hooks';
 import { getHostIncludingDockerHosts } from '../../config/host';
 import Tag from './Tag';
 
@@ -121,6 +122,7 @@ export default function Tribe({
 
   const lastActiveM = last_active ? moment(last_active * 1000) : moment().subtract(1, 'months');
   const lastActive = lastActiveM.format('MMM D HH:mm');
+  useBrowserTabTitle('Tribes');
 
   function copyString(e: any, text: any) {
     e.stopPropagation();

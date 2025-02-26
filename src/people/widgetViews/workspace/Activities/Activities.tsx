@@ -9,6 +9,7 @@ import { useStores } from 'store';
 import { useParams } from 'react-router-dom';
 import { renderMarkdown } from 'people/utils/RenderMarkdown';
 import SidebarComponent from 'components/common/SidebarComponent';
+import { useBrowserTabTitle } from 'hooks';
 import { Phase } from '../interface';
 import ActivitiesHeader from './header';
 
@@ -341,6 +342,7 @@ const Activities = observer(() => {
   const [comment, setComment] = useState('');
   const [isCommentChanged, setIsCommentChanged] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
+  useBrowserTabTitle('Activities');
 
   let interval: NodeJS.Timeout | null = null;
 

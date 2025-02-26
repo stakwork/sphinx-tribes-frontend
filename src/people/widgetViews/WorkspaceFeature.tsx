@@ -35,6 +35,7 @@ import MaterialIcon from '@material/react-material-icon';
 import { EuiOverlayMask, EuiModalHeader, EuiModalFooter, EuiText } from '@elastic/eui';
 import { Box } from '@mui/system';
 import { userHasRole } from 'helpers/helpers-extended';
+import { useBrowserTabTitle } from '../../hooks';
 import { createSocketInstance, SOCKET_MSG } from '../../config/socket.ts';
 import { useDeleteConfirmationModal } from '../../components/common';
 import SidebarComponent from '../../components/common/SidebarComponent.tsx';
@@ -392,6 +393,7 @@ const WorkspaceFeature = () => {
   const [permissionsChecked, setPermissionsChecked] = useState<boolean>(false);
 
   const history = useHistory();
+  useBrowserTabTitle(featureData?.name ? `Feature: ${featureData.name}` : 'Feature');
 
   const editWorkspaceDisabled = useMemo(() => {
     if (!ui.meInfo) return true;
