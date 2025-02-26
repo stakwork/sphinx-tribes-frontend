@@ -5,6 +5,7 @@ import { QRCode } from 'react-qr-svg';
 import styled from 'styled-components';
 import { getHostIncludingDockerHosts } from '../../config/host';
 import Tag from './Tag';
+import { useBrowserTabTitle } from 'hooks';
 
 interface ContentProps {
   selected: boolean;
@@ -121,6 +122,8 @@ export default function Tribe({
 
   const lastActiveM = last_active ? moment(last_active * 1000) : moment().subtract(1, 'months');
   const lastActive = lastActiveM.format('MMM D HH:mm');
+
+  useBrowserTabTitle(name);
 
   function copyString(e: any, text: any) {
     e.stopPropagation();
