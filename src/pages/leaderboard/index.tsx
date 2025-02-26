@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite';
 import React, { useEffect } from 'react';
 import { useStores } from 'store';
 import styled from 'styled-components';
-import { useBrowserTabTitle } from '../../hooks';
+import { useBrowserTabTitle } from '../../hooks/useBrowserTabTitle';
 import { LeaerboardItem } from './leaderboardItem';
 import { Summary } from './summary';
 import { Top3 } from './top3';

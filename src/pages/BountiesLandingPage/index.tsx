@@ -1,7 +1,8 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
 import styled from 'styled-components';
-import { useIsMobile, useBrowserTabTitle } from '../../hooks';
+import { useIsMobile } from '../../hooks';
+import { useBrowserTabTitle } from '../../hooks/useBrowserTabTitle';
 import { colors } from '../../config/colors';
 import BountyNavBar from '../../components/BountyComponents/BountyNavBar';
 import HeroSection from '../../components/BountyComponents/HeroSection';

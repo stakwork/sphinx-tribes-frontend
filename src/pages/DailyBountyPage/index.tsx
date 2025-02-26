@@ -3,8 +3,9 @@ import React, { useEffect, useState } from 'react';
 import { EuiLoadingSpinner } from '@elastic/eui';
 import ReactMarkdown from 'react-markdown';
 import styled from 'styled-components';
-import { useIsMobile, useBrowserTabTitle } from '../../hooks';
+import { useIsMobile } from '../../hooks';
 import { colors } from '../../config/colors';
+import { useBrowserTabTitle } from '../../hooks/useBrowserTabTitle';
 
 interface ColumnProps {
   isSecondColumn?: boolean;

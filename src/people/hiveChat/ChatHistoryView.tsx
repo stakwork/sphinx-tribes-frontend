@@ -13,7 +13,7 @@ import { ActionPopover, ActionItem, ActionIcon } from 'pages/tickets/style.ts';
 import { archiveIcon } from 'components/common/DeleteConfirmationModal/archiveIcon.tsx';
 import { useStores } from '../../store';
 import { Chat } from '../../store/interface';
-import { useBrowserTabTitle } from '../../hooks';
+import { useBrowserTabTitle } from '../../hooks/useBrowserTabTitle';
 const Container = styled.div<{ collapsed: boolean }>`
   gap: 2rem;
   padding-bottom: 0 !important;

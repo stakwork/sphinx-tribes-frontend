@@ -8,7 +8,7 @@ import { EuiDragDropContext, EuiDraggable, EuiDroppable } from '@elastic/eui';
 import { Feature } from 'store/interface';
 import SidebarComponent from 'components/common/SidebarComponent';
 import ActivitiesHeader from '../HiveFeaturesView/header';
-import { useBrowserTabTitle } from '../../../../hooks';
+import { useBrowserTabTitle } from '../../../../hooks/useBrowserTabTitle';
 const MainContainer = styled.div`
   flex-grow: 1;
   transition:

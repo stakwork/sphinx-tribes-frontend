@@ -9,7 +9,7 @@ import history from 'config/history';
 import { autorun } from 'mobx';
 import { useStores } from '../../store';
 import { colors } from '../../config';
-import { useBrowserTabTitle } from '../../hooks';
+import { useBrowserTabTitle } from '../../hooks/useBrowserTabTitle';
 import SidebarComponent from '../../components/common/SidebarComponent';
 import { WorkspacePlannerHeader } from './WorkspacePlannerHeader';
 import BountyCardComp from './BountyCard';

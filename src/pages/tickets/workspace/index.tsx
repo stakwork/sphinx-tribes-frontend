@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import ConnectCard from 'people/utils/ConnectCard';
 import { useParams } from 'react-router-dom';
 import { TicketModalPage } from '../TicketModalPage';
-import { useBrowserTabTitle } from '../../../hooks';
+import { useBrowserTabTitle } from '../../../hooks/useBrowserTabTitle';
 import WorkspaceTickets from './WorkspaceTickets';
 
 export const WorkspaceTicketsPage = () => {

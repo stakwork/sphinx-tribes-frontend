@@ -36,7 +36,7 @@ import { EuiOverlayMask, EuiModalHeader, EuiModalFooter, EuiText } from '@elasti
 import { Box } from '@mui/system';
 import { userHasRole } from 'helpers/helpers-extended';
 import { createSocketInstance, SOCKET_MSG } from '../../config/socket.ts';
-import { useBrowserTabTitle } from '../../hooks';
+import { useBrowserTabTitle } from '../../hooks/useBrowserTabTitle';
 import { useDeleteConfirmationModal } from '../../components/common';
 import SidebarComponent from '../../components/common/SidebarComponent.tsx';
 import {

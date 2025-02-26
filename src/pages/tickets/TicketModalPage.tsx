@@ -10,7 +10,7 @@ import { widgetConfigs } from '../../people/utils/Constants';
 import { AlreadyDeleted } from '../../components/common/AfterDeleteNotification/AlreadyDeleted';
 import { useStores } from '../../store';
 import { PersonBounty } from '../../store/interface';
-import { useBrowserTabTitle } from '../../hooks';
+import { useBrowserTabTitle } from '../../hooks/useBrowserTabTitle';
 
 const color = colors['light'];
 const focusedDesktopModalStyles = widgetConfigs.bounties.modalStyle;

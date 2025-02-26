@@ -9,7 +9,7 @@ import { BountyMetrics, defaultSuperAdminBountyStatus, Person } from 'store/inte
 import { useStores } from 'store';
 import moment from 'moment';
 import { useInViewPort } from 'hooks';
-import { useBrowserTabTitle } from '../../hooks';
+import { useBrowserTabTitle } from '../../hooks/useBrowserTabTitle';
 import { MyTable } from './tableComponent';
 import { Header } from './header';
 import { Statistics } from './statistics';

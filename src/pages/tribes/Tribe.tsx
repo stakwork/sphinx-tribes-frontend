@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { QRCode } from 'react-qr-svg';
 import styled from 'styled-components';
 import { getHostIncludingDockerHosts } from '../../config/host';
-import { useBrowserTabTitle } from '../../hooks';
+import { useBrowserTabTitle } from '../../hooks/useBrowserTabTitle';
 import Tag from './Tag';
 
 interface ContentProps {

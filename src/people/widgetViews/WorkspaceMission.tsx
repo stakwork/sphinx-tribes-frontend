@@ -57,7 +57,7 @@ import { colors } from '../../config/colors';
 import dragIcon from '../../pages/superadmin/header/icons/drag_indicator.svg';
 import SidebarComponent from '../../components/common/SidebarComponent.tsx';
 import { useFeatureFlag } from '../../hooks/useFeatureFlag';
-import { useBrowserTabTitle } from '../../hooks';
+import { useBrowserTabTitle } from '../../hooks/useBrowserTabTitle';
 import AddCodeGraph from './workspace/AddCodeGraphModal';
 import AddFeature from './workspace/AddFeatureModal';
 import {
