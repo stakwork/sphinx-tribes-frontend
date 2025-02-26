@@ -12,6 +12,7 @@ import { Author, BountyCardStatus, TicketStatus } from 'store/interface.ts';
 import { createSocketInstance } from 'config/socket';
 import { SOCKET_MSG } from 'config/socket';
 import { uiStore } from 'store/ui';
+import MaterialIcon from '@material/react-material-icon';
 import { v4 as uuidv4 } from 'uuid';
 import {
   QuickBountyTicket,
@@ -19,6 +20,8 @@ import {
 } from '../../../../store/quickBountyTicketStore.tsx';
 import { AddPhaseModal } from '../WorkspacePhasingModals.tsx';
 import { PaymentConfirmationModal } from '../../../../components/common';
+import { WorkspaceName } from '../style.ts';
+import { FeatureHeadNameWrap } from '../style.ts';
 import ActivitiesHeader from './header';
 
 const TableContainer = styled.div`
@@ -32,6 +35,7 @@ const TableContainer = styled.div`
 
 export const LabelValue = styled.span`
   font-weight: normal;
+  margin-left: 5px;
 `;
 
 const PhaseHeader = styled.h3`
@@ -109,6 +113,28 @@ const StatusBadge = styled.span<{ status: string }>`
       : 'black'};
 `;
 
+export const FeatureHeadWrap = styled.div<{ collapsed: boolean }>`
+  display: flex;
+  align-items: center;
+  padding: 30px 50px 0 50px;
+  padding-right: 40px;
+  margin-left: ${({ collapsed }: { collapsed: boolean }) => (collapsed ? '50px' : '250px')};
+  transition: margin-left 0.3s ease-in-out;
+  @media only screen and (max-width: 800px) {
+    padding: 15px 15px;
+  }
+  @media only screen and (max-width: 700px) {
+    padding: 12px 10px;
+  }
+  @media only screen and (max-width: 500px) {
+    padding: 0px;
+    padding-bottom: 15px;
+    flex-direction: column;
+    align-items: start;
+    padding: 20px 30px;
+  }
+`;
+
 export const ActivitiesContainer = styled.div<{ collapsed: boolean }>`
   display: grid;
   grid-template-columns: 1fr;
@@ -119,7 +145,7 @@ export const ActivitiesContainer = styled.div<{ collapsed: boolean }>`
   height: calc(100vh - 120px);
   overflow-y: auto;
   margin-bottom: 50px;
-  margin-top: 50px;
+  margin-top: 20px;
   margin-left: ${({ collapsed }: { collapsed: boolean }) => (collapsed ? '50px' : '250px')};
   transition: margin-left 0.3s ease-in-out;
 `;
@@ -717,11 +743,24 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
       <MainContainer>
         <SidebarComponent uuid={workspaceUuid} />
         <ActivitiesHeader uuid={workspaceUuid} collapsed={collapsed} />
+        <FeatureHeadWrap collapsed={collapsed}>
+          <FeatureHeadNameWrap>
+            <MaterialIcon
+              onClick={handleFeatureBacklogClick}
+              icon={'arrow_back'}
+              style={{
+                fontSize: 25,
+                cursor: 'pointer'
+              }}
+            />
+            <WorkspaceName>
+              Feature Name:
+              <LabelValue>{featureName}</LabelValue>
+            </WorkspaceName>
+          </FeatureHeadNameWrap>
+        </FeatureHeadWrap>
         <ActivitiesContainer collapsed={collapsed}>
           <TableContainer>
-            <h3>
-              Feature Name: <LabelValue>{featureName}</LabelValue>
-            </h3>
             {Object.keys(phaseNames).length === 0 ? (
               <p>No phases available</p>
             ) : (
