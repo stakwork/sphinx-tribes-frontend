@@ -8,6 +8,7 @@ import styled from 'styled-components';
 import { EuiLoadingSpinner } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
 import { mainStore } from '../../store/main.ts';
+import { useBrowserTabTitle } from '../../hooks';
 
 interface RouteParams {
   uuid: string;
@@ -156,7 +157,7 @@ export const HiveBuildView: React.FC = observer(() => {
   const [isSending, setIsSending] = useState(false);
   const chatHistoryRef = useRef<HTMLDivElement>(null);
   const history = useHistory();
-
+  useBrowserTabTitle('Build Hive');
   const chatId = 'this is random id';
   const title = 'Build with Hive';
 

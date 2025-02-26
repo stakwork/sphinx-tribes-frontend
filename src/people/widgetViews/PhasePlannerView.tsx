@@ -33,6 +33,7 @@ import { createSocketInstance } from 'config/socket';
 import SidebarComponent from 'components/common/SidebarComponent.tsx';
 import styled from 'styled-components';
 import { phaseTicketStore } from '../../store/phase';
+import { useBrowserTabTitle } from '../../hooks';
 import StakworkLogsPanel from '../../components/common/TicketEditor/StakworkLogsPanel.tsx';
 import { useFeatureFlag } from '../../hooks/useFeatureFlag';
 import {
@@ -118,6 +119,7 @@ const PhasePlannerView: React.FC = observer(() => {
   const [isConversionModalOpen, setIsConversionModalOpen] = useState(false);
   const [isConverting, setIsConverting] = useState(false);
 
+  useBrowserTabTitle('Phase Planner');
   const handleSelectTicket = (ticketId: string) => {
     setSelectedTickets((prev) => ({
       ...prev,

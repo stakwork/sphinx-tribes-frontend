@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { EuiLoadingSpinner } from '@elastic/eui';
 import ReactMarkdown from 'react-markdown';
 import styled from 'styled-components';
-import { useIsMobile } from '../../hooks';
+import { useIsMobile, useBrowserTabTitle } from '../../hooks';
 import { colors } from '../../config/colors';
 
 interface ColumnProps {
@@ -14,6 +14,7 @@ const DailyBountyPage: React.FC = () => {
   const [content, setContent] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const isMobile = useIsMobile();
+  useBrowserTabTitle('Daily Bounty Rules');
 
   const color = colors['light'];
 

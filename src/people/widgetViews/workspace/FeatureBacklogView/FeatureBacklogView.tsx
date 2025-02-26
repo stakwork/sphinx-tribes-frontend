@@ -8,7 +8,7 @@ import { EuiDragDropContext, EuiDraggable, EuiDroppable } from '@elastic/eui';
 import { Feature } from 'store/interface';
 import SidebarComponent from 'components/common/SidebarComponent';
 import ActivitiesHeader from '../HiveFeaturesView/header';
-
+import { useBrowserTabTitle } from '../../../../hooks';
 const MainContainer = styled.div`
   flex-grow: 1;
   transition:
@@ -338,6 +338,8 @@ const FeatureBacklogView = observer(() => {
   const [newFeatureTitle, setNewFeatureTitle] = useState('');
   const [newFeatureBrief, setNewFeatureBrief] = useState('');
   const [isCreating, setIsCreating] = useState(false);
+
+  useBrowserTabTitle('Feature Backlog');
 
   useEffect(() => {
     const handleCollapseChange = (e: Event) => {

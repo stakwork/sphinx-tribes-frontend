@@ -22,6 +22,8 @@ import { AddPhaseModal } from '../WorkspacePhasingModals.tsx';
 import { PaymentConfirmationModal } from '../../../../components/common';
 import { WorkspaceName } from '../style.ts';
 import { FeatureHeadNameWrap } from '../style.ts';
+import { useBrowserTabTitle } from '../../../../hooks';
+
 import ActivitiesHeader from './header';
 
 const TableContainer = styled.div`
@@ -312,6 +314,7 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
   const [isOpenPaymentConfirmation, setIsOpenPaymentConfirmation] = React.useState(false);
   const [activeBounty, setActiveBounty] = React.useState<any[]>([]);
   const [bountyID, setBountyID] = useState<number>();
+  useBrowserTabTitle(featureName ? `Hive Feature: ${featureName}` : 'Hive Features');
 
   let interval: number;
 

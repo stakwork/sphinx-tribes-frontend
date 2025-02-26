@@ -3,7 +3,7 @@ import { EuiText } from '@elastic/eui';
 import { Formik } from 'formik';
 import { observer } from 'mobx-react-lite';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useIsMobile } from 'hooks';
+import { useIsMobile, useBrowserTabTitle } from 'hooks';
 import { RefineDescriptionModal } from 'components/common/RefineDescriptionModal';
 import { snippetStore } from 'store/snippetStore';
 import { toCapitalize } from '../../../helpers/helpers';
@@ -63,6 +63,8 @@ function Form(props: FormProps) {
   const [schemaData, setSchemaData] = useState(BountyDetailsCreationData.step_1);
   const [stepTracker, setStepTracker] = useState<number>(1);
   const [userWorkspaces, setUserWorkspaces] = useState<Array<{ label: string; value: string }>>([]);
+
+  useBrowserTabTitle('Post Bounty');
 
   let lastPage = 1;
   const scrollDiv = scrollRef ?? refBody;

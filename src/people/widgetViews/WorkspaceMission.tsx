@@ -57,6 +57,7 @@ import { colors } from '../../config/colors';
 import dragIcon from '../../pages/superadmin/header/icons/drag_indicator.svg';
 import SidebarComponent from '../../components/common/SidebarComponent.tsx';
 import { useFeatureFlag } from '../../hooks/useFeatureFlag';
+import { useBrowserTabTitle } from '../../hooks';
 import AddCodeGraph from './workspace/AddCodeGraphModal';
 import AddFeature from './workspace/AddFeatureModal';
 import {
@@ -347,6 +348,7 @@ const WorkspaceMission = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isSnippetModalVisible, setSnippetModalVisible] = useState(false);
+  useBrowserTabTitle('Settings');
 
   const openSnippetModal = () => {
     setSnippetModalVisible(true);

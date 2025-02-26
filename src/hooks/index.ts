@@ -4,3 +4,4 @@ export * from './uiHooks';
 export * from './usePerson';
 export * from './useInViewport';
 export * from './usePeopleSearchHandler';
+export * from './useBrowserTabTitle';

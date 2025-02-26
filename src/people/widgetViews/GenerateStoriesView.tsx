@@ -3,6 +3,7 @@ import { useHistory, useParams } from 'react-router-dom';
 import { EuiOverlayMask } from '@elastic/eui';
 import { useStores } from '../../store';
 import { getHost } from '../../config';
+import { useBrowserTabTitle } from '../../hooks';
 import { FieldWrap } from '../../pages/tickets/style';
 import { Label } from '../../pages/tickets/style';
 import { UserStoryWrapper } from './workspace/style';
@@ -27,6 +28,8 @@ const GenerateStoriesView: React.FC = () => {
   const [mission, setMission] = useState<string | undefined>('');
   const [tactics, setTactics] = useState<string | undefined>('');
   const [response, setResponse] = useState<any>(null);
+
+  useBrowserTabTitle('User Stories');
 
   useEffect(() => {
     const fetchData = async () => {

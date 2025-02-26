@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import ConnectCard from 'people/utils/ConnectCard';
 import { useParams } from 'react-router-dom';
 import { TicketModalPage } from '../TicketModalPage';
+import { useBrowserTabTitle } from '../../../hooks';
 import WorkspaceTickets from './WorkspaceTickets';
 
 export const WorkspaceTicketsPage = () => {
   const { bountyId } = useParams<{ bountyId?: string }>();
   const [connectPerson, setConnectPerson] = useState<any>(null);
+  useBrowserTabTitle('Workspace Bounties');
   return (
     <>
       <WorkspaceTickets />

@@ -36,6 +36,7 @@ import { EuiOverlayMask, EuiModalHeader, EuiModalFooter, EuiText } from '@elasti
 import { Box } from '@mui/system';
 import { userHasRole } from 'helpers/helpers-extended';
 import { createSocketInstance, SOCKET_MSG } from '../../config/socket.ts';
+import { useBrowserTabTitle } from '../../hooks';
 import { useDeleteConfirmationModal } from '../../components/common';
 import SidebarComponent from '../../components/common/SidebarComponent.tsx';
 import {
@@ -390,6 +391,9 @@ const WorkspaceFeature = () => {
     'preview'
   );
   const [permissionsChecked, setPermissionsChecked] = useState<boolean>(false);
+
+  // Add browser tab title with feature name
+  useBrowserTabTitle(featureData?.name ? `Feature: ${featureData.name}` : 'Feature');
 
   const history = useHistory();
 

@@ -9,13 +9,13 @@ import { BountyMetrics, defaultSuperAdminBountyStatus, Person } from 'store/inte
 import { useStores } from 'store';
 import moment from 'moment';
 import { useInViewPort } from 'hooks';
+import { useBrowserTabTitle } from '../../hooks';
 import { MyTable } from './tableComponent';
 import { Header } from './header';
 import { Statistics } from './statistics';
 import AdminAccessDenied from './accessDenied';
 import { normalizeMetrics } from './utils/metrics';
 import { pageSize, visibleTabs } from './constants.ts';
-
 const Container = styled.body`
   height: 100vh; /* Set a fixed height for the container */
   overflow-y: auto; /* Enable vertical scrolling */
@@ -65,6 +65,8 @@ export const SuperAdmin = () => {
     rootMargin: '0px',
     threshold: 0.25
   });
+
+  useBrowserTabTitle('Super Admin');
 
   const onDateFilterChange = useCallback((option: string) => setSortOrder(option), []);
 

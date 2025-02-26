@@ -4,6 +4,7 @@ import { observer } from 'mobx-react-lite';
 import React, { useEffect } from 'react';
 import { useStores } from 'store';
 import styled from 'styled-components';
+import { useBrowserTabTitle } from '../../hooks';
 import { LeaerboardItem } from './leaderboardItem';
 import { Summary } from './summary';
 import { Top3 } from './top3';
@@ -57,6 +58,8 @@ const LoaderContainer = styled.div`
 
 export const LeaderboardPage = observer(() => {
   const { leaderboard } = useStores();
+  useBrowserTabTitle('Leaderboard');
+
   useEffect(() => {
     leaderboard.fetchLeaders();
   }, [leaderboard]);

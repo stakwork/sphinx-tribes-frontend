@@ -10,6 +10,7 @@ import { widgetConfigs } from '../../people/utils/Constants';
 import { AlreadyDeleted } from '../../components/common/AfterDeleteNotification/AlreadyDeleted';
 import { useStores } from '../../store';
 import { PersonBounty } from '../../store/interface';
+import { useBrowserTabTitle } from '../../hooks';
 
 const color = colors['light'];
 const focusedDesktopModalStyles = widgetConfigs.bounties.modalStyle;
@@ -32,6 +33,7 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
   const [activeBounty, setActiveBounty] = useState<PersonBounty[]>([]);
   const [visible, setVisible] = useState(false);
   const [isDeleted, setisDeleted] = useState(false);
+  useBrowserTabTitle('Bounties');
 
   const [toasts, setToasts]: any = useState([]);
 

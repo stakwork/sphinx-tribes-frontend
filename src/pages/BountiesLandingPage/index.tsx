@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
 import styled from 'styled-components';
-import { useIsMobile } from '../../hooks';
+import { useIsMobile, useBrowserTabTitle } from '../../hooks';
 import { colors } from '../../config/colors';
 import BountyNavBar from '../../components/BountyComponents/BountyNavBar';
 import HeroSection from '../../components/BountyComponents/HeroSection';
@@ -38,7 +38,7 @@ const ContentWrapper = styled.div`
 
 const BountiesLandingPage: React.FC = () => {
   const isMobile = useIsMobile();
-
+  useBrowserTabTitle('Bounty Platform');
   return (
     <Body isMobile={isMobile}>
       <ContentWrapper>

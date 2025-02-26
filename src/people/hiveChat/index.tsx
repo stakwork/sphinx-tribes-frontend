@@ -15,6 +15,7 @@ import { chatHistoryStore } from 'store/chat.ts';
 import { renderMarkdown } from '../utils/RenderMarkdown.tsx';
 import { UploadModal } from '../../components/UploadModal';
 import { useFeatureFlag } from '../../hooks/useFeatureFlag';
+import { useBrowserTabTitle } from '../../hooks';
 import { ModelOption, ModelSelector } from './modelSelector.tsx';
 
 interface RouteParams {
@@ -286,6 +287,7 @@ export const HiveChatView: React.FC = observer(() => {
     label: 'Open AI - 4o',
     value: 'gpt-4o'
   });
+  useBrowserTabTitle('Hive Chat');
 
   const handleBackClick = () => {
     history.push(`/workspace/${uuid}`);
