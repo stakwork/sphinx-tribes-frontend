@@ -105,7 +105,7 @@ function BodyComponent() {
 
   useEffect(() => {
     getTotalBounties(checkboxIdToSelectedMap);
-  }, [getTotalBounties]);
+  }, [getTotalBounties, checkboxIdToSelectedMap]);
 
   const onChangeStatus = (optionId: any) => {
     const newCheckboxIdToSelectedMap = {

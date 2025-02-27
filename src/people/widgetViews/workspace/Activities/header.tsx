@@ -6,7 +6,6 @@ import { useStores } from 'store';
 import { PostModal } from 'people/widgetViews/postBounty/PostModal';
 import addBounty from 'pages/tickets/workspace/workspaceHeader/Icons/addBounty.svg';
 import { useHistory } from 'react-router-dom';
-import { Workspace } from '../../../../store/interface.ts';
 import { useFeatureFlag, useBrowserTabTitle } from '../../../../hooks';
 
 const HeaderContainer = styled.header`

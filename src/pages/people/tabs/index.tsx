@@ -122,12 +122,11 @@ export const TabsPages = observer(() => {
     }
   };
 
-  const toTitleCase = (str: string) => {
-    return str
+  const toTitleCase = (str: string) =>
+    str
       .split(' ')
       .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
-  };
   const activeTabName: string =
     tabsNames.find((name: any) => location.pathname.includes(name)) || 'People';
   const activeTab: string = toTitleCase(activeTabName);
