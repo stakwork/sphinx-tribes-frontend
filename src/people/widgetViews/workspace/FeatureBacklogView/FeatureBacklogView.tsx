@@ -547,6 +547,12 @@ const FeatureBacklogView = observer(() => {
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setNewFeatureTitle(e.target.value)
                 }
+                onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                  if (e.key === 'Enter' && newFeatureTitle.trim().length >= 2 && !isCreating) {
+                    e.preventDefault();
+                    handleCreateFeature();
+                  }
+                }}
               />
               <NewBriefInput
                 placeholder="Enter Brief"
@@ -554,6 +560,12 @@ const FeatureBacklogView = observer(() => {
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setNewFeatureBrief(e.target.value)
                 }
+                onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                  if (e.key === 'Enter' && newFeatureTitle.trim().length >= 2 && !isCreating) {
+                    e.preventDefault();
+                    handleCreateFeature();
+                  }
+                }}
                 collapsed={collapsed}
               />
               <CreateButton

@@ -862,6 +862,11 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
                             placeholder="Quick draft a new ticket..."
                             value={draftText}
                             onChange={(e) => handleDraftChange(phaseID, e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' && draftText) {
+                                handleCreateTicket(phaseID);
+                              }
+                            }}
                           />
                           {draftText && (
                             <DraftButton
