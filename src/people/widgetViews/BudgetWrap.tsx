@@ -12,6 +12,7 @@ import { useStores } from 'store';
 import { EuiFlexGrid, EuiFlexItem, useIsWithinBreakpoints, EuiIcon } from '@elastic/eui';
 import { Link, useRouteMatch } from 'react-router-dom';
 import { Button } from 'components/common';
+import { useLocalStorage } from 'hooks/useLocalStorage';
 import balanceIcon from '../../public/static/toll.svg';
 import balanceVector from '../../public/static/balancevector.svg';
 import {
@@ -50,10 +51,7 @@ export const BudgetWrapComponent = (props: { org: Workspace | undefined; uuid: s
   const [isOpenBudget, setIsOpenBudget] = useState<boolean>(false);
   const [paymentsHistory, setPaymentsHistory] = useState<PaymentHistory[]>([]);
   const [invoiceStatus, setInvoiceStatus] = useState(false);
-  const [showBalances, setShowBalances] = useState(() => {
-    const storedValue = localStorage.getItem('showBalances');
-    return storedValue ? JSON.parse(storedValue) : true;
-  });
+  const [showBalances, setShowBalances] = useLocalStorage('showBalances', true);
 
   const closeHistoryHandler = () => {
     setIsOpenHistory(false);
@@ -178,9 +176,7 @@ export const BudgetWrapComponent = (props: { org: Workspace | undefined; uuid: s
   const openBudget = orgBudget && orgBudget.open_budget ? orgBudget.open_budget : 0;
 
   const toggleBalances = () => {
-    const newValue = !showBalances;
-    setShowBalances(newValue);
-    localStorage.setItem('showBalances', JSON.stringify(newValue));
+    setShowBalances(!showBalances);
   };
 
   return (
