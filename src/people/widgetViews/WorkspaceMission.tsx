@@ -56,7 +56,7 @@ import { archiveIcon } from 'components/common/DeleteConfirmationModal/archiveIc
 import { colors } from '../../config/colors';
 import dragIcon from '../../pages/superadmin/header/icons/drag_indicator.svg';
 import SidebarComponent from '../../components/common/SidebarComponent.tsx';
-import { useFeatureFlag,useBrowserTabTitle } from '../../hooks';
+import { useFeatureFlag, useBrowserTabTitle } from '../../hooks';
 import AddCodeGraph from './workspace/AddCodeGraphModal';
 import AddFeature from './workspace/AddFeatureModal';
 import {
@@ -368,7 +368,7 @@ const WorkspaceMission = () => {
     }
   }, [main, uuid]);
 
-  useBrowserTabTitle("Workspace")
+  useBrowserTabTitle('Workspace');
 
   useEffect(() => {
     fetchCodeGraph();

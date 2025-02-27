@@ -10,7 +10,7 @@ import { autorun } from 'mobx';
 import { useStores } from '../../store';
 import { colors } from '../../config';
 import SidebarComponent from '../../components/common/SidebarComponent';
-import {useBrowserTabTitle} from '../../hooks';
+import { useBrowserTabTitle } from '../../hooks';
 import { WorkspacePlannerHeader } from './WorkspacePlannerHeader';
 import BountyCardComp from './BountyCard';
 

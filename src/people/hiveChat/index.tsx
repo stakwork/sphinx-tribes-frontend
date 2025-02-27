@@ -286,7 +286,7 @@ export const HiveChatView: React.FC = observer(() => {
     label: 'Open AI - 4o',
     value: 'gpt-4o'
   });
-  useBrowserTabTitle("Hive Chat")
+  useBrowserTabTitle('Hive Chat');
 
   const handleBackClick = () => {
     history.push(`/workspace/${uuid}`);

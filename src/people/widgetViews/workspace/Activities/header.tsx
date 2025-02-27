@@ -150,7 +150,7 @@ export default function ActivitiesHeader({ uuid }: { uuid: string }) {
     }
   }, [main, ui.selectedPerson]);
 
-  useBrowserTabTitle("Activities")
+  useBrowserTabTitle('Activities');
 
   useEffect(() => {
     getUserWorkspaces();

@@ -34,7 +34,7 @@ import SidebarComponent from 'components/common/SidebarComponent.tsx';
 import styled from 'styled-components';
 import { phaseTicketStore } from '../../store/phase';
 import StakworkLogsPanel from '../../components/common/TicketEditor/StakworkLogsPanel.tsx';
-import { useFeatureFlag,useBrowserTabTitle } from '../../hooks';
+import { useFeatureFlag, useBrowserTabTitle } from '../../hooks';
 import {
   FeatureHeadNameWrap,
   FeatureHeadWrap,
@@ -117,7 +117,7 @@ const PhasePlannerView: React.FC = observer(() => {
   const { isEnabled: isBulkCreateEnabled } = useFeatureFlag('bulk_ticket_create');
   const [isConversionModalOpen, setIsConversionModalOpen] = useState(false);
   const [isConverting, setIsConverting] = useState(false);
-  useBrowserTabTitle("Phase Planner")
+  useBrowserTabTitle('Phase Planner');
 
   const handleSelectTicket = (ticketId: string) => {
     setSelectedTickets((prev) => ({

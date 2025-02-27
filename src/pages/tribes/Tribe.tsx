@@ -3,9 +3,9 @@ import moment from 'moment';
 import React, { useState } from 'react';
 import { QRCode } from 'react-qr-svg';
 import styled from 'styled-components';
+import { useBrowserTabTitle } from 'hooks';
 import { getHostIncludingDockerHosts } from '../../config/host';
 import Tag from './Tag';
-import { useBrowserTabTitle } from 'hooks';
 
 interface ContentProps {
   selected: boolean;

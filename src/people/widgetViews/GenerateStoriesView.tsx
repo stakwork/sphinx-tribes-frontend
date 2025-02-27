@@ -28,7 +28,7 @@ const GenerateStoriesView: React.FC = () => {
   const [mission, setMission] = useState<string | undefined>('');
   const [tactics, setTactics] = useState<string | undefined>('');
   const [response, setResponse] = useState<any>(null);
-  useBrowserTabTitle("Stories")
+  useBrowserTabTitle('Stories');
 
   useEffect(() => {
     const fetchData = async () => {

@@ -391,7 +391,7 @@ const WorkspaceFeature = () => {
     'preview'
   );
   const [permissionsChecked, setPermissionsChecked] = useState<boolean>(false);
-  useBrowserTabTitle(`Feature: ${featureData?.name || ""}`);
+  useBrowserTabTitle(`Feature: ${featureData?.name || ''}`);
 
   const history = useHistory();
 
