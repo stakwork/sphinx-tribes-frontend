@@ -13,6 +13,7 @@ import { BountyDetailsCreationData } from '../../../people/utils/BountyCreationC
 import { formDropdownOptions } from '../../../people/utils/Constants';
 import { useStores } from '../../../store';
 import { Button, Divider } from '../../common';
+import { useBrowserTabTitle } from '../../../hooks/useBrowserTabTitle';
 import ImageButton from '../../common/ImageButton';
 import Input from '../inputs';
 import { dynamicSchemaAutofillFieldsByType, dynamicSchemasByType } from '../schema';
@@ -63,6 +64,8 @@ function Form(props: FormProps) {
   const [schemaData, setSchemaData] = useState(BountyDetailsCreationData.step_1);
   const [stepTracker, setStepTracker] = useState<number>(1);
   const [userWorkspaces, setUserWorkspaces] = useState<Array<{ label: string; value: string }>>([]);
+
+  useBrowserTabTitle('Post Bounty');
 
   let lastPage = 1;
   const scrollDiv = scrollRef ?? refBody;

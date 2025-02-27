@@ -5,6 +5,7 @@ import ReactMarkdown from 'react-markdown';
 import styled from 'styled-components';
 import { useIsMobile } from '../../hooks';
 import { colors } from '../../config/colors';
+import { useBrowserTabTitle } from '../../hooks/useBrowserTabTitle';
 
 interface ColumnProps {
   isSecondColumn?: boolean;
@@ -14,6 +15,7 @@ const DailyBountyPage: React.FC = () => {
   const [content, setContent] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const isMobile = useIsMobile();
+  useBrowserTabTitle('Daily Bounty Rules');
 
   const color = colors['light'];
 

@@ -2,6 +2,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useIsMobile } from '../../hooks';
+import { useBrowserTabTitle } from '../../hooks/useBrowserTabTitle';
 import { colors } from '../../config/colors';
 import BountyNavBar from '../../components/BountyComponents/BountyNavBar';
 import HeroSection from '../../components/BountyComponents/HeroSection';
@@ -38,7 +39,7 @@ const ContentWrapper = styled.div`
 
 const BountiesLandingPage: React.FC = () => {
   const isMobile = useIsMobile();
-
+  useBrowserTabTitle('Bounty Platform');
   return (
     <Body isMobile={isMobile}>
       <ContentWrapper>
