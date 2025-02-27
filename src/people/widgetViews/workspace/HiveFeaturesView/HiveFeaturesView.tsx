@@ -116,7 +116,8 @@ const StatusBadge = styled.span<{ status: string }>`
 export const FeatureHeadWrap = styled.div<{ collapsed: boolean }>`
   display: flex;
   align-items: center;
-  padding: 30px 50px 0 50px;
+  background: #f8f9fa;
+  padding: 30px 50px 10px 50px;
   padding-right: 40px;
   margin-left: ${({ collapsed }: { collapsed: boolean }) => (collapsed ? '50px' : '250px')};
   transition: margin-left 0.3s ease-in-out;
@@ -145,7 +146,6 @@ export const ActivitiesContainer = styled.div<{ collapsed: boolean }>`
   height: calc(100vh - 120px);
   overflow-y: auto;
   margin-bottom: 50px;
-  margin-top: 20px;
   margin-left: ${({ collapsed }: { collapsed: boolean }) => (collapsed ? '50px' : '250px')};
   transition: margin-left 0.3s ease-in-out;
 `;

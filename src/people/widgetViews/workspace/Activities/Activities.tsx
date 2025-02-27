@@ -21,7 +21,6 @@ export const ActivitiesContainer = styled.div`
   height: calc(100vh - 120px);
   overflow-y: auto;
   margin-bottom: 50px;
-  margin-top: 50px;
 `;
 
 export const ActivitiesList = styled.div`

@@ -25,7 +25,6 @@ const BacklogContainer = styled.div<{ collapsed: boolean }>`
   background-color: #f8f9fa;
   height: calc(100vh - 120px);
   overflow-y: auto;
-  margin-top: 15px;
   margin-bottom: 50px;
   margin-left: ${({ collapsed }: { collapsed: boolean }) => (collapsed ? '50px' : '250px')};
   transition: margin-left 0.3s ease-in-out;
@@ -34,9 +33,10 @@ const BacklogContainer = styled.div<{ collapsed: boolean }>`
 const FeatureHeadNameWrap = styled.div<{ collapsed: boolean }>`
   display: flex;
   align-items: center;
+  background: #f8f9fa;
+  padding-bottom: 10px !important;
   gap: 0.8rem;
   padding: 2rem;
-  padding-bottom: 0 !important;
   margin-left: ${({ collapsed }: { collapsed: boolean }) => (collapsed ? '50px' : '250px')};
   transition: margin-left 0.3s ease-in-out;
 `;
