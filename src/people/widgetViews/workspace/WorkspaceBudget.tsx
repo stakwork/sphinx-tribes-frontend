@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { DollarConverter, satToUsd, userHasRole } from 'helpers';
 import { useStores } from 'store';
 import styled from 'styled-components';
+import { useLocalStorage } from 'hooks/useLocalStorage';
 
 const WorkspaceTextWrap = styled.div`
   margin-left: 1.5rem;
@@ -76,9 +77,13 @@ const CurrencyUnit = styled.span`
 
 const WorkspaceBudget = (props: { user_pubkey: string; org: any }) => {
   const [userRoles, setUserRoles] = useState<any[]>([]);
-
   const { main, ui } = useStores();
   const { user_pubkey, org } = props;
+  const [showBalances, setShowBalances] = useLocalStorage('showBalances', true);
+
+  const toggleBalances = () => {
+    setShowBalances(!showBalances);
+  };
 
   const isWorkspaceAdmin =
     org?.owner_pubkey &&
@@ -105,12 +110,12 @@ const WorkspaceBudget = (props: { user_pubkey: string; org: any }) => {
         {org.name}
       </WorkspaceText>
       {hasAccess && (
-        <WorkspaceBudgetText href={`/workspace/${org.uuid}/activities`}>
-          {DollarConverter(org.budget ?? 0)}
+        <WorkspaceBudgetText onClick={toggleBalances} style={{ cursor: 'pointer' }}>
+          {showBalances ? DollarConverter(org.budget ?? 0) : '****'}
           <CurrencyUnit>
             {' SAT'}
             <SatsGap>/</SatsGap>
-            {satToUsd(org.budget ?? 0)} USD
+            {showBalances ? satToUsd(org.budget ?? 0) : '****'} USD
           </CurrencyUnit>
         </WorkspaceBudgetText>
       )}
