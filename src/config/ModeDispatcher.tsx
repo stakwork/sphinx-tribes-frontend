@@ -26,7 +26,7 @@ const hosts: { [k: string]: AppMode } = {
 
 function getMode(): AppMode {
   const { host } = window.location;
-  return hosts[host] || (process.env.REACT_APP_LOCAL_ENV ? AppMode.COMMUNITY : AppMode.TRIBES);
+  return hosts[host] || AppMode.COMMUNITY;
 }
 
 export const ModeDispatcher = ({
