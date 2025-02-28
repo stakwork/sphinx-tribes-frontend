@@ -8,12 +8,13 @@ export enum AppMode {
 }
 
 const hosts: { [k: string]: AppMode } = {
-  'localhost:3000': AppMode.TRIBES,
+  'localhost:3000': process.env.REACT_APP_LOCAL_ENV ? AppMode.COMMUNITY : AppMode.TRIBES,
   'localhost:13000': AppMode.TRIBES,
   'localhost:23000': AppMode.TRIBES,
   'tribes.sphinx.chat': AppMode.TRIBES,
   'tribes-test.sphinx.chat': AppMode.TRIBES,
   'localhost:13007': AppMode.COMMUNITY,
+  'localhost:13008': AppMode.COMMUNITY,
   'localhost:23007': AppMode.COMMUNITY,
   'localhost:3007': AppMode.COMMUNITY,
   'people.sphinx.chat': AppMode.COMMUNITY,
@@ -25,7 +26,7 @@ const hosts: { [k: string]: AppMode } = {
 
 function getMode(): AppMode {
   const { host } = window.location;
-  return hosts[host] || AppMode.TRIBES;
+  return hosts[host] || AppMode.COMMUNITY;
 }
 
 export const ModeDispatcher = ({

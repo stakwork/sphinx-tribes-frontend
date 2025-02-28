@@ -32,21 +32,14 @@ To run the **tribes** frontend locally, utilize the following ports:
 
 ## Running Frontend Against people.sphinx.chat Locally 🌐
 
-If you wish to run only the frontend, follow these steps:
+To run the frontend:
 
-1. Modify line 11 in `src/config/ModeDispatcher.tsx`: 
- - Change `'localhost:3000': AppMode.TRIBES` to `'localhost:3000': AppMode.COMMUNITY`
+1. Install dependencies:
+ - `yarn install` to install the dependencies
 
-2. Modify line 28 in `src/config/ModeDispatcher.tsx`: 
- - Change `return hosts[host] || AppMode.TRIBES;` to `return hosts[host] || AppMode.COMMUNITY;`
-
-3. Modify line 10 in `src/config/host.ts`: 
- - Change `return host;` to `return 'people-test.sphinx.chat';`
-
-4. Open the terminal. Locate your folder and then run:
-
-- `yarn install` to install the dependencies
-- `yarn start` to run the frontend locally
+2. Start the application:
+- For local development: `yarn start:local`
+- For production environment: `yarn start`
 
 ## Contributing Guidelines 🤝
 

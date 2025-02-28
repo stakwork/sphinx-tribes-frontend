@@ -40,7 +40,7 @@ export const createSocketInstance = (): WebSocket => {
       localStorage.setItem('websocket_token', uniqueID!);
     }
 
-    socket = new WebSocket(URL + `?uniqueId=${uniqueID}`);
+    socket = new WebSocket(`${URL}?uniqueId=${uniqueID}`);
 
     socket.onclose = () => {
       console.log('WebSocket connection closed from index');

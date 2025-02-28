@@ -5,6 +5,8 @@ import { useHistory, useParams } from 'react-router-dom';
 import { ChatMessage } from 'store/interface';
 import { useStores } from 'store';
 import { createSocketInstance } from 'config/socket';
+import SidebarComponent from 'components/common/SidebarComponent.tsx';
+import ActivitiesHeader from 'people/widgetViews/workspace/Activities/header.tsx';
 import { SOCKET_MSG } from 'config/socket';
 import styled from 'styled-components';
 import { EuiLoadingSpinner } from '@elastic/eui';
@@ -35,13 +37,15 @@ interface LogEntry {
   message: string;
 }
 
-const Container = styled.div`
+const Container = styled.div<{ collapsed: boolean }>`
   display: flex;
   flex-direction: column;
   height: 100vh;
   padding: 0 20px;
   overflow: hidden;
   background: var(--Search-bar-background, #f2f3f5);
+  margin-left: ${({ collapsed }: { collapsed: boolean }) => (collapsed ? '50px' : '250px')};
+  transition: margin-left 0.3s ease-in-out;
 `;
 
 const ChatBody = styled.div`
@@ -270,6 +274,7 @@ export const HiveChatView: React.FC = observer(() => {
   const history = useHistory();
   const [isUpdatingTitle, setIsUpdatingTitle] = useState(false);
   const [projectId, setProjectId] = useState('');
+  const [collapsed, setCollapsed] = useState(false);
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [isChainVisible, setIsChainVisible] = useState(false);
   const [lastLogLine, setLastLogLine] = useState('');
@@ -342,6 +347,19 @@ export const HiveChatView: React.FC = observer(() => {
       setIsUpdatingTitle(false);
     }
   };
+
+  useEffect(() => {
+    const handleCollapseChange = (e: Event) => {
+      const customEvent = e as CustomEvent<{ collapsed: boolean }>;
+      setCollapsed(customEvent.detail.collapsed);
+    };
+
+    window.addEventListener('sidebarCollapse', handleCollapseChange as EventListener);
+
+    return () => {
+      window.removeEventListener('sidebarCollapse', handleCollapseChange as EventListener);
+    };
+  }, []);
 
   useEffect(() => {
     const initializeChat = async () => {
@@ -542,7 +560,7 @@ export const HiveChatView: React.FC = observer(() => {
 
   if (loading) {
     return (
-      <Container>
+      <Container collapsed={collapsed}>
         <LoadingContainer>
           <EuiLoadingSpinner size="l" />
         </LoadingContainer>
@@ -552,95 +570,100 @@ export const HiveChatView: React.FC = observer(() => {
 
   if (error) {
     return (
-      <Container>
+      <Container collapsed={collapsed}>
         <Title>Error: {error}</Title>
       </Container>
     );
   }
 
   return (
-    <Container>
-      <Header>
-        <MaterialIcon
-          onClick={handleBackClick}
-          icon="arrow_back"
-          style={{
-            fontSize: 25,
-            cursor: 'pointer',
-            color: '#5f6368'
-          }}
-        />
-        <SaveTitleContainer>
-          <TitleInput
-            value={title}
-            onChange={onTitleChange}
-            placeholder="Enter chat title..."
-            disabled={isUpdatingTitle}
+    <>
+      <SidebarComponent uuid={uuid} />
+      <Container collapsed={collapsed}>
+        <ActivitiesHeader uuid={uuid} />
+
+        <Header>
+          <MaterialIcon
+            onClick={handleBackClick}
+            icon="arrow_back"
             style={{
-              cursor: isUpdatingTitle ? 'not-allowed' : 'text'
+              fontSize: 25,
+              cursor: 'pointer',
+              color: '#5f6368'
             }}
           />
-          {isEditingTitle && (
-            <SendButton
-              onClick={handleSaveTitle}
+          <SaveTitleContainer>
+            <TitleInput
+              value={title}
+              onChange={onTitleChange}
+              placeholder="Enter chat title..."
               disabled={isUpdatingTitle}
-              style={{ margin: 0, padding: '8px 16px' }}
-            >
-              Save
-            </SendButton>
-          )}
-        </SaveTitleContainer>
-        <ModelSelector selectedModel={selectedModel} onModelChange={setSelectedModel} />
-      </Header>
-      <ChatBody>
-        <ChatHistory ref={chatHistoryRef}>
-          {messages.map((msg: ChatMessage) => (
-            <MessageBubble key={msg.id} isUser={msg.role === 'user'}>
-              {renderMarkdown(msg.message, {
-                codeBlockBackground: '#282c34',
-                textColor: '#abb2bf',
-                bubbleTextColor: msg.role === 'user' ? 'white' : '',
-                borderColor: '#444',
-                codeBlockFont: 'Courier New'
-              })}
-            </MessageBubble>
-          ))}
-          {isChainVisible && (
-            <MessageBubble isUser={false}>
-              <h6>Hive - Chain of Thought</h6>
-              <p>
-                {lastLogLine
-                  ? lastLogLine
-                  : `Hi ${ui.meInfo?.owner_alias}, I've got your message. Let me have a think.`}
-              </p>
-            </MessageBubble>
-          )}
-        </ChatHistory>
-        <InputContainer>
-          <TextArea
-            value={message}
-            onChange={handleMessageChange}
-            onKeyPress={handleKeyPress}
-            placeholder="Type your message..."
-            disabled={isSending}
-          />
-          <AttachButton onClick={() => setIsUploadModalOpen(true)} disabled={isSending}>
-            Attach
-            <AttachIcon icon="attach_file" />
-          </AttachButton>
-          <SendButton onClick={handleSendMessage} disabled={!message.trim() || isSending}>
-            Send
-          </SendButton>
-          {isUploadModalOpen && (
-            <UploadModal
-              isOpen={isUploadModalOpen}
-              onClose={() => setIsUploadModalOpen(false)}
-              onUploadComplete={handleUploadComplete}
+              style={{
+                cursor: isUpdatingTitle ? 'not-allowed' : 'text'
+              }}
             />
-          )}
-        </InputContainer>
-      </ChatBody>
-    </Container>
+            {isEditingTitle && (
+              <SendButton
+                onClick={handleSaveTitle}
+                disabled={isUpdatingTitle}
+                style={{ margin: 0, padding: '8px 16px' }}
+              >
+                Save
+              </SendButton>
+            )}
+          </SaveTitleContainer>
+          <ModelSelector selectedModel={selectedModel} onModelChange={setSelectedModel} />
+        </Header>
+        <ChatBody>
+          <ChatHistory ref={chatHistoryRef}>
+            {messages.map((msg: ChatMessage) => (
+              <MessageBubble key={msg.id} isUser={msg.role === 'user'}>
+                {renderMarkdown(msg.message, {
+                  codeBlockBackground: '#282c34',
+                  textColor: '#abb2bf',
+                  bubbleTextColor: msg.role === 'user' ? 'white' : '',
+                  borderColor: '#444',
+                  codeBlockFont: 'Courier New'
+                })}
+              </MessageBubble>
+            ))}
+            {isChainVisible && (
+              <MessageBubble isUser={false}>
+                <h6>Hive - Chain of Thought</h6>
+                <p>
+                  {lastLogLine
+                    ? lastLogLine
+                    : `Hi ${ui.meInfo?.owner_alias}, I've got your message. Let me have a think.`}
+                </p>
+              </MessageBubble>
+            )}
+          </ChatHistory>
+          <InputContainer>
+            <TextArea
+              value={message}
+              onChange={handleMessageChange}
+              onKeyPress={handleKeyPress}
+              placeholder="Type your message..."
+              disabled={isSending}
+            />
+            <AttachButton onClick={() => setIsUploadModalOpen(true)} disabled={isSending}>
+              Attach
+              <AttachIcon icon="attach_file" />
+            </AttachButton>
+            <SendButton onClick={handleSendMessage} disabled={!message.trim() || isSending}>
+              Send
+            </SendButton>
+            {isUploadModalOpen && (
+              <UploadModal
+                isOpen={isUploadModalOpen}
+                onClose={() => setIsUploadModalOpen(false)}
+                onUploadComplete={handleUploadComplete}
+              />
+            )}
+          </InputContainer>
+        </ChatBody>
+      </Container>
+    </>
   );
 });
 

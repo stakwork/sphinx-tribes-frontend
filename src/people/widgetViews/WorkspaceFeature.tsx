@@ -497,7 +497,7 @@ const WorkspaceFeature = () => {
   }, [getWorkspaceData]);
 
   useEffect(() => {
-    let socket = createSocketInstance();
+    const socket = createSocketInstance();
 
     socket.onmessage = async (event: MessageEvent) => {
       console.log('Raw websocket message received:', event.data);
@@ -767,7 +767,9 @@ const WorkspaceFeature = () => {
         <FeatureHeadWrap>
           <FeatureHeadNameWrap>
             <MaterialIcon
-              onClick={() => history.push(`/workspace/${workspaceData?.uuid}`)}
+              onClick={() =>
+                history.push(`/workspace/${workspaceData?.uuid}/feature/${feature_uuid}`)
+              }
               icon={'arrow_back'}
               style={{
                 fontSize: 25,

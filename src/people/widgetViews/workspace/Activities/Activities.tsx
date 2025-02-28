@@ -14,14 +14,13 @@ import ActivitiesHeader from './header';
 
 export const ActivitiesContainer = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1.5fr;
+  grid-template-columns: 30% 70%;
   gap: 2rem;
   padding: 3.5rem;
   background-color: #f8f9fa;
   height: calc(100vh - 120px);
   overflow-y: auto;
   margin-bottom: 50px;
-  margin-top: 50px;
 `;
 
 export const ActivitiesList = styled.div`
