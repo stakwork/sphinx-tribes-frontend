@@ -27,6 +27,7 @@ import {
   FeatureOptionsWrap
 } from 'pages/tickets/style';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useBrowserTabTitle } from 'hooks';
 import { useParams, useHistory } from 'react-router-dom';
 import { useStores } from 'store';
 import { mainStore } from 'store/main';
@@ -390,6 +391,7 @@ const WorkspaceFeature = () => {
     'preview'
   );
   const [permissionsChecked, setPermissionsChecked] = useState<boolean>(false);
+  useBrowserTabTitle(`Feature: ${featureData?.name || ''}`);
 
   const history = useHistory();
 

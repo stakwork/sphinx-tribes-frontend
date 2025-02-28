@@ -54,7 +54,7 @@ export function usePeopleFilteredSearch() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [fetchPeople]);
 
   return {
     isLoading,
