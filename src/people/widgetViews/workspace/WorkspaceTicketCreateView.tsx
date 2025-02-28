@@ -1,16 +1,23 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/typedef */
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useParams, useHistory } from 'react-router-dom';
-import { Feature, Ticket, TicketMessage, TicketStatus } from 'store/interface';
+import { Feature, Ticket, TicketMessage, TicketStatus, Author } from 'store/interface';
 import MaterialIcon from '@material/react-material-icon';
 import { useStores } from 'store';
 import { v4 as uuidv4 } from 'uuid';
-import { FeatureBody, FeatureDataWrap, FieldWrap } from 'pages/tickets/style';
+import {
+  FeatureBody,
+  FeatureDataWrap,
+  FieldWrap,
+  LabelValue,
+  StyledLink
+} from 'pages/tickets/style';
 import { SOCKET_MSG } from 'config/socket';
 import { createSocketInstance } from 'config/socket';
 import { EuiGlobalToastList } from '@elastic/eui';
-import NewTicketEditor from 'components/common/TicketEditor/NewTicketEditor';
+import TicketEditor from 'components/common/TicketEditor/TicketEditor';
 import SidebarComponent from 'components/common/SidebarComponent';
 import styled from 'styled-components';
 import { phaseTicketStore } from '../../../store/phase';
@@ -60,8 +67,9 @@ const WorkspaceTicketCreateView: React.FC = observer(() => {
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [workspace, setWorkspace] = useState<any>(null);
   const [collapsed, setCollapsed] = useState(false);
+  const [ticketGroupId] = useState(uuidv4());
 
-  const emptyTicket = useMemo(
+  const defaultTicket = useMemo(
     () => ({
       uuid: uuidv4(),
       name: '',
@@ -71,9 +79,30 @@ const WorkspaceTicketCreateView: React.FC = observer(() => {
       status: 'DRAFT' as TicketStatus,
       version: 1,
       feature_uuid: selectedFeature,
-      phase_uuid: selectedPhase
+      phase_uuid: selectedPhase,
+      category: '',
+      amount: 0,
+      ticket_group: ticketGroupId,
+      author: 'HUMAN' as Author,
+      author_id: ''
     }),
-    [selectedFeature, selectedPhase]
+    [selectedFeature, selectedPhase, ticketGroupId]
+  );
+
+  useEffect(() => {
+    phaseTicketStore.addTicket(defaultTicket);
+    return () => phaseTicketStore.clearPhaseTickets(defaultTicket.uuid);
+  }, [defaultTicket]);
+
+  const emptyTicket = useMemo(
+    () => ({
+      ...defaultTicket,
+      uuid: uuidv4(),
+      feature_uuid: selectedFeature,
+      phase_uuid: selectedPhase,
+      ticket_group: ticketGroupId
+    }),
+    [defaultTicket, selectedFeature, selectedPhase, ticketGroupId]
   );
 
   useEffect(() => {
@@ -260,7 +289,10 @@ const WorkspaceTicketCreateView: React.FC = observer(() => {
     };
   }, [main]);
 
-  const getPhaseTickets = useCallback(async () => [emptyTicket], [emptyTicket]);
+  const getPhaseTickets = useCallback(async () => {
+    const storeTickets = phaseTicketStore.getPhaseTickets(selectedPhase);
+    return [...storeTickets, defaultTicket];
+  }, [selectedPhase, defaultTicket]);
 
   const handleFeatureChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const featureUuid = e.target.value;
@@ -284,7 +316,7 @@ const WorkspaceTicketCreateView: React.FC = observer(() => {
       setToasts([
         {
           id: `error-${Date.now()}`,
-          title: 'Error',
+          title: 'Something Wrong!',
           color: 'danger',
           text: 'Failed to get ticket details'
         }
@@ -347,24 +379,39 @@ const WorkspaceTicketCreateView: React.FC = observer(() => {
 
             <SelectWrapper>
               <SelectLabel>Phase:</SelectLabel>
-              <StyledSelect
-                value={selectedPhase}
-                onChange={handlePhaseChange}
-                disabled={isLoadingPhases || !selectedFeature}
-              >
-                <option value="">Select Phase</option>
-                {phases.map((phase: Phase) => (
-                  <option key={phase.uuid} value={phase.uuid}>
-                    {phase.name}
-                  </option>
-                ))}
-              </StyledSelect>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <StyledSelect
+                  value={selectedPhase}
+                  onChange={handlePhaseChange}
+                  disabled={isLoadingPhases || !selectedFeature}
+                >
+                  <option value="">Select Phase</option>
+                  {phases.map((phase: Phase) => (
+                    <option key={phase.uuid} value={phase.uuid}>
+                      {phase.name}
+                    </option>
+                  ))}
+                </StyledSelect>
+                {selectedFeature && selectedPhase && (
+                  <LabelValue>
+                    <StyledLink
+                      onClick={() =>
+                        window.open(
+                          `/feature/${selectedFeature}/phase/${selectedPhase}/planner`,
+                          '_blank'
+                        )
+                      }
+                    >
+                      [Phase Planner]
+                    </StyledLink>
+                  </LabelValue>
+                )}
+              </div>
             </SelectWrapper>
 
             <PhaseFlexContainer style={{ height: '600px' }}>
-              <NewTicketEditor
+              <TicketEditor
                 key={emptyTicket.uuid}
-                index={0}
                 ticketData={emptyTicket}
                 logs={logs}
                 websocketSessionId={websocketSessionId}
@@ -373,7 +420,15 @@ const WorkspaceTicketCreateView: React.FC = observer(() => {
                 workspaceUUID={workspaceId}
                 draggableId={emptyTicket.uuid}
                 hasInteractiveChildren={false}
-                onTicketSaved={handleTicketSaved}
+                onTicketUpdate={(updatedTicket) => handleTicketSaved(updatedTicket.uuid)}
+                showFeaturePhaseDropdowns={true}
+                showVersionSelector={true}
+                showDragHandle={false}
+                showSWWFLink={false}
+                index={0}
+                selectedTickets={{}}
+                onSelectTicket={() => {}}
+                showCheckbox={false}
               />
             </PhaseFlexContainer>
           </FieldWrap>

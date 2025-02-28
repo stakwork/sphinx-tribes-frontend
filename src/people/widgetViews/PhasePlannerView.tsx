@@ -47,6 +47,7 @@ import { Phase, Toast } from './workspace/interface';
 import { EditableField } from './workspace/EditableField.tsx';
 import WidgetSwitchViewer from './WidgetSwitchViewer.tsx';
 import ActivitiesHeader from './workspace/Activities/header.tsx';
+import { GeneratePhasePlanButton } from './workspace/GeneratePhasePlan.tsx';
 
 interface PhasePlannerParams {
   feature_uuid: string;
@@ -437,7 +438,7 @@ const PhasePlannerView: React.FC = observer(() => {
   }, [getFeatureData, getPhaseData, history, getPhaseTickets, phase_uuid]);
 
   const handleClose = () => {
-    history.push(`/feature/${feature_uuid}`);
+    history.push(`/workspace/${featureData?.workspace_uuid}/feature/${feature_uuid}`);
   };
 
   const addTicketHandler = async () => {
@@ -623,6 +624,11 @@ const PhasePlannerView: React.FC = observer(() => {
             />
             <WorkspaceName>Phase Planner</WorkspaceName>
           </FeatureHeadNameWrap>
+          <GeneratePhasePlanButton
+            featureId={feature_uuid}
+            phaseId={phase_uuid}
+            sourceWebsocket={websocketSessionId}
+          />
         </FeatureHeadWrap>
         <FeatureDataWrap>
           <FieldWrap>
@@ -744,6 +750,11 @@ const PhasePlannerView: React.FC = observer(() => {
                               selectedTickets={selectedTickets}
                               onSelectTicket={handleSelectTicket}
                               collapsed={collapsed}
+                              showFeaturePhaseDropdowns={false}
+                              showVersionSelector={true}
+                              showDragHandle={true}
+                              showSWWFLink={true}
+                              showCheckbox={true}
                             />
                           </div>
                         )}

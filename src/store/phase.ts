@@ -17,6 +17,7 @@ export interface TicketStore {
   organizeTicketsByGroup: (tickets: Ticket[]) => Ticket[];
   getLatestVersionFromGroup: (groupId: string) => Ticket | undefined;
   getTicketByVersion: (groupId: string, version: number) => Ticket | undefined;
+  getTicketGroupIds: (phase_uuid: string) => string[];
 }
 
 export class PhaseTicketStore implements TicketStore {
@@ -120,6 +121,18 @@ export class PhaseTicketStore implements TicketStore {
     }
 
     return ticket;
+  }
+
+  getTicketGroupIds(phase_uuid: string): string[] {
+    const tickets = this.getPhaseTickets(phase_uuid);
+    const uniqueGroupIds = new Set<string>();
+
+    tickets.forEach((ticket: Ticket) => {
+      const groupId = ticket.ticket_group || ticket.uuid;
+      uniqueGroupIds.add(groupId);
+    });
+
+    return Array.from(uniqueGroupIds);
   }
 }
 

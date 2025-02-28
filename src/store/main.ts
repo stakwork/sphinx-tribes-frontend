@@ -4718,6 +4718,70 @@ export class MainStore {
       return null;
     }
   }
+
+  async createStakworkProject(chatQuestion: string): Promise<any | null> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+      const response = await fetch(`${TribesURL}/hivechat/send/build`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt || '',
+          'Content-Type': 'application/json',
+          'x-session-id': this.getSessionId()
+        },
+        body: JSON.stringify({
+          question: chatQuestion
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to create Stakwork project: ${response.status} ${response.statusText}`
+        );
+      }
+
+      const responseData = await response.json();
+      return responseData;
+    } catch (error) {
+      console.error('Error creating Stakwork project:', error);
+      return null;
+    }
+  }
+
+  async sendPhasePlan(payload: {
+    feature_id: string;
+    phase_id: string;
+    ticket_group_ids: string[];
+    source_websocket: string;
+    request_uuid: string;
+  }): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+
+      const response = await fetch(`${TribesURL}/bounties/ticket/plan/send`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json',
+          'x-session-id': this.getSessionId()
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send phase plan');
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error('Error sending phase plan:', error);
+      return null;
+    }
+  }
 }
 
 export const mainStore = new MainStore();

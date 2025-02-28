@@ -41,7 +41,7 @@ const WorkspaceText = styled.a<{ hasAccess: boolean }>`
   }
 `;
 
-const WorkspaceBudgetText = styled.small`
+const WorkspaceBudgetText = styled.a`
   color: #5f6368;
   font-family: 'Barlow';
   font-size: 0.9375rem;
@@ -52,6 +52,9 @@ const WorkspaceBudgetText = styled.small`
   text-transform: uppercase;
   margin-top: auto;
   font-size: 0.9rem;
+  :hover {
+    text-decoration: none;
+  }
   @media only screen and (max-width: 700px) {
     font-size: 0.8rem;
   }
@@ -98,11 +101,11 @@ const WorkspaceBudget = (props: { user_pubkey: string; org: any }) => {
 
   return (
     <WorkspaceTextWrap className="org-text-wrap">
-      <WorkspaceText href={`/workspace/${org.uuid}`} hasAccess={hasAccess}>
+      <WorkspaceText href={`/workspace/${org.uuid}/activities`} hasAccess={hasAccess}>
         {org.name}
       </WorkspaceText>
       {hasAccess && (
-        <WorkspaceBudgetText>
+        <WorkspaceBudgetText href={`/workspace/${org.uuid}/activities`}>
           {DollarConverter(org.budget ?? 0)}
           <CurrencyUnit>
             {' SAT'}

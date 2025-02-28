@@ -547,6 +547,7 @@ export interface BountyCard {
   pow?: number;
   ticket_uuid?: string;
   ticket_group?: string;
+  bounty_price?: number;
 }
 
 export type BountyReviewStatus = 'New' | 'Accepted' | 'Rejected' | 'Change Requested';

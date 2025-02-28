@@ -9,6 +9,7 @@ import history from 'config/history.ts';
 import MaterialIcon from '@material/react-material-icon';
 import { Box } from '@mui/system';
 import { snippetStore } from 'store/snippetStore.ts';
+import { workspaceTicketStore } from 'store/workspace-ticket.ts';
 import { SnippetDropdown } from 'components/form/inputs/SnippetDropDown.tsx';
 import { phaseTicketStore } from '../../../store/phase';
 import {
@@ -44,7 +45,7 @@ interface LogEntry {
 interface TicketEditorProps {
   ticketData: Ticket;
   logs: LogEntry[];
-  index: number;
+  index?: number;
   websocketSessionId: string;
   draggableId: string;
   hasInteractiveChildren: boolean;
@@ -52,9 +53,15 @@ interface TicketEditorProps {
   swwfLink?: string;
   getPhaseTickets: () => Promise<Ticket[] | undefined>;
   workspaceUUID: string;
-  selectedTickets: Record<string, boolean>;
-  onSelectTicket: (ticketId: string) => void;
+  selectedTickets?: Record<string, boolean>;
+  onSelectTicket?: (ticketId: string) => void;
   collapsed?: boolean;
+  showFeaturePhaseDropdowns?: boolean;
+  showVersionSelector?: boolean;
+  showDragHandle?: boolean;
+  showSWWFLink?: boolean;
+  onTicketUpdate?: (updatedTicket: Ticket) => void;
+  showCheckbox?: boolean;
 }
 
 const SwitcherContainer = styled.div`
@@ -200,6 +207,23 @@ const CATEGORY_OPTIONS = [
   { value: 'Other', label: 'Other' }
 ];
 
+const DEFAULT_TICKET: Ticket = {
+  uuid: '',
+  name: '',
+  sequence: 1,
+  dependency: [],
+  description: '',
+  status: 'DRAFT' as TicketStatus,
+  version: 1,
+  feature_uuid: '',
+  phase_uuid: '',
+  category: '',
+  amount: 0,
+  ticket_group: '',
+  author: 'HUMAN' as Author,
+  author_id: ''
+};
+
 const TicketEditor = observer(
   ({
     ticketData,
@@ -211,7 +235,12 @@ const TicketEditor = observer(
     logs,
     selectedTickets,
     onSelectTicket,
-    collapsed
+    collapsed,
+    showVersionSelector,
+    showDragHandle,
+    showSWWFLink,
+    showCheckbox = true,
+    onTicketUpdate
   }: TicketEditorProps) => {
     const [toasts, setToasts] = useState<Toast[]>([]);
     const [versions, setVersions] = useState<number[]>([]);
@@ -219,7 +248,9 @@ const TicketEditor = observer(
       ticketData.ticket_group as string
     );
     const [selectedVersion, setSelectedVersion] = useState<number>(latestTicket?.version as number);
-    const [versionTicketData, setVersionTicketData] = useState<Ticket>(latestTicket as Ticket);
+    const [versionTicketData, setVersionTicketData] = useState<Ticket>(
+      ticketData || DEFAULT_TICKET
+    );
     const [isCopying, setIsCopying] = useState(false);
     const [activeMode, setActiveMode] = useState<'preview' | 'edit'>('edit');
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
@@ -259,6 +290,23 @@ const TicketEditor = observer(
         description: prevData.description ? `${prevData.description}\n${snippet}` : snippet
       }));
     };
+
+    useEffect(() => {
+      const groupTickets = workspaceTicketStore.getTicketsByGroup(
+        ticketData.ticket_group as string
+      );
+      const versions = groupTickets.map((ticket) => ticket.version || 0);
+      setVersions(versions);
+
+      const latestTicket = workspaceTicketStore.getLatestVersionFromGroup(
+        ticketData.ticket_group as string
+      );
+
+      if (latestTicket) {
+        setSelectedVersion(latestTicket.version as number);
+        setVersionTicketData(latestTicket);
+      }
+    }, [ticketData, ticketData.version]);
 
     useEffect(() => {
       const maxLimit = 21;
@@ -339,22 +387,33 @@ const TicketEditor = observer(
           throw new Error('Failed to update ticket');
         }
 
-        setSelectedVersion(ticketData.version + 1);
+        const updatedTicket = {
+          ...ticketPayload.ticket,
+          uuid: ticketData.uuid,
+          UUID: ticketData.UUID
+        };
 
-        const phaseTickets = await getPhaseTickets();
+        workspaceTicketStore.addTicket(updatedTicket);
+        phaseTicketStore.addTicket(updatedTicket);
 
-        if (!Array.isArray(phaseTickets)) {
-          console.error('Error: phaseTickets is not an array');
-          return;
-        }
+        setSelectedVersion(updatedTicket.version);
+        setVersionTicketData(updatedTicket);
 
-        // Update phase ticket store with the latest tickets
-        phaseTicketStore.clearPhaseTickets(ticketData.phase_uuid);
-        for (const updatedTicket of phaseTickets) {
-          if (updatedTicket.UUID) {
-            updatedTicket.uuid = updatedTicket.UUID;
+        onTicketUpdate?.(updatedTicket);
+
+        const updatedGroupTickets = await main.getTicketsByGroup(ticketData.ticket_group as string);
+
+        if (Array.isArray(updatedGroupTickets)) {
+          workspaceTicketStore.clearTickets();
+          phaseTicketStore.clearPhaseTickets(ticketData.phase_uuid);
+
+          for (const groupTicket of updatedGroupTickets) {
+            if (groupTicket.UUID) {
+              groupTicket.uuid = groupTicket.UUID;
+            }
+            workspaceTicketStore.addTicket(groupTicket);
+            phaseTicketStore.addTicket(groupTicket);
           }
-          phaseTicketStore.addTicket(updatedTicket);
         }
 
         addUpdateSuccessToast();
@@ -420,15 +479,13 @@ const TicketEditor = observer(
     useEffect(() => {
       const updateTicketData = () => {
         const selectedTicket = phaseTicketStore.getTicketByVersion(
-          ticketData.ticket_group as string,
+          ticketData?.ticket_group || '',
           selectedVersion
         );
-        console.log(selectedTicket, selectedVersion);
-        setVersionTicketData(selectedTicket || ticketData);
+        setVersionTicketData(selectedTicket || ticketData || DEFAULT_TICKET);
       };
-
       updateTicketData();
-    }, [selectedVersion, ticketData, ticketData.ticket_group]);
+    }, [selectedVersion, ticketData, ticketData?.ticket_group]);
 
     const handleVersionChange = (newVersion) => {
       setSelectedVersion(newVersion);
@@ -558,27 +615,31 @@ const TicketEditor = observer(
     return (
       <TicketContainer>
         <EuiFlexGroup alignItems="center" gutterSize="s">
-          <EuiFlexItem grow={false}>
-            <EuiPanel
-              style={{ backgroundColor: '#f2f3f5', border: 'none' }}
-              color="transparent"
-              className="drag-handle"
-              paddingSize="s"
-              {...dragHandleProps}
-              aria-label="Drag Handle"
-              key={ticketData.uuid}
-              data-testid={`drag-handle-${ticketData.uuid}`}
-            >
-              <EuiIcon type="grab" />
-            </EuiPanel>
-          </EuiFlexItem>
+          {showDragHandle && (
+            <EuiFlexItem grow={false}>
+              <EuiPanel
+                style={{ backgroundColor: '#f2f3f5', border: 'none' }}
+                color="transparent"
+                className="drag-handle"
+                paddingSize="s"
+                {...dragHandleProps}
+                aria-label="Drag Handle"
+                key={ticketData.uuid}
+                data-testid={`drag-handle-${ticketData.uuid}`}
+              >
+                <EuiIcon type="grab" />
+              </EuiPanel>
+            </EuiFlexItem>
+          )}
           <EuiFlexItem>
             <TicketHeaderInputWrap>
-              <StyledCheckbox
-                type="checkbox"
-                checked={!!selectedTickets[ticketData.uuid]}
-                onChange={() => onSelectTicket(ticketData.uuid)}
-              />
+              {showCheckbox && (
+                <StyledCheckbox
+                  type="checkbox"
+                  checked={!!selectedTickets?.[ticketData.uuid]}
+                  onChange={() => onSelectTicket?.(ticketData.uuid)}
+                />
+              )}
               <TicketHeader>Ticket:</TicketHeader>
               <TicketInput
                 value={versionTicketData.name}
@@ -587,16 +648,18 @@ const TicketEditor = observer(
                 }
                 placeholder="Enter ticket name..."
               />
-              <VersionSelect
-                value={selectedVersion}
-                onChange={(e) => handleVersionChange(e.target.value)}
-              >
-                {Array.from(new Set(versions)).map((version: number) => (
-                  <Option key={version} value={version}>
-                    Version {version}
-                  </Option>
-                ))}
-              </VersionSelect>
+              {showVersionSelector && (
+                <VersionSelect
+                  value={selectedVersion}
+                  onChange={(e) => handleVersionChange(e.target.value)}
+                >
+                  {Array.from(new Set(versions)).map((version: number) => (
+                    <Option key={version} value={version}>
+                      Version {version}
+                    </Option>
+                  ))}
+                </VersionSelect>
+              )}
               <BountyOptionsWrap $collapsed={collapsed}>
                 <MaterialIconStyled
                   icon={'more_horiz'}
@@ -698,7 +761,7 @@ const TicketEditor = observer(
               )}
             </EditorWrapper>
             <TicketButtonGroup>
-              {swwfLink && (
+              {showSWWFLink && swwfLink && (
                 <ChainOfThought>
                   <h6>Hive - Chain of Thought</h6>
                   <p>
@@ -708,7 +771,7 @@ const TicketEditor = observer(
                   </p>
                 </ChainOfThought>
               )}
-              {swwfLink && (
+              {showSWWFLink && swwfLink && (
                 <ActionButton
                   as="a"
                   href={`https://jobs.stakwork.com/admin/projects/${swwfLink}`}

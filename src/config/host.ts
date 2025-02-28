@@ -2,6 +2,10 @@ const internalDockerHosts = ['localhost:13007', 'localhost:13000'];
 const externalDockerHosts = ['localhost:23007', 'localhost:23000'];
 
 export function getHost(): string {
+  if (process.env.REACT_APP_LOCAL_ENV) {
+    return 'people-test.sphinx.chat';
+  }
+
   const host = window.location.host.includes('localhost')
     ? window.location.host.includes('localhost:3007')
       ? 'localhost:13000'

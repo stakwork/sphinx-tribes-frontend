@@ -16,6 +16,9 @@ import WorkspaceTicketCreateView from '../people/widgetViews/workspace/Workspace
 import { HiveChatView } from '../people/hiveChat/index';
 import WorkSpacePlanner from '../people/WorkSpacePlanner/index';
 import HiveFeaturesView from '../people/widgetViews/workspace/HiveFeaturesView/HiveFeaturesView.tsx';
+import FeatureBacklogView from '../people/widgetViews/workspace/FeatureBacklogView/FeatureBacklogView.tsx';
+import { ChatHistoryView } from '../people/hiveChat/ChatHistoryView.tsx';
+import HiveBuildView from '../people/hiveBuild';
 import DailyBountyPage from './DailyBountyPage/index';
 import Body from './tribes/Body';
 import Header from './tribes/Header';
@@ -73,11 +76,20 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
               <Route path="/workspace/:uuid/activities">
                 <Activities />
               </Route>
+              <Route path="/workspace/:workspace_uuid/feature_backlog">
+                <FeatureBacklogView />
+              </Route>
               <Route path="/workspace/:workspace_uuid/feature/:feature_uuid">
                 <HiveFeaturesView />
               </Route>
+              <Route path="/workspace/:workspaceId/hivechat/history">
+                <ChatHistoryView />
+              </Route>
               <Route path="/workspace/:uuid/hivechat/:chatId">
                 <HiveChatView />
+              </Route>
+              <Route path="/hivechat/:uuid/build">
+                <HiveBuildView />
               </Route>
               <Route path="/workspace/:uuid">
                 <WorkspaceMission />
