@@ -374,7 +374,7 @@ const BountyNavBar: React.FC = () => {
                     <Alias>{ui.meInfo?.owner_alias}</Alias>
                   </LoggedInBtn>
                 ) : (
-                  <LoginBtn onClick={handleLoginClick}>
+                  <LoginBtn onClick={handleLoginClick} style={{ marginTop: 12 }}>
                     <span>Sign in</span>
                     <MaterialIcon
                       icon={'login'}
