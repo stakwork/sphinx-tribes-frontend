@@ -214,4 +214,79 @@ describe('StartUpModal', () => {
 
     expect(screen.getByText('Step 2')).toBeInTheDocument();
   });
+
+  it('displays the proper heading when QR code is shown', async () => {
+    (api.get as jest.Mock).mockResolvedValueOnce({ connection_string: 'test-connection-string' });
+
+    render(
+      <StartUpModal closeModal={mockCloseModal} buttonColor="primary" dataObject={mockDataObject} />
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Reveal Connection Code')).toBeInTheDocument();
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByText('Reveal Connection Code'));
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Install the Sphinx app on your phone and then scan this QRcode')
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('renders QR component when connection_string is available', async () => {
+    (api.get as jest.Mock).mockResolvedValueOnce({ connection_string: 'test-connection-string' });
+
+    render(
+      <StartUpModal closeModal={mockCloseModal} buttonColor="primary" dataObject={mockDataObject} />
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Reveal Connection Code')).toBeInTheDocument();
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByText('Reveal Connection Code'));
+    });
+
+    await waitFor(() => {
+      const qrContainer = screen.getByTestId('qrcode');
+      expect(qrContainer).toBeInTheDocument();
+
+      const qrElement = qrContainer.querySelector('canvas, svg');
+      expect(qrElement).toBeInTheDocument();
+
+      expect(
+        screen.getByText('Install the Sphinx app on your phone and then scan this QRcode')
+      ).toBeInTheDocument();
+
+      expect(
+        screen.queryByText('We are out of codes to sign up! Please check again later.')
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it('renders the correct buttons and text in StepTwo component', () => {
+    render(
+      <StartUpModal closeModal={mockCloseModal} buttonColor="primary" dataObject={mockDataObject} />
+    );
+
+    expect(screen.getByText('Step 1')).toBeInTheDocument();
+    expect(screen.getByText('Download App')).toBeInTheDocument();
+    expect(screen.getByText('Android')).toBeInTheDocument();
+    expect(screen.getByText('IOS')).toBeInTheDocument();
+  });
+
+  it('renders the correct text and calls the correct functions in IconButton component', () => {
+    render(
+      <StartUpModal closeModal={mockCloseModal} buttonColor="primary" dataObject={mockDataObject} />
+    );
+
+    fireEvent.click(screen.getByText('Sign in'));
+    expect(mockCloseModal).toHaveBeenCalled();
+    expect(mockSetShowSignIn).toHaveBeenCalledWith(true);
+  });
 });
