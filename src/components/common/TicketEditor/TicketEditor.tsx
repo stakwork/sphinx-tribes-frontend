@@ -393,28 +393,13 @@ const TicketEditor = observer(
           UUID: ticketData.UUID
         };
 
-        workspaceTicketStore.addTicket(updatedTicket);
-        phaseTicketStore.addTicket(updatedTicket);
+        workspaceTicketStore.updateTicket(ticketData.uuid, updatedTicket);
+        phaseTicketStore.updateTicket(ticketData.uuid, updatedTicket);
 
         setSelectedVersion(updatedTicket.version);
         setVersionTicketData(updatedTicket);
 
         onTicketUpdate?.(updatedTicket);
-
-        const updatedGroupTickets = await main.getTicketsByGroup(ticketData.ticket_group as string);
-
-        if (Array.isArray(updatedGroupTickets)) {
-          workspaceTicketStore.clearTickets();
-          phaseTicketStore.clearPhaseTickets(ticketData.phase_uuid);
-
-          for (const groupTicket of updatedGroupTickets) {
-            if (groupTicket.UUID) {
-              groupTicket.uuid = groupTicket.UUID;
-            }
-            workspaceTicketStore.addTicket(groupTicket);
-            phaseTicketStore.addTicket(groupTicket);
-          }
-        }
 
         addUpdateSuccessToast();
       } catch (error) {
