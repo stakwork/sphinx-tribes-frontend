@@ -654,7 +654,20 @@ const TicketEditor = observer(
         if (!isEnabled) return;
 
         if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-          setIsThinking((prev) => (prev === 'speed' ? 'thinking' : 'speed'));
+          setIsThinking((prev) => {
+            const newMode = prev === 'speed' ? 'thinking' : 'speed';
+
+            setTimeout(() => {
+              const buttonToFocus = document.querySelector(
+                `[role="radio"][aria-checked="true"]`
+              ) as HTMLElement;
+              if (buttonToFocus) {
+                buttonToFocus.focus();
+              }
+            }, 0);
+
+            return newMode;
+          });
         }
 
         if (e.key === 'Enter' || e.key === ' ') {
