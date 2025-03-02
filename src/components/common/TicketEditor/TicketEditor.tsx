@@ -33,6 +33,7 @@ import { Toast } from '../../../people/widgetViews/workspace/interface';
 import { uiStore } from '../../../store/ui';
 import { Select, Option } from '../../../people/widgetViews/workspace/style.ts';
 import { useDeleteConfirmationModal } from '../DeleteConfirmationModal';
+import { useFeatureFlag } from '../../../hooks/useFeatureFlag';
 import { TicketTextAreaComp } from './TicketTextArea.tsx';
 
 interface LogEntry {
@@ -67,7 +68,7 @@ interface TicketEditorProps {
 const SwitcherContainer = styled.div`
   display: flex;
   background-color: white;
-  border-radius: 20px;
+  border-radius: 18px;
   padding: 4px;
   width: fit-content;
 `;
@@ -224,33 +225,6 @@ const DEFAULT_TICKET: Ticket = {
   author_id: ''
 };
 
-const ModeToggleContainer = styled.div`
-  display: flex;
-  align-items: center;
-  margin-right: 8px;
-`;
-
-const ModeLabel = styled.span`
-  margin: 0 8px;
-  font-size: 14px;
-  color: #666;
-`;
-
-const ModeToggleButton = styled.button<{ isActive: boolean }>`
-  padding: 6px 12px;
-  border: 1px solid #ddd;
-  border-radius: 16px;
-  cursor: pointer;
-  font-size: 14px;
-  background-color: ${({ isActive }) => (isActive ? '#007bff' : 'transparent')};
-  color: ${({ isActive }) => (isActive ? 'white' : '#333')};
-  transition: all 0.3s ease;
-
-  &:hover {
-    background-color: ${({ isActive }) => (isActive ? '#0069d9' : '#f5f5f5')};
-  }
-`;
-
 const TicketEditor = observer(
   ({
     ticketData,
@@ -288,6 +262,7 @@ const TicketEditor = observer(
     const ui = uiStore;
     const { openDeleteConfirmation } = useDeleteConfirmationModal();
     const [responseMode, setResponseMode] = useState<'thinking' | 'speed'>('thinking');
+    const showModeToggle = useFeatureFlag('response_mode_toggle');
 
     const groupTickets = useMemo(
       () => phaseTicketStore.getTicketsByGroup(ticketData.ticket_group as string),
@@ -640,6 +615,10 @@ const TicketEditor = observer(
       });
     };
 
+    const toggleMode = (mode: 'thinking' | 'speed') => {
+      setResponseMode(mode);
+    };
+
     return (
       <TicketContainer>
         <EuiFlexGroup alignItems="center" gutterSize="s">
@@ -817,28 +796,31 @@ const TicketEditor = observer(
                   SW Run: {swwfLink}
                 </ActionButton>
               )}
-              <ModeToggleContainer>
-                <ModeToggleButton
-                  isActive={responseMode === 'thinking'}
-                  onClick={() => setResponseMode('thinking')}
+              <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px' }}>
+                {showModeToggle && (
+                  <SwitcherContainer>
+                    <SwitcherButton
+                      isActive={responseMode === 'thinking'}
+                      onClick={() => toggleMode('thinking')}
+                    >
+                      Thinking
+                    </SwitcherButton>
+                    <SwitcherButton
+                      isActive={responseMode === 'speed'}
+                      onClick={() => toggleMode('speed')}
+                    >
+                      Speed
+                    </SwitcherButton>
+                  </SwitcherContainer>
+                )}
+                <ActionButton
+                  color="#49C998"
+                  onClick={handleTicketBuilder}
+                  data-testid="story-generate-btn"
                 >
-                  Thinking
-                </ModeToggleButton>
-                <ModeLabel>Mode:</ModeLabel>
-                <ModeToggleButton
-                  isActive={responseMode === 'speed'}
-                  onClick={() => setResponseMode('speed')}
-                >
-                  Speed
-                </ModeToggleButton>
-              </ModeToggleContainer>
-              <ActionButton
-                color="#49C998"
-                onClick={handleTicketBuilder}
-                data-testid="story-generate-btn"
-              >
-                Improve with AI
-              </ActionButton>
+                  Improve with AI
+                </ActionButton>
+              </div>
               <ActionButton
                 color="primary"
                 onClick={handleUpdate}
