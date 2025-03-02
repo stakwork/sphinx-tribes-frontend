@@ -224,6 +224,33 @@ const DEFAULT_TICKET: Ticket = {
   author_id: ''
 };
 
+const ModeToggleContainer = styled.div`
+  display: flex;
+  align-items: center;
+  margin-right: 8px;
+`;
+
+const ModeLabel = styled.span`
+  margin: 0 8px;
+  font-size: 14px;
+  color: #666;
+`;
+
+const ModeToggleButton = styled.button<{ isActive: boolean }>`
+  padding: 6px 12px;
+  border: 1px solid #ddd;
+  border-radius: 16px;
+  cursor: pointer;
+  font-size: 14px;
+  background-color: ${({ isActive }) => (isActive ? '#007bff' : 'transparent')};
+  color: ${({ isActive }) => (isActive ? 'white' : '#333')};
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: ${({ isActive }) => (isActive ? '#0069d9' : '#f5f5f5')};
+  }
+`;
+
 const TicketEditor = observer(
   ({
     ticketData,
@@ -260,6 +287,7 @@ const TicketEditor = observer(
     const [lastLogLine, setLastLogLine] = useState('');
     const ui = uiStore;
     const { openDeleteConfirmation } = useDeleteConfirmationModal();
+    const [responseMode, setResponseMode] = useState<'thinking' | 'speed'>('thinking');
 
     const groupTickets = useMemo(
       () => phaseTicketStore.getTicketsByGroup(ticketData.ticket_group as string),
@@ -789,6 +817,21 @@ const TicketEditor = observer(
                   SW Run: {swwfLink}
                 </ActionButton>
               )}
+              <ModeToggleContainer>
+                <ModeToggleButton
+                  isActive={responseMode === 'thinking'}
+                  onClick={() => setResponseMode('thinking')}
+                >
+                  Thinking
+                </ModeToggleButton>
+                <ModeLabel>Mode:</ModeLabel>
+                <ModeToggleButton
+                  isActive={responseMode === 'speed'}
+                  onClick={() => setResponseMode('speed')}
+                >
+                  Speed
+                </ModeToggleButton>
+              </ModeToggleContainer>
               <ActionButton
                 color="#49C998"
                 onClick={handleTicketBuilder}
