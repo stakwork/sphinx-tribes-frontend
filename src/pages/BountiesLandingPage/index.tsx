@@ -8,6 +8,7 @@ import HeroSection from '../../components/BountyComponents/HeroSection';
 import CommunitySection from '../../components/BountyComponents/CommunitySection';
 import PaymentSection from '../../components/BountyComponents/PaymentSection';
 import Footer from '../../components/BountyComponents/Footer.tsx';
+import { useBrowserTabTitle } from '../../hooks';
 
 const Body = styled.div<{ isMobile: boolean }>`
   display: flex;
@@ -38,6 +39,7 @@ const ContentWrapper = styled.div`
 
 const BountiesLandingPage: React.FC = () => {
   const isMobile = useIsMobile();
+  useBrowserTabTitle('Bounties');
 
   return (
     <Body isMobile={isMobile}>

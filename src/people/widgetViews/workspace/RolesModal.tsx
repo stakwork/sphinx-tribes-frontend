@@ -106,7 +106,7 @@ const RolesModal = (props: UserRolesModalProps) => {
 
       setRolesCategories(newRoles);
     }
-  }, [main, pubkey, user, uuid, formatBountyRolesData]);
+  }, [main, pubkey, user, uuid, formatBountyRolesData, bountyRolesData]);
 
   useEffect(() => {
     getRoles();

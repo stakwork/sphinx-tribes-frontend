@@ -6,7 +6,7 @@ import { useStores } from 'store';
 import { PostModal } from 'people/widgetViews/postBounty/PostModal';
 import addBounty from 'pages/tickets/workspace/workspaceHeader/Icons/addBounty.svg';
 import { useHistory } from 'react-router-dom';
-import { useFeatureFlag } from '../../../../hooks/useFeatureFlag.ts';
+import { useFeatureFlag, useBrowserTabTitle } from '../../../../hooks';
 
 const HeaderContainer = styled.header`
   background: #1a1b23;
@@ -148,6 +148,8 @@ export default function ActivitiesHeader({ uuid }: { uuid: string }) {
       await main.getUserWorkspaces(ui.selectedPerson);
     }
   }, [main, ui.selectedPerson]);
+
+  useBrowserTabTitle('Activities');
 
   useEffect(() => {
     getUserWorkspaces();

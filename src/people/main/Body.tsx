@@ -7,7 +7,7 @@ import PeopleHeader from 'people/widgetViews/PeopleHeader';
 import type { Person } from 'store/interface';
 import { SearchTextInput } from '../../components/common';
 import { colors } from '../../config/colors';
-import { useIsMobile, usePageScroll, useScreenWidth } from '../../hooks';
+import { useIsMobile, usePageScroll, useScreenWidth, useBrowserTabTitle } from '../../hooks';
 import { useStores } from '../../store';
 import PersonCard from '../../pages/people/Person';
 import NoResults from '../utils/NoResults';
@@ -72,6 +72,7 @@ function BodyComponent() {
   const loadForwardFunc = () => uploadMore(1);
   const loadBackwardFunc = () => uploadMore(-1);
   const { loadingBottom, handleScroll } = usePageScroll(loadForwardFunc, loadBackwardFunc);
+  useBrowserTabTitle('People');
 
   const toastsEl = (
     <EuiGlobalToastList
