@@ -394,16 +394,16 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
       if (featureUuid) {
         const phases = await main.getFeaturePhases(featureUuid);
         const names: { [key: string]: string } = {};
-        for (const phase of phases) {
-          names[phase.uuid] = phase.name || 'Untitled Phase';
-
-          if (!(phase.uuid in expandedPhases)) {
-            setExpandedPhases((prev) => ({
-              ...prev,
-              [phase.uuid]: true
-            }));
+        setExpandedPhases((prev) => {
+          const newExpandedPhases = { ...prev };
+          for (const phase of phases) {
+            names[phase.uuid] = phase.name || 'Untitled Phase';
+            if (!(phase.uuid in newExpandedPhases)) {
+              newExpandedPhases[phase.uuid] = true;
+            }
           }
-        }
+          return newExpandedPhases;
+        });
         setPhaseNames(names);
       }
     };

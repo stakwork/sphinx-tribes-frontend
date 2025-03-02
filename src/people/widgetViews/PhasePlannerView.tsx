@@ -184,6 +184,7 @@ const PhasePlannerView: React.FC = observer(() => {
         }
 
         if (data.action === 'swrun' && data.message && data.ticketDetails?.ticketUUID) {
+          console.log(`Ticket Info: {"ticketUUID": ${data.ticketDetails?.ticketUUID}, "message": ${data.message}}`);
           try {
             const stakworkId = data.message.replace(
               'https://jobs.stakwork.com/admin/projects/',
@@ -235,7 +236,7 @@ const PhasePlannerView: React.FC = observer(() => {
         socket.close();
       }
     };
-  }, [main]);
+  }, [main, phaseData, tickets]);
 
   const submitPurpose = async () => {
     if (!phaseData) return;
