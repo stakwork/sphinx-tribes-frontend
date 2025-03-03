@@ -21,7 +21,9 @@ import TicketEditor from 'components/common/TicketEditor/TicketEditor';
 import SidebarComponent from 'components/common/SidebarComponent';
 import styled from 'styled-components';
 import { phaseTicketStore } from '../../../store/phase';
-import StakworkLogsPanel from '../../../components/common/TicketEditor/StakworkLogsPanel';
+import StakworkLogsPanel, {
+  LogEntry
+} from '../../../components/common/TicketEditor/StakworkLogsPanel';
 import {
   FeatureHeadNameWrap,
   FeatureHeadWrap,
@@ -36,13 +38,6 @@ import ActivitiesHeader from './Activities/header';
 
 interface WorkspaceParams {
   workspaceId: string;
-}
-
-interface LogEntry {
-  timestamp: string;
-  projectId: string;
-  ticketUUID: string;
-  message: string;
 }
 
 const MainContent = styled.div<{ collapsed: boolean }>`
@@ -235,6 +230,16 @@ const WorkspaceTicketCreateView: React.FC = observer(() => {
           return;
         }
 
+        if (data.ticketDetails?.ticketUUID) {
+          const newLogEntry: LogEntry = {
+            timestamp: new Date().toISOString(),
+            projectId: data.projectId,
+            ticketUUID: data.ticketDetails.ticketUUID,
+            message: data.message || JSON.stringify(data)
+          };
+          setLogs((prevLogs) => [...prevLogs, newLogEntry]);
+        }
+
         if (data.action === 'swrun' && data.message && data.ticketDetails?.ticketUUID) {
           try {
             const stakworkId = data.message.replace(
@@ -266,6 +271,16 @@ const WorkspaceTicketCreateView: React.FC = observer(() => {
               action: ticketMessage.action,
               ticketDetails: ticketMessage.ticketDetails
             });
+
+            if (ticketMessage.ticketDetails?.ticketUUID && ticketMessage.message) {
+              const newLogEntry: LogEntry = {
+                timestamp: new Date().toISOString(),
+                projectId: data.projectId,
+                ticketUUID: ticketMessage.ticketDetails.ticketUUID,
+                message: ticketMessage.message
+              };
+              setLogs((prevLogs) => [newLogEntry, ...prevLogs]);
+            }
             break;
 
           case 'process':
@@ -424,7 +439,7 @@ const WorkspaceTicketCreateView: React.FC = observer(() => {
                 showFeaturePhaseDropdowns={true}
                 showVersionSelector={true}
                 showDragHandle={false}
-                showSWWFLink={false}
+                showSWWFLink={true}
                 index={0}
                 selectedTickets={{}}
                 onSelectTicket={() => {}}

@@ -12,7 +12,7 @@ export const transformBountyWithPeopleBounty = (bountyDetails: any) => {
   }
   return {
     body: { ...bounty, assignee: assignee || '' },
-    person: { ...owner, wanteds: [] } || { wanteds: [] },
+    person: { ...owner, wanteds: [] },
     workspace: { ...workspace }
   };
 };

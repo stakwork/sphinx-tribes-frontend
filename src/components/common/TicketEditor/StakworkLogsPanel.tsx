@@ -76,7 +76,7 @@ const Footer = styled.div`
   border-top: 1px solid #374151;
 `;
 
-interface LogEntry {
+export interface LogEntry {
   timestamp: string;
   projectId: string;
   ticketUUID: string;
