@@ -70,7 +70,7 @@ const WhatYouLikeToBuild = styled.button`
 `;
 
 export default function ActivitiesHeader({ uuid }: { uuid: string }) {
-  const { main, ui } = useStores();
+  const { main, ui, chat } = useStores();
   const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
   const [canPostBounty, setCanPostBounty] = useState(false);
   const { isEnabled } = useFeatureFlag('buildtoday');
@@ -95,8 +95,29 @@ export default function ActivitiesHeader({ uuid }: { uuid: string }) {
     }
   };
 
-  const handleWhatYouWantToBuild = () => {
-    history.push(`/hivechat/${uuid}/build`);
+  const handleWhatYouWantToBuild = async () => {
+    try {
+      const newChat = await chat.createChat(uuid, 'New Chat');
+      if (newChat && newChat.id) {
+        history.push(`/hivechat/${uuid}/build/${newChat.id}`);
+      } else {
+        ui.setToasts([
+          {
+            title: 'Error',
+            color: 'danger',
+            text: 'Failed to create new chat. Please try again.'
+          }
+        ]);
+      }
+    } catch (error) {
+      ui.setToasts([
+        {
+          title: 'Error',
+          color: 'danger',
+          text: 'An error occurred while creating the chat.'
+        }
+      ]);
+    }
   };
 
   const DraftTicketButton = styled.button`

@@ -1,13 +1,15 @@
 /* eslint-disable @typescript-eslint/typedef */
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useHistory, useParams } from 'react-router-dom';
-import { ChatMessage } from 'store/interface';
+import { Chat, ChatMessage } from 'store/interface';
 import { useStores } from 'store';
 import styled from 'styled-components';
 import { EuiLoadingSpinner } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
 import { mainStore } from '../../store/main.ts';
+import { ModelOption, ModelSelector } from '../hiveChat/modelSelector.tsx';
+import { createSocketInstance, SOCKET_MSG } from '../../config/socket.ts';
 
 interface RouteParams {
   uuid: string;
@@ -147,17 +149,74 @@ const LoadingContainer = styled.div`
   height: 100%;
 `;
 
+const Select = styled.select`
+  padding: 15px 10px;
+  margin-right: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  cursor: pointer;
+`;
+
+const connectToLogWebSocket = (
+  projectId: string,
+  chatId: string,
+  setLogs: (update: (prevLogs: LogEntry[]) => LogEntry[]) => void
+) => {
+  const ws = new WebSocket('wss://jobs.stakwork.com/cable?channel=ProjectLogChannel');
+
+  ws.onopen = () => {
+    const command = {
+      command: 'subscribe',
+      identifier: JSON.stringify({ channel: 'ProjectLogChannel', id: projectId })
+    };
+    ws.send(JSON.stringify(command));
+  };
+
+  ws.onmessage = (event: any) => {
+    const data = JSON.parse(event.data);
+    if (data.type === 'ping') return;
+
+    const messageData = data?.message;
+
+    if (
+      messageData &&
+      (messageData.type === 'on_step_start' || messageData.type === 'on_step_complete')
+    ) {
+      setLogs((prevLogs: LogEntry[]) => [
+        ...prevLogs,
+        { timestamp: new Date().toISOString(), projectId, chatId, message: messageData.message }
+      ]);
+    }
+  };
+
+  ws.onerror = (error: any) => console.error('WebSocket error123:', error);
+
+  return ws;
+};
+
 export const HiveBuildView: React.FC = observer(() => {
-  const { uuid } = useParams<RouteParams>();
+  const { uuid, chatId } = useParams<RouteParams>();
   const { chat, ui } = useStores();
+  const [chats, setChats] = React.useState<Chat[]>([]);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSending, setIsSending] = useState(false);
+  const [websocketSessionId, setWebsocketSessionId] = useState('');
+  const [projectId, setProjectId] = useState('');
+  const [logs, setLogs] = useState<LogEntry[]>([]);
+  const [isChainVisible, setIsChainVisible] = useState(false);
+  const [lastLogLine, setLastLogLine] = useState('');
   const chatHistoryRef = useRef<HTMLDivElement>(null);
+  const [selectedChatId, setSelectedChatId] = useState(chatId);
+  const [selectedModel, setSelectedModel] = useState<ModelOption>({
+    label: 'Open AI - 4o',
+    value: 'gpt-4o'
+  });
   const history = useHistory();
 
-  const chatId = 'this is random id';
   const title = 'Build with Hive';
 
   const handleBackClick = () => {
@@ -168,8 +227,8 @@ export const HiveBuildView: React.FC = observer(() => {
     const initializeChat = async () => {
       setLoading(true);
       try {
-        if (chatId) {
-          await chat.loadChatHistory(chatId);
+        if (selectedChatId) {
+          await chat.loadChatHistory(selectedChatId);
         }
       } catch (err) {
         console.error('Error initializing chat:', err);
@@ -180,9 +239,91 @@ export const HiveBuildView: React.FC = observer(() => {
     };
 
     initializeChat();
-  }, [chatId, chat]);
+  }, [selectedChatId, chat]);
 
-  const messages = chat.chatMessages[chatId] || [];
+  const messages = chat.chatMessages[selectedChatId] || [];
+
+  const refreshChatHistory = useCallback(async () => {
+    try {
+      await chat.loadChatHistory(selectedChatId);
+      if (chatHistoryRef.current) {
+        chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
+      }
+    } catch (error) {
+      console.error('Error refreshing chat history:', error);
+      ui.setToasts([
+        {
+          title: 'Error',
+          color: 'danger',
+          text: 'Failed to refresh chat history'
+        }
+      ]);
+    }
+  }, [chat, chatId, ui]);
+
+  useEffect(() => {
+    // eslint-disable-next-line prefer-const
+    let socket = createSocketInstance();
+
+    socket.onmessage = async (event: MessageEvent) => {
+      console.log('Raw websocket message received:', event.data);
+
+      try {
+        const data = JSON.parse(event.data);
+        console.log('Parsed websocket message:', data);
+
+        if (data.msg === SOCKET_MSG.user_connect) {
+          const sessionId = data.body;
+          setWebsocketSessionId(sessionId);
+          console.log(`Websocket Session ID: ${sessionId}`);
+        } else if (data.action === 'swrun' && data.message) {
+          const match = data.message.match(/\/projects\/([^/]+)/);
+          if (match && match[1]) {
+            const projectID = match[1];
+            setProjectId(projectID);
+            console.log(`Project ID: ${projectID}`);
+            setIsChainVisible(true);
+            setLogs([]);
+            setLastLogLine('');
+          }
+        } else if (data.action === 'message' && data.chatMessage) {
+          chat.addMessage(data.chatMessage);
+          setIsChainVisible(false);
+          setLogs([]);
+          setLastLogLine('');
+          await refreshChatHistory();
+        } else if (data.action === 'process' && data.chatMessage) {
+          chat.updateMessage(data.chatMessage.id, data.chatMessage);
+          await refreshChatHistory();
+        }
+      } catch (error) {
+        console.error('Error processing websocket message:', error);
+      }
+    };
+
+    socket.onclose = () => {
+      console.log('Socket disconnected in Hive Chat');
+    };
+
+    socket.onerror = (error: Event) => {
+      console.error('WebSocket error:', error);
+      ui.setToasts([
+        {
+          title: 'Connection Error',
+          color: 'danger',
+          text: 'Failed to connect to chat server'
+        }
+      ]);
+    };
+  }, [ui, refreshChatHistory, selectedChatId, chat]);
+
+  useEffect(() => {
+    const ws = connectToLogWebSocket(projectId, chatId, setLogs);
+
+    return () => {
+      ws.close();
+    };
+  }, [projectId, selectedChatId]);
 
   useEffect(() => {
     if (chatHistoryRef.current) {
@@ -194,39 +335,35 @@ export const HiveBuildView: React.FC = observer(() => {
     if (!message.trim() || isSending) return;
 
     setIsSending(true);
-    const timestamp = new Date().toISOString();
-
     try {
-      chat.addMessage({
-        id: Date.now().toString(),
-        chatId: chatId,
+      let socketId = websocketSessionId;
+      if (socketId === '') {
+        socketId = localStorage.getItem('websocket_token') || '';
+      }
+
+      const sentMessage = await chat.sendMessage(
+        selectedChatId,
         message,
-        role: 'user',
-        timestamp,
-        status: 'sent',
-        source: 'user',
-        workspaceUUID: uuid
-      });
+        selectedModel.value,
+        socketId,
+        uuid,
+        undefined
+      );
 
       await mainStore.createStakworkProject(message);
-      setMessage('');
 
-      chat.addMessage({
-        id: (Date.now() + 1).toString(),
-        chatId: chatId,
-        message: "I'm on it. Let me generate a PR.",
-        role: 'assistant',
-        timestamp,
-        status: 'sent',
-        source: 'agent',
-        workspaceUUID: uuid
-      });
+      if (sentMessage) {
+        chat.addMessage(sentMessage);
+        setMessage('');
 
-      await fetch('/api/generate-pr', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: message, uuid })
-      });
+        const textarea = document.querySelector('textarea');
+        if (textarea) {
+          textarea.style.height = '60px';
+        }
+        if (chatHistoryRef.current) {
+          chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
+        }
+      }
     } catch (error) {
       console.error('Error sending message:', error);
       ui.setToasts([
@@ -251,6 +388,40 @@ export const HiveBuildView: React.FC = observer(() => {
       handleSendMessage();
     }
   };
+
+  useEffect(() => {
+    if (logs.length > 0) {
+      setLastLogLine(logs[logs.length - 1]?.message || '');
+    }
+  }, [logs]);
+
+  useEffect(() => {
+    const loadChats = async () => {
+      try {
+        const workspaceChats = await chat.getWorkspaceChats(uuid);
+        if (workspaceChats && workspaceChats.length > 0) {
+          const sortedChats = workspaceChats
+            .filter((chat: Chat) => chat && chat.id)
+            .sort((a: Chat, b: Chat) => {
+              const dateA = new Date(a.updatedAt || a.createdAt || 0).getTime();
+              const dateB = new Date(b.updatedAt || b.createdAt || 0).getTime();
+              return dateB - dateA;
+            });
+          setChats(sortedChats);
+        }
+      } catch (error) {
+        console.error('Error loading chats:', error);
+        ui.setToasts([
+          {
+            title: 'Error',
+            color: 'danger',
+            text: 'Failed to load chats.'
+          }
+        ]);
+      }
+    };
+    loadChats();
+  }, [uuid, chat, ui]);
 
   if (loading) {
     return (
@@ -279,6 +450,14 @@ export const HiveBuildView: React.FC = observer(() => {
           style={{ fontSize: 25, cursor: 'pointer', color: '#5f6368' }}
         />
         <Title>{title}</Title>
+        <Select value={selectedChatId} onChange={(e) => setSelectedChatId(e.target.value)}>
+          {chats.map((chat) => (
+            <option key={chat.id} value={chat.id}>
+              {chat.id}
+            </option>
+          ))}
+        </Select>
+        <ModelSelector selectedModel={selectedModel} onModelChange={setSelectedModel} />
       </Header>
       <ChatBody>
         <ChatHistory ref={chatHistoryRef}>
@@ -288,6 +467,15 @@ export const HiveBuildView: React.FC = observer(() => {
               {msg.message}
             </MessageBubble>
           ))}
+          {isChainVisible && (
+            <MessageBubble isUser={false}>
+              <p>
+                {lastLogLine
+                  ? lastLogLine
+                  : `Hi ${ui.meInfo?.owner_alias}, I'm on it. Let me generate a PR.`}
+              </p>
+            </MessageBubble>
+          )}
         </ChatHistory>
         <InputContainer>
           <TextArea
