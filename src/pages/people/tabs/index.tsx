@@ -1,4 +1,4 @@
-import { useIsMobile, usePerson } from 'hooks';
+import { useBrowserTabTitle, useIsMobile, usePerson } from 'hooks';
 import { observer } from 'mobx-react-lite';
 import RenderWidgets from 'people/widgetViews/RenderWidgets';
 import { widgetConfigs } from 'people/utils/Constants';
@@ -122,8 +122,19 @@ export const TabsPages = observer(() => {
     }
   };
 
+  const toTitleCase = (str: string) =>
+    str
+      .split(' ')
+      .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  const activeTabName: string =
+    tabsNames.find((name: any) => location.pathname.includes(name)) || 'People';
+  const activeTab: string = toTitleCase(activeTabName);
+  useBrowserTabTitle(activeTab);
+
   useEffect(() => {
     const tabSelected = tabsNames.some((name: any) => location.pathname.includes(name));
+
     if (!tabSelected) {
       changeTabHandler(tabsNames[0]);
     } else {

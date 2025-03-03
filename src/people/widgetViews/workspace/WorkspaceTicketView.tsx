@@ -539,13 +539,11 @@ const WorkspaceTicketView: React.FC = observer(() => {
             getPhaseTickets={getTickets}
             workspaceUUID={workspaceId}
             onTicketUpdate={(updatedTicket: Ticket) => {
-              const groupId = updatedTicket.ticket_group || updatedTicket.uuid;
-              workspaceTicketStore.addTicket(updatedTicket);
-              phaseTicketStore.addTicket(updatedTicket);
+              workspaceTicketStore.updateTicket(updatedTicket.uuid, updatedTicket);
+              phaseTicketStore.updateTicket(updatedTicket.uuid, updatedTicket);
 
-              const latestTicket = workspaceTicketStore.getLatestVersionFromGroup(groupId);
-              if (latestTicket) {
-                setCurrentTicketId(latestTicket.uuid);
+              if (updatedTicket.version > currentTicket.version) {
+                setCurrentTicketId(updatedTicket.uuid);
               }
             }}
             showFeaturePhaseDropdowns={false}

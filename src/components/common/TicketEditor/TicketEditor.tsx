@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/typedef */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStores } from 'store';
 import { EuiGlobalToastList, EuiFlexGroup, EuiFlexItem, EuiPanel, EuiIcon } from '@elastic/eui';
@@ -33,6 +33,7 @@ import { Toast } from '../../../people/widgetViews/workspace/interface';
 import { uiStore } from '../../../store/ui';
 import { Select, Option } from '../../../people/widgetViews/workspace/style.ts';
 import { useDeleteConfirmationModal } from '../DeleteConfirmationModal';
+import { useFeatureFlag } from '../../../hooks/useFeatureFlag.ts';
 import { TicketTextAreaComp } from './TicketTextArea.tsx';
 
 interface LogEntry {
@@ -72,12 +73,46 @@ const SwitcherContainer = styled.div`
   width: fit-content;
 `;
 
+const ToggleContainer = styled.div`
+  margin-top: 20px;
+  display: flex;
+  background-color: white;
+  border-radius: 6px;
+  padding: 4px;
+  width: fit-content;
+`;
+
 const SwitcherButton = styled.button<{ isActive: boolean }>`
   padding: 8px 16px;
   border: none;
   border-radius: 16px;
   cursor: pointer;
   font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+
+  ${({ isActive }) =>
+    isActive
+      ? `
+    background-color: #007bff;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+  `
+      : `
+    background-color: transparent;
+    color: #333;
+    &:hover {
+      background-color: rgba(0, 123, 255, 0.1);
+    }
+  `}
+`;
+
+const ToggleButton = styled.button<{ isActive: boolean }>`
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
   font-weight: 500;
   transition: all 0.3s ease;
 
@@ -253,6 +288,7 @@ const TicketEditor = observer(
     );
     const [isCopying, setIsCopying] = useState(false);
     const [activeMode, setActiveMode] = useState<'preview' | 'edit'>('edit');
+    const [isThinking, setIsThinking] = useState<'speed' | 'thinking'>('thinking');
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
     const { main } = useStores();
     const [isCreatingBounty, setIsCreatingBounty] = useState(false);
@@ -260,6 +296,7 @@ const TicketEditor = observer(
     const [lastLogLine, setLastLogLine] = useState('');
     const ui = uiStore;
     const { openDeleteConfirmation } = useDeleteConfirmationModal();
+    const { isEnabled } = useFeatureFlag('thinking');
 
     const groupTickets = useMemo(
       () => phaseTicketStore.getTicketsByGroup(ticketData.ticket_group as string),
@@ -393,28 +430,13 @@ const TicketEditor = observer(
           UUID: ticketData.UUID
         };
 
-        workspaceTicketStore.addTicket(updatedTicket);
-        phaseTicketStore.addTicket(updatedTicket);
+        workspaceTicketStore.updateTicket(ticketData.uuid, updatedTicket);
+        phaseTicketStore.updateTicket(ticketData.uuid, updatedTicket);
 
         setSelectedVersion(updatedTicket.version);
         setVersionTicketData(updatedTicket);
 
         onTicketUpdate?.(updatedTicket);
-
-        const updatedGroupTickets = await main.getTicketsByGroup(ticketData.ticket_group as string);
-
-        if (Array.isArray(updatedGroupTickets)) {
-          workspaceTicketStore.clearTickets();
-          phaseTicketStore.clearPhaseTickets(ticketData.phase_uuid);
-
-          for (const groupTicket of updatedGroupTickets) {
-            if (groupTicket.UUID) {
-              groupTicket.uuid = groupTicket.UUID;
-            }
-            workspaceTicketStore.addTicket(groupTicket);
-            phaseTicketStore.addTicket(groupTicket);
-          }
-        }
 
         addUpdateSuccessToast();
       } catch (error) {
@@ -612,6 +634,35 @@ const TicketEditor = observer(
       });
     };
 
+    const handleKeyDown = useCallback(
+      (e: React.KeyboardEvent<HTMLDivElement>) => {
+        if (!isEnabled) return;
+
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+          setIsThinking((prev) => {
+            const newMode = prev === 'speed' ? 'thinking' : 'speed';
+
+            setTimeout(() => {
+              const buttonToFocus = document.querySelector(
+                `[role="radio"][aria-checked="true"]`
+              ) as HTMLElement;
+              if (buttonToFocus) {
+                buttonToFocus.focus();
+              }
+            }, 0);
+
+            return newMode;
+          });
+        }
+
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          setIsThinking((prev) => (prev === 'speed' ? 'thinking' : 'speed'));
+        }
+      },
+      [isEnabled, setIsThinking]
+    );
+
     return (
       <TicketContainer>
         <EuiFlexGroup alignItems="center" gutterSize="s">
@@ -761,7 +812,34 @@ const TicketEditor = observer(
               )}
             </EditorWrapper>
             <TicketButtonGroup>
-              {logs.length > 0 && (
+              {isEnabled && (
+                <ToggleContainer
+                  tabIndex={0}
+                  onKeyDown={handleKeyDown}
+                  role="radiogroup"
+                  aria-label="Toggle Thinking Mode"
+                >
+                  <ToggleButton
+                    isActive={isThinking === 'speed'}
+                    onClick={() => setIsThinking('speed')}
+                    tabIndex={0}
+                    role="radio"
+                    aria-checked={isThinking === 'speed'}
+                  >
+                    Speed
+                  </ToggleButton>
+                  <ToggleButton
+                    isActive={isThinking === 'thinking'}
+                    onClick={() => setIsThinking('thinking')}
+                    tabIndex={0}
+                    role="radio"
+                    aria-checked={isThinking === 'thinking'}
+                  >
+                    Thinking
+                  </ToggleButton>
+                </ToggleContainer>
+              )}
+              {showSWWFLink && swwfLink && (
                 <ChainOfThought>
                   <h6>Hive - Chain of Thought</h6>
                   <p>
