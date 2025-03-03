@@ -12,6 +12,7 @@ import { useStores } from 'store';
 import { EuiFlexGrid, EuiFlexItem, useIsWithinBreakpoints, EuiIcon } from '@elastic/eui';
 import { Link, useRouteMatch } from 'react-router-dom';
 import { Button } from 'components/common';
+import { useLocalStorage } from 'hooks/useLocalStorage';
 import balanceIcon from '../../public/static/toll.svg';
 import balanceVector from '../../public/static/balancevector.svg';
 import {
@@ -50,6 +51,7 @@ export const BudgetWrapComponent = (props: { org: Workspace | undefined; uuid: s
   const [isOpenBudget, setIsOpenBudget] = useState<boolean>(false);
   const [paymentsHistory, setPaymentsHistory] = useState<PaymentHistory[]>([]);
   const [invoiceStatus, setInvoiceStatus] = useState(false);
+  const [showBalances, setShowBalances] = useLocalStorage('showBalances', true);
 
   const closeHistoryHandler = () => {
     setIsOpenHistory(false);
@@ -173,11 +175,16 @@ export const BudgetWrapComponent = (props: { org: Workspace | undefined; uuid: s
   const openCountText = orgBudget && orgBudget.open_count ? orgBudget.open_count : 0;
   const openBudget = orgBudget && orgBudget.open_budget ? orgBudget.open_budget : 0;
 
+  const toggleBalances = () => {
+    setShowBalances(!showBalances);
+  };
+
   return (
     <>
       <ActionWrap>
         <ActionHeader>
-          Balance <BalanceImg src={balanceIcon} />
+          Balance{' '}
+          <BalanceImg src={balanceIcon} onClick={toggleBalances} style={{ cursor: 'pointer' }} />
         </ActionHeader>
         <HeadButtonWrap forSmallScreen={true}>
           <Button
@@ -235,11 +242,12 @@ export const BudgetWrapComponent = (props: { org: Workspace | undefined; uuid: s
                   </BudgetHeaderWrap>
                   <ViewBudgetTextWrap>
                     <Budget data-testid="current-balance-amount">
-                      {orgBudgetText.toLocaleString()} <Grey>SATS</Grey>
+                      {showBalances ? `${orgBudgetText.toLocaleString()}` : '*****'}{' '}
+                      <Grey>SATS</Grey>
                     </Budget>
                     <Budget className="budget-small">
                       <BalanceAmountImg src={balanceVector} />
-                      {satToUsd(orgBudgetText)} <Grey>USD</Grey>
+                      {showBalances ? satToUsd(orgBudgetText) : '*****'} <Grey>USD</Grey>
                     </Budget>
                   </ViewBudgetTextWrap>
                 </BudgetData>
@@ -257,12 +265,12 @@ export const BudgetWrapComponent = (props: { org: Workspace | undefined; uuid: s
                   </BudgetHeaderWrap>
                   <ViewBudgetTextWrap>
                     <Budget>
-                      {completedBudget.toLocaleString()}
-                      <Grey>SATS</Grey>
+                      {showBalances ? `${completedBudget.toLocaleString()}` : '*****'}
+                      <Grey> SATS</Grey>
                     </Budget>
                     <Budget className="budget-small">
                       <BalanceAmountImg src={balanceVector} />
-                      {satToUsd(completedBudget)} <Grey>USD</Grey>
+                      {showBalances ? satToUsd(completedBudget) : '*****'} <Grey>USD</Grey>
                     </Budget>
                   </ViewBudgetTextWrap>
                 </BudgetData>
@@ -280,12 +288,12 @@ export const BudgetWrapComponent = (props: { org: Workspace | undefined; uuid: s
                   </BudgetHeaderWrap>
                   <ViewBudgetTextWrap>
                     <Budget>
-                      {assignedBudget.toLocaleString()}
-                      <Grey>SATS</Grey>
+                      {showBalances ? `${assignedBudget.toLocaleString()}` : '*****'}
+                      <Grey> SATS</Grey>
                     </Budget>
                     <Budget className="budget-small">
                       <BalanceAmountImg src={balanceVector} />
-                      {satToUsd(assignedBudget)} <Grey>USD</Grey>
+                      {showBalances ? satToUsd(assignedBudget) : '*****'} <Grey>USD</Grey>
                     </Budget>
                   </ViewBudgetTextWrap>
                 </BudgetData>
@@ -303,12 +311,12 @@ export const BudgetWrapComponent = (props: { org: Workspace | undefined; uuid: s
                   </BudgetHeaderWrap>
                   <ViewBudgetTextWrap>
                     <Budget>
-                      {openBudget.toLocaleString()}
-                      <Grey>SATS</Grey>
+                      {showBalances ? `${openBudget.toLocaleString()}` : '*****'}
+                      <Grey> SATS</Grey>
                     </Budget>
                     <Budget className="budget-small">
                       <BalanceAmountImg src={balanceVector} />
-                      {satToUsd(openBudget)} <Grey>USD</Grey>
+                      {showBalances ? satToUsd(openBudget) : '*****'} <Grey>USD</Grey>
                     </Budget>
                   </ViewBudgetTextWrap>
                 </BudgetData>
