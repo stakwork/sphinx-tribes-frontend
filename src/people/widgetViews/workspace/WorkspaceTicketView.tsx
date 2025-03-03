@@ -296,38 +296,6 @@ const WorkspaceTicketView: React.FC = observer(() => {
     }
   }, [currentTicket?.ticket_group, main]);
 
-  const getFeatureData = useCallback(async () => {
-    if (!currentTicket?.feature_uuid) return;
-    const data = await main.getFeaturesByUuid(currentTicket?.feature_uuid);
-    return data;
-  }, [currentTicket?.feature_uuid, main]);
-
-  const getPhaseData = useCallback(async () => {
-    if (!currentTicket?.feature_uuid || !currentTicket?.phase_uuid) return;
-    const data = await main.getFeaturePhaseByUUID(
-      currentTicket.feature_uuid,
-      currentTicket.phase_uuid
-    );
-    return data;
-  }, [currentTicket?.feature_uuid, currentTicket?.phase_uuid, main]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const feature = await getFeatureData();
-        const phase = await getPhaseData();
-        if (feature && phase) {
-          // setFeatureData(feature);
-          // setPhaseData(phase);
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    fetchData();
-  }, [getFeatureData, getPhaseData]);
-
   const handleLinkClick = () => {
     window.open(
       `/feature/${currentTicket?.feature_uuid}/phase/${currentTicket?.phase_uuid}/planner`,

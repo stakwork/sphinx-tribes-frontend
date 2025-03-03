@@ -761,7 +761,7 @@ const TicketEditor = observer(
               )}
             </EditorWrapper>
             <TicketButtonGroup>
-              {showSWWFLink && swwfLink && (
+              {logs.length > 0 && (
                 <ChainOfThought>
                   <h6>Hive - Chain of Thought</h6>
                   <p>

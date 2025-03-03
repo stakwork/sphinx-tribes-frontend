@@ -463,7 +463,7 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
       }
     };
     fetchFeatureName();
-  }, [featureUuid]);
+  }, [featureUuid, main]);
 
   const togglePhase = (phaseID: string) => {
     setExpandedPhases((prev) => ({
