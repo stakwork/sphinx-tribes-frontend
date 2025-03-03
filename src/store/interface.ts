@@ -421,6 +421,11 @@ export const TICKET_CATEGORIES = {
   OTHER: 'Other'
 } as const;
 
+export enum TicketProcessingMode {
+  THINKING = 'thinking',
+  SPEED = 'speed'
+}
+
 export interface Ticket {
   uuid: string;
   UUID?: string;
@@ -440,6 +445,7 @@ export interface Ticket {
   author_id?: string;
   created_at?: Date;
   updated_at?: Date;
+  mode?: TicketProcessingMode;
 }
 
 export interface CreateTicketInput {

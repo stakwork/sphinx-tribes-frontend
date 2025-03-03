@@ -28,7 +28,7 @@ import {
   ConvertToBountyPopover,
   BountyPopoverContent
 } from '../../../pages/tickets/style';
-import { TicketStatus, Ticket, Author } from '../../../store/interface';
+import { TicketStatus, Ticket, Author, TicketProcessingMode } from '../../../store/interface';
 import { Toast } from '../../../people/widgetViews/workspace/interface';
 import { uiStore } from '../../../store/ui';
 import { Select, Option } from '../../../people/widgetViews/workspace/style.ts';
@@ -288,7 +288,9 @@ const TicketEditor = observer(
     );
     const [isCopying, setIsCopying] = useState(false);
     const [activeMode, setActiveMode] = useState<'preview' | 'edit'>('edit');
-    const [isThinking, setIsThinking] = useState<'speed' | 'thinking'>('thinking');
+    const [processingMode, setProcessingMode] = useState<TicketProcessingMode>(
+      TicketProcessingMode.THINKING
+    );
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
     const { main } = useStores();
     const [isCreatingBounty, setIsCreatingBounty] = useState(false);
@@ -296,7 +298,7 @@ const TicketEditor = observer(
     const [lastLogLine, setLastLogLine] = useState('');
     const ui = uiStore;
     const { openDeleteConfirmation } = useDeleteConfirmationModal();
-    const { isEnabled } = useFeatureFlag('thinking');
+    const { isEnabled } = useFeatureFlag(TicketProcessingMode.THINKING);
 
     const groupTickets = useMemo(
       () => phaseTicketStore.getTicketsByGroup(ticketData.ticket_group as string),
@@ -320,6 +322,11 @@ const TicketEditor = observer(
       label: p.title,
       snippet: p.snippet
     }));
+
+    const isProcessingModeActive = useCallback(
+      (mode: TicketProcessingMode) => processingMode === mode,
+      [processingMode]
+    );
 
     const handleSnippetSelect = (snippet: string) => {
       setVersionTicketData((prevData) => ({
@@ -481,7 +488,8 @@ const TicketEditor = observer(
             status: 'DRAFT' as TicketStatus,
             author: 'AGENT' as Author,
             author_id: 'TICKET_BUILDER',
-            ticket_group: ticketData.ticket_group || ticketData.uuid
+            ticket_group: ticketData.ticket_group || ticketData.uuid,
+            mode: processingMode
           }
         };
 
@@ -639,8 +647,10 @@ const TicketEditor = observer(
         if (!isEnabled) return;
 
         if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-          setIsThinking((prev) => {
-            const newMode = prev === 'speed' ? 'thinking' : 'speed';
+          setProcessingMode((prev) => {
+            const newMode = isProcessingModeActive(prev)
+              ? TicketProcessingMode.THINKING
+              : TicketProcessingMode.SPEED;
 
             setTimeout(() => {
               const buttonToFocus = document.querySelector(
@@ -657,10 +667,14 @@ const TicketEditor = observer(
 
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          setIsThinking((prev) => (prev === 'speed' ? 'thinking' : 'speed'));
+          setProcessingMode((prev) =>
+            isProcessingModeActive(prev)
+              ? TicketProcessingMode.THINKING
+              : TicketProcessingMode.SPEED
+          );
         }
       },
-      [isEnabled, setIsThinking]
+      [isEnabled, isProcessingModeActive]
     );
 
     return (
@@ -820,20 +834,20 @@ const TicketEditor = observer(
                   aria-label="Toggle Thinking Mode"
                 >
                   <ToggleButton
-                    isActive={isThinking === 'speed'}
-                    onClick={() => setIsThinking('speed')}
+                    isActive={isProcessingModeActive(TicketProcessingMode.SPEED)}
+                    onClick={() => setProcessingMode(TicketProcessingMode.SPEED)}
                     tabIndex={0}
                     role="radio"
-                    aria-checked={isThinking === 'speed'}
+                    aria-checked={isProcessingModeActive(TicketProcessingMode.SPEED)}
                   >
                     Speed
                   </ToggleButton>
                   <ToggleButton
-                    isActive={isThinking === 'thinking'}
-                    onClick={() => setIsThinking('thinking')}
+                    isActive={isProcessingModeActive(TicketProcessingMode.THINKING)}
+                    onClick={() => setProcessingMode(TicketProcessingMode.THINKING)}
                     tabIndex={0}
                     role="radio"
-                    aria-checked={isThinking === 'thinking'}
+                    aria-checked={isProcessingModeActive(TicketProcessingMode.THINKING)}
                   >
                     Thinking
                   </ToggleButton>
