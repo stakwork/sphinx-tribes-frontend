@@ -88,7 +88,7 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
               <Route path="/workspace/:uuid/hivechat/:chatId">
                 <HiveChatView />
               </Route>
-              <Route path="/hivechat/:uuid/build">
+              <Route path="/hivechat/:uuid/build/:chatId">
                 <HiveBuildView />
               </Route>
               <Route path="/workspace/:uuid">
