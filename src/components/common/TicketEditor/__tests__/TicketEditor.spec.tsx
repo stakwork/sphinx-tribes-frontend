@@ -104,179 +104,200 @@ describe('TicketEditor Thinking/Speed Toggle', () => {
     });
   });
 
-  test('should not render toggle when feature flag is disabled', () => {
+  test('should not render toggle when feature flag is disabled', async () => {
     (useFeatureFlag as jest.Mock).mockReturnValue({ isEnabled: false });
 
-    waitFor(() => {
+    await waitFor(() => {
       render(<TicketEditor {...defaultProps} />);
-
-      expect(
-        screen.queryByRole('radiogroup', { name: /toggle thinking mode/i })
-      ).not.toBeInTheDocument();
     });
+
+    expect(
+      screen.queryByRole('radiogroup', { name: /toggle thinking mode/i })
+    ).not.toBeInTheDocument();
   });
 
-  test('should render toggle when feature flag is enabled', () => {
+  test('should render toggle when feature flag is enabled', async () => {
     (useFeatureFlag as jest.Mock).mockReturnValue({ isEnabled: true });
 
-    waitFor(() => {
+    await waitFor(() => {
       render(<TicketEditor {...defaultProps} />);
-
-      expect(screen.getByRole('radiogroup', { name: /toggle thinking mode/i })).toBeInTheDocument();
-      expect(screen.getByRole('radio', { name: /speed/i })).toBeInTheDocument();
-      expect(screen.getByRole('radio', { name: /thinking/i })).toBeInTheDocument();
     });
+
+    expect(screen.getByRole('radiogroup', { name: /toggle thinking mode/i })).toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: /speed/i })).toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: /thinking/i })).toBeInTheDocument();
   });
 
-  test('should default to thinking mode', () => {
+  test('should default to thinking mode', async () => {
     (useFeatureFlag as jest.Mock).mockReturnValue({ isEnabled: true });
 
-    waitFor(() => {
+    await waitFor(() => {
       render(<TicketEditor {...defaultProps} />);
-
-      const thinkingButton = screen.getByRole('radio', { name: /thinking/i });
-      const speedButton = screen.getByRole('radio', { name: /speed/i });
-
-      expect(thinkingButton).toHaveAttribute('aria-checked', 'true');
-      expect(speedButton).toHaveAttribute('aria-checked', 'false');
     });
+
+    const thinkingButton = screen.getByRole('radio', { name: /thinking/i });
+    const speedButton = screen.getByRole('radio', { name: /speed/i });
+
+    expect(thinkingButton).toHaveAttribute('aria-checked', 'true');
+    expect(speedButton).toHaveAttribute('aria-checked', 'false');
   });
 
-  test('should toggle mode when clicking buttons', () => {
+  test('should toggle mode when clicking buttons', async () => {
     (useFeatureFlag as jest.Mock).mockReturnValue({ isEnabled: true });
 
-    waitFor(() => {
+    await waitFor(() => {
       render(<TicketEditor {...defaultProps} />);
-
-      const thinkingButton = screen.getByRole('radio', { name: /thinking/i });
-      const speedButton = screen.getByRole('radio', { name: /speed/i });
-
-      expect(thinkingButton).toHaveAttribute('aria-checked', 'true');
-      expect(speedButton).toHaveAttribute('aria-checked', 'false');
-
-      fireEvent.click(speedButton);
-
-      expect(thinkingButton).toHaveAttribute('aria-checked', 'false');
-      expect(speedButton).toHaveAttribute('aria-checked', 'true');
-
-      fireEvent.click(thinkingButton);
-
-      expect(thinkingButton).toHaveAttribute('aria-checked', 'true');
-      expect(speedButton).toHaveAttribute('aria-checked', 'false');
     });
+
+    const thinkingButton = screen.getByRole('radio', { name: /thinking/i });
+    const speedButton = screen.getByRole('radio', { name: /speed/i });
+
+    expect(thinkingButton).toHaveAttribute('aria-checked', 'true');
+    expect(speedButton).toHaveAttribute('aria-checked', 'false');
+
+    fireEvent.click(speedButton);
+
+    expect(thinkingButton).toHaveAttribute('aria-checked', 'false');
+    expect(speedButton).toHaveAttribute('aria-checked', 'true');
+
+    fireEvent.click(thinkingButton);
+
+    expect(thinkingButton).toHaveAttribute('aria-checked', 'true');
+    expect(speedButton).toHaveAttribute('aria-checked', 'false');
   });
 
   test('should toggle mode with keyboard arrow keys', async () => {
     (useFeatureFlag as jest.Mock).mockReturnValue({ isEnabled: true });
 
-    waitFor(() => {
+    await waitFor(() => {
       render(<TicketEditor {...defaultProps} />);
+    });
 
-      const toggleContainer = screen.getByRole('radiogroup', { name: /toggle thinking mode/i });
-      const thinkingButton = screen.getByRole('radio', { name: /thinking/i });
-      const speedButton = screen.getByRole('radio', { name: /speed/i });
+    const toggleContainer = screen.getByRole('radiogroup', { name: /toggle thinking mode/i });
+    const thinkingButton = screen.getByRole('radio', { name: /thinking/i });
+    const speedButton = screen.getByRole('radio', { name: /speed/i });
 
-      expect(thinkingButton).toHaveAttribute('aria-checked', 'true');
-      expect(speedButton).toHaveAttribute('aria-checked', 'false');
+    expect(thinkingButton).toHaveAttribute('aria-checked', 'true');
+    expect(speedButton).toHaveAttribute('aria-checked', 'false');
 
-      fireEvent.keyDown(toggleContainer, { key: 'ArrowRight' });
+    (document.querySelector as jest.Mock).mockClear();
 
-      expect(thinkingButton).toHaveAttribute('aria-checked', 'false');
-      expect(speedButton).toHaveAttribute('aria-checked', 'true');
-      expect(document.querySelector).toHaveBeenCalledWith('[role="radio"][aria-checked="true"]');
+    fireEvent.keyDown(toggleContainer, { key: 'ArrowRight' });
 
-      fireEvent.keyDown(toggleContainer, { key: 'ArrowLeft' });
-
-      expect(thinkingButton).toHaveAttribute('aria-checked', 'true');
-      expect(speedButton).toHaveAttribute('aria-checked', 'false');
+    await waitFor(() => {
       expect(document.querySelector).toHaveBeenCalledWith('[role="radio"][aria-checked="true"]');
     });
-  });
 
-  test('should toggle mode with Enter key', () => {
-    (useFeatureFlag as jest.Mock).mockReturnValue({ isEnabled: true });
+    expect(thinkingButton).toHaveAttribute('aria-checked', 'false');
+    expect(speedButton).toHaveAttribute('aria-checked', 'true');
 
-    waitFor(() => {
-      render(<TicketEditor {...defaultProps} />);
+    (document.querySelector as jest.Mock).mockClear();
 
-      const toggleContainer = screen.getByRole('radiogroup', { name: /toggle thinking mode/i });
-      const thinkingButton = screen.getByRole('radio', { name: /thinking/i });
-      const speedButton = screen.getByRole('radio', { name: /speed/i });
+    fireEvent.keyDown(toggleContainer, { key: 'ArrowLeft' });
 
-      expect(thinkingButton).toHaveAttribute('aria-checked', 'true');
-      expect(speedButton).toHaveAttribute('aria-checked', 'false');
-
-      fireEvent.keyDown(toggleContainer, { key: 'Enter' });
-
-      expect(thinkingButton).toHaveAttribute('aria-checked', 'false');
-      expect(speedButton).toHaveAttribute('aria-checked', 'true');
+    await waitFor(() => {
+      expect(document.querySelector).toHaveBeenCalledWith('[role="radio"][aria-checked="true"]');
     });
+
+    expect(thinkingButton).toHaveAttribute('aria-checked', 'true');
+    expect(speedButton).toHaveAttribute('aria-checked', 'false');
   });
 
-  test('should toggle mode with Space key', () => {
+  test('should toggle mode with Enter key', async () => {
     (useFeatureFlag as jest.Mock).mockReturnValue({ isEnabled: true });
 
-    waitFor(() => {
+    await waitFor(() => {
       render(<TicketEditor {...defaultProps} />);
-
-      const toggleContainer = screen.getByRole('radiogroup', { name: /toggle thinking mode/i });
-      const thinkingButton = screen.getByRole('radio', { name: /thinking/i });
-      const speedButton = screen.getByRole('radio', { name: /speed/i });
-
-      expect(thinkingButton).toHaveAttribute('aria-checked', 'true');
-      expect(speedButton).toHaveAttribute('aria-checked', 'false');
-
-      fireEvent.keyDown(toggleContainer, { key: ' ' });
-
-      expect(thinkingButton).toHaveAttribute('aria-checked', 'false');
-      expect(speedButton).toHaveAttribute('aria-checked', 'true');
     });
+
+    const toggleContainer = screen.getByRole('radiogroup', { name: /toggle thinking mode/i });
+    const thinkingButton = screen.getByRole('radio', { name: /thinking/i });
+    const speedButton = screen.getByRole('radio', { name: /speed/i });
+
+    expect(thinkingButton).toHaveAttribute('aria-checked', 'true');
+    expect(speedButton).toHaveAttribute('aria-checked', 'false');
+
+    fireEvent.keyDown(toggleContainer, { key: 'Enter' });
+
+    expect(thinkingButton).toHaveAttribute('aria-checked', 'false');
+    expect(speedButton).toHaveAttribute('aria-checked', 'true');
   });
 
-  test('should prevent default on Enter and Space keys', () => {
+  test('should toggle mode with Space key', async () => {
     (useFeatureFlag as jest.Mock).mockReturnValue({ isEnabled: true });
 
-    waitFor(() => {
+    await waitFor(() => {
       render(<TicketEditor {...defaultProps} />);
+    });
 
-      const toggleContainer = screen.getByRole('radiogroup', { name: /toggle thinking mode/i });
+    const toggleContainer = screen.getByRole('radiogroup', { name: /toggle thinking mode/i });
+    const thinkingButton = screen.getByRole('radio', { name: /thinking/i });
+    const speedButton = screen.getByRole('radio', { name: /speed/i });
 
-      const enterEvent = {
-        key: 'Enter',
-        preventDefault: jest.fn()
-      };
+    expect(thinkingButton).toHaveAttribute('aria-checked', 'true');
+    expect(speedButton).toHaveAttribute('aria-checked', 'false');
 
-      const spaceEvent = {
-        key: ' ',
-        preventDefault: jest.fn()
-      };
+    fireEvent.keyDown(toggleContainer, { key: ' ' });
 
-      fireEvent.keyDown(toggleContainer, enterEvent);
+    expect(thinkingButton).toHaveAttribute('aria-checked', 'false');
+    expect(speedButton).toHaveAttribute('aria-checked', 'true');
+  });
+
+  test('should prevent default on Enter and Space keys', async () => {
+    (useFeatureFlag as jest.Mock).mockReturnValue({ isEnabled: true });
+
+    await waitFor(() => {
+      render(<TicketEditor {...defaultProps} />);
+    });
+
+    const toggleContainer = screen.getByRole('radiogroup', { name: /toggle thinking mode/i });
+
+    const enterEvent = { key: 'Enter', preventDefault: jest.fn() };
+
+    const enterDomEvent = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true });
+    Object.defineProperty(enterDomEvent, 'preventDefault', {
+      value: enterEvent.preventDefault,
+      configurable: true
+    });
+
+    toggleContainer.dispatchEvent(enterDomEvent);
+
+    await waitFor(() => {
       expect(enterEvent.preventDefault).toHaveBeenCalled();
+    });
 
-      fireEvent.keyDown(toggleContainer, spaceEvent);
+    const spaceEvent = { key: ' ', preventDefault: jest.fn() };
+    const spaceDomEvent = new KeyboardEvent('keydown', { key: ' ', bubbles: true });
+    Object.defineProperty(spaceDomEvent, 'preventDefault', {
+      value: spaceEvent.preventDefault,
+      configurable: true
+    });
+
+    toggleContainer.dispatchEvent(spaceDomEvent);
+
+    await waitFor(() => {
       expect(spaceEvent.preventDefault).toHaveBeenCalled();
     });
   });
 
-  test('should not respond to keyboard events when feature flag is disabled', () => {
+  test('should not respond to keyboard events when feature flag is disabled', async () => {
     (useFeatureFlag as jest.Mock).mockReturnValue({ isEnabled: false });
 
-    waitFor(() => {
+    await waitFor(() => {
       render(<TicketEditor {...defaultProps} />);
-
-      const container = screen.getByTestId('ticket-textarea').parentElement;
-
-      if (container) {
-        const keyEvent = {
-          key: 'ArrowRight',
-          preventDefault: jest.fn()
-        };
-
-        fireEvent.keyDown(container, keyEvent);
-
-        expect(keyEvent.preventDefault).not.toHaveBeenCalled();
-      }
     });
+
+    const container = screen.getByTestId('ticket-textarea').parentElement;
+
+    if (container) {
+      const keyEvent = {
+        key: 'ArrowRight',
+        preventDefault: jest.fn()
+      };
+
+      fireEvent.keyDown(container, keyEvent);
+
+      expect(keyEvent.preventDefault).not.toHaveBeenCalled();
+    }
   });
 });
