@@ -38,6 +38,14 @@ const Nav = styled.nav`
   }
 `;
 
+const NavList = styled.ul`
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 12px;
+`;
+
 const Logo = styled.div`
   display: flex;
   align-items: center;
@@ -82,7 +90,7 @@ const LoginBtn = styled.button<{ isMobile?: boolean }>`
   font-size: 14px;
   font-weight: 500;
   line-height: 17px;
-  margin: ${(props: any) => (props.isMobile ? '0' : '0 0 0 18px')};
+  margin: ${(props: any) => (props.isMobile ? '0' : '12px 0 0 18px')};
   padding: ${(props: any) => (props.isMobile ? '10px 0' : '0')};
   background: transparent;
   border: none;
@@ -226,6 +234,15 @@ const MobileMenu = styled.div`
   }
 `;
 
+const MobileNavList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
+
 const HamburgerButton = styled.button`
   display: none;
   background: none;
@@ -352,7 +369,7 @@ const BountyNavBar: React.FC = () => {
           <span>SPHINX COMMUNITY</span>
         </Logo>
         <ButtonGroup>
-          <ul style={{ listStyle: 'none', display: 'flex', gap: '12px', padding: 0, margin: 0 }}>
+          <NavList>
             <li>
               <Button variant="primary" onClick={handleStartEarning}>
                 Start Earning
@@ -374,7 +391,7 @@ const BountyNavBar: React.FC = () => {
                     <Alias>{ui.meInfo?.owner_alias}</Alias>
                   </LoggedInBtn>
                 ) : (
-                  <LoginBtn onClick={handleLoginClick} style={{ marginTop: 12 }}>
+                  <LoginBtn onClick={handleLoginClick}>
                     <span>Sign in</span>
                     <MaterialIcon
                       icon={'login'}
@@ -386,23 +403,14 @@ const BountyNavBar: React.FC = () => {
                 )}
               </Corner>
             </li>
-          </ul>
+          </NavList>
         </ButtonGroup>
       </Nav>
 
       <MobileMenu className={isMobileMenuOpen ? 'open' : ''}>
         <nav aria-label="Mobile Navigation">
           <ButtonGroup as="div" id="mobile-menu">
-            <ul
-              style={{
-                listStyle: 'none',
-                padding: 0,
-                margin: 0,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '12px'
-              }}
-            >
+            <MobileNavList>
               <li>
                 <Button variant="primary" onClick={handleStartEarning}>
                   Start Earning
@@ -440,7 +448,7 @@ const BountyNavBar: React.FC = () => {
                   )}
                 </Corner>
               </li>
-            </ul>
+            </MobileNavList>
           </ButtonGroup>
         </nav>
       </MobileMenu>
