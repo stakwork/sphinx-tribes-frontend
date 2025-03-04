@@ -79,11 +79,7 @@ const WorkspaceBudget = (props: { user_pubkey: string; org: any }) => {
   const [userRoles, setUserRoles] = useState<any[]>([]);
   const { main, ui } = useStores();
   const { user_pubkey, org } = props;
-  const [showBalances, setShowBalances] = useLocalStorage('showBalances', true);
-
-  const toggleBalances = () => {
-    setShowBalances(!showBalances);
-  };
+  const [showBalances] = useLocalStorage('showBalances', true);
 
   const isWorkspaceAdmin =
     org?.owner_pubkey &&
@@ -110,7 +106,7 @@ const WorkspaceBudget = (props: { user_pubkey: string; org: any }) => {
         {org.name}
       </WorkspaceText>
       {hasAccess && (
-        <WorkspaceBudgetText onClick={toggleBalances} style={{ cursor: 'pointer' }}>
+        <WorkspaceBudgetText href={`/workspace/${org.uuid}/activities`}>
           {showBalances ? DollarConverter(org.budget ?? 0) : '****'}
           <CurrencyUnit>
             {' SAT'}
