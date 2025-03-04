@@ -498,6 +498,41 @@ export interface ContextTag {
   id: string;
 }
 
+export interface Example {
+  type: string;
+  url: string;
+}
+
+export interface Option {
+  action_type: 'button' | 'chat';
+  option_label: string;
+  option_response: string;
+  webhook: string;
+}
+
+export interface TextContent {
+  text_type: 'code' | 'rag' | 'md';
+  content: string;
+}
+
+export interface VisualContent {
+  text_type?: 'img' | 'view' | 'vm';
+  url?: string;
+  examples?: Example[];
+}
+
+export interface ActionContent {
+  actionText: string;
+  options: Option[];
+}
+
+export interface Artifact {
+  id: string;
+  messageId: string;
+  type: 'text' | 'visual' | 'action';
+  content?: TextContent | VisualContent | ActionContent;
+}
+
 export interface ChatMessage {
   id: string;
   chat_id?: string;
@@ -511,6 +546,7 @@ export interface ChatMessage {
   source: ChatSource;
   sourceWebsocketID?: string;
   workspaceUUID?: string;
+  artifacts?: Artifact[];
 }
 
 export interface Chat {
