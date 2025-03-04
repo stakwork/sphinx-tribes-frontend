@@ -440,6 +440,7 @@ export interface Ticket {
   author_id?: string;
   created_at?: Date;
   updated_at?: Date;
+  mode?: string;
 }
 
 export interface CreateTicketInput {

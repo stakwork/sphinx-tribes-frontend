@@ -481,7 +481,8 @@ const TicketEditor = observer(
             status: 'DRAFT' as TicketStatus,
             author: 'AGENT' as Author,
             author_id: 'TICKET_BUILDER',
-            ticket_group: ticketData.ticket_group || ticketData.uuid
+            ticket_group: ticketData.ticket_group || ticketData.uuid,
+            mode: isThinking
           }
         };
 
@@ -812,6 +813,16 @@ const TicketEditor = observer(
               )}
             </EditorWrapper>
             <TicketButtonGroup>
+              {showSWWFLink && swwfLink && (
+                <ChainOfThought>
+                  <h6>Hive - Chain of Thought</h6>
+                  <p>
+                    {lastLogLine
+                      ? lastLogLine
+                      : `Hi ${ui.meInfo?.owner_alias}, let me see if I can improve this ticket.`}
+                  </p>
+                </ChainOfThought>
+              )}
               {isEnabled && (
                 <ToggleContainer
                   tabIndex={0}
@@ -838,16 +849,6 @@ const TicketEditor = observer(
                     Thinking
                   </ToggleButton>
                 </ToggleContainer>
-              )}
-              {showSWWFLink && swwfLink && (
-                <ChainOfThought>
-                  <h6>Hive - Chain of Thought</h6>
-                  <p>
-                    {lastLogLine
-                      ? lastLogLine
-                      : `Hi ${ui.meInfo?.owner_alias}, let me see if I can improve this ticket.`}
-                  </p>
-                </ChainOfThought>
               )}
               {showSWWFLink && swwfLink && (
                 <ActionButton
