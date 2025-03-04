@@ -1,5 +1,5 @@
 import { TribesURL } from '../config';
-import { Chat, ChatMessage, ContextTag } from '../store/interface';
+import { Artifact, Chat, ChatMessage, ContextTag } from '../store/interface';
 import { uiStore } from '../store/ui';
 
 export class ChatService {
@@ -258,6 +258,97 @@ export class ChatService {
       console.error('Error uploading file:', error);
       throw error;
     }
+  }
+
+  async createArtifact(artifact: Artifact): Promise<Artifact> {
+    const response = await fetch(`${TribesURL}/hivechat/artefacts`, {
+      method: 'POST',
+      mode: 'cors',
+      headers: {
+        'x-jwt': uiStore.meInfo?.tribe_jwt ?? '',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(artifact)
+    });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return response.json();
+  }
+
+  async getArtifactsByChatId(chatId: string): Promise<Artifact[]> {
+    const response = await fetch(`${TribesURL}/hivechat/artefacts/chat/${chatId}`, {
+      method: 'GET',
+      mode: 'cors',
+      headers: {
+        'x-jwt': uiStore.meInfo?.tribe_jwt ?? '',
+        'Content-Type': 'application/json'
+      }
+    });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return response.json();
+  }
+
+  async getArtifactById(artifactId: string): Promise<Artifact> {
+    const response = await fetch(`${TribesURL}/hivechat/artefacts/${artifactId}`, {
+      method: 'GET',
+      mode: 'cors',
+      headers: {
+        'x-jwt': uiStore.meInfo?.tribe_jwt ?? '',
+        'Content-Type': 'application/json'
+      }
+    });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return response.json();
+  }
+
+  async getArtifactsByMessageId(messageId: string): Promise<Artifact[]> {
+    const response = await fetch(`${TribesURL}/hivechat/artefacts/message/${messageId}`, {
+      method: 'GET',
+      mode: 'cors',
+      headers: {
+        'x-jwt': uiStore.meInfo?.tribe_jwt ?? '',
+        'Content-Type': 'application/json'
+      }
+    });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return response.json();
+  }
+
+  async updateArtifact(artifactId: string, artifactUpdate: Partial<Artifact>): Promise<Artifact> {
+    const response = await fetch(`${TribesURL}/hivechat/artefacts/${artifactId}`, {
+      method: 'PUT',
+      mode: 'cors',
+      headers: {
+        'x-jwt': uiStore.meInfo?.tribe_jwt ?? '',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(artifactUpdate)
+    });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return response.json();
+  }
+
+  async deleteArtifact(artifactId: string): Promise<void> {
+    const response = await fetch(`${TribesURL}/hivechat/artefacts/${artifactId}`, {
+      method: 'DELETE',
+      mode: 'cors',
+      headers: {
+        'x-jwt': uiStore.meInfo?.tribe_jwt ?? '',
+        'Content-Type': 'application/json'
+      }
+    });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  async deleteArtifactsByChatId(chatId: string): Promise<void> {
+    const response = await fetch(`${TribesURL}/hivechat/artefacts/chat/${chatId}`, {
+      method: 'DELETE',
+      mode: 'cors',
+      headers: {
+        'x-jwt': uiStore.meInfo?.tribe_jwt ?? '',
+        'Content-Type': 'application/json'
+      }
+    });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
   }
 }
 
