@@ -178,6 +178,7 @@ export class ChatService {
     message: string,
     sourceWebsocketID: string,
     workspaceUUID: string,
+    mode: string,
     contextTags?: ContextTag[],
     pdfUrl?: string,
     modelSelection?: string
@@ -200,7 +201,8 @@ export class ChatService {
           sourceWebsocketID,
           workspaceUUID,
           pdf_url: pdfUrl,
-          modelSelection
+          modelSelection,
+          mode
         })
       });
 

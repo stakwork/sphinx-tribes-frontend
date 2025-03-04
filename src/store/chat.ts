@@ -166,6 +166,7 @@ export class ChatHistoryStore implements ChatStore {
     modelSelection: string,
     sourceWebsocketID: string,
     workspaceUUID: string,
+    mode: string,
     contextTags?: ContextTag[],
     pdfUrl?: string
   ): Promise<ChatMessage | undefined> {
@@ -175,6 +176,7 @@ export class ChatHistoryStore implements ChatStore {
         message,
         sourceWebsocketID,
         workspaceUUID,
+        mode,
         contextTags,
         pdfUrl,
         modelSelection
