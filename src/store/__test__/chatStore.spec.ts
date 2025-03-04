@@ -109,7 +109,14 @@ describe('ChatHistoryStore', () => {
     it('should send message with default model selection', async () => {
       const spy = jest.spyOn(chatService, 'sendMessage');
 
-      await store.sendMessage('chat123', 'test message', 'gpt-4o', 'websocket123', 'workspace123');
+      await store.sendMessage(
+        'chat123',
+        'test message',
+        'gpt-4o',
+        'websocket123',
+        'workspace123',
+        'Chat'
+      );
 
       expect(spy).toHaveBeenCalledWith(
         'chat123',
@@ -130,7 +137,8 @@ describe('ChatHistoryStore', () => {
         'test message',
         'claude-3-5-sonnet-latest',
         'websocket123',
-        'workspace123'
+        'workspace123',
+        'Chat'
       );
 
       expect(spy).toHaveBeenCalledWith(
@@ -147,7 +155,14 @@ describe('ChatHistoryStore', () => {
     it('should send message with o3-mini model selection', async () => {
       const spy = jest.spyOn(chatService, 'sendMessage');
 
-      await store.sendMessage('chat123', 'test message', 'o3-mini', 'websocket123', 'workspace123');
+      await store.sendMessage(
+        'chat123',
+        'test message',
+        'o3-mini',
+        'websocket123',
+        'workspace123',
+        'Chat'
+      );
 
       expect(spy).toHaveBeenCalledWith(
         'chat123',
