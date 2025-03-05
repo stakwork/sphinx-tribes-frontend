@@ -276,6 +276,7 @@ export class ChatHistoryStore implements ChatStore {
     mode: string,
     contextTags?: ContextTag[],
     pdfUrl?: string,
+    actionArtifact?: Artifact,
     artifacts?: Artifact[]
   ): Promise<ChatMessage | undefined> {
     try {
@@ -287,7 +288,8 @@ export class ChatHistoryStore implements ChatStore {
         mode,
         contextTags,
         pdfUrl,
-        modelSelection
+        modelSelection,
+        actionArtifact
       );
       if (newMessage) {
         if (!this.chatMessages[chat_id]) {
@@ -516,6 +518,10 @@ export class ChatHistoryStore implements ChatStore {
 
   hasActions(messageId: string): boolean {
     return this.getActionsForMessage(messageId) !== undefined;
+  }
+
+  isActionContent(content: Artifact['content']): content is ActionContent {
+    return !!content && (content as ActionContent).actionText !== undefined;
   }
 }
 

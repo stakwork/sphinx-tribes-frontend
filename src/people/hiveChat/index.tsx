@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useHistory, useParams } from 'react-router-dom';
-import { ActionContent, ChatMessage, VisualContent, TextContent } from 'store/interface';
+import { ActionContent, ChatMessage, VisualContent, TextContent, Artifact } from 'store/interface';
 import { useStores } from 'store';
 import { createSocketInstance } from 'config/socket';
 import SidebarComponent from 'components/common/SidebarComponent.tsx';
@@ -314,6 +314,7 @@ export const HiveChatView: React.FC = observer(() => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isBuild, setIsBuild] = useState<'Chat' | 'Build'>('Chat');
+  const [actionArtifact, setActionArtifact] = useState<Artifact>();
   const [pdfUrl, setPdfUrl] = useState('');
   const { isEnabled: isVerboseLoggingEnabled } = useFeatureFlag('verbose_logging_sw');
   const { isEnabled: isArtifactLoggingEnabled } = useFeatureFlag('log_artefact');
@@ -521,10 +522,27 @@ export const HiveChatView: React.FC = observer(() => {
   const messages = chat.chatMessages[chatId];
 
   useEffect(() => {
-    if (chatHistoryRef.current) {
-      chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
-    }
-  }, [messages]);
+    const processArtifacts = async () => {
+      if (chatHistoryRef.current) {
+        chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
+      }
+
+      const systemMessages = messages?.filter((msg) => msg.role !== 'user');
+      const lastSystemMessageId =
+        systemMessages?.length > 0 ? systemMessages[systemMessages.length - 1].id : null;
+
+      if (lastSystemMessageId) {
+        const artifacts = chat.getMessageArtifacts(lastSystemMessageId);
+        for (const artifact of artifacts) {
+          if (artifact.type === 'action' && chat.isActionContent(artifact.content)) {
+            setActionArtifact(artifact);
+          }
+        }
+      }
+    };
+
+    processArtifacts();
+  }, [chat, chatId, messages]);
 
   const handleUploadComplete = (url: string) => {
     setPdfUrl(url);
@@ -552,7 +570,8 @@ export const HiveChatView: React.FC = observer(() => {
         uuid,
         isBuild,
         undefined,
-        pdfUrl
+        pdfUrl,
+        actionArtifact
       );
 
       if (sentMessage) {
@@ -579,6 +598,7 @@ export const HiveChatView: React.FC = observer(() => {
       ]);
     } finally {
       setIsSending(false);
+      setMessage('');
     }
   };
 
@@ -769,15 +789,31 @@ export const HiveChatView: React.FC = observer(() => {
         <ChatBody>
           <ChatHistory ref={chatHistoryRef}>
             {messages.map((msg: ChatMessage) => (
-              <MessageBubble key={msg.id} isUser={msg.role === 'user'}>
-                {renderMarkdown(msg.message, {
-                  codeBlockBackground: '#282c34',
-                  textColor: '#abb2bf',
-                  bubbleTextColor: msg.role === 'user' ? 'white' : '',
-                  borderColor: '#444',
-                  codeBlockFont: 'Courier New'
-                })}
-              </MessageBubble>
+              <React.Fragment key={msg.id}>
+                <MessageBubble isUser={msg.role === 'user'}>
+                  {renderMarkdown(msg.message, {
+                    codeBlockBackground: '#282c34',
+                    textColor: '#abb2bf',
+                    bubbleTextColor: msg.role === 'user' ? 'white' : '',
+                    borderColor: '#444',
+                    codeBlockFont: 'Courier New'
+                  })}
+                </MessageBubble>
+
+                {actionArtifact &&
+                  actionArtifact.messageId === msg.id &&
+                  chat.isActionContent(actionArtifact.content) && (
+                    <MessageBubble isUser={msg.role === 'user'}>
+                      {renderMarkdown(actionArtifact?.content?.actionText, {
+                        codeBlockBackground: '#282c34',
+                        textColor: '#abb2bf',
+                        bubbleTextColor: msg.role === 'user' ? 'white' : '',
+                        borderColor: '#444',
+                        codeBlockFont: 'Courier New'
+                      })}
+                    </MessageBubble>
+                  )}
+              </React.Fragment>
             ))}
             {isChainVisible && (
               <MessageBubble isUser={false}>
