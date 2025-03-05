@@ -174,7 +174,7 @@ const PhasePlannerView: React.FC = observer(() => {
 
       try {
         const data = JSON.parse(event.data);
-        // Log parsed
+        // Log parsed data
         console.log('Parsed websocket message:', data);
 
         if (data.msg === SOCKET_MSG.user_connect) {
@@ -184,22 +184,7 @@ const PhasePlannerView: React.FC = observer(() => {
           return;
         }
 
-        if (data.ticketDetails?.ticketUUID) {
-          // Create a new log entry for any message with ticket details
-          const newLogEntry: LogEntry = {
-            timestamp: new Date().toISOString(),
-            projectId: data.ticketDetails.projectId || '',
-            ticketUUID: data.ticketDetails.ticketUUID,
-            message: data.message || JSON.stringify(data)
-          };
-
-          setLogs((prevLogs) => [...prevLogs, newLogEntry]);
-        }
-
         if (data.action === 'swrun' && data.message && data.ticketDetails?.ticketUUID) {
-          console.log(
-            `Ticket Info: {"ticketUUID": ${data.ticketDetails?.ticketUUID}, "message": ${data.message}}`
-          );
           try {
             const stakworkId = data.message.replace(
               'https://jobs.stakwork.com/admin/projects/',
@@ -230,17 +215,6 @@ const PhasePlannerView: React.FC = observer(() => {
               action: ticketMessage.action,
               ticketDetails: ticketMessage.ticketDetails
             });
-
-            if (ticketMessage.ticketDetails?.ticketUUID && ticketMessage.message) {
-              const newLogEntry: LogEntry = {
-                timestamp: new Date().toISOString(),
-                projectId: data.projectId || '',
-                ticketUUID: ticketMessage.ticketDetails.ticketUUID,
-                message: ticketMessage.message
-              };
-
-              setLogs((prevLogs) => [...prevLogs, newLogEntry]);
-            }
             break;
 
           case 'process':
@@ -262,7 +236,7 @@ const PhasePlannerView: React.FC = observer(() => {
         socket.close();
       }
     };
-  }, [main, phaseData, tickets]);
+  }, [main]);
 
   const submitPurpose = async () => {
     if (!phaseData) return;

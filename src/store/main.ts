@@ -740,7 +740,7 @@ export class MainStore {
 
           ps3.push({
             body: { ...bounty, assignee: assignee || '' },
-            person: { ...owner, wanteds: [] },
+            person: { ...owner, wanteds: [] } || { wanteds: [] },
             organization: { ...organization }
           });
         }
@@ -831,7 +831,7 @@ export class MainStore {
 
           ps3.push({
             body: { ...bounty, assignee: assignee || '' },
-            person: { ...owner, wanteds: [] },
+            person: { ...owner, wanteds: [] } || { wanteds: [] },
             organization: { ...organization }
           });
         }
@@ -933,7 +933,7 @@ export class MainStore {
 
           ps3.push({
             body: { ...bounty, assignee: assignee || '' },
-            person: { ...owner, wanteds: [] },
+            person: { ...owner, wanteds: [] } || { wanteds: [] },
             organization: { ...organization }
           });
         }
@@ -1000,7 +1000,7 @@ export class MainStore {
 
             ps3.push({
               body: { ...bounty, assignee: assignee || '' },
-              person: { ...owner, wanteds: [] },
+              person: { ...owner, wanteds: [] } || { wanteds: [] },
               organization: { ...organization }
             });
           }
@@ -1038,7 +1038,7 @@ export class MainStore {
 
           ps3.push({
             body: { ...bounty, assignee: assignee || '' },
-            person: { ...owner, wanteds: [] },
+            person: { ...owner, wanteds: [] } || { wanteds: [] },
             organization: { ...organization }
           });
         }
@@ -1083,7 +1083,7 @@ export class MainStore {
 
           ps3.push({
             body: { ...bounty, assignee: assignee || '' },
-            person: { ...owner, wanteds: [] },
+            person: { ...owner, wanteds: [] } || { wanteds: [] },
             organization: { ...organization }
           });
         }
@@ -1171,7 +1171,7 @@ export class MainStore {
 
           ps3.push({
             body: { ...bounty, assignee: assignee || '' },
-            person: { ...owner, wanteds: [] },
+            person: { ...owner, wanteds: [] } || { wanteds: [] },
             organization: { ...organization }
           });
         }
@@ -1221,7 +1221,7 @@ export class MainStore {
 
           ps3.push({
             body: { ...bounty, assignee: assignee || '' },
-            person: { ...owner, wanteds: [] },
+            person: { ...owner, wanteds: [] } || { wanteds: [] },
             organization: { ...organization }
           });
         }
@@ -1293,7 +1293,7 @@ export class MainStore {
           if (bounty.org_uuid === uuid) {
             ps3.push({
               body: { ...bounty, assignee: assignee || '' },
-              person: { ...owner, wanteds: [] },
+              person: { ...owner, wanteds: [] } || { wanteds: [] },
               organization: { ...organization }
             });
           }

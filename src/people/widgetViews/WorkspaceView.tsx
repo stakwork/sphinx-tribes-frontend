@@ -219,7 +219,7 @@ const Workspaces = (props: { person: Person }) => {
         console.warn('Poll invoices error', e);
       }
     }, 2000);
-  }, [main, getUserWorkspaces]);
+  }, []);
 
   const getUserInvoicesCount = useCallback(async () => {
     const count = await main.allUserWorkspaceInvoiceCount();
