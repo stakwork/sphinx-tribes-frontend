@@ -51,6 +51,7 @@ declare namespace Cypress {
     description: string;
     website?: string;
     github?: string;
+    feature_call?: string;
   };
 
   type InvoiceDetail = {
