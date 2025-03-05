@@ -624,10 +624,20 @@ export const HiveChatView: React.FC = observer(() => {
 
   useEffect(() => {
     const logArtifacts = async () => {
+      if (chatId) {
+        const res = await chat.loadArtifactsForChat(chatId);
+        console.log('Artifacts for that chat', res);
+      }
+    };
+    logArtifacts();
+  }, [chat, chatId]);
+
+  useEffect(() => {
+    const logArtifacts = async () => {
       if (!isArtifactLoggingEnabled || !chatId) return;
 
       try {
-        const artifacts = chat.getChatArtifacts(chatId);
+        const artifacts = chat.getChatArtifacts(chatId) || [];
 
         console.group('Chat Artifacts Debug Info');
         console.log('Chat ID:', chatId);
