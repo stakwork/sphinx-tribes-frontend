@@ -22,9 +22,7 @@ import SidebarComponent from 'components/common/SidebarComponent';
 import styled from 'styled-components';
 import { workspaceTicketStore } from 'store/workspace-ticket';
 import { phaseTicketStore } from '../../../store/phase';
-import StakworkLogsPanel, {
-  LogEntry
-} from '../../../components/common/TicketEditor/StakworkLogsPanel';
+import StakworkLogsPanel from '../../../components/common/TicketEditor/StakworkLogsPanel';
 import {
   FeatureHeadNameWrap,
   FeatureHeadWrap,
@@ -39,6 +37,13 @@ import ActivitiesHeader from './Activities/header';
 
 interface WorkspaceParams {
   workspaceId: string;
+}
+
+interface LogEntry {
+  timestamp: string;
+  projectId: string;
+  ticketUUID: string;
+  message: string;
 }
 
 const MainContent = styled.div<{ collapsed: boolean }>`
@@ -440,7 +445,7 @@ const WorkspaceTicketCreateView: React.FC = observer(() => {
                 showFeaturePhaseDropdowns={true}
                 showVersionSelector={true}
                 showDragHandle={false}
-                showSWWFLink={true}
+                showSWWFLink={false}
                 index={0}
                 selectedTickets={{}}
                 onSelectTicket={() => {}}
