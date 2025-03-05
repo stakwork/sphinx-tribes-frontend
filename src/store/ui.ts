@@ -194,9 +194,17 @@ export class UiStore {
   }
 
   @persist('object') connection_string = '';
-  setConnectionString(code: string) {
+  setConnectionString(code: any) {
+  if (typeof code === 'string') {
     this.connection_string = code;
+  } else if (typeof code === 'number') {
+    this.connection_string = code.toString();
+  } else if (code === null || code === undefined) {
+    this.connection_string = '';
+  } else {
+    this.connection_string = '';
   }
+}
 
   showSignIn = false;
   setShowSignIn(b: boolean) {
