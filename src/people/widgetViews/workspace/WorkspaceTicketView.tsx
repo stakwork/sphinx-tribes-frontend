@@ -542,9 +542,7 @@ const WorkspaceTicketView: React.FC = observer(() => {
               workspaceTicketStore.updateTicket(updatedTicket.uuid, updatedTicket);
               phaseTicketStore.updateTicket(updatedTicket.uuid, updatedTicket);
 
-              if (updatedTicket.version > currentTicket.version) {
-                setCurrentTicketId(updatedTicket.uuid);
-              }
+                setCurrentTicketId(updatedTicket.uuid) 
             }}
             showFeaturePhaseDropdowns={false}
             showVersionSelector={true}
