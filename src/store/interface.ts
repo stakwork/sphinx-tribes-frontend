@@ -530,7 +530,7 @@ export interface Artifact {
   id: string;
   messageId: string;
   type: 'text' | 'visual' | 'action';
-  content?: TextContent | VisualContent | ActionContent;
+  content?: ActionContent | TextContent | VisualContent;
 }
 
 export interface ChatMessage {
