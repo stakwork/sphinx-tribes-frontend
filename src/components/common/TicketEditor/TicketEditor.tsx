@@ -294,6 +294,7 @@ const TicketEditor = observer(
     const [isCreatingBounty, setIsCreatingBounty] = useState(false);
     const [isOptionsMenuVisible, setIsOptionsMenuVisible] = useState(false);
     const [lastLogLine, setLastLogLine] = useState('');
+    const [isImproving, setIsImproving] = useState(false);
     const ui = uiStore;
     const { openDeleteConfirmation } = useDeleteConfirmationModal();
     const { isEnabled } = useFeatureFlag('thinking');
@@ -409,7 +410,7 @@ const TicketEditor = observer(
             name: versionTicketData.name,
             description: versionTicketData.description,
             status: 'DRAFT' as TicketStatus,
-            version: ticketData.version + 1,
+            version: (ticketData.version || 1) + 1,
             amount: versionTicketData.amount,
             category: versionTicketData.category,
             author: 'HUMAN' as Author,
@@ -469,6 +470,8 @@ const TicketEditor = observer(
 
     const handleTicketBuilder = async () => {
       try {
+        setIsImproving(true);
+        setLastLogLine('Thinking...');
         const ticketPayload = {
           metadata: {
             source: 'websocket',
@@ -481,6 +484,9 @@ const TicketEditor = observer(
             status: 'DRAFT' as TicketStatus,
             author: 'AGENT' as Author,
             author_id: 'TICKET_BUILDER',
+            version: ticketData.version,
+            amount: versionTicketData.amount,
+            category: versionTicketData.category,
             ticket_group: ticketData.ticket_group || ticketData.uuid,
             mode: isThinking
           }
@@ -488,14 +494,28 @@ const TicketEditor = observer(
 
         const response = await main.sendTicketForReview(ticketPayload);
 
-        if (response) {
-          addSuccessToast();
+        if (response?.ticket_id) {
+            const updatedTicketData = await main.getTicketDetails(response?.ticket_id);
+
+            workspaceTicketStore.addTicket(updatedTicketData);
+            phaseTicketStore.addTicket(updatedTicketData);
+
+
+            //to ensure tickets are added to stores first
+           setTimeout(() => {
+              setVersionTicketData(updatedTicketData);
+              setSelectedVersion(updatedTicketData.version);
+              onTicketUpdate?.(updatedTicketData);
+              addSuccessToast();
+            },100);
         } else {
           throw new Error('Failed to send ticket for review');
         }
       } catch (error) {
         console.error('Error in ticket builder:', error);
         addErrorToast();
+      }finally{
+        setIsImproving(false);
       }
     };
 
@@ -589,8 +609,6 @@ const TicketEditor = observer(
             text: 'Ticket deleted successfully!'
           }
         ]);
-
-        await new Promise((resolve) => setTimeout(resolve, 1000));
 
         phaseTicketStore.clearPhaseTickets(ticketData.phase_uuid);
         if (getPhaseTickets) {
@@ -873,7 +891,7 @@ const TicketEditor = observer(
                 onClick={handleTicketBuilder}
                 data-testid="story-generate-btn"
               >
-                Improve with AI
+                {isImproving ? 'Improving...' : 'Improve with AI'}
               </ActionButton>
               <ActionButton
                 color="primary"
