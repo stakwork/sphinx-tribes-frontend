@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useHistory, useParams } from 'react-router-dom';
-import { ActionContent, ChatMessage, VisualContent, TextContent, Artifact } from 'store/interface';
+import { ChatMessage, Artifact } from 'store/interface';
 import { useStores } from 'store';
 import { createSocketInstance } from 'config/socket';
 import SidebarComponent from 'components/common/SidebarComponent.tsx';
@@ -644,66 +644,13 @@ export const HiveChatView: React.FC = observer(() => {
 
   useEffect(() => {
     const logArtifacts = async () => {
-      if (chatId) {
+      if (chatId && isArtifactLoggingEnabled) {
         const res = await chat.loadArtifactsForChat(chatId);
         console.log('Artifacts for that chat', res);
       }
     };
     logArtifacts();
-  }, [chat, chatId]);
-
-  useEffect(() => {
-    const logArtifacts = async () => {
-      if (!isArtifactLoggingEnabled || !chatId) return;
-
-      try {
-        const artifacts = chat.getChatArtifacts(chatId) || [];
-
-        console.group('Chat Artifacts Debug Info');
-        console.log('Chat ID:', chatId);
-        console.log('Total Artifacts:', artifacts.length);
-
-        artifacts.forEach((artifact, index) => {
-          console.group(`Artifact ${index + 1}`);
-          console.log('ID:', artifact.id);
-          console.log('Type:', artifact.type);
-          console.log('Message ID:', artifact.messageId);
-          console.log('Content:', artifact.content);
-
-          if (artifact.type === 'text') {
-            const textContent = artifact.content as TextContent;
-            console.log('Text Type:', textContent.text_type);
-          } else if (artifact.type === 'visual') {
-            const visualContent = artifact.content as VisualContent;
-            console.log('Examples:', visualContent.examples?.length || 0);
-          } else if (artifact.type === 'action') {
-            const actionContent = artifact.content as ActionContent;
-            console.log('Action Text:', actionContent.actionText);
-            console.log('Options:', actionContent.options);
-          }
-
-          console.groupEnd();
-        });
-
-        const codeExamples = chat.getAllCodeExamplesForChat(chatId);
-        console.group('Code Examples');
-        console.log('Total Code Examples:', codeExamples.length);
-        codeExamples.forEach((example, index) => {
-          console.group(`Code Example ${index + 1}`);
-          console.log('Message ID:', example.messageId);
-          console.log('Content:', example.content);
-          console.groupEnd();
-        });
-        console.groupEnd();
-
-        console.groupEnd();
-      } catch (error) {
-        console.error('Error logging artifacts:', error);
-      }
-    };
-
-    logArtifacts();
-  }, [chatId, chat, isArtifactLoggingEnabled]);
+  }, [chat, chatId, isArtifactLoggingEnabled]);
 
   if (loading) {
     return (
