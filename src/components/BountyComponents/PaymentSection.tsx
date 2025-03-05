@@ -140,7 +140,7 @@ const PaymentSection: React.FC = () => {
         <CardsContainer>
           <Card>
             <IconWrapper>
-              <Icon src="/static/icons/lightningcircle.svg" alt="Bitcoin icon" />
+              <Icon src="/static/icons/lightningcircle.svg" alt="Lightning icon" />
             </IconWrapper>
             <h3>Instant payments after approval.</h3>
             <p>
@@ -152,7 +152,7 @@ const PaymentSection: React.FC = () => {
 
           <Card>
             <IconWrapper>
-              <Icon src="/static/icons/keys.svg" alt="Calendar icon" />
+              <Icon src="/static/icons/keys.svg" alt="Keys icon" />
             </IconWrapper>
             <h3>Full control of your earnings.</h3>
             <p>
@@ -164,7 +164,7 @@ const PaymentSection: React.FC = () => {
 
           <Card>
             <IconWrapper>
-              <LightningIcon src="/static/icons/sun.svg" alt="Lightning icon" />
+              <LightningIcon src="/static/icons/sun.svg" alt="Sunshine icon" />
             </IconWrapper>
             <h3>No hidden costs or surprises.</h3>
             <p>
