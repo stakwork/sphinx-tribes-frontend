@@ -546,33 +546,32 @@ export const HiveChatView: React.FC = observer(() => {
       if (chatId && isArtifactLoggingEnabled) {
         const res = await chat.loadArtifactsForChat(chatId);
         console.log('Artifacts for that chat', res);
-      }
-    };
-    logArtifacts();
-  }, [chat, chatId, isArtifactLoggingEnabled]);
+        const systemMessages = messages?.filter((msg) => msg.role !== 'user');
+        const lastSystemMessageId =
+          systemMessages?.length > 0 ? systemMessages[systemMessages.length - 1].id : null;
 
-  useEffect(() => {
-    const processArtifacts = async () => {
-      if (chatHistoryRef.current) {
-        chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
-      }
-
-      const systemMessages = messages?.filter((msg) => msg.role !== 'user');
-      const lastSystemMessageId =
-        systemMessages?.length > 0 ? systemMessages[systemMessages.length - 1].id : null;
-
-      if (lastSystemMessageId) {
-        const artifacts = chat.getMessageArtifacts(lastSystemMessageId);
-        for (const artifact of artifacts) {
-          if (artifact.type === 'action' && chat.isActionContent(artifact.content)) {
-            setActionArtifact(artifact);
+        if (lastSystemMessageId) {
+          const artifacts = chat.getMessageArtifacts(lastSystemMessageId);
+          for (const artifact of artifacts) {
+            if (artifact.type === 'action' && chat.isActionContent(artifact.content)) {
+              setActionArtifact(artifact);
+            }
           }
         }
       }
     };
+    logArtifacts();
+  }, [chat, chatId, isArtifactLoggingEnabled, messages]);
+
+  useEffect(() => {
+    const processArtifacts = () => {
+      if (chatHistoryRef.current) {
+        chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
+      }
+    };
 
     processArtifacts();
-  }, [chat, chatId, messages, chat.messageArtifacts]);
+  }, []);
 
   const handleUploadComplete = (url: string) => {
     setPdfUrl(url);
