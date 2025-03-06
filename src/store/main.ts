@@ -59,7 +59,8 @@ import {
   QuickBountiesResponse,
   QuickTicketsResponse,
   BulkConversionResponse,
-  BulkTicketToBountyRequest
+  BulkTicketToBountyRequest,
+  Featurecall
 } from './interface';
 
 function makeTorSaveURL(host: string, key: string) {
@@ -4719,7 +4720,7 @@ export class MainStore {
     }
   }
 
-  async createStakworkProject(chatQuestion: string): Promise<any | null> {
+  async createStakworkProject(chatQuestion: string): Promise<Featurecall | null> {
     try {
       if (!uiStore.meInfo) return null;
       const info = uiStore.meInfo;

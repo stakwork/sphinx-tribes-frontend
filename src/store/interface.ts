@@ -747,3 +747,11 @@ export interface BulkConversionResponse {
   success: boolean;
   message: string;
 }
+
+export interface Featurecall {
+  id: string;
+  workspace_id: string;
+  url: string;
+  created_at: string;
+  updated_at: string;
+}
