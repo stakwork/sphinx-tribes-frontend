@@ -188,7 +188,7 @@ export class FeaturesWorkspaceStore {
         runInAction(() => {
           const feature = this.state.features.get(uuid);
           if (feature) {
-            feature.feat_status = 'completed';
+            feature.feat_status = 'active';
             this.state.features.set(uuid, feature);
           }
         });
@@ -196,7 +196,7 @@ export class FeaturesWorkspaceStore {
       }
       return false;
     } catch (error) {
-      this.setError(error instanceof Error ? error.message : 'Failed to complete feature');
+      this.setError(error instanceof Error ? error.message : 'Failed to activate feature');
       return false;
     } finally {
       this.setLoading(false);
