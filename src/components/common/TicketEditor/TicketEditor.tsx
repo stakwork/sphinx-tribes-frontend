@@ -357,11 +357,23 @@ const TicketEditor = observer(
     }, [groupTickets, latestTicket?.version]);
 
     useEffect(() => {
-      const isChanged =
+      const hasChanges =
         ticketData.name.trim() !== versionTicketData.name.trim() ||
-        ticketData.description.trim() !== versionTicketData.description.trim();
-      setIsButtonDisabled(!isChanged);
-    }, [ticketData, versionTicketData]);
+        ticketData.description.trim() !== versionTicketData.description.trim() ||
+        ticketData.amount !== versionTicketData.amount ||
+        ticketData.category !== versionTicketData.category;
+
+      setIsButtonDisabled(!hasChanges || !versionTicketData.name.trim());
+    }, [
+      ticketData.name,
+      ticketData.description,
+      ticketData.amount,
+      ticketData.category,
+      versionTicketData.name,
+      versionTicketData.description,
+      versionTicketData.amount,
+      versionTicketData.category
+    ]);
 
     useEffect(() => {
       if (logs.length > 0) {
@@ -370,6 +382,11 @@ const TicketEditor = observer(
         setLastLogLine('');
       }
     }, [logs]);
+
+    useEffect(() => {
+      const latestTicket = phaseTicketStore.getTicket(ticketData.uuid);
+      setVersionTicketData(latestTicket || ticketData || DEFAULT_TICKET);
+    }, [ticketData.uuid, ticketData]);
 
     const addUpdateSuccessToast = () => {
       setToasts([
@@ -443,6 +460,8 @@ const TicketEditor = observer(
       } catch (error) {
         console.error('Error updating ticket:', error);
         addUpdateErrorToast();
+      } finally {
+        setIsButtonDisabled(false);
       }
     };
 
@@ -484,8 +503,8 @@ const TicketEditor = observer(
             status: 'DRAFT' as TicketStatus,
             author: 'AGENT' as Author,
             author_id: 'TICKET_BUILDER',
-            version: ticketData.version,
             amount: versionTicketData.amount,
+            version: (ticketData.version || 1) + 1,
             category: versionTicketData.category,
             ticket_group: ticketData.ticket_group || ticketData.uuid,
             mode: isThinking
@@ -494,27 +513,15 @@ const TicketEditor = observer(
 
         const response = await main.sendTicketForReview(ticketPayload);
 
-        if (response?.ticket_id) {
-            const updatedTicketData = await main.getTicketDetails(response?.ticket_id);
-
-            workspaceTicketStore.addTicket(updatedTicketData);
-            phaseTicketStore.addTicket(updatedTicketData);
-
-
-            //to ensure tickets are added to stores first
-           setTimeout(() => {
-              setVersionTicketData(updatedTicketData);
-              setSelectedVersion(updatedTicketData.version);
-              onTicketUpdate?.(updatedTicketData);
-              addSuccessToast();
-            },100);
+        if (response) {
+          addSuccessToast();
         } else {
           throw new Error('Failed to send ticket for review');
         }
       } catch (error) {
         console.error('Error in ticket builder:', error);
         addErrorToast();
-      }finally{
+      } finally {
         setIsImproving(false);
       }
     };
