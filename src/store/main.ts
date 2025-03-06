@@ -4720,7 +4720,7 @@ export class MainStore {
     }
   }
 
-  async createStakworkProject(chatQuestion: string): Promise<Featurecall | null> {
+  async createStakworkProject(chatQuestion: string): Promise<any | null> {
     try {
       if (!uiStore.meInfo) return null;
       const info = uiStore.meInfo;
@@ -4784,7 +4784,7 @@ export class MainStore {
     }
   }
 
-  async getFeatureCalls(workspace_uuid: string): Promise<any> {
+  async getFeatureCalls(workspace_uuid: string): Promise<Featurecall | null> {
     try {
       if (!uiStore.meInfo) {
         throw new Error('No user info found');
@@ -4828,7 +4828,7 @@ export class MainStore {
     }
   }
 
-  async createFeatureCall(workspace_uuid: string): Promise<any> {
+  async createFeatureCall(workspace_uuid: string): Promise<Featurecall | null> {
     try {
       if (!uiStore.meInfo) return null;
       const info = uiStore.meInfo;
