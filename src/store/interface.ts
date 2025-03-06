@@ -529,6 +529,7 @@ export interface ActionContent {
 export interface Artifact {
   id: string;
   messageId: string;
+  message_id?: string;
   type: 'text' | 'visual' | 'action';
   content?: ActionContent | TextContent | VisualContent;
 }
