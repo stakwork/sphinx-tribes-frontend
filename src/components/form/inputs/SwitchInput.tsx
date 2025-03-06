@@ -43,12 +43,34 @@ export default function SwitchInput({
   handleFocus,
   extraHTML,
   disabled,
-  style = {}
+  style = {},
+  values
 }: Props) {
   useEffect(() => {
-    // if value not initiated, default value true
-    if (name === 'show' && value === undefined) handleChange(true);
-  }, [handleChange, name, value]);
+    if (name === 'show' && value === undefined) {
+      handleChange(true);
+    }
+  }, [name, value, handleChange]);
+
+  const shouldDisableSwitch = () => {
+    if (name === 'show') {
+      return values?.access_restriction === 'workspace';
+    }
+    return disabled;
+  };
+
+  useEffect(() => {
+    if (name === 'show' && values?.access_restriction !== undefined) {
+      const isWorkspace = values.access_restriction === 'workspace';
+      const isNoRestriction = values.access_restriction === '';
+
+      if (isWorkspace && value !== false) {
+        handleChange(false);
+      } else if (isNoRestriction && !value) {
+        handleChange(true);
+      }
+    }
+  }, [values?.access_restriction, value, handleChange, name]);
 
   const color = colors['light'];
 
@@ -61,12 +83,14 @@ export default function SwitchInput({
           label=""
           checked={value}
           onChange={(e: any) => {
-            handleChange(e.target.checked);
+            if (!shouldDisableSwitch()) {
+              handleChange(e.target.checked);
+            }
           }}
           onBlur={handleBlur}
           onFocus={handleFocus}
           compressed
-          disabled={disabled}
+          disabled={shouldDisableSwitch()}
           style={{
             border: 'none',
             background: 'inherit'

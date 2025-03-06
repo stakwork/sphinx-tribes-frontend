@@ -28,4 +28,8 @@ export interface Props {
   setColor?: (data: boolean, value: string) => void;
   isOpen?: boolean;
   workspaceid?: string;
+  values?: {
+    access_restriction?: string;
+    [key: string]: any;
+  };
 }

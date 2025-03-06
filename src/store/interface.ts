@@ -120,6 +120,7 @@ export interface PersonBounty {
   feature_uuid?: string;
   phase_uuid?: string;
   text_snippet_id?: string;
+  access_restriction?: string;
 }
 
 export type WorkspaceTransactionType = 'deposit' | 'payment' | 'withdraw' | 'failed' | 'pending';
