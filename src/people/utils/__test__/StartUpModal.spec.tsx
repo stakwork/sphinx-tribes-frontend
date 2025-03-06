@@ -255,4 +255,182 @@ describe('StartUpModal', () => {
 
     expect(screen.getByTestId('qrcode')).toBeInTheDocument();
   });
+
+  describe('DisplayQRCode Component', () => {
+    it('renders QR code when connection_string is valid', async () => {
+      (api.get as jest.Mock).mockResolvedValueOnce({ connection_string: 'test-connection-string' });
+
+      render(
+        <StartUpModal
+          closeModal={mockCloseModal}
+          buttonColor="primary"
+          dataObject={mockDataObject}
+        />
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByText('Reveal Connection Code'));
+      });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('qrcode')).toBeInTheDocument();
+        expect(
+          screen.getByText('Install the Sphinx app on your phone and then scan this QRcode')
+        ).toBeInTheDocument();
+      });
+    });
+
+    it('renders out of codes message when connection_string is undefined', async () => {
+      (api.get as jest.Mock).mockResolvedValueOnce({ connection_string: undefined });
+
+      render(
+        <StartUpModal
+          closeModal={mockCloseModal}
+          buttonColor="primary"
+          dataObject={mockDataObject}
+        />
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByText('Reveal Connection Code'));
+      });
+
+      await waitFor(() => {
+        expect(
+          screen.getByText('We are out of codes to sign up! Please check again later.')
+        ).toBeInTheDocument();
+      });
+    });
+
+    it('renders out of codes message when connection_string is null', async () => {
+      (api.get as jest.Mock).mockResolvedValueOnce({ connection_string: null });
+
+      render(
+        <StartUpModal
+          closeModal={mockCloseModal}
+          buttonColor="primary"
+          dataObject={mockDataObject}
+        />
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByText('Reveal Connection Code'));
+      });
+
+      await waitFor(() => {
+        expect(
+          screen.getByText('We are out of codes to sign up! Please check again later.')
+        ).toBeInTheDocument();
+      });
+    });
+
+    it('renders out of codes message when connection_string is empty', async () => {
+      (api.get as jest.Mock).mockResolvedValueOnce({ connection_string: '' });
+
+      render(
+        <StartUpModal
+          closeModal={mockCloseModal}
+          buttonColor="primary"
+          dataObject={mockDataObject}
+        />
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByText('Reveal Connection Code'));
+      });
+
+      await waitFor(() => {
+        expect(
+          screen.getByText('We are out of codes to sign up! Please check again later.')
+        ).toBeInTheDocument();
+      });
+    });
+
+    it('handles back button click and prevents event propagation', async () => {
+      (api.get as jest.Mock).mockResolvedValueOnce({ connection_string: 'test-connection-string' });
+      const mockStopPropagation = jest.fn();
+
+      render(
+        <StartUpModal
+          closeModal={mockCloseModal}
+          buttonColor="primary"
+          dataObject={mockDataObject}
+        />
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByText('Reveal Connection Code'));
+      });
+
+      const backButton = screen.getByText('Back');
+      fireEvent.click(backButton, { stopPropagation: mockStopPropagation });
+
+      waitFor(() => {
+        expect(mockStopPropagation).toHaveBeenCalled();
+        expect(screen.getByTestId('step-two')).toBeInTheDocument();
+      });
+    });
+
+    it('verifies back button styling and props', async () => {
+      (api.get as jest.Mock).mockResolvedValueOnce({ connection_string: 'test-connection-string' });
+
+      render(
+        <StartUpModal
+          closeModal={mockCloseModal}
+          buttonColor="primary"
+          dataObject={mockDataObject}
+        />
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByText('Reveal Connection Code'));
+      });
+
+      const backButton = screen.getByText('Back');
+      expect(backButton).toHaveStyle({ color: '#5F6368' });
+      waitFor(() => {
+        expect(backButton.parentElement).toHaveStyle({ marginTop: '0px' });
+      });
+    });
+
+    it('maintains consistent rendered output with valid connection_string', async () => {
+      (api.get as jest.Mock).mockResolvedValueOnce({ connection_string: 'test-connection-string' });
+
+      const { container } = render(
+        <StartUpModal
+          closeModal={mockCloseModal}
+          buttonColor="primary"
+          dataObject={mockDataObject}
+        />
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByText('Reveal Connection Code'));
+      });
+
+      await waitFor(() => {
+        expect(container.querySelector('[data-testid="qrcode"]')).toMatchSnapshot();
+      });
+    });
+
+    it('maintains consistent rendered output with falsy connection_string', async () => {
+      (api.get as jest.Mock).mockResolvedValueOnce({ connection_string: '' });
+
+      const { container } = render(
+        <StartUpModal
+          closeModal={mockCloseModal}
+          buttonColor="primary"
+          dataObject={mockDataObject}
+        />
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByText('Reveal Connection Code'));
+      });
+
+      await waitFor(() => {
+        expect(container.querySelector('[data-testid="qrcode"]')).toMatchSnapshot();
+      });
+    });
+  });
 });
