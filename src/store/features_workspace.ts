@@ -1,5 +1,5 @@
 import { makeAutoObservable, runInAction } from 'mobx';
-import { Feature, CreateFeatureInput, QueryParams } from './interface';
+import { Feature, CreateFeatureInput, QueryParams, FeatureStatus } from './interface';
 import { mainStore } from './main';
 
 export interface IFeatureWorkspaceState {
@@ -57,6 +57,39 @@ export class FeaturesWorkspaceStore {
     }
   }
 
+  async updateFeatureStatus(
+    uuid: string,
+    status: FeatureStatus,
+    errorMessage = `Failed to update feature status to ${status}`
+  ): Promise<boolean> {
+    if (!Object.values(FeatureStatus).includes(status)) return false;
+
+    const feature = this.state.features.get(uuid);
+    if (!feature) return false;
+
+    try {
+      this.setLoading(true);
+      const result = await mainStore.updateFeatureStatus(uuid, status);
+
+      if (result) {
+        runInAction(() => {
+          const feature = this.state.features.get(uuid);
+          if (feature) {
+            feature.feat_status = status;
+            this.state.features.set(uuid, feature);
+          }
+        });
+        return true;
+      }
+      return false;
+    } catch (error) {
+      this.setError(error instanceof Error ? error.message : errorMessage);
+      return false;
+    } finally {
+      this.setLoading(false);
+    }
+  }
+
   async fetchFeatureByUuid(uuid: string): Promise<void> {
     try {
       this.setLoading(true);
@@ -107,30 +140,6 @@ export class FeaturesWorkspaceStore {
     }
   }
 
-  async archiveFeature(uuid: string): Promise<boolean> {
-    try {
-      this.setLoading(true);
-      const result = await mainStore.archiveFeature(uuid);
-
-      if (result) {
-        runInAction(() => {
-          const feature = this.state.features.get(uuid);
-          if (feature) {
-            feature.feat_status = 'archived';
-            this.state.features.set(uuid, feature);
-          }
-        });
-        return true;
-      }
-      return false;
-    } catch (error) {
-      this.setError(error instanceof Error ? error.message : 'Failed to archive feature');
-      return false;
-    } finally {
-      this.setLoading(false);
-    }
-  }
-
   async updateFeaturePriority(uuid: string, priority: number): Promise<void> {
     try {
       this.setLoading(true);
@@ -165,7 +174,7 @@ export class FeaturesWorkspaceStore {
     this.state.error = null;
   }
 
-  private setError(error: string): void {
+  setError(error: string): void {
     this.state.error = error;
     this.state.loading = false;
   }
