@@ -10,6 +10,7 @@ import { widgetConfigs } from '../../people/utils/Constants';
 import { AlreadyDeleted } from '../../components/common/AfterDeleteNotification/AlreadyDeleted';
 import { useStores } from '../../store';
 import { PersonBounty } from '../../store/interface';
+import { AccessDenied } from '../../components/common/AccessDenied';
 
 const color = colors['light'];
 const focusedDesktopModalStyles = widgetConfigs.bounties.modalStyle;
@@ -32,6 +33,7 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
   const [activeBounty, setActiveBounty] = useState<PersonBounty[]>([]);
   const [visible, setVisible] = useState(false);
   const [isDeleted, setisDeleted] = useState(false);
+  const [accessDenied, setAccessDenied] = useState(false);
 
   const [toasts, setToasts]: any = useState([]);
 
@@ -79,6 +81,18 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
       bountyIndex = await main.getBountyIndexById(Number(search.created));
     }
 
+    if (bounty && bounty.length > 0 && bounty[0].body.access_restriction === 'workspace') {
+      const workspaceUser = await main.getWorkspaceUser(bounty[0].body.workspace_uuid);
+      const isWorkspaceAdmin = bounty[0].organization?.owner_pubkey === ui.meInfo?.owner_pubkey;
+      const isWorkspaceMember = workspaceUser?.owner_pubkey === ui.meInfo?.owner_pubkey;
+
+      if (!workspaceUser || (!isWorkspaceAdmin && !isWorkspaceMember)) {
+        setAccessDenied(true);
+        setVisible(false);
+        return;
+      }
+    }
+
     const connectPerson = bounty && bounty.length ? bounty[0].person : [];
 
     setPublicFocusIndex(bountyIndex);
@@ -88,9 +102,9 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
     const isDeleted = bounty && bounty.length === 0;
     setisDeleted(isDeleted);
     setActiveBounty(bounty);
-
+    setAccessDenied(false);
     setVisible(visible);
-  }, [bountyId, main, search]);
+  }, [bountyId, main, search, ui.meInfo]);
 
   useEffect(() => {
     getBounty();
@@ -162,14 +176,13 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
   if (isMobile) {
     return (
       <>
-        {isDeleted ? (
+        {accessDenied ? (
+          <Modal visible={true} fill={true}>
+            <AccessDenied onClose={goBack} />
+          </Modal>
+        ) : isDeleted ? (
           <Modal visible={isDeleted} fill={true}>
-            <AlreadyDeleted
-              onClose={function (): void {
-                throw new Error('Function not implemented.');
-              }}
-              isDeleted={true}
-            />
+            <AlreadyDeleted onClose={goBack} isDeleted={true} />
           </Modal>
         ) : (
           visible && (
@@ -202,13 +215,31 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
 
   return (
     <>
-      {isDeleted ? (
+      {accessDenied ? (
+        <Modal
+          visible={true}
+          envStyle={{
+            background: 'white',
+            width: '800px',
+            height: 'auto',
+            borderRadius: '16px',
+            boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
+            position: 'relative',
+            padding: '24px'
+          }}
+          style={{
+            background: 'rgba(0, 0, 0, 0.5)'
+          }}
+          overlayClick={goBack}
+        >
+          <AccessDenied onClose={goBack} />
+        </Modal>
+      ) : isDeleted ? (
         <Modal
           visible={isDeleted}
           envStyle={{
             background: color.pureWhite,
             ...focusedDesktopModalStyles,
-
             right: '-50px',
             borderRadius: '50%'
           }}
