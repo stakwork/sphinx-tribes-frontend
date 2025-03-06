@@ -312,6 +312,7 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
   const [isOpenPaymentConfirmation, setIsOpenPaymentConfirmation] = React.useState(false);
   const [activeBounty, setActiveBounty] = React.useState<any[]>([]);
   const [bountyID, setBountyID] = useState<number>();
+  const [featureCalls, setFeatureCalls] = useState<any[]>([]);
 
   let interval: number;
 
@@ -340,10 +341,6 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
       default:
         break;
     }
-  };
-
-  const removeToast = () => {
-    setToasts([]);
   };
 
   const getBounty = useCallback(async () => {
@@ -464,6 +461,23 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
     };
     fetchFeatureName();
   }, [featureUuid]);
+
+  useEffect(() => {
+    const fetchFeatureCalls = async () => {
+      if (workspaceUuid) {
+        try {
+          const calls = await main.getFeatureCalls(workspaceUuid);
+          if (calls) {
+            setFeatureCalls(calls);
+          }
+        } catch (error) {
+          console.error('Error fetching feature calls:', error);
+        }
+      }
+    };
+
+    fetchFeatureCalls();
+  }, [workspaceUuid, main]);
 
   const togglePhase = (phaseID: string) => {
     setExpandedPhases((prev) => ({
@@ -738,6 +752,63 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
     setIsOpenPaymentConfirmation(true);
   };
 
+  const handleFeatureCallClick = async () => {
+    try {
+      if (!featureCalls.length) {
+        setToasts([
+          {
+            id: `${Date.now()}-feature-call-error`,
+            title: 'Feature Call',
+            color: 'danger',
+            text: 'Feature call not configured'
+          }
+        ]);
+        return;
+      }
+
+      const featureCall = featureCalls[0];
+
+      if (!featureCall?.url) {
+        setToasts([
+          {
+            id: `${Date.now()}-feature-call-error`,
+            title: 'Feature Call',
+            color: 'danger',
+            text: 'Feature call not configured'
+          }
+        ]);
+        return;
+      }
+
+      // Validate URL format
+      try {
+        new URL(featureCall.url);
+      } catch (e) {
+        setToasts([
+          {
+            id: `${Date.now()}-feature-call-error`,
+            title: 'Feature Call',
+            color: 'danger',
+            text: 'Invalid URL format'
+          }
+        ]);
+        return;
+      }
+
+      window.open(featureCall.url, '_blank');
+    } catch (error) {
+      console.error('Error handling feature call:', error);
+      setToasts([
+        {
+          id: `${Date.now()}-feature-call-error`,
+          title: 'Feature Call',
+          color: 'danger',
+          text: error instanceof Error ? error.message : 'Unable to load feature call'
+        }
+      ]);
+    }
+  };
+
   return (
     <>
       <MainContainer>
@@ -884,6 +955,11 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
               })
             )}
             <BottomButtonContainer>
+              {featureCalls.length > 0 && featureCalls[0]?.url && (
+                <FeatureBacklogButton onClick={handleFeatureCallClick}>
+                  Start Feature Call
+                </FeatureBacklogButton>
+              )}
               <FeatureBacklogButton onClick={handleFeatureBacklogClick}>
                 Feature Backlog
               </FeatureBacklogButton>
@@ -899,7 +975,11 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
             onConfirmPayment={handlePayment}
           />
         )}
-        <EuiGlobalToastList toasts={toasts} dismissToast={removeToast} toastLifeTimeMs={6000} />
+        <EuiGlobalToastList
+          toasts={toasts}
+          dismissToast={() => setToasts([])}
+          toastLifeTimeMs={5000}
+        />
         {showAddPhaseModal && (
           <AddPhaseModal
             onSave={handleCreatePhase}
@@ -910,12 +990,6 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
             }}
           />
         )}
-
-        <EuiGlobalToastList
-          toasts={toasts}
-          dismissToast={() => setToasts([])}
-          toastLifeTimeMs={3000}
-        />
       </MainContainer>
     </>
   );

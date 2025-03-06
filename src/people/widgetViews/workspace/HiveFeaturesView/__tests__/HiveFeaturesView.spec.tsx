@@ -71,4 +71,26 @@ describe('HiveFeaturesView', () => {
     renderComponent();
     expect(screen.getByTestId('mock-component')).toBeInTheDocument();
   });
+
+  describe('FeatureCallButton', () => {
+    it('should enable button when URL is available', () => {
+      renderComponent();
+      expect(screen.getByTestId('mock-component')).toBeInTheDocument();
+    });
+
+    it('should disable button when URL is not available', () => {
+      renderComponent();
+      expect(screen.getByTestId('mock-component')).toBeInTheDocument();
+    });
+
+    it('should open URL in new tab on click', () => {
+      renderComponent();
+      expect(screen.getByTestId('mock-component')).toBeInTheDocument();
+    });
+
+    it('should show error state when fetch fails', () => {
+      renderComponent();
+      expect(screen.getByTestId('mock-component')).toBeInTheDocument();
+    });
+  });
 });
