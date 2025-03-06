@@ -354,6 +354,26 @@ export const HiveChatView: React.FC = observer(() => {
     }
   }, [chat, chatId, ui]);
 
+  useEffect(() => {
+    const refreshChatOnFocus = async () => {
+      try {
+        if (document.visibilityState === 'visible') {
+          await refreshChatHistory();
+        }
+      } catch (error) {
+        console.error('Error refreshing chat history on focus:', error);
+      }
+    };
+
+    window.addEventListener('visibilitychange', refreshChatOnFocus);
+    window.addEventListener('focus', refreshChatOnFocus);
+
+    return () => {
+      window.removeEventListener('visibilitychange', refreshChatOnFocus);
+      window.removeEventListener('focus', refreshChatOnFocus);
+    };
+  }, [refreshChatHistory]);
+
   const updateChatTitle = async (
     chatId: string,
     uuid: string,
