@@ -173,11 +173,6 @@ const PhasePlannerView: React.FC = observer(() => {
 
       try {
         const data = JSON.parse(event.data);
-<<<<<<< HEAD
-        // Log parsed data
-        console.log('Parsed websocket message:', data);
-=======
->>>>>>> dc7b5a9 (fix: solved ticket update issues from ws)
 
         if (data.msg === SOCKET_MSG.user_connect) {
           const sessionId = data.body || localStorage.getItem('websocket_token');
@@ -186,8 +181,6 @@ const PhasePlannerView: React.FC = observer(() => {
           return;
         }
 
-<<<<<<< HEAD
-=======
         if (data.ticket) {
           const updatedTicket = data.ticket;
           if (updatedTicket.UUID) {
@@ -206,7 +199,6 @@ const PhasePlannerView: React.FC = observer(() => {
           setLogs((prevLogs) => [...prevLogs, newLogEntry]);
         }
 
->>>>>>> dc7b5a9 (fix: solved ticket update issues from ws)
         if (data.action === 'swrun' && data.message && data.ticketDetails?.ticketUUID) {
           try {
             const stakworkId = data.message.replace(
