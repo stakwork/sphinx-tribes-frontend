@@ -10,6 +10,7 @@ interface styledProps {
 
 const OuterContainer = styled.div<styledProps>`
   box-shadow: 0px 1px 2px ${(p: any) => p.color && p.color.black100} !important ;
+  margin-top: 10px;
 `;
 export default function SelectInput({ label, options, value, handleChange, testId }: Props) {
   const color = colors['light'];

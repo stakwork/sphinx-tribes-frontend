@@ -779,6 +779,20 @@ export const wantedCodingTaskSchema: FormField[] = [
     type: 'textarea'
   },
   {
+    name: 'access_restriction',
+    label: 'Restrict Access to',
+    type: 'select',
+    options: [
+      { label: 'No Restriction', value: '' },
+      { label: 'Workspace', value: 'workspace' },
+      { label: 'Owner', value: 'owner' },
+      { label: 'Assigned', value: 'assigned' },
+      { label: 'Admins', value: 'admins' }
+    ],
+    validator: strValidatorNotRequired,
+    testId: 'Restrict Access'
+  },
+  {
     name: 'show',
     label: 'Show to public',
     type: 'switch'

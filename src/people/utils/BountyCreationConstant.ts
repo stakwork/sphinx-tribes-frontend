@@ -56,7 +56,7 @@ export const BountyDetailsCreationData = {
     heading: 'Price and Estimate',
     sub_heading: ' ',
     schema: ['price', 'estimated_session_length', 'estimated_completion_date'],
-    schema2: ['tribe', 'deliverables', 'show'],
+    schema2: ['tribe', 'deliverables', 'access_restriction', 'show'],
     required: ['price'],
     outerContainerStyle: {
       minWidth: '712px', // Retains the current minimum width
