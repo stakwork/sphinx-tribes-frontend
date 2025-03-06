@@ -522,6 +522,16 @@ export const HiveChatView: React.FC = observer(() => {
   const messages = chat.chatMessages[chatId];
 
   useEffect(() => {
+    const logArtifacts = async () => {
+      if (chatId && isArtifactLoggingEnabled) {
+        const res = await chat.loadArtifactsForChat(chatId);
+        console.log('Artifacts for that chat', res);
+      }
+    };
+    logArtifacts();
+  }, [chat, chatId, isArtifactLoggingEnabled]);
+
+  useEffect(() => {
     const processArtifacts = async () => {
       if (chatHistoryRef.current) {
         chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
@@ -542,7 +552,7 @@ export const HiveChatView: React.FC = observer(() => {
     };
 
     processArtifacts();
-  }, [chat, chatId, messages]);
+  }, [chat, chatId, messages, chat.messageArtifacts]);
 
   const handleUploadComplete = (url: string) => {
     setPdfUrl(url);
@@ -642,16 +652,6 @@ export const HiveChatView: React.FC = observer(() => {
     [setIsBuild]
   );
 
-  useEffect(() => {
-    const logArtifacts = async () => {
-      if (chatId && isArtifactLoggingEnabled) {
-        const res = await chat.loadArtifactsForChat(chatId);
-        console.log('Artifacts for that chat', res);
-      }
-    };
-    logArtifacts();
-  }, [chat, chatId, isArtifactLoggingEnabled]);
-
   if (loading) {
     return (
       <Container collapsed={collapsed}>
@@ -748,7 +748,7 @@ export const HiveChatView: React.FC = observer(() => {
                 </MessageBubble>
 
                 {actionArtifact &&
-                  actionArtifact.messageId === msg.id &&
+                  actionArtifact.message_id === msg.id &&
                   chat.isActionContent(actionArtifact.content) && (
                     <MessageBubble isUser={msg.role === 'user'}>
                       {renderMarkdown(actionArtifact?.content?.actionText, {
