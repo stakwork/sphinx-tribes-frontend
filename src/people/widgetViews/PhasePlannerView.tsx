@@ -169,13 +169,15 @@ const PhasePlannerView: React.FC = observer(() => {
     };
 
     socket.onmessage = async (event: MessageEvent) => {
-      // Log raw message data
       console.log('Raw websocket message received:', event.data);
 
       try {
         const data = JSON.parse(event.data);
+<<<<<<< HEAD
         // Log parsed data
         console.log('Parsed websocket message:', data);
+=======
+>>>>>>> dc7b5a9 (fix: solved ticket update issues from ws)
 
         if (data.msg === SOCKET_MSG.user_connect) {
           const sessionId = data.body || localStorage.getItem('websocket_token');
@@ -184,6 +186,27 @@ const PhasePlannerView: React.FC = observer(() => {
           return;
         }
 
+<<<<<<< HEAD
+=======
+        if (data.ticket) {
+          const updatedTicket = data.ticket;
+          if (updatedTicket.UUID) {
+            updatedTicket.uuid = updatedTicket.UUID;
+          }
+          phaseTicketStore.addTicket(updatedTicket);
+        }
+
+        if (data.ticketDetails?.ticketUUID) {
+          const newLogEntry: LogEntry = {
+            timestamp: new Date().toISOString(),
+            projectId: data.ticketDetails.projectId || '',
+            ticketUUID: data.ticketDetails.ticketUUID,
+            message: data.message || JSON.stringify(data)
+          };
+          setLogs((prevLogs) => [...prevLogs, newLogEntry]);
+        }
+
+>>>>>>> dc7b5a9 (fix: solved ticket update issues from ws)
         if (data.action === 'swrun' && data.message && data.ticketDetails?.ticketUUID) {
           try {
             const stakworkId = data.message.replace(
@@ -203,12 +226,9 @@ const PhasePlannerView: React.FC = observer(() => {
         }
 
         const ticketMessage = data as TicketMessage;
-        // Log ticket message before processing
-        console.log('Ticket message before processing:', ticketMessage);
 
         switch (ticketMessage.action) {
           case 'message':
-            console.log('Received ticket message:', ticketMessage.message);
             console.log('Ticket details:', {
               broadcastType: ticketMessage.broadcastType,
               sourceSessionID: ticketMessage.sourceSessionID,
@@ -218,7 +238,6 @@ const PhasePlannerView: React.FC = observer(() => {
             break;
 
           case 'process':
-            console.log('Processing ticket update:', ticketMessage.ticketDetails.ticketUUID);
             await refreshSingleTicket(ticketMessage.ticketDetails.ticketUUID as string);
             break;
         }
