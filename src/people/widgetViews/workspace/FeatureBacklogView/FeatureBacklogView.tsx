@@ -363,6 +363,12 @@ const FeatureBacklogView = observer(() => {
   const handleStatusChange = async (feature: Feature, newStatus: string) => {
     if (newStatus === 'archived') {
       await featuresWorkspaceStore.archiveFeature(feature.uuid);
+    } else if (newStatus === 'completed') {
+      await featuresWorkspaceStore.completeFeature(feature.uuid);
+    } else if (newStatus === 'backlog') {
+      await featuresWorkspaceStore.moveToBacklog(feature.uuid);
+    } else if (newStatus === 'active') {
+      await featuresWorkspaceStore.activeFeature(feature.uuid);
     }
 
     const workspaceFeatures = featuresWorkspaceStore.getWorkspaceFeatures(workspaceUuid);
@@ -463,6 +469,8 @@ const FeatureBacklogView = observer(() => {
                     <option value="all">Status</option>
                     <option value="active">Active</option>
                     <option value="archived">Archived</option>
+                    <option value="completed">Completed</option>
+                    <option value="backlog">Backlog</option>
                   </HeaderStatusSelect>
                 </Th>
               </tr>
@@ -529,6 +537,8 @@ const FeatureBacklogView = observer(() => {
                                 >
                                   <option value="active">Active</option>
                                   <option value="archived">Archived</option>
+                                  <option value="completed">Completed</option>
+                                  <option value="backlog">Backlog</option>
                                 </StatusSelect>
                               </Td>
                             </TableRow>

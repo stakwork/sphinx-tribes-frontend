@@ -415,6 +415,8 @@ export type Author = 'HUMAN' | 'AGENT';
 
 export type TicketCategory = 'Web development' | 'Backend development' | 'Design' | 'Other';
 
+export type FeatureStatus = 'active' | 'archived' | 'completed' | 'backlog';
+
 export const TICKET_CATEGORIES = {
   WEB_DEV: 'Web development',
   BACKEND_DEV: 'Backend development',

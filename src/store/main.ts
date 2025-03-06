@@ -59,7 +59,8 @@ import {
   QuickBountiesResponse,
   QuickTicketsResponse,
   BulkConversionResponse,
-  BulkTicketToBountyRequest
+  BulkTicketToBountyRequest,
+  FeatureStatus
 } from './interface';
 
 function makeTorSaveURL(host: string, key: string) {
@@ -3584,7 +3585,7 @@ export class MainStore {
     }
   }
 
-  async archiveFeature(uuid: string): Promise<any> {
+  async updateFeatureStatus(uuid: string, status: FeatureStatus): Promise<any> {
     try {
       if (!uiStore.meInfo) return null;
       const info = uiStore.meInfo;
@@ -3595,7 +3596,7 @@ export class MainStore {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ status: 'archived' })
+        body: JSON.stringify({ status })
       });
 
       if (!response.ok) {

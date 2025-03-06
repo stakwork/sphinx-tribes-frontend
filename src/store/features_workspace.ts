@@ -110,7 +110,7 @@ export class FeaturesWorkspaceStore {
   async archiveFeature(uuid: string): Promise<boolean> {
     try {
       this.setLoading(true);
-      const result = await mainStore.archiveFeature(uuid);
+      const result = await mainStore.updateFeatureStatus(uuid, 'archived');
 
       if (result) {
         runInAction(() => {
@@ -125,6 +125,78 @@ export class FeaturesWorkspaceStore {
       return false;
     } catch (error) {
       this.setError(error instanceof Error ? error.message : 'Failed to archive feature');
+      return false;
+    } finally {
+      this.setLoading(false);
+    }
+  }
+
+  async completeFeature(uuid: string): Promise<boolean> {
+    try {
+      this.setLoading(true);
+      const result = await mainStore.updateFeatureStatus(uuid, 'completed');
+
+      if (result) {
+        runInAction(() => {
+          const feature = this.state.features.get(uuid);
+          if (feature) {
+            feature.feat_status = 'completed';
+            this.state.features.set(uuid, feature);
+          }
+        });
+        return true;
+      }
+      return false;
+    } catch (error) {
+      this.setError(error instanceof Error ? error.message : 'Failed to complete feature');
+      return false;
+    } finally {
+      this.setLoading(false);
+    }
+  }
+
+  async moveToBacklog(uuid: string): Promise<boolean> {
+    try {
+      this.setLoading(true);
+      const result = await mainStore.updateFeatureStatus(uuid, 'backlog');
+
+      if (result) {
+        runInAction(() => {
+          const feature = this.state.features.get(uuid);
+          if (feature) {
+            feature.feat_status = 'backlog';
+            this.state.features.set(uuid, feature);
+          }
+        });
+        return true;
+      }
+      return false;
+    } catch (error) {
+      this.setError(error instanceof Error ? error.message : 'Failed to move feature to backlog');
+      return false;
+    } finally {
+      this.setLoading(false);
+    }
+  }
+
+  async activeFeature(uuid: string): Promise<boolean> {
+    try {
+      this.setLoading(true);
+      const result = await mainStore.updateFeatureStatus(uuid, 'active');
+
+      if (result) {
+        runInAction(() => {
+          const feature = this.state.features.get(uuid);
+          if (feature) {
+            feature.feat_status = 'completed';
+            this.state.features.set(uuid, feature);
+          }
+        });
+        return true;
+      }
+      return false;
+    } catch (error) {
+      this.setError(error instanceof Error ? error.message : 'Failed to complete feature');
       return false;
     } finally {
       this.setLoading(false);
