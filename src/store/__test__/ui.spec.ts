@@ -942,3 +942,146 @@ describe('UiStore.setUsdToSatsExchangeRate', () => {
     expect(uiStore.usdToSatsExchangeRate).toBe(-3.14159);
   });
 });
+
+describe('setConnectionString', () => {
+  let uiStore: UiStore;
+
+  beforeEach(() => {
+    uiStore = new UiStore();
+  });
+
+  it('Standard Input', () => {
+    const standardString = 'connection-123';
+    uiStore.setConnectionString(standardString);
+    expect(uiStore.connection_string).toBe(standardString);
+  });
+
+  it('Empty String', () => {
+    uiStore.setConnectionString('');
+    expect(uiStore.connection_string).toBe('');
+  });
+
+  it('Very Long String', () => {
+    const longString = 'a'.repeat(10000);
+    uiStore.setConnectionString(longString);
+    expect(uiStore.connection_string).toBe(longString);
+  });
+
+  it('Null Input', () => {
+    uiStore.setConnectionString(null as unknown as string);
+    expect(uiStore.connection_string).toBe(null);
+  });
+
+  it('Undefined Input', () => {
+    uiStore.setConnectionString(undefined as unknown as string);
+    expect(uiStore.connection_string).toBe(undefined);
+  });
+
+  it('Non-String Input', () => {
+    // Number
+    const numberInput = 123;
+    uiStore.setConnectionString(numberInput as unknown as string);
+    expect(uiStore.connection_string).toBe(numberInput);
+
+    // Boolean
+    const boolInput = true;
+    uiStore.setConnectionString(boolInput as unknown as string);
+    expect(uiStore.connection_string).toBe(boolInput);
+
+    // Object
+    const objInput = { key: 'value' };
+    uiStore.setConnectionString(objInput as unknown as string);
+    expect(uiStore.connection_string).toStrictEqual(objInput);
+
+    // Array
+    const arrayInput = ['a', 'b'];
+    uiStore.setConnectionString(arrayInput as unknown as string);
+    expect(uiStore.connection_string).toStrictEqual(arrayInput);
+  });
+
+  it('Special Characters', () => {
+    const specialChars = '!@#$%^&*()_+-=[]{}|;:,.<>?`~';
+    uiStore.setConnectionString(specialChars);
+    expect(uiStore.connection_string).toBe(specialChars);
+
+    const escapeChars = '\n\t\r\b\f\v';
+    uiStore.setConnectionString(escapeChars);
+    expect(uiStore.connection_string).toBe(escapeChars);
+  });
+
+  it('Whitespace Handling', () => {
+    // Leading and trailing whitespace
+    const stringWithWhitespace = '  test string  ';
+    uiStore.setConnectionString(stringWithWhitespace);
+    expect(uiStore.connection_string).toBe(stringWithWhitespace);
+
+    // Multiple spaces
+    const multipleSpaces = 'test   multiple   spaces';
+    uiStore.setConnectionString(multipleSpaces);
+    expect(uiStore.connection_string).toBe(multipleSpaces);
+
+    // Tabs and newlines
+    const tabsAndNewlines = 'test\t\nstring';
+    uiStore.setConnectionString(tabsAndNewlines);
+    expect(uiStore.connection_string).toBe(tabsAndNewlines);
+
+    // Only whitespace
+    const onlyWhitespace = '   \t\n  ';
+    uiStore.setConnectionString(onlyWhitespace);
+    expect(uiStore.connection_string).toBe(onlyWhitespace);
+  });
+
+  it('Non-ASCII Characters', () => {
+    // Unicode characters
+    const unicodeString = '你好世界🌍';
+    uiStore.setConnectionString(unicodeString);
+    expect(uiStore.connection_string).toBe(unicodeString);
+
+    // Emojis
+    const emojiString = '👋🎉🎈🎊';
+    uiStore.setConnectionString(emojiString);
+    expect(uiStore.connection_string).toBe(emojiString);
+
+    // Accented characters
+    const accentedString = 'éèêëāăąçćčďđ';
+    uiStore.setConnectionString(accentedString);
+    expect(uiStore.connection_string).toBe(accentedString);
+  });
+
+  it('Injection Attack Simulation', () => {
+    const sqlInjection = "'; DROP TABLE users; --";
+    uiStore.setConnectionString(sqlInjection);
+    expect(uiStore.connection_string).toBe(sqlInjection);
+
+    const xssAttempt = '<script>alert("XSS")</script>';
+    uiStore.setConnectionString(xssAttempt);
+    expect(uiStore.connection_string).toBe(xssAttempt);
+
+    const commandInjection = '`rm -rf /`';
+    uiStore.setConnectionString(commandInjection);
+    expect(uiStore.connection_string).toBe(commandInjection);
+
+    const htmlEntities = '&lt;div&gt;&amp;&lt;/div&gt;';
+    uiStore.setConnectionString(htmlEntities);
+    expect(uiStore.connection_string).toBe(htmlEntities);
+  });
+
+  it('Multiple Consecutive Calls', () => {
+    uiStore.setConnectionString('first');
+    expect(uiStore.connection_string).toBe('first');
+
+    uiStore.setConnectionString('second');
+    expect(uiStore.connection_string).toBe('second');
+
+    uiStore.setConnectionString('third');
+    expect(uiStore.connection_string).toBe('third');
+  });
+
+  it('Same Value Multiple Times', () => {
+    const value = 'test-string';
+    uiStore.setConnectionString(value);
+    uiStore.setConnectionString(value);
+    uiStore.setConnectionString(value);
+    expect(uiStore.connection_string).toBe(value);
+  });
+});
