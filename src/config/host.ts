@@ -6,6 +6,14 @@ export function getHost(): string {
     return 'people-test.sphinx.chat';
   }
 
+  // codespace urls
+  if (window.location.host.endsWith('-13008.app.github.dev')) {
+    const arr = window.location.host.split('-13008');
+    const codespaceUrl = arr[0]
+    console.log(`${codespaceUrl}-5002.app.github.dev`);
+    return `${codespaceUrl}-5002.app.github.dev`;
+  }
+
   const host = window.location.host.includes('localhost')
     ? window.location.host.includes('localhost:3007')
       ? 'localhost:13000'
@@ -27,5 +35,8 @@ export function getHostIncludingDockerHosts() {
 export const TribesURL = getHost().startsWith('localhost')
   ? `http://${getHost()}`
   : getHost().startsWith('http')
-  ? getHost()
-  : `https://${getHost()}`;
+    ? getHost()
+    : `https://${getHost()}`;
+
+
+// https://obscure-zebra-94rwjg6r9v37pwg.github.dev/
