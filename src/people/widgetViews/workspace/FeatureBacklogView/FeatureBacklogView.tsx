@@ -17,7 +17,7 @@ const MainContainer = styled.div`
   transition:
     margin-left 0.3s ease-in-out,
     width 0.3s ease-in-out;
-  overflow: hidden;
+  overflow: auto;
 `;
 
 const BacklogContainer = styled.div<{ collapsed: boolean }>`
@@ -25,7 +25,6 @@ const BacklogContainer = styled.div<{ collapsed: boolean }>`
   grid-template-columns: 1fr;
   padding: 2rem;
   padding-bottom: 0 !important;
-  background-color: #f8f9fa;
   overflow-y: auto;
   margin-bottom: 50px;
   margin-left: ${({ collapsed }: { collapsed: boolean }) => (collapsed ? '50px' : '250px')};
@@ -50,11 +49,11 @@ const Title = styled.h1`
 `;
 
 const TableContainer = styled.div`
-  background: white;
+  width: 100%;
   border-radius: 8px;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
   margin-bottom: 16%;
-  overflow: visible;
+  overflow: auto;
 `;
 
 const Table = styled.table`
@@ -72,6 +71,8 @@ const TableRow = styled.tr`
   }
   border-bottom: 1px solid #e0e0e0;
   height: 56px;
+  width: 100%;
+  display: table-row;
 `;
 
 const DraggableWrapper = styled.div`
@@ -104,25 +105,25 @@ const Td = styled.td<TdProps>`
   background: white;
 
   &:first-child {
-    width: 100px;
-    min-width: 100px;
+    width: 10%;
+    min-width: 110px;
   }
 
   &:nth-child(2) {
-    width: 350px;
-    min-width: 350px;
+    width: 25%;
+    min-width: 285px;
   }
 
   &:nth-child(3) {
-    width: ${({ collapsed }: any) => (collapsed ? '650px' : '350px')};
-    min-width: ${({ collapsed }: any) => (collapsed ? '650px' : '350px')};
+    width: ${({ collapsed }: any) => (collapsed ? '50%' : '40%')};
+    min-width: 570px;
   }
 
   &:last-child {
-    width: 200px;
-    min-width: 80px;
+    width: 15%;
+    min-width: 150px;
     text-align: right;
-    padding-right: 24px;
+    // padding-right: 24px;
   }
 `;
 
@@ -134,23 +135,23 @@ const Th = styled.th`
   height: 48px;
 
   &:first-child {
-    width: 105px;
-    min-width: 105px;
+    width: 10%;
+    min-width: 80px;
   }
 
   &:nth-child(2) {
-    width: 350px;
-    min-width: 350px;
+    width: 25%;
+    min-width: 150px;
   }
 
   &:nth-child(3) {
-    width: calc(100% - 600px);
-    min-width: 300px;
+    width: 50%;
+    min-width: 200px;
   }
 
   &:last-child {
-    width: 200px;
-    min-width: 200px;
+    width: 15%;
+    min-width: 80px;
     position: relative;
   }
 `;
@@ -546,10 +547,7 @@ const FeatureBacklogView = observer(() => {
                         {(provided: any) => (
                           <DraggableWrapper ref={provided.innerRef} {...provided.draggableProps}>
                             <TableRow 
-                            //set max width for the table row
-                            style={{
-                              maxWidth: '100%',
-                            }}
+                            
                             >
                               <Td>
                                 <PriorityCell>
