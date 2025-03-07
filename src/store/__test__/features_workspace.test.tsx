@@ -169,7 +169,7 @@ describe('FeaturesWorkspaceStore', () => {
       });
     });
   });
-  
+
   describe('updateFeatureStatus', () => {
     beforeEach(() => {
       featuresWorkspaceStore.state.features.set(mockFeature.uuid, mockFeature);
@@ -195,14 +195,14 @@ describe('FeaturesWorkspaceStore', () => {
     it('should handle update errors', async () => {
       const error = new Error('Update failed');
       (mainStore.updateFeatureStatus as jest.Mock).mockRejectedValue(error);
-      
+
       const setErrorSpy = jest.spyOn(featuresWorkspaceStore, 'setError');
-    
+
       const result = await featuresWorkspaceStore.updateFeatureStatus(
         mockFeature.uuid,
         FeatureStatus.ARCHIVE
       );
-    
+
       expect(result).toBe(false);
       expect(setErrorSpy).toHaveBeenCalledWith('Update failed');
       expect(featuresWorkspaceStore.state.loading).toBe(false);
