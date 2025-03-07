@@ -524,24 +524,19 @@ const FeatureBacklogView = observer(() => {
                         draggableId={feature.uuid}
                         customDragHandle={true}
                         hasInteractiveChildren={true}
-                        isDragDisabled={!isDragEnabled}
                       >
                         {(provided: any) => (
                           <DraggableWrapper ref={provided.innerRef} {...provided.draggableProps}>
                             <TableRow>
                               <Td>
                                 <PriorityCell>
-                                  <DragHandle
-                                    {...provided.dragHandleProps}
-                                    style={{
-                                      cursor: isDragEnabled ? 'grab' : 'default',
-                                      opacity: isDragEnabled ? 1 : 0.5
-                                    }}
-                                  >
-                                    <MaterialIcon
-                                      icon="drag_indicator"
-                                      style={{ fontSize: '20px' }}
-                                    />
+                                  <DragHandle {...provided.dragHandleProps}>
+                                    {isDragEnabled && (
+                                      <MaterialIcon
+                                        icon="drag_indicator"
+                                        style={{ fontSize: '20px' }}
+                                      />
+                                    )}
                                   </DragHandle>
                                   {index + 1}
                                 </PriorityCell>
