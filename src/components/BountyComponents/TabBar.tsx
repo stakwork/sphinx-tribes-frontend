@@ -23,12 +23,24 @@ const Tab = styled.div<{ active: boolean }>`
   color: ${(props) => (props.active ? '#ffffff' : '#000000')};
   transition: background-color 0.2s;
   border: ${(props) => (props.active ? '' : '1px solid #e0e0e0')};
-  border-top-left-radius: ${(props) => (props.active ? '8px 0px' : '')};
-  border-top-right-radius: ${(props) => (props.active ? '0px 8px' : '')};
-//   height: 40px;
-//   &:hover {
-//     background-color: ${(props) => (props.active ? '#fff' : '#e0e0e0')};
-//   }
+border-top-left-radius: ${(props) => (props.active ? '8px' : '8px')};
+border-top-right-radius: ${(props) => (props.active ? '8px' : '8px')};
+position: relative;
+
+&::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -16px; 
+  width: 32px;
+  height: 16px;
+  background-color: inherit;
+  transform: rotate(-45deg); 
+  transform-origin: top left;
+  border-top-right-radius: 32px; 
+  z-index: 1; 
+  display: ${(props) => (props.active ? 'block' : 'none')};
+}
 `;
 
 interface TabBarProps {
