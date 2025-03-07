@@ -39,7 +39,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useStores } from 'store';
 import { useDeleteConfirmationModal } from 'components/common';
 import { Box } from '@mui/system';
-import { Feature, Person, Workspace } from 'store/interface';
+import { Feature, FeatureCall, Person, Workspace } from 'store/interface';
 import MaterialIcon from '@material/react-material-icon';
 import { Button, Modal } from 'components/common';
 import { EuiToolTip } from '@elastic/eui';
@@ -58,6 +58,7 @@ import dragIcon from '../../pages/superadmin/header/icons/drag_indicator.svg';
 import SidebarComponent from '../../components/common/SidebarComponent.tsx';
 import { useFeatureFlag, useBrowserTabTitle } from '../../hooks';
 import AddCodeGraph from './workspace/AddCodeGraphModal';
+import AddFeatureCall from './workspace/AddFeatureCallModal.tsx';
 import AddFeature from './workspace/AddFeatureModal';
 import {
   RowFlex,
@@ -334,6 +335,14 @@ const WorkspaceMission = () => {
     url: string;
     secret_alias: string;
   }>();
+  const [featureCallModal, setFeatureCallModal] = useState(false);
+  const [featureCall, setFeatureCall] = useState<FeatureCall | null>(null);
+  const [featureCallModalType, setFeatureCallModalType] = useState<'add' | 'edit'>('add');
+  const [currentFeatureCallUrl, setCurrentFeatureCallUrl] = useState('');
+  const [selectedFeatureCall, setSelectedFeatureCall] = useState<{
+    id: string;
+    url: string;
+  }>();
   const history = useHistory();
   const { chat } = useStores();
   const [chats, setChats] = React.useState<Chat[]>([]);
@@ -368,11 +377,24 @@ const WorkspaceMission = () => {
     }
   }, [main, uuid]);
 
+  const fetchFeatureCall = useCallback(async () => {
+    try {
+      const data = await main.getWorkspaceFeatureCall(uuid);
+      setFeatureCall(data);
+    } catch (error) {
+      console.error(error);
+    }
+  }, [main, uuid]);
+
   useBrowserTabTitle('Workspace');
 
   useEffect(() => {
     fetchCodeGraph();
   }, [fetchCodeGraph]);
+
+  useEffect(() => {
+    fetchFeatureCall();
+  }, [fetchFeatureCall]);
 
   const openCodeGraphModal = (type: 'add' | 'edit', graph?: CodeGraph) => {
     if (type === 'edit' && graph) {
@@ -389,6 +411,22 @@ const WorkspaceMission = () => {
     }
     setCodeGraphModalType(type);
     setCodeGraphModal(true);
+  };
+
+  const openFeatureCallModal = (type: 'add' | 'edit', featureCall?: FeatureCall) => {
+    if (type === 'edit' && featureCall) {
+      if (featureCall) {
+        setSelectedFeatureCall({
+          id: featureCall.id,
+          url: featureCall.url
+        });
+      }
+      setCurrentFeatureCallUrl(featureCall.url);
+    } else {
+      // setCurrent('');
+    }
+    setFeatureCallModalType(type);
+    setFeatureCallModal(true);
   };
 
   useEffect(() => {
@@ -414,6 +452,15 @@ const WorkspaceMission = () => {
     setCodeGraphModal(false);
   };
 
+  const closeFeatureCallModal = () => {
+    setSelectedFeatureCall({
+      id: '',
+      url: ''
+    });
+    setCurrentFeatureCallUrl('');
+    setFeatureCallModal(false);
+  };
+
   const handleDeleteCodeGraph = async () => {
     try {
       await main.deleteCodeGraph(uuid, currentCodeGraphUuid);
@@ -421,6 +468,16 @@ const WorkspaceMission = () => {
       fetchCodeGraph();
     } catch (error) {
       console.error('Error deleteCodeGraph', error);
+    }
+  };
+
+  const handleDeleteFeatureCall = async () => {
+    try {
+      await main.deleteFeatureCall(uuid);
+      closeFeatureCallModal();
+      fetchFeatureCall();
+    } catch (error) {
+      console.error('Error deleteFeatureCall', error);
     }
   };
 
@@ -1092,6 +1149,120 @@ const WorkspaceMission = () => {
                   )}
                 </DataWrap2>
               </FieldWrap>
+
+              <FieldWrap style={{ marginTop: '20px' }}>
+                <DataWrap2>
+                  <RowFlex>
+                    <Label>Feature Call</Label>
+                  </RowFlex>
+                  {!featureCall && (
+                    <StyledList>
+                      <StyledListElement key={1}>
+                        <OptionsWrap style={{ position: 'unset', display: 'contents' }}>
+                          <MaterialIcon
+                            icon={'more_horiz'}
+                            onClick={() => handleUserRepoOptionClick(1 as number)}
+                            className="MaterialIcon"
+                            data-testid={`featurecall-option-btn-${1}`}
+                            style={{ transform: 'rotate(90deg)' }}
+                          />
+                          {displayUserRepoOptions[1 as number] && (
+                            <EditPopover>
+                              <EditPopoverTail bottom="-30px" left="-27px" />
+                              <EditPopoverContent
+                                onClick={() => {
+                                  openFeatureCallModal('add');
+                                  setDisplayUserRepoOptions((prev: Record<number, boolean>) => ({
+                                    ...prev,
+                                    [1 as number]: !prev[1 as number]
+                                  }));
+                                }}
+                                bottom="-60px"
+                                transform="translateX(-90%)"
+                              >
+                                <MaterialIcon
+                                  icon="edit"
+                                  style={{ fontSize: '20px', marginTop: '2px' }}
+                                />
+                                <EditPopoverText data-testid={`featurecall-edit-btn-${1}`}>
+                                  Edit
+                                </EditPopoverText>
+                              </EditPopoverContent>
+                            </EditPopover>
+                          )}
+                        </OptionsWrap>
+                        <RepoName>Feature Call :</RepoName>
+                        <CodeGraphDetails>
+                          <CodeGraphRow>
+                            <CodeGraphLabel>URL: </CodeGraphLabel>
+                            <EuiToolTip position="top" content="placeholder">
+                              <a href="/" target="_blank" rel="noreferrer">
+                                Not Configured
+                              </a>
+                            </EuiToolTip>
+                          </CodeGraphRow>
+                        </CodeGraphDetails>
+                      </StyledListElement>
+                    </StyledList>
+                  )}
+
+                  {featureCall && (
+                    <StyledList>
+                      <StyledListElement key={featureCall.id}>
+                        <OptionsWrap style={{ position: 'unset', display: 'contents' }}>
+                          <MaterialIcon
+                            icon={'more_horiz'}
+                            onClick={() =>
+                              handleUserRepoOptionClick(parseFloat(featureCall.id) as number)
+                            }
+                            className="MaterialIcon"
+                            data-testid={`codegraph-option-btn-${featureCall.id}`}
+                            style={{ transform: 'rotate(90deg)' }}
+                          />
+                          {displayUserRepoOptions[parseFloat(featureCall.id) as number] && (
+                            <EditPopover>
+                              <EditPopoverTail bottom="-30px" left="-27px" />
+                              <EditPopoverContent
+                                onClick={() => {
+                                  openFeatureCallModal('edit', featureCall);
+                                  setDisplayUserRepoOptions((prev: Record<number, boolean>) => ({
+                                    ...prev,
+                                    [parseFloat(featureCall.id) as number]:
+                                      !prev[parseFloat(featureCall.id) as number]
+                                  }));
+                                }}
+                                bottom="-60px"
+                                transform="translateX(-90%)"
+                              >
+                                <MaterialIcon
+                                  icon="edit"
+                                  style={{ fontSize: '20px', marginTop: '2px' }}
+                                />
+                                <EditPopoverText
+                                  data-testid={`codegraph-edit-btn-${featureCall.id}`}
+                                >
+                                  Edit
+                                </EditPopoverText>
+                              </EditPopoverContent>
+                            </EditPopover>
+                          )}
+                        </OptionsWrap>
+                        <RepoName>Feature Call</RepoName>
+                        <CodeGraphDetails>
+                          <CodeGraphRow>
+                            <CodeGraphLabel>URL: </CodeGraphLabel>
+                            <EuiToolTip position="top" content={featureCall.url}>
+                              <a href={featureCall.url} target="_blank" rel="noreferrer">
+                                {featureCall.url}
+                              </a>
+                            </EuiToolTip>
+                          </CodeGraphRow>
+                        </CodeGraphDetails>
+                      </StyledListElement>
+                    </StyledList>
+                  )}
+                </DataWrap2>
+              </FieldWrap>
             </LeftSection>
             <VerticalGrayLine />
             <RightSection>
@@ -1616,6 +1787,39 @@ const WorkspaceMission = () => {
               name={selectedCodeGraph?.name}
               url={selectedCodeGraph?.url}
               secret_alias={selectedCodeGraph?.secret_alias}
+            />
+          </Modal>
+          <Modal
+            visible={featureCallModal}
+            style={{
+              height: '100%',
+              flexDirection: 'column'
+            }}
+            envStyle={{
+              marginTop: isMobile ? 64 : 0,
+              background: color.pureWhite,
+              zIndex: 20,
+              maxHeight: '100%',
+              borderRadius: '10px',
+              minWidth: isMobile ? '100%' : '30%',
+              minHeight: isMobile ? '100%' : '20%'
+            }}
+            overlayClick={closeFeatureCallModal}
+            bigCloseImage={closeFeatureCallModal}
+            bigCloseImageStyle={{
+              top: '-18px',
+              right: '-18px',
+              background: '#000',
+              borderRadius: '50%'
+            }}
+          >
+            <AddFeatureCall
+              closeHandler={closeFeatureCallModal}
+              getFeatureCall={fetchFeatureCall}
+              workspace_uuid={uuid}
+              currentUuid={currentuuid}
+              handleDelete={handleDeleteFeatureCall}
+              url={currentFeatureCallUrl}
             />
           </Modal>
           <Modal

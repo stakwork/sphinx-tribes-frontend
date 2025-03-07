@@ -60,6 +60,7 @@ import {
   QuickTicketsResponse,
   BulkConversionResponse,
   BulkTicketToBountyRequest,
+  FeatureCall,
   FeatureStatus
 } from './interface';
 
@@ -4154,6 +4155,82 @@ export class MainStore {
       return response.json();
     } catch (e) {
       console.log('Error deleteCodeGraph', e);
+      return null;
+    }
+  }
+
+  async getWorkspaceFeatureCall(workspace_uuid: string): Promise<FeatureCall | null> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+      const response = await fetch(`${TribesURL}/features/call/${workspace_uuid}`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json',
+          'x-session-id': this.getSessionId()
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return response.json();
+    } catch (e) {
+      console.log('Error getWorkspaceFeatureCall', e);
+      return null;
+    }
+  }
+
+  async createOrUpdateFeatureCall(featureCall: FeatureCall): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+      const response = await fetch(`${TribesURL}/features/call`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json',
+          'x-session-id': this.getSessionId()
+        },
+        body: JSON.stringify(featureCall)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return response.json();
+    } catch (e) {
+      console.log('Error createOrUpdateFeatureCall', e);
+      return null;
+    }
+  }
+
+  async deleteFeatureCall(workspace_uuid: string): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+      const response = await fetch(`${TribesURL}/features/call/${workspace_uuid}`, {
+        method: 'DELETE',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json',
+          'x-session-id': this.getSessionId()
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return response.json();
+    } catch (e) {
+      console.log('Error deleteFeatureCall', e);
       return null;
     }
   }

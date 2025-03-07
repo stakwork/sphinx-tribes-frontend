@@ -363,6 +363,14 @@ export interface CreateFeatureInput {
   priority?: number;
 }
 
+export interface FeatureCall {
+  id: string;
+  workspace_id: string;
+  url: string;
+  created_at: string;
+  updated_at: string;
+}
+
 // Default data
 export const defaultWorkspaceBudget: WorkspaceBudget = {
   org_uuid: '',
