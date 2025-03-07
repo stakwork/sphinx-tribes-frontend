@@ -82,14 +82,18 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
     }
 
     if (bounty && bounty.length > 0 && bounty[0].body.access_restriction === 'workspace') {
-      const workspaceUser = await main.getWorkspaceUser(bounty[0].body.workspace_uuid);
-      const isWorkspaceAdmin = bounty[0].organization?.owner_pubkey === ui.meInfo?.owner_pubkey;
-      const isWorkspaceMember = workspaceUser?.owner_pubkey === ui.meInfo?.owner_pubkey;
+      const isOwner = bounty[0].body.owner_id === ui.meInfo?.owner_pubkey;
 
-      if (!workspaceUser || (!isWorkspaceAdmin && !isWorkspaceMember)) {
-        setAccessDenied(true);
-        setVisible(false);
-        return;
+      if (!isOwner) {
+        const workspaceUser = await main.getWorkspaceUser(bounty[0].body.workspace_uuid);
+        const isWorkspaceAdmin = bounty[0].organization?.owner_pubkey === ui.meInfo?.owner_pubkey;
+        const isWorkspaceMember = workspaceUser?.owner_pubkey === ui.meInfo?.owner_pubkey;
+
+        if (!workspaceUser || (!isWorkspaceAdmin && !isWorkspaceMember)) {
+          setAccessDenied(true);
+          setVisible(false);
+          return;
+        }
       }
     }
 
