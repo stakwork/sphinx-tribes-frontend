@@ -294,7 +294,6 @@ const TicketEditor = observer(
     const [isCreatingBounty, setIsCreatingBounty] = useState(false);
     const [isOptionsMenuVisible, setIsOptionsMenuVisible] = useState(false);
     const [lastLogLine, setLastLogLine] = useState('');
-    const [isImproving, setIsImproving] = useState(false);
     const ui = uiStore;
     const { openDeleteConfirmation } = useDeleteConfirmationModal();
     const { isEnabled } = useFeatureFlag('thinking');
@@ -357,23 +356,11 @@ const TicketEditor = observer(
     }, [groupTickets, latestTicket?.version]);
 
     useEffect(() => {
-      const hasChanges =
+      const isChanged =
         ticketData.name.trim() !== versionTicketData.name.trim() ||
-        ticketData.description.trim() !== versionTicketData.description.trim() ||
-        ticketData.amount !== versionTicketData.amount ||
-        ticketData.category !== versionTicketData.category;
-
-      setIsButtonDisabled(!hasChanges || !versionTicketData.name.trim());
-    }, [
-      ticketData.name,
-      ticketData.description,
-      ticketData.amount,
-      ticketData.category,
-      versionTicketData.name,
-      versionTicketData.description,
-      versionTicketData.amount,
-      versionTicketData.category
-    ]);
+        ticketData.description.trim() !== versionTicketData.description.trim();
+      setIsButtonDisabled(!isChanged);
+    }, [ticketData, versionTicketData]);
 
     useEffect(() => {
       if (logs.length > 0) {
@@ -382,11 +369,6 @@ const TicketEditor = observer(
         setLastLogLine('');
       }
     }, [logs]);
-
-    useEffect(() => {
-      const latestTicket = phaseTicketStore.getTicket(ticketData.uuid);
-      setVersionTicketData(latestTicket || ticketData || DEFAULT_TICKET);
-    }, [ticketData.uuid, ticketData]);
 
     const addUpdateSuccessToast = () => {
       setToasts([
@@ -427,7 +409,7 @@ const TicketEditor = observer(
             name: versionTicketData.name,
             description: versionTicketData.description,
             status: 'DRAFT' as TicketStatus,
-            version: (ticketData.version || 1) + 1,
+            version: ticketData.version + 1,
             amount: versionTicketData.amount,
             category: versionTicketData.category,
             author: 'HUMAN' as Author,
@@ -460,8 +442,6 @@ const TicketEditor = observer(
       } catch (error) {
         console.error('Error updating ticket:', error);
         addUpdateErrorToast();
-      } finally {
-        setIsButtonDisabled(false);
       }
     };
 
@@ -489,8 +469,6 @@ const TicketEditor = observer(
 
     const handleTicketBuilder = async () => {
       try {
-        setIsImproving(true);
-        setLastLogLine('Thinking...');
         const ticketPayload = {
           metadata: {
             source: 'websocket',
@@ -503,9 +481,6 @@ const TicketEditor = observer(
             status: 'DRAFT' as TicketStatus,
             author: 'AGENT' as Author,
             author_id: 'TICKET_BUILDER',
-            amount: versionTicketData.amount,
-            version: (ticketData.version || 1) + 1,
-            category: versionTicketData.category,
             ticket_group: ticketData.ticket_group || ticketData.uuid,
             mode: isThinking
           }
@@ -521,8 +496,6 @@ const TicketEditor = observer(
       } catch (error) {
         console.error('Error in ticket builder:', error);
         addErrorToast();
-      } finally {
-        setIsImproving(false);
       }
     };
 
@@ -616,6 +589,8 @@ const TicketEditor = observer(
             text: 'Ticket deleted successfully!'
           }
         ]);
+
+        await new Promise((resolve) => setTimeout(resolve, 1000));
 
         phaseTicketStore.clearPhaseTickets(ticketData.phase_uuid);
         if (getPhaseTickets) {
@@ -898,7 +873,7 @@ const TicketEditor = observer(
                 onClick={handleTicketBuilder}
                 data-testid="story-generate-btn"
               >
-                {isImproving ? 'Improving...' : 'Improve with AI'}
+                Improve with AI
               </ActionButton>
               <ActionButton
                 color="primary"

@@ -169,34 +169,19 @@ const PhasePlannerView: React.FC = observer(() => {
     };
 
     socket.onmessage = async (event: MessageEvent) => {
+      // Log raw message data
       console.log('Raw websocket message received:', event.data);
 
       try {
         const data = JSON.parse(event.data);
+        // Log parsed data
+        console.log('Parsed websocket message:', data);
 
         if (data.msg === SOCKET_MSG.user_connect) {
           const sessionId = data.body || localStorage.getItem('websocket_token');
           setWebsocketSessionId(sessionId);
           console.log(`Websocket Session ID: ${sessionId}`);
           return;
-        }
-
-        if (data.ticket) {
-          const updatedTicket = data.ticket;
-          if (updatedTicket.UUID) {
-            updatedTicket.uuid = updatedTicket.UUID;
-          }
-          phaseTicketStore.addTicket(updatedTicket);
-        }
-
-        if (data.ticketDetails?.ticketUUID) {
-          const newLogEntry: LogEntry = {
-            timestamp: new Date().toISOString(),
-            projectId: data.ticketDetails.projectId || '',
-            ticketUUID: data.ticketDetails.ticketUUID,
-            message: data.message || JSON.stringify(data)
-          };
-          setLogs((prevLogs) => [...prevLogs, newLogEntry]);
         }
 
         if (data.action === 'swrun' && data.message && data.ticketDetails?.ticketUUID) {
@@ -218,9 +203,12 @@ const PhasePlannerView: React.FC = observer(() => {
         }
 
         const ticketMessage = data as TicketMessage;
+        // Log ticket message before processing
+        console.log('Ticket message before processing:', ticketMessage);
 
         switch (ticketMessage.action) {
           case 'message':
+            console.log('Received ticket message:', ticketMessage.message);
             console.log('Ticket details:', {
               broadcastType: ticketMessage.broadcastType,
               sourceSessionID: ticketMessage.sourceSessionID,
@@ -230,6 +218,7 @@ const PhasePlannerView: React.FC = observer(() => {
             break;
 
           case 'process':
+            console.log('Processing ticket update:', ticketMessage.ticketDetails.ticketUUID);
             await refreshSingleTicket(ticketMessage.ticketDetails.ticketUUID as string);
             break;
         }
