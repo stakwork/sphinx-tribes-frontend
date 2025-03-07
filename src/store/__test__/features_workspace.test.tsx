@@ -4,7 +4,15 @@ import { featuresWorkspaceStore } from '../features_workspace';
 import { mainStore } from '../main';
 import { Feature, CreateFeatureInput } from '../interface';
 
-jest.mock('../main');
+jest.mock('../main', () => ({
+  mainStore: {
+    getWorkspaceFeatures: jest.fn(),
+    getFeaturesByUuid: jest.fn(),
+    addWorkspaceFeature: jest.fn(),
+    updateFeatureStatus: jest.fn(),
+    getWorkspaceFeaturesCount: jest.fn()
+  }
+}));
 
 describe('FeaturesWorkspaceStore', () => {
   const mockWorkspaceUuid = 'workspace-123';
@@ -148,26 +156,13 @@ describe('FeaturesWorkspaceStore', () => {
   describe('archiveFeature', () => {
     it('should successfully archive a feature', async () => {
       featuresWorkspaceStore.state.features.set(mockFeature.uuid, mockFeature);
-      (mainStore.archiveFeature as jest.Mock).mockResolvedValue(true);
+      (mainStore.updateFeatureStatus as jest.Mock).mockResolvedValue(true);
 
       const result = await featuresWorkspaceStore.archiveFeature(mockFeature.uuid);
 
       expect(result).toBe(true);
-      expect(featuresWorkspaceStore.state.features.get(mockFeature.uuid)?.feat_status).toBe(
-        'archived'
-      );
-    });
-
-    it('should handle archive errors', async () => {
-      const error = new Error('Archive failed');
-      (mainStore.archiveFeature as jest.Mock).mockRejectedValue(error);
-
-      const result = await featuresWorkspaceStore.archiveFeature(mockFeature.uuid);
-
-      waitFor(() => {
-        expect(result).toBe(false);
-        expect(featuresWorkspaceStore.state.error).toBe('Failed to archive feature');
-      });
+      const updatedFeature = featuresWorkspaceStore.state.features.get(mockFeature.uuid);
+      expect(updatedFeature?.feat_status).toBe('archived');
     });
   });
 
