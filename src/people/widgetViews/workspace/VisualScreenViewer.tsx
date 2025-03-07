@@ -71,10 +71,10 @@ const VisualScreenViewer: React.FC<VisualScreenViewerProps> = ({ artifacts }) =>
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
-    if (artifacts.length) {
-      setCurrentIndex(artifacts.length - 1);
+    if (artifacts?.length) {
+      setCurrentIndex(artifacts?.length - 1);
     }
-  }, []);
+  }, [artifacts?.length]);
 
   if (!artifacts?.length) {
     return <ViewerContainer>No visual screens available.</ViewerContainer>;
