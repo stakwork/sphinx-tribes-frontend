@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { FeatureStatus, FeatureTabLabels } from 'store/interface';
 import TabBar from '../TabBar';
 
 describe('TabBar', () => {
@@ -45,10 +46,10 @@ describe('TabBar', () => {
     expect(mockOnTabChange).toHaveBeenCalledWith('all');
 
     fireEvent.click(screen.getByText('Backlog'));
-    expect(mockOnTabChange).toHaveBeenCalledWith('backlog');
+    expect(mockOnTabChange).toHaveBeenCalledWith(FeatureStatus.BACKLOG);
 
     fireEvent.click(screen.getByText('Archive'));
-    expect(mockOnTabChange).toHaveBeenCalledWith('archive');
+    expect(mockOnTabChange).toHaveBeenCalledWith(FeatureStatus.ARCHIVE);
 
     fireEvent.click(screen.getByText('Focus'));
     expect(mockOnTabChange).toHaveBeenCalledWith('focus');
@@ -73,7 +74,7 @@ describe('TabBar', () => {
     type TabType = string;
     const invalidTab: TabType = 'invalid';
 
-    render(<TabBar activeTab={invalidTab} onTabChange={mockOnTabChange} />);
+    render(<TabBar activeTab={invalidTab as FeatureTabLabels} onTabChange={mockOnTabChange} />);
 
     expect(screen.getByText('Focus')).toBeInTheDocument();
     expect(screen.getByText('All')).toBeInTheDocument();
