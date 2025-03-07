@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import MaterialIcon from '@material/react-material-icon';
 import styled from 'styled-components';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams, useHistory, useLocation } from 'react-router-dom';
 import { featuresWorkspaceStore } from 'store/features_workspace';
 import { EuiDragDropContext, EuiDraggable, EuiDroppable } from '@elastic/eui';
 import { Feature } from 'store/interface';
+import TabBar from 'components/BountyComponents/TabBar';
 import SidebarComponent from 'components/common/SidebarComponent';
 import ActivitiesHeader from '../HiveFeaturesView/header';
+
 
 const MainContainer = styled.div`
   flex-grow: 1;
@@ -23,7 +25,6 @@ const BacklogContainer = styled.div<{ collapsed: boolean }>`
   padding: 2rem;
   padding-bottom: 0 !important;
   background-color: #f8f9fa;
-  height: calc(100vh - 120px);
   overflow-y: auto;
   margin-bottom: 50px;
   margin-left: ${({ collapsed }: { collapsed: boolean }) => (collapsed ? '50px' : '250px')};
@@ -112,13 +113,13 @@ const Td = styled.td<TdProps>`
   }
 
   &:nth-child(3) {
-    width: ${({ collapsed }: any) => (collapsed ? '930px' : '730px')};
-    min-width: ${({ collapsed }: any) => (collapsed ? '930px' : '730px')};
+    width: ${({ collapsed }: any) => (collapsed ? '650px' : '350px')};
+    min-width: ${({ collapsed }: any) => (collapsed ? '650px' : '350px')};
   }
 
   &:last-child {
     width: 200px;
-    min-width: 200px;
+    min-width: 80px;
     text-align: right;
     padding-right: 24px;
   }
@@ -237,8 +238,10 @@ const BriefCell = styled.div<BriefCellProps>`
   white-space: normal;
   overflow: visible;
   text-overflow: clip;
-  min-width: ${({ collapsed }: any) => (collapsed ? '900px' : '700px')};
-  max-width: ${({ collapsed }: any) => (collapsed ? '900px' : '700px')};
+  word-break: break-word;
+  overflow-wrap: break-word;
+  min-width: ${({ collapsed }: any) => (collapsed ? '600px' : '400px')};
+  max-width: ${({ collapsed }: any) => (collapsed ? '600px' : '400px')};
 `;
 
 const NoFeaturesMessage = styled.div`
@@ -263,13 +266,13 @@ const NewFeatureRow = styled.div`
 `;
 
 const NewFeatureInput = styled.input`
-  padding: 8px 12px;
+  padding: 8px 6px;
   border: 1px solid #dadce0;
   border-radius: 4px;
   font-size: 14px;
   flex: 1;
-  max-width: 330px;
-  min-width: 330px;
+  max-width: 220px;
+  min-width: 200px;
   height: 44px;
   margin-left: 35px;
 
@@ -280,13 +283,13 @@ const NewFeatureInput = styled.input`
 `;
 
 const NewBriefInput = styled.input<{ collapsed: boolean }>`
-  padding: 8px 12px;
+  padding: 8px 6px;
   border: 1px solid #dadce0;
   border-radius: 4px;
   font-size: 14px;
   flex: 1;
-  width: ${({ collapsed }: any) => (collapsed ? '940px' : '740px')};
-  min-width: ${({ collapsed }: any) => (collapsed ? '940px' : '740px')};
+  width: ${({ collapsed }: any) => (collapsed ? '640px' : '420px')};
+  min-width: ${({ collapsed }: any) => (collapsed ? '640px' : '420px')};
   height: 44px;
   margin-left: 10px;
 
@@ -332,12 +335,18 @@ const FeatureBacklogView = observer(() => {
   const params = useParams<{ workspace_uuid?: string }>();
   const workspaceUuid = params.workspace_uuid ?? '';
   const history = useHistory();
+  const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const [features, setFeatures] = useState<Feature[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [newFeatureTitle, setNewFeatureTitle] = useState('');
   const [newFeatureBrief, setNewFeatureBrief] = useState('');
   const [isCreating, setIsCreating] = useState(false);
+  const [activeTab, setActiveTab] = useState<string>(() => {
+    const searchParams = new URLSearchParams(location.search);
+    return searchParams.get('tab') || 'focus';
+  });
+  
 
   useEffect(() => {
     const handleCollapseChange = (e: Event) => {
@@ -433,6 +442,36 @@ const FeatureBacklogView = observer(() => {
     history.push(`/workspace/${workspaceUuid}/feature/${featureUuid}`);
   };
 
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set('tab', tab);
+    history.replace({
+      pathname: location.pathname,
+      search: searchParams.toString()
+    });
+    
+    switch(tab) {
+      case 'focus':
+        setStatusFilter('active');
+        break;
+      case 'all':
+        setStatusFilter('all');
+        break;
+      case 'backlog':
+        setStatusFilter('backlog');
+        break;
+      case 'archive':
+        setStatusFilter('archived');
+        break;
+      default:
+        setStatusFilter('all');
+    }
+  };
+
+  const isDragEnabled = activeTab === 'all';
+
   return (
     <MainContainer>
       <SidebarComponent uuid={workspaceUuid} />
@@ -446,8 +485,13 @@ const FeatureBacklogView = observer(() => {
         <Title>Feature Backlog</Title>
       </FeatureHeadNameWrap>
       <BacklogContainer collapsed={collapsed}>
+      <TabBar activeTab={activeTab} onTabChange={handleTabChange} />
         <TableContainer>
-          <Table>
+          <Table
+            style={{
+              maxWidth: '100%',
+            }} 
+          >
             <thead>
               <tr>
                 <Th>Priority</Th>
@@ -491,6 +535,7 @@ const FeatureBacklogView = observer(() => {
                     filteredFeatures.map((feature: Feature, index: number) => (
                       <EuiDraggable
                         key={feature.uuid}
+                        isDragDisabled={!isDragEnabled}
                         index={index}
                         draggableId={feature.uuid}
                         customDragHandle={true}
@@ -498,10 +543,20 @@ const FeatureBacklogView = observer(() => {
                       >
                         {(provided: any) => (
                           <DraggableWrapper ref={provided.innerRef} {...provided.draggableProps}>
-                            <TableRow>
+                            <TableRow 
+                            //set max width for the table row
+                            style={{
+                              maxWidth: '100%',
+                            }}
+                            >
                               <Td>
                                 <PriorityCell>
-                                  <DragHandle {...provided.dragHandleProps}>
+                                  <DragHandle {...provided.dragHandleProps}
+                                  style={{ 
+    cursor: isDragEnabled ? 'grab' : 'default',
+    opacity: isDragEnabled ? 1 : 0.5 
+  }}
+                                  >
                                     <MaterialIcon
                                       icon="drag_indicator"
                                       style={{ fontSize: '20px' }}
@@ -539,6 +594,7 @@ const FeatureBacklogView = observer(() => {
                 </tbody>
               </EuiDroppable>
             </EuiDragDropContext>
+            {(activeTab === 'all') && (
             <NewFeatureRow>
               <NewLabel>New</NewLabel>
               <NewFeatureInput
@@ -575,6 +631,7 @@ const FeatureBacklogView = observer(() => {
                 {isCreating ? 'Creating...' : 'Create'}
               </CreateButton>
             </NewFeatureRow>
+            )}
           </Table>
         </TableContainer>
       </BacklogContainer>
