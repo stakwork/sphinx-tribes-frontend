@@ -59,8 +59,7 @@ import {
   QuickBountiesResponse,
   QuickTicketsResponse,
   BulkConversionResponse,
-  BulkTicketToBountyRequest,
-  Featurecall
+  BulkTicketToBountyRequest
 } from './interface';
 
 function makeTorSaveURL(host: string, key: string) {
@@ -4720,7 +4719,7 @@ export class MainStore {
     }
   }
 
-  async createStakworkProject(chatQuestion: string): Promise<any | null> {
+  async createStakworkProject(chatQuestion: string): Promise<any> {
     try {
       if (!uiStore.meInfo) return null;
       const info = uiStore.meInfo;
@@ -4784,7 +4783,7 @@ export class MainStore {
     }
   }
 
-  async getFeatureCalls(workspace_uuid: string): Promise<Featurecall | null> {
+  async getFeatureCalls(workspace_uuid: string): Promise<any> {
     try {
       if (!uiStore.meInfo) {
         throw new Error('No user info found');
@@ -4828,7 +4827,7 @@ export class MainStore {
     }
   }
 
-  async createFeatureCall(workspace_uuid: string): Promise<Featurecall | null> {
+  async createFeatureCall(workspace_uuid: string): Promise<any> {
     try {
       if (!uiStore.meInfo) return null;
       const info = uiStore.meInfo;
