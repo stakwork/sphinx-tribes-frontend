@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 import { waitFor } from '@testing-library/react';
 import { featuresWorkspaceStore } from '../features_workspace';
 import { mainStore } from '../main';
-import { Feature, CreateFeatureInput } from '../interface';
+import { Feature, CreateFeatureInput, FeatureStatus } from '../interface';
 
 jest.mock('../main');
 
@@ -145,32 +145,6 @@ describe('FeaturesWorkspaceStore', () => {
     });
   });
 
-  describe('archiveFeature', () => {
-    it('should successfully archive a feature', async () => {
-      featuresWorkspaceStore.state.features.set(mockFeature.uuid, mockFeature);
-      (mainStore.archiveFeature as jest.Mock).mockResolvedValue(true);
-
-      const result = await featuresWorkspaceStore.archiveFeature(mockFeature.uuid);
-
-      expect(result).toBe(true);
-      expect(featuresWorkspaceStore.state.features.get(mockFeature.uuid)?.feat_status).toBe(
-        'archived'
-      );
-    });
-
-    it('should handle archive errors', async () => {
-      const error = new Error('Archive failed');
-      (mainStore.archiveFeature as jest.Mock).mockRejectedValue(error);
-
-      const result = await featuresWorkspaceStore.archiveFeature(mockFeature.uuid);
-
-      waitFor(() => {
-        expect(result).toBe(false);
-        expect(featuresWorkspaceStore.state.error).toBe('Failed to archive feature');
-      });
-    });
-  });
-
   describe('fetchWorkspaceFeaturesCount', () => {
     it('should fetch and store the total count', async () => {
       const mockCount = 42;
@@ -193,6 +167,75 @@ describe('FeaturesWorkspaceStore', () => {
         expect(featuresWorkspaceStore.state.error).toBe('Failed to fetch features count');
         expect(featuresWorkspaceStore.state.loading).toBe(false);
       });
+    });
+  });
+
+  describe('updateFeatureStatus', () => {
+    beforeEach(() => {
+      featuresWorkspaceStore.state.features.set(mockFeature.uuid, mockFeature);
+      jest.clearAllMocks();
+    });
+
+    it.each(Object.values(FeatureStatus))(
+      'should successfully update feature status to %s',
+      async (status) => {
+        (mainStore.updateFeatureStatus as jest.Mock).mockResolvedValue(true);
+
+        const result = await featuresWorkspaceStore.updateFeatureStatus(mockFeature.uuid, status);
+
+        expect(result).toBe(true);
+        expect(featuresWorkspaceStore.state.features.get(mockFeature.uuid)?.feat_status).toBe(
+          status
+        );
+        expect(featuresWorkspaceStore.state.loading).toBe(false);
+        expect(featuresWorkspaceStore.state.error).toBe(null);
+      }
+    );
+
+    it('should handle update errors', async () => {
+      const error = new Error('Update failed');
+      (mainStore.updateFeatureStatus as jest.Mock).mockRejectedValue(error);
+
+      const setErrorSpy = jest.spyOn(featuresWorkspaceStore, 'setError');
+
+      const result = await featuresWorkspaceStore.updateFeatureStatus(
+        mockFeature.uuid,
+        FeatureStatus.ARCHIVE
+      );
+
+      expect(result).toBe(false);
+      expect(setErrorSpy).toHaveBeenCalledWith('Update failed');
+      expect(featuresWorkspaceStore.state.loading).toBe(false);
+    });
+
+    it('should handle feature not found', async () => {
+      const nonExistentUuid = 'non-existent-uuid';
+      (mainStore.updateFeatureStatus as jest.Mock).mockResolvedValue(true);
+
+      const result = await featuresWorkspaceStore.updateFeatureStatus(
+        nonExistentUuid,
+        FeatureStatus.ARCHIVE
+      );
+
+      expect(result).toBe(false);
+      expect(featuresWorkspaceStore.state.features.get(nonExistentUuid)).toBeUndefined();
+      expect(featuresWorkspaceStore.state.loading).toBe(false);
+      expect(featuresWorkspaceStore.state.error).toBe(null);
+    });
+
+    it('should set loading state correctly', async () => {
+      (mainStore.updateFeatureStatus as jest.Mock).mockResolvedValue(true);
+
+      const promise = featuresWorkspaceStore.updateFeatureStatus(
+        mockFeature.uuid,
+        FeatureStatus.ARCHIVE
+      );
+
+      expect(featuresWorkspaceStore.state.loading).toBe(true);
+
+      await promise;
+
+      expect(featuresWorkspaceStore.state.loading).toBe(false);
     });
   });
 
