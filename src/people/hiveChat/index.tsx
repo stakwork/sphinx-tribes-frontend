@@ -561,8 +561,8 @@ export const HiveChatView: React.FC = observer(() => {
             artifact &&
             artifact.type === 'visual' &&
             artifact.content &&
-            'visual_type' in artifact.content &&
-            artifact.content.visual_type === 'screen'
+            'text_type' in artifact.content &&
+            artifact?.content?.text_type === 'screen'
         );
 
         if (screenArtifacts) {
