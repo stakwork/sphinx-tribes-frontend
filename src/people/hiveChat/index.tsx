@@ -343,7 +343,6 @@ export const HiveChatView: React.FC = observer(() => {
 
   const refreshChatHistory = useCallback(async () => {
     try {
-      setActionArtifact({} as Artifact);
       await chat.loadChatHistory(chatId);
       const selectedChat = chat.getChat(chatId);
       if (selectedChat?.title) {
@@ -556,7 +555,7 @@ export const HiveChatView: React.FC = observer(() => {
       if (chatId && isArtifactLoggingEnabled) {
         const res = await chat.loadArtifactsForChat(chatId);
         console.log('Artifacts for that chat', res);
-
+        setActionArtifact({} as Artifact);
         const screenArtifacts = res?.filter(
           (artifact) =>
             artifact &&
