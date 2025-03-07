@@ -11,20 +11,21 @@ import SidebarComponent from 'components/common/SidebarComponent';
 import { toCapitalize } from 'helpers/helpers-extended';
 import ActivitiesHeader from '../HiveFeaturesView/header';
 
-
 const MainContainer = styled.div`
   flex-grow: 1;
   transition:
     margin-left 0.3s ease-in-out,
     width 0.3s ease-in-out;
-  overflow: auto;
+  overflow: hidden;
 `;
 
 const BacklogContainer = styled.div<{ collapsed: boolean }>`
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
   padding: 2rem;
   padding-bottom: 0 !important;
+  background-color: #f8f9fa;
+  height: calc(100vh - 120px);
   overflow-y: auto;
   margin-bottom: 50px;
   margin-left: ${({ collapsed }: { collapsed: boolean }) => (collapsed ? '50px' : '250px')};
@@ -49,11 +50,12 @@ const Title = styled.h1`
 `;
 
 const TableContainer = styled.div`
-  width: 100%;
+  background: white;
   border-radius: 8px;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
   margin-bottom: 16%;
-  overflow: auto;
+  overflow-x: clip;
+  overflow-y: auto;
 `;
 
 const Table = styled.table`
@@ -71,8 +73,6 @@ const TableRow = styled.tr`
   }
   border-bottom: 1px solid #e0e0e0;
   height: 56px;
-  width: 100%;
-  display: table-row;
 `;
 
 const DraggableWrapper = styled.div`
@@ -125,6 +125,25 @@ const Td = styled.td<TdProps>`
     text-align: right;
     // padding-right: 24px;
   }
+
+  // &:first-child {
+  //   width: 100px;
+  //   min-width: 100px;
+  // }
+  // &:nth-child(2) {
+  //   width: 350px;
+  //   min-width: 350px;
+  // }
+  // &:nth-child(3) {
+  //   width: ${({ collapsed }: any) => (collapsed ? '930px' : '730px')};
+  //   min-width: ${({ collapsed }: any) => (collapsed ? '930px' : '730px')};
+  // }
+  // &:last-child {
+  //   width: 200px;
+  //   min-width: 200px;
+  //   text-align: right;
+  //   padding-right: 24px;
+  // }
 `;
 
 const Th = styled.th`
@@ -136,24 +155,42 @@ const Th = styled.th`
 
   &:first-child {
     width: 10%;
-    min-width: 80px;
+    min-width: 110px;
   }
 
   &:nth-child(2) {
     width: 25%;
-    min-width: 150px;
+    min-width: 285px;
   }
 
   &:nth-child(3) {
-    width: 50%;
-    min-width: 200px;
+    width: ${({ collapsed }: any) => (collapsed ? '50%' : '40%')};
+    min-width: 570px;
   }
 
   &:last-child {
     width: 15%;
-    min-width: 80px;
+    min-width: 150px;
     position: relative;
   }
+
+  // &:first-child {
+  //   width: 105px;
+  //   min-width: 105px;
+  // }
+  // &:nth-child(2) {
+  //   width: 350px;
+  //   min-width: 350px;
+  // }
+  // &:nth-child(3) {
+  //   width: calc(100% - 600px);
+  //   min-width: 300px;
+  // }
+  // &:last-child {
+  //   width: 200px;
+  //   min-width: 200px;
+  //   position: relative;
+  // }
 `;
 
 const DragHandle = styled.div`
@@ -242,8 +279,8 @@ const BriefCell = styled.div<BriefCellProps>`
   text-overflow: clip;
   word-break: break-word;
   overflow-wrap: break-word;
-  min-width: ${({ collapsed }: any) => (collapsed ? '600px' : '400px')};
-  max-width: ${({ collapsed }: any) => (collapsed ? '600px' : '400px')};
+  min-width: ${({ collapsed }: any) => (collapsed ? '700px' : '500px')};
+  max-width: ${({ collapsed }: any) => (collapsed ? '700px' : '500px')};
 `;
 
 const NoFeaturesMessage = styled.div`
@@ -290,8 +327,8 @@ const NewBriefInput = styled.input<{ collapsed: boolean }>`
   border-radius: 4px;
   font-size: 14px;
   flex: 1;
-  width: ${({ collapsed }: any) => (collapsed ? '640px' : '420px')};
-  min-width: ${({ collapsed }: any) => (collapsed ? '640px' : '420px')};
+  width: ${({ collapsed }: any) => (collapsed ? '640px' : '620px')};
+  min-width: ${({ collapsed }: any) => (collapsed ? '640px' : '620px')};
   height: 44px;
   margin-left: 10px;
 
@@ -348,7 +385,6 @@ const FeatureBacklogView = observer(() => {
     const searchParams = new URLSearchParams(location.search);
     return searchParams.get('tab') || 'focus';
   });
-  
 
   useEffect(() => {
     const handleCollapseChange = (e: Event) => {
@@ -451,8 +487,8 @@ const FeatureBacklogView = observer(() => {
       pathname: location.pathname,
       search: searchParams.toString()
     });
-    
-    switch(tab) {
+
+    switch (tab) {
       case 'focus':
         setStatusFilter('active');
         break;
@@ -485,13 +521,9 @@ const FeatureBacklogView = observer(() => {
         <Title>Feature Backlog</Title>
       </FeatureHeadNameWrap>
       <BacklogContainer collapsed={collapsed}>
-      <TabBar activeTab={activeTab} onTabChange={handleTabChange} />
+        <TabBar activeTab={activeTab} onTabChange={handleTabChange} />
         <TableContainer>
-          <Table
-            style={{
-              maxWidth: '100%',
-            }} 
-          >
+          <Table>
             <thead>
               <tr>
                 <Th>Priority</Th>
@@ -546,16 +578,15 @@ const FeatureBacklogView = observer(() => {
                       >
                         {(provided: any) => (
                           <DraggableWrapper ref={provided.innerRef} {...provided.draggableProps}>
-                            <TableRow 
-                            
-                            >
+                            <TableRow>
                               <Td>
                                 <PriorityCell>
-                                  <DragHandle {...provided.dragHandleProps}
-                                  style={{ 
-    cursor: isDragEnabled ? 'grab' : 'default',
-    opacity: isDragEnabled ? 1 : 0.5 
-  }}
+                                  <DragHandle
+                                    {...provided.dragHandleProps}
+                                    style={{
+                                      cursor: isDragEnabled ? 'grab' : 'default',
+                                      opacity: isDragEnabled ? 1 : 0.5
+                                    }}
                                   >
                                     <MaterialIcon
                                       icon="drag_indicator"
@@ -597,43 +628,43 @@ const FeatureBacklogView = observer(() => {
                 </tbody>
               </EuiDroppable>
             </EuiDragDropContext>
-            {(activeTab === 'all') && (
-            <NewFeatureRow>
-              <NewLabel>New</NewLabel>
-              <NewFeatureInput
-                placeholder="Enter Title"
-                value={newFeatureTitle}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setNewFeatureTitle(e.target.value)
-                }
-                onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                  if (e.key === 'Enter' && newFeatureTitle.trim().length >= 2 && !isCreating) {
-                    e.preventDefault();
-                    handleCreateFeature();
+            {(activeTab === 'focus' || activeTab === 'all') && (
+              <NewFeatureRow>
+                <NewLabel>New</NewLabel>
+                <NewFeatureInput
+                  placeholder="Enter Title"
+                  value={newFeatureTitle}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setNewFeatureTitle(e.target.value)
                   }
-                }}
-              />
-              <NewBriefInput
-                placeholder="Enter Brief"
-                value={newFeatureBrief}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setNewFeatureBrief(e.target.value)
-                }
-                onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                  if (e.key === 'Enter' && newFeatureTitle.trim().length >= 2 && !isCreating) {
-                    e.preventDefault();
-                    handleCreateFeature();
+                  onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                    if (e.key === 'Enter' && newFeatureTitle.trim().length >= 2 && !isCreating) {
+                      e.preventDefault();
+                      handleCreateFeature();
+                    }
+                  }}
+                />
+                <NewBriefInput
+                  placeholder="Enter Brief"
+                  value={newFeatureBrief}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setNewFeatureBrief(e.target.value)
                   }
-                }}
-                collapsed={collapsed}
-              />
-              <CreateButton
-                disabled={newFeatureTitle.trim().length < 2 || isCreating}
-                onClick={handleCreateFeature}
-              >
-                {isCreating ? 'Creating...' : 'Create'}
-              </CreateButton>
-            </NewFeatureRow>
+                  onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                    if (e.key === 'Enter' && newFeatureTitle.trim().length >= 2 && !isCreating) {
+                      e.preventDefault();
+                      handleCreateFeature();
+                    }
+                  }}
+                  collapsed={collapsed}
+                />
+                <CreateButton
+                  disabled={newFeatureTitle.trim().length < 2 || isCreating}
+                  onClick={handleCreateFeature}
+                >
+                  {isCreating ? 'Creating...' : 'Create'}
+                </CreateButton>
+              </NewFeatureRow>
             )}
           </Table>
         </TableContainer>
