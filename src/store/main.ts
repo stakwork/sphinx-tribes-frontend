@@ -60,7 +60,8 @@ import {
   QuickTicketsResponse,
   BulkConversionResponse,
   BulkTicketToBountyRequest,
-  FeatureCall
+  FeatureCall,
+  FeatureStatus
 } from './interface';
 
 function makeTorSaveURL(host: string, key: string) {
@@ -3585,7 +3586,7 @@ export class MainStore {
     }
   }
 
-  async archiveFeature(uuid: string): Promise<any> {
+  async updateFeatureStatus(uuid: string, status: FeatureStatus): Promise<any> {
     try {
       if (!uiStore.meInfo) return null;
       const info = uiStore.meInfo;
@@ -3596,7 +3597,7 @@ export class MainStore {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ status: 'archived' })
+        body: JSON.stringify({ status })
       });
 
       if (!response.ok) {
@@ -3606,7 +3607,7 @@ export class MainStore {
       const data = await response.json();
       return data;
     } catch (e) {
-      console.log('Error archiveFeature', e);
+      console.log('Error updateFeatureStatus', e);
       return null;
     }
   }
@@ -4796,7 +4797,7 @@ export class MainStore {
     }
   }
 
-  async createStakworkProject(chatQuestion: string): Promise<any | null> {
+  async createStakworkProject(chatQuestion: string): Promise<any> {
     try {
       if (!uiStore.meInfo) return null;
       const info = uiStore.meInfo;
@@ -4856,6 +4857,78 @@ export class MainStore {
       return response.json();
     } catch (error) {
       console.error('Error sending phase plan:', error);
+      return null;
+    }
+  }
+
+  async getFeatureCalls(workspace_uuid: string): Promise<any> {
+    try {
+      if (!uiStore.meInfo) {
+        throw new Error('No user info found');
+      }
+
+      const response = await fetch(`${TribesURL}/features/call/${workspace_uuid}`, {
+        method: 'GET',
+        headers: {
+          'x-jwt': uiStore.meInfo.tribe_jwt,
+          'Content-Type': 'application/json',
+          'x-session-id': this.getSessionId()
+        }
+      });
+
+      if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          throw new Error('No permission');
+        }
+        if (response.status === 404) {
+          throw new Error('Feature call not configured');
+        }
+        throw new Error('Unable to load feature call');
+      }
+
+      const data = await response.json();
+      if (!data?.url) {
+        throw new Error('Feature call not configured');
+      }
+
+      // Validate URL format
+      try {
+        new URL(data.url);
+      } catch (e) {
+        throw new Error('Invalid URL format');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Error in getFeatureCalls:', error);
+      throw error;
+    }
+  }
+
+  async createFeatureCall(workspace_uuid: string): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+
+      const response = await fetch(`${TribesURL}/features/call`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json',
+          'x-session-id': this.getSessionId()
+        },
+        body: JSON.stringify({ workspace_uuid })
+      });
+
+      if (!response.ok) {
+        console.error('Error in createFeatureCall API call', response.statusText);
+        return null;
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error('Error creating feature call:', error);
       return null;
     }
   }

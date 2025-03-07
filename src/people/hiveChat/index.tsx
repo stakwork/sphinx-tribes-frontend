@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useHistory, useParams } from 'react-router-dom';
-import { ChatMessage, Artifact } from 'store/interface';
+import { ChatMessage, Artifact, VisualContent } from 'store/interface';
 import { useStores } from 'store';
 import { createSocketInstance } from 'config/socket';
 import SidebarComponent from 'components/common/SidebarComponent.tsx';
@@ -15,6 +15,7 @@ import { chatHistoryStore } from 'store/chat.ts';
 import { renderMarkdown } from '../utils/RenderMarkdown.tsx';
 import { UploadModal } from '../../components/UploadModal';
 import { useFeatureFlag, useBrowserTabTitle } from '../../hooks';
+import VisualScreenViewer from '../widgetViews/workspace/VisualScreenViewer.tsx';
 import { ModelOption, ModelSelector } from './modelSelector.tsx';
 
 interface RouteParams {
@@ -48,10 +49,17 @@ const Container = styled.div<{ collapsed: boolean }>`
   transition: margin-left 0.3s ease-in-out;
 `;
 
+const ChatBodyWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  padding: 3px 60px 75px !important;
+  flex: 1;
+  overflow: hidden;
+`;
 const ChatBody = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 3px 60px 75px !important;
+  padding: 3px 10px 75px !important;
   flex: 1;
   overflow: hidden;
 `;
@@ -315,6 +323,7 @@ export const HiveChatView: React.FC = observer(() => {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isBuild, setIsBuild] = useState<'Chat' | 'Build'>('Chat');
   const [actionArtifact, setActionArtifact] = useState<Artifact>();
+  const [visualArtifact, setVisualArtifact] = useState<Artifact[]>();
   const [pdfUrl, setPdfUrl] = useState('');
   const { isEnabled: isVerboseLoggingEnabled } = useFeatureFlag('verbose_logging_sw');
   const { isEnabled: isArtifactLoggingEnabled } = useFeatureFlag('log_artefact');
@@ -353,6 +362,26 @@ export const HiveChatView: React.FC = observer(() => {
       ]);
     }
   }, [chat, chatId, ui]);
+
+  useEffect(() => {
+    const refreshChatOnFocus = async () => {
+      try {
+        if (document.visibilityState === 'visible') {
+          await refreshChatHistory();
+        }
+      } catch (error) {
+        console.error('Error refreshing chat history on focus:', error);
+      }
+    };
+
+    window.addEventListener('visibilitychange', refreshChatOnFocus);
+    window.addEventListener('focus', refreshChatOnFocus);
+
+    return () => {
+      window.removeEventListener('visibilitychange', refreshChatOnFocus);
+      window.removeEventListener('focus', refreshChatOnFocus);
+    };
+  }, [refreshChatHistory]);
 
   const updateChatTitle = async (
     chatId: string,
@@ -522,27 +551,50 @@ export const HiveChatView: React.FC = observer(() => {
   const messages = chat.chatMessages[chatId];
 
   useEffect(() => {
-    const processArtifacts = async () => {
-      if (chatHistoryRef.current) {
-        chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
-      }
+    const logArtifacts = async () => {
+      if (chatId && isArtifactLoggingEnabled) {
+        const res = await chat.loadArtifactsForChat(chatId);
+        console.log('Artifacts for that chat', res);
 
-      const systemMessages = messages?.filter((msg) => msg.role !== 'user');
-      const lastSystemMessageId =
-        systemMessages?.length > 0 ? systemMessages[systemMessages.length - 1].id : null;
+        const screenArtifacts = res?.filter(
+          (artifact) =>
+            artifact &&
+            artifact.type === 'visual' &&
+            artifact.content &&
+            'visual_type' in artifact.content &&
+            artifact.content.visual_type === 'screen'
+        );
 
-      if (lastSystemMessageId) {
-        const artifacts = chat.getMessageArtifacts(lastSystemMessageId);
-        for (const artifact of artifacts) {
-          if (artifact.type === 'action' && chat.isActionContent(artifact.content)) {
-            setActionArtifact(artifact);
+        if (screenArtifacts) {
+          setVisualArtifact(screenArtifacts);
+        }
+
+        const systemMessages = messages?.filter((msg) => msg.role !== 'user');
+        const lastSystemMessageId =
+          systemMessages?.length > 0 ? systemMessages[systemMessages.length - 1].id : null;
+
+        if (lastSystemMessageId) {
+          const artifacts = chat.getMessageArtifacts(lastSystemMessageId);
+          for (const artifact of artifacts) {
+            if (artifact.type === 'action' && chat.isActionContent(artifact.content)) {
+              setActionArtifact(artifact);
+            }
           }
         }
       }
     };
+    logArtifacts();
+  }, [chat, chatId, isArtifactLoggingEnabled, messages]);
+
+  useEffect(() => {
+    const processArtifacts = () => {
+      if (chatHistoryRef.current) {
+        chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
+      }
+    };
 
     processArtifacts();
-  }, [chat, chatId, messages]);
+  }, []);
 
   const handleUploadComplete = (url: string) => {
     setPdfUrl(url);
@@ -642,16 +694,6 @@ export const HiveChatView: React.FC = observer(() => {
     [setIsBuild]
   );
 
-  useEffect(() => {
-    const logArtifacts = async () => {
-      if (chatId && isArtifactLoggingEnabled) {
-        const res = await chat.loadArtifactsForChat(chatId);
-        console.log('Artifacts for that chat', res);
-      }
-    };
-    logArtifacts();
-  }, [chat, chatId, isArtifactLoggingEnabled]);
-
   if (loading) {
     return (
       <Container collapsed={collapsed}>
@@ -733,70 +775,75 @@ export const HiveChatView: React.FC = observer(() => {
           </ToggleContainer>
           <ModelSelector selectedModel={selectedModel} onModelChange={setSelectedModel} />
         </Header>
-        <ChatBody>
-          <ChatHistory ref={chatHistoryRef}>
-            {messages.map((msg: ChatMessage) => (
-              <React.Fragment key={msg.id}>
-                <MessageBubble isUser={msg.role === 'user'}>
-                  {renderMarkdown(msg.message, {
-                    codeBlockBackground: '#282c34',
-                    textColor: '#abb2bf',
-                    bubbleTextColor: msg.role === 'user' ? 'white' : '',
-                    borderColor: '#444',
-                    codeBlockFont: 'Courier New'
-                  })}
-                </MessageBubble>
+        <ChatBodyWrapper>
+          <ChatBody>
+            <ChatHistory ref={chatHistoryRef}>
+              {messages.map((msg: ChatMessage) => (
+                <React.Fragment key={msg.id}>
+                  <MessageBubble isUser={msg.role === 'user'}>
+                    {renderMarkdown(msg.message, {
+                      codeBlockBackground: '#282c34',
+                      textColor: '#abb2bf',
+                      bubbleTextColor: msg.role === 'user' ? 'white' : '',
+                      borderColor: '#444',
+                      codeBlockFont: 'Courier New'
+                    })}
+                  </MessageBubble>
 
-                {actionArtifact &&
-                  actionArtifact.messageId === msg.id &&
-                  chat.isActionContent(actionArtifact.content) && (
-                    <MessageBubble isUser={msg.role === 'user'}>
-                      {renderMarkdown(actionArtifact?.content?.actionText, {
-                        codeBlockBackground: '#282c34',
-                        textColor: '#abb2bf',
-                        bubbleTextColor: msg.role === 'user' ? 'white' : '',
-                        borderColor: '#444',
-                        codeBlockFont: 'Courier New'
-                      })}
-                    </MessageBubble>
-                  )}
-              </React.Fragment>
-            ))}
-            {isChainVisible && (
-              <MessageBubble isUser={false}>
-                <h6>Hive - Chain of Thought</h6>
-                <p>
-                  {lastLogLine
-                    ? lastLogLine
-                    : `Hi ${ui.meInfo?.owner_alias}, I've got your message. Let me have a think.`}
-                </p>
-              </MessageBubble>
-            )}
-          </ChatHistory>
-          <InputContainer>
-            <TextArea
-              value={message}
-              onChange={handleMessageChange}
-              onKeyPress={handleKeyPress}
-              placeholder="Type your message..."
-              disabled={isSending}
-            />
-            <AttachButton onClick={() => setIsUploadModalOpen(true)} disabled={isSending}>
-              Attach
-              <AttachIcon icon="attach_file" />
-            </AttachButton>
-            <SendButton onClick={handleSendMessage} disabled={!message.trim() || isSending}>
-              Send
-            </SendButton>
-            {isUploadModalOpen && (
-              <UploadModal
-                isOpen={isUploadModalOpen}
-                onClose={() => setIsUploadModalOpen(false)}
-                onUploadComplete={handleUploadComplete}
+                  {actionArtifact &&
+                    actionArtifact.message_id === msg.id &&
+                    chat.isActionContent(actionArtifact.content) && (
+                      <MessageBubble isUser={msg.role === 'user'}>
+                        {renderMarkdown(actionArtifact?.content?.actionText, {
+                          codeBlockBackground: '#282c34',
+                          textColor: '#abb2bf',
+                          bubbleTextColor: msg.role === 'user' ? 'white' : '',
+                          borderColor: '#444',
+                          codeBlockFont: 'Courier New'
+                        })}
+                      </MessageBubble>
+                    )}
+                </React.Fragment>
+              ))}
+              {isChainVisible && (
+                <MessageBubble isUser={false}>
+                  <h6>Hive - Chain of Thought</h6>
+                  <p>
+                    {lastLogLine
+                      ? lastLogLine
+                      : `Hi ${ui.meInfo?.owner_alias}, I've got your message. Let me have a think.`}
+                  </p>
+                </MessageBubble>
+              )}
+            </ChatHistory>
+            <InputContainer>
+              <TextArea
+                value={message}
+                onChange={handleMessageChange}
+                onKeyPress={handleKeyPress}
+                placeholder="Type your message..."
+                disabled={isSending}
               />
-            )}
-          </InputContainer>
-        </ChatBody>
+              <AttachButton onClick={() => setIsUploadModalOpen(true)} disabled={isSending}>
+                Attach
+                <AttachIcon icon="attach_file" />
+              </AttachButton>
+              <SendButton onClick={handleSendMessage} disabled={!message.trim() || isSending}>
+                Send
+              </SendButton>
+              {isUploadModalOpen && (
+                <UploadModal
+                  isOpen={isUploadModalOpen}
+                  onClose={() => setIsUploadModalOpen(false)}
+                  onUploadComplete={handleUploadComplete}
+                />
+              )}
+            </InputContainer>
+          </ChatBody>
+          {visualArtifact && visualArtifact?.length > 0 && (
+            <VisualScreenViewer artifacts={visualArtifact} />
+          )}
+        </ChatBodyWrapper>
       </Container>
     </>
   );

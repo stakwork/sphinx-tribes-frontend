@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Phase } from 'people/widgetViews/workspace/interface';
 import { Extras } from '../components/form/inputs/widgets/interfaces';
 
@@ -120,6 +121,7 @@ export interface PersonBounty {
   feature_uuid?: string;
   phase_uuid?: string;
   text_snippet_id?: string;
+  access_restriction?: string;
 }
 
 export type WorkspaceTransactionType = 'deposit' | 'payment' | 'withdraw' | 'failed' | 'pending';
@@ -302,6 +304,13 @@ export interface WorkspaceBudget {
   completed_count: number;
 }
 
+export enum FeatureStatus {
+  ACTIVE = 'active',
+  BACKLOG = 'backlog',
+  COMPLETED = 'completed',
+  ARCHIVE = 'archived'
+}
+
 export interface Feature {
   id: number;
   uuid: string;
@@ -319,7 +328,7 @@ export interface Feature {
   updated: string;
   created_by: string;
   updated_by: string;
-  feat_status?: string;
+  feat_status?: FeatureStatus;
 }
 
 export interface FeatureStory {
@@ -537,6 +546,7 @@ export interface ActionContent {
 export interface Artifact {
   id: string;
   messageId: string;
+  message_id?: string;
   type: 'text' | 'visual' | 'action';
   content?: ActionContent | TextContent | VisualContent;
 }
@@ -753,4 +763,12 @@ export interface BulkConversionResponse {
   results: BulkConversionResult[];
   success: boolean;
   message: string;
+}
+
+export interface Featurecall {
+  id: string;
+  workspace_id: string;
+  url: string;
+  created_at: string;
+  updated_at: string;
 }

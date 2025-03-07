@@ -181,4 +181,96 @@ describe('NameTag', () => {
 
     expect(mockHistoryPush).not.toHaveBeenCalled();
   });
+
+  describe('selectPerson functionality', () => {
+    it('does nothing when event object is null', () => {
+      (useIsMobile as jest.Mock).mockReturnValue(false);
+
+      render(<NameTag {...defaultProps} owner_alias="test" id={1} />);
+
+      const nameElement = screen.getByTestId('owner_name');
+      fireEvent.click(nameElement, null as any);
+
+      expect(mockSetSelectedPerson).toHaveBeenCalledWith(1);
+      expect(mockSetSelectingPerson).toHaveBeenCalledWith(1);
+    });
+
+    it('handles normal selection with all properties defined', () => {
+      (useIsMobile as jest.Mock).mockReturnValue(false);
+      const uuid = 'test-uuid';
+      const widget = 'test-widget';
+
+      render(<NameTag {...defaultProps} owner_alias="test" id={1} uuid={uuid} widget={widget} />);
+
+      const nameElement = screen.getByTestId('owner_name');
+      fireEvent.click(nameElement);
+
+      expect(mockSetPersonViewOpenTab).toHaveBeenCalledWith(widget);
+      expect(mockSetSelectedPerson).toHaveBeenCalledWith(1);
+      expect(mockSetSelectingPerson).toHaveBeenCalledWith(1);
+      expect(mockHistoryPush).toHaveBeenCalledWith(`/p/${uuid}`);
+    });
+
+    it('uses empty string when widget is not defined', () => {
+      (useIsMobile as jest.Mock).mockReturnValue(false);
+
+      render(<NameTag {...defaultProps} owner_alias="test" id={1} />);
+
+      const nameElement = screen.getByTestId('owner_name');
+      fireEvent.click(nameElement);
+
+      expect(mockSetPersonViewOpenTab).toHaveBeenCalledWith('');
+      expect(mockSetSelectedPerson).toHaveBeenCalledWith(1);
+      expect(mockSetSelectingPerson).toHaveBeenCalledWith(1);
+    });
+
+    it('handles event with missing stopPropagation', () => {
+      (useIsMobile as jest.Mock).mockReturnValue(false);
+
+      render(<NameTag {...defaultProps} owner_alias="test" id={1} />);
+
+      const nameElement = screen.getByTestId('owner_name');
+      const customEvent = { target: nameElement };
+
+      fireEvent(nameElement, new CustomEvent('click', { detail: customEvent }));
+
+      waitFor(() => {
+        expect(mockSetSelectedPerson).toHaveBeenCalledWith(1);
+        expect(mockSetSelectingPerson).toHaveBeenCalledWith(1);
+      });
+    });
+
+    it('handles mobile selection correctly', () => {
+      (useIsMobile as jest.Mock).mockReturnValue(true);
+      const uuid = 'test-uuid';
+
+      render(<NameTag {...defaultProps} owner_alias="test" id={1} uuid={uuid} />);
+
+      waitFor(() => {
+        const wrapElement = screen.getByRole('img', { hidden: true }).parentElement;
+        fireEvent.click(wrapElement as any);
+
+        expect(mockSetSelectedPerson).toHaveBeenCalledWith(1);
+        expect(mockSetSelectingPerson).toHaveBeenCalledWith(1);
+        expect(mockHistoryPush).toHaveBeenCalledWith(`/p/${uuid}`);
+      });
+    });
+
+    it('preserves existing behavior when selecting already selected person', () => {
+      (useIsMobile as jest.Mock).mockReturnValue(false);
+      (StoreHooks.useStores as jest.Mock).mockReturnValue({
+        main: { getUserAvatarPlaceholder: mockGetUserAvatarPlaceholder },
+        ui: { selectedPerson: 1 }
+      });
+
+      render(<NameTag {...defaultProps} owner_alias="test" id={1} />);
+
+      const nameElement = screen.getByTestId('owner_name');
+      fireEvent.click(nameElement);
+
+      expect(mockSetSelectedPerson).not.toHaveBeenCalled();
+      expect(mockSetSelectingPerson).not.toHaveBeenCalled();
+      expect(mockHistoryPush).not.toHaveBeenCalled();
+    });
+  });
 });

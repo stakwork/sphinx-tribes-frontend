@@ -216,7 +216,7 @@ export class ChatService {
           body = {
             action_webhook: firstOption.webhook,
             chatId: chat_id,
-            messageId: actionArtifact.messageId,
+            messageId: actionArtifact.message_id,
             message,
             sourceWebsocketId: sourceWebsocketID
           };

@@ -424,19 +424,55 @@ const TicketEditor = observer(
           throw new Error('Failed to update ticket');
         }
 
-        const updatedTicket = {
-          ...ticketPayload.ticket,
-          uuid: ticketData.uuid,
-          UUID: ticketData.UUID
-        };
+        const updatedGroupTickets = await main.getTicketsByGroup(ticketData.ticket_group as string);
 
-        workspaceTicketStore.updateTicket(ticketData.uuid, updatedTicket);
-        phaseTicketStore.updateTicket(ticketData.uuid, updatedTicket);
+        if (Array.isArray(updatedGroupTickets)) {
+          const currentGroupId = ticketData.ticket_group as string;
+          const otherWorkspaceTickets = Array.from(workspaceTicketStore.tickets.values()).filter(
+            (t) => t.ticket_group !== currentGroupId
+          );
+          const otherPhaseTickets = phaseTicketStore
+            .getPhaseTickets(ticketData.phase_uuid)
+            .filter((t) => t.ticket_group !== currentGroupId);
 
-        setSelectedVersion(updatedTicket.version);
-        setVersionTicketData(updatedTicket);
+          workspaceTicketStore.clearTickets();
+          phaseTicketStore.clearPhaseTickets(ticketData.phase_uuid);
 
-        onTicketUpdate?.(updatedTicket);
+          otherWorkspaceTickets.forEach((ticket) => workspaceTicketStore.addTicket(ticket));
+          otherPhaseTickets.forEach((ticket) => phaseTicketStore.addTicket(ticket));
+
+          for (const ticket of updatedGroupTickets) {
+            const processedTicket = {
+              ...ticket,
+              uuid: ticket.UUID || ticket.uuid,
+              phase_uuid: ticketData.phase_uuid,
+              ticket_group: currentGroupId
+            };
+
+            workspaceTicketStore.addTicket(processedTicket);
+            phaseTicketStore.addTicket(processedTicket);
+
+            if (ticket.version === ticketData.version + 1) {
+              onTicketUpdate?.(processedTicket);
+            }
+          }
+
+          if (getPhaseTickets) {
+            const phaseTickets = await getPhaseTickets();
+
+            if (Array.isArray(phaseTickets)) {
+              for (const ticket of phaseTickets) {
+                if (ticket.ticket_group !== currentGroupId) {
+                  const processedTicket = {
+                    ...ticket,
+                    uuid: ticket.UUID || ticket.uuid
+                  };
+                  phaseTicketStore.addTicket(processedTicket);
+                }
+              }
+            }
+          }
+        }
 
         addUpdateSuccessToast();
       } catch (error) {

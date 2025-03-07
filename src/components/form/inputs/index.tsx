@@ -171,7 +171,7 @@ export default function Input(props: any) {
       case 'loom':
         return props?.newDesign ? <LoomVideoInputNew {...props} /> : <LoomVideoInput {...props} />;
       case 'switch':
-        return <SwitchInput {...props} />;
+        return <SwitchInput {...props} values={props.values} />;
       case 'select':
         return <SelectInput {...props} />;
       case 'searchableselect':

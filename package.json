@@ -129,9 +129,9 @@
       "@typescript-eslint/typedef": [
         "error",
         {
-          "parameter": true,
+          "parameter": false,
           "objectDestructuring": false,
-          "arrowParameter": true,
+          "arrowParameter": false,
           "memberVariableDeclaration": false
         }
       ],

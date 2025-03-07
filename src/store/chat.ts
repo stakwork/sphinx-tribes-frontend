@@ -44,33 +44,43 @@ export class ChatHistoryStore implements ChatStore {
   }
 
   addArtifact(artifact: Artifact) {
+    const messageId = artifact.messageId || artifact.message_id;
+
+    if (!messageId) {
+      console.error('Artifact is missing messageId:', artifact);
+      return;
+    }
+
     this.artifacts.set(artifact.id, artifact);
 
-    if (!this.messageArtifacts[artifact.messageId]) {
-      this.messageArtifacts[artifact.messageId] = [];
-    }
-    const isDuplicate = this.messageArtifacts[artifact.messageId].some(
-      (a: Artifact) => a.id === artifact.id
-    );
-    if (!isDuplicate) {
-      this.messageArtifacts = {
-        ...this.messageArtifacts,
-        [artifact.messageId]: [...this.messageArtifacts[artifact.messageId], artifact]
-      };
+    if (!this.messageArtifacts[messageId]) {
+      this.messageArtifacts[messageId] = [];
     }
 
-    const message = this.findMessageById(artifact.messageId);
-    if (message && message.chatId) {
-      if (!this.chatArtifacts[message.chatId]) {
-        this.chatArtifacts[message.chatId] = [];
+    const isDuplicate = this.messageArtifacts[messageId].some(
+      (a: Artifact) => a.id === artifact.id
+    );
+
+    if (!isDuplicate) {
+      this.messageArtifacts[messageId].push(artifact);
+    }
+
+    const message = this.findMessageById(messageId);
+    if (message?.chatId) {
+      const { chatId } = message;
+
+      if (!this.chatArtifacts[chatId]) {
+        this.chatArtifacts[chatId] = [];
       }
-      const isDuplicateInChat = this.chatArtifacts[message.chatId].some(
+
+      const isDuplicateInChat = this.chatArtifacts[chatId].some(
         (a: Artifact) => a.id === artifact.id
       );
+
       if (!isDuplicateInChat) {
         this.chatArtifacts = {
           ...this.chatArtifacts,
-          [message.chatId]: [...this.chatArtifacts[message.chatId], artifact]
+          [chatId]: [...this.chatArtifacts[chatId], artifact]
         };
       }
     }
@@ -120,8 +130,17 @@ export class ChatHistoryStore implements ChatStore {
     });
   }
 
-  getMessageArtifacts(messageId: string): Artifact[] {
-    return this.messageArtifacts[messageId] || [];
+  getMessageArtifacts(messageId: string): any {
+    if (!messageId) {
+      console.error('Invalid messageId provided:', messageId);
+      return [];
+    }
+
+    if (this.messageArtifacts[messageId] === undefined) {
+      return [];
+    }
+
+    return this.messageArtifacts[messageId];
   }
 
   getChatArtifacts(chatId: string): Artifact[] {
