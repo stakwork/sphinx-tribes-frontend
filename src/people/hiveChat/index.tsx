@@ -343,6 +343,7 @@ export const HiveChatView: React.FC = observer(() => {
 
   const refreshChatHistory = useCallback(async () => {
     try {
+      setActionArtifact({} as Artifact);
       await chat.loadChatHistory(chatId);
       const selectedChat = chat.getChat(chatId);
       if (selectedChat?.title) {
