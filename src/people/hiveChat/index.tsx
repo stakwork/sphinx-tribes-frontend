@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useHistory, useParams } from 'react-router-dom';
-import { ChatMessage, Artifact, VisualContent } from 'store/interface';
+import { ChatMessage, Artifact, ActionContent } from 'store/interface';
 import { useStores } from 'store';
 import { createSocketInstance } from 'config/socket';
 import SidebarComponent from 'components/common/SidebarComponent.tsx';
@@ -17,6 +17,7 @@ import { UploadModal } from '../../components/UploadModal';
 import { useFeatureFlag, useBrowserTabTitle } from '../../hooks';
 import VisualScreenViewer from '../widgetViews/workspace/VisualScreenViewer.tsx';
 import { ModelOption, ModelSelector } from './modelSelector.tsx';
+import { ActionArtifactRenderer } from './ActionArtifactRenderer';
 
 interface RouteParams {
   uuid: string;
@@ -301,6 +302,9 @@ const connectToLogWebSocket = (
 
   return ws;
 };
+
+const hasButtonOptions = (content: ActionContent): boolean =>
+  content.options && content.options.some((option) => option.action_type === 'button');
 
 export const HiveChatView: React.FC = observer(() => {
   const { uuid, chatId } = useParams<RouteParams>();
@@ -790,9 +794,12 @@ export const HiveChatView: React.FC = observer(() => {
                     })}
                   </MessageBubble>
 
+                  <ActionArtifactRenderer messageId={msg.id} chatId={chatId} />
+
                   {actionArtifact &&
                     actionArtifact.message_id === msg.id &&
-                    chat.isActionContent(actionArtifact.content) && (
+                    chat.isActionContent(actionArtifact.content) &&
+                    !hasButtonOptions(actionArtifact.content) && (
                       <MessageBubble isUser={msg.role === 'user'}>
                         {renderMarkdown(actionArtifact?.content?.actionText, {
                           codeBlockBackground: '#282c34',
