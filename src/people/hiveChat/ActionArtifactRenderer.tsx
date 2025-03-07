@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite';
 import { renderMarkdown } from '../utils/RenderMarkdown.tsx';
 import { ActionContent, Artifact, Option } from '../../store/interface';
 import { useStores } from '../../store';
-import { sendActionResponse } from '../../services/index';
+import { chatService } from '../../services/index';
 import { ActionButtons } from './ActionButtons';
 
 interface ActionArtifactRendererProps {
@@ -12,10 +12,11 @@ interface ActionArtifactRendererProps {
   chatId: string;
 }
 
-const ActionContainer = styled.div`
+const ActionContainer = styled.div<{ isExpanded: boolean }>`
   margin: 8px 0;
-  max-width: 70%;
+  max-width: ${(props) => (props.isExpanded ? '70%' : 'auto')};
   align-self: flex-start;
+  width: ${(props) => (props.isExpanded ? '70%' : 'auto')};
 `;
 
 const ActionBubble = styled.div`
@@ -116,7 +117,7 @@ export const ActionArtifactRenderer: React.FC<ActionArtifactRendererProps> = obs
       try {
         const sourceWebsocketId = localStorage.getItem('websocket_token') || '';
 
-        await sendActionResponse({
+        await chatService.sendActionResponse({
           action_webhook: option.webhook,
           chatId,
           messageId,
@@ -147,7 +148,7 @@ export const ActionArtifactRenderer: React.FC<ActionArtifactRendererProps> = obs
     };
 
     return (
-      <ActionContainer>
+      <ActionContainer isExpanded={selectedOption?.option_response === 'textbox'}>
         <ActionBubble>
           {renderMarkdown(content.actionText, {
             codeBlockBackground: '#282c34',
