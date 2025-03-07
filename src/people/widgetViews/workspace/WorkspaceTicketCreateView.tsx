@@ -20,6 +20,7 @@ import { EuiGlobalToastList } from '@elastic/eui';
 import TicketEditor from 'components/common/TicketEditor/TicketEditor';
 import SidebarComponent from 'components/common/SidebarComponent';
 import styled from 'styled-components';
+import { workspaceTicketStore } from 'store/workspace-ticket';
 import { phaseTicketStore } from '../../../store/phase';
 import StakworkLogsPanel from '../../../components/common/TicketEditor/StakworkLogsPanel';
 import {
@@ -89,10 +90,24 @@ const WorkspaceTicketCreateView: React.FC = observer(() => {
     [selectedFeature, selectedPhase, ticketGroupId]
   );
 
-  useEffect(() => {
-    phaseTicketStore.addTicket(defaultTicket);
-    return () => phaseTicketStore.clearPhaseTickets(defaultTicket.uuid);
-  }, [defaultTicket]);
+  const handleTicketSaved = useCallback(
+    (ticketUuid: string) => {
+      if (ticketUuid) {
+        history.push(`/workspace/${workspaceId}/ticket/${ticketUuid}`);
+      } else {
+        console.error('No ticket UUID received');
+        setToasts([
+          {
+            id: `error-${Date.now()}`,
+            title: 'Something Wrong!',
+            color: 'danger',
+            text: 'Failed to get ticket details'
+          }
+        ]);
+      }
+    },
+    [history, workspaceId]
+  );
 
   const emptyTicket = useMemo(
     () => ({
@@ -104,6 +119,11 @@ const WorkspaceTicketCreateView: React.FC = observer(() => {
     }),
     [defaultTicket, selectedFeature, selectedPhase, ticketGroupId]
   );
+
+  useEffect(() => {
+    phaseTicketStore.addTicket(defaultTicket);
+    return () => phaseTicketStore.clearPhaseTickets(defaultTicket.uuid);
+  }, [defaultTicket]);
 
   useEffect(() => {
     const loadWorkspace = async () => {
@@ -221,18 +241,34 @@ const WorkspaceTicketCreateView: React.FC = observer(() => {
     };
 
     socket.onmessage = async (event: MessageEvent) => {
-      console.log('Raw websocket message received:', event.data);
-
       try {
         const data = JSON.parse(event.data);
-
-        console.log('Parsed websocket message:', data);
 
         if (data.msg === SOCKET_MSG.user_connect) {
           const sessionId = data.body || localStorage.getItem('websocket_token');
           setWebsocketSessionId(sessionId);
-          console.log(`Websocket Session ID: ${sessionId}`);
+
           return;
+        }
+
+        if (data.ticket) {
+          const improvedNewTicket = data.ticket as Ticket;
+          phaseTicketStore.addTicket(improvedNewTicket);
+          workspaceTicketStore.addTicket(improvedNewTicket);
+
+          if (improvedNewTicket.uuid === emptyTicket.uuid) {
+            handleTicketSaved(improvedNewTicket.uuid);
+          }
+        }
+
+        if (data.ticketDetails?.ticketUUID) {
+          const newLogEntry: LogEntry = {
+            timestamp: new Date().toISOString(),
+            projectId: data.projectId,
+            ticketUUID: data.ticketDetails.ticketUUID,
+            message: data.message || JSON.stringify(data)
+          };
+          setLogs((prevLogs) => [...prevLogs, newLogEntry]);
         }
 
         if (data.action === 'swrun' && data.message && data.ticketDetails?.ticketUUID) {
@@ -255,22 +291,23 @@ const WorkspaceTicketCreateView: React.FC = observer(() => {
 
         const ticketMessage = data as TicketMessage;
 
-        console.log('Ticket message before processing:', ticketMessage);
-
         switch (ticketMessage.action) {
           case 'message':
-            console.log('Received ticket message:', ticketMessage.message);
-            console.log('Ticket details:', {
-              broadcastType: ticketMessage.broadcastType,
-              sourceSessionID: ticketMessage.sourceSessionID,
-              action: ticketMessage.action,
-              ticketDetails: ticketMessage.ticketDetails
-            });
+            if (ticketMessage.ticketDetails?.ticketUUID && ticketMessage.message) {
+              const newLogEntry: LogEntry = {
+                timestamp: new Date().toISOString(),
+                projectId: data.projectId,
+                ticketUUID: ticketMessage.ticketDetails.ticketUUID,
+                message: ticketMessage.message
+              };
+              setLogs((prevLogs) => [newLogEntry, ...prevLogs]);
+            }
             break;
 
           case 'process':
-            console.log('Processing ticket update:', ticketMessage.ticketDetails.ticketUUID);
-            await refreshSingleTicket(ticketMessage.ticketDetails.ticketUUID as string);
+            if (!ticketMessage.ticketDetails?.ticketUUID) {
+              await refreshSingleTicket(ticketMessage.ticketDetails.ticketUUID as string);
+            }
             break;
         }
       } catch (error) {
@@ -287,7 +324,7 @@ const WorkspaceTicketCreateView: React.FC = observer(() => {
         socket.close();
       }
     };
-  }, [main]);
+  }, [main, emptyTicket, handleTicketSaved]);
 
   const getPhaseTickets = useCallback(async () => {
     const storeTickets = phaseTicketStore.getPhaseTickets(selectedPhase);
@@ -306,22 +343,6 @@ const WorkspaceTicketCreateView: React.FC = observer(() => {
 
   const handleClose = () => {
     history.push(`/workspace/${workspaceId}/planner`);
-  };
-
-  const handleTicketSaved = (ticketUuid: string) => {
-    if (ticketUuid) {
-      history.push(`/workspace/${workspaceId}/ticket/${ticketUuid}`);
-    } else {
-      console.error('No ticket UUID received');
-      setToasts([
-        {
-          id: `error-${Date.now()}`,
-          title: 'Something Wrong!',
-          color: 'danger',
-          text: 'Failed to get ticket details'
-        }
-      ]);
-    }
   };
 
   const toastsEl = (
