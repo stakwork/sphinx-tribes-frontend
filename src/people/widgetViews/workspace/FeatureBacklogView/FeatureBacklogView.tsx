@@ -5,9 +5,10 @@ import styled from 'styled-components';
 import { useParams, useHistory, useLocation } from 'react-router-dom';
 import { featuresWorkspaceStore } from 'store/features_workspace';
 import { EuiDragDropContext, EuiDraggable, EuiDroppable } from '@elastic/eui';
-import { Feature } from 'store/interface';
+import { Feature, FeatureStatus } from 'store/interface';
 import TabBar from 'components/BountyComponents/TabBar';
 import SidebarComponent from 'components/common/SidebarComponent';
+import { toCapitalize } from 'helpers/helpers-extended';
 import ActivitiesHeader from '../HiveFeaturesView/header';
 
 
@@ -369,10 +370,8 @@ const FeatureBacklogView = observer(() => {
     loadFeatures();
   }, [workspaceUuid]);
 
-  const handleStatusChange = async (feature: Feature, newStatus: string) => {
-    if (newStatus === 'archived') {
-      await featuresWorkspaceStore.archiveFeature(feature.uuid);
-    }
+  const handleStatusChange = async (feature: Feature, newStatus: FeatureStatus) => {
+    await featuresWorkspaceStore.updateFeatureStatus(feature.uuid, newStatus);
 
     const workspaceFeatures = featuresWorkspaceStore.getWorkspaceFeatures(workspaceUuid);
     setFeatures(workspaceFeatures);
@@ -505,8 +504,11 @@ const FeatureBacklogView = observer(() => {
                     }
                   >
                     <option value="all">Status</option>
-                    <option value="active">Active</option>
-                    <option value="archived">Archived</option>
+                    {Object.values(FeatureStatus).map((status) => (
+                      <option key={status} value={status}>
+                        {toCapitalize(status)}
+                      </option>
+                    ))}
                   </HeaderStatusSelect>
                 </Th>
               </tr>
@@ -579,11 +581,14 @@ const FeatureBacklogView = observer(() => {
                                 <StatusSelect
                                   value={feature.feat_status}
                                   onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                                    handleStatusChange(feature, e.target.value)
+                                    handleStatusChange(feature, e.target.value as FeatureStatus)
                                   }
                                 >
-                                  <option value="active">Active</option>
-                                  <option value="archived">Archived</option>
+                                  {Object.values(FeatureStatus).map((status) => (
+                                    <option key={status} value={status}>
+                                      {toCapitalize(status)}
+                                    </option>
+                                  ))}
                                 </StatusSelect>
                               </Td>
                             </TableRow>

@@ -59,7 +59,9 @@ import {
   QuickBountiesResponse,
   QuickTicketsResponse,
   BulkConversionResponse,
-  BulkTicketToBountyRequest
+  BulkTicketToBountyRequest,
+  FeatureCall,
+  FeatureStatus
 } from './interface';
 
 function makeTorSaveURL(host: string, key: string) {
@@ -3584,7 +3586,7 @@ export class MainStore {
     }
   }
 
-  async archiveFeature(uuid: string): Promise<any> {
+  async updateFeatureStatus(uuid: string, status: FeatureStatus): Promise<any> {
     try {
       if (!uiStore.meInfo) return null;
       const info = uiStore.meInfo;
@@ -3595,7 +3597,7 @@ export class MainStore {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ status: 'archived' })
+        body: JSON.stringify({ status })
       });
 
       if (!response.ok) {
@@ -3605,7 +3607,7 @@ export class MainStore {
       const data = await response.json();
       return data;
     } catch (e) {
-      console.log('Error archiveFeature', e);
+      console.log('Error updateFeatureStatus', e);
       return null;
     }
   }
@@ -4153,6 +4155,82 @@ export class MainStore {
       return response.json();
     } catch (e) {
       console.log('Error deleteCodeGraph', e);
+      return null;
+    }
+  }
+
+  async getWorkspaceFeatureCall(workspace_uuid: string): Promise<FeatureCall | null> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+      const response = await fetch(`${TribesURL}/features/call/${workspace_uuid}`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json',
+          'x-session-id': this.getSessionId()
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return response.json();
+    } catch (e) {
+      console.log('Error getWorkspaceFeatureCall', e);
+      return null;
+    }
+  }
+
+  async createOrUpdateFeatureCall(featureCall: FeatureCall): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+      const response = await fetch(`${TribesURL}/features/call`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json',
+          'x-session-id': this.getSessionId()
+        },
+        body: JSON.stringify(featureCall)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return response.json();
+    } catch (e) {
+      console.log('Error createOrUpdateFeatureCall', e);
+      return null;
+    }
+  }
+
+  async deleteFeatureCall(workspace_uuid: string): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+      const response = await fetch(`${TribesURL}/features/call/${workspace_uuid}`, {
+        method: 'DELETE',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json',
+          'x-session-id': this.getSessionId()
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return response.json();
+    } catch (e) {
+      console.log('Error deleteFeatureCall', e);
       return null;
     }
   }
