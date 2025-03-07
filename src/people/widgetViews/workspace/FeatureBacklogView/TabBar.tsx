@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { FeatureStatus, FeatureTabLabels } from 'store/interface';
 
 const Container = styled.div`
   position: relative;
@@ -64,27 +65,29 @@ const TabButton = styled.button<{ isSelected: boolean }>`
 `;
 
 interface TabBarProps {
-  activeTab: string;
-  onTabChange: (tab: string) => void;
+  activeTab: FeatureTabLabels;
+  onTabChange: (tab: FeatureTabLabels) => void;
 }
 
-const TabBar: React.FC<TabBarProps> = ({ activeTab, onTabChange }) => (
-  <Container>
-    <TabWrapper>
-      <TabButton isSelected={activeTab === 'focus'} onClick={() => onTabChange('focus')}>
-        Focus
-      </TabButton>
-      <TabButton isSelected={activeTab === 'all'} onClick={() => onTabChange('all')}>
-        All
-      </TabButton>
-      <TabButton isSelected={activeTab === 'backlog'} onClick={() => onTabChange('backlog')}>
-        Backlog
-      </TabButton>
-      <TabButton isSelected={activeTab === 'archive'} onClick={() => onTabChange('archive')}>
-        Archive
-      </TabButton>
-    </TabWrapper>
-  </Container>
-);
+const TabBar: React.FC<TabBarProps> = ({ activeTab, onTabChange }) => {
+  const tabs: Array<{ id: FeatureTabLabels; label: string }> = [
+    { id: 'focus', label: 'Focus' },
+    { id: 'all', label: 'All' },
+    { id: FeatureStatus.BACKLOG, label: 'Backlog' },
+    { id: FeatureStatus.ARCHIVE, label: 'Archive' }
+  ];
+
+  return (
+    <Container>
+      <TabWrapper>
+        {tabs.map(({ id, label }) => (
+          <TabButton key={id} isSelected={activeTab === id} onClick={() => onTabChange(id)}>
+            {label}
+          </TabButton>
+        ))}
+      </TabWrapper>
+    </Container>
+  );
+};
 
 export default TabBar;

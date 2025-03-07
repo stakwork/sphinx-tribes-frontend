@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { useParams, useHistory } from 'react-router-dom';
 import { featuresWorkspaceStore } from 'store/features_workspace';
 import { EuiDragDropContext, EuiDraggable, EuiDroppable } from '@elastic/eui';
-import { Feature, FeatureStatus } from 'store/interface';
+import { Feature, FeatureStatus, FeatureTabLabels, TAB_TO_STATUS_MAP } from 'store/interface';
 import SidebarComponent from 'components/common/SidebarComponent';
 import { toCapitalize } from 'helpers/helpers-extended';
 import { DropResult } from 'react-beautiful-dnd';
@@ -341,7 +341,10 @@ const FeatureBacklogView = observer(() => {
   const [newFeatureTitle, setNewFeatureTitle] = useState('');
   const [newFeatureBrief, setNewFeatureBrief] = useState('');
   const [isCreating, setIsCreating] = useState(false);
-  const [activeTab, setActiveTab] = useState<string>('focus');
+  const [activeTab, setActiveTab] = useState<FeatureTabLabels>(() => {
+    const params = new URLSearchParams(window.location.search);
+    return (params.get('tab') as FeatureTabLabels) || 'focus';
+  });
 
   useEffect(() => {
     const handleCollapseChange = (e: Event) => {
@@ -435,28 +438,20 @@ const FeatureBacklogView = observer(() => {
     history.push(`/workspace/${workspaceUuid}/feature/${featureUuid}`);
   };
 
-  const handleTabChange = (tab: string) => {
+  const handleTabChange = (tab: FeatureTabLabels) => {
     setActiveTab(tab);
 
-    switch (tab) {
-      case 'focus':
-        setStatusFilter('active');
-        break;
-      case 'all':
-        setStatusFilter('all');
-        break;
-      case 'backlog':
-        setStatusFilter('backlog');
-        break;
-      case 'archive':
-        setStatusFilter('archived');
-        break;
-      default:
-        setStatusFilter('all');
-    }
+    const searchParams = new URLSearchParams(window.location.search);
+    searchParams.set('tab', tab);
+    history.push({
+      pathname: window.location.pathname,
+      search: searchParams.toString()
+    });
+
+    setStatusFilter(TAB_TO_STATUS_MAP[tab]);
   };
 
-  const isDragEnabled = activeTab === 'all';
+  const showNewFeatureRow = activeTab === 'focus' || activeTab === 'all';
 
   return (
     <MainContainer>
@@ -531,7 +526,7 @@ const FeatureBacklogView = observer(() => {
                               <Td>
                                 <PriorityCell>
                                   <DragHandle {...provided.dragHandleProps}>
-                                    {isDragEnabled && (
+                                    {activeTab === 'all' && (
                                       <MaterialIcon
                                         icon="drag_indicator"
                                         style={{ fontSize: '20px' }}
@@ -573,7 +568,7 @@ const FeatureBacklogView = observer(() => {
                 </tbody>
               </EuiDroppable>
             </EuiDragDropContext>
-            {(activeTab === 'focus' || activeTab === 'all' || activeTab === 'backlog') && (
+            {showNewFeatureRow && (
               <NewFeatureRow>
                 <NewLabel>New</NewLabel>
                 <NewFeatureInput
