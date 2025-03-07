@@ -311,6 +311,8 @@ export enum FeatureStatus {
   ARCHIVE = 'archived'
 }
 
+export type FeatureTabLabels = `${Exclude<FeatureStatus, FeatureStatus.COMPLETED | FeatureStatus.ACTIVE>}` | 'focus' | 'all';
+
 export interface Feature {
   id: number;
   uuid: string;

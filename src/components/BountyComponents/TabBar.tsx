@@ -1,4 +1,5 @@
 import React from 'react';
+import { FeatureTabLabels } from 'store/interface';
 import styled from 'styled-components';
 
 const TabContainer = styled.div`
@@ -46,8 +47,8 @@ const Tab = styled.div<{ active: boolean }>`
 `;
 
 interface TabBarProps {
-  activeTab: string;
-  onTabChange: (tab: string) => void;
+  activeTab: FeatureTabLabels;
+  onTabChange: (tab: FeatureTabLabels) => void;
 }
 
 const TabBar: React.FC<TabBarProps> = ({ activeTab, onTabChange }) => (
@@ -61,7 +62,7 @@ const TabBar: React.FC<TabBarProps> = ({ activeTab, onTabChange }) => (
       <Tab active={activeTab === 'backlog'} onClick={() => onTabChange('backlog')}>
         Backlog
       </Tab>
-      <Tab active={activeTab === 'archive'} onClick={() => onTabChange('archive')}>
+      <Tab active={activeTab === 'archived'} onClick={() => onTabChange('archived')}>
         Archive
       </Tab>
     </TabContainer>

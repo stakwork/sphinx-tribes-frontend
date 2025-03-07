@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { useParams, useHistory, useLocation } from 'react-router-dom';
 import { featuresWorkspaceStore } from 'store/features_workspace';
 import { EuiDragDropContext, EuiDraggable, EuiDroppable } from '@elastic/eui';
-import { Feature, FeatureStatus } from 'store/interface';
+import { Feature, FeatureStatus, FeatureTabLabels } from 'store/interface';
 import TabBar from 'components/BountyComponents/TabBar';
 import SidebarComponent from 'components/common/SidebarComponent';
 import { toCapitalize } from 'helpers/helpers-extended';
@@ -123,27 +123,7 @@ const Td = styled.td<TdProps>`
     width: 15%;
     min-width: 150px;
     text-align: right;
-    // padding-right: 24px;
   }
-
-  // &:first-child {
-  //   width: 100px;
-  //   min-width: 100px;
-  // }
-  // &:nth-child(2) {
-  //   width: 350px;
-  //   min-width: 350px;
-  // }
-  // &:nth-child(3) {
-  //   width: ${({ collapsed }: any) => (collapsed ? '930px' : '730px')};
-  //   min-width: ${({ collapsed }: any) => (collapsed ? '930px' : '730px')};
-  // }
-  // &:last-child {
-  //   width: 200px;
-  //   min-width: 200px;
-  //   text-align: right;
-  //   padding-right: 24px;
-  // }
 `;
 
 const Th = styled.th`
@@ -173,24 +153,6 @@ const Th = styled.th`
     min-width: 150px;
     position: relative;
   }
-
-  // &:first-child {
-  //   width: 105px;
-  //   min-width: 105px;
-  // }
-  // &:nth-child(2) {
-  //   width: 350px;
-  //   min-width: 350px;
-  // }
-  // &:nth-child(3) {
-  //   width: calc(100% - 600px);
-  //   min-width: 300px;
-  // }
-  // &:last-child {
-  //   width: 200px;
-  //   min-width: 200px;
-  //   position: relative;
-  // }
 `;
 
 const DragHandle = styled.div`
@@ -381,9 +343,9 @@ const FeatureBacklogView = observer(() => {
   const [newFeatureTitle, setNewFeatureTitle] = useState('');
   const [newFeatureBrief, setNewFeatureBrief] = useState('');
   const [isCreating, setIsCreating] = useState(false);
-  const [activeTab, setActiveTab] = useState<string>(() => {
+  const [activeTab, setActiveTab] = useState<FeatureTabLabels>(() => {
     const searchParams = new URLSearchParams(location.search);
-    return searchParams.get('tab') || 'focus';
+    return searchParams.get('tab') as FeatureTabLabels || 'focus';
   });
 
   useEffect(() => {
@@ -478,7 +440,7 @@ const FeatureBacklogView = observer(() => {
     history.push(`/workspace/${workspaceUuid}/feature/${featureUuid}`);
   };
 
-  const handleTabChange = (tab: string) => {
+  const handleTabChange = (tab: FeatureTabLabels) => {
     setActiveTab(tab);
 
     const searchParams = new URLSearchParams(location.search);
@@ -488,22 +450,7 @@ const FeatureBacklogView = observer(() => {
       search: searchParams.toString()
     });
 
-    switch (tab) {
-      case 'focus':
-        setStatusFilter('active');
-        break;
-      case 'all':
-        setStatusFilter('all');
-        break;
-      case 'backlog':
-        setStatusFilter('backlog');
-        break;
-      case 'archive':
-        setStatusFilter('archived');
-        break;
-      default:
-        setStatusFilter('all');
-    }
+    setStatusFilter(tab === 'focus' ? 'active' : tab);
   };
 
   const isDragEnabled = activeTab === 'all';
