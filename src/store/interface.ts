@@ -772,3 +772,12 @@ export interface Featurecall {
   created_at: string;
   updated_at: string;
 }
+
+export type FeatureTabLabels = 'focus' | 'all' | FeatureStatus.BACKLOG | FeatureStatus.ARCHIVE;
+
+export const TAB_TO_STATUS_MAP: Record<FeatureTabLabels, FeatureStatus | 'all'> = {
+  focus: FeatureStatus.ACTIVE,
+  all: 'all',
+  [FeatureStatus.BACKLOG]: FeatureStatus.BACKLOG,
+  [FeatureStatus.ARCHIVE]: FeatureStatus.ARCHIVE
+} as const;
