@@ -240,7 +240,7 @@ const PaginationContainer = styled.div`
   grid-template-columns: 24px auto 24px;
   justify-content: center;
   align-items: center;
-  padding: 15px 15px;
+  padding: 15px 15px; //cange here
   margin-left: -34px;
   text-align: center;
   gap: 12px;
