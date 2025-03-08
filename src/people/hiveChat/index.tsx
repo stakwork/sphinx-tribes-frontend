@@ -3,6 +3,7 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useHistory, useParams } from 'react-router-dom';
 import { ChatMessage, Artifact, ActionContent } from 'store/interface';
+import { ChatMessage, Artifact } from 'store/interface';
 import { useStores } from 'store';
 import { createSocketInstance } from 'config/socket';
 import SidebarComponent from 'components/common/SidebarComponent.tsx';
@@ -328,6 +329,7 @@ export const HiveChatView: React.FC = observer(() => {
   const [isBuild, setIsBuild] = useState<'Chat' | 'Build'>('Chat');
   const [actionArtifact, setActionArtifact] = useState<Artifact>();
   const [visualArtifact, setVisualArtifact] = useState<Artifact[]>();
+  const [codeArtifact, setCodeArtifacts] = useState<Artifact[]>();
   const [pdfUrl, setPdfUrl] = useState('');
   const { isEnabled: isVerboseLoggingEnabled } = useFeatureFlag('verbose_logging_sw');
   const { isEnabled: isArtifactLoggingEnabled } = useFeatureFlag('log_artefact');
@@ -571,6 +573,19 @@ export const HiveChatView: React.FC = observer(() => {
 
         if (screenArtifacts) {
           setVisualArtifact(screenArtifacts);
+        }
+
+        const codeArtifacts = res?.filter(
+          (artifact) =>
+            artifact &&
+            artifact.type === 'text' &&
+            artifact.content &&
+            'text_type' in artifact.content &&
+            artifact.content.text_type === 'code'
+        );
+
+        if (codeArtifacts) {
+          setCodeArtifacts(codeArtifacts);
         }
 
         const systemMessages = messages?.filter((msg) => msg.role !== 'user');
@@ -851,9 +866,13 @@ export const HiveChatView: React.FC = observer(() => {
               )}
             </InputContainer>
           </ChatBody>
-          {visualArtifact && visualArtifact?.length > 0 && (
-            <VisualScreenViewer artifacts={visualArtifact} />
-          )}
+          {(visualArtifact && visualArtifact.length > 0) ||
+          (codeArtifact && codeArtifact.length > 0) ? (
+            <VisualScreenViewer
+              visualArtifact={visualArtifact ?? []}
+              codeArtifact={codeArtifact ?? []}
+            />
+          ) : null}
         </ChatBodyWrapper>
       </Container>
     </>

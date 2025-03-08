@@ -5,10 +5,12 @@ import styled from 'styled-components';
 import { useParams, useHistory } from 'react-router-dom';
 import { featuresWorkspaceStore } from 'store/features_workspace';
 import { EuiDragDropContext, EuiDraggable, EuiDroppable } from '@elastic/eui';
-import { Feature, FeatureStatus } from 'store/interface';
+import { Feature, FeatureStatus, FeatureTabLabels, TAB_TO_STATUS_MAP } from 'store/interface';
 import SidebarComponent from 'components/common/SidebarComponent';
 import { toCapitalize } from 'helpers/helpers-extended';
+import { DropResult } from 'react-beautiful-dnd';
 import ActivitiesHeader from '../HiveFeaturesView/header';
+import TabBar from './TabBar';
 
 const MainContainer = styled.div`
   flex-grow: 1;
@@ -339,6 +341,10 @@ const FeatureBacklogView = observer(() => {
   const [newFeatureTitle, setNewFeatureTitle] = useState('');
   const [newFeatureBrief, setNewFeatureBrief] = useState('');
   const [isCreating, setIsCreating] = useState(false);
+  const [activeTab, setActiveTab] = useState<FeatureTabLabels>(() => {
+    const params = new URLSearchParams(window.location.search);
+    return (params.get('tab') as FeatureTabLabels) || 'focus';
+  });
 
   useEffect(() => {
     const handleCollapseChange = (e: Event) => {
@@ -377,7 +383,8 @@ const FeatureBacklogView = observer(() => {
     await featuresWorkspaceStore.updateFeaturePriority(feat.uuid, priority);
   };
 
-  const onDragEnd = ({ source, destination }: any) => {
+  const onDragEnd = (result: DropResult) => {
+    const { source, destination } = result;
     if (source && destination && source.index !== destination.index) {
       const updatedFeatures = [...features];
 
@@ -394,7 +401,6 @@ const FeatureBacklogView = observer(() => {
       setFeatures(updatedFeatures);
 
       const dragIndex = updatedFeatures.findIndex((feat: Feature) => feat.uuid === movedItem.uuid);
-
       const dropIndex = updatedFeatures.findIndex((feat: Feature) => feat.uuid === dropItem.uuid);
 
       handleReorderFeatures(movedItem, dragIndex + 1);
@@ -432,6 +438,21 @@ const FeatureBacklogView = observer(() => {
     history.push(`/workspace/${workspaceUuid}/feature/${featureUuid}`);
   };
 
+  const handleTabChange = (tab: FeatureTabLabels) => {
+    setActiveTab(tab);
+
+    const searchParams = new URLSearchParams(window.location.search);
+    searchParams.set('tab', tab);
+    history.push({
+      pathname: window.location.pathname,
+      search: searchParams.toString()
+    });
+
+    setStatusFilter(TAB_TO_STATUS_MAP[tab]);
+  };
+
+  const showNewFeatureRow = activeTab === 'focus' || activeTab === 'all';
+
   return (
     <MainContainer>
       <SidebarComponent uuid={workspaceUuid} />
@@ -446,6 +467,7 @@ const FeatureBacklogView = observer(() => {
       </FeatureHeadNameWrap>
       <BacklogContainer collapsed={collapsed}>
         <TableContainer>
+          <TabBar activeTab={activeTab} onTabChange={handleTabChange} />
           <Table>
             <thead>
               <tr>
@@ -504,10 +526,12 @@ const FeatureBacklogView = observer(() => {
                               <Td>
                                 <PriorityCell>
                                   <DragHandle {...provided.dragHandleProps}>
-                                    <MaterialIcon
-                                      icon="drag_indicator"
-                                      style={{ fontSize: '20px' }}
-                                    />
+                                    {activeTab === 'all' && (
+                                      <MaterialIcon
+                                        icon="drag_indicator"
+                                        style={{ fontSize: '20px' }}
+                                      />
+                                    )}
                                   </DragHandle>
                                   {index + 1}
                                 </PriorityCell>
@@ -544,42 +568,44 @@ const FeatureBacklogView = observer(() => {
                 </tbody>
               </EuiDroppable>
             </EuiDragDropContext>
-            <NewFeatureRow>
-              <NewLabel>New</NewLabel>
-              <NewFeatureInput
-                placeholder="Enter Title"
-                value={newFeatureTitle}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setNewFeatureTitle(e.target.value)
-                }
-                onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                  if (e.key === 'Enter' && newFeatureTitle.trim().length >= 2 && !isCreating) {
-                    e.preventDefault();
-                    handleCreateFeature();
+            {showNewFeatureRow && (
+              <NewFeatureRow>
+                <NewLabel>New</NewLabel>
+                <NewFeatureInput
+                  placeholder="Enter Title"
+                  value={newFeatureTitle}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setNewFeatureTitle(e.target.value)
                   }
-                }}
-              />
-              <NewBriefInput
-                placeholder="Enter Brief"
-                value={newFeatureBrief}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setNewFeatureBrief(e.target.value)
-                }
-                onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                  if (e.key === 'Enter' && newFeatureTitle.trim().length >= 2 && !isCreating) {
-                    e.preventDefault();
-                    handleCreateFeature();
+                  onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                    if (e.key === 'Enter' && newFeatureTitle.trim().length >= 2 && !isCreating) {
+                      e.preventDefault();
+                      handleCreateFeature();
+                    }
+                  }}
+                />
+                <NewBriefInput
+                  placeholder="Enter Brief"
+                  value={newFeatureBrief}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setNewFeatureBrief(e.target.value)
                   }
-                }}
-                collapsed={collapsed}
-              />
-              <CreateButton
-                disabled={newFeatureTitle.trim().length < 2 || isCreating}
-                onClick={handleCreateFeature}
-              >
-                {isCreating ? 'Creating...' : 'Create'}
-              </CreateButton>
-            </NewFeatureRow>
+                  onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                    if (e.key === 'Enter' && newFeatureTitle.trim().length >= 2 && !isCreating) {
+                      e.preventDefault();
+                      handleCreateFeature();
+                    }
+                  }}
+                  collapsed={collapsed}
+                />
+                <CreateButton
+                  disabled={newFeatureTitle.trim().length < 2 || isCreating}
+                  onClick={handleCreateFeature}
+                >
+                  {isCreating ? 'Creating...' : 'Create'}
+                </CreateButton>
+              </NewFeatureRow>
+            )}
           </Table>
         </TableContainer>
       </BacklogContainer>
