@@ -533,7 +533,7 @@ export interface TextContent {
 }
 
 export interface VisualContent {
-  text_type?: 'img' | 'view' | 'vm';
+  visual_type?: 'img' | 'view' | 'vm' | 'screen';
   url?: string;
   examples?: Example[];
 }

@@ -7,12 +7,13 @@ const ViewerContainer = styled.div`
   display: flex;
   flex-direction: column;
   border-radius: 8px;
-  width: 60%;
+  width: 70%;
   height: calc(100% - 100px);
   background-color: #f9f9f9;
   border-left: 1px solid #ddd;
   padding: 16px;
   box-sizing: border-box;
+  margin: 4px 0 0 6px;
 `;
 
 const TabContainer = styled.div`
