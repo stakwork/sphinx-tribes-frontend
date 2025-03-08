@@ -6,7 +6,6 @@ import { ChatMessage, Artifact } from 'store/interface';
 import { useStores } from 'store';
 import { createSocketInstance } from 'config/socket';
 import SidebarComponent from 'components/common/SidebarComponent.tsx';
-import ActivitiesHeader from 'people/widgetViews/workspace/Activities/header.tsx';
 import { SOCKET_MSG } from 'config/socket';
 import styled from 'styled-components';
 import { EuiLoadingSpinner } from '@elastic/eui';
