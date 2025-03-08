@@ -52,14 +52,14 @@ const Container = styled.div<{ collapsed: boolean }>`
 const ChatBodyWrapper = styled.div`
   display: flex;
   flex-direction: row;
-  padding: 3px 60px 75px !important;
+  padding: 3px 5px 0 !important;
   flex: 1;
   overflow: hidden;
 `;
 const ChatBody = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 3px 10px 75px !important;
+  padding: 3px 5px 60px !important;
   flex: 1;
   overflow: hidden;
 `;
@@ -120,10 +120,14 @@ const ChatHistory = styled.div`
   min-height: 0;
 `;
 
+const HiveThoughts = styled.h6`
+  margin-top: 20px;
+`;
+
 const MessageBubble = styled.div<MessageBubbleProps>`
   max-width: 70%;
   margin: 12px 0;
-  padding: 0px 20px;
+  padding: 0 20px;
   border-radius: 16px;
   word-wrap: break-word;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -247,17 +251,17 @@ const ToggleButton = styled.button<{ isActive: boolean }>`
   ${({ isActive }) =>
     isActive
       ? `
-    background-color: #007bff;
-    color: white;
-    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
-  `
+   background-color: #007bff;
+   color: white;
+   box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+ `
       : `
-    background-color: transparent;
-    color: #333;
-    &:hover {
-      background-color: rgba(0, 123, 255, 0.1);
-    }
-  `}
+   background-color: transparent;
+   color: #333;
+   &:hover {
+     background-color: rgba(0, 123, 255, 0.1);
+   }
+ `}
 `;
 
 const connectToLogWebSocket = (
@@ -315,7 +319,7 @@ export const HiveChatView: React.FC = observer(() => {
   const history = useHistory();
   const [isUpdatingTitle, setIsUpdatingTitle] = useState(false);
   const [projectId, setProjectId] = useState('');
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [isChainVisible, setIsChainVisible] = useState(false);
   const [lastLogLine, setLastLogLine] = useState('');
@@ -728,10 +732,8 @@ export const HiveChatView: React.FC = observer(() => {
 
   return (
     <>
-      <SidebarComponent uuid={uuid} />
+      <SidebarComponent uuid={uuid} defaultCollapsed />
       <Container collapsed={collapsed}>
-        <ActivitiesHeader uuid={uuid} />
-
         <Header>
           <MaterialIcon
             onClick={handleBackClick}
@@ -821,7 +823,7 @@ export const HiveChatView: React.FC = observer(() => {
               ))}
               {isChainVisible && (
                 <MessageBubble isUser={false}>
-                  <h6>Hive - Chain of Thought</h6>
+                  <HiveThoughts>Hive - Chain of Thought</HiveThoughts>
                   <p>
                     {lastLogLine
                       ? lastLogLine
