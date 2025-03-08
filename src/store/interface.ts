@@ -567,6 +567,14 @@ export interface ChatMessage {
   artifacts?: Artifact[];
 }
 
+export interface ActionResponsePayload {
+  action_webhook: string;
+  chatId: string;
+  messageId: string;
+  message: string;
+  sourceWebsocketId: string;
+}
+
 export interface Chat {
   id: string;
   workspaceId: string;
