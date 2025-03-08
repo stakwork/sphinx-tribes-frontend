@@ -794,7 +794,11 @@ export const HiveChatView: React.FC = observer(() => {
                     })}
                   </MessageBubble>
 
-                  <ActionArtifactRenderer messageId={msg.id} chatId={chatId} />
+                  <ActionArtifactRenderer
+                    messageId={msg.id}
+                    chatId={chatId}
+                    websocketSessionId={websocketSessionId}
+                  />
 
                   {actionArtifact &&
                     actionArtifact.message_id === msg.id &&
