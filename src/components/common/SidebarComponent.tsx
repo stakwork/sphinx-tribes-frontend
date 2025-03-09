@@ -49,6 +49,10 @@ const SidebarContainer = styled.div<{ collapsed: boolean }>`
   box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
   overflow-y: auto;
 
+  @media (max-width: 768px) {
+    width: ${({ collapsed }) => (collapsed ? '60px' : '100%')};
+  }
+
   &::-webkit-scrollbar {
     width: 4px;
   }
@@ -70,6 +74,11 @@ const HamburgerButton = styled.button`
   margin-top: 80px;
   margin-left: 10px;
   z-index: 1000;
+
+  @media (max-width: 768px) {
+    margin-top: 110px;
+    transition: left 0.3s ease-in-out;
+  }
 `;
 
 const NavItem = styled.div<{ collapsed: boolean; active?: boolean }>`
@@ -396,10 +405,6 @@ export default function SidebarComponent({
 
   const toggleFeatures = () => {
     setIsFeaturesExpanded(!isFeaturesExpanded);
-  };
-
-  const toggleWorkspace = () => {
-    setIsWorkspaceExpanded(!isWorkspaceExpanded);
   };
 
   const handleWorkspaceClick = (uuid: string) => {
