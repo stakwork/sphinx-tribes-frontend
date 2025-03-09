@@ -253,6 +253,18 @@ const EuiPopOverCheckboxLeft = styled.div<styledProps>`
       }
     }
   }
+  @media (max-width: 768px) {
+    padding: 5px 18px;
+    .leftBoxHeading {
+      margin-bottom: 5px;
+    }
+
+    .euiCheckboxGroup__item {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+  }
 `;
 
 const PopOverRightBox = styled.div<styledProps>`
@@ -269,6 +281,12 @@ const PopOverRightBox = styled.div<styledProps>`
     text-transform: uppercase;
     color: ${(p: any) => p.color && p.color.grayish.G100};
   }
+  @media (max-width: 768px) {
+    padding: 5px 0px 5px 21px;
+    .rightBoxHeading {
+      margin-bottom: 5px;
+    }
+  }
 `;
 
 const EuiPopOverCheckboxRight = styled.div<styledProps>`
@@ -278,7 +296,6 @@ const EuiPopOverCheckboxRight = styled.div<styledProps>`
   user-select: none;
 
   &.CheckboxOuter > div {
-    height: 100%;
     display: grid;
     grid-template-columns: 1fr 1fr;
     justify-content: center;
@@ -657,22 +674,18 @@ const BountyHeader = ({
                 border: 'none',
                 boxShadow: `0px 1px 20px ${color.black90}`,
                 background: `${color.pureWhite}`,
-                borderRadius: '6px',
-                minWidth: '432px',
-                minHeight: '304px',
-                marginTop: '0px',
-                marginLeft: '20px'
+                borderRadius: '6px'
               }}
               isOpen={isPopoverOpen}
               closePopover={closePopover}
               panelClassName="yourClassNameHere"
               panelPaddingSize="none"
-              anchorPosition="downLeft"
+              anchorPosition="downRight"
             >
               <div
                 style={{
                   display: 'flex',
-                  flexDirection: 'row'
+                  flexDirection: 'column'
                 }}
               >
                 <EuiPopOverCheckboxLeft className="CheckboxOuter" color={color}>
