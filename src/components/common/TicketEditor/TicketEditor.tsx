@@ -34,6 +34,7 @@ import { uiStore } from '../../../store/ui';
 import { Select, Option } from '../../../people/widgetViews/workspace/style.ts';
 import { useDeleteConfirmationModal } from '../DeleteConfirmationModal';
 import { useFeatureFlag } from '../../../hooks/useFeatureFlag.ts';
+import { checkSocketFreshness, updateLastActiveTime } from '../../../config/socket';
 import { TicketTextAreaComp } from './TicketTextArea.tsx';
 
 interface LogEntry {
@@ -297,6 +298,7 @@ const TicketEditor = observer(
     const ui = uiStore;
     const { openDeleteConfirmation } = useDeleteConfirmationModal();
     const { isEnabled } = useFeatureFlag('thinking');
+    const [isReconnecting, setIsReconnecting] = useState(false);
 
     const groupTickets = useMemo(
       () => phaseTicketStore.getTicketsByGroup(ticketData.ticket_group as string),
@@ -396,8 +398,20 @@ const TicketEditor = observer(
       setIsOptionsMenuVisible(!isOptionsMenuVisible);
     };
 
+    const ensureWebSocketFreshness = useCallback(() => {
+      const isFresh = checkSocketFreshness();
+      if (!isFresh) {
+        setIsReconnecting(true);
+        setTimeout(() => setIsReconnecting(false), 2000);
+      }
+      return isFresh;
+    }, []);
+
     const handleUpdate = async () => {
       if (isButtonDisabled) return;
+
+      ensureWebSocketFreshness();
+
       try {
         const ticketPayload = {
           metadata: {
@@ -417,6 +431,8 @@ const TicketEditor = observer(
             ticket_group: ticketData.ticket_group || ticketData.uuid
           }
         };
+
+        updateLastActiveTime();
 
         const response = await main.createUpdateTicket(ticketPayload);
 
@@ -504,6 +520,8 @@ const TicketEditor = observer(
     };
 
     const handleTicketBuilder = async () => {
+      ensureWebSocketFreshness();
+
       try {
         const ticketPayload = {
           metadata: {
@@ -521,6 +539,8 @@ const TicketEditor = observer(
             mode: isThinking
           }
         };
+
+        updateLastActiveTime();
 
         const response = await main.sendTicketForReview(ticketPayload);
 
@@ -699,6 +719,20 @@ const TicketEditor = observer(
       },
       [isEnabled, setIsThinking]
     );
+
+    useEffect(() => {
+      if (isReconnecting) {
+        setToasts((prev) => [
+          ...prev,
+          {
+            id: `${Date.now()}-reconnecting`,
+            title: 'Reconnecting',
+            color: 'primary',
+            text: 'Reconnecting to server...'
+          }
+        ]);
+      }
+    }, [isReconnecting]);
 
     return (
       <TicketContainer>
