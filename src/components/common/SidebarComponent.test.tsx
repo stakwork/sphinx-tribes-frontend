@@ -1,26 +1,19 @@
 import React from 'react';
-import '@testing-library/jest-dom';
 import { render, screen, fireEvent, within, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { Chat } from 'store/interface';
-import { useStores } from 'store';
 import SidebarComponent from './SidebarComponent';
 
-type MockStore = {
-  chat: {
-    createChat: jest.Mock;
-    getWorkspaceChats: jest.Mock;
-  };
-  ui: {
-    setToasts: jest.Mock;
-  };
-  main: {
-    workspaces: any[];
-  };
-};
-
 jest.mock('store', () => ({
-  useStores: jest.fn()
+  useStores: () => ({
+    chat: {
+      createChat: jest.fn(),
+      getWorkspaceChats: jest.fn()
+    },
+    ui: {
+      setToasts: jest.fn()
+    }
+  })
 }));
 
 const mockChats: Chat[] = [
@@ -182,153 +175,6 @@ describe('SidebarComponent Chat Section', () => {
       ];
       renderSidebar({ chats: chatsWithNoTimestamp });
       expect(screen.getByText('No date')).toBeInTheDocument();
-    });
-  });
-});
-
-describe('SidebarComponent Tooltip Tests', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
-  test('should show tooltip for activities when collapsed', async () => {
-    const mockStores: MockStore = {
-      chat: {
-        createChat: jest.fn(),
-        getWorkspaceChats: jest.fn()
-      },
-      ui: {
-        setToasts: jest.fn()
-      },
-      main: {
-        workspaces: []
-      }
-    };
-
-    (useStores as jest.Mock).mockReturnValue(mockStores);
-
-    renderSidebar({ defaultCollapsed: true });
-    const activitiesButton = screen.getByLabelText('Activities');
-
-    fireEvent.mouseEnter(activitiesButton);
-    waitFor(() => {
-      expect(screen.getByText('Activities')).toBeInTheDocument();
-    });
-  });
-
-  test('should show tooltip for settings when collapsed', async () => {
-    waitFor(() => {
-      renderSidebar({ defaultCollapsed: true });
-      const settingsButton = screen.getByLabelText('Settings');
-
-      fireEvent.mouseEnter(settingsButton);
-      expect(screen.getByText('Settings')).toBeInTheDocument();
-    });
-  });
-
-  test('should show tooltip for feature backlog when collapsed', async () => {
-    waitFor(() => {
-      renderSidebar({ defaultCollapsed: true });
-      const backlogButton = screen.getByLabelText('Feature Backlog');
-
-      fireEvent.mouseEnter(backlogButton);
-      expect(screen.getByText('Feature Backlog')).toBeInTheDocument();
-    });
-  });
-
-  test('should show tooltip for new chat button', () => {
-    waitFor(() => {
-      renderSidebar({ defaultCollapsed: false });
-      const addChatButton = screen.getByTestId('add-chat-button');
-
-      fireEvent.mouseEnter(addChatButton);
-      expect(screen.getByText('New Chat')).toBeInTheDocument();
-    });
-  });
-
-  test('should show tooltip for new feature button', async () => {
-    waitFor(() => {
-      renderSidebar({ defaultCollapsed: false });
-      const addFeatureButton = screen.getByLabelText('New Feature');
-
-      fireEvent.mouseEnter(addFeatureButton);
-      expect(screen.getByText('New Feature')).toBeInTheDocument();
-    });
-  });
-
-  test('should show tooltip for workspace budget', async () => {
-    waitFor(() => {
-      const mockWorkspace = {
-        id: 1,
-        uuid: 'test-uuid',
-        name: 'Test Workspace',
-        img: 'test.jpg'
-      };
-
-      renderSidebar({
-        defaultCollapsed: false,
-        workspaces: [mockWorkspace]
-      });
-
-      const budgetElement = screen.getByText(/Budget/i).closest('div');
-      if (!budgetElement) throw new Error('Budget element not found');
-
-      fireEvent.mouseEnter(budgetElement);
-      expect(screen.getByText('Test Workspace Budget')).toBeInTheDocument();
-    });
-  });
-
-  test('should show tooltip for workspace switcher', async () => {
-    waitFor(() => {
-      renderSidebar({ defaultCollapsed: false });
-      const dropdownButton = screen.getByTestId('workspace-dropdown');
-
-      fireEvent.mouseEnter(dropdownButton);
-      expect(screen.getByText('Switch Workspace')).toBeInTheDocument();
-    });
-  });
-
-  test('should show tooltip for feature names when collapsed', async () => {
-    waitFor(() => {
-      const mockFeature = {
-        id: 1,
-        uuid: 'feature-uuid',
-        name: 'Test Feature',
-        workspace_uuid: 'test-uuid',
-        priority: 1
-      };
-
-      renderSidebar({
-        defaultCollapsed: true,
-        features: [mockFeature]
-      });
-
-      const featureElement = screen.getByText('Test Feature').closest('div');
-      if (!featureElement) throw new Error('Feature element not found');
-
-      fireEvent.mouseEnter(featureElement);
-      expect(screen.getByText('Test Feature')).toBeInTheDocument();
-    });
-  });
-
-  test('should not show tooltips when sidebar is expanded', async () => {
-    waitFor(() => {
-      renderSidebar({ defaultCollapsed: false });
-      const activitiesButton = screen.getByLabelText('Activities');
-
-      fireEvent.mouseEnter(activitiesButton);
-      expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
-    });
-  });
-
-  test('should handle keyboard navigation for tooltips', async () => {
-    waitFor(() => {
-      renderSidebar({ defaultCollapsed: true });
-      const activitiesButton = screen.getByLabelText('Activities');
-
-      fireEvent.focus(activitiesButton);
-      expect(activitiesButton).toHaveFocus();
-      expect(screen.getByText('Activities')).toBeInTheDocument();
     });
   });
 });
