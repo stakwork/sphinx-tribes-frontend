@@ -170,7 +170,7 @@ export const HeadButtonWrap = styled.div<{ forSmallScreen: boolean }>`
     gap: 8px;
     margin-left: 0px;
     width: 100vw;
-    margin-left: ${(p: any) => (p.forSmallScreen ? '50px' : '0px')};
+    margin-left: ${(p: any) => (p.forSmallScreen ? '150px' : '0px')};
     flex-wrap: wrap;
     display: flex;
   }

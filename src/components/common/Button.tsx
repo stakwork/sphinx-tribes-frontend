@@ -21,6 +21,8 @@ const B = styled(EuiButton)`
   text-transform: none !important;
   text-decoration: none !important;
   transform: none !important;
+  min-width: unset !important;
+
   :disabled {
     border: 1px solid rgba(0, 0, 0, 0.07);
     background: rgba(0, 0, 0, 0.04);
