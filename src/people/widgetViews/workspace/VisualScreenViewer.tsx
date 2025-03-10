@@ -39,6 +39,15 @@ const CodeViewer = styled.div`
   z-index: 0;
 `;
 
+const TextViewer = styled.div`
+  flex-grow: 1;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  padding: 12px;
+  max-height: 500px;
+  z-index: 0;
+`;
+
 const PaginationControls = styled.div`
   display: flex;
   justify-content: center;
@@ -76,43 +85,53 @@ const PageIndicator = styled.span`
 interface VisualScreenViewerProps {
   visualArtifact: Artifact[];
   codeArtifact: Artifact[];
-  activeTab: 'visual' | 'code';
+  textArtifact: Artifact[];
+  activeTab: 'visual' | 'code' | 'text';
 }
 
 const VisualScreenViewer: React.FC<VisualScreenViewerProps> = ({
   visualArtifact,
   codeArtifact,
+  textArtifact,
   activeTab
 }) => {
   const [visualIndex, setVisualIndex] = useState(0);
   const [codeIndex, setCodeIndex] = useState(0);
+  const [textIndex, setTextIndex] = useState(0);
 
   useEffect(() => {
     if (visualArtifact.length > 0) {
       setVisualIndex(0);
     } else if (codeArtifact.length > 0) {
       setCodeIndex(0);
+    } else if (textArtifact.length > 0) {
+      setTextIndex(0);
     }
-  }, [visualArtifact.length, codeArtifact.length]);
+  }, [visualArtifact.length, codeArtifact.length, textArtifact.length]);
 
   const handleNext = () => {
     if (activeTab === 'visual') {
       setVisualIndex((prev) => prev + 1);
-    } else {
+    } else if (activeTab === 'code') {
       setCodeIndex((prev) => prev + 1);
+    } else {
+      setTextIndex((prev) => prev + 1);
     }
   };
 
   const handlePrevious = () => {
     if (activeTab === 'visual') {
       setVisualIndex((prev) => prev - 1);
-    } else {
+    } else if (activeTab === 'code') {
       setCodeIndex((prev) => prev - 1);
+    } else {
+      setTextIndex((prev) => prev - 1);
     }
   };
 
   const currentVisual = visualArtifact[visualArtifact.length - 1 - visualIndex];
   const currentCode = codeArtifact[codeArtifact.length - 1 - codeIndex];
+  const currentText = textArtifact[textArtifact.length - 1 - textIndex];
 
   return (
     <ViewerContainer>
@@ -157,6 +176,25 @@ const VisualScreenViewer: React.FC<VisualScreenViewerProps> = ({
               <b>{codeIndex + 1}</b> of <b>{codeArtifact.length}</b>
             </PageIndicator>
             <Button onClick={handleNext} disabled={codeIndex === codeArtifact.length - 1}>
+              {'>'}
+            </Button>
+          </PaginationControls>
+        </>
+      )}
+
+      {activeTab === 'text' && currentText && (
+        <>
+          <TextViewer>
+            {renderMarkdown((currentText.content as TextContent).content || '')}
+          </TextViewer>
+          <PaginationControls>
+            <Button onClick={handlePrevious} disabled={textIndex === 0}>
+              {'<'}
+            </Button>
+            <PageIndicator>
+              <b>{textIndex + 1}</b> of <b>{textArtifact.length}</b>
+            </PageIndicator>
+            <Button onClick={handleNext} disabled={textIndex === textArtifact.length - 1}>
               {'>'}
             </Button>
           </PaginationControls>
