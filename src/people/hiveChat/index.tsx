@@ -156,7 +156,6 @@ const MessageBubble = styled.div<MessageBubbleProps>`
   word-wrap: break-word;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   align-self: ${(props) => (props.isUser ? 'flex-end' : 'flex-start')};
-
   background-color: ${(props) => (props.isUser ? '#808080' : '#F2F3F5')};
   color: ${(props) => (props.isUser ? 'white' : '#202124')};
 `;
@@ -279,6 +278,28 @@ const TabButton = styled.button<{ active: boolean }>`
   &:hover {
     background: ${({ active }) => (active ? '#808080' : '#e6e6e6')};
     color: ${({ active }) => (active ? 'white' : '#1e1f25')};
+  }
+`;
+
+const CopyButton = styled.button<{ $isUser?: boolean }>`
+  display: block;
+  margin: 0px 0 12px 0;
+  margin-left: ${(props) => (props.$isUser ? 'auto' : '0')};
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: ${(props) => (props.$isUser ? 'rgba(255,255,255,0.7)' : '#5f6368')};
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s;
+  width: fit-content;
+  max-width: 70%;
+  align-self: ${(props) => (props.$isUser ? 'flex-end' : 'flex-start')};
+
+  &:hover {
+    background: ${(props) => (props.$isUser ? 'rgba(255,255,255,0.1)' : 'rgba(0, 0, 0, 0.1)')};
+    color: ${(props) => (props.$isUser ? 'white' : '#202124')};
+    border-radius: 50%;
   }
 `;
 
@@ -803,6 +824,25 @@ export const HiveChatView: React.FC = observer(() => {
                         codeBlockFont: 'Courier New'
                       })}
                     </MessageBubble>
+                    <CopyButton
+                      $isUser={msg.role === 'user'}
+                      onClick={() => {
+                        navigator.clipboard.writeText(msg.message);
+                        const button = document.getElementById(`copy-${msg.id}`);
+                        if (button) {
+                          button.textContent = 'done';
+                          setTimeout(() => {
+                            button.textContent = 'content_copy';
+                          }, 2000);
+                        }
+                      }}
+                    >
+                      <MaterialIcon
+                        id={`copy-${msg.id}`}
+                        icon="content_copy"
+                        style={{ fontSize: '16px' }}
+                      />
+                    </CopyButton>
 
                     <ActionArtifactRenderer
                       messageId={msg.id}
