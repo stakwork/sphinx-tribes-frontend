@@ -43,7 +43,7 @@ const Container = styled.div<{ collapsed: boolean }>`
   display: flex;
   flex-direction: column;
   height: 100vh;
-  padding: 0 20px;
+  padding: 0 25px 0 35px;
   overflow: hidden;
   background: var(--Search-bar-background, #f2f3f5);
   margin-left: ${({ collapsed }: { collapsed: boolean }) => (collapsed ? '50px' : '250px')};
@@ -730,6 +730,9 @@ export const HiveChatView: React.FC = observer(() => {
     [setIsBuild]
   );
 
+  const showArtifactView =
+    (visualArtifact && visualArtifact.length > 0) || (codeArtifact && codeArtifact.length > 0);
+
   if (loading) {
     return (
       <Container collapsed={collapsed}>
@@ -776,13 +779,15 @@ export const HiveChatView: React.FC = observer(() => {
                 )}
               </SaveTitleContainer>
 
-              <ThinkingModeToggle
-                isBuild={isBuild}
-                setIsBuild={setIsBuild}
-                selectedModel={selectedModel}
-                setSelectedModel={setSelectedModel}
-                handleKeyDown={handleKeyDown}
-              />
+              {!showArtifactView ? (
+                <ThinkingModeToggle
+                  isBuild={isBuild}
+                  setIsBuild={setIsBuild}
+                  selectedModel={selectedModel}
+                  setSelectedModel={setSelectedModel}
+                  handleKeyDown={handleKeyDown}
+                />
+              ) : null}
             </ChatHeader>
 
             <ChatBody>
@@ -857,8 +862,7 @@ export const HiveChatView: React.FC = observer(() => {
               </InputContainer>
             </ChatBody>
           </ChatSection>
-          {(visualArtifact && visualArtifact.length > 0) ||
-          (codeArtifact && codeArtifact.length > 0) ? (
+          {showArtifactView ? (
             <ViewerSection>
               <ViewerHeader>
                 <TabContainer>
