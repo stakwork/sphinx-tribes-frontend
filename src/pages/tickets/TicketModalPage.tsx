@@ -81,15 +81,31 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
       bountyIndex = await main.getBountyIndexById(Number(search.created));
     }
 
-    if (bounty && bounty.length > 0 && bounty[0].body.access_restriction === 'workspace') {
+    if (bounty && bounty.length > 0) {
+      const accessRestriction = bounty[0].body.access_restriction;
       const isOwner = bounty[0].body.owner_id === ui.meInfo?.owner_pubkey;
 
-      if (!isOwner) {
-        const workspaceUser = await main.getWorkspaceUser(bounty[0].body.workspace_uuid);
-        const isWorkspaceAdmin = bounty[0].organization?.owner_pubkey === ui.meInfo?.owner_pubkey;
-        const isWorkspaceMember = workspaceUser?.owner_pubkey === ui.meInfo?.owner_pubkey;
+      if (accessRestriction === 'workspace') {
+        if (!isOwner) {
+          const workspaceUser = await main.getWorkspaceUser(bounty[0].body.workspace_uuid);
+          const isWorkspaceAdmin = bounty[0].organization?.owner_pubkey === ui.meInfo?.owner_pubkey;
+          const isWorkspaceMember = workspaceUser?.owner_pubkey === ui.meInfo?.owner_pubkey;
 
-        if (!workspaceUser || (!isWorkspaceAdmin && !isWorkspaceMember)) {
+          if (!workspaceUser || (!isWorkspaceAdmin && !isWorkspaceMember)) {
+            setAccessDenied(true);
+            setVisible(false);
+            return;
+          }
+        }
+      } else if (accessRestriction === 'owner') {
+        if (!isOwner) {
+          setAccessDenied(true);
+          setVisible(false);
+          return;
+        }
+      } else if (accessRestriction === 'assigned') {
+        const isAssigned = bounty[0].body.assigned_id === ui.meInfo?.owner_pubkey;
+        if (!isOwner && !isAssigned) {
           setAccessDenied(true);
           setVisible(false);
           return;

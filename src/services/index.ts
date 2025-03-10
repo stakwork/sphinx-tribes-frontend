@@ -1,5 +1,12 @@
 import { TribesURL } from '../config';
-import { ActionContent, Artifact, Chat, ChatMessage, ContextTag } from '../store/interface';
+import {
+  ActionContent,
+  ActionResponsePayload,
+  Artifact,
+  Chat,
+  ChatMessage,
+  ContextTag
+} from '../store/interface';
 import { uiStore } from '../store/ui';
 
 export class ChatService {
@@ -247,6 +254,33 @@ export class ChatService {
     } catch (e) {
       console.error('Error sending message:', e);
       return undefined;
+    }
+  }
+
+  async sendActionResponse(payload: ActionResponsePayload): Promise<any> {
+    try {
+      if (!uiStore.meInfo) {
+        throw new Error('User not authenticated');
+      }
+
+      const response = await fetch(`${TribesURL}/hivechat/send/action`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'x-jwt': uiStore.meInfo.tribe_jwt,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error sending action response:', error);
+      throw error;
     }
   }
 

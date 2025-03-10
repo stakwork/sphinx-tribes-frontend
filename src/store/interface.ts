@@ -533,7 +533,7 @@ export interface TextContent {
 }
 
 export interface VisualContent {
-  text_type?: 'img' | 'view' | 'vm';
+  visual_type?: 'img' | 'view' | 'vm' | 'screen';
   url?: string;
   examples?: Example[];
 }
@@ -565,6 +565,14 @@ export interface ChatMessage {
   sourceWebsocketID?: string;
   workspaceUUID?: string;
   artifacts?: Artifact[];
+}
+
+export interface ActionResponsePayload {
+  action_webhook: string;
+  chatId: string;
+  messageId: string;
+  message: string;
+  sourceWebsocketId: string;
 }
 
 export interface Chat {

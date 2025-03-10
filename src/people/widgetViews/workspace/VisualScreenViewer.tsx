@@ -6,66 +6,37 @@ import { renderMarkdown } from '../../utils/RenderMarkdown.tsx';
 const ViewerContainer = styled.div`
   display: flex;
   flex-direction: column;
-  border-radius: 8px;
-  width: 60%;
-  height: calc(100% - 100px);
-  background-color: #f9f9f9;
-  border-left: 1px solid #ddd;
-  padding: 16px;
-  box-sizing: border-box;
-`;
-
-const TabContainer = styled.div`
-  display: flex;
-  width: 30%;
-`;
-
-const TabButton = styled.button<{ active: boolean }>`
+  width: 100%;
   flex: 1;
-  padding: 10px 16px;
-  border: 0.2px solid #615c5c;
-  border-bottom: ${({ active }) => (active ? 'none' : '2px solid #ddd')};
-  background: ${({ active }) => (active ? '#007bff' : '#f6f4f4')};
-  color: ${({ active }) => (active ? 'white' : 'black')};
-  font-weight: 700;
-  font-family: Barlow;
-  font-size: 16px;
-  cursor: pointer;
-  transition:
-    background 0.3s,
-    color 0.3s;
+  background-color: #f9f9f9;
+  padding: 0 0 16px 0;
+  box-sizing: border-box;
+  margin: 0px 0 0 10px;
   position: relative;
-  top: 2px;
-
-  &:hover {
-    background: #f6f4f4;
-    color: #1e1f25;
-  }
 `;
 
 const IframeWrapper = styled.div`
   flex-grow: 1;
   overflow: hidden;
-  border: 1px solid #ccc;
-  border-radius: 0 8px 8px 8px;
+  border: 1px solid #ddd;
   background-color: #fff;
+  z-index: 0;
 `;
 
 const StyledIframe = styled.iframe`
   width: 100%;
   height: 100%;
   border: none;
-  border-radius: 0 8px 8px 8px;
 `;
 
 const CodeViewer = styled.div`
   flex-grow: 1;
   overflow-y: auto;
-  border: 1px solid #ccc;
-  border-radius: 0 8px 8px 8px;
+  border: 1px solid #ddd;
   background-color: #1e1e1e;
   padding: 12px;
   max-height: 500px;
+  z-index: 0;
 `;
 
 const PaginationControls = styled.div`
@@ -105,13 +76,14 @@ const PageIndicator = styled.span`
 interface VisualScreenViewerProps {
   visualArtifact: Artifact[];
   codeArtifact: Artifact[];
+  activeTab: 'visual' | 'code';
 }
 
 const VisualScreenViewer: React.FC<VisualScreenViewerProps> = ({
   visualArtifact,
-  codeArtifact
+  codeArtifact,
+  activeTab
 }) => {
-  const [activeTab, setActiveTab] = useState<'visual' | 'code'>('code');
   const [visualIndex, setVisualIndex] = useState(0);
   const [codeIndex, setCodeIndex] = useState(0);
 
@@ -119,7 +91,6 @@ const VisualScreenViewer: React.FC<VisualScreenViewerProps> = ({
     if (visualArtifact.length > 0) {
       setVisualIndex(0);
     } else if (codeArtifact.length > 0) {
-      setActiveTab('code');
       setCodeIndex(0);
     }
   }, [visualArtifact.length, codeArtifact.length]);
@@ -145,19 +116,6 @@ const VisualScreenViewer: React.FC<VisualScreenViewerProps> = ({
 
   return (
     <ViewerContainer>
-      <TabContainer>
-        {codeArtifact.length > 0 && (
-          <TabButton active={activeTab === 'code'} onClick={() => setActiveTab('code')}>
-            Code
-          </TabButton>
-        )}
-        {visualArtifact.length > 0 && (
-          <TabButton active={activeTab === 'visual'} onClick={() => setActiveTab('visual')}>
-            Screen
-          </TabButton>
-        )}
-      </TabContainer>
-
       {activeTab === 'visual' && currentVisual && (
         <>
           <IframeWrapper>

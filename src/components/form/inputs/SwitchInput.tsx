@@ -54,17 +54,21 @@ export default function SwitchInput({
 
   const shouldDisableSwitch = () => {
     if (name === 'show') {
-      return values?.access_restriction === 'workspace';
+      return values?.access_restriction
+        ? ['workspace', 'owner', 'assigned'].includes(values.access_restriction)
+        : false;
     }
     return disabled;
   };
 
   useEffect(() => {
     if (name === 'show' && values?.access_restriction !== undefined) {
-      const isWorkspace = values.access_restriction === 'workspace';
+      const isRestrictedAccess = ['workspace', 'owner', 'assigned'].includes(
+        values.access_restriction
+      );
       const isNoRestriction = values.access_restriction === '';
 
-      if (isWorkspace && value !== false) {
+      if (isRestrictedAccess && value !== false) {
         handleChange(false);
       } else if (isNoRestriction && !value) {
         handleChange(true);

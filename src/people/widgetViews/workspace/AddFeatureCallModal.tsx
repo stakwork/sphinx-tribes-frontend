@@ -81,23 +81,24 @@ const AddFeatureCall: React.FC<AddFeatureCallProps> = ({
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   function isValidUrl(url: string) {
-    const pattern = new RegExp(
-      '^([a-zA-Z]+:\\/\\/)?' + // protocol
-        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
-        '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR IP (v4) address
-        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
-        '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-        '(\\#[-a-z\\d_]*)?$', // fragment locator
-      'i'
-    );
-    return pattern.test(url);
+    try {
+      new URL(url);
+      return true;
+    } catch (e) {
+      try {
+        new URL(`https://${url}`);
+        return true;
+      } catch (err) {
+        return false;
+      }
+    }
   }
 
   useEffect(() => {
-    if (isValidUrl(featureCallUrl)) {
-      setFeatureCallUrlError(false);
+    if (featureCallUrl) {
+      setFeatureCallUrlError(!isValidUrl(featureCallUrl));
     } else {
-      setFeatureCallUrlError(true);
+      setFeatureCallUrlError(false);
     }
   }, [featureCallUrl]);
 
