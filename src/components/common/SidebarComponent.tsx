@@ -78,6 +78,7 @@ const NavItem = styled.div<{ collapsed: boolean; active?: boolean }>`
   padding: 15px;
   cursor: pointer;
   background-color: ${(props) => (props.active ? '#e0e0e0' : 'transparent')};
+  position: relative;
   &:hover {
     background-color: #e0e0e0;
   }
@@ -272,6 +273,39 @@ const ViewMoreLink = styled.span`
   margin: 0 8px;
 `;
 
+const Tooltip = styled.div<{ visible: boolean; top: number; collapsed: boolean }>`
+  position: fixed;
+  left: ${(props) => (props.collapsed ? '70px' : '260px')};
+  background: rgba(31, 41, 55, 0.95);
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  max-width: 200px;
+  opacity: ${(props) => (props.visible ? 1 : 0)};
+  visibility: ${(props) => (props.visible ? 'visible' : 'hidden')};
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 9999;
+  white-space: nowrap;
+  top: ${(props) => props.top}px;
+  pointer-events: none;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: -6px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-style: solid;
+    border-width: 6px 6px 6px 0;
+    border-color: transparent rgba(31, 41, 55, 0.95) transparent transparent;
+  }
+`;
+
 interface SidebarComponentProps {
   uuid?: string;
   defaultCollapsed?: boolean;
@@ -299,6 +333,8 @@ export default function SidebarComponent({
   const [isChatsExpanded, setIsChatsExpanded] = useState(false);
   const [chatOffset, setChatOffset] = useState(0);
   const CHATS_PER_PAGE = 5;
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const [tooltipTop, setTooltipTop] = useState(0);
 
   const user_pubkey = ui.meInfo?.owner_pubkey;
 
@@ -584,6 +620,12 @@ export default function SidebarComponent({
     }
   };
 
+  const handleMouseEnter = (event: React.MouseEvent, itemName: string) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    setTooltipTop(rect.top + rect.height / 2 - 15);
+    setHoveredItem(itemName);
+  };
+
   return (
     <SidebarContainer collapsed={collapsed} onClick={(e) => e.stopPropagation()}>
       <HamburgerButton onClick={() => handleCollapse(!collapsed)}>
@@ -603,11 +645,23 @@ export default function SidebarComponent({
                   e.stopPropagation();
                   if (collapsed) toggleDropdown(e);
                 }}
+                onMouseEnter={(e) => handleMouseEnter(e, `workspace-${workspace.uuid}`)}
+                onMouseLeave={() => setHoveredItem(null)}
               />
               {!collapsed && (
                 <>
-                  <WorkspaceBudget org={workspace} user_pubkey={user_pubkey ?? ''} />
-                  <WorkspaceDropdown collapsed={collapsed} onClick={toggleDropdown}>
+                  <div
+                    onMouseEnter={(e) => handleMouseEnter(e, `workspace-budget-${workspace.uuid}`)}
+                    onMouseLeave={() => setHoveredItem(null)}
+                  >
+                    <WorkspaceBudget org={workspace} user_pubkey={user_pubkey ?? ''} />
+                  </div>
+                  <WorkspaceDropdown
+                    collapsed={collapsed}
+                    onClick={toggleDropdown}
+                    onMouseEnter={(e) => handleMouseEnter(e, 'workspace-dropdown')}
+                    onMouseLeave={() => setHoveredItem(null)}
+                  >
                     <MaterialIcon icon="arrow_drop_down" style={{ fontSize: 24 }} />
                     {showDropdown && (
                       <DropdownMenu>
@@ -617,6 +671,10 @@ export default function SidebarComponent({
                             <DropdownItem
                               key={workspace.uuid}
                               onClick={() => handleWorkspaceClick(workspace.uuid)}
+                              onMouseEnter={(e) =>
+                                handleMouseEnter(e, `workspace-${workspace.uuid}`)
+                              }
+                              onMouseLeave={() => setHoveredItem(null)}
                             >
                               <DropdownWorkspaceImage
                                 src={workspace.img || avatarIcon}
@@ -632,6 +690,25 @@ export default function SidebarComponent({
                   </WorkspaceDropdown>
                 </>
               )}
+              {(collapsed || hoveredItem === `workspace-${workspace.uuid}`) && (
+                <Tooltip
+                  visible={hoveredItem === `workspace-${workspace.uuid}`}
+                  top={tooltipTop}
+                  collapsed={collapsed}
+                >
+                  {workspace.name}
+                </Tooltip>
+              )}
+              {hoveredItem === `workspace-budget-${workspace.uuid}` && (
+                <Tooltip visible={true} top={tooltipTop} collapsed={collapsed}>
+                  {workspace.name}
+                </Tooltip>
+              )}
+              {hoveredItem === 'workspace-dropdown' && (
+                <Tooltip visible={true} top={tooltipTop} collapsed={collapsed}>
+                  Switch Workspace
+                </Tooltip>
+              )}
             </React.Fragment>
           ))}
       </WorkspaceTitle>
@@ -640,24 +717,43 @@ export default function SidebarComponent({
         active={activeItem === 'activities'}
         onClick={() => handleItemClick('activities')}
         collapsed={collapsed}
+        onMouseEnter={(e) => handleMouseEnter(e, 'activities')}
+        onMouseLeave={() => setHoveredItem(null)}
+        aria-label="Activities"
       >
         <MaterialIcon icon="home" />
         <span>Activities</span>
+        {(collapsed || hoveredItem === 'activities') && (
+          <Tooltip visible={hoveredItem === 'activities'} top={tooltipTop} collapsed={collapsed}>
+            Activities
+          </Tooltip>
+        )}
       </NavItem>
 
       <NavItem
         active={activeItem === 'settings'}
         onClick={() => handleItemClick('settings')}
         collapsed={collapsed}
+        onMouseEnter={(e) => handleMouseEnter(e, 'settings')}
+        onMouseLeave={() => setHoveredItem(null)}
+        aria-label="Settings"
       >
         <MaterialIcon icon="settings" />
         <span>Settings</span>
+        {(collapsed || hoveredItem === 'settings') && (
+          <Tooltip visible={hoveredItem === 'settings'} top={tooltipTop} collapsed={collapsed}>
+            Settings
+          </Tooltip>
+        )}
       </NavItem>
 
       <NavItem
         active={window.location.pathname.includes('feature_backlog')}
         onClick={handleFeatureBacklogClick}
         collapsed={collapsed}
+        onMouseEnter={(e) => handleMouseEnter(e, 'backlog')}
+        onMouseLeave={() => setHoveredItem(null)}
+        aria-label="Feature Backlog"
       >
         <img
           src="/static/backlog.png"
@@ -670,10 +766,19 @@ export default function SidebarComponent({
           }}
         />
         <span>Backlog</span>
+        {(collapsed || hoveredItem === 'backlog') && (
+          <Tooltip visible={hoveredItem === 'backlog'} top={tooltipTop} collapsed={collapsed}>
+            Feature Backlog
+          </Tooltip>
+        )}
       </NavItem>
 
       <FeaturesSection>
-        <FeatureHeader onClick={toggleChats}>
+        <FeatureHeader
+          onClick={toggleChats}
+          onMouseEnter={(e) => handleMouseEnter(e, 'chats')}
+          onMouseLeave={() => setHoveredItem(null)}
+        >
           <h6 style={{ display: collapsed ? 'none' : 'block' }}>Chats</h6>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <MaterialIcon
@@ -684,12 +789,27 @@ export default function SidebarComponent({
                 e.stopPropagation();
                 handleNewChat();
               }}
+              onMouseEnter={(e) => {
+                e.stopPropagation();
+                setHoveredItem('new-chat');
+              }}
+              onMouseLeave={() => setHoveredItem(null)}
             />
+            {hoveredItem === 'new-chat' && (
+              <Tooltip visible={true} top={tooltipTop} collapsed={collapsed}>
+                New Chat
+              </Tooltip>
+            )}
             <MaterialIcon
               icon={isChatsExpanded ? 'arrow_drop_down' : 'arrow_right'}
               style={{ marginRight: '5px' }}
             />
           </div>
+          {(collapsed || hoveredItem === 'chats') && (
+            <Tooltip visible={hoveredItem === 'chats'} top={tooltipTop} collapsed={collapsed}>
+              Chats
+            </Tooltip>
+          )}
         </FeatureHeader>
         {isChatsExpanded && (
           <div data-testid="chat-list">
@@ -782,7 +902,11 @@ export default function SidebarComponent({
       </FeaturesSection>
 
       <FeaturesSection>
-        <FeatureHeader onClick={toggleFeatures}>
+        <FeatureHeader
+          onClick={toggleFeatures}
+          onMouseEnter={(e) => handleMouseEnter(e, 'features')}
+          onMouseLeave={() => setHoveredItem(null)}
+        >
           <h6 style={{ display: collapsed ? 'none' : 'block' }}>Features</h6>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <MaterialIcon
@@ -792,12 +916,27 @@ export default function SidebarComponent({
                 e.stopPropagation();
                 handleAddFeature();
               }}
+              onMouseEnter={(e) => {
+                e.stopPropagation();
+                handleMouseEnter(e, 'new-feature');
+              }}
+              onMouseLeave={() => setHoveredItem(null)}
             />
             <MaterialIcon
               icon={isFeaturesExpanded ? 'arrow_drop_down' : 'arrow_right'}
               style={{ marginRight: '5px' }}
             />
           </div>
+          {(collapsed || hoveredItem === 'features') && (
+            <Tooltip visible={hoveredItem === 'features'} top={tooltipTop} collapsed={collapsed}>
+              Features
+            </Tooltip>
+          )}
+          {hoveredItem === 'new-feature' && (
+            <Tooltip visible={true} top={tooltipTop} collapsed={collapsed}>
+              New Feature
+            </Tooltip>
+          )}
         </FeatureHeader>
         {isFeaturesExpanded && (
           <div>
@@ -824,6 +963,8 @@ export default function SidebarComponent({
                           active={
                             activeItem === 'feature' && window.location.pathname.includes(feat.uuid)
                           }
+                          onMouseEnter={(e) => handleMouseEnter(e, `feature-${feat.uuid}`)}
+                          onMouseLeave={() => setHoveredItem(null)}
                         >
                           <MissionRowFlex>
                             <MaterialIcon
@@ -842,6 +983,15 @@ export default function SidebarComponent({
                               </FeatureData>
                             )}
                           </MissionRowFlex>
+                          {(collapsed || hoveredItem === `feature-${feat.uuid}`) && (
+                            <Tooltip
+                              visible={hoveredItem === `feature-${feat.uuid}`}
+                              top={tooltipTop}
+                              collapsed={collapsed}
+                            >
+                              {feat.name}
+                            </Tooltip>
+                          )}
                         </NavItem>
                       )}
                     </EuiDraggable>
