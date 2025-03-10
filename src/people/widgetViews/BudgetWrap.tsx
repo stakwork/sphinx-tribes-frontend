@@ -234,7 +234,7 @@ export const BudgetWrapComponent = (props: { org: Workspace | undefined; uuid: s
           </NoBudgetWrap>
         ) : (
           <BudgetStatsWrap>
-            <EuiFlexGrid responsive={false} columns={isMobile ? 2 : 4}>
+            <EuiFlexGrid responsive={true} columns={isMobile ? 2 : 4}>
               <EuiFlexItem>
                 <BudgetData background="#FAFBFC" borderColor="#DDE1E5">
                   <BudgetHeaderWrap>

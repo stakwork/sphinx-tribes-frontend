@@ -158,7 +158,7 @@ export const DataWrap2 = styled.div`
 `;
 
 export const LeftSection = styled.div`
-  width: 60%;
+  width: 50%;
   display: flex;
   flex-direction: column;
   align-items: flex-start; /* Aligns content to the left */
@@ -170,7 +170,7 @@ export const LeftSection = styled.div`
 `;
 
 export const RightSection = styled.div`
-  width: 40%;
+  width: 50%;
   display: flex;
   flex-direction: column;
   align-items: flex-end; /* Aligns content to the right */
