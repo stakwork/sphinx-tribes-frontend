@@ -1,4 +1,5 @@
 import React from 'react';
+import styled from 'styled-components';
 import { useState, useCallback, useEffect } from 'react';
 import MaterialIcon from '@material/react-material-icon';
 import {
@@ -38,6 +39,20 @@ import {
 import HistoryModal from './workspace/HistoryModal';
 import WithdrawBudgetModal from './workspace/WithdrawBudgetModal';
 import AddBudgetModal from './workspace/AddBudgetModal';
+
+const ButtonWrapper = styled(Button)`
+  @media screen and (max-width: 500px) {
+    &&.euiButton {
+      min-width: 100px !important;
+    }
+  }
+
+  @media only screen and (max-width: 500px) {
+    &&.euiButton {
+      min-width: 100px !important;
+    }
+  }
+`;
 
 export const BudgetWrapComponent = (props: { org: Workspace | undefined; uuid: string }) => {
   const { url } = useRouteMatch();
@@ -187,7 +202,7 @@ export const BudgetWrapComponent = (props: { org: Workspace | undefined; uuid: s
           <BalanceImg src={balanceIcon} onClick={toggleBalances} style={{ cursor: 'pointer' }} />
         </ActionHeader>
         <HeadButtonWrap forSmallScreen={true}>
-          <Button
+          <ButtonWrapper
             disabled={viewReportDisabled}
             text="History"
             data-testid="history-button"
@@ -196,7 +211,7 @@ export const BudgetWrapComponent = (props: { org: Workspace | undefined; uuid: s
             style={{ borderRadius: '5px' }}
             onClick={() => openPaymentHistory()}
           />
-          <Button
+          <ButtonWrapper
             disabled={addWithdrawDisabled}
             text="Withdraw"
             data-testid="withdrawal-button"
@@ -205,7 +220,7 @@ export const BudgetWrapComponent = (props: { org: Workspace | undefined; uuid: s
             style={{ borderRadius: '5px' }}
             onClick={() => setIsOpenWithdrawBudget(true)}
           />
-          <Button
+          <ButtonWrapper
             data-testid="deposit-button"
             disabled={addBudgetDisabled}
             text="Deposit"

@@ -39,7 +39,9 @@ import styled from 'styled-components';
 import { AvatarGroup } from 'components/common/AvatarGroup';
 import { userHasRole } from 'helpers/helpers-extended';
 import { CodeGraph } from 'store/interface';
+
 import { SchematicPreview } from 'people/SchematicPreviewer';
+
 import { colors } from '../../config/colors';
 import SidebarComponent from '../../components/common/SidebarComponent.tsx';
 import { useBrowserTabTitle } from '../../hooks';
@@ -107,6 +109,28 @@ const UrlLink = styled.a`
 
   &:hover {
     text-decoration: underline;
+  }
+`;
+
+export const DataWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 50px;
+  width: 90%;
+  margin: 0 auto;
+  align-items: left;
+  background: #fff;
+  border-radius: 6px;
+
+  @media only screen and (max-width: 900px) {
+    width: 90%;
+    padding: 30px 40px;
+  }
+
+  @media only screen and (max-width: 500px) {
+    width: 90%;
+    padding: 20px 10px;
+    flex-direction: column;
   }
 `;
 
@@ -513,10 +537,9 @@ const WorkspaceMission = () => {
               <BudgetWrapComponent uuid={uuid} org={workspaceData} />
             </FieldWrap>
           </DataWrap>
-          <DataWrap
+          <DataWrapper
             style={{
-              marginTop: '20px',
-              marginBottom: '80px'
+              marginTop: '20px'
             }}
           >
             <LeftSection>
@@ -538,6 +561,34 @@ const WorkspaceMission = () => {
                   />
                 </Data>
               </FieldWrap>
+              <HorizontalGrayLine />
+            </LeftSection>
+            <VerticalGrayLine />
+            <RightSection>
+              <FieldWrap>
+                <Label>Tactics and Objectives</Label>
+                <Data>
+                  <EditableField
+                    value={tactics ?? workspaceData?.tactics ?? ''}
+                    setValue={setTactics}
+                    isEditing={editTactics}
+                    previewMode={tacticsPreviewMode}
+                    setPreviewMode={setTacticsPreviewMode}
+                    placeholder="Tactics"
+                    dataTestIdPrefix="tactics"
+                    workspaceUUID={workspaceData?.uuid}
+                    onCancel={() => setEditTactics(true)}
+                    onUpdate={submitTactics}
+                    defaultHeight="250px"
+                  />
+                </Data>
+              </FieldWrap>
+              <HorizontalGrayLine />
+            </RightSection>
+          </DataWrapper>
+
+          <DataWrapper>
+            <LeftSection>
               <FieldWrap>
                 <Label>Schematic</Label>
                 <Data style={{ border: 'none', paddingLeft: '0px', padding: '5px 5px' }}>
@@ -586,6 +637,28 @@ const WorkspaceMission = () => {
                 </Data>
               </FieldWrap>
               <HorizontalGrayLine />
+            </LeftSection>
+            <RightSection>
+              <FieldWrap style={{ marginTop: '20px' }}>
+                <RowFlex style={{ gap: '25px', marginBottom: '15px' }}>
+                  <Label style={{ margin: 0 }}>People</Label>
+                  <EuiLinkStyled isMobile={isMobile} onClick={toggleManageUserModal}>
+                    Manage
+                  </EuiLinkStyled>
+                </RowFlex>
+                <AvatarGroup avatarList={avatarList} avatarSize="xl" maxGroupSize={5} />
+              </FieldWrap>
+
+              <HorizontalGrayLine style={{ marginTop: '107px' }} />
+            </RightSection>
+          </DataWrapper>
+
+          <DataWrapper
+            style={{
+              marginBottom: '80px'
+            }}
+          >
+            <LeftSection>
               <FieldWrap style={{ marginTop: '20px' }}>
                 <DataWrap2>
                   <RowFlex>
@@ -829,39 +902,7 @@ const WorkspaceMission = () => {
                 </DataWrap2>
               </FieldWrap>
             </LeftSection>
-            <VerticalGrayLine />
             <RightSection>
-              <FieldWrap>
-                <Label>Tactics and Objectives</Label>
-                <Data>
-                  <EditableField
-                    value={tactics ?? workspaceData?.tactics ?? ''}
-                    setValue={setTactics}
-                    isEditing={editTactics}
-                    previewMode={tacticsPreviewMode}
-                    setPreviewMode={setTacticsPreviewMode}
-                    placeholder="Tactics"
-                    dataTestIdPrefix="tactics"
-                    workspaceUUID={workspaceData?.uuid}
-                    onCancel={() => setEditTactics(true)}
-                    onUpdate={submitTactics}
-                    defaultHeight="250px"
-                  />
-                </Data>
-              </FieldWrap>
-              <HorizontalGrayLine />
-              <FieldWrap style={{ marginTop: '20px' }}>
-                <RowFlex style={{ gap: '25px', marginBottom: '15px' }}>
-                  <Label style={{ margin: 0 }}>People</Label>
-                  <EuiLinkStyled isMobile={isMobile} onClick={toggleManageUserModal}>
-                    Manage
-                  </EuiLinkStyled>
-                </RowFlex>
-                <AvatarGroup avatarList={avatarList} avatarSize="xl" maxGroupSize={5} />
-              </FieldWrap>
-
-              <HorizontalGrayLine />
-
               <WorkspaceFieldWrap>
                 <Button
                   style={{
@@ -882,7 +923,7 @@ const WorkspaceMission = () => {
                 />
               </WorkspaceFieldWrap>
             </RightSection>
-          </DataWrap>
+          </DataWrapper>
 
           <Modal
             visible={isModalVisible}

@@ -663,7 +663,7 @@ export const TicketHeaderInputWrap = styled.div`
 
 export const WorkspaceFieldWrap = styled.div`
   margin-bottom: 10px;
-  margin-top: 10px;
+  margin-top: 20px;
   width: 98%;
 `;
 
