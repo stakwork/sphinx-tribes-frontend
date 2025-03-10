@@ -110,6 +110,13 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
           setVisible(false);
           return;
         }
+      } else if (accessRestriction === 'admins') {
+        const isAdmin = await main.getSuperAdmin();
+        if (!isOwner && !isAdmin) {
+          setAccessDenied(true);
+          setVisible(false);
+          return;
+        }
       }
     }
 
