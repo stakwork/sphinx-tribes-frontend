@@ -312,7 +312,7 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
   const [isOpenPaymentConfirmation, setIsOpenPaymentConfirmation] = React.useState(false);
   const [activeBounty, setActiveBounty] = React.useState<any[]>([]);
   const [bountyID, setBountyID] = useState<number>();
-  const [featureCalls, setFeatureCalls] = useState<any[]>([]);
+  const [featureCalls, setFeatureCalls] = useState<any>(null);
 
   let interval: number;
 
@@ -467,9 +467,7 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
       if (workspaceUuid) {
         try {
           const calls = await main.getFeatureCalls(workspaceUuid);
-          if (calls) {
-            setFeatureCalls(calls);
-          }
+          setFeatureCalls(calls);
         } catch (error) {
           console.error('Error fetching feature calls:', error);
         }
@@ -544,8 +542,6 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
         console.log('No user info found');
         return;
       }
-
-      console.log('Creating ticket with text:', text, uiStore.meInfo?.pubkey);
 
       const ticketPayload = {
         metadata: {
@@ -754,7 +750,7 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
 
   const handleFeatureCallClick = async () => {
     try {
-      if (!featureCalls.length) {
+      if (!featureCalls) {
         setToasts([
           {
             id: `${Date.now()}-feature-call-error`,
@@ -766,15 +762,13 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
         return;
       }
 
-      const featureCall = featureCalls[0];
-
-      if (!featureCall?.url) {
+      if (!featureCalls?.url) {
         setToasts([
           {
             id: `${Date.now()}-feature-call-error`,
             title: 'Feature Call',
             color: 'danger',
-            text: 'Feature call not configured'
+            text: 'Feature call URL is missing'
           }
         ]);
         return;
@@ -782,7 +776,7 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
 
       // Validate URL format
       try {
-        new URL(featureCall.url);
+        new URL(featureCalls.url);
       } catch (e) {
         setToasts([
           {
@@ -795,7 +789,7 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
         return;
       }
 
-      window.open(featureCall.url, '_blank');
+      window.open(featureCalls.url, '_blank');
     } catch (error) {
       console.error('Error handling feature call:', error);
       setToasts([
@@ -955,7 +949,7 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
               })
             )}
             <BottomButtonContainer>
-              {featureCalls.length > 0 && featureCalls[0]?.url && (
+              {featureCalls?.url && (
                 <FeatureBacklogButton onClick={handleFeatureCallClick}>
                   Start Feature Call
                 </FeatureBacklogButton>
