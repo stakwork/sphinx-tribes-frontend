@@ -4131,7 +4131,10 @@ export class MainStore {
     }
   }
 
-  async deleteCodeGraph(workspace_uuid: string, codegraph_uuid: string): Promise<any> {
+  async deleteCodeGraph(
+    workspace_uuid: string,
+    codegraph_uuid: string
+  ): Promise<FeatureCall | null> {
     try {
       if (!uiStore.meInfo) return null;
       const info = uiStore.meInfo;
