@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/typedef */
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
-import { useHistory, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { ChatMessage, Artifact, ActionContent } from 'store/interface';
 import { useStores } from 'store';
 import { createSocketInstance } from 'config/socket';
@@ -15,8 +15,9 @@ import { renderMarkdown } from '../utils/RenderMarkdown.tsx';
 import { UploadModal } from '../../components/UploadModal';
 import { useFeatureFlag, useBrowserTabTitle } from '../../hooks';
 import VisualScreenViewer from '../widgetViews/workspace/VisualScreenViewer.tsx';
-import { ModelOption, ModelSelector } from './modelSelector.tsx';
+import { ModelOption } from './modelSelector.tsx';
 import { ActionArtifactRenderer } from './ActionArtifactRenderer';
+import ThinkingModeToggle from './ThinkingModeToggle.tsx';
 
 interface RouteParams {
   uuid: string;
@@ -42,7 +43,7 @@ const Container = styled.div<{ collapsed: boolean }>`
   display: flex;
   flex-direction: column;
   height: 100vh;
-  padding: 0 20px;
+  padding: 0 25px 0 35px;
   overflow: hidden;
   background: var(--Search-bar-background, #f2f3f5);
   margin-left: ${({ collapsed }: { collapsed: boolean }) => (collapsed ? '50px' : '250px')};
@@ -52,24 +53,47 @@ const Container = styled.div<{ collapsed: boolean }>`
 const ChatBodyWrapper = styled.div`
   display: flex;
   flex-direction: row;
-  padding: 3px 5px 0 !important;
-  flex: 1;
-  overflow: hidden;
-`;
-const ChatBody = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: 3px 5px 60px !important;
+  padding: 0 !important;
   flex: 1;
   overflow: hidden;
 `;
 
-const Header = styled.div`
-  padding: 16px 20px;
-  border-radius: 8px 8px 0 0;
+const ViewerSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 70%;
+  overflow: hidden;
+`;
+
+const ChatHeader = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
+  padding: 16px 10px 8px 0;
+  border-radius: 8px 8px 0 0;
+`;
+
+const ChatSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+`;
+
+const ViewerHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 16px;
+  border-radius: 8px 8px 0 0;
+`;
+
+const ChatBody = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 0 5px 60px 0 !important;
+  flex: 1;
+  overflow: hidden;
 `;
 
 const SaveTitleContainer = styled.div`
@@ -231,37 +255,31 @@ const AttachIcon = styled(MaterialIcon)`
   margin-right: 2px;
 `;
 
-const ToggleContainer = styled.div`
+const TabContainer = styled.div`
   display: flex;
-  background-color: white;
-  border-radius: 6px;
-  padding: 4px;
-  width: fit-content;
+  margin-left: 10px;
 `;
 
-const ToggleButton = styled.button<{ isActive: boolean }>`
-  padding: 8px 16px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
+const TabButton = styled.button<{ active: boolean }>`
+  padding: 10px 16px;
+  border: ${({ active }) => (!active ? 'none' : '1px solid #ddd')};
+  background: ${({ active }) => (active ? '#808080' : '#f9f9f9')};
+  color: ${({ active }) => (active ? 'white' : '#333')};
+  font-weight: 700;
+  font-family: Barlow;
   font-size: 16px;
-  font-weight: 500;
-  transition: all 0.3s ease;
+  cursor: pointer;
+  transition:
+    background 0.3s,
+    color 0.3s;
+  border-radius: 8px 8px 0 0;
+  margin-right: 4px;
+  min-width: 120px;
 
-  ${({ isActive }) =>
-    isActive
-      ? `
-   background-color: #007bff;
-   color: white;
-   box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
- `
-      : `
-   background-color: transparent;
-   color: #333;
-   &:hover {
-     background-color: rgba(0, 123, 255, 0.1);
-   }
- `}
+  &:hover {
+    background: ${({ active }) => (active ? '#808080' : '#e6e6e6')};
+    color: ${({ active }) => (active ? 'white' : '#1e1f25')};
+  }
 `;
 
 const connectToLogWebSocket = (
@@ -319,7 +337,7 @@ export const HiveChatView: React.FC = observer(() => {
   const [websocketSessionId, setWebsocketSessionId] = useState('');
   const chatHistoryRef = useRef<HTMLDivElement>(null);
   const [title, setTitle] = useState('Talk to Hive - Chat');
-  const history = useHistory();
+  // const history = useHistory();
   const [isUpdatingTitle, setIsUpdatingTitle] = useState(false);
   const [projectId, setProjectId] = useState('');
   const [collapsed, setCollapsed] = useState(true);
@@ -339,11 +357,8 @@ export const HiveChatView: React.FC = observer(() => {
     label: 'Open AI - 4o',
     value: 'gpt-4o'
   });
+  const [artifactTab, setArtifactTab] = useState<'visual' | 'code'>('code');
   useBrowserTabTitle('Hive Chat');
-
-  const handleBackClick = () => {
-    history.push(`/workspace/${uuid}`);
-  };
 
   if (isVerboseLoggingEnabled) {
     console.log('Hive Chat logs', logs);
@@ -715,6 +730,9 @@ export const HiveChatView: React.FC = observer(() => {
     [setIsBuild]
   );
 
+  const showArtifactView =
+    (visualArtifact && visualArtifact.length > 0) || (codeArtifact && codeArtifact.length > 0);
+
   if (loading) {
     return (
       <Container collapsed={collapsed}>
@@ -737,141 +755,150 @@ export const HiveChatView: React.FC = observer(() => {
     <>
       <SidebarComponent uuid={uuid} defaultCollapsed />
       <Container collapsed={collapsed}>
-        <Header>
-          <MaterialIcon
-            onClick={handleBackClick}
-            icon="arrow_back"
-            style={{
-              fontSize: 25,
-              cursor: 'pointer',
-              color: '#5f6368'
-            }}
-          />
-          <SaveTitleContainer>
-            <TitleInput
-              value={title}
-              onChange={onTitleChange}
-              placeholder="Enter chat title..."
-              disabled={isUpdatingTitle}
-              style={{
-                cursor: isUpdatingTitle ? 'not-allowed' : 'text'
-              }}
-            />
-            {isEditingTitle && (
-              <SendButton
-                onClick={handleSaveTitle}
-                disabled={isUpdatingTitle}
-                style={{ margin: 0, padding: '8px 16px' }}
-              >
-                Save
-              </SendButton>
-            )}
-          </SaveTitleContainer>
-          <ToggleContainer
-            tabIndex={0}
-            onKeyDown={handleKeyDown}
-            role="radiogroup"
-            aria-label="Toggle Thinking Mode"
-          >
-            <ToggleButton
-              isActive={isBuild === 'Build'}
-              onClick={() => setIsBuild('Build')}
-              tabIndex={0}
-              role="radio"
-              aria-checked={isBuild === 'Build'}
-            >
-              Build
-            </ToggleButton>
-            <ToggleButton
-              isActive={isBuild === 'Chat'}
-              onClick={() => setIsBuild('Chat')}
-              tabIndex={0}
-              role="radio"
-              aria-checked={isBuild === 'Chat'}
-            >
-              Chat
-            </ToggleButton>
-          </ToggleContainer>
-          <ModelSelector selectedModel={selectedModel} onModelChange={setSelectedModel} />
-        </Header>
         <ChatBodyWrapper>
-          <ChatBody>
-            <ChatHistory ref={chatHistoryRef}>
-              {messages.map((msg: ChatMessage) => (
-                <React.Fragment key={msg.id}>
-                  <MessageBubble isUser={msg.role === 'user'}>
-                    {renderMarkdown(msg.message, {
-                      codeBlockBackground: '#282c34',
-                      textColor: '#abb2bf',
-                      bubbleTextColor: msg.role === 'user' ? 'white' : '',
-                      borderColor: '#444',
-                      codeBlockFont: 'Courier New'
-                    })}
-                  </MessageBubble>
-
-                  <ActionArtifactRenderer
-                    messageId={msg.id}
-                    chatId={chatId}
-                    websocketSessionId={websocketSessionId}
-                  />
-
-                  {actionArtifact &&
-                    actionArtifact.message_id === msg.id &&
-                    chat.isActionContent(actionArtifact.content) &&
-                    !hasButtonOptions(actionArtifact.content) && (
-                      <MessageBubble isUser={msg.role === 'user'}>
-                        {renderMarkdown(actionArtifact?.content?.actionText, {
-                          codeBlockBackground: '#282c34',
-                          textColor: '#abb2bf',
-                          bubbleTextColor: msg.role === 'user' ? 'white' : '',
-                          borderColor: '#444',
-                          codeBlockFont: 'Courier New'
-                        })}
-                      </MessageBubble>
-                    )}
-                </React.Fragment>
-              ))}
-              {isChainVisible && (
-                <MessageBubble isUser={false}>
-                  <HiveThoughts>Hive - Chain of Thought</HiveThoughts>
-                  <p>
-                    {lastLogLine
-                      ? lastLogLine
-                      : `Hi ${ui.meInfo?.owner_alias}, I've got your message. Let me have a think.`}
-                  </p>
-                </MessageBubble>
-              )}
-            </ChatHistory>
-            <InputContainer>
-              <TextArea
-                value={message}
-                onChange={handleMessageChange}
-                onKeyPress={handleKeyPress}
-                placeholder="Type your message..."
-                disabled={isSending}
-              />
-              <AttachButton onClick={() => setIsUploadModalOpen(true)} disabled={isSending}>
-                Attach
-                <AttachIcon icon="attach_file" />
-              </AttachButton>
-              <SendButton onClick={handleSendMessage} disabled={!message.trim() || isSending}>
-                Send
-              </SendButton>
-              {isUploadModalOpen && (
-                <UploadModal
-                  isOpen={isUploadModalOpen}
-                  onClose={() => setIsUploadModalOpen(false)}
-                  onUploadComplete={handleUploadComplete}
+          <ChatSection>
+            <ChatHeader>
+              <SaveTitleContainer>
+                <TitleInput
+                  value={title}
+                  onChange={onTitleChange}
+                  placeholder="Enter chat title..."
+                  disabled={isUpdatingTitle}
+                  style={{
+                    cursor: isUpdatingTitle ? 'not-allowed' : 'text'
+                  }}
                 />
-              )}
-            </InputContainer>
-          </ChatBody>
-          {(visualArtifact && visualArtifact.length > 0) ||
-          (codeArtifact && codeArtifact.length > 0) ? (
-            <VisualScreenViewer
-              visualArtifact={visualArtifact ?? []}
-              codeArtifact={codeArtifact ?? []}
-            />
+                {isEditingTitle && (
+                  <SendButton
+                    onClick={handleSaveTitle}
+                    disabled={isUpdatingTitle}
+                    style={{ margin: 0, padding: '8px 16px' }}
+                  >
+                    Save
+                  </SendButton>
+                )}
+              </SaveTitleContainer>
+
+              {!showArtifactView ? (
+                <ThinkingModeToggle
+                  isBuild={isBuild}
+                  setIsBuild={setIsBuild}
+                  selectedModel={selectedModel}
+                  setSelectedModel={setSelectedModel}
+                  handleKeyDown={handleKeyDown}
+                />
+              ) : null}
+            </ChatHeader>
+
+            <ChatBody>
+              <ChatHistory ref={chatHistoryRef}>
+                {messages.map((msg: ChatMessage) => (
+                  <React.Fragment key={msg.id}>
+                    <MessageBubble isUser={msg.role === 'user'}>
+                      {renderMarkdown(msg.message, {
+                        codeBlockBackground: '#282c34',
+                        textColor: '#abb2bf',
+                        bubbleTextColor: msg.role === 'user' ? 'white' : '',
+                        borderColor: '#444',
+                        codeBlockFont: 'Courier New'
+                      })}
+                    </MessageBubble>
+
+                    <ActionArtifactRenderer
+                      messageId={msg.id}
+                      chatId={chatId}
+                      websocketSessionId={websocketSessionId}
+                    />
+
+                    {actionArtifact &&
+                      actionArtifact.message_id === msg.id &&
+                      chat.isActionContent(actionArtifact.content) &&
+                      !hasButtonOptions(actionArtifact.content) && (
+                        <MessageBubble isUser={msg.role === 'user'}>
+                          {renderMarkdown(actionArtifact?.content?.actionText, {
+                            codeBlockBackground: '#282c34',
+                            textColor: '#abb2bf',
+                            bubbleTextColor: msg.role === 'user' ? 'white' : '',
+                            borderColor: '#444',
+                            codeBlockFont: 'Courier New'
+                          })}
+                        </MessageBubble>
+                      )}
+                  </React.Fragment>
+                ))}
+                {isChainVisible && (
+                  <MessageBubble isUser={false}>
+                    <HiveThoughts>Hive - Chain of Thought</HiveThoughts>
+                    <p>
+                      {lastLogLine
+                        ? lastLogLine
+                        : `Hi ${ui.meInfo?.owner_alias}, I've got your message. Let me have a think.`}
+                    </p>
+                  </MessageBubble>
+                )}
+              </ChatHistory>
+              <InputContainer>
+                <TextArea
+                  value={message}
+                  onChange={handleMessageChange}
+                  onKeyPress={handleKeyPress}
+                  placeholder="Type your message..."
+                  disabled={isSending}
+                />
+                <AttachButton onClick={() => setIsUploadModalOpen(true)} disabled={isSending}>
+                  Attach
+                  <AttachIcon icon="attach_file" />
+                </AttachButton>
+                <SendButton onClick={handleSendMessage} disabled={!message.trim() || isSending}>
+                  Send
+                </SendButton>
+                {isUploadModalOpen && (
+                  <UploadModal
+                    isOpen={isUploadModalOpen}
+                    onClose={() => setIsUploadModalOpen(false)}
+                    onUploadComplete={handleUploadComplete}
+                  />
+                )}
+              </InputContainer>
+            </ChatBody>
+          </ChatSection>
+          {showArtifactView ? (
+            <ViewerSection>
+              <ViewerHeader>
+                <TabContainer>
+                  {codeArtifact && codeArtifact?.length > 0 && (
+                    <TabButton
+                      active={artifactTab === 'code'}
+                      onClick={() => setArtifactTab('code')}
+                    >
+                      Code
+                    </TabButton>
+                  )}
+                  {visualArtifact && visualArtifact?.length > 0 && (
+                    <TabButton
+                      active={artifactTab === 'visual'}
+                      onClick={() => setArtifactTab('visual')}
+                    >
+                      Screen
+                    </TabButton>
+                  )}
+                </TabContainer>
+
+                <ThinkingModeToggle
+                  isBuild={isBuild}
+                  setIsBuild={setIsBuild}
+                  selectedModel={selectedModel}
+                  setSelectedModel={setSelectedModel}
+                  handleKeyDown={handleKeyDown}
+                />
+              </ViewerHeader>
+
+              <VisualScreenViewer
+                visualArtifact={visualArtifact ?? []}
+                codeArtifact={codeArtifact ?? []}
+                activeTab={artifactTab}
+              />
+            </ViewerSection>
           ) : null}
         </ChatBodyWrapper>
       </Container>
