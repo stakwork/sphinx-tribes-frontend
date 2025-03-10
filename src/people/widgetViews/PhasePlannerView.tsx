@@ -115,6 +115,7 @@ const PhasePlannerView: React.FC = observer(() => {
   const [collapsed, setCollapsed] = useState(false);
   const [selectedTickets, setSelectedTickets] = useState<Record<string, boolean>>({});
   const { isEnabled: isBulkCreateEnabled } = useFeatureFlag('bulk_ticket_create');
+  const { isEnabled: isGeneratePhasePlanEnabled } = useFeatureFlag('phaseplanning');
   const [isConversionModalOpen, setIsConversionModalOpen] = useState(false);
   const [isConverting, setIsConverting] = useState(false);
   useBrowserTabTitle('Phase Planner');
@@ -625,11 +626,13 @@ const PhasePlannerView: React.FC = observer(() => {
             />
             <WorkspaceName>Phase Planner</WorkspaceName>
           </FeatureHeadNameWrap>
-          <GeneratePhasePlanButton
-            featureId={feature_uuid}
-            phaseId={phase_uuid}
-            sourceWebsocket={websocketSessionId}
-          />
+          {isGeneratePhasePlanEnabled && (
+            <GeneratePhasePlanButton
+              featureId={feature_uuid}
+              phaseId={phase_uuid}
+              sourceWebsocket={websocketSessionId}
+            />
+          )}
         </FeatureHeadWrap>
         <FeatureDataWrap>
           <FieldWrap>
