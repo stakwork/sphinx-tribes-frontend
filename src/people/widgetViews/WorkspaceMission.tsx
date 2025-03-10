@@ -301,6 +301,20 @@ const CodeGraphValue = styled.span`
   word-break: break-all;
 `;
 
+const UrlLink = styled.a`
+  word-wrap: break-word;
+  word-break: break-all;
+  color: #0066cc;
+  text-decoration: none;
+  flex: 1;
+  min-width: 200px;
+  padding-right: 16px;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
 const WorkspaceMission = () => {
   const { main, ui } = useStores();
   const { uuid } = useParams<{ uuid: string }>();
@@ -325,7 +339,6 @@ const WorkspaceMission = () => {
   const [featuresCount] = useState(22);
   const [isOpenUserManage, setIsOpenUserManage] = useState<boolean>(false);
   const [users, setUsers] = useState<Person[]>([]);
-  const [displayUserRepoOptions, setDisplayUserRepoOptions] = useState<Record<number, boolean>>({});
   const [codeGraphModal, setCodeGraphModal] = useState(false);
   const [codeGraph, setCodeGraph] = useState<CodeGraph | null>(null);
   const [codeGraphModalType, setCodeGraphModalType] = useState<'add' | 'edit'>('add');
@@ -356,6 +369,7 @@ const WorkspaceMission = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isSnippetModalVisible, setSnippetModalVisible] = useState(false);
+  const [currentOpenMenu, setCurrentOpenMenu] = useState<string | null>(null);
 
   const openSnippetModal = () => {
     setSnippetModalVisible(true);
@@ -557,11 +571,12 @@ const WorkspaceMission = () => {
     window.open(`/workspace/${uuid}/activities`, '_target');
   };
 
-  const handleUserRepoOptionClick = (repositoryId: number) => {
-    setDisplayUserRepoOptions((prev: Record<number, boolean>) => ({
-      ...prev,
-      [repositoryId]: !prev[repositoryId]
-    }));
+  const handleUserRepoOptionClick = (repositoryId: string) => {
+    if (currentOpenMenu === repositoryId) {
+      setCurrentOpenMenu(null);
+    } else {
+      setCurrentOpenMenu(repositoryId);
+    }
   };
   const [userRoles, setUserRoles] = useState<any[]>([]);
 
@@ -1031,21 +1046,18 @@ const WorkspaceMission = () => {
                         <OptionsWrap style={{ position: 'unset', display: 'contents' }}>
                           <MaterialIcon
                             icon={'more_horiz'}
-                            onClick={() => handleUserRepoOptionClick(repository?.id as number)}
+                            onClick={() => handleUserRepoOptionClick(repository?.id as string)}
                             className="MaterialIcon"
                             data-testid="repository-option-btn"
                             style={{ transform: 'rotate(90deg)' }}
                           />
-                          {displayUserRepoOptions[repository?.id as number] && (
+                          {currentOpenMenu === repository?.id?.toString() && (
                             <EditPopover>
                               <EditPopoverTail bottom="-30px" left="-27px" />
                               <EditPopoverContent
                                 onClick={() => {
                                   openModal('edit', repository);
-                                  setDisplayUserRepoOptions((prev: Record<number, boolean>) => ({
-                                    ...prev,
-                                    [repository?.id]: !prev[repository?.id]
-                                  }));
+                                  setCurrentOpenMenu(null);
                                 }}
                                 bottom="-60px"
                                 transform="translateX(-90%)"
@@ -1097,21 +1109,20 @@ const WorkspaceMission = () => {
                         <OptionsWrap style={{ position: 'unset', display: 'contents' }}>
                           <MaterialIcon
                             icon={'more_horiz'}
-                            onClick={() => handleUserRepoOptionClick(codeGraph.id as number)}
+                            onClick={() =>
+                              handleUserRepoOptionClick(codeGraph.id?.toString() ?? '')
+                            }
                             className="MaterialIcon"
                             data-testid={`codegraph-option-btn-${codeGraph.id}`}
                             style={{ transform: 'rotate(90deg)' }}
                           />
-                          {displayUserRepoOptions[codeGraph.id as number] && (
+                          {currentOpenMenu === codeGraph.id?.toString() && (
                             <EditPopover>
                               <EditPopoverTail bottom="-30px" left="-27px" />
                               <EditPopoverContent
                                 onClick={() => {
                                   openCodeGraphModal('edit', codeGraph);
-                                  setDisplayUserRepoOptions((prev: Record<number, boolean>) => ({
-                                    ...prev,
-                                    [codeGraph.id as number]: !prev[codeGraph.id as number]
-                                  }));
+                                  setCurrentOpenMenu(null);
                                 }}
                                 bottom="-60px"
                                 transform="translateX(-90%)"
@@ -1161,21 +1172,18 @@ const WorkspaceMission = () => {
                         <OptionsWrap style={{ position: 'unset', display: 'contents' }}>
                           <MaterialIcon
                             icon={'more_horiz'}
-                            onClick={() => handleUserRepoOptionClick(1 as number)}
+                            onClick={() => handleUserRepoOptionClick('feature_call_new')}
                             className="MaterialIcon"
                             data-testid={`featurecall-option-btn-${1}`}
                             style={{ transform: 'rotate(90deg)' }}
                           />
-                          {displayUserRepoOptions[1 as number] && (
+                          {currentOpenMenu === 'feature_call_new' && (
                             <EditPopover>
                               <EditPopoverTail bottom="-30px" left="-27px" />
                               <EditPopoverContent
                                 onClick={() => {
                                   openFeatureCallModal('add');
-                                  setDisplayUserRepoOptions((prev: Record<number, boolean>) => ({
-                                    ...prev,
-                                    [1 as number]: !prev[1 as number]
-                                  }));
+                                  setCurrentOpenMenu(null);
                                 }}
                                 bottom="-60px"
                                 transform="translateX(-90%)"
@@ -1213,23 +1221,19 @@ const WorkspaceMission = () => {
                           <MaterialIcon
                             icon={'more_horiz'}
                             onClick={() =>
-                              handleUserRepoOptionClick(parseFloat(featureCall.id) as number)
+                              handleUserRepoOptionClick(`feature_call_${featureCall.id}`)
                             }
                             className="MaterialIcon"
-                            data-testid={`codegraph-option-btn-${featureCall.id}`}
+                            data-testid={`featurecall-option-btn-${featureCall.id}`}
                             style={{ transform: 'rotate(90deg)' }}
                           />
-                          {displayUserRepoOptions[parseFloat(featureCall.id) as number] && (
+                          {currentOpenMenu === `feature_call_${featureCall.id}` && (
                             <EditPopover>
                               <EditPopoverTail bottom="-30px" left="-27px" />
                               <EditPopoverContent
                                 onClick={() => {
                                   openFeatureCallModal('edit', featureCall);
-                                  setDisplayUserRepoOptions((prev: Record<number, boolean>) => ({
-                                    ...prev,
-                                    [parseFloat(featureCall.id) as number]:
-                                      !prev[parseFloat(featureCall.id) as number]
-                                  }));
+                                  setCurrentOpenMenu(null);
                                 }}
                                 bottom="-60px"
                                 transform="translateX(-90%)"
@@ -1252,9 +1256,9 @@ const WorkspaceMission = () => {
                           <CodeGraphRow>
                             <CodeGraphLabel>URL: </CodeGraphLabel>
                             <EuiToolTip position="top" content={featureCall.url}>
-                              <a href={featureCall.url} target="_blank" rel="noreferrer">
+                              <UrlLink href={featureCall.url} target="_blank" rel="noreferrer">
                                 {featureCall.url}
-                              </a>
+                              </UrlLink>
                             </EuiToolTip>
                           </CodeGraphRow>
                         </CodeGraphDetails>
