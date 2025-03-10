@@ -8,10 +8,6 @@ export const URL = (() => {
     return `wss://${getHost()}/websocket`;
   }
 
-  if (getHost().includes('people-test.sphinx.chat')) {
-    return `wss://${getHost()}/websocket`;
-  }
-
   return process.env.NODE_ENV !== 'development'
     ? `wss://${getHost()}/websocket`
     : `ws://${getHost()}/websocket`;
@@ -31,16 +27,11 @@ export const SOCKET_MSG = {
 };
 
 let socket: WebSocket | null = null;
-let lastActiveTime: number = Date.now();
-const STALE_THRESHOLD = 5 * 60 * 1000;
-
-export const updateLastActiveTime = (): void => {
-  lastActiveTime = Date.now();
-  localStorage.setItem('websocket_last_active', lastActiveTime.toString());
-};
 
 export const createSocketInstance = (): WebSocket => {
-  if (!socket || socket.readyState !== WebSocket.OPEN) {
+  if (!socket || !socket.OPEN) {
+    socket = new WebSocket(URL);
+    // get socket from localStorage
     const webssocketToken = localStorage.getItem('websocket_token');
     let uniqueID = webssocketToken;
 
@@ -49,17 +40,7 @@ export const createSocketInstance = (): WebSocket => {
       localStorage.setItem('websocket_token', uniqueID!);
     }
 
-    if (socket) {
-      try {
-        socket.close();
-      } catch (e) {
-        console.error('Error closing existing socket:', e);
-      }
-    }
-
     socket = new WebSocket(`${URL}?uniqueId=${uniqueID}`);
-
-    updateLastActiveTime();
 
     socket.onclose = () => {
       console.log('WebSocket connection closed from index');
@@ -74,30 +55,9 @@ export const createSocketInstance = (): WebSocket => {
   return socket;
 };
 
-export const checkSocketFreshness = (): boolean => {
-  const now = Date.now();
-  const storedTime = localStorage.getItem('websocket_last_active');
-  if (storedTime) {
-    lastActiveTime = parseInt(storedTime, 10);
-  }
-
-  const isFresh = now - lastActiveTime < STALE_THRESHOLD;
-
-  if (!isFresh || !socket || socket.readyState !== WebSocket.OPEN) {
-    console.log('Socket connection stale or not open, reconnecting...');
-    createSocketInstance();
-    return false;
-  }
-
-  return true;
-};
-
 export const getSocketInstance = (): WebSocket => {
   if (!socket) {
     throw new Error('Socket instance not created. Call createSocketInstance first.');
   }
-
-  checkSocketFreshness();
-
   return socket;
 };
