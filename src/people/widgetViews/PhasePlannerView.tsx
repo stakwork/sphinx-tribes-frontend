@@ -29,7 +29,7 @@ import {
   Label
 } from 'pages/tickets/style';
 import { SOCKET_MSG } from 'config/socket';
-import { createSocketInstance, updateLastActiveTime } from 'config/socket';
+import { createSocketInstance } from 'config/socket';
 import SidebarComponent from 'components/common/SidebarComponent.tsx';
 import styled from 'styled-components';
 import { phaseTicketStore } from '../../store/phase';
@@ -117,7 +117,6 @@ const PhasePlannerView: React.FC = observer(() => {
   const { isEnabled: isBulkCreateEnabled } = useFeatureFlag('bulk_ticket_create');
   const [isConversionModalOpen, setIsConversionModalOpen] = useState(false);
   const [isConverting, setIsConverting] = useState(false);
-  const [isReconnecting, setIsReconnecting] = useState<boolean>(false);
   useBrowserTabTitle('Phase Planner');
 
   const handleSelectTicket = (ticketId: string) => {
@@ -142,18 +141,11 @@ const PhasePlannerView: React.FC = observer(() => {
   const checkboxIdToSelectedMapLanguage = {};
   const languageString = '';
 
-  const getPhaseTickets = useCallback(async () => {
-    if (!feature_uuid || !phase_uuid) return;
-    const data = await main.getTicketDataByPhase(feature_uuid, phase_uuid);
-    return data;
-  }, [feature_uuid, phase_uuid, main]);
-
   useEffect(() => {
     const socket = createSocketInstance();
 
     socket.onopen = () => {
       console.log('Socket connected in Phase Planner');
-      updateLastActiveTime();
     };
 
     const refreshSingleTicket = async (ticketUuid: string) => {
@@ -167,20 +159,22 @@ const PhasePlannerView: React.FC = observer(() => {
         phaseTicketStore.addTicket(ticket);
 
         const groupId = ticket.ticket_group || ticket.uuid;
+
         const latestTicket = phaseTicketStore.getLatestVersionFromGroup(groupId);
+
         phaseTicketStore.updateTicket(latestTicket?.uuid as string, latestTicket as Ticket);
-        updateLastActiveTime();
       } catch (error) {
         console.error('Error on refreshing ticket:', error);
       }
     };
 
     socket.onmessage = async (event: MessageEvent) => {
-      updateLastActiveTime();
+      // Log raw message data
       console.log('Raw websocket message received:', event.data);
 
       try {
         const data = JSON.parse(event.data);
+        // Log parsed data
         console.log('Parsed websocket message:', data);
 
         if (data.msg === SOCKET_MSG.user_connect) {
@@ -209,6 +203,7 @@ const PhasePlannerView: React.FC = observer(() => {
         }
 
         const ticketMessage = data as TicketMessage;
+        // Log ticket message before processing
         console.log('Ticket message before processing:', ticketMessage);
 
         switch (ticketMessage.action) {
@@ -232,9 +227,14 @@ const PhasePlannerView: React.FC = observer(() => {
       }
     };
 
+    socket.onclose = () => {
+      console.log('Socket disconnected in Phase Planner');
+    };
+
     return () => {
-      socket.onmessage = null;
-      socket.onopen = null;
+      if (socket.readyState === WebSocket.OPEN) {
+        socket.close();
+      }
     };
   }, [main]);
 
@@ -379,6 +379,12 @@ const PhasePlannerView: React.FC = observer(() => {
   const getPhaseData = useCallback(async () => {
     if (!feature_uuid || !phase_uuid) return;
     const data = await main.getFeaturePhaseByUUID(feature_uuid, phase_uuid);
+    return data;
+  }, [feature_uuid, phase_uuid, main]);
+
+  const getPhaseTickets = useCallback(async () => {
+    if (!feature_uuid || !phase_uuid) return;
+    const data = await main.getTicketDataByPhase(feature_uuid, phase_uuid);
     return data;
   }, [feature_uuid, phase_uuid, main]);
 
@@ -532,29 +538,8 @@ const PhasePlannerView: React.FC = observer(() => {
     }
   };
 
-  const allToasts = [
-    ...toasts,
-    ...(isReconnecting
-      ? [
-          {
-            id: `${Date.now()}-reconnecting`,
-            title: 'Reconnecting',
-            color: 'primary' as const,
-            text: 'Reconnecting to server...'
-          }
-        ]
-      : [])
-  ];
-
   const toastsEl = (
-    <EuiGlobalToastList
-      toasts={allToasts}
-      dismissToast={() => {
-        setToasts([]);
-        setIsReconnecting(false);
-      }}
-      toastLifeTimeMs={3000}
-    />
+    <EuiGlobalToastList toasts={toasts} dismissToast={() => setToasts([])} toastLifeTimeMs={3000} />
   );
 
   useEffect(() => {
