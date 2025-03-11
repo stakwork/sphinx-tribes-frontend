@@ -2,15 +2,7 @@
 /* eslint-disable @typescript-eslint/typedef */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
-import {
-  EuiDragDropContext,
-  EuiDraggable,
-  EuiDroppable,
-  EuiGlobalToastList,
-  EuiIcon,
-  EuiLink,
-  EuiLoadingSpinner
-} from '@elastic/eui';
+import { EuiGlobalToastList, EuiLink, EuiLoadingSpinner } from '@elastic/eui';
 import {
   Body,
   WorkspaceMissionBody,
@@ -25,7 +17,6 @@ import {
   Data,
   OptionsWrap,
   StyledListElement,
-  FeatureLink,
   StyledList,
   EditPopoverTail,
   EditPopoverContent,
@@ -34,12 +25,12 @@ import {
   WorkspaceFieldWrap
 } from 'pages/tickets/style';
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { useStores } from 'store';
 import { useDeleteConfirmationModal } from 'components/common';
 import { Box } from '@mui/system';
-import { Feature, FeatureCall, Person, Workspace } from 'store/interface';
+import { FeatureCall, Person, Workspace } from 'store/interface';
 import MaterialIcon from '@material/react-material-icon';
 import { Button, Modal } from 'components/common';
 import { EuiToolTip } from '@elastic/eui';
@@ -47,27 +38,16 @@ import { useIsMobile } from 'hooks';
 import styled from 'styled-components';
 import { AvatarGroup } from 'components/common/AvatarGroup';
 import { userHasRole } from 'helpers/helpers-extended';
-import { CodeGraph, Chat } from 'store/interface';
-import { useHistory } from 'react-router-dom';
+import { CodeGraph } from 'store/interface';
+
 import { SchematicPreview } from 'people/SchematicPreviewer';
-import { PostModal } from 'people/widgetViews/postBounty/PostModal';
-import { chatService } from 'services';
-import { archiveIcon } from 'components/common/DeleteConfirmationModal/archiveIcon';
+
 import { colors } from '../../config/colors';
-import dragIcon from '../../pages/superadmin/header/icons/drag_indicator.svg';
 import SidebarComponent from '../../components/common/SidebarComponent.tsx';
-import { useFeatureFlag, useBrowserTabTitle } from '../../hooks';
+import { useBrowserTabTitle } from '../../hooks';
 import AddCodeGraph from './workspace/AddCodeGraphModal';
 import AddFeatureCall from './workspace/AddFeatureCallModal.tsx';
-import AddFeature from './workspace/AddFeatureModal';
-import {
-  RowFlex,
-  RepoName,
-  MissionRowFlex,
-  FullNoBudgetWrap,
-  FullNoBudgetText,
-  ChatRowFlex
-} from './workspace/style';
+import { RowFlex, RepoName, FullNoBudgetWrap, FullNoBudgetText } from './workspace/style';
 import AddRepoModal from './workspace/AddRepoModal';
 import EditSchematic from './workspace/EditSchematicModal';
 import ManageWorkspaceUsersModal from './workspace/ManageWorkspaceUsersModal';
@@ -78,43 +58,6 @@ import TextSnippetModal from './workspace/TextSnippetModal.tsx';
 import ActivitiesHeader from './workspace/Activities/header.tsx';
 
 const color = colors['light'];
-
-const FeaturesWrap = styled.div`
-  margin-top: 25px;
-`;
-
-const FeatureDataWrap = styled.div`
-  padding: 8px 5px;
-  margin-bottom: 0px;
-  border: 1px solid #fefefe;
-  box-shadow: 0px 1px 2px 2px #00000026;
-  border-radius: 10px;
-  display: flex;
-  font-size: 1rem;
-  font-weight: 700;
-  min-width: 100%;
-  flex-direction: column;
-  position: relative;
-  background: #ffffff;
-  margin-bottom: 5px;
-`;
-
-const FeatureCount = styled.h4`
-  font-size: 1.1rem;
-  font-weight: 400;
-  padding: 0px;
-  color: #5f6368;
-  margin: 0;
-`;
-
-const FeatureData = styled.div`
-  min-width: calc(100% - 7%);
-  font-size: 1rem;
-  font-weight: 500;
-  display: flex;
-  margin-left: 7%;
-  color: #5f6368;
-`;
 
 export const RowWrap = styled.div`
   display: flex;
@@ -127,152 +70,6 @@ const EuiLinkStyled = styled(EuiLink)<{ isMobile: boolean }>`
   margin-left: ${(props: any) => (props.isMobile ? 'auto' : '0')};
   margin: ${(props: any) => (props.isMobile ? '0' : '0')};
   background-color: #fff;
-`;
-
-const StatusWrap = styled.div`
-  margin-left: auto;
-  margin-right: 120px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-`;
-
-interface StatusType {
-  type: string;
-}
-
-const StatusBox = styled.div<StatusType>`
-  min-width: 155px;
-  min-height: 65px;
-  padding: 10px 5px;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.8rem;
-  position: relative;
-  background: ${(props: any) => {
-    if (props.type === 'completed') {
-      return '#9157F612';
-    } else if (props.type === 'assigned') {
-      return '#49C99812';
-    } else if (props.type === 'open') {
-      return '#618AFF12';
-    }
-  }};
-  font-weight: 600;
-  border: ${(props: any) => {
-    if (props.type === 'completed') {
-      return ' 0.5px solid #9157F6';
-    } else if (props.type === 'assigned') {
-      return '0.5px solid #2FB379';
-    } else if (props.type === 'open') {
-      return '0.5px solid #5078F2';
-    }
-  }};
-  color: ${(props: any) => {
-    if (props.type === 'completed') {
-      return '#9157F6';
-    } else if (props.type === 'assigned') {
-      return '#2FB379';
-    } else if (props.type === 'open') {
-      return '#5078F2';
-    }
-  }};
-`;
-
-const ChatListContainer = styled.div`
-  margin-top: 13px;
-  height: 300px;
-  overflow-y: auto;
-  border: 3px solid #848484;
-  border-radius: 5px;
-  background-color: #ffffff;
-  padding: 10px;
-`;
-
-const LoadingContainer = styled.div`
-  text-align: center;
-  padding: 20px;
-`;
-
-const LoadingText = styled.div`
-  margin-top: 10px;
-`;
-
-const EmptyStateMessage = styled.div`
-  text-align: center;
-  padding: 20px;
-  color: #666;
-`;
-
-const ChatListItem = styled(StyledListElement)`
-  padding: 12px 16px;
-  cursor: pointer;
-  border-bottom: 1px solid #ebedf1;
-  transition: background-color 0.2s ease;
-  position: relative;
-
-  &:hover {
-    background-color: #f5f7fa;
-  }
-
-  &:last-child {
-    border-bottom: none;
-  }
-`;
-
-const ChatItemContent = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-`;
-
-const ChatTitle = styled.div`
-  font-size: 14px;
-  font-weight: 500;
-  color: #2c3e50;
-  flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
-
-const ChatTimestamp = styled.div`
-  font-size: 12px;
-  color: #8c9196;
-  white-space: nowrap;
-`;
-
-interface BudgetHeaderProps {
-  color: string;
-}
-
-const BudgetCount = styled.span<BudgetHeaderProps>`
-  background: ${(p: any) => p.color};
-  color: #fff;
-  padding: 0.5px 5px;
-  border-radius: 50%;
-  font-size: 0.65rem;
-  font-weight: bolder;
-  display: inline-block;
-  margin-left: 10px;
-`;
-
-const BudgetBountyLink = styled.span`
-  cursor: pointer;
-  position: absolute;
-  right: 8px;
-  top: 4px;
-`;
-
-const DragIcon = styled.img`
-  width: 20px;
-  height: 20px;
-  padding: 0px;
-  margin: 0;
 `;
 
 const CodeGraphDetails = styled.div`
@@ -315,13 +112,33 @@ const UrlLink = styled.a`
   }
 `;
 
+export const DataWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 50px;
+  width: 90%;
+  margin: 0 auto;
+  align-items: left;
+  background: #fff;
+  border-radius: 6px;
+
+  @media only screen and (max-width: 900px) {
+    width: 90%;
+    padding: 30px 40px;
+  }
+
+  @media only screen and (max-width: 500px) {
+    width: 90%;
+    padding: 20px 10px;
+    flex-direction: column;
+  }
+`;
+
 const WorkspaceMission = () => {
   const { main, ui } = useStores();
   const { uuid } = useParams<{ uuid: string }>();
   const [workspaceData, setWorkspaceData] = useState<Workspace>();
   const [loading, setLoading] = useState(true);
-  const [visibleFeatureStatus, setVisibleFeatureStatus] = useState<{ [key: string]: boolean }>({});
-  const [visibleChatMenu, setVisibleChatMenu] = useState<{ [key: string]: boolean }>({});
   const [editMission, setEditMission] = useState<boolean>(true);
   const [displaySchematic, setDidplaySchematic] = useState(false);
   const [editTactics, setEditTactics] = useState<boolean>(true);
@@ -334,9 +151,6 @@ const WorkspaceMission = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentuuid, setCurrentuuid] = useState('');
   const [modalType, setModalType] = useState('add');
-  const [featureModal, setFeatureModal] = useState(false);
-  const [features, setFeatures] = useState<Feature[]>([]);
-  const [featuresCount] = useState(22);
   const [isOpenUserManage, setIsOpenUserManage] = useState<boolean>(false);
   const [users, setUsers] = useState<Person[]>([]);
   const [codeGraphModal, setCodeGraphModal] = useState(false);
@@ -356,18 +170,11 @@ const WorkspaceMission = () => {
     id: string;
     url: string;
   }>();
-  const history = useHistory();
-  const { chat } = useStores();
-  const [chats, setChats] = React.useState<Chat[]>([]);
-  const [isLoadingChats, setIsLoadingChats] = useState(true);
   const [missionPreviewMode, setMissionPreviewMode] = useState<'preview' | 'edit'>('preview');
   const [tacticsPreviewMode, setTacticsPreviewMode] = useState<'preview' | 'edit'>('preview');
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [collapsed, setCollapsed] = useState(false);
   const [permissionsChecked, setPermissionsChecked] = useState<boolean>(false);
-  const [isPostBountyModalOpen, setIsPostBountyModalOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isSnippetModalVisible, setSnippetModalVisible] = useState(false);
   const [currentOpenMenu, setCurrentOpenMenu] = useState<string | null>(null);
 
@@ -378,9 +185,6 @@ const WorkspaceMission = () => {
   const closeSnippetModal = () => {
     setSnippetModalVisible(false);
   };
-
-  const { isEnabled: isPlannerEnabled, loading: isPlannerLoading } =
-    useFeatureFlag('display_planner');
 
   const fetchCodeGraph = useCallback(async () => {
     try {
@@ -493,82 +297,6 @@ const WorkspaceMission = () => {
     } catch (error) {
       console.error('Error deleteFeatureCall', error);
     }
-  };
-
-  const handlePostBountyClick = () => {
-    setIsPostBountyModalOpen(true);
-  };
-
-  useEffect(() => {
-    const loadChats = async () => {
-      setIsLoadingChats(true);
-      try {
-        const workspaceChats = await chat.getWorkspaceChats(uuid);
-        if (workspaceChats && workspaceChats.length > 0) {
-          const sortedChats = workspaceChats
-            .filter((chat: Chat) => chat && chat.id)
-            .sort((a: Chat, b: Chat) => {
-              const dateA = new Date(a.updatedAt || a.createdAt || 0).getTime();
-              const dateB = new Date(b.updatedAt || b.createdAt || 0).getTime();
-              return dateB - dateA;
-            });
-          setChats(sortedChats);
-        }
-      } catch (error) {
-        console.error('Error loading chats:', error);
-        ui.setToasts([
-          {
-            title: 'Error',
-            color: 'danger',
-            text: 'Failed to load chats.'
-          }
-        ]);
-      } finally {
-        setIsLoadingChats(false);
-      }
-    };
-    loadChats();
-  }, [uuid, chat, ui]);
-
-  const handleNewChat = async () => {
-    try {
-      const newChat = await chat.createChat(uuid, 'New Chat');
-      if (newChat && newChat.id) {
-        history.push(`/workspace/${uuid}/hivechat/${newChat.id}`);
-      } else {
-        ui.setToasts([
-          {
-            title: 'Error',
-            color: 'danger',
-            text: 'Failed to create new chat. Please try again.'
-          }
-        ]);
-      }
-    } catch (error) {
-      ui.setToasts([
-        {
-          title: 'Error',
-          color: 'danger',
-          text: 'An error occurred while creating the chat.'
-        }
-      ]);
-    }
-  };
-
-  const handleChatClick = (chatId: string) => {
-    history.push(`/workspace/${uuid}/hivechat/${chatId}`);
-  };
-
-  const handleWorkspacePlanner = () => {
-    history.push(`/workspace/${uuid}/planner`);
-  };
-
-  const handleViewBounties = () => {
-    window.open(`/workspace/bounties/${uuid}`, '_target');
-  };
-
-  const handleActivities = () => {
-    window.open(`/workspace/${uuid}/activities`, '_target');
   };
 
   const handleUserRepoOptionClick = (repositoryId: string) => {
@@ -697,92 +425,6 @@ const WorkspaceMission = () => {
     getWorkspaceUsers();
   }, [getWorkspaceData, getWorkspaceUsers]);
 
-  const getFeaturesCount = useCallback(async () => {
-    if (!uuid) return;
-    const featuresCount = await main.getWorkspaceFeaturesCount(uuid);
-    if (!featuresCount) return;
-
-    setLoading(false);
-  }, [uuid, main]);
-
-  useEffect(() => {
-    getFeaturesCount();
-  }, [getFeaturesCount]);
-
-  const getFeatures = useCallback(
-    async (page: number, isInitialLoad = false): Promise<void> => {
-      if (!uuid) return;
-
-      setIsLoadingMore(true);
-
-      try {
-        const featuresRes = await main.getWorkspaceFeatures(uuid, {
-          page,
-          status: 'active'
-        });
-
-        if (featuresRes && Array.isArray(featuresRes)) {
-          setFeatures((prev: Feature[]) => {
-            const newFeatures = page === 1 ? featuresRes : [...prev, ...featuresRes];
-            const uniqueFeatures = Array.from(new Set(newFeatures.map((f) => f.id)))
-              .map((id) => newFeatures.find((f) => f.id === id))
-              .filter((feature): feature is Feature => feature !== undefined);
-            return uniqueFeatures;
-          });
-        }
-      } catch (error) {
-        console.error('Error fetching features:', error);
-      } finally {
-        setIsLoadingMore(false);
-      }
-    },
-    [uuid, main]
-  );
-
-  useEffect(() => {
-    getFeatures(1, false);
-  }, [getFeatures]);
-
-  const observerTarget = useRef(null);
-
-  const handleWebsiteButton = (websiteUrl: string) => {
-    window.open(websiteUrl, '_blank');
-  };
-
-  const handleGithubButton = (githubUrl: string) => {
-    window.open(githubUrl, '_blank');
-  };
-
-  const toggleFeatureStatus = (uuid: string) => {
-    setVisibleFeatureStatus((prevState: { [key: string]: boolean }) => ({
-      ...prevState,
-      [uuid]: !prevState[uuid]
-    }));
-  };
-
-  const toggleChatMenu = (chatId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-
-    setVisibleChatMenu({ [chatId]: !visibleChatMenu[chatId] });
-  };
-
-  const closeAllFeatureStatus = () => {
-    setVisibleFeatureStatus({});
-  };
-
-  const archiveFeatureStatus = async (uuid: string) => {
-    await main.archiveFeature(uuid);
-    ui.setToasts([
-      {
-        title: 'Archived',
-        color: 'success',
-        text: 'Feature is successfully archived'
-      }
-    ]);
-    getFeatures(1, true);
-    closeAllFeatureStatus();
-  };
-
   const submitMission = async () => {
     try {
       const body = {
@@ -843,48 +485,9 @@ const WorkspaceMission = () => {
     }
   };
 
-  const toggleFeatureModal = () => {
-    setFeatureModal(!featureModal);
-  };
-
   const toggleSchematicModal = () => {
     setDidplaySchematic(false);
     setSchematicModal(!schematicModal);
-  };
-
-  const handleReorderFeatures = async (feat: Feature, priority: number) => {
-    await main.addWorkspaceFeature({
-      workspace_uuid: feat.workspace_uuid,
-      uuid: feat.uuid,
-      priority: priority
-    });
-  };
-
-  const onDragEnd = ({ source, destination }: any) => {
-    if (source && destination && source.index !== destination.index) {
-      const updatedFeatures = [...features];
-
-      const [movedItem] = updatedFeatures.splice(source.index, 1);
-      const dropItem = features[destination.index];
-
-      if (destination.index !== updatedFeatures.length) {
-        updatedFeatures.splice(destination.index, 0, movedItem);
-      } else {
-        updatedFeatures[source.index] = dropItem;
-        updatedFeatures.splice(updatedFeatures.length, 1, movedItem);
-      }
-
-      setFeatures(updatedFeatures);
-
-      // get drag feature
-      const dragIndex = updatedFeatures.findIndex((feat: Feature) => feat.uuid === movedItem.uuid);
-      // get drop feature
-      const dropIndex = updatedFeatures.findIndex((feat: Feature) => feat.uuid === dropItem.uuid);
-
-      // update drag and drop items indexes
-      handleReorderFeatures(movedItem, dragIndex + 1);
-      handleReorderFeatures(dropItem, dropIndex + 1);
-    }
   };
 
   const avatarList = useMemo(
@@ -899,59 +502,6 @@ const WorkspaceMission = () => {
       </Body>
     );
   }
-
-  const handleArchiveChat = async (chatId: string) => {
-    try {
-      setIsLoadingChats(true);
-      await chatService.archiveChat(chatId);
-
-      const updatedChats = await chat.getWorkspaceChats(uuid);
-      setChats(updatedChats);
-
-      setToasts([
-        {
-          id: `${Date.now()}-archive-success`,
-          title: 'Success',
-          color: 'success',
-          text: 'Chat archived successfully!'
-        }
-      ]);
-    } catch (error) {
-      setToasts([
-        {
-          id: `${Date.now()}-archive-error`,
-          title: 'Error',
-          color: 'danger',
-          text: 'Failed to archive chat'
-        }
-      ]);
-    } finally {
-      setIsLoadingChats(false);
-    }
-  };
-
-  const confirmArchiveChat = (chatId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-
-    openDeleteConfirmation({
-      onDelete: () => handleArchiveChat(chatId),
-      onCancel: () =>
-        setVisibleChatMenu((prev: Record<string, boolean>) => ({
-          ...prev,
-          [chatId]: false
-        })),
-      confirmButtonText: 'Confirm',
-      customIcon: archiveIcon,
-      children: (
-        <Box fontSize={20} textAlign="center">
-          Are you sure you want to <br />
-          <Box component="span" fontWeight="500">
-            Archive this Chat?
-          </Box>
-        </Box>
-      )
-    });
-  };
 
   if (editWorkspaceDisabled) {
     return (
@@ -982,7 +532,12 @@ const WorkspaceMission = () => {
         <SidebarComponent uuid={uuid} />
         <WorkspaceMissionBody collapsed={collapsed}>
           <ActivitiesHeader uuid={uuid} />
-          <DataWrap
+          <DataWrap style={{ marginTop: '20px', padding: '0px' }}>
+            <FieldWrap style={{ background: 'white' }}>
+              <BudgetWrapComponent uuid={uuid} org={workspaceData} />
+            </FieldWrap>
+          </DataWrap>
+          <DataWrapper
             style={{
               marginTop: '20px'
             }}
@@ -1006,6 +561,10 @@ const WorkspaceMission = () => {
                   />
                 </Data>
               </FieldWrap>
+              <HorizontalGrayLine />
+            </LeftSection>
+            <VerticalGrayLine />
+            <RightSection>
               <FieldWrap>
                 <Label>Tactics and Objectives</Label>
                 <Data>
@@ -1025,6 +584,81 @@ const WorkspaceMission = () => {
                 </Data>
               </FieldWrap>
               <HorizontalGrayLine />
+            </RightSection>
+          </DataWrapper>
+
+          <DataWrapper>
+            <LeftSection>
+              <FieldWrap>
+                <Label>Schematic</Label>
+                <Data style={{ border: 'none', paddingLeft: '0px', padding: '5px 5px' }}>
+                  <SchematicPreview
+                    schematicImg={workspaceData?.schematic_img || ''}
+                    schematicUrl={workspaceData?.schematic_url || ''}
+                  />
+                  <RowWrap>
+                    <OptionsWrap style={{ position: 'unset', display: 'contents' }}>
+                      <MaterialIcon
+                        icon={'more_horiz'}
+                        className="MaterialIcon"
+                        onClick={() => setDidplaySchematic(!displaySchematic)}
+                        data-testid="schematic-option-btn"
+                        style={{ transform: 'rotate(90deg)' }}
+                      />
+                      <EditPopover style={{ display: displaySchematic ? 'block' : 'none' }}>
+                        <EditPopoverTail bottom="-30px" left="-27px" />
+                        <EditPopoverContent
+                          onClick={toggleSchematicModal}
+                          bottom="-60px"
+                          transform="translateX(-90%)"
+                        >
+                          <MaterialIcon
+                            icon="edit"
+                            style={{ fontSize: '20px', marginTop: '2px' }}
+                          />
+                          <EditPopoverText data-testid="schematic-edit-btn">Edit</EditPopoverText>
+                        </EditPopoverContent>
+                      </EditPopover>
+                    </OptionsWrap>
+                    {workspaceData?.schematic_url ? (
+                      <a
+                        href={workspaceData?.schematic_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        data-testid="schematic-url"
+                        style={{ marginLeft: '0.5rem' }}
+                      >
+                        schematic
+                      </a>
+                    ) : (
+                      <span style={{ marginLeft: '0.5rem' }}>No schematic url yet</span>
+                    )}
+                  </RowWrap>
+                </Data>
+              </FieldWrap>
+              <HorizontalGrayLine />
+            </LeftSection>
+            <RightSection>
+              <FieldWrap style={{ marginTop: '20px' }}>
+                <RowFlex style={{ gap: '25px', marginBottom: '15px' }}>
+                  <Label style={{ margin: 0 }}>People</Label>
+                  <EuiLinkStyled isMobile={isMobile} onClick={toggleManageUserModal}>
+                    Manage
+                  </EuiLinkStyled>
+                </RowFlex>
+                <AvatarGroup avatarList={avatarList} avatarSize="xl" maxGroupSize={5} />
+              </FieldWrap>
+
+              <HorizontalGrayLine style={{ marginTop: '107px' }} />
+            </RightSection>
+          </DataWrapper>
+
+          <DataWrapper
+            style={{
+              marginBottom: '80px'
+            }}
+          >
+            <LeftSection>
               <FieldWrap style={{ marginTop: '20px' }}>
                 <DataWrap2>
                   <RowFlex>
@@ -1268,126 +902,7 @@ const WorkspaceMission = () => {
                 </DataWrap2>
               </FieldWrap>
             </LeftSection>
-            <VerticalGrayLine />
             <RightSection>
-              <FieldWrap>
-                <Label>Schematic</Label>
-                <Data style={{ border: 'none', paddingLeft: '0px', padding: '5px 5px' }}>
-                  <SchematicPreview
-                    schematicImg={workspaceData?.schematic_img || ''}
-                    schematicUrl={workspaceData?.schematic_url || ''}
-                  />
-                  <RowWrap>
-                    <OptionsWrap style={{ position: 'unset', display: 'contents' }}>
-                      <MaterialIcon
-                        icon={'more_horiz'}
-                        className="MaterialIcon"
-                        onClick={() => setDidplaySchematic(!displaySchematic)}
-                        data-testid="schematic-option-btn"
-                        style={{ transform: 'rotate(90deg)' }}
-                      />
-                      <EditPopover style={{ display: displaySchematic ? 'block' : 'none' }}>
-                        <EditPopoverTail bottom="-30px" left="-27px" />
-                        <EditPopoverContent
-                          onClick={toggleSchematicModal}
-                          bottom="-60px"
-                          transform="translateX(-90%)"
-                        >
-                          <MaterialIcon
-                            icon="edit"
-                            style={{ fontSize: '20px', marginTop: '2px' }}
-                          />
-                          <EditPopoverText data-testid="schematic-edit-btn">Edit</EditPopoverText>
-                        </EditPopoverContent>
-                      </EditPopover>
-                    </OptionsWrap>
-                    {workspaceData?.schematic_url ? (
-                      <a
-                        href={workspaceData?.schematic_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        data-testid="schematic-url"
-                        style={{ marginLeft: '0.5rem' }}
-                      >
-                        schematic
-                      </a>
-                    ) : (
-                      <span style={{ marginLeft: '0.5rem' }}>No schematic url yet</span>
-                    )}
-                  </RowWrap>
-                </Data>
-              </FieldWrap>
-              <HorizontalGrayLine />
-              <FieldWrap style={{ marginTop: '20px' }}>
-                <RowFlex style={{ gap: '25px', marginBottom: '15px' }}>
-                  <Label style={{ margin: 0 }}>People</Label>
-                  <EuiLinkStyled isMobile={isMobile} onClick={toggleManageUserModal}>
-                    Manage
-                  </EuiLinkStyled>
-                </RowFlex>
-                <AvatarGroup avatarList={avatarList} avatarSize="xl" maxGroupSize={5} />
-              </FieldWrap>
-
-              <HorizontalGrayLine />
-              {uuid && isPlannerEnabled && !isPlannerLoading && (
-                <WorkspaceFieldWrap>
-                  <Button
-                    style={{
-                      borderRadius: '5px',
-                      margin: 0,
-                      padding: '10px 20px',
-                      width: '100%',
-                      backgroundColor: '#4285f4',
-                      color: 'white',
-                      textAlign: 'center',
-                      border: 'none',
-                      fontSize: '16px',
-                      cursor: 'pointer'
-                    }}
-                    onClick={handleWorkspacePlanner}
-                    dataTestId="workspace-planner-btn"
-                    text="Workspace Planner"
-                  />
-                </WorkspaceFieldWrap>
-              )}
-              <WorkspaceFieldWrap>
-                <Button
-                  style={{
-                    borderRadius: '5px',
-                    margin: 0,
-                    padding: '10px 20px',
-                    width: '100%',
-                    backgroundColor: '#4285f4',
-                    color: 'white',
-                    textAlign: 'center',
-                    border: 'none',
-                    fontSize: '16px',
-                    cursor: 'pointer'
-                  }}
-                  onClick={handleActivities}
-                  dataTestId="workspace-activities-btn"
-                  text="Activities"
-                />
-              </WorkspaceFieldWrap>
-              <WorkspaceFieldWrap>
-                <Button
-                  style={{
-                    borderRadius: '5px',
-                    margin: 0,
-                    padding: '10px 20px',
-                    width: '100%',
-                    backgroundColor: '#4285f4',
-                    color: 'white',
-                    textAlign: 'center',
-                    border: 'none',
-                    fontSize: '16px',
-                    cursor: 'pointer'
-                  }}
-                  onClick={handleViewBounties}
-                  dataTestId="workspace-planner-btn"
-                  text="View Bounties"
-                />
-              </WorkspaceFieldWrap>
               <WorkspaceFieldWrap>
                 <Button
                   style={{
@@ -1407,288 +922,9 @@ const WorkspaceMission = () => {
                   text="Manage Text snippets"
                 />
               </WorkspaceFieldWrap>
-              <WorkspaceFieldWrap>
-                <Button
-                  style={{
-                    borderRadius: '5px',
-                    margin: 0,
-                    padding: '10px 20px',
-                    width: '100%',
-                    backgroundColor: '#49C998',
-                    color: 'white',
-                    textAlign: 'center',
-                    border: 'none',
-                    fontSize: '16px',
-                    cursor: 'pointer'
-                  }}
-                  onClick={handlePostBountyClick}
-                  dataTestId="post-bounty-btn"
-                  text="Post Bounty"
-                />
-              </WorkspaceFieldWrap>
-              <HorizontalGrayLine />
-              <FieldWrap style={{ marginTop: '10px' }}>
-                <Label>Talk to Hive</Label>
-                <Button
-                  style={{
-                    borderRadius: '5px',
-                    margin: 0,
-                    padding: '10px 20px',
-                    width: '100%',
-                    backgroundColor: '#4285f4',
-                    color: 'white',
-                    textAlign: 'center',
-                    border: 'none',
-                    fontSize: '16px',
-                    cursor: 'pointer'
-                  }}
-                  onClick={handleNewChat}
-                  dataTestId="new-chat-btn"
-                  text="New Chat"
-                />
-                <ChatListContainer>
-                  {isLoadingChats ? (
-                    <LoadingContainer>
-                      <EuiLoadingSpinner size="m" />
-                      <LoadingText>Loading chats...</LoadingText>
-                    </LoadingContainer>
-                  ) : chats.length > 0 ? (
-                    <StyledList>
-                      {chats.map((chat: Chat) => (
-                        <ChatListItem key={chat.id} onClick={() => handleChatClick(chat.id)}>
-                          <ChatItemContent>
-                            <ChatRowFlex>
-                              <ChatTitle>{chat.title || 'Untitled Chat'}</ChatTitle>
-                              <ChatTimestamp>
-                                {chat.updatedAt || chat.createdAt
-                                  ? new Date(chat.updatedAt || chat.createdAt).toLocaleString()
-                                  : 'No date'}
-                              </ChatTimestamp>
-                            </ChatRowFlex>
-                            <OptionsWrap style={{ top: 'unset' }}>
-                              <MaterialIcon
-                                icon={'more_horiz'}
-                                className="MaterialIcon"
-                                onClick={(e: React.MouseEvent) => toggleChatMenu(chat.id, e)}
-                                data-testid={`chat-option-btn-${chat.id}`}
-                              />
-                              {visibleChatMenu[chat.id] && (
-                                <EditPopover>
-                                  <EditPopoverTail />
-                                  <EditPopoverContent
-                                    onClick={(e: React.MouseEvent) =>
-                                      confirmArchiveChat(chat.id, e)
-                                    }
-                                  >
-                                    <EditPopoverText data-testid={`chat-archive-btn-${chat.id}`}>
-                                      Archive
-                                    </EditPopoverText>
-                                  </EditPopoverContent>
-                                </EditPopover>
-                              )}
-                            </OptionsWrap>
-                          </ChatItemContent>
-                        </ChatListItem>
-                      ))}
-                    </StyledList>
-                  ) : (
-                    <EmptyStateMessage>
-                      No chats yet. Click &ldquo;New Chat&rdquo; to start a conversation.
-                    </EmptyStateMessage>
-                  )}
-                </ChatListContainer>
-              </FieldWrap>
             </RightSection>
-          </DataWrap>
+          </DataWrapper>
 
-          <DataWrap style={{ marginTop: '20px', padding: '0px' }}>
-            <FieldWrap style={{ background: 'white' }}>
-              <BudgetWrapComponent uuid={uuid} org={workspaceData} />
-            </FieldWrap>
-          </DataWrap>
-          <DataWrap style={{ marginTop: '20px' }}>
-            <FieldWrap style={{ marginBottom: '5rem' }}>
-              <RowFlex>
-                <Label>Features</Label>
-                <Button
-                  onClick={toggleFeatureModal}
-                  style={{
-                    borderRadius: '5px',
-                    margin: 0,
-                    marginLeft: 'auto'
-                  }}
-                  dataTestId="new-feature-btn"
-                  text="New Feature"
-                />
-              </RowFlex>
-              <FeaturesWrap>
-                <EuiDragDropContext onDragEnd={onDragEnd}>
-                  <EuiDroppable droppableId="features_droppable_area" spacing="m">
-                    {features &&
-                      features
-                        // .sort((a: Feature, b: Feature) => a.priority - b.priority)
-                        .map((feat: Feature, i: number) => (
-                          <EuiDraggable
-                            spacing="m"
-                            key={feat.id}
-                            index={i}
-                            draggableId={feat.uuid}
-                            customDragHandle
-                            hasInteractiveChildren
-                          >
-                            {(provided: any) => (
-                              <FeatureDataWrap key={i} data-testid="feature-item">
-                                <MissionRowFlex>
-                                  <DragIcon
-                                    src={dragIcon}
-                                    color="transparent"
-                                    className="drag-handle"
-                                    paddingSize="s"
-                                    {...provided.dragHandleProps}
-                                    data-testid={`drag-handle-${feat.priority}`}
-                                    aria-label="Drag Handle"
-                                  />
-                                  <FeatureCount>{i + 1}</FeatureCount>
-                                </MissionRowFlex>
-                                <FeatureData>
-                                  <FeatureLink
-                                    href={`/workspace/${uuid}/feature/${feat.uuid}`}
-                                    style={{ marginLeft: '1rem' }}
-                                  >
-                                    {feat.name}
-                                  </FeatureLink>
-                                  <OptionsWrap>
-                                    <MaterialIcon
-                                      icon={'more_horiz'}
-                                      className="MaterialIcon"
-                                      onClick={() => toggleFeatureStatus(feat.uuid)}
-                                      data-testid="mission-option-btn"
-                                    />
-                                    {visibleFeatureStatus[feat.uuid] && (
-                                      <EditPopover>
-                                        <EditPopoverTail />
-                                        <EditPopoverContent
-                                          onClick={() => archiveFeatureStatus(feat.uuid)}
-                                        >
-                                          <EditPopoverText data-testid="mission-edit-btn">
-                                            Archive
-                                          </EditPopoverText>
-                                        </EditPopoverContent>
-                                      </EditPopover>
-                                    )}
-                                  </OptionsWrap>
-                                  <StatusWrap>
-                                    <StatusBox type="completed">
-                                      Completed
-                                      <BudgetCount color="#9157F6">
-                                        {feat.bounties_count_completed
-                                          ? feat.bounties_count_completed.toLocaleString()
-                                          : 0}
-                                      </BudgetCount>
-                                      <BudgetBountyLink>
-                                        <Link target="_blank" to={''}>
-                                          <EuiIcon type="popout" color="#9157F6" />
-                                        </Link>
-                                      </BudgetBountyLink>
-                                    </StatusBox>
-                                    <StatusBox type="assigned">
-                                      Assigned
-                                      <BudgetCount color="#2FB379">
-                                        {feat.bounties_count_assigned
-                                          ? feat.bounties_count_assigned.toLocaleString()
-                                          : 0}
-                                      </BudgetCount>
-                                      <BudgetBountyLink>
-                                        <Link target="_blank" to={''}>
-                                          <EuiIcon type="popout" color="#2FB379" />
-                                        </Link>
-                                      </BudgetBountyLink>
-                                    </StatusBox>
-                                    <StatusBox type="open">
-                                      Open
-                                      <BudgetCount color="#5078F2">
-                                        {feat.bounties_count_open
-                                          ? feat.bounties_count_open.toLocaleString()
-                                          : 0}
-                                      </BudgetCount>
-                                      <BudgetBountyLink>
-                                        <Link target="_blank" to={''}>
-                                          <EuiIcon size="m" type="popout" color="#5078F2" />
-                                        </Link>
-                                      </BudgetBountyLink>
-                                    </StatusBox>
-                                  </StatusWrap>
-                                </FeatureData>
-                              </FeatureDataWrap>
-                            )}
-                          </EuiDraggable>
-                        ))}
-                  </EuiDroppable>
-                </EuiDragDropContext>
-
-                {/* Observer target for infinite scroll */}
-                <div ref={observerTarget} style={{ height: '20px' }} />
-
-                <div
-                  style={{
-                    width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
-                >
-                  {features.length >= 20 && features.length < featuresCount && (
-                    <Button
-                      text="Load More"
-                      onClick={() => {
-                        setCurrentPage((prev) => prev + 1);
-                        getFeatures(currentPage + 1, true);
-                      }}
-                    />
-                  )}
-                </div>
-
-                {/* Loading indicator */}
-                {isLoadingMore && (
-                  <LoadingContainer>
-                    <EuiLoadingSpinner size="m" />
-                    <LoadingText>Loading more features...</LoadingText>
-                  </LoadingContainer>
-                )}
-              </FeaturesWrap>
-            </FieldWrap>
-          </DataWrap>
-          <Modal
-            visible={featureModal}
-            style={{
-              height: '100%',
-              flexDirection: 'column'
-            }}
-            envStyle={{
-              marginTop: isMobile ? 64 : 0,
-              background: color.pureWhite,
-              zIndex: 20,
-              maxHeight: '100%',
-              borderRadius: '10px',
-              minWidth: isMobile ? '100%' : '25%',
-              minHeight: isMobile ? '100%' : '20%'
-            }}
-            overlayClick={toggleFeatureModal}
-            bigCloseImage={toggleFeatureModal}
-            bigCloseImageStyle={{
-              top: '-18px',
-              right: '-18px',
-              background: '#000',
-              borderRadius: '50%'
-            }}
-          >
-            <AddFeature
-              closeHandler={toggleFeatureModal}
-              getFeatures={() => getFeatures(1, true)}
-              workspace_uuid={uuid}
-              priority={featuresCount}
-            />
-          </Modal>
           <Modal
             visible={isModalVisible}
             style={{
@@ -1874,11 +1110,6 @@ const WorkspaceMission = () => {
             toasts={toasts}
             dismissToast={() => setToasts([])}
             toastLifeTimeMs={3000}
-          />
-          <PostModal
-            widget="bounties"
-            isOpen={isPostBountyModalOpen}
-            onClose={() => setIsPostBountyModalOpen(false)}
           />
         </WorkspaceMissionBody>
       </>
