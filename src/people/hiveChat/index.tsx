@@ -864,21 +864,6 @@ export const HiveChatView: React.FC = observer(() => {
                       chatId={chatId}
                       websocketSessionId={websocketSessionId}
                     />
-
-                    {actionArtifact &&
-                      actionArtifact.message_id === msg.id &&
-                      chat.isActionContent(actionArtifact.content) &&
-                      !hasButtonOptions(actionArtifact.content) && (
-                        <MessageBubble isUser={msg.role === 'user'}>
-                          {renderMarkdown(actionArtifact?.content?.actionText, {
-                            codeBlockBackground: '#282c34',
-                            textColor: '#abb2bf',
-                            bubbleTextColor: msg.role === 'user' ? 'white' : '',
-                            borderColor: '#444',
-                            codeBlockFont: 'Courier New'
-                          })}
-                        </MessageBubble>
-                      )}
                   </React.Fragment>
                 ))}
                 {isChainVisible && (
