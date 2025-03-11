@@ -43,7 +43,7 @@ const ManageButton = (props: { user_pubkey: string; org: any; action: () => void
 
   useEffect(() => {
     getUserRoles();
-  }, [getUserRoles]);
+  }, [getUserRoles, user_pubkey]);
 
   return (
     <>

@@ -267,7 +267,7 @@ function Header() {
 
   const getUserWorkspaces = useCallback(async () => {
     const id = ui._meInfo?.id || 0;
-    if (id != 0) {
+    if (id !== 0) {
       await main.getUserWorkspaces(id);
     }
   }, [main, ui.selectedPerson]);
@@ -293,6 +293,14 @@ function Header() {
       label: 'Hive',
       name: 'hive',
       path: `/workspace/${space.uuid}/activities`
+    });
+  }
+
+  if (isAdmin && workspaceLength > 0) {
+    tabs.push({
+      label: 'Skills',
+      name: 'skills',
+      path: `/skills`
     });
   }
 
