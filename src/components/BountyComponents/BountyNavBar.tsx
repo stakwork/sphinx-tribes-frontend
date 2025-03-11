@@ -317,8 +317,9 @@ const BountyNavBar: React.FC = () => {
   };
 
   const handleViewBounties = () => {
-    const host = getHost();
-    window.location.href = `https://${host}/bounties`;
+    // const host = getHost();
+    // window.location.href = `https://${host}/bounties`;
+    history.push('/bounties');
     setIsMobileMenuOpen(false);
   };
 

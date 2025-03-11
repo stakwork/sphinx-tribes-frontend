@@ -267,7 +267,7 @@ function Header() {
 
   const getUserWorkspaces = useCallback(async () => {
     const id = ui._meInfo?.id || 0;
-    if (id != 0) {
+    if (id !== 0) {
       await main.getUserWorkspaces(id);
     }
   }, [main, ui.selectedPerson]);
@@ -361,7 +361,7 @@ function Header() {
         console.log('e', e);
       }
     })();
-  }, []);
+  }, [history, location.pathname]);
 
   function goToEditSelf() {
     if (ui.meInfo?.id && !location.pathname.includes(`/p/${ui.meInfo.uuid}`)) {

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { useHistory } from 'react-router-dom';
 import StartUpModal from '../../people/utils/StartUpModal';
 import { getHost } from '../../config';
 
@@ -117,6 +118,7 @@ const Button = styled.button<{ variant: 'primary' | 'secondary' }>`
 
 const HeroSection: React.FC = () => {
   const [isOpenStartupModal, setIsOpenStartupModal] = useState(false);
+  const history = useHistory();
 
   const handleStartEarning = () => {
     setIsOpenStartupModal(true);
@@ -124,7 +126,8 @@ const HeroSection: React.FC = () => {
 
   const handleViewBounties = () => {
     const host = getHost();
-    window.location.href = `https://${host}/bounties`;
+    // window.location.href = `https://${host}/bounties`;
+    history.push('/bounties');
   };
 
   return (
