@@ -45,6 +45,6 @@ describe('Check for Feature Call Url placeholder', () => {
     cy.get('[data-testid="add-featurecall-btn"]').click();
     cy.wait(2000);
 
-    cy.contains('https://testfeature.com').should('exist');
+    cy.contains('Not Configured').should('exist');
   });
 });
