@@ -35,7 +35,7 @@ const CodeViewer = styled.div`
   border: 1px solid #ddd;
   background-color: #1e1e1e;
   padding: 12px;
-  max-height: 500px;
+  min-height: 65vh;
   z-index: 0;
 `;
 
@@ -44,7 +44,7 @@ const TextViewer = styled.div`
   overflow-y: auto;
   border: 1px solid #ddd;
   padding: 12px;
-  max-height: 500px;
+  min-height: 65vh;
   z-index: 0;
 `;
 
@@ -54,6 +54,11 @@ const PaginationControls = styled.div`
   gap: 4px;
   align-items: center;
   margin-top: 12px;
+  z-index: 100;
+  position: sticky;
+  bottom: 0;
+  background-color: #f9f9f9;
+  padding: 8px 0;
 `;
 
 const Button = styled.button`
