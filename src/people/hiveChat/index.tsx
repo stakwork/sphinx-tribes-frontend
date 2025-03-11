@@ -371,6 +371,7 @@ export const HiveChatView: React.FC = observer(() => {
   const [isBuild, setIsBuild] = useState<'Chat' | 'Build'>('Chat');
   const [actionArtifact, setActionArtifact] = useState<Artifact>();
   const [visualArtifact, setVisualArtifact] = useState<Artifact[]>();
+  const [textArtifact, setTextArtifact] = useState<Artifact[]>();
   const [codeArtifact, setCodeArtifacts] = useState<Artifact[]>();
   const [pdfUrl, setPdfUrl] = useState('');
   const { isEnabled: isVerboseLoggingEnabled } = useFeatureFlag('verbose_logging_sw');
@@ -379,7 +380,7 @@ export const HiveChatView: React.FC = observer(() => {
     label: 'Open AI - 4o',
     value: 'gpt-4o'
   });
-  const [artifactTab, setArtifactTab] = useState<'visual' | 'code'>('code');
+  const [artifactTab, setArtifactTab] = useState<'visual' | 'code' | 'text'>('code');
   useBrowserTabTitle('Hive Chat');
 
   if (isVerboseLoggingEnabled) {
@@ -625,6 +626,19 @@ export const HiveChatView: React.FC = observer(() => {
 
         if (codeArtifacts) {
           setCodeArtifacts(codeArtifacts);
+        }
+
+        const textArtifacts = res?.filter(
+          (artifact) =>
+            artifact &&
+            artifact.type === 'text' &&
+            artifact.content &&
+            'text_type' in artifact.content &&
+            artifact.content.text_type !== 'code'
+        );
+
+        if (textArtifacts) {
+          setTextArtifact(textArtifacts);
         }
 
         const systemMessages = messages?.filter((msg) => msg.role !== 'user');
@@ -923,6 +937,14 @@ export const HiveChatView: React.FC = observer(() => {
                       Screen
                     </TabButton>
                   )}
+                  {textArtifact && textArtifact?.length > 0 && (
+                    <TabButton
+                      active={artifactTab === 'text'}
+                      onClick={() => setArtifactTab('text')}
+                    >
+                      Text
+                    </TabButton>
+                  )}
                 </TabContainer>
 
                 <ThinkingModeToggle
@@ -937,6 +959,7 @@ export const HiveChatView: React.FC = observer(() => {
               <VisualScreenViewer
                 visualArtifact={visualArtifact ?? []}
                 codeArtifact={codeArtifact ?? []}
+                textArtifact={textArtifact ?? []}
                 activeTab={artifactTab}
               />
             </ViewerSection>
