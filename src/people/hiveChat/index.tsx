@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useParams } from 'react-router-dom';
-import { ChatMessage, Artifact, ActionContent } from 'store/interface';
+import { ChatMessage, Artifact } from 'store/interface';
 import { useStores } from 'store';
 import { createSocketInstance } from 'config/socket';
 import SidebarComponent from 'components/common/SidebarComponent.tsx';
@@ -345,9 +345,6 @@ const connectToLogWebSocket = (
 
   return ws;
 };
-
-const hasButtonOptions = (content: ActionContent): boolean =>
-  content.options && content.options.some((option) => option.action_type === 'button');
 
 export const HiveChatView: React.FC = observer(() => {
   const { uuid, chatId } = useParams<RouteParams>();
