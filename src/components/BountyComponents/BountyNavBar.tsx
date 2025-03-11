@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite';
 import MaterialIcon from '@material/react-material-icon';
 import { useHistory, useLocation } from 'react-router-dom';
 import StartUpModal from '../../people/utils/StartUpModal';
-import { getHost } from '../../config';
+// import { getHost } from '../../config';
 import { useStores } from '../../store';
 import { Modal } from '../../components/common';
 import SignIn from '../../components/auth/SignIn';

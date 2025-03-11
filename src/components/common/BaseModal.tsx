@@ -41,7 +41,7 @@ const StyledBackdrop = styled(Backdrop)<BackdropProps>`
   -webkit-tap-highlight-color: transparent;
 `;
 
-export const Inner = styled('div')(() => ({
+const Inner = styled('div')(() => ({
   backgroundColor: 'white',
   position: 'relative',
   borderRadius: '0.5rem',
