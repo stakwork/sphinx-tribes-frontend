@@ -109,96 +109,173 @@ const StartUpModal = ({ closeModal, buttonColor }: StartUpModalProps) => {
   );
 
   const StepTwo = () => (
-    <>
-      <ModalContainer data-testid="step-two">
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <p style={{ textAlign: 'center', fontWeight: 600 }}>Step 1</p>
-          <p style={{ textAlign: 'center' }}>Download App</p>
-          <AndroidIosButtonConatiner>
-            <IconButton
-              text={'Android'}
-              width={100}
-              height={48}
-              style={{ marginTop: '20px', textDecoration: 'none' }}
-              onClick={() =>
-                window.open(
-                  'https://play.google.com/store/apps/details?id=chat.sphinx.v2&hl=en_US',
-                  '_blank'
-                )
-              }
-              textStyle={{
-                fontSize: '15px',
-                fontWeight: '500'
-              }}
-              iconStyle={{
-                top: '14px'
-              }}
-              color={buttonColor}
-            />
-            <IconButton
-              text={'IOS'}
-              width={100}
-              height={48}
-              style={{ marginTop: '20px', textDecoration: 'none' }}
-              onClick={() => window.open('https://testflight.apple.com/join/p721ALD9', '_blank')}
-              textStyle={{
-                fontSize: '15px',
-                fontWeight: '500'
-              }}
-              iconStyle={{
-                top: '14px'
-              }}
-              color={buttonColor}
-            />
-          </AndroidIosButtonConatiner>
-        </div>
-      </ModalContainer>
-      <p style={{ textAlign: 'center', fontWeight: 600 }}>Step 2</p>
-      <p style={{ textAlign: 'center' }}>Scan Code</p>
-      <ButtonContainer>
-        <IconButton
-          text={'Reveal Connection Code'}
-          endingIcon={'key'}
-          width={250}
-          height={48}
-          style={{ marginTop: 20 }}
-          hovercolor={buttonColor === 'primary' ? '#5881F8' : '#3CBE88'}
-          activecolor={buttonColor === 'primary' ? '#5078F2' : '#2FB379'}
-          shadowcolor={
-            buttonColor === 'primary' ? 'rgba(97, 138, 255, 0.5)' : 'rgba(73, 201, 152, 0.5)'
-          }
-          onClick={() => {
-            getConnectionCode();
-            setStep(4);
+      <>
+        <ModalContainer
+          role="region"
+          aria-labelledby="step-one-heading"
+          data-testid="step-one"
+          tabIndex={0}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center'
           }}
-          color={buttonColor}
-        />
-        <DirectionWrap>
-          <IconButton
-            text={'Sign in'}
-            width={210}
-            height={48}
-            buttonType={'text'}
-            style={{ color: '#83878b', marginTop: '20px', textDecoration: 'none' }}
-            onClick={(e: any) => {
-              e.stopPropagation();
-              closeModal();
-              ui.setShowSignIn(true);
+        >
+          <h2
+            id="step-one-heading"
+            style={{
+              textAlign: 'center',
+              fontWeight: 600,
+              marginTop: 15,
+              marginBottom: 15,
+              fontSize: 'inherit',
+              fontFamily: 'inherit'
             }}
-            textStyle={{
-              fontSize: '15px',
-              fontWeight: '500',
-              color: '#5F6368'
+          >
+            Step 1
+          </h2>
+
+          <p id="step-one-description" style={{ textAlign: 'center' }}>
+            Download App
+          </p>
+
+          <div
+            style={{
+              width: '85%',
+              display: 'flex',
+              justifyContent: 'center',
+              marginLeft: 'auto',
+              marginRight: 'auto'
             }}
-            iconStyle={{
-              top: '14px'
+            role="group"
+            aria-labelledby="download-options"
+          >
+            <span id="download-options" className="sr-only">
+              Download options
+            </span>
+            <AndroidIosButtonConatiner>
+              <IconButton
+                text={'Android'}
+                width={100}
+                height={48}
+                style={{ marginTop: '20px', textDecoration: 'none' }}
+                onClick={() =>
+                  window.open(
+                    'https://play.google.com/store/apps/details?id=chat.sphinx.v2&hl=en_US',
+                    '_blank',
+                    'noopener noreferrer'
+                  )
+                }
+                textStyle={{
+                  fontSize: '15px',
+                  fontWeight: '500'
+                }}
+                iconStyle={{
+                  top: '14px'
+                }}
+                color={buttonColor}
+                aria-label="Download Android app"
+              />
+              <IconButton
+                text={'iOS'}
+                width={100}
+                height={48}
+                style={{ marginTop: '20px', textDecoration: 'none' }}
+                onClick={() =>
+                  window.open(
+                    'https://testflight.apple.com/join/p721ALD9',
+                    '_blank',
+                    'noopener noreferrer'
+                  )
+                }
+                textStyle={{
+                  fontSize: '15px',
+                  fontWeight: '500'
+                }}
+                iconStyle={{
+                  top: '14px'
+                }}
+                color={buttonColor}
+                aria-label="Download iOS app"
+              />
+            </AndroidIosButtonConatiner>
+          </div>
+        </ModalContainer>
+
+        <ModalContainer
+          role="region"
+          aria-labelledby="step-two-heading"
+          data-testid="step-two"
+          tabIndex={0}
+          style={{ display: 'flex', flexDirection: 'column' }}
+        >
+          <h2
+            id="step-two-heading"
+            style={{
+              textAlign: 'center',
+              fontWeight: 600,
+              marginTop: 15,
+              marginBottom: 15,
+              fontSize: 'inherit',
+              fontFamily: 'inherit'
             }}
-            color={buttonColor}
-          />
-        </DirectionWrap>
-      </ButtonContainer>
-    </>
-  );
+          >
+            Step 2
+          </h2>
+
+          <p id="step-two-description" style={{ textAlign: 'center' }}>
+            Scan Code
+          </p>
+
+          <ButtonContainer>
+            <IconButton
+              text={'Reveal Connection Code'}
+              endingIcon={'key'}
+              width={250}
+              height={48}
+              style={{ marginTop: 20 }}
+              hovercolor={buttonColor === 'primary' ? '#5881F8' : '#3CBE88'}
+              activecolor={buttonColor === 'primary' ? '#5078F2' : '#2FB379'}
+              shadowcolor={
+                buttonColor === 'primary' ? 'rgba(97, 138, 255, 0.5)' : 'rgba(73, 201, 152, 0.5)'
+              }
+              onClick={() => {
+                getConnectionCode();
+                setStep(4);
+              }}
+              color={buttonColor}
+              aria-label="Reveal connection code"
+            />
+            <DirectionWrap>
+              <IconButton
+                text={'Sign in'}
+                width={210}
+                height={48}
+                buttonType={'text'}
+                style={{ color: '#83878b', marginTop: '20px', textDecoration: 'none' }}
+                onClick={(e: any) => {
+                  e.stopPropagation();
+                  closeModal();
+                  ui.setShowSignIn(true);
+                }}
+                textStyle={{
+                  fontSize: '15px',
+                  fontWeight: '500',
+                  color: '#5F6368'
+                }}
+                iconStyle={{
+                  top: '14px'
+                }}
+                color={buttonColor}
+                aria-label="Sign in instead"
+              />
+            </DirectionWrap>
+          </ButtonContainer>
+        </ModalContainer>
+      </>
+    );
+  
 
   return (
     <BaseModal data-testid="startup-modal" open onClose={closeModal}>

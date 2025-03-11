@@ -41,7 +41,7 @@ const StyledBackdrop = styled(Backdrop)<BackdropProps>`
   -webkit-tap-highlight-color: transparent;
 `;
 
-const Inner = styled('div')(() => ({
+export const Inner = styled('div')(() => ({
   backgroundColor: 'white',
   position: 'relative',
   borderRadius: '0.5rem',
@@ -52,7 +52,12 @@ const Inner = styled('div')(() => ({
   fontFamily: 'Barlow'
 }));
 
-export const BaseModal = ({ children, backdrop, ...props }: BaseModalProps) => (
+export const BaseModal = ({
+  children,
+  backdrop,
+  title = 'Sphinx App Download Modal',
+  ...props
+}: BaseModalProps) => (
   <StyledModal
     {...props}
     slots={{ backdrop: StyledBackdrop }}
@@ -61,21 +66,53 @@ export const BaseModal = ({ children, backdrop, ...props }: BaseModalProps) => (
         backdrop
       } as any
     }}
+    aria-modal="true"
+    aria-labelledby="modal-title"
+    role="dialog"
   >
     <Inner>
       <>
+        <h2
+          id="modal-title"
+          style={{
+            position: 'absolute',
+            width: '1px',
+            height: '1px',
+            padding: 0,
+            margin: '-1px',
+            overflow: 'hidden',
+            clip: 'rect(0, 0, 0, 0)',
+            whiteSpace: 'nowrap',
+            borderWidth: 0
+          }}
+        >
+          {title}
+        </h2>
+
         {props.onClose && (
           <Box
             onClick={(e) => props.onClose?.(e, 'backdropClick')}
             p={1}
-            sx={{ cursor: 'pointer' }}
-            component="img"
-            src="/static/close-thin.svg"
-            alt="close_icon"
+            sx={{
+              cursor: 'pointer',
+              '&:focus': {
+                outline: '2px solid #4A90E2',
+                borderRadius: '4px'
+              }
+            }}
+            component="button"
+            aria-label="Close Button"
             position="absolute"
             right={1}
             top={1}
-          />
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            border="none"
+            bgcolor="transparent"
+          >
+            <img src="/static/close-thin.svg" alt="Close icon" />
+          </Box>
         )}
         {children}
       </>
