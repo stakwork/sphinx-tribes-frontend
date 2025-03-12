@@ -448,7 +448,7 @@ export default function MobileView(props: CodingViewProps) {
             />
           </ButtonRow>
 
-          {markPaidOrUnpaid}
+          {hasAccess && isAssigner && markPaidOrUnpaid}
           <LoomViewerRecorder readOnly loomEmbedUrl={loomEmbedUrl} style={{ marginBottom: 20 }} />
 
           <Divider />
