@@ -86,13 +86,14 @@ export const ActionArtifactRenderer: React.FC<ActionArtifactRendererProps> = obs
     return (
       <ActionContainer>
         <ActionBubble>
-          {renderMarkdown(content.actionText, {
-            codeBlockBackground: '#282c34',
-            textColor: '#abb2bf',
-            bubbleTextColor: '',
-            borderColor: '#444',
-            codeBlockFont: 'Courier New'
-          })}
+          {content.actionText &&
+            renderMarkdown(content.actionText, {
+              codeBlockBackground: '#282c34',
+              textColor: '#abb2bf',
+              bubbleTextColor: '',
+              borderColor: '#444',
+              codeBlockFont: 'Courier New'
+            })}
 
           <ActionButtons
             options={content.options}
