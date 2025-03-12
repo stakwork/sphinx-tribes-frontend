@@ -31,7 +31,7 @@ interface SendButtonProps {
 }
 
 interface LogEntry {
-  timestamp: string;
+  timestamp: string; //today work
   projectId: string;
   chatId: string;
   message: string;
