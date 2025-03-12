@@ -530,6 +530,7 @@ export interface Option {
 export interface TextContent {
   text_type: 'code' | 'rag' | 'md';
   content: string;
+  language?: string;
 }
 
 export interface VisualContent {

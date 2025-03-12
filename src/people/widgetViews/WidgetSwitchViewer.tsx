@@ -42,6 +42,7 @@ export const LoadMoreContainer = styled.div<PanelProps>`
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: ${(p) => (p.isMobile ? '0 0 50px 0' : '0')};
   .LoadMoreButton {
     width: 166px;
     height: 48px;
@@ -397,6 +398,7 @@ function WidgetSwitchViewer(props: any) {
       {showLoadMore && (
         <LoadMoreContainer
           color={color}
+          isMobile={isMobile}
           style={{
             width: '100%',
             display: 'flex',
@@ -412,6 +414,7 @@ function WidgetSwitchViewer(props: any) {
       {uuid && WorkspaceLoadMore && (
         <LoadMoreContainer
           color={color}
+          isMobile={isMobile}
           style={{
             width: '100%',
             display: 'flex',
