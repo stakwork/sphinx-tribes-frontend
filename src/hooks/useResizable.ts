@@ -30,14 +30,13 @@ export function useResizable({
       const handleMouseMove = (moveEvent: MouseEvent | TouchEvent) => {
         const { current: isCurrentlyResizing } = isResizing;
         const { current: container } = containerRef;
-        
+
         if (!isCurrentlyResizing || !container) return;
 
         const { left, width: containerWidth } = container.getBoundingClientRect();
 
-        const clientX = 'clientX' in moveEvent 
-          ? moveEvent.clientX 
-          : moveEvent.touches?.[0]?.clientX ?? 0;
+        const clientX =
+          'clientX' in moveEvent ? moveEvent.clientX : moveEvent.touches?.[0]?.clientX ?? 0;
 
         if (!clientX) return;
 
@@ -54,14 +53,14 @@ export function useResizable({
       const stopResize = () => {
         isResizing.current = false;
         document.body.style.cursor = '';
-        
+
         const eventHandlers = [
           { event: 'mousemove', handler: handleMouseMove },
           { event: 'mouseup', handler: stopResize },
           { event: 'touchmove', handler: handleMouseMove },
           { event: 'touchend', handler: stopResize }
         ];
-        
+
         eventHandlers.forEach(({ event, handler }) => {
           document.removeEventListener(event, handler as EventListener);
         });
@@ -73,7 +72,7 @@ export function useResizable({
         { event: 'touchmove', handler: handleMouseMove, options: { passive: false } },
         { event: 'touchend', handler: stopResize }
       ];
-      
+
       eventListenerConfigs.forEach(({ event, handler, options }) => {
         document.addEventListener(event, handler as EventListener, options);
       });

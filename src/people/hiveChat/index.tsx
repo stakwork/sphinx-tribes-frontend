@@ -52,20 +52,32 @@ const Container = styled.div<{ collapsed: boolean }>`
   flex-direction: column;
   height: 100vh;
   padding: 0 25px 0 35px;
-  overflow: hidden;
+  overflow: auto;
   background: var(--Search-bar-background, #f2f3f5);
   margin-left: ${({ collapsed }: { collapsed: boolean }) => (collapsed ? '50px' : '250px')};
   transition: margin-left 0.3s ease-in-out;
+  position: relative;
 `;
 
 const ChatBodyWrapper = styled.div`
   display: flex;
+  height: 100vh;
   flex-direction: row;
   padding: 0 !important;
   flex: 1;
   position: relative;
   overflow: hidden;
   width: 100%;
+`;
+
+const MobileContentWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 50px);
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+  padding-bottom: ${(props) => (props.theme?.isCompact ? '60px' : '90px')};
 `;
 
 const ViewerSection = styled.div`
@@ -75,6 +87,7 @@ const ViewerSection = styled.div`
   overflow: hidden;
   transition: width 0.1s ease;
   min-width: 0;
+  max-height: 100vh;
 `;
 
 const ChatHeader = styled.div`
@@ -90,9 +103,10 @@ const ChatHeader = styled.div`
 const ChatSection = styled.div`
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: auto;
   transition: width 0.1s ease;
   min-width: 0;
+  height: 100%;
   * {
     transition:
       font-size 0.2s ease,
@@ -117,6 +131,7 @@ const ChatBody = styled.div`
   overflow: hidden;
   width: 100%;
   min-width: 0;
+  position: relative;
 `;
 
 const SaveTitleContainer = styled.div`
@@ -174,6 +189,13 @@ const ChatHistory = styled.div`
   min-height: 0;
   width: 100%;
   max-width: 100%;
+
+  scrollbar-width: none; 
+  -ms-overflow-style: none; 
+  
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const HiveThoughts = styled.h6`
@@ -207,6 +229,7 @@ const InputContainer = styled.div`
   width: 100%;
   min-width: 0;
   transition: padding 0.2s ease;
+  z-index: 10;
 `;
 
 const InputWrapper = styled.div<{ isCompact: boolean }>`
@@ -405,6 +428,52 @@ const CopyButton = styled.button<{ $isUser?: boolean }>`
   }
 `;
 
+const MobileTabBar = styled.div`
+  display: flex;
+  justify-content: space-around;
+  background-color: #f2f3f5;
+  padding: 6px 0;
+  border-bottom: 1px solid #ddd;
+  width: 100%;
+  z-index: 1000;
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+`;
+
+const MobileTabButton = styled.button<{ active: boolean }>`
+  flex: 1;
+  padding: 6px;
+  background-color: ${({ active }) => (active ? '#4285f4' : 'transparent')};
+  color: ${({ active }) => (active ? 'white' : '#333')};
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
+
+  &:hover {
+    background-color: ${({ active }) => (active ? '#3367d6' : '#e6e6e6')};
+  }
+`;
+
+const MobileOnly = styled.div`
+  @media (min-width: 768px) {
+    display: none;
+  }
+`;
+
+const DesktopOnly = styled.div`
+  @media (max-width: 767px) {
+    display: none;
+  }
+`;
+
 const connectToLogWebSocket = (
   projectId: string,
   chatId: string,
@@ -484,6 +553,7 @@ export const HiveChatView: React.FC = observer(() => {
     const savedWidth = localStorage.getItem('hiveChatSectionWidth');
     return savedWidth ? parseInt(savedWidth, 10) : 30;
   });
+  const [activeSection, setActiveSection] = useState<'chat' | 'viewer'>('chat');
   const isNarrowChat = chatSectionWidth < 30;
 
   if (isVerboseLoggingEnabled) {
@@ -929,228 +999,449 @@ export const HiveChatView: React.FC = observer(() => {
     <>
       <SidebarComponent uuid={uuid} defaultCollapsed />
       <Container collapsed={collapsed}>
-        <ChatBodyWrapper>
-          <ChatSection style={{ width: `${chatSectionWidth}%` }}>
-            <ChatHeader theme={{ isCompact: isNarrowChat }}>
-              <SaveTitleContainer>
-                <TitleInput
-                  value={title}
-                  onChange={onTitleChange}
-                  placeholder={isNarrowChat ? 'Title...' : 'Enter chat title...'}
-                  disabled={isUpdatingTitle}
-                  theme={{ isCompact: isNarrowChat }}
-                  style={{
-                    cursor: isUpdatingTitle ? 'not-allowed' : 'text'
-                  }}
-                />
-                {isEditingTitle && (
-                  <CompactSaveButton
-                    onClick={handleSaveTitle}
+        <DesktopOnly>
+          <ChatBodyWrapper>
+            <ChatSection style={{ width: `${chatSectionWidth}%` }}>
+              <ChatHeader theme={{ isCompact: isNarrowChat }}>
+                <SaveTitleContainer>
+                  <TitleInput
+                    value={title}
+                    onChange={onTitleChange}
+                    placeholder={isNarrowChat ? 'Title...' : 'Enter chat title...'}
                     disabled={isUpdatingTitle}
                     theme={{ isCompact: isNarrowChat }}
-                  >
-                    Save
-                  </CompactSaveButton>
-                )}
-              </SaveTitleContainer>
-
-              {!showArtifactView ? (
-                <ThinkingModeToggle
-                  isBuild={isBuild}
-                  setIsBuild={setIsBuild}
-                  selectedModel={selectedModel}
-                  setSelectedModel={setSelectedModel}
-                  handleKeyDown={handleKeyDown}
-                  isCompact={isNarrowChat}
-                />
-              ) : null}
-            </ChatHeader>
-
-            <ChatBody>
-              <ChatHistory ref={chatHistoryRef}>
-                {messages.map((msg: ChatMessage) => (
-                  <React.Fragment key={msg.id}>
-                    <MessageBubble isUser={msg.role === 'user'}>
-                      {renderMarkdown(msg.message, {
-                        codeBlockBackground: '#282c34',
-                        textColor: '#abb2bf',
-                        bubbleTextColor: msg.role === 'user' ? 'white' : '',
-                        borderColor: '#444',
-                        codeBlockFont: 'Courier New'
-                      })}
-                      {msg.role !== 'user' && (
-                        <CopyButton
-                          onClick={() => {
-                            navigator.clipboard.writeText(msg.message);
-                            const button = document.getElementById(`copy-${msg.id}`);
-                            if (button) {
-                              button.textContent = 'done';
-                              setTimeout(() => {
-                                button.textContent = 'content_copy';
-                              }, 2000);
-                            }
-                          }}
-                        >
-                          <MaterialIcon
-                            id={`copy-${msg.id}`}
-                            icon="content_copy"
-                            style={{ fontSize: '16px' }}
-                          />
-                        </CopyButton>
-                      )}
-                    </MessageBubble>
-
-                    <ActionArtifactRenderer
-                      messageId={msg.id}
-                      chatId={chatId}
-                      websocketSessionId={websocketSessionId}
-                    />
-                  </React.Fragment>
-                ))}
-                {isChainVisible && (
-                  <MessageBubble isUser={false}>
-                    <HiveThoughts>Hive - Chain of Thought</HiveThoughts>
-                    <p>
-                      {lastLogLine
-                        ? lastLogLine
-                        : `Hi ${ui.meInfo?.owner_alias}, I've got your message. Let me have a think.`}
-                    </p>
-                  </MessageBubble>
-                )}
-              </ChatHistory>
-              <InputContainer theme={{ isCompact: isNarrowChat }}>
-                {isNarrowChat ? (
-                  <InputWrapper isCompact={true}>
-                    <CompactTextArea
-                      value={message}
-                      onChange={handleMessageChange}
-                      onKeyPress={handleKeyPress}
-                      placeholder="Type your message..."
-                      disabled={isSending}
-                      isCompact={true}
-                    />
-                    <CompactAttachButton
-                      onClick={() => setIsUploadModalOpen(true)}
-                      disabled={isSending}
-                      isCompact={true}
+                    style={{
+                      cursor: isUpdatingTitle ? 'not-allowed' : 'text'
+                    }}
+                  />
+                  {isEditingTitle && (
+                    <CompactSaveButton
+                      onClick={handleSaveTitle}
+                      disabled={isUpdatingTitle}
+                      theme={{ isCompact: isNarrowChat }}
                     >
-                      <AttachIcon icon="attach_file" />
-                    </CompactAttachButton>
-                    <CompactButton
-                      onClick={handleSendMessage}
-                      disabled={!message.trim() || isSending}
-                      isCompact={true}
-                    >
-                      <MaterialIcon icon="send" style={{ fontSize: '18px' }} />
-                    </CompactButton>
-                  </InputWrapper>
-                ) : (
-                  <>
-                    <CompactTextArea
-                      value={message}
-                      onChange={handleMessageChange}
-                      onKeyPress={handleKeyPress}
-                      placeholder="Type your message..."
-                      disabled={isSending}
-                      isCompact={false}
-                    />
-                    <CompactAttachButton
-                      onClick={() => setIsUploadModalOpen(true)}
-                      disabled={isSending}
-                      isCompact={false}
-                    >
-                      Attach
-                      <AttachIcon icon="attach_file" />
-                    </CompactAttachButton>
-                    <CompactButton
-                      onClick={handleSendMessage}
-                      disabled={!message.trim() || isSending}
-                      isCompact={false}
-                    >
-                      Send
-                    </CompactButton>
-                  </>
-                )}
-              </InputContainer>
-            </ChatBody>
-          </ChatSection>
-          {showArtifactView ? (
-            <>
-              <ResizableDivider
-                initialLeftWidth={chatSectionWidth}
-                minLeftWidth={20}
-                maxLeftWidth={80}
-                onChange={setChatSectionWidth}
-                onResizeEnd={() => {
-                  localStorage.setItem('hiveChatSectionWidth', chatSectionWidth.toString());
-                }}
-              />
-              <ViewerSection style={{ width: `${100 - chatSectionWidth - 1}%` }}>
-                <ViewerHeader>
-                  <TabContainer>
-                    {(() => {
-                      let tabCount = 0;
-                      if (codeArtifact && codeArtifact?.length > 0) tabCount++;
-                      if (visualArtifact && visualArtifact?.length > 0) tabCount++;
-                      if (textArtifact && textArtifact?.length > 0) tabCount++;
+                      Save
+                    </CompactSaveButton>
+                  )}
+                </SaveTitleContainer>
 
-                      return (
-                        <>
-                          {codeArtifact && codeArtifact?.length > 0 && (
-                            <TabButton
-                              active={artifactTab === 'code'}
-                              onClick={() => setArtifactTab('code')}
-                              chatSectionWidth={chatSectionWidth}
-                              tabCount={tabCount}
-                            >
-                              Code
-                            </TabButton>
-                          )}
-                          {visualArtifact && visualArtifact?.length > 0 && (
-                            <TabButton
-                              active={artifactTab === 'visual'}
-                              onClick={() => setArtifactTab('visual')}
-                              chatSectionWidth={chatSectionWidth}
-                              tabCount={tabCount}
-                            >
-                              Screen
-                            </TabButton>
-                          )}
-                          {textArtifact && textArtifact?.length > 0 && (
-                            <TabButton
-                              active={artifactTab === 'text'}
-                              onClick={() => setArtifactTab('text')}
-                              chatSectionWidth={chatSectionWidth}
-                              tabCount={tabCount}
-                            >
-                              Text
-                            </TabButton>
-                          )}
-                        </>
-                      );
-                    })()}
-                  </TabContainer>
-
+                {!showArtifactView ? (
                   <ThinkingModeToggle
                     isBuild={isBuild}
                     setIsBuild={setIsBuild}
                     selectedModel={selectedModel}
                     setSelectedModel={setSelectedModel}
                     handleKeyDown={handleKeyDown}
-                    isCompact={100 - chatSectionWidth < 50}
+                    isCompact={isNarrowChat}
                   />
-                </ViewerHeader>
+                ) : null}
+              </ChatHeader>
 
-                <VisualScreenViewer
-                  visualArtifact={visualArtifact ?? []}
-                  codeArtifact={codeArtifact ?? []}
-                  textArtifact={textArtifact ?? []}
-                  activeTab={artifactTab}
+              <ChatBody>
+                <ChatHistory ref={chatHistoryRef}>
+                  {messages.map((msg: ChatMessage) => (
+                    <React.Fragment key={msg.id}>
+                      <MessageBubble isUser={msg.role === 'user'}>
+                        {renderMarkdown(msg.message, {
+                          codeBlockBackground: '#282c34',
+                          textColor: '#abb2bf',
+                          bubbleTextColor: msg.role === 'user' ? 'white' : '',
+                          borderColor: '#444',
+                          codeBlockFont: 'Courier New'
+                        })}
+                        {msg.role !== 'user' && (
+                          <CopyButton
+                            onClick={() => {
+                              navigator.clipboard.writeText(msg.message);
+                              const button = document.getElementById(`copy-${msg.id}`);
+                              if (button) {
+                                button.textContent = 'done';
+                                setTimeout(() => {
+                                  button.textContent = 'content_copy';
+                                }, 2000);
+                              }
+                            }}
+                          >
+                            <MaterialIcon
+                              id={`copy-${msg.id}`}
+                              icon="content_copy"
+                              style={{ fontSize: '16px' }}
+                            />
+                          </CopyButton>
+                        )}
+                      </MessageBubble>
+
+                      <ActionArtifactRenderer
+                        messageId={msg.id}
+                        chatId={chatId}
+                        websocketSessionId={websocketSessionId}
+                      />
+                    </React.Fragment>
+                  ))}
+                  {isChainVisible && (
+                    <MessageBubble isUser={false}>
+                      <HiveThoughts>Hive - Chain of Thought</HiveThoughts>
+                      <p>
+                        {lastLogLine
+                          ? lastLogLine
+                          : `Hi ${ui.meInfo?.owner_alias}, I've got your message. Let me have a think.`}
+                      </p>
+                    </MessageBubble>
+                  )}
+                </ChatHistory>
+                <InputContainer theme={{ isCompact: isNarrowChat }}>
+                  {isNarrowChat ? (
+                    <InputWrapper isCompact={true}>
+                      <CompactTextArea
+                        value={message}
+                        onChange={handleMessageChange}
+                        onKeyPress={handleKeyPress}
+                        placeholder="Type your message..."
+                        disabled={isSending}
+                        isCompact={true}
+                      />
+                      <CompactAttachButton
+                        onClick={() => setIsUploadModalOpen(true)}
+                        disabled={isSending}
+                        isCompact={true}
+                      >
+                        <AttachIcon icon="attach_file" />
+                      </CompactAttachButton>
+                      <CompactButton
+                        onClick={handleSendMessage}
+                        disabled={!message.trim() || isSending}
+                        isCompact={true}
+                      >
+                        <MaterialIcon icon="send" style={{ fontSize: '18px' }} />
+                      </CompactButton>
+                    </InputWrapper>
+                  ) : (
+                    <>
+                      <CompactTextArea
+                        value={message}
+                        onChange={handleMessageChange}
+                        onKeyPress={handleKeyPress}
+                        placeholder="Type your message..."
+                        disabled={isSending}
+                        isCompact={false}
+                      />
+                      <CompactAttachButton
+                        onClick={() => setIsUploadModalOpen(true)}
+                        disabled={isSending}
+                        isCompact={false}
+                      >
+                        Attach
+                        <AttachIcon icon="attach_file" />
+                      </CompactAttachButton>
+                      <CompactButton
+                        onClick={handleSendMessage}
+                        disabled={!message.trim() || isSending}
+                        isCompact={false}
+                      >
+                        Send
+                      </CompactButton>
+                    </>
+                  )}
+                </InputContainer>
+              </ChatBody>
+            </ChatSection>
+            {showArtifactView ? (
+              <>
+                <ResizableDivider
+                  initialLeftWidth={chatSectionWidth}
+                  minLeftWidth={20}
+                  maxLeftWidth={80}
+                  onChange={setChatSectionWidth}
+                  onResizeEnd={() => {
+                    localStorage.setItem('hiveChatSectionWidth', chatSectionWidth.toString());
+                  }}
                 />
-              </ViewerSection>
-            </>
-          ) : null}
-        </ChatBodyWrapper>
+                <ViewerSection style={{ width: `${100 - chatSectionWidth - 1}%` }}>
+                  <ViewerHeader>
+                    <TabContainer>
+                      {(() => {
+                        let tabCount = 0;
+                        if (codeArtifact && codeArtifact?.length > 0) tabCount++;
+                        if (visualArtifact && visualArtifact?.length > 0) tabCount++;
+                        if (textArtifact && textArtifact?.length > 0) tabCount++;
+
+                        return (
+                          <>
+                            {codeArtifact && codeArtifact?.length > 0 && (
+                              <TabButton
+                                active={artifactTab === 'code'}
+                                onClick={() => setArtifactTab('code')}
+                                chatSectionWidth={chatSectionWidth}
+                                tabCount={tabCount}
+                              >
+                                Code
+                              </TabButton>
+                            )}
+                            {visualArtifact && visualArtifact?.length > 0 && (
+                              <TabButton
+                                active={artifactTab === 'visual'}
+                                onClick={() => setArtifactTab('visual')}
+                                chatSectionWidth={chatSectionWidth}
+                                tabCount={tabCount}
+                              >
+                                Screen
+                              </TabButton>
+                            )}
+                            {textArtifact && textArtifact?.length > 0 && (
+                              <TabButton
+                                active={artifactTab === 'text'}
+                                onClick={() => setArtifactTab('text')}
+                                chatSectionWidth={chatSectionWidth}
+                                tabCount={tabCount}
+                              >
+                                Text
+                              </TabButton>
+                            )}
+                          </>
+                        );
+                      })()}
+                    </TabContainer>
+
+                    <ThinkingModeToggle
+                      isBuild={isBuild}
+                      setIsBuild={setIsBuild}
+                      selectedModel={selectedModel}
+                      setSelectedModel={setSelectedModel}
+                      handleKeyDown={handleKeyDown}
+                      isCompact={100 - chatSectionWidth < 50}
+                    />
+                  </ViewerHeader>
+
+                  <VisualScreenViewer
+                    visualArtifact={visualArtifact ?? []}
+                    codeArtifact={codeArtifact ?? []}
+                    textArtifact={textArtifact ?? []}
+                    activeTab={artifactTab}
+                  />
+                </ViewerSection>
+              </>
+            ) : null}
+          </ChatBodyWrapper>
+        </DesktopOnly>
+
+        <MobileOnly>
+          <MobileContentWrapper>
+            <MobileTabBar>
+              <MobileTabButton
+                active={activeSection === 'chat'}
+                onClick={() => setActiveSection('chat')}
+              >
+                Chat
+              </MobileTabButton>
+              <MobileTabButton
+                active={activeSection === 'viewer'}
+                onClick={() => setActiveSection('viewer')}
+              >
+                Viewer
+              </MobileTabButton>
+            </MobileTabBar>
+            {activeSection === 'chat' && (
+              <ChatSection style={{ width: '100%' }}>
+                <ChatHeader theme={{ isCompact: isNarrowChat }}>
+                  <SaveTitleContainer>
+                    <TitleInput
+                      value={title}
+                      onChange={onTitleChange}
+                      placeholder={isNarrowChat ? 'Title...' : 'Enter chat title...'}
+                      disabled={isUpdatingTitle}
+                      theme={{ isCompact: isNarrowChat }}
+                      style={{
+                        cursor: isUpdatingTitle ? 'not-allowed' : 'text'
+                      }}
+                    />
+                    {isEditingTitle && (
+                      <CompactSaveButton
+                        onClick={handleSaveTitle}
+                        disabled={isUpdatingTitle}
+                        theme={{ isCompact: isNarrowChat }}
+                      >
+                        Save
+                      </CompactSaveButton>
+                    )}
+                  </SaveTitleContainer>
+
+                  {!showArtifactView ? (
+                    <ThinkingModeToggle
+                      isBuild={isBuild}
+                      setIsBuild={setIsBuild}
+                      selectedModel={selectedModel}
+                      setSelectedModel={setSelectedModel}
+                      handleKeyDown={handleKeyDown}
+                      isCompact={isNarrowChat}
+                    />
+                  ) : null}
+                </ChatHeader>
+
+                <ChatBody>
+                  <ChatHistory
+                    style={{
+                      paddingBottom: '70px'
+                    }}
+                    ref={chatHistoryRef}
+                  >
+                    {messages.map((msg: ChatMessage) => (
+                      <React.Fragment key={msg.id}>
+                        <MessageBubble isUser={msg.role === 'user'}>
+                          {renderMarkdown(msg.message, {
+                            codeBlockBackground: '#282c34',
+                            textColor: '#abb2bf',
+                            bubbleTextColor: msg.role === 'user' ? 'white' : '',
+                            borderColor: '#444',
+                            codeBlockFont: 'Courier New'
+                          })}
+                          {msg.role !== 'user' && (
+                            <CopyButton
+                              onClick={() => {
+                                navigator.clipboard.writeText(msg.message);
+                                const button = document.getElementById(`copy-${msg.id}`);
+                                if (button) {
+                                  button.textContent = 'done';
+                                  setTimeout(() => {
+                                    button.textContent = 'content_copy';
+                                  }, 2000);
+                                }
+                              }}
+                            >
+                              <MaterialIcon
+                                id={`copy-${msg.id}`}
+                                icon="content_copy"
+                                style={{ fontSize: '16px' }}
+                              />
+                            </CopyButton>
+                          )}
+                        </MessageBubble>
+
+                        <ActionArtifactRenderer
+                          messageId={msg.id}
+                          chatId={chatId}
+                          websocketSessionId={websocketSessionId}
+                        />
+                      </React.Fragment>
+                    ))}
+                    {isChainVisible && (
+                      <MessageBubble isUser={false}>
+                        <HiveThoughts>Hive - Chain of Thought</HiveThoughts>
+                        <p>
+                          {lastLogLine
+                            ? lastLogLine
+                            : `Hi ${ui.meInfo?.owner_alias}, I've got your message. Let me have a think.`}
+                        </p>
+                      </MessageBubble>
+                    )}
+                  </ChatHistory>
+                  <InputContainer
+                    theme={{ isCompact: isNarrowChat }}
+                    style={{
+                      backgroundColor: 'white',
+                      position: 'fixed',
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      padding: '8px 16px',
+                      boxShadow: '0 -2px 5px rgba(0,0,0,0.1)'
+                    }}
+                  >
+                    <InputWrapper isCompact={true}>
+                      <CompactTextArea
+                        value={message}
+                        onChange={handleMessageChange}
+                        onKeyPress={handleKeyPress}
+                        placeholder="Type your message..."
+                        disabled={isSending}
+                        isCompact={true}
+                      />
+                      <CompactAttachButton
+                        onClick={() => setIsUploadModalOpen(true)}
+                        disabled={isSending}
+                        isCompact={true}
+                      >
+                        <AttachIcon icon="attach_file" />
+                      </CompactAttachButton>
+                      <CompactButton
+                        onClick={handleSendMessage}
+                        disabled={!message.trim() || isSending}
+                        isCompact={true}
+                      >
+                        <MaterialIcon icon="send" style={{ fontSize: '18px' }} />
+                      </CompactButton>
+                    </InputWrapper>
+                  </InputContainer>
+                </ChatBody>
+              </ChatSection>
+            )}
+
+            {activeSection === 'viewer' && showArtifactView && (
+              <ViewerSection style={{ width: '100%' }}>
+              <ViewerHeader>
+                <TabContainer>
+                  {(() => {
+                    let tabCount = 0;
+                    if (codeArtifact && codeArtifact?.length > 0) tabCount++;
+                    if (visualArtifact && visualArtifact?.length > 0) tabCount++;
+                    if (textArtifact && textArtifact?.length > 0) tabCount++;
+
+                    return (
+                      <>
+                        {codeArtifact && codeArtifact?.length > 0 && (
+                          <TabButton
+                            active={artifactTab === 'code'}
+                            onClick={() => setArtifactTab('code')}
+                            chatSectionWidth={chatSectionWidth}
+                            tabCount={tabCount}
+                          >
+                            Code
+                          </TabButton>
+                        )}
+                        {visualArtifact && visualArtifact?.length > 0 && (
+                          <TabButton
+                            active={artifactTab === 'visual'}
+                            onClick={() => setArtifactTab('visual')}
+                            chatSectionWidth={chatSectionWidth}
+                            tabCount={tabCount}
+                          >
+                            Screen
+                          </TabButton>
+                        )}
+                        {textArtifact && textArtifact?.length > 0 && (
+                          <TabButton
+                            active={artifactTab === 'text'}
+                            onClick={() => setArtifactTab('text')}
+                            chatSectionWidth={chatSectionWidth}
+                            tabCount={tabCount}
+                          >
+                            Text
+                          </TabButton>
+                        )}
+                      </>
+                    );
+                  })()}
+                </TabContainer>
+
+                <ThinkingModeToggle
+                  isBuild={isBuild}
+                  setIsBuild={setIsBuild}
+                  selectedModel={selectedModel}
+                  setSelectedModel={setSelectedModel}
+                  handleKeyDown={handleKeyDown}
+                  isCompact={true}
+                />
+              </ViewerHeader>
+
+              <VisualScreenViewer
+                visualArtifact={visualArtifact ?? []}
+                codeArtifact={codeArtifact ?? []}
+                textArtifact={textArtifact ?? []}
+                activeTab={artifactTab}
+              />
+            </ViewerSection>
+            )}
+          </MobileContentWrapper>
+        </MobileOnly>
         {isUploadModalOpen && (
           <UploadModal
             isOpen={isUploadModalOpen}
