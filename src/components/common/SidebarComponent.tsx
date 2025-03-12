@@ -48,6 +48,7 @@ const SidebarContainer = styled.div<{ collapsed: boolean }>`
   background: #f4f4f4;
   box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
   overflow-y: auto;
+  cursor: ${({ collapsed }) => (collapsed ? 'pointer' : 'default')};
 
   @media (max-width: 768px) {
     width: ${({ collapsed }) => (collapsed ? '60px' : '100%')};
@@ -632,7 +633,15 @@ export default function SidebarComponent({
   };
 
   return (
-    <SidebarContainer collapsed={collapsed} onClick={(e) => e.stopPropagation()}>
+    <SidebarContainer
+      collapsed={collapsed}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (collapsed) {
+          handleCollapse(false);
+        }
+      }}
+    >
       <HamburgerButton onClick={() => handleCollapse(!collapsed)}>
         <MaterialIcon icon="menu" style={{ fontSize: 28 }} />
       </HamburgerButton>
@@ -778,235 +787,243 @@ export default function SidebarComponent({
         )}
       </NavItem>
 
-      <FeaturesSection>
-        <FeatureHeader
-          onClick={toggleChats}
-          onMouseEnter={(e) => handleMouseEnter(e, 'chats')}
-          onMouseLeave={() => setHoveredItem(null)}
-        >
-          <h6 style={{ display: collapsed ? 'none' : 'block' }}>Chats</h6>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <MaterialIcon
-              data-testid="add-chat-button"
-              icon="add"
-              style={{ marginRight: '10px', cursor: 'pointer' }}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleNewChat();
-              }}
-              onMouseEnter={(e) => {
-                e.stopPropagation();
-                setHoveredItem('new-chat');
-              }}
-              onMouseLeave={() => setHoveredItem(null)}
-            />
-            {hoveredItem === 'new-chat' && (
-              <Tooltip visible={true} top={tooltipTop} collapsed={collapsed}>
-                New Chat
+      {!collapsed && (
+        <FeaturesSection>
+          <FeatureHeader
+            onClick={toggleChats}
+            onMouseEnter={(e) => handleMouseEnter(e, 'chats')}
+            onMouseLeave={() => setHoveredItem(null)}
+          >
+            <h6>Chats</h6>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <MaterialIcon
+                data-testid="add-chat-button"
+                icon="add"
+                style={{ marginRight: '10px', cursor: 'pointer' }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleNewChat();
+                }}
+                onMouseEnter={(e) => {
+                  e.stopPropagation();
+                  setHoveredItem('new-chat');
+                }}
+                onMouseLeave={() => setHoveredItem(null)}
+              />
+              {hoveredItem === 'new-chat' && (
+                <Tooltip visible={true} top={tooltipTop} collapsed={collapsed}>
+                  New Chat
+                </Tooltip>
+              )}
+              <MaterialIcon
+                icon={isChatsExpanded ? 'arrow_drop_down' : 'arrow_right'}
+                style={{ marginRight: '5px' }}
+              />
+            </div>
+            {hoveredItem === 'chats' && (
+              <Tooltip visible={hoveredItem === 'chats'} top={tooltipTop} collapsed={collapsed}>
+                Chats
               </Tooltip>
             )}
-            <MaterialIcon
-              icon={isChatsExpanded ? 'arrow_drop_down' : 'arrow_right'}
-              style={{ marginRight: '5px' }}
-            />
-          </div>
-          {(collapsed || hoveredItem === 'chats') && (
-            <Tooltip visible={hoveredItem === 'chats'} top={tooltipTop} collapsed={collapsed}>
-              Chats
-            </Tooltip>
-          )}
-        </FeatureHeader>
-        {isChatsExpanded && (
-          <div data-testid="chat-list">
-            {isLoadingChats ? (
-              <LoadingContainer data-testid="chat-loading-spinner">
-                <EuiLoadingSpinner size="m" />
-              </LoadingContainer>
-            ) : (
-              <>
-                {visibleChats.map((chat) => (
-                  <NavItem
-                    data-testid={`chat-item-${chat.id}`}
-                    key={chat.id}
-                    onClick={() => history.push(`/workspace/${uuid}/hivechat/${chat.id}`)}
-                    collapsed={collapsed}
-                    active={window.location.pathname.includes(`/hivechat/${chat.id}`)}
-                  >
-                    <MissionRowFlex>
-                      {!collapsed && (
-                        <FeatureData>
-                          <ChatItemContainer>
-                            <ChatItemContent>
-                              <ChatTitle>{chat.title || 'Untitled Chat'}</ChatTitle>
-                              <ChatTimestamp data-testid={`chat-timestamp-${chat.id}`}>
-                                {chat.updatedAt || chat.createdAt
-                                  ? new Date(chat.updatedAt || chat.createdAt).toLocaleString()
-                                  : 'No date'}
-                              </ChatTimestamp>
-                            </ChatItemContent>
-                            <MaterialIcon
-                              data-testid="chat-options-button"
-                              icon="more_horiz"
-                              onClick={(e) => toggleChatMenu(chat.id, e)}
-                              style={{ cursor: 'pointer' }}
-                            />
-                          </ChatItemContainer>
-                          {visibleChatMenu[chat.id] && (
-                            <EditPopover>
-                              <EditPopoverTail />
-                              <EditPopoverContent onClick={(e) => confirmArchiveChat(chat.id, e)}>
-                                <EditPopoverText>Archive</EditPopoverText>
-                              </EditPopoverContent>
-                            </EditPopover>
-                          )}
-                        </FeatureData>
-                      )}
-                    </MissionRowFlex>
-                  </NavItem>
-                ))}
-                {!collapsed && chats.length > 0 && (
-                  <PaginationContainer>
-                    <div
-                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}
+          </FeatureHeader>
+          {isChatsExpanded && (
+            <div data-testid="chat-list">
+              {isLoadingChats ? (
+                <LoadingContainer data-testid="chat-loading-spinner">
+                  <EuiLoadingSpinner size="m" />
+                </LoadingContainer>
+              ) : (
+                <>
+                  {visibleChats.map((chat) => (
+                    <NavItem
+                      data-testid={`chat-item-${chat.id}`}
+                      key={chat.id}
+                      onClick={() => history.push(`/workspace/${uuid}/hivechat/${chat.id}`)}
+                      collapsed={collapsed}
+                      active={window.location.pathname.includes(`/hivechat/${chat.id}`)}
                     >
-                      {hasPreviousPage && (
-                        <PaginationButton
-                          icon="chevron_left"
-                          onClick={handlePreviousPage}
-                          data-testid="previous-page-button"
-                        />
-                      )}
-                    </div>
-                    <ViewMoreLink
-                      onClick={() => history.push(`/workspace/${uuid}/hivechat/history`)}
-                      data-testid="view-more-link"
-                    >
-                      View More
-                    </ViewMoreLink>
-                    <div
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'flex-start'
-                      }}
-                    >
-                      {hasNextPage && (
-                        <PaginationButton
-                          icon="chevron_right"
-                          onClick={handleNextPage}
-                          data-testid="next-page-button"
-                        />
-                      )}
-                    </div>
-                  </PaginationContainer>
-                )}
-              </>
-            )}
-          </div>
-        )}
-      </FeaturesSection>
-
-      <FeaturesSection>
-        <FeatureHeader
-          onClick={toggleFeatures}
-          onMouseEnter={(e) => handleMouseEnter(e, 'features')}
-          onMouseLeave={() => setHoveredItem(null)}
-        >
-          <h6 style={{ display: collapsed ? 'none' : 'block' }}>Features</h6>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <MaterialIcon
-              icon="add"
-              style={{ marginRight: '10px', cursor: 'pointer' }}
-              data-testid="new-feature-btn"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleAddFeature();
-              }}
-              onMouseEnter={(e) => {
-                e.stopPropagation();
-                handleMouseEnter(e, 'new-feature');
-              }}
-              onMouseLeave={() => setHoveredItem(null)}
-            />
-            <MaterialIcon
-              icon={isFeaturesExpanded ? 'arrow_drop_down' : 'arrow_right'}
-              style={{ marginRight: '5px' }}
-            />
-          </div>
-          {(collapsed || hoveredItem === 'features') && (
-            <Tooltip visible={hoveredItem === 'features'} top={tooltipTop} collapsed={collapsed}>
-              Features
-            </Tooltip>
-          )}
-          {hoveredItem === 'new-feature' && (
-            <Tooltip visible={true} top={tooltipTop} collapsed={collapsed}>
-              New Feature
-            </Tooltip>
-          )}
-        </FeatureHeader>
-        {isFeaturesExpanded && (
-          <div>
-            <EuiDragDropContext onDragEnd={onDragEnd}>
-              <EuiDroppable droppableId="features_droppable_area" spacing="m">
-                {features &&
-                  features.map((feat: Feature, i: number) => (
-                    <EuiDraggable
-                      spacing="m"
-                      key={feat.id}
-                      index={i}
-                      draggableId={feat.uuid}
-                      customDragHandle
-                      hasInteractiveChildren
-                    >
-                      {(provided: any) => (
-                        <NavItem
-                          onClick={() => {
-                            setActiveItem('feature');
-                            history.push(`/workspace/${uuid}/feature/${feat.uuid}`);
-                          }}
-                          key={feat.id}
-                          collapsed={collapsed}
-                          active={
-                            activeItem === 'feature' && window.location.pathname.includes(feat.uuid)
-                          }
-                          onMouseEnter={(e) => handleMouseEnter(e, `feature-${feat.uuid}`)}
-                          onMouseLeave={() => setHoveredItem(null)}
-                        >
-                          <MissionRowFlex>
-                            <MaterialIcon
-                              icon="menu"
-                              color="transparent"
-                              className="drag-handle"
-                              paddingSize="s"
-                              {...provided.dragHandleProps}
-                              data-testid={`drag-handle-${feat.priority}`}
-                              aria-label="Drag Handle"
-                              style={{ fontSize: 20, marginBottom: '6px' }}
-                            />
-                            {!collapsed && (
-                              <FeatureData>
-                                <h6 style={{ marginLeft: '1rem' }}>{feat.name}</h6>
-                              </FeatureData>
+                      <MissionRowFlex>
+                        {!collapsed && (
+                          <FeatureData>
+                            <ChatItemContainer>
+                              <ChatItemContent>
+                                <ChatTitle>{chat.title || 'Untitled Chat'}</ChatTitle>
+                                <ChatTimestamp data-testid={`chat-timestamp-${chat.id}`}>
+                                  {chat.updatedAt || chat.createdAt
+                                    ? new Date(chat.updatedAt || chat.createdAt).toLocaleString()
+                                    : 'No date'}
+                                </ChatTimestamp>
+                              </ChatItemContent>
+                              <MaterialIcon
+                                data-testid="chat-options-button"
+                                icon="more_horiz"
+                                onClick={(e) => toggleChatMenu(chat.id, e)}
+                                style={{ cursor: 'pointer' }}
+                              />
+                            </ChatItemContainer>
+                            {visibleChatMenu[chat.id] && (
+                              <EditPopover>
+                                <EditPopoverTail />
+                                <EditPopoverContent onClick={(e) => confirmArchiveChat(chat.id, e)}>
+                                  <EditPopoverText>Archive</EditPopoverText>
+                                </EditPopoverContent>
+                              </EditPopover>
                             )}
-                          </MissionRowFlex>
-                          {(collapsed || hoveredItem === `feature-${feat.uuid}`) && (
-                            <Tooltip
-                              visible={hoveredItem === `feature-${feat.uuid}`}
-                              top={tooltipTop}
-                              collapsed={collapsed}
-                            >
-                              {feat.name}
-                            </Tooltip>
-                          )}
-                        </NavItem>
-                      )}
-                    </EuiDraggable>
+                          </FeatureData>
+                        )}
+                      </MissionRowFlex>
+                    </NavItem>
                   ))}
-              </EuiDroppable>
-            </EuiDragDropContext>
-          </div>
-        )}
-      </FeaturesSection>
+                  {!collapsed && chats.length > 0 && (
+                    <PaginationContainer>
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'flex-end'
+                        }}
+                      >
+                        {hasPreviousPage && (
+                          <PaginationButton
+                            icon="chevron_left"
+                            onClick={handlePreviousPage}
+                            data-testid="previous-page-button"
+                          />
+                        )}
+                      </div>
+                      <ViewMoreLink
+                        onClick={() => history.push(`/workspace/${uuid}/hivechat/history`)}
+                        data-testid="view-more-link"
+                      >
+                        View More
+                      </ViewMoreLink>
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'flex-start'
+                        }}
+                      >
+                        {hasNextPage && (
+                          <PaginationButton
+                            icon="chevron_right"
+                            onClick={handleNextPage}
+                            data-testid="next-page-button"
+                          />
+                        )}
+                      </div>
+                    </PaginationContainer>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+        </FeaturesSection>
+      )}
+
+      {!collapsed && (
+        <FeaturesSection>
+          <FeatureHeader
+            onClick={toggleFeatures}
+            onMouseEnter={(e) => handleMouseEnter(e, 'features')}
+            onMouseLeave={() => setHoveredItem(null)}
+          >
+            <h6>Features</h6>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <MaterialIcon
+                icon="add"
+                style={{ marginRight: '10px', cursor: 'pointer' }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleAddFeature();
+                }}
+                onMouseEnter={(e) => {
+                  e.stopPropagation();
+                  handleMouseEnter(e, 'new-feature');
+                }}
+                onMouseLeave={() => setHoveredItem(null)}
+              />
+              <MaterialIcon
+                icon={isFeaturesExpanded ? 'arrow_drop_down' : 'arrow_right'}
+                style={{ marginRight: '5px' }}
+              />
+            </div>
+            {hoveredItem === 'features' && (
+              <Tooltip visible={hoveredItem === 'features'} top={tooltipTop} collapsed={collapsed}>
+                Features
+              </Tooltip>
+            )}
+            {hoveredItem === 'new-feature' && (
+              <Tooltip visible={true} top={tooltipTop} collapsed={collapsed}>
+                New Feature
+              </Tooltip>
+            )}
+          </FeatureHeader>
+          {isFeaturesExpanded && (
+            <div>
+              <EuiDragDropContext onDragEnd={onDragEnd}>
+                <EuiDroppable droppableId="features_droppable_area" spacing="m">
+                  {features &&
+                    features.map((feat: Feature, i: number) => (
+                      <EuiDraggable
+                        spacing="m"
+                        key={feat.id}
+                        index={i}
+                        draggableId={feat.uuid}
+                        customDragHandle
+                        hasInteractiveChildren
+                      >
+                        {(provided: any) => (
+                          <NavItem
+                            onClick={() => {
+                              setActiveItem('feature');
+                              history.push(`/workspace/${uuid}/feature/${feat.uuid}`);
+                            }}
+                            key={feat.id}
+                            collapsed={collapsed}
+                            active={
+                              activeItem === 'feature' &&
+                              window.location.pathname.includes(feat.uuid)
+                            }
+                            onMouseEnter={(e) => handleMouseEnter(e, `feature-${feat.uuid}`)}
+                            onMouseLeave={() => setHoveredItem(null)}
+                          >
+                            <MissionRowFlex>
+                              <MaterialIcon
+                                icon="menu"
+                                color="transparent"
+                                className="drag-handle"
+                                paddingSize="s"
+                                {...provided.dragHandleProps}
+                                data-testid={`drag-handle-${feat.priority}`}
+                                aria-label="Drag Handle"
+                                style={{ fontSize: 20, marginBottom: '6px' }}
+                              />
+                              {!collapsed && (
+                                <FeatureData>
+                                  <h6 style={{ marginLeft: '1rem' }}>{feat.name}</h6>
+                                </FeatureData>
+                              )}
+                            </MissionRowFlex>
+                            {(collapsed || hoveredItem === `feature-${feat.uuid}`) && (
+                              <Tooltip
+                                visible={hoveredItem === `feature-${feat.uuid}`}
+                                top={tooltipTop}
+                                collapsed={collapsed}
+                              >
+                                {feat.name}
+                              </Tooltip>
+                            )}
+                          </NavItem>
+                        )}
+                      </EuiDraggable>
+                    ))}
+                </EuiDroppable>
+              </EuiDragDropContext>
+            </div>
+          )}
+        </FeaturesSection>
+      )}
 
       {featureModal && (
         <Modal

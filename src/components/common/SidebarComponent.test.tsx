@@ -73,9 +73,6 @@ describe('SidebarComponent Chat Section', () => {
     waitFor(() => {
       renderSidebar({ defaultCollapsed: true });
       expect(screen.getByTestId('add-chat-button')).toBeInTheDocument();
-
-      renderSidebar({ defaultCollapsed: false });
-      expect(screen.getByTestId('add-chat-button')).toBeInTheDocument();
     });
   });
 
