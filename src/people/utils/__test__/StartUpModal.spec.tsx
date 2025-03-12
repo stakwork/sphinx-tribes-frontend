@@ -510,20 +510,44 @@ describe('StartUpModal', () => {
     });
 
     it('should handle API errors appropriately', async () => {
+      // Track API call count
+      let apiCallCount = 0;
       const expectedErr = new Error('Network failure');
-      (api.get as jest.Mock).mockRejectedValueOnce(expectedErr);
-
+      
+      // Mock API to simulate failure
+      (api.get as jest.Mock).mockImplementation(() => {
+        apiCallCount++;
+        return Promise.reject(expectedErr);
+      });
+      
+      // Suppress the expected console error from the rejected promise
+      const originalConsoleError = console.error;
+      console.error = jest.fn();
+      
       render(
         <StartUpModal closeModal={mockCloseModal} buttonColor="primary" dataObject={mockDataObject} />
       );
 
+      // Click the button that triggers the API call
       await act(async () => {
         fireEvent.click(screen.getByText('Reveal Connection Code'));
       });
 
+      // Wait for the component to render the error state
       await waitFor(() => {
+        // Verify error message is displayed (UI error handling)
         expect(screen.getByText('We are out of codes to sign up! Please check again later.')).toBeInTheDocument();
       });
+      
+      // Verify API was called exactly once
+      expect(apiCallCount).toBe(1);
+      
+      // Verify QR code container exists but success message doesn't
+      expect(screen.getByTestId('qrcode')).toBeInTheDocument();
+      expect(screen.queryByText('Install the Sphinx app on your phone and then scan this QRcode')).not.toBeInTheDocument();
+      
+      // Restore console.error
+      console.error = originalConsoleError;
     });
 
     it('should handle asynchronous API responses', async () => {
