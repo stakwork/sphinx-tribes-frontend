@@ -319,7 +319,9 @@ const FeatureFlagsModal = ({ open, close, addToast }: FeatureFlagsProps) => {
                         </Td>
                         <Td>
                           <ActionButton onClick={() => handleEdit(flag)}>Edit</ActionButton>
-                          <ActionButton onClick={() => handleDelete(flag.uuid)}>Delete</ActionButton>
+                          <ActionButton onClick={() => handleDelete(flag.uuid)}>
+                            Delete
+                          </ActionButton>
                           <ActionButton
                             onClick={() => console.log('Manage Endpoints button has been clicked')}
                           >
