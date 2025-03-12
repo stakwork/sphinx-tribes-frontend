@@ -790,3 +790,18 @@ export const TAB_TO_STATUS_MAP: Record<FeatureTabLabels, FeatureStatus | 'all'> 
   [FeatureStatus.BACKLOG]: FeatureStatus.BACKLOG,
   [FeatureStatus.ARCHIVE]: FeatureStatus.ARCHIVE
 } as const;
+
+export interface ApiResponse<T> {
+  success: boolean;
+  message?: string;
+  data: T;
+}
+
+export interface ChatWorkflow {
+  id?: number;
+  workspaceId: string;
+  url: string;
+  stackworkId: string;
+  createdAt?: string;
+  updatedAt?: string;
+}

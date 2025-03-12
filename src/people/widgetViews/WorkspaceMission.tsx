@@ -30,7 +30,7 @@ import { useParams } from 'react-router-dom';
 import { useStores } from 'store';
 import { useDeleteConfirmationModal } from 'components/common';
 import { Box } from '@mui/system';
-import { FeatureCall, Person, Workspace } from 'store/interface';
+import { FeatureCall, Person, Workspace, ChatWorkflow } from 'store/interface';
 import MaterialIcon from '@material/react-material-icon';
 import { Button, Modal } from 'components/common';
 import { EuiToolTip } from '@elastic/eui';
@@ -56,6 +56,7 @@ import { EditableField } from './workspace/EditableField';
 import { Toast } from './workspace/interface';
 import TextSnippetModal from './workspace/TextSnippetModal.tsx';
 import ActivitiesHeader from './workspace/Activities/header.tsx';
+import AddChatWorkflow from './workspace/AddChatWorkflowModal.tsx';
 
 const color = colors['light'];
 
@@ -177,6 +178,9 @@ const WorkspaceMission = () => {
   const [permissionsChecked, setPermissionsChecked] = useState<boolean>(false);
   const [isSnippetModalVisible, setSnippetModalVisible] = useState(false);
   const [currentOpenMenu, setCurrentOpenMenu] = useState<string | number | null>(null);
+  const [chatWorkflowModal, setChatWorkflowModal] = useState(false);
+  const [selectedChatWorkflow, setSelectedChatWorkflow] = useState<ChatWorkflow | null>(null);
+  const [currentChatWorkflowUrl, setCurrentChatWorkflowUrl] = useState('');
 
   const openSnippetModal = () => {
     setSnippetModalVisible(true);
@@ -204,6 +208,18 @@ const WorkspaceMission = () => {
     }
   }, [main, uuid]);
 
+  const fetchChatWorkflow = useCallback(async () => {
+    try {
+      const data = await main.getWorkspaceChatWorkflow(uuid);
+      setSelectedChatWorkflow(data);
+      if (data) {
+        setCurrentChatWorkflowUrl(data.url);
+      }
+    } catch (error) {
+      console.error('Error fetching chat workflow:', error);
+    }
+  }, [main, uuid]);
+
   useBrowserTabTitle('Workspace');
 
   useEffect(() => {
@@ -213,6 +229,10 @@ const WorkspaceMission = () => {
   useEffect(() => {
     fetchFeatureCall();
   }, [fetchFeatureCall]);
+
+  useEffect(() => {
+    fetchChatWorkflow();
+  }, [fetchChatWorkflow]);
 
   const openCodeGraphModal = (type: 'add' | 'edit', graph?: CodeGraph) => {
     if (type === 'edit' && graph) {
@@ -247,6 +267,15 @@ const WorkspaceMission = () => {
     setFeatureCallModal(true);
   };
 
+  const openChatWorkflowModal = (type: 'add' | 'edit') => {
+    if (type === 'add') {
+      setCurrentChatWorkflowUrl('');
+    } else {
+      setCurrentChatWorkflowUrl(selectedChatWorkflow?.url || '');
+    }
+    setChatWorkflowModal(true);
+  };
+
   useEffect(() => {
     const handleCollapseChange = (e: Event) => {
       const customEvent = e as CustomEvent<{ collapsed: boolean }>;
@@ -279,6 +308,12 @@ const WorkspaceMission = () => {
     setFeatureCallModal(false);
   };
 
+  const closeChatWorkflowModal = () => {
+    setSelectedChatWorkflow(null);
+    setCurrentChatWorkflowUrl('');
+    setChatWorkflowModal(false);
+  };
+
   const handleDeleteCodeGraph = async () => {
     try {
       await main.deleteCodeGraph(uuid, currentCodeGraphUuid);
@@ -296,6 +331,16 @@ const WorkspaceMission = () => {
       fetchFeatureCall();
     } catch (error) {
       console.error('Error deleteFeatureCall', error);
+    }
+  };
+
+  const handleDeleteChatWorkflow = async () => {
+    try {
+      await main.deleteChatWorkflow(uuid);
+      closeChatWorkflowModal();
+      fetchChatWorkflow();
+    } catch (error) {
+      console.error('Error deleteChatWorkflow', error);
     }
   };
 
@@ -901,6 +946,117 @@ const WorkspaceMission = () => {
                   )}
                 </DataWrap2>
               </FieldWrap>
+
+              <FieldWrap style={{ marginTop: '20px' }}>
+                <DataWrap2>
+                  <RowFlex>
+                    <Label>Chat Workflow</Label>
+                  </RowFlex>
+                  {!selectedChatWorkflow && (
+                    <StyledList>
+                      <StyledListElement key={1}>
+                        <OptionsWrap style={{ position: 'unset', display: 'contents' }}>
+                          <MaterialIcon
+                            icon={'more_horiz'}
+                            onClick={() => handleUserRepoOptionClick('chat_workflow_new')}
+                            className="MaterialIcon"
+                            data-testid={`chatworkflow-option-btn-${1}`}
+                            style={{ transform: 'rotate(90deg)' }}
+                          />
+                          {currentOpenMenu === 'chat_workflow_new' && (
+                            <EditPopover>
+                              <EditPopoverTail bottom="-30px" left="-27px" />
+                              <EditPopoverContent
+                                onClick={() => {
+                                  openChatWorkflowModal('add');
+                                  setCurrentOpenMenu(null);
+                                }}
+                                bottom="-60px"
+                                transform="translateX(-90%)"
+                              >
+                                <MaterialIcon
+                                  icon="edit"
+                                  style={{ fontSize: '20px', marginTop: '2px' }}
+                                />
+                                <EditPopoverText data-testid={`chatworkflow-edit-btn-${1}`}>
+                                  Edit
+                                </EditPopoverText>
+                              </EditPopoverContent>
+                            </EditPopover>
+                          )}
+                        </OptionsWrap>
+                        <RepoName>Hive Chat :</RepoName>
+                        <CodeGraphDetails>
+                          <CodeGraphRow>
+                            <CodeGraphLabel>URL: </CodeGraphLabel>
+                            <EuiToolTip position="top" content="placeholder">
+                              <a href="/" target="_blank" rel="noreferrer">
+                                Not Configured
+                              </a>
+                            </EuiToolTip>
+                          </CodeGraphRow>
+                        </CodeGraphDetails>
+                      </StyledListElement>
+                    </StyledList>
+                  )}
+
+                  {selectedChatWorkflow && (
+                    <StyledList>
+                      <StyledListElement key={selectedChatWorkflow.id}>
+                        <OptionsWrap style={{ position: 'unset', display: 'contents' }}>
+                          <MaterialIcon
+                            icon={'more_horiz'}
+                            onClick={() =>
+                              handleUserRepoOptionClick(`chat_workflow_${selectedChatWorkflow.id}`)
+                            }
+                            className="MaterialIcon"
+                            data-testid={`chatworkflow-option-btn-${selectedChatWorkflow.id}`}
+                            style={{ transform: 'rotate(90deg)' }}
+                          />
+                          {currentOpenMenu === `chat_workflow_${selectedChatWorkflow.id}` && (
+                            <EditPopover>
+                              <EditPopoverTail bottom="-30px" left="-27px" />
+                              <EditPopoverContent
+                                onClick={() => {
+                                  openChatWorkflowModal('edit');
+                                  setCurrentOpenMenu(null);
+                                }}
+                                bottom="-60px"
+                                transform="translateX(-90%)"
+                              >
+                                <MaterialIcon
+                                  icon="edit"
+                                  style={{ fontSize: '20px', marginTop: '2px' }}
+                                />
+                                <EditPopoverText
+                                  data-testid={`chatworkflow-edit-btn-${selectedChatWorkflow.id}`}
+                                >
+                                  Edit
+                                </EditPopoverText>
+                              </EditPopoverContent>
+                            </EditPopover>
+                          )}
+                        </OptionsWrap>
+                        <RepoName>Hive Chat</RepoName>
+                        <CodeGraphDetails>
+                          <CodeGraphRow>
+                            <CodeGraphLabel>URL: </CodeGraphLabel>
+                            <EuiToolTip position="top" content={selectedChatWorkflow.url}>
+                              <UrlLink
+                                href={selectedChatWorkflow.url}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                {selectedChatWorkflow.url}
+                              </UrlLink>
+                            </EuiToolTip>
+                          </CodeGraphRow>
+                        </CodeGraphDetails>
+                      </StyledListElement>
+                    </StyledList>
+                  )}
+                </DataWrap2>
+              </FieldWrap>
             </LeftSection>
             <RightSection>
               <WorkspaceFieldWrap>
@@ -1106,6 +1262,39 @@ const WorkspaceMission = () => {
               updateUsers={updateWorkspaceUsers}
             />
           )}
+          <Modal
+            visible={chatWorkflowModal}
+            style={{
+              height: '100%',
+              flexDirection: 'column'
+            }}
+            envStyle={{
+              marginTop: isMobile ? 64 : 0,
+              background: color.pureWhite,
+              zIndex: 20,
+              maxHeight: '100%',
+              borderRadius: '10px',
+              minWidth: isMobile ? '100%' : '30%',
+              minHeight: isMobile ? '100%' : '20%'
+            }}
+            overlayClick={closeChatWorkflowModal}
+            bigCloseImage={closeChatWorkflowModal}
+            bigCloseImageStyle={{
+              top: '-18px',
+              right: '-18px',
+              background: '#000',
+              borderRadius: '50%'
+            }}
+          >
+            <AddChatWorkflow
+              closeHandler={closeChatWorkflowModal}
+              getChatWorkflow={fetchChatWorkflow}
+              workspaceId={uuid}
+              currentId={selectedChatWorkflow?.id}
+              handleDelete={handleDeleteChatWorkflow}
+              url={currentChatWorkflowUrl}
+            />
+          </Modal>
           <EuiGlobalToastList
             toasts={toasts}
             dismissToast={() => setToasts([])}
