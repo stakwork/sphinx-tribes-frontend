@@ -700,6 +700,20 @@ const TicketEditor = observer(
       [isEnabled, setIsThinking]
     );
 
+    const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const rawValue = e.target.value.replace(/,/g, '');
+      const newValue = Number(rawValue);
+
+      if (!isNaN(newValue) && newValue >= 0) {
+        const formattedValue = newValue === 0 ? '' : newValue.toLocaleString();
+        setVersionTicketData({
+          ...versionTicketData,
+          amount: newValue
+        });
+        e.target.value = formattedValue;
+      }
+    };
+
     return (
       <TicketContainer>
         <EuiFlexGroup alignItems="center" gutterSize="s">
@@ -797,15 +811,9 @@ const TicketEditor = observer(
             <TicketHeaderInputWrap>
               <h6>Amount:</h6>
               <TicketInput
-                type="number"
-                value={versionTicketData.amount || ''}
-                onChange={(e) => {
-                  const newValue = Number(e.target.value);
-                  setVersionTicketData({
-                    ...versionTicketData,
-                    amount: newValue >= 0 ? newValue : 0
-                  });
-                }}
+                type="text"
+                value={versionTicketData.amount ? versionTicketData.amount.toLocaleString() : ''}
+                onChange={handleAmountChange}
                 placeholder="Enter amount..."
                 min="0"
               />
