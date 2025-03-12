@@ -66,19 +66,41 @@ const MarkdownContainer = styled.div<{ textColor?: string }>`
   pre {
     background-color: #050038;
     color: #ffffff;
-    font-family: monospace;
     padding: 1rem;
     border-radius: 6px;
     border: 1px solid #444;
     margin: 1rem 0;
     overflow-x: auto;
+
+    code {
+      background: none;
+      color: ${(props) => props.textColor || '#ffffff'};
+      padding: 0;
+      border-radius: 0;
+      margin: 0;
+      display: block;
+      overflow-x: auto;
+      white-space: pre;
+    }
   }
 
   code {
-    color: #f5f5f5;
-    padding: 0.2rem 0.4rem;
-    border-radius: 4px;
-    font-family: monospace;
+    background-color: rgba(175, 184, 193, 0.2);
+    color: #24292f;
+    padding: 0.2em 0.4em;
+    border-radius: 6px;
+    font-family:
+      ui-monospace,
+      SFMono-Regular,
+      SF Mono,
+      Menlo,
+      Consolas,
+      Liberation Mono,
+      monospace;
+    font-size: 85%;
+    margin: 0;
+    word-break: break-word;
+    display: inline;
   }
 `;
 
@@ -107,7 +129,15 @@ export function renderMarkdown(markdown: any, customStyles?: CustomStyles) {
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeRaw]}
         components={{
-          code({ className, children, ...props }: any) {
+          code({ inline, className, children, ...props }: any) {
+            if (inline) {
+              return (
+                <code className={className} {...props}>
+                  {children}
+                </code>
+              );
+            }
+
             return (
               <pre
                 style={{
