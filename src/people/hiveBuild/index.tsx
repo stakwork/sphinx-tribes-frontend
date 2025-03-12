@@ -22,12 +22,12 @@ interface SendButtonProps {
   disabled: boolean;
 }
 
-// interface LogEntry {
-//   timestamp: string;
-//   projectId: string;
-//   chatId: string;
-//   message: string;
-// }
+interface LogEntry {
+  timestamp: string;
+  projectId: string;
+  chatId: string;
+  message: string;
+}
 
 const Container = styled.div`
   display: flex;
