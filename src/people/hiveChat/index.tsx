@@ -150,7 +150,7 @@ const HiveThoughts = styled.h6`
 `;
 
 const MessageBubble = styled.div<MessageBubbleProps>`
-  max-width: 70%;
+  max-width: 90%;
   margin: 12px 0;
   padding: 0 20px;
   border-radius: 16px;
