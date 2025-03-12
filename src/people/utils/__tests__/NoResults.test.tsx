@@ -1,15 +1,21 @@
 import React from 'react';
+import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { useStores } from '../../../store';
 import NoResults from '../NoResults';
 
 // Mock the store hook
-jest.mock('../../store', () => ({
+jest.mock('../../../store', () => ({
   useStores: jest.fn()
 }));
 
+// Mock mobx-react-lite observer
+jest.mock('mobx-react-lite', () => ({
+  observer: (component: any) => component
+}));
+
 // Mock PageLoadSpinner component
-jest.mock('./PageLoadSpinner', () => function MockPageLoadSpinner({ show }: { show: boolean }) {
+jest.mock('../PageLoadSpinner', () => function MockPageLoadSpinner({ show }: { show: boolean }) {
     return <div data-testid="page-load-spinner" data-show={show}>Loading...</div>;
   });
 

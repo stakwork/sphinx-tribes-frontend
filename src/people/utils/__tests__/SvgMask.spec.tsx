@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { SvgMaskProps } from 'people/interfaces';
+import { SvgMaskProps } from '../../interfaces';
 import { SvgMask } from '../SvgMask';
 
 describe('SvgMask', () => {
@@ -24,7 +24,14 @@ describe('SvgMask', () => {
   // Helper function to verify style properties
   const verifyStyles = (element: HTMLElement, expectedStyles: Record<string, any>) => {
     Object.entries(expectedStyles).forEach(([key, value]) => {
-      expect(element.style).toHaveProperty(key, String(value));
+      if (key === 'backgroundColor' && value.startsWith('#')) {
+        // Create a temporary div to normalize the color value
+        const temp = document.createElement('div');
+        temp.style.backgroundColor = value;
+        expect(element.style[key]).toBe(temp.style.backgroundColor);
+      } else {
+        expect(element.style).toHaveProperty(key, String(value));
+      }
     });
   };
 
@@ -212,7 +219,7 @@ describe('SvgMask', () => {
   });
 
   it('Test Case 10: Large Volume of Data (Long Strings for Performance)', () => {
-    const longSrc = 'a'.repeat(5000) + '.svg';
+    const longSrc = `${'a'.repeat(5000)  }.svg`;
     
     const element = renderAndGetElement({
       src: longSrc,
