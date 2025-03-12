@@ -932,6 +932,7 @@ export default function SidebarComponent({
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <MaterialIcon
                 icon="add"
+                data-testid="new-feature-btn"
                 style={{ marginRight: '10px', cursor: 'pointer' }}
                 onClick={(e) => {
                   e.stopPropagation();
