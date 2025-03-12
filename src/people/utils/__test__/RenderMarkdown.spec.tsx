@@ -165,4 +165,75 @@ describe('RenderMarkdown Component', () => {
       });
     });
   });
+
+  describe('inline code component', () => {
+    const renderInlineCode = (markdown: string) => render(renderMarkdown(markdown));
+
+    it('renders inline code without line breaks', () => {
+      const markdown = 'This is a test with `inline code` in the middle.';
+      waitFor(() => {
+        renderInlineCode(markdown);
+        const codeElement = screen.getByText('inline code');
+
+        expect(codeElement.tagName).toBe('CODE');
+        expect(codeElement).toHaveStyle({
+          display: 'inline',
+          backgroundColor: 'rgba(175, 184, 193, 0.2)',
+          color: '#24292f'
+        });
+      });
+    });
+
+    it('handles multiple inline codes in one line', () => {
+      const markdown = 'Test `first` and `second` inline codes';
+      waitFor(() => {
+        renderInlineCode(markdown);
+
+        const codeElements = screen.getAllByRole('code');
+        expect(codeElements).toHaveLength(2);
+        expect(codeElements[0]).toHaveTextContent('first');
+        expect(codeElements[1]).toHaveTextContent('second');
+      });
+    });
+
+    it('maintains proper spacing around inline code', () => {
+      const markdown = '`start` middle `end`';
+      waitFor(() => {
+        const { container } = renderInlineCode(markdown);
+        const text = container.textContent;
+
+        expect(text).toBe('start middle end');
+        expect(screen.getAllByRole('code')).toHaveLength(2);
+      });
+    });
+
+    it('applies correct styling to inline code', () => {
+      const markdown = 'Test `styled code` here';
+      waitFor(() => {
+        renderInlineCode(markdown);
+        const codeElement = screen.getByText('styled code');
+
+        expect(codeElement).toHaveStyle({
+          fontFamily:
+            'ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace',
+          fontSize: '85%',
+          padding: '0.2em 0.4em',
+          borderRadius: '6px'
+        });
+      });
+    });
+
+    it('handles inline code at start and end of lines', () => {
+      const markdown = '`start code` middle `end code`';
+      waitFor(() => {
+        renderInlineCode(markdown);
+
+        const codeElements = screen.getAllByRole('code');
+        expect(codeElements[0]).toHaveTextContent('start code');
+        expect(codeElements[1]).toHaveTextContent('end code');
+        expect(codeElements[0]).toHaveStyle({ display: 'inline' });
+        expect(codeElements[1]).toHaveStyle({ display: 'inline' });
+      });
+    });
+  });
 });
