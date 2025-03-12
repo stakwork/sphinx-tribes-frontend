@@ -48,12 +48,12 @@ export const ActionArtifactRenderer: React.FC<ActionArtifactRendererProps> = obs
     const content = actionArtifact.content as ActionContent;
 
     const hasButtonOptions =
-      content.options &&
-      content.options.some(
-        (option) => option.action_type === 'button' || option.action_type === 'chat'
-      );
+      content.options && content.options.some((option) => option.action_type === 'button');
 
-    if (!hasButtonOptions) {
+    const hasChatOptions =
+      content.options && content.options.some((option) => option.action_type === 'chat');
+
+    if (!hasButtonOptions && !hasChatOptions) {
       return null;
     }
 
@@ -85,22 +85,24 @@ export const ActionArtifactRenderer: React.FC<ActionArtifactRendererProps> = obs
 
     return (
       <ActionContainer>
-        <ActionBubble>
-          {content.actionText &&
-            renderMarkdown(content.actionText, {
-              codeBlockBackground: '#282c34',
-              textColor: '#abb2bf',
-              bubbleTextColor: '',
-              borderColor: '#444',
-              codeBlockFont: 'Courier New'
-            })}
+        {(hasButtonOptions || content.actionText) && (
+          <ActionBubble>
+            {content.actionText &&
+              renderMarkdown(content.actionText, {
+                codeBlockBackground: '#282c34',
+                textColor: '#abb2bf',
+                bubbleTextColor: '',
+                borderColor: '#444',
+                codeBlockFont: 'Courier New'
+              })}
 
-          <ActionButtons
-            options={content.options}
-            onButtonClick={handleButtonClick}
-            disabled={isSending}
-          />
-        </ActionBubble>
+            <ActionButtons
+              options={content.options}
+              onButtonClick={handleButtonClick}
+              disabled={isSending}
+            />
+          </ActionBubble>
+        )}
       </ActionContainer>
     );
   }
