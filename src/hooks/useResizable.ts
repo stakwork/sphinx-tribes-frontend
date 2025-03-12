@@ -28,30 +28,25 @@ export function useResizable({
       document.body.style.cursor = 'col-resize';
 
       const handleMouseMove = (moveEvent: MouseEvent | TouchEvent) => {
-        // Early return with destructured condition
         const { current: isCurrentlyResizing } = isResizing;
         const { current: container } = containerRef;
         
         if (!isCurrentlyResizing || !container) return;
 
-        // Destructure bounding rectangle properties
         const { left, width: containerWidth } = container.getBoundingClientRect();
 
-        // Determine client position with type checking and destructuring
         const clientX = 'clientX' in moveEvent 
           ? moveEvent.clientX 
           : moveEvent.touches?.[0]?.clientX ?? 0;
 
         if (!clientX) return;
 
-        // Calculate new width with destructuring
         const leftPixelWidth = clientX - left;
         const leftPercentWidth = (leftPixelWidth / containerWidth) * 100;
         const newWidth = Math.max(minWidth, Math.min(maxWidth, leftPercentWidth));
 
         setLeftWidth(newWidth);
 
-        // Only call preventDefault if available
         const { cancelable } = moveEvent;
         cancelable && moveEvent.preventDefault();
       };
@@ -60,7 +55,6 @@ export function useResizable({
         isResizing.current = false;
         document.body.style.cursor = '';
         
-        // Organize event removal with destructuring
         const eventHandlers = [
           { event: 'mousemove', handler: handleMouseMove },
           { event: 'mouseup', handler: stopResize },
@@ -73,7 +67,6 @@ export function useResizable({
         });
       };
 
-      // Structured event registration with object destructuring
       const eventListenerConfigs = [
         { event: 'mousemove', handler: handleMouseMove },
         { event: 'mouseup', handler: stopResize },
