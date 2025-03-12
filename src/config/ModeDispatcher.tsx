@@ -8,7 +8,7 @@ export enum AppMode {
 }
 
 const hosts: { [k: string]: AppMode } = {
-  'localhost:3000': process.env.REACT_APP_LOCAL_ENV ? AppMode.COMMUNITY : AppMode.COMMUNITY,
+  'localhost:3000': process.env.REACT_APP_LOCAL_ENV ? AppMode.COMMUNITY : AppMode.TRIBES,
   'localhost:13000': AppMode.TRIBES,
   'localhost:23000': AppMode.TRIBES,
   'tribes.sphinx.chat': AppMode.TRIBES,

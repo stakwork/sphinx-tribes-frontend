@@ -19,9 +19,7 @@ export function getHost(): string {
       ? 'localhost:13000'
       : 'localhost:5002'
     : window.location.host;
-  // return host;
-
-  return 'community.sphinx.chat';
+  return host;
 }
 
 export function getHostIncludingDockerHosts() {

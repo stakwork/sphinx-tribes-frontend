@@ -31,7 +31,8 @@ export default function AssignBounty(props: ConnectCardProps) {
   useEffect(() => {
     if (main.assignInvoice !== '') {
       const expired = isInvoiceExpired(main.assignInvoice);
-      if (expired) {
+      if (!expired) {
+      } else {
         main.setAssignInvoice('');
       }
     }
