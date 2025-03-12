@@ -159,6 +159,7 @@ const MessageBubble = styled.div<MessageBubbleProps>`
   align-self: ${(props) => (props.isUser ? 'flex-end' : 'flex-start')};
   background-color: ${(props) => (props.isUser ? '#808080' : '#F2F3F5')};
   color: ${(props) => (props.isUser ? 'white' : '#202124')};
+  position: relative;
 `;
 
 const InputContainer = styled.div`
@@ -283,19 +284,21 @@ const TabButton = styled.button<{ active: boolean }>`
 `;
 
 const CopyButton = styled.button<{ $isUser?: boolean }>`
-  display: block;
-  margin: 0px 0 12px 0;
-  margin-left: ${(props) => (props.$isUser ? 'auto' : '0')};
+  position: absolute;
+  top: 8px;
+  right: 8px;
   background: transparent;
   border: none;
   cursor: pointer;
   color: ${(props) => (props.$isUser ? 'rgba(255,255,255,0.7)' : '#5f6368')};
-  padding: 4px 8px;
+  padding: 4px;
   border-radius: 4px;
   transition: all 0.2s;
-  width: fit-content;
-  max-width: 70%;
-  align-self: ${(props) => (props.$isUser ? 'flex-end' : 'flex-start')};
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &:hover {
     background: ${(props) => (props.$isUser ? 'rgba(255,255,255,0.1)' : 'rgba(0, 0, 0, 0.1)')};
@@ -838,26 +841,27 @@ export const HiveChatView: React.FC = observer(() => {
                         borderColor: '#444',
                         codeBlockFont: 'Courier New'
                       })}
+                      {msg.role !== 'user' && (
+                        <CopyButton
+                          onClick={() => {
+                            navigator.clipboard.writeText(msg.message);
+                            const button = document.getElementById(`copy-${msg.id}`);
+                            if (button) {
+                              button.textContent = 'done';
+                              setTimeout(() => {
+                                button.textContent = 'content_copy';
+                              }, 2000);
+                            }
+                          }}
+                        >
+                          <MaterialIcon
+                            id={`copy-${msg.id}`}
+                            icon="content_copy"
+                            style={{ fontSize: '16px' }}
+                          />
+                        </CopyButton>
+                      )}
                     </MessageBubble>
-                    <CopyButton
-                      $isUser={msg.role === 'user'}
-                      onClick={() => {
-                        navigator.clipboard.writeText(msg.message);
-                        const button = document.getElementById(`copy-${msg.id}`);
-                        if (button) {
-                          button.textContent = 'done';
-                          setTimeout(() => {
-                            button.textContent = 'content_copy';
-                          }, 2000);
-                        }
-                      }}
-                    >
-                      <MaterialIcon
-                        id={`copy-${msg.id}`}
-                        icon="content_copy"
-                        style={{ fontSize: '16px' }}
-                      />
-                    </CopyButton>
 
                     <ActionArtifactRenderer
                       messageId={msg.id}
