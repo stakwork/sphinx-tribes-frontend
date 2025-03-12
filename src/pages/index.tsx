@@ -30,6 +30,7 @@ import { WorkspaceTicketsPage } from './tickets/workspace';
 import { LeaderboardPage } from './leaderboard';
 import { SuperAdmin } from './superadmin/index';
 import BountiesLandingPage from './BountiesLandingPage';
+import { SkillsPage } from './skills';
 
 const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
   community: () => (
@@ -108,6 +109,9 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
               </Route>
               <Route path="/admin">
                 <SuperAdmin />
+              </Route>
+              <Route path="/skills">
+                <SkillsPage />
               </Route>
             </Switch>
           </MainLayout>
