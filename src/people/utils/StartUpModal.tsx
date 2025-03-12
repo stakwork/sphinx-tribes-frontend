@@ -61,12 +61,22 @@ const StartUpModal = ({ closeModal, buttonColor }: StartUpModalProps) => {
   const { ui } = useStores();
   const [step, setStep] = useState(2);
   const [connection_string, setConnectionString] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   async function getConnectionCode() {
     if (!ui.meInfo && !connection_string) {
-      const code = await api.get('connectioncodes');
-      if (code.connection_string) {
-        setConnectionString(code.connection_string);
+      try {
+        const code = await api.get('connectioncodes');
+        if (code && code.connection_string) {
+          setConnectionString(code.connection_string);
+          setErrorMessage(''); // Clear any previous error
+        }
+      } catch (error) {
+        console.error('Error fetching connection code:', error);
+        // Set error message to display to the user
+        setErrorMessage('Failed to fetch connection code. Please try again later.');
+        // Set connection_string to empty to show the error message
+        setConnectionString('');
       }
     }
   }
@@ -74,7 +84,9 @@ const StartUpModal = ({ closeModal, buttonColor }: StartUpModalProps) => {
   const DisplayQRCode = () => (
     <>
       <ModalContainer data-testid="qrcode">
-        {!connection_string ? (
+        {errorMessage ? (
+          <QRText>{errorMessage}</QRText>
+        ) : !connection_string ? (
           <QRText>We are out of codes to sign up! Please check again later.</QRText>
         ) : (
           <QrContainer>
