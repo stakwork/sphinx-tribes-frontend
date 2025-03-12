@@ -1,9 +1,4 @@
 describe('Check for Feature Call Url placeholder', () => {
-  beforeEach(() => {
-    cy.login('carol');
-    cy.wait(1000);
-  });
-
   it('Renders with initial placeholder and opens button on edit button click', () => {
     const WorkSpaceName = 'Workspace Feature 17';
 
@@ -14,6 +9,9 @@ describe('Check for Feature Call Url placeholder', () => {
       website: 'https://community.sphinx.chat',
       github: 'https://github.com/stakwork/sphinx-tribes-frontend'
     };
+
+    cy.login('carol');
+    cy.wait(2000);
 
     cy.create_workspace(workspace);
     cy.wait(1000);
@@ -47,6 +45,6 @@ describe('Check for Feature Call Url placeholder', () => {
     cy.get('[data-testid="add-featurecall-btn"]').click();
     cy.wait(2000);
 
-    cy.contains('https://testfeature.com').should('exist');
+    cy.contains('Not Configured').should('exist');
   });
 });

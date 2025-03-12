@@ -917,6 +917,7 @@ export default function SidebarComponent({
             <MaterialIcon
               icon="add"
               style={{ marginRight: '10px', cursor: 'pointer' }}
+              data-testid="new-feature-btn"
               onClick={(e) => {
                 e.stopPropagation();
                 handleAddFeature();

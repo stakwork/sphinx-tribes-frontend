@@ -176,7 +176,7 @@ const WorkspaceMission = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [permissionsChecked, setPermissionsChecked] = useState<boolean>(false);
   const [isSnippetModalVisible, setSnippetModalVisible] = useState(false);
-  const [currentOpenMenu, setCurrentOpenMenu] = useState<string | null>(null);
+  const [currentOpenMenu, setCurrentOpenMenu] = useState<string | number | null>(null);
 
   const openSnippetModal = () => {
     setSnippetModalVisible(true);
@@ -299,7 +299,7 @@ const WorkspaceMission = () => {
     }
   };
 
-  const handleUserRepoOptionClick = (repositoryId: string) => {
+  const handleUserRepoOptionClick = (repositoryId: string | number) => {
     if (currentOpenMenu === repositoryId) {
       setCurrentOpenMenu(null);
     } else {
@@ -680,12 +680,12 @@ const WorkspaceMission = () => {
                         <OptionsWrap style={{ position: 'unset', display: 'contents' }}>
                           <MaterialIcon
                             icon={'more_horiz'}
-                            onClick={() => handleUserRepoOptionClick(repository?.id as string)}
+                            onClick={() => handleUserRepoOptionClick(repository?.id)}
                             className="MaterialIcon"
                             data-testid="repository-option-btn"
                             style={{ transform: 'rotate(90deg)' }}
                           />
-                          {currentOpenMenu === repository?.id?.toString() && (
+                          {currentOpenMenu === repository?.id && (
                             <EditPopover>
                               <EditPopoverTail bottom="-30px" left="-27px" />
                               <EditPopoverContent
