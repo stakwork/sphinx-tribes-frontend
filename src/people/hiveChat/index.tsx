@@ -91,7 +91,7 @@ const ViewerHeader = styled.div`
 
 const ChatBody = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: column; //Today work
   padding: 0 5px 60px 0 !important;
   flex: 1;
   overflow: hidden;
