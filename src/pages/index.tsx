@@ -29,6 +29,7 @@ import { TicketsPage } from './tickets';
 import { WorkspaceTicketsPage } from './tickets/workspace';
 import { LeaderboardPage } from './leaderboard';
 import { SuperAdmin } from './superadmin/index';
+import { Skills } from './skills/index.tsx';
 import BountiesLandingPage from './BountiesLandingPage';
 
 const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
@@ -108,6 +109,9 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
               </Route>
               <Route path="/admin">
                 <SuperAdmin />
+              </Route>
+              <Route path="/skills">
+                <Skills />
               </Route>
             </Switch>
           </MainLayout>
