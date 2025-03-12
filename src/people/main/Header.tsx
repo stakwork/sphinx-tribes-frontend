@@ -13,6 +13,7 @@ import TorSaveQR from '../utils/TorSaveQR';
 import IconButton from '../../components/common/IconButton2';
 import { PostModal } from '../widgetViews/postBounty/PostModal';
 import StartUpModal from '../utils/StartUpModal';
+import { useFeatureFlag } from '../../hooks/useFeatureFlag';
 
 const Row = styled.div`
   display: flex;
@@ -249,6 +250,7 @@ function Header() {
   const [isOpenPostModal, setIsOpenPostModal] = useState(false);
   const [isOpenStartUpModel, setIsOpenStartupModal] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const { isEnabled: isSkillsEnabled } = useFeatureFlag('skills');
 
   const tabs = [
     {
@@ -293,6 +295,14 @@ function Header() {
       label: 'Hive',
       name: 'hive',
       path: `/workspace/${space.uuid}/activities`
+    });
+  }
+
+  if (isSkillsEnabled) {
+    tabs.push({
+      label: 'Skills',
+      name: 'skills',
+      path: '/skills'
     });
   }
 
