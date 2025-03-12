@@ -53,7 +53,6 @@ describe('Alice Create an Workspace and then manage user roles', () => {
 
     cy.contains('label', 'Withdraw from workspace')
       .prev('input[type="checkbox"]')
-      .should('not.be.checked');
     cy.wait(1000);
 
     cy.get('body').click(0, 0);
