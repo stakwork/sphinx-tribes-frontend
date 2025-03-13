@@ -11,6 +11,7 @@ interface ActionArtifactRendererProps {
   messageId: string;
   chatId: string;
   websocketSessionId: string;
+  setIsActionSend: (b: boolean) => void;
 }
 
 const ActionContainer = styled.div`
@@ -31,7 +32,7 @@ const ActionBubble = styled.div`
 `;
 
 export const ActionArtifactRenderer: React.FC<ActionArtifactRendererProps> = observer(
-  ({ messageId, chatId, websocketSessionId }) => {
+  ({ messageId, chatId, websocketSessionId, setIsActionSend }) => {
     const { chat } = useStores();
     const [isSending, setIsSending] = useState(false);
 
@@ -60,6 +61,7 @@ export const ActionArtifactRenderer: React.FC<ActionArtifactRendererProps> = obs
     const handleButtonClick = async (option: Option) => {
       if (isSending) return;
       setIsSending(true);
+      setIsActionSend(true);
 
       try {
         const payload = {
