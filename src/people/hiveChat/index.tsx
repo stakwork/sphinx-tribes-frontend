@@ -350,7 +350,6 @@ const connectToLogWebSocket = (
   return ws;
 };
 
-
 const highlightCode = (code: string): string => hljs.highlightAuto(code).value;
 
 export const HiveChatView: React.FC = observer(() => {
