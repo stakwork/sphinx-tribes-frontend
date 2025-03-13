@@ -24,8 +24,8 @@ export const SkillPageHeroSection = () => (
           complex tasks easily.
         </Description>
         <Description>
-          Our marketplace connects your agents with premium pay-per-use skills, eliminating the
-          need to build custom solutions from scratch
+          Our marketplace connects your agents with premium pay-per-use skills, eliminating the need
+          to build custom solutions from scratch
         </Description>
         <Button targetSection="skills">Browse marketplace</Button>
       </HeroColumn>
