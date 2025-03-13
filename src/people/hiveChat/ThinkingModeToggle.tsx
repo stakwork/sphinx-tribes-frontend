@@ -62,8 +62,7 @@ const ThinkingModeToggle: React.FC<ThinkingModeToggleProps> = ({
   setSelectedModel,
   handleKeyDown,
   isCompact = false
-}) => {
-  return (
+}) => (
     <ToggleWrapper isCompact={isCompact}>
       <ToggleContainer
         tabIndex={0}
@@ -100,6 +99,6 @@ const ThinkingModeToggle: React.FC<ThinkingModeToggleProps> = ({
       />
     </ToggleWrapper>
   );
-};
+
 
 export default ThinkingModeToggle;
