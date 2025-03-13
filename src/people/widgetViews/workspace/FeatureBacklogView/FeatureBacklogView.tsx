@@ -177,15 +177,13 @@ const StatusSelect = styled.select`
 `;
 
 const HeaderStatusSelect = styled(StatusSelect)`
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
+  position: static;
   background: transparent;
   border: 1px solid lightgray;
   color: black;
   font-weight: 600;
   width: 130px;
-  margin-left: 35px;
+  float: right;
   z-index: 1;
 
   &:hover {
