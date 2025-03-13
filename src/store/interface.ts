@@ -805,3 +805,31 @@ export interface ChatWorkflow {
   createdAt?: string;
   updatedAt?: string;
 }
+
+export type ChargeModel = 'Free' | 'PAYG';
+export type SkillStatus = 'Approved' | 'Draft' | 'Archived';
+export type ClientType = 'Claude Desktop' | 'Cursor' | 'Cline' | 'Goose';
+
+export interface Skill {
+  id: string;
+  name: string;
+  tagline: string;
+  description: string;
+  iconUrl: string;
+  ownerPubkey: string;
+  chargeModel: ChargeModel;
+  labels: string[];
+  status: SkillStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SkillInstall {
+  id: string;
+  skillId: string;
+  client: ClientType;
+  installDescription: string;
+  installFile: string;
+  createdAt: string;
+  updatedAt: string;
+}
