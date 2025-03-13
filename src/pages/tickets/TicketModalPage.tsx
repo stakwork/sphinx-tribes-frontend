@@ -84,6 +84,7 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
     if (bounty && bounty.length > 0) {
       const accessRestriction = bounty[0].body.access_restriction;
       const isOwner = bounty[0].body.owner_id === ui.meInfo?.owner_pubkey;
+      const isAssigned = bounty[0].body.assignee?.owner_pubkey === ui.meInfo?.owner_pubkey;
 
       if (accessRestriction === 'workspace') {
         if (!isOwner) {
@@ -104,7 +105,6 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
           return;
         }
       } else if (accessRestriction === 'assigned') {
-        const isAssigned = bounty[0].body.assigned_id === ui.meInfo?.owner_pubkey;
         if (!isOwner && !isAssigned) {
           setAccessDenied(true);
           setVisible(false);
