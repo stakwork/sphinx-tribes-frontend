@@ -1,18 +1,23 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useBrowserTabTitle } from '../../hooks';
+import { SkillsHeroSection } from './components/SkillsHeroSection';
+import { SkillsRegisterSection } from './components/SkillsRegisterSection';
+import { SkillsListSection } from './components/SkillsListSection';
 
 const Container = styled.div`
-  padding: 24px;
+  width: 100%;
+  overflow-x: hidden;
 `;
 
-const Title = styled.h1`
-  font-size: 24px;
-  color: #292c33;
-  margin-bottom: 16px;
-`;
+export const SkillsPage: React.FC = () => {
+  useBrowserTabTitle('Skills');
 
-export const SkillsPage: React.FC = () => (
-  <Container>
-    <Title>Skills</Title>
-  </Container>
-);
+  return (
+    <Container>
+      <SkillsHeroSection />
+      <SkillsListSection id="skills" />
+      <SkillsRegisterSection id="register" />
+    </Container>
+  );
+};
