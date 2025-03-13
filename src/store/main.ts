@@ -61,7 +61,9 @@ import {
   BulkConversionResponse,
   BulkTicketToBountyRequest,
   FeatureCall,
-  FeatureStatus
+  FeatureStatus,
+  ChatWorkflow,
+  ApiResponse
 } from './interface';
 
 function makeTorSaveURL(host: string, key: string) {
@@ -4932,6 +4934,96 @@ export class MainStore {
       return response.json();
     } catch (error) {
       console.error('Error creating feature call:', error);
+      return null;
+    }
+  }
+
+  async getWorkspaceChatWorkflow(workspace_uuid: string): Promise<ChatWorkflow | null> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+      const response = await fetch(`${TribesURL}/hivechat/chatworkflow/${workspace_uuid}`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json',
+          'x-session-id': this.getSessionId()
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result: ApiResponse<ChatWorkflow> = await response.json();
+      return result.data;
+    } catch (e) {
+      console.error('Error getWorkspaceChatWorkflow:', e);
+      return null;
+    }
+  }
+
+  async createOrUpdateChatWorkflow(chatWorkflow: ChatWorkflow): Promise<ChatWorkflow | null> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+
+      const url = new URL(chatWorkflow.url);
+      const pathParts = url.pathname.split('/');
+      const stackworkId = pathParts[pathParts.length - 1];
+
+      const payload = {
+        workspaceId: chatWorkflow.workspaceId,
+        url: chatWorkflow.url,
+        stackworkId
+      };
+
+      const response = await fetch(`${TribesURL}/hivechat/chatworkflow`, {
+        method: 'POST',
+        mode: 'cors',
+        body: JSON.stringify(payload),
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json',
+          'x-session-id': this.getSessionId()
+        }
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.message || `HTTP error! status: ${response.status}`);
+      }
+
+      const result: ApiResponse<ChatWorkflow> = await response.json();
+      return result.data;
+    } catch (e) {
+      console.error('Error createOrUpdateChatWorkflow:', e);
+      throw e;
+    }
+  }
+
+  async deleteChatWorkflow(workspace_uuid: string): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+      const response = await fetch(`${TribesURL}/hivechat/chatworkflow/${workspace_uuid}`, {
+        method: 'DELETE',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json',
+          'x-session-id': this.getSessionId()
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return response.json();
+    } catch (e) {
+      console.log('Error deleteChatWorkflow', e);
       return null;
     }
   }
