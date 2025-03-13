@@ -1,10 +1,10 @@
 import styled from 'styled-components';
+import { SectionContainer } from '../common/styles';
 
 export const StyledHero = styled.section`
   display: flex;
   min-height: auto;
   width: 100%;
-  background-color: #1a242e;
   color: white;
   overflow: visible;
 
@@ -14,18 +14,22 @@ export const StyledHero = styled.section`
   }
 `;
 
+export const StyledHeroWrapper = styled(SectionContainer)`
+  background-color: #1a242e;
+
+  @media (max-width: 768px) {
+    min-height: auto;
+  }
+`;
+
 export const StyledHeroContainer = styled.section`
-  width: 100%;
-  height: auto;
-  min-height: 100vh;
+  width: 75%;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
   gap: 80px;
-  padding: 100px 15rem;
   margin: 0 auto;
-  background-color: #1a242e;
   color: #ffffff;
   overflow: visible;
 
@@ -47,7 +51,8 @@ const StyledHeroColumn = styled.div`
 
   @media (max-width: 768px) {
     padding: 1rem 0;
-    min-height: 70vh;
+    min-height: 75vh;
+    min-width: 320px;
   }
 `;
 
@@ -61,10 +66,14 @@ export const StyledHeroListItem = styled.li`
   margin-bottom: 0.75rem;
   display: flex;
   align-items: center;
+  font-size: 1.125rem;
+  opacity: 0.8;
+  font-weight: 500;
 
   span {
+    font-size: 1rem;
     margin-right: 0.25rem;
-    font-weight: semi-bold;
+    font-weight: 500;
   }
 `;
 

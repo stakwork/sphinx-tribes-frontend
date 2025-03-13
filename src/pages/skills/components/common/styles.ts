@@ -9,9 +9,9 @@ export const PageContainer = styled.div`
 `;
 
 export const SectionContainer = styled.section`
-  min-height: 100vh;
   width: 100%;
   display: flex;
+  min-height: 100vh;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -80,6 +80,7 @@ export const StyledDescription = styled.p`
   line-height: 1.6;
   margin-bottom: 2rem;
   opacity: 0.8;
+  font-weight: 500;
 
   @media (max-width: 768px) {
     font-size: 1rem;
