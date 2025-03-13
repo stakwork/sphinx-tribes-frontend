@@ -100,4 +100,5 @@ const ThinkingModeToggle: React.FC<ThinkingModeToggleProps> = ({
     </ToggleWrapper>
   );
 
+
 export default ThinkingModeToggle;
