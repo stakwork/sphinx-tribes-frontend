@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useParams } from 'react-router-dom';
 import hljs from 'highlight.js';
-import { ChatMessage, Artifact, ActionContent, TextContent } from 'store/interface';
+import { ChatMessage, Artifact, TextContent } from 'store/interface';
 import { useStores } from 'store';
 import { createSocketInstance } from 'config/socket';
 import SidebarComponent from 'components/common/SidebarComponent.tsx';
@@ -350,12 +350,7 @@ const connectToLogWebSocket = (
   return ws;
 };
 
-const hasButtonOptions = (content: ActionContent): boolean =>
-  content.options && content.options.some((option) => option.action_type === 'button');
-
-const highlightCode = (code: string): string => {
-  return hljs.highlightAuto(code).value;
-};
+const highlightCode = (code: string): string => hljs.highlightAuto(code).value;
 
 export const HiveChatView: React.FC = observer(() => {
   const { uuid, chatId } = useParams<RouteParams>();
@@ -381,6 +376,7 @@ export const HiveChatView: React.FC = observer(() => {
   const [visualArtifact, setVisualArtifact] = useState<Artifact[]>();
   const [textArtifact, setTextArtifact] = useState<Artifact[]>();
   const [codeArtifact, setCodeArtifacts] = useState<Artifact[]>();
+  const [isActionSend, setIsActionSend] = useState(false);
   const [pdfUrl, setPdfUrl] = useState('');
   const { isEnabled: isVerboseLoggingEnabled } = useFeatureFlag('verbose_logging_sw');
   const { isEnabled: isArtifactLoggingEnabled } = useFeatureFlag('log_artefact');
@@ -542,8 +538,12 @@ export const HiveChatView: React.FC = observer(() => {
         } else if (data.action === 'message' && data.chatMessage) {
           chat.addMessage(data.chatMessage);
           setIsChainVisible(false);
-          setLogs([]);
-          setLastLogLine('');
+          setIsActionSend(false);
+
+          if (data.artifacts.length === 0) {
+            setLogs([]);
+            setLastLogLine('');
+          }
           await refreshChatHistory();
         } else if (data.action === 'process' && data.chatMessage) {
           chat.updateMessage(data.chatMessage.id, data.chatMessage);
@@ -576,7 +576,7 @@ export const HiveChatView: React.FC = observer(() => {
     return () => {
       ws.close();
     };
-  }, [projectId, chatId, isVerboseLoggingEnabled]);
+  }, [projectId, chatId, isVerboseLoggingEnabled, isActionSend]);
 
   useEffect(() => {
     if (logs.length > 0) {
@@ -877,15 +877,17 @@ export const HiveChatView: React.FC = observer(() => {
                         </CopyButton>
                       )}
                     </MessageBubble>
-
-                    <ActionArtifactRenderer
-                      messageId={msg.id}
-                      chatId={chatId}
-                      websocketSessionId={websocketSessionId}
-                    />
+                    {!isActionSend && (
+                      <ActionArtifactRenderer
+                        messageId={msg.id}
+                        chatId={chatId}
+                        websocketSessionId={websocketSessionId}
+                        setIsActionSend={setIsActionSend}
+                      />
+                    )}
                   </React.Fragment>
                 ))}
-                {isChainVisible && (
+                {(isChainVisible || isActionSend) && (
                   <MessageBubble isUser={false}>
                     <HiveThoughts>Hive - Chain of Thought</HiveThoughts>
                     <p>
