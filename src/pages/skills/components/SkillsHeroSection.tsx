@@ -30,14 +30,6 @@ const TwoColumnLayout = styled.div`
   }
 `;
 
-const SecondaryText = styled.p`
-  color: rgba(229, 231, 235, 0.8);
-  font-size: 16px;
-  line-height: 1.5;
-  margin-top: 24px;
-  max-width: 500px;
-`;
-
 const scrollToSection = (sectionId: string) => {
   const section = document.getElementById(sectionId);
   if (section) {
@@ -51,16 +43,19 @@ export const SkillsHeroSection: React.FC = () => (
       <div>
         <HeroCTACard
           title="For the LLM Power User"
-          heading="Supercharge your agents with AI native skills"
+          heading={
+            <>
+              Supercharge your agents with
+              <br />
+              AI native skills
+            </>
+          }
           description="Access specialized tools, data and memory systems so your AI Agent can handle ever more complex tasks easily."
+          secondaryText="Our marketplace connects your agents with premium pay-per-use skills, eliminating the need to build custom solutions from scratch"
           buttonText="Browse marketplace"
           onButtonClick={() => scrollToSection('skills')}
           variant="primary"
         />
-        <SecondaryText>
-          Our marketplace connects your agents with premium pay-per-use skills, eliminating the need
-          to build custom solutions from scratch
-        </SecondaryText>
       </div>
       <div>
         <HeroCTACard

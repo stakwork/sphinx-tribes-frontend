@@ -6,6 +6,7 @@ interface HeroCTACardProps {
   heading: React.ReactNode;
   description: string;
   buttonText: string;
+  secondaryText?: string;
   onButtonClick: () => void;
   variant: 'primary' | 'secondary';
   numberList?: string[];
@@ -35,7 +36,7 @@ const Title = styled.h2`
 
 const Heading = styled.h3`
   font-size: 42px;
-  line-height: 1.1;
+  line-height: 1.3;
   margin-bottom: 24px;
   font-weight: 700;
   letter-spacing: -0.02em;
@@ -48,31 +49,36 @@ const Heading = styled.h3`
 const Description = styled.p<{ $hasList?: boolean }>`
   font-size: 18px;
   line-height: 1.5;
-  color: rgba(229, 231, 235, 0.8);
-  margin-bottom: ${(props) => (props.$hasList ? '16px' : '32px')};
+  color: white;
+  margin-top: 16px;
+  width: 80%;
+  word-wrap: break-word;
+  margin-bottom: ${(props) => (props.$hasList ? '24px' : '5px')};
 `;
 
 const NumberedList = styled.ol`
   list-style: decimal;
-  color: rgba(229, 231, 235, 0.8);
-  margin: 0 0 32px 20px;
+  color: white;
+  margin-left: 35px;
   padding: 0;
 `;
 
 const ListItem = styled.li`
   font-size: 18px;
-  line-height: 1.5;
-  margin-bottom: 8px;
+  line-height: 1.2;
 `;
 
 const Button = styled.button<{ variant: 'primary' | 'secondary' }>`
   padding: 12px 24px;
-  border-radius: 24px;
+  border-radius: 5px;
   font-weight: 600;
   font-size: 16px;
+  margin-top: 50px;
   cursor: pointer;
   width: fit-content;
   transition: all 0.2s;
+  align-self: center;
+  margin-right: 20%;
 
   ${({ variant }) =>
     variant === 'primary'
@@ -99,6 +105,7 @@ export const HeroCTACard: React.FC<HeroCTACardProps> = ({
   heading,
   description,
   buttonText,
+  secondaryText,
   onButtonClick,
   variant,
   numberList
@@ -107,6 +114,7 @@ export const HeroCTACard: React.FC<HeroCTACardProps> = ({
     <Title>{title}</Title>
     <Heading>{heading}</Heading>
     <Description $hasList={!!numberList}>{description}</Description>
+    {secondaryText && <Description $hasList={!!numberList}>{secondaryText}</Description>}
     {numberList && (
       <NumberedList>
         {numberList.map((item, index) => (
