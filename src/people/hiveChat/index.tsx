@@ -686,6 +686,12 @@ export const HiveChatView: React.FC = observer(() => {
     processArtifacts();
   }, []);
 
+  useEffect(() => {
+    if (!visualArtifact && !codeArtifact) {
+      setArtifactTab('text');
+    }
+  }, [codeArtifact, visualArtifact]);
+
   const handleUploadComplete = (url: string) => {
     setPdfUrl(url);
     setMessage((prevMessage: string) => {
@@ -785,7 +791,9 @@ export const HiveChatView: React.FC = observer(() => {
   );
 
   const showArtifactView =
-    (visualArtifact && visualArtifact.length > 0) || (codeArtifact && codeArtifact.length > 0);
+    (visualArtifact && visualArtifact.length > 0) ||
+    (codeArtifact && codeArtifact.length > 0) ||
+    (textArtifact && textArtifact.length > 0);
 
   if (loading) {
     return (
