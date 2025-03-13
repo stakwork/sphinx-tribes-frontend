@@ -659,6 +659,13 @@ export const HiveChatView: React.FC = observer(() => {
           setTextArtifact(textArtifacts);
         }
 
+        if (!codeArtifacts && !visualArtifact && textArtifacts) {
+          setArtifactTab('text');
+        }
+        if (!codeArtifacts && !textArtifacts && visualArtifact) {
+          setArtifactTab('visual');
+        }
+
         const systemMessages = messages?.filter((msg) => msg.role !== 'user');
         const lastSystemMessageId =
           systemMessages?.length > 0 ? systemMessages[systemMessages.length - 1].id : null;
@@ -785,7 +792,9 @@ export const HiveChatView: React.FC = observer(() => {
   );
 
   const showArtifactView =
-    (visualArtifact && visualArtifact.length > 0) || (codeArtifact && codeArtifact.length > 0);
+    (visualArtifact && visualArtifact.length > 0) ||
+    (codeArtifact && codeArtifact.length > 0) ||
+    (textArtifact && textArtifact.length > 0);
 
   if (loading) {
     return (
