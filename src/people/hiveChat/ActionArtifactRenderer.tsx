@@ -35,6 +35,7 @@ export const ActionArtifactRenderer: React.FC<ActionArtifactRendererProps> = obs
   ({ messageId, chatId, websocketSessionId, setIsActionSend }) => {
     const { chat } = useStores();
     const [isSending, setIsSending] = useState(false);
+    const [isActionCompleted, setIsActionCompleted] = useState(false);
 
     const artifacts = chat.getMessageArtifacts(messageId);
 
@@ -59,7 +60,7 @@ export const ActionArtifactRenderer: React.FC<ActionArtifactRendererProps> = obs
     }
 
     const handleButtonClick = async (option: Option) => {
-      if (isSending) return;
+      if (isSending || isActionCompleted) return;
       setIsSending(true);
       setIsActionSend(true);
 
@@ -77,7 +78,11 @@ export const ActionArtifactRenderer: React.FC<ActionArtifactRendererProps> = obs
           return;
         }
 
-        await chatService.sendActionResponse(payload);
+        const response = await chatService.sendActionResponse(payload);
+        console.log('Action response:', response);
+        if (response && response.success) {
+          setIsActionCompleted(true);
+        }
       } catch (error) {
         console.error('Error sending action response:', error);
       } finally {
@@ -101,7 +106,7 @@ export const ActionArtifactRenderer: React.FC<ActionArtifactRendererProps> = obs
             <ActionButtons
               options={content.options}
               onButtonClick={handleButtonClick}
-              disabled={isSending}
+              disabled={isSending || isActionCompleted}
             />
           </ActionBubble>
         )}
