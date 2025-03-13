@@ -19,6 +19,14 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   padding: 40px 50px;
+  max-height: 90vh;
+  overflow: hidden;
+`;
+
+const ContentWrapper = styled.div`
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
 `;
 
 const ModalTitle = styled.h3`
@@ -252,10 +260,12 @@ const FeatureFlagsModal = ({ open, close, addToast }: FeatureFlagsProps) => {
         marginTop: isMobile ? 64 : 0,
         background: 'white',
         zIndex: 20,
-        maxHeight: '100%',
+        maxHeight: '90vh',
         borderRadius: '10px',
         width: isMobile ? '100%' : '80%',
-        maxWidth: '1200px'
+        maxWidth: '1200px',
+        display: 'flex',
+        flexDirection: 'column'
       }}
       overlayClick={close}
       bigCloseImage={close}
@@ -270,93 +280,97 @@ const FeatureFlagsModal = ({ open, close, addToast }: FeatureFlagsProps) => {
         <ModalTitle>Feature Flags</ModalTitle>
         <CreateButton onClick={() => setShowCreateModal(true)}>Create Feature Flag</CreateButton>
 
-        {loading ? (
-          <LoadingContainer>
-            <EuiLoadingSpinner size="xl" />
-          </LoadingContainer>
-        ) : (
-          <>
-            <TableContainer>
-              <Table>
-                <thead>
-                  <tr>
-                    <Th onClick={() => handleSort('name')}>
-                      Name {sortField === 'name' && (sortDirection === 'asc' ? '↑' : '↓')}
-                    </Th>
-                    <Th onClick={() => handleSort('description')}>
-                      Description{' '}
-                      {sortField === 'description' && (sortDirection === 'asc' ? '↑' : '↓')}
-                    </Th>
-                    <Th>Status</Th>
-                    <Th>Actions</Th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sortedFlags.map((flag: FeatureFlag) => (
-                    <tr key={flag.uuid}>
-                      <Td>{flag.name}</Td>
-                      <Td>{flag.description}</Td>
-                      <Td>
-                        <Toggle>
-                          <input
-                            type="checkbox"
-                            checked={flag.enabled}
-                            onChange={() => handleToggle(flag.uuid, flag.enabled)}
-                          />
-                          <span />
-                        </Toggle>
-                      </Td>
-                      <Td>
-                        <ActionButton onClick={() => handleEdit(flag)}>Edit</ActionButton>
-                        <ActionButton onClick={() => handleDelete(flag.uuid)}>Delete</ActionButton>
-                        <ActionButton
-                          onClick={() => console.log('Manage Endpoints button has been clicked')}
-                        >
-                          Manage Endpoints
-                        </ActionButton>
-                      </Td>
+        <ContentWrapper>
+          {loading ? (
+            <LoadingContainer>
+              <EuiLoadingSpinner size="xl" />
+            </LoadingContainer>
+          ) : (
+            <>
+              <TableContainer>
+                <Table>
+                  <thead>
+                    <tr>
+                      <Th onClick={() => handleSort('name')}>
+                        Name {sortField === 'name' && (sortDirection === 'asc' ? '↑' : '↓')}
+                      </Th>
+                      <Th onClick={() => handleSort('description')}>
+                        Description{' '}
+                        {sortField === 'description' && (sortDirection === 'asc' ? '↑' : '↓')}
+                      </Th>
+                      <Th>Status</Th>
+                      <Th>Actions</Th>
                     </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </TableContainer>
+                  </thead>
+                  <tbody>
+                    {sortedFlags.map((flag: FeatureFlag) => (
+                      <tr key={flag.uuid}>
+                        <Td>{flag.name}</Td>
+                        <Td>{flag.description}</Td>
+                        <Td>
+                          <Toggle>
+                            <input
+                              type="checkbox"
+                              checked={flag.enabled}
+                              onChange={() => handleToggle(flag.uuid, flag.enabled)}
+                            />
+                            <span />
+                          </Toggle>
+                        </Td>
+                        <Td>
+                          <ActionButton onClick={() => handleEdit(flag)}>Edit</ActionButton>
+                          <ActionButton onClick={() => handleDelete(flag.uuid)}>
+                            Delete
+                          </ActionButton>
+                          <ActionButton
+                            onClick={() => console.log('Manage Endpoints button has been clicked')}
+                          >
+                            Manage Endpoints
+                          </ActionButton>
+                        </Td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </TableContainer>
 
-            <MobileCards>
-              {sortedFlags.map((flag: FeatureFlag) => (
-                <Card key={flag.uuid}>
-                  <CardField>
-                    <label>Name:</label>
-                    {flag.name}
-                  </CardField>
-                  <CardField>
-                    <label>Description:</label>
-                    {flag.description}
-                  </CardField>
-                  <CardField>
-                    <label>Status:</label>
-                    <Toggle>
-                      <input
-                        type="checkbox"
-                        checked={flag.enabled}
-                        onChange={() => handleToggle(flag.uuid, flag.enabled)}
-                      />
-                      <span />
-                    </Toggle>
-                  </CardField>
-                  <CardField>
-                    <ActionButton onClick={() => handleEdit(flag)}>Edit</ActionButton>
-                    <ActionButton onClick={() => handleDelete(flag.uuid)}>Delete</ActionButton>
-                    <ActionButton
-                      onClick={() => console.log('Manage Endpoints button has been clicked')}
-                    >
-                      Manage Endpoints
-                    </ActionButton>
-                  </CardField>
-                </Card>
-              ))}
-            </MobileCards>
-          </>
-        )}
+              <MobileCards>
+                {sortedFlags.map((flag: FeatureFlag) => (
+                  <Card key={flag.uuid}>
+                    <CardField>
+                      <label>Name:</label>
+                      {flag.name}
+                    </CardField>
+                    <CardField>
+                      <label>Description:</label>
+                      {flag.description}
+                    </CardField>
+                    <CardField>
+                      <label>Status:</label>
+                      <Toggle>
+                        <input
+                          type="checkbox"
+                          checked={flag.enabled}
+                          onChange={() => handleToggle(flag.uuid, flag.enabled)}
+                        />
+                        <span />
+                      </Toggle>
+                    </CardField>
+                    <CardField>
+                      <ActionButton onClick={() => handleEdit(flag)}>Edit</ActionButton>
+                      <ActionButton onClick={() => handleDelete(flag.uuid)}>Delete</ActionButton>
+                      <ActionButton
+                        onClick={() => console.log('Manage Endpoints button has been clicked')}
+                      >
+                        Manage Endpoints
+                      </ActionButton>
+                    </CardField>
+                  </Card>
+                ))}
+              </MobileCards>
+            </>
+          )}
+        </ContentWrapper>
 
         <CreateFeatureFlagModal
           open={showCreateModal}

@@ -2,7 +2,8 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useParams } from 'react-router-dom';
-import { ChatMessage, Artifact, ActionContent } from 'store/interface';
+import hljs from 'highlight.js';
+import { ChatMessage, Artifact, ActionContent, TextContent } from 'store/interface';
 import { useStores } from 'store';
 import { createSocketInstance } from 'config/socket';
 import SidebarComponent from 'components/common/SidebarComponent.tsx';
@@ -352,6 +353,10 @@ const connectToLogWebSocket = (
 const hasButtonOptions = (content: ActionContent): boolean =>
   content.options && content.options.some((option) => option.action_type === 'button');
 
+const highlightCode = (code: string): string => {
+  return hljs.highlightAuto(code).value;
+};
+
 export const HiveChatView: React.FC = observer(() => {
   const { uuid, chatId } = useParams<RouteParams>();
   const { chat, ui } = useStores();
@@ -631,6 +636,16 @@ export const HiveChatView: React.FC = observer(() => {
             'text_type' in artifact.content &&
             artifact.content.text_type === 'code'
         );
+
+        const isTextContent = (content: any): content is TextContent => {
+          return content && typeof content.text_type === 'string' && 'language' in content;
+        };
+
+        codeArtifacts.forEach((artifact) => {
+          if (isTextContent(artifact.content)) {
+            artifact.content.content = highlightCode(artifact.content.content);
+          }
+        });
 
         if (codeArtifacts) {
           setCodeArtifacts(codeArtifacts);
