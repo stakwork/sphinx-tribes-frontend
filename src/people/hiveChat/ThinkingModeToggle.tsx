@@ -8,28 +8,24 @@ interface ThinkingModeToggleProps {
   selectedModel: ModelOption;
   setSelectedModel: React.Dispatch<React.SetStateAction<ModelOption>>;
   handleKeyDown: (e: React.KeyboardEvent<HTMLDivElement>) => void;
-  isCompact?: boolean;
 }
 
-const ToggleContainer = styled.div<{ isCompact?: boolean }>`
+const ToggleContainer = styled.div`
   display: flex;
   background-color: white;
   border-radius: 6px;
   padding: 4px;
   width: fit-content;
-  align-items: center;
-  gap: ${(props) => (props.isCompact ? '4px' : '8px')};
 `;
 
-const ToggleButton = styled.button<{ isActive: boolean; isCompact?: boolean }>`
-  padding: ${(props) => (props.isCompact ? '6px 10px' : '8px 16px')};
+const ToggleButton = styled.button<{ isActive: boolean }>`
+  padding: 8px 16px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-size: ${(props) => (props.isCompact ? '14px' : '16px')};
+  font-size: 16px;
   font-weight: 500;
   transition: all 0.3s ease;
-  white-space: nowrap;
 
   ${({ isActive }) =>
     isActive
@@ -47,58 +43,41 @@ const ToggleButton = styled.button<{ isActive: boolean; isCompact?: boolean }>`
  `}
 `;
 
-const ToggleWrapper = styled.div<{ isCompact?: boolean }>`
-  display: flex;
-  align-items: center;
-  gap: ${(props) => (props.isCompact ? '6px' : '10px')};
-  flex-wrap: ${(props) => (props.isCompact ? 'wrap' : 'nowrap')};
-  justify-content: ${(props) => (props.isCompact ? 'center' : 'flex-start')};
-`;
-
 const ThinkingModeToggle: React.FC<ThinkingModeToggleProps> = ({
   isBuild,
   setIsBuild,
   selectedModel,
   setSelectedModel,
-  handleKeyDown,
-  isCompact = false
+  handleKeyDown
 }) => (
-    <ToggleWrapper isCompact={isCompact}>
-      <ToggleContainer
+  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+    <ToggleContainer
+      tabIndex={0}
+      onKeyDown={handleKeyDown}
+      role="radiogroup"
+      aria-label="Toggle Thinking Mode"
+    >
+      <ToggleButton
+        isActive={isBuild === 'Build'}
+        onClick={() => setIsBuild('Build')}
         tabIndex={0}
-        onKeyDown={handleKeyDown}
-        role="radiogroup"
-        aria-label="Toggle Thinking Mode"
-        isCompact={isCompact}
+        role="radio"
+        aria-checked={isBuild === 'Build'}
       >
-        <ToggleButton
-          isActive={isBuild === 'Build'}
-          onClick={() => setIsBuild('Build')}
-          tabIndex={0}
-          role="radio"
-          aria-checked={isBuild === 'Build'}
-          isCompact={isCompact}
-        >
-          {isCompact ? 'B' : 'Build'}
-        </ToggleButton>
-        <ToggleButton
-          isActive={isBuild === 'Chat'}
-          onClick={() => setIsBuild('Chat')}
-          tabIndex={0}
-          role="radio"
-          aria-checked={isBuild === 'Chat'}
-          isCompact={isCompact}
-        >
-          {isCompact ? 'C' : 'Chat'}
-        </ToggleButton>
-      </ToggleContainer>
-      <ModelSelector
-        selectedModel={selectedModel}
-        onModelChange={setSelectedModel}
-        isCompact={isCompact}
-      />
-    </ToggleWrapper>
-  );
-
+        Build
+      </ToggleButton>
+      <ToggleButton
+        isActive={isBuild === 'Chat'}
+        onClick={() => setIsBuild('Chat')}
+        tabIndex={0}
+        role="radio"
+        aria-checked={isBuild === 'Chat'}
+      >
+        Chat
+      </ToggleButton>
+    </ToggleContainer>
+    <ModelSelector selectedModel={selectedModel} onModelChange={setSelectedModel} />
+  </div>
+);
 
 export default ThinkingModeToggle;
