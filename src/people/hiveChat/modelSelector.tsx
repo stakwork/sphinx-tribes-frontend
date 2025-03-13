@@ -10,31 +10,25 @@ export interface ModelOption {
 export interface ModelSelectorProps {
   selectedModel: ModelOption;
   onModelChange: (model: ModelOption) => void;
-  isCompact?: boolean;
 }
 
-const DropdownContainer = styled.div<{ isCompact?: boolean }>`
+const DropdownContainer = styled.div`
   position: relative;
-  width: ${(props) => (props.isCompact ? '130px' : '200px')};
-  transition: width 0.2s ease;
+  width: 200px;
 `;
 
-const DropdownHeader = styled.div<{ isCompact?: boolean }>`
+const DropdownHeader = styled.div`
   background-color: white;
   border: 1px solid grey;
   border-radius: 4px;
-  padding: ${(props) => (props.isCompact ? '6px 8px' : '10px')};
-  font-size: ${(props) => (props.isCompact ? '12px' : '14px')};
+  padding: 10px;
   cursor: pointer;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 `;
 
-const DropdownList = styled.ul<{ isCompact?: boolean }>`
+const DropdownList = styled.ul`
   background-color: white;
   border: 1px solid grey;
   border-top: none;
@@ -49,13 +43,8 @@ const DropdownList = styled.ul<{ isCompact?: boolean }>`
   z-index: 1000;
 `;
 
-const DropdownListItem = styled.li<{ isCompact?: boolean }>`
-  padding: ${(props) => (props.isCompact ? '6px 8px' : '10px')};
-  font-size: ${(props) => (props.isCompact ? '12px' : '14px')};
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-
+const DropdownListItem = styled.li`
+  padding: 10px;
   &:hover {
     background-color: #f5f5f5;
   }
@@ -63,7 +52,6 @@ const DropdownListItem = styled.li<{ isCompact?: boolean }>`
 
 const Arrow = styled.span`
   display: inline-block;
-  flex-shrink: 0;
   width: 0;
   height: 0;
   border-left: 5px solid transparent;
@@ -72,27 +60,7 @@ const Arrow = styled.span`
   margin-left: 10px;
 `;
 
-const formatModelLabel = (label: string, isCompact: boolean): string => {
-  if (!isCompact) return label;
-
-  if (label === 'Open AI - 4o') {
-    return 'gpt-4o';
-  }
-  if (label === 'Open AI - 03 Mini') {
-    return 'o3-mini';
-  }
-  if (label === 'Claude 3.5 Sonnet') {
-    return 'sonnet-3.5';
-  }
-
-  return label;
-};
-
-export const ModelSelector: React.FC<ModelSelectorProps> = ({
-  selectedModel,
-  onModelChange,
-  isCompact = false
-}) => {
+export const ModelSelector: React.FC<ModelSelectorProps> = ({ selectedModel, onModelChange }) => {
   const modelOptions: ModelOption[] = [
     {
       label: 'Open AI - 4o',
@@ -112,6 +80,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
   const [error, setError] = useState<Error | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       try {
@@ -151,27 +120,23 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
 
   if (error) {
     return (
-      <div style={{ color: 'red', padding: isCompact ? '4px' : '10px', border: '1px solid red' }}>
+      <div style={{ color: 'red', padding: '10px', border: '1px solid red' }}>
         Something went wrong: {error.message}
       </div>
     );
   }
 
   return (
-    <DropdownContainer ref={containerRef} isCompact={isCompact}>
-      <DropdownHeader onClick={toggleDropdown} isCompact={isCompact}>
-        <span>{formatModelLabel(selectedModel.label, isCompact)}</span>
+    <DropdownContainer ref={containerRef}>
+      <DropdownHeader onClick={toggleDropdown}>
+        <span>{selectedModel.label}</span>
         <Arrow />
       </DropdownHeader>
       {isOpen && (
-        <DropdownList isCompact={isCompact}>
+        <DropdownList>
           {modelOptions.map((option) => (
-            <DropdownListItem
-              key={option.value}
-              onClick={() => handleItemClick(option)}
-              isCompact={isCompact}
-            >
-              {formatModelLabel(option.label, isCompact)}
+            <DropdownListItem key={option.value} onClick={() => handleItemClick(option)}>
+              {option.label}
             </DropdownListItem>
           ))}
         </DropdownList>
