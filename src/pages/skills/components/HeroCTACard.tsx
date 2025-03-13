@@ -75,7 +75,7 @@ const Button = styled.button<{ variant: 'primary' | 'secondary' }>`
   font-size: 16px;
   margin-top: 50px;
   cursor: pointer;
-  width: fit-content;
+  width: 35%;
   transition: all 0.2s;
   align-self: center;
   margin-right: 20%;
