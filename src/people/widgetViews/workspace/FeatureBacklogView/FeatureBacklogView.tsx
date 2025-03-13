@@ -4,7 +4,7 @@ import MaterialIcon from '@material/react-material-icon';
 import styled from 'styled-components';
 import { useParams, useHistory } from 'react-router-dom';
 import { featuresWorkspaceStore } from 'store/features_workspace';
-import { EuiDragDropContext, EuiDraggable, EuiDroppable } from '@elastic/eui';
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { Feature, FeatureStatus, FeatureTabLabels, TAB_TO_STATUS_MAP } from 'store/interface';
 import SidebarComponent from 'components/common/SidebarComponent';
 import { toCapitalize } from 'helpers/helpers-extended';
@@ -58,53 +58,18 @@ const TableContainer = styled.div`
   overflow: visible;
 `;
 
-const Table = styled.table`
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  overflow: visible;
-  border-radius: 8px;
-  table-layout: fixed;
+const HeaderRow = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  height: 48px;
+  background: #f8f9fa;
+  border-bottom: 2px solid #ddd;
+  font-weight: 500;
 `;
 
-const TableRow = styled.tr`
-  &:hover {
-    background-color: #f8f9fa;
-  }
-  border-bottom: 1px solid #e0e0e0;
-  height: 56px;
-`;
-
-const DraggableWrapper = styled.div`
-  transform: translate(0, 0) !important;
-
-  &[data-rbd-dragging='true'] {
-    display: table-row;
-    background: white;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-
-    width: 100%;
-    table-layout: fixed;
-
-    pointer-events: none;
-    position: relative !important;
-    z-index: 1000;
-  }
-`;
-
-interface TdProps {
-  collapsed?: boolean;
-}
-
-const Td = styled.td<TdProps>`
-  padding: 8px 16px;
-  color: #202124;
-  font-size: 14px;
-  vertical-align: middle;
-  border-bottom: 1px solid #e0e0e0;
-  background: white;
-
-  &:first-child {
+const HeaderCell = styled.div`
+  &:nth-child(1) {
     width: 100px;
     min-width: 100px;
   }
@@ -115,44 +80,64 @@ const Td = styled.td<TdProps>`
   }
 
   &:nth-child(3) {
-    width: ${({ collapsed }: any) => (collapsed ? '930px' : '730px')};
-    min-width: ${({ collapsed }: any) => (collapsed ? '930px' : '730px')};
+    flex: 1;
   }
 
-  &:last-child {
+  &:nth-child(4) {
     width: 200px;
     min-width: 200px;
+    position: relative;
     text-align: right;
-    padding-right: 24px;
   }
 `;
 
-const Th = styled.th`
-  padding: 10px;
-  text-align: left;
-  border-bottom: 2px solid #ddd;
-  background: #f8f9fa;
-  height: 48px;
+const FeatureRow = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  height: 56px;
+  border-bottom: 1px solid #e0e0e0;
+  background: white;
 
-  &:first-child {
-    width: 105px;
-    min-width: 105px;
+  &:hover {
+    background-color: #f8f9fa;
+  }
+`;
+
+const Cell = styled.div<{ collapsed?: boolean }>`
+  padding: 8px 0;
+
+  &:nth-child(1) {
+    width: 100px;
+    min-width: 100px;
   }
 
   &:nth-child(2) {
     width: 350px;
     min-width: 350px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   &:nth-child(3) {
-    width: calc(100% - 600px);
-    min-width: 300px;
+    flex: 1;
+    padding-right: 16px;
   }
 
-  &:last-child {
+  &:nth-child(4) {
     width: 200px;
     min-width: 200px;
-    position: relative;
+    text-align: right;
+  }
+`;
+
+const DraggableItem = styled.div`
+  &.dragging {
+    background: white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    opacity: 0.9;
   }
 `;
 
@@ -162,6 +147,7 @@ const DragHandle = styled.div`
   display: flex;
   align-items: center;
   padding: 4px;
+  margin-right: 8px;
 
   &:hover {
     background: #f1f3f4;
@@ -191,15 +177,13 @@ const StatusSelect = styled.select`
 `;
 
 const HeaderStatusSelect = styled(StatusSelect)`
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
+  position: static;
   background: transparent;
   border: 1px solid lightgray;
   color: black;
   font-weight: 600;
   width: 130px;
-  margin-left: 35px;
+  float: right;
   z-index: 1;
 
   &:hover {
@@ -210,17 +194,12 @@ const HeaderStatusSelect = styled(StatusSelect)`
 const PriorityCell = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding-right: 8px;
 `;
 
 const FeatureCell = styled.div`
   font-size: 14px;
   color: #202124;
   font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   cursor: pointer;
 
   &:hover {
@@ -228,20 +207,13 @@ const FeatureCell = styled.div`
   }
 `;
 
-interface BriefCellProps {
-  empty: boolean;
-  collapsed?: boolean;
-}
-
-const BriefCell = styled.div<BriefCellProps>`
+const BriefCell = styled.div<{ empty: boolean }>`
   font-size: 14px;
   color: ${(props: { empty: boolean }) => (props.empty ? '#9AA0A6' : '#202124')};
   font-style: ${(props: { empty: boolean }) => (props.empty ? 'italic' : 'normal')};
-  white-space: normal;
-  overflow: visible;
-  text-overflow: clip;
-  min-width: ${({ collapsed }: any) => (collapsed ? '900px' : '700px')};
-  max-width: ${({ collapsed }: any) => (collapsed ? '900px' : '700px')};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const NoFeaturesMessage = styled.div`
@@ -468,85 +440,78 @@ const FeatureBacklogView = observer(() => {
       <BacklogContainer collapsed={collapsed}>
         <TableContainer>
           <TabBar activeTab={activeTab} onTabChange={handleTabChange} />
-          <Table>
-            <thead>
-              <tr>
-                <Th>Priority</Th>
-                <Th>Feature</Th>
-                <Th>Brief</Th>
-                <Th style={{ position: 'relative' }}>
-                  <HeaderStatusSelect
-                    value={statusFilter}
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                      setStatusFilter(e.target.value)
-                    }
-                  >
-                    <option value="all">Status</option>
-                    {Object.values(FeatureStatus).map((status) => (
-                      <option key={status} value={status}>
-                        {toCapitalize(status)}
-                      </option>
-                    ))}
-                  </HeaderStatusSelect>
-                </Th>
-              </tr>
-            </thead>
-            {filteredFeatures.length === 0 && (
-              <tr>
-                <td colSpan={4}>
-                  <NoFeaturesMessage>
-                    No features found for the selected status:{' '}
-                    {statusFilter === 'all' ? 'all statuses' : statusFilter}
-                  </NoFeaturesMessage>
-                </td>
-              </tr>
-            )}
-            <EuiDragDropContext
-              onDragEnd={onDragEnd}
-              dragHandleUsageInstructions="Drag to reorder features"
-            >
-              <EuiDroppable
-                droppableId="FEATURES_LIST"
-                spacing="none"
-                style={{ transform: 'none !important' }}
+
+          <HeaderRow>
+            <HeaderCell>Priority</HeaderCell>
+            <HeaderCell>Feature</HeaderCell>
+            <HeaderCell>Brief</HeaderCell>
+            <HeaderCell>
+              <HeaderStatusSelect
+                value={statusFilter}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                  setStatusFilter(e.target.value)
+                }
               >
-                <tbody>
+                <option value="all">Status</option>
+                {Object.values(FeatureStatus).map((status) => (
+                  <option key={status} value={status}>
+                    {toCapitalize(status)}
+                  </option>
+                ))}
+              </HeaderStatusSelect>
+            </HeaderCell>
+          </HeaderRow>
+
+          {filteredFeatures.length === 0 && (
+            <NoFeaturesMessage>
+              No features found for the selected status:{' '}
+              {statusFilter === 'all' ? 'all statuses' : statusFilter}
+            </NoFeaturesMessage>
+          )}
+
+          <DragDropContext onDragEnd={onDragEnd}>
+            <Droppable droppableId="FEATURES_LIST">
+              {(provided) => (
+                <div {...provided.droppableProps} ref={provided.innerRef}>
                   {filteredFeatures.length > 0 &&
                     filteredFeatures.map((feature: Feature, index: number) => (
-                      <EuiDraggable
+                      <Draggable
                         key={feature.uuid}
-                        index={index}
                         draggableId={feature.uuid}
-                        customDragHandle={true}
-                        hasInteractiveChildren={true}
+                        index={index}
+                        isDragDisabled={activeTab !== 'all'}
                       >
-                        {(provided: any) => (
-                          <DraggableWrapper ref={provided.innerRef} {...provided.draggableProps}>
-                            <TableRow>
-                              <Td>
+                        {(provided, snapshot) => (
+                          <DraggableItem
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            className={snapshot.isDragging ? 'dragging' : ''}
+                          >
+                            <FeatureRow>
+                              <Cell>
                                 <PriorityCell>
-                                  <DragHandle {...provided.dragHandleProps}>
-                                    {activeTab === 'all' && (
+                                  {activeTab === 'all' && (
+                                    <DragHandle {...provided.dragHandleProps}>
                                       <MaterialIcon
                                         icon="drag_indicator"
                                         style={{ fontSize: '20px' }}
                                       />
-                                    )}
-                                  </DragHandle>
+                                    </DragHandle>
+                                  )}
                                   {index + 1}
                                 </PriorityCell>
-                              </Td>
-                              <Td>
+                              </Cell>
+                              <Cell>
                                 <FeatureCell onClick={() => handleFeatureClick(feature.uuid)}>
                                   {feature.name}
                                 </FeatureCell>
-                              </Td>
-                              <Td collapsed={collapsed}>
-                                <BriefCell empty={!feature.brief} collapsed={collapsed}>
+                              </Cell>
+                              <Cell>
+                                <BriefCell empty={!feature.brief}>
                                   {feature.brief || 'No brief yet'}
                                 </BriefCell>
-                              </Td>
-                              <Td collapsed={collapsed}>
+                              </Cell>
+                              <Cell>
                                 <StatusSelect
                                   value={feature.feat_status}
                                   onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
@@ -559,54 +524,56 @@ const FeatureBacklogView = observer(() => {
                                     </option>
                                   ))}
                                 </StatusSelect>
-                              </Td>
-                            </TableRow>
-                          </DraggableWrapper>
+                              </Cell>
+                            </FeatureRow>
+                          </DraggableItem>
                         )}
-                      </EuiDraggable>
+                      </Draggable>
                     ))}
-                </tbody>
-              </EuiDroppable>
-            </EuiDragDropContext>
-            {showNewFeatureRow && (
-              <NewFeatureRow>
-                <NewLabel>New</NewLabel>
-                <NewFeatureInput
-                  placeholder="Enter Title"
-                  value={newFeatureTitle}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setNewFeatureTitle(e.target.value)
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
+
+          {showNewFeatureRow && (
+            <NewFeatureRow>
+              <NewLabel>New</NewLabel>
+              <NewFeatureInput
+                placeholder="Enter Title"
+                value={newFeatureTitle}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setNewFeatureTitle(e.target.value)
+                }
+                onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                  if (e.key === 'Enter' && newFeatureTitle.trim().length >= 2 && !isCreating) {
+                    e.preventDefault();
+                    handleCreateFeature();
                   }
-                  onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                    if (e.key === 'Enter' && newFeatureTitle.trim().length >= 2 && !isCreating) {
-                      e.preventDefault();
-                      handleCreateFeature();
-                    }
-                  }}
-                />
-                <NewBriefInput
-                  placeholder="Enter Brief"
-                  value={newFeatureBrief}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setNewFeatureBrief(e.target.value)
+                }}
+              />
+              <NewBriefInput
+                placeholder="Enter Brief"
+                value={newFeatureBrief}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setNewFeatureBrief(e.target.value)
+                }
+                onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                  if (e.key === 'Enter' && newFeatureTitle.trim().length >= 2 && !isCreating) {
+                    e.preventDefault();
+                    handleCreateFeature();
                   }
-                  onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                    if (e.key === 'Enter' && newFeatureTitle.trim().length >= 2 && !isCreating) {
-                      e.preventDefault();
-                      handleCreateFeature();
-                    }
-                  }}
-                  collapsed={collapsed}
-                />
-                <CreateButton
-                  disabled={newFeatureTitle.trim().length < 2 || isCreating}
-                  onClick={handleCreateFeature}
-                >
-                  {isCreating ? 'Creating...' : 'Create'}
-                </CreateButton>
-              </NewFeatureRow>
-            )}
-          </Table>
+                }}
+                collapsed={collapsed}
+              />
+              <CreateButton
+                disabled={newFeatureTitle.trim().length < 2 || isCreating}
+                onClick={handleCreateFeature}
+              >
+                {isCreating ? 'Creating...' : 'Create'}
+              </CreateButton>
+            </NewFeatureRow>
+          )}
         </TableContainer>
       </BacklogContainer>
     </MainContainer>
