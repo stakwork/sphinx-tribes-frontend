@@ -269,7 +269,7 @@ function Header() {
 
   const getUserWorkspaces = useCallback(async () => {
     const id = ui._meInfo?.id || 0;
-    if (id != 0) {
+    if (id !== 0) {
       await main.getUserWorkspaces(id);
     }
   }, [main, ui.selectedPerson]);
