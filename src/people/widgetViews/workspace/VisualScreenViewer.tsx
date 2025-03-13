@@ -37,6 +37,7 @@ const CodeViewer = styled.div`
   background-color: #1e1e1e;
   padding: 12px;
   min-height: 65vh;
+  max-height: 80vh;
   z-index: 0;
 `;
 
@@ -46,6 +47,7 @@ const TextViewer = styled.div`
   border: 1px solid #ddd;
   padding: 12px;
   min-height: 65vh;
+  max-height: 80vh;
   z-index: 0;
 `;
 
