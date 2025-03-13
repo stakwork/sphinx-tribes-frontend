@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
+import MaterialIcon from '@material/react-material-icon';
 import { Artifact, VisualContent, TextContent } from '../../../store/interface.ts';
 import { renderMarkdown } from '../../utils/RenderMarkdown.tsx';
 
@@ -87,6 +88,104 @@ const PageIndicator = styled.span`
   color: #333;
 `;
 
+const BrowserToolbar = styled.div`
+  display: flex;
+  align-items: center;
+  background-color: #f1f3f4;
+  padding: 6px 8px;
+  border-bottom: 1px solid #ddd;
+  gap: 12px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+`;
+
+const NavigationButtons = styled.div`
+  display: flex;
+  gap: 2px;
+`;
+
+const ToolbarButton = styled.button`
+  background: none;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #5f6368;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.08);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  & > i {
+    font-size: 20px;
+  }
+`;
+
+const AddressBar = styled.input`
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 24px;
+  border: 1px solid #ddd;
+  background-color: white;
+  font-size: 14px;
+  color: #202124;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: #f8f9fa;
+  }
+
+  &:focus {
+    outline: none;
+    background-color: white;
+    border-color: #1a73e8;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+`;
+
+const NewTabButton = styled(ToolbarButton)`
+  margin-left: 2px;
+  color: #5f6368;
+  border-radius: 24px;
+  padding: 0 12px;
+  width: auto;
+  gap: 6px;
+  background-color: white;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: #f8f9fa;
+  }
+
+  &:active {
+    border-color: #1a73e8;
+  }
+
+  & > span {
+    font-weight: 400;
+    line-height: 36px;
+  }
+
+  & > i {
+    font-size: 20px;
+  }
+`;
+
 interface VisualScreenViewerProps {
   visualArtifact: Artifact[];
   codeArtifact: Artifact[];
@@ -103,6 +202,8 @@ const VisualScreenViewer: React.FC<VisualScreenViewerProps> = ({
   const [visualIndex, setVisualIndex] = useState(0);
   const [codeIndex, setCodeIndex] = useState(0);
   const [textIndex, setTextIndex] = useState(0);
+  const [currentUrl, setCurrentUrl] = useState('');
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
     if (visualArtifact.length > 0) {
@@ -138,12 +239,79 @@ const VisualScreenViewer: React.FC<VisualScreenViewerProps> = ({
   const currentCode = codeArtifact[codeArtifact.length - 1 - codeIndex];
   const currentText = textArtifact[textArtifact.length - 1 - textIndex];
 
+  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCurrentUrl(e.target.value);
+  };
+
+  const handleUrlSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && iframeRef.current) {
+      iframeRef.current.src = currentUrl;
+    }
+  };
+
+  const handleNewTab = () => {
+    window.open(currentUrl, '_blank');
+  };
+
+  useEffect(() => {
+    if (activeTab === 'visual' && currentVisual?.content) {
+      const content = currentVisual.content as VisualContent;
+      if (content.url) {
+        setCurrentUrl(content.url);
+      }
+    }
+  }, [activeTab, currentVisual]);
+
+  const renderBrowserTools = (visualContent: VisualContent) => {
+    if (visualContent.visual_type !== 'screen') return null;
+
+    return (
+      <BrowserToolbar>
+        <NavigationButtons>
+          <ToolbarButton onClick={handlePrevious} disabled={visualIndex === 0} title="Go back">
+            <MaterialIcon icon="arrow_back" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={handleNext}
+            disabled={visualIndex === visualArtifact.length - 1}
+            title="Go forward"
+          >
+            <MaterialIcon icon="arrow_forward" />
+          </ToolbarButton>
+          <ToolbarButton
+            title="Reload"
+            onClick={() => {
+              if (iframeRef.current) {
+                iframeRef.current.src = currentUrl;
+              }
+            }}
+          >
+            <MaterialIcon icon="refresh" />
+          </ToolbarButton>
+        </NavigationButtons>
+        <AddressBar
+          value={currentUrl}
+          onChange={handleUrlChange}
+          onKeyDown={handleUrlSubmit}
+          placeholder="Enter URL"
+          spellCheck={false}
+        />
+        <NewTabButton onClick={handleNewTab} title="Open in new tab">
+          <span>Open In New Tab</span>
+          <MaterialIcon icon="open_in_new" />
+        </NewTabButton>
+      </BrowserToolbar>
+    );
+  };
+
   return (
     <ViewerContainer>
       {activeTab === 'visual' && currentVisual && (
         <>
           <IframeWrapper>
+            {renderBrowserTools(currentVisual.content as VisualContent)}
             <StyledIframe
+              ref={iframeRef}
               src={(currentVisual.content as VisualContent).url || ''}
               title="Visual Screen Viewer"
             />
