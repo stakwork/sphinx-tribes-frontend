@@ -53,6 +53,7 @@ import {
   Title,
   Description,
   Status,
+  DeleteButton,
   ElapsedTimerContainer
 } from './style';
 import { getTwitterLink } from './lib';
@@ -531,6 +532,33 @@ function MobileView(props: CodingBountiesProps) {
           title: 'Update Failed',
           color: 'danger',
           text: error.message || 'Failed to update proof status'
+        }
+      ]);
+    }
+  };
+
+  const handleDeleteProof = async (bountyID: string, proofId: string) => {
+    try {
+      await bountyReviewStore.deleteProof(bountyID, proofId);
+
+      if (!toastShown) {
+        setToasts([
+          {
+            id: `${Math.random()}`,
+            title: 'Proof Deleted',
+            color: 'success',
+            text: 'Proof deleted successfully'
+          }
+        ]);
+        setToastShown(false);
+      }
+    } catch (error: any) {
+      setToasts([
+        {
+          id: `${Math.random()}`,
+          title: 'Deleting Proof Failed',
+          color: 'danger',
+          text: error.message || 'Failed to delete proof'
         }
       ]);
     }
@@ -1044,7 +1072,14 @@ function MobileView(props: CodingBountiesProps) {
                                     return part;
                                   })}
                               </Description>
-                              <Status style={{ flex: 0.3, textAlign: 'right' }}>
+                              {isAssigned && isAssignee && (
+                                <DeleteButton onClick={() => handleDeleteProof(bountyID, proof.id)}>
+                                  Delete
+                                </DeleteButton>
+                              )}
+                              <Status
+                                style={{ flex: 0.3, textAlign: 'right', marginBottom: '2px' }}
+                              >
                                 <StatusDropdown
                                   bountyId={bountyID}
                                   proofId={proof.id}
@@ -1647,7 +1682,12 @@ function MobileView(props: CodingBountiesProps) {
                   {proofs[bountyID]?.length ? (
                     <ul>
                       {proofs[bountyID].map((proof: any, index: any) => (
-                        <div key={index}>
+                        <div key={index} style={{ display: 'flex' }}>
+                          {isAssigned && isAssignee && (
+                            <DeleteButton onClick={() => handleDeleteProof(bountyID, proof.id)}>
+                              Delete
+                            </DeleteButton>
+                          )}
                           <StatusDropdown
                             bountyId={bountyID}
                             proofId={proof.id}

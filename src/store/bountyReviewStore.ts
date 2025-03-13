@@ -232,6 +232,32 @@ export class BountyReviewStore {
       this.setReviewLoading(proofId, false);
     }
   }
+
+  async deleteProof(bountyId: string, proofId: string) {
+    try {
+      if (!uiStore._meInfo) return;
+      const info = uiStore.meInfo;
+
+      this.setReviewLoading(proofId, true);
+      const response = await fetch(`${TribesURL}/gobounties/${bountyId}/proofs/${proofId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-jwt': info?.tribe_jwt || ''
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to update proof status: ${response.status} ${response.statusText}`);
+      }
+
+      await this.getProofs(bountyId);
+    } catch (error: any) {
+      throw new Error(`Failed to update proof status`);
+    } finally {
+      this.setReviewLoading(proofId, false);
+    }
+  }
 }
 
 export const bountyReviewStore = new BountyReviewStore();

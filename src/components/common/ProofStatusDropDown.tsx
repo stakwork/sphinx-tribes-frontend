@@ -52,7 +52,8 @@ const StatusDropdown: React.FC<StatusDropdownProps> = observer(
             borderRadius: '4px',
             backgroundColor: getStatusBackgroundColor(currentStatus),
             color: color.pureWhite,
-            fontSize: '14px'
+            fontSize: '14px',
+            marginBottom: '2px'
           }}
         >
           {currentStatus || '---'}
@@ -65,7 +66,8 @@ const StatusDropdown: React.FC<StatusDropdownProps> = observer(
             borderRadius: '4px',
             backgroundColor: getStatusBackgroundColor(currentStatus),
             color: color.pureWhite,
-            fontSize: '14px'
+            fontSize: '14px',
+            marginBottom: '2px'
           }}
         >
           {currentStatus || '---'}

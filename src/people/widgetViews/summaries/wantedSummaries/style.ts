@@ -361,6 +361,26 @@ export const Status = styled.div`
   font-weight: 500;
 `;
 
+export const DeleteButton = styled.button`
+  background: #ff4d4f;
+  border: none;
+  color: White;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-bottom: 2px;
+  transition: color 0.2s ease-in-out;
+
+  &:hover {
+    background: #d9363e;
+  }
+
+  &:disabled {
+    color: #ccc;
+    cursor: not-allowed;
+  }
+`;
+
 export const UnassignedPersonProfile = styled.div<containerProps>`
   min-width: 228px;
   min-height: 57.6px;
