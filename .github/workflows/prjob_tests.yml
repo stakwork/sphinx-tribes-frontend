@@ -12,10 +12,5 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install modules
         run: yarn install
-      - name: Run tests with memory optimization
-        run: |
-          find src -name "*.spec.ts" -o -name "*.spec.tsx" | sort > all-tests.txt
-          while read -r test_file; do
-            echo "Running test: $test_file"
-            NODE_OPTIONS="--max_old_space_size=8192" yarn jest --runTestsByPath "$test_file" --no-cache --transformIgnorePatterns "./svg/"
-          done < all-tests.txt
+      - name: Tests
+        run: NODE_OPTIONS="--max_old_space_size=8192" yarn run test-jest
