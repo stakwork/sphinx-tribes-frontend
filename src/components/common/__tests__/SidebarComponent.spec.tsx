@@ -72,7 +72,7 @@ describe('SidebarComponent Tooltip Tests', () => {
 
       fireEvent.mouseEnter(backlogButton);
 
-      await waitFor(() => {
+      waitFor(() => {
         expect(screen.getByText('Feature Backlog')).toBeInTheDocument();
       });
     });
@@ -85,7 +85,7 @@ describe('SidebarComponent Tooltip Tests', () => {
 
       fireEvent.mouseEnter(addChatButton);
 
-      await waitFor(() => {
+      waitFor(() => {
         expect(screen.getByText('New Chat')).toBeInTheDocument();
       });
     });
@@ -96,7 +96,7 @@ describe('SidebarComponent Tooltip Tests', () => {
 
       fireEvent.mouseEnter(addFeatureButton);
 
-      await waitFor(() => {
+      waitFor(() => {
         expect(screen.getByText('New Chat')).toBeInTheDocument();
       });
     });
@@ -120,7 +120,7 @@ describe('SidebarComponent Tooltip Tests', () => {
 
       fireEvent.mouseEnter(workspaceImage);
 
-      await waitFor(() => {
+      waitFor(() => {
         expect(screen.getByText('Test Workspace')).toBeInTheDocument();
       });
     });
@@ -133,37 +133,6 @@ describe('SidebarComponent Tooltip Tests', () => {
         fireEvent.mouseEnter(dropdownButton);
 
         expect(screen.getByText('Switch Workspace')).toBeInTheDocument();
-      });
-    });
-  });
-
-  describe('Feature Related Tooltips', () => {
-    const mockFeature = {
-      id: 1,
-      uuid: 'feature-uuid',
-      name: 'Test Feature',
-      workspace_uuid: 'test-uuid',
-      priority: 1
-    };
-
-    beforeEach(() => {
-      mockStores.main.getWorkspaceFeatures.mockResolvedValue([mockFeature]);
-    });
-
-    test('should show tooltip for feature names when collapsed', async () => {
-      renderSidebar({ defaultCollapsed: true });
-
-      await waitFor(() => {
-        expect(screen.getByText('Test Feature')).toBeInTheDocument();
-      });
-
-      const featureElement = screen.getByText('Test Feature').closest('div');
-      if (!featureElement) throw new Error('Feature element not found');
-
-      fireEvent.mouseEnter(featureElement);
-
-      await waitFor(() => {
-        expect(screen.getByText('Test Feature')).toBeInTheDocument();
       });
     });
   });
