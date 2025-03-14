@@ -58,4 +58,10 @@ export const Img = styled.div<ImageProps>`
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
+
+  @media (max-width: 768px) {
+    width: 100px;
+    height: 100px;
+    margin-top: 50px;
+  }
 `;
