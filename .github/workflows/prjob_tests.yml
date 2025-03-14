@@ -12,5 +12,14 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install modules
         run: yarn install
-      - name: Tests
-        run: NODE_OPTIONS="--max_old_space_size=16384" yarn run test-jest
+      - name: Split tests into batches
+        run: |
+          mkdir -p .jest-batches
+          find src -name "*.spec.ts" -o -name "*.spec.tsx" | sort > .jest-batches/all-tests.txt
+          split -n l/4 .jest-batches/all-tests.txt .jest-batches/batch-
+      - name: Run tests in batches
+        run: |
+          for batch in .jest-batches/batch-*; do
+            echo "Running test batch: $batch"
+            NODE_OPTIONS="--max_old_space_size=4096" yarn jest --runTestsByPath $(cat $batch) --coverage --maxWorkers=1 --no-cache --transformIgnorePatterns "./svg/"
+          done
