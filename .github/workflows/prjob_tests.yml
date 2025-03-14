@@ -13,4 +13,4 @@ jobs:
       - name: Install modules
         run: yarn install
       - name: Tests
-        run: NODE_OPTIONS="--max_old_space_size=8192" yarn run test-jest
+        run: yarn run test-jest
