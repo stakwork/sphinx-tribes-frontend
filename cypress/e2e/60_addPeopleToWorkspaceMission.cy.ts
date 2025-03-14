@@ -36,7 +36,7 @@ describe('Create Workspace And Update People On Mission', () => {
     const username = 'alice';
     cy.contains('Add New User').should('exist');
     cy.get('input[placeholder="Type to search ..."]').type(username.toLowerCase());
-    cy.wait(1000);
+    cy.wait(3000);
 
     cy.contains('Select').click();
     cy.wait(1000);
