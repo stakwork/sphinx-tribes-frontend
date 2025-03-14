@@ -4,6 +4,7 @@ import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import styled from 'styled-components';
 import { colors } from '../../config';
+import 'highlight.js/styles/night-owl.css';
 
 const MarkdownContainer = styled.div<{ textColor?: string }>`
   font-size: 1rem;
