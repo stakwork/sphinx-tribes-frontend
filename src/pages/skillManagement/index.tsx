@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import styled from 'styled-components';
 import { skillsStore } from '../../store/skillsStore.ts';
+import AdminAccessDenied from '../superadmin/accessDenied';
+import { useStores } from '../../store';
 
 const Container = styled.div`
   padding: 20px 60px;
@@ -87,7 +89,21 @@ const DropdownItemDelete = styled(DropdownItem)`
 
 const ManageSkillsPage: React.FC = observer(() => {
   const [skills, setSkills] = useState(Array.from(skillsStore.skills.values()));
+  const { main } = useStores();
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [permissionsChecked, setPermissionsChecked] = useState(false);
+
+  const getIsSuperAdmin = useCallback(async () => {
+    const isSuperAdmin = await main.getSuperAdmin();
+    setIsSuperAdmin(isSuperAdmin);
+  }, [main]);
+
+  useEffect(() => {
+    getIsSuperAdmin().finally(() => {
+      setPermissionsChecked(true);
+    });
+  }, [getIsSuperAdmin]);
 
   useEffect(() => {
     const fetchSkills = async () => {
@@ -107,48 +123,54 @@ const ManageSkillsPage: React.FC = observer(() => {
   };
 
   return (
-    <Container>
-      <Header>
-        <Title>Manage Skills Page</Title>
-        <AddButton>Add new skill</AddButton>
-      </Header>
-      <Table>
-        <thead>
-          <tr>
-            <Th>Skill Name</Th>
-            <Th>Owner</Th>
-            <Th>Type</Th>
-            <Th>Labels</Th>
-            <Th>Status</Th>
-            <Th>Action</Th>
-          </tr>
-        </thead>
-        <tbody>
-          {skills.map((skill) => (
-            <tr key={skill.id}>
-              <Td>{skill.name}</Td>
-              <Td>{skill.ownerAlias}</Td>
-              <Td>{skill.type}</Td>
-              <Td>{skill.labels.join(', ')}</Td>
-              <Td>{skill.status}</Td>
-              <Td>
-                <ActionMenu>
-                  <Ellipsis onClick={() => handleToggleMenu(skill.id)}>⋮</Ellipsis>
-                  {openMenu === skill.id && (
-                    <Dropdown>
-                      <DropdownItem>Edit</DropdownItem>
-                      <DropdownItemDelete onClick={() => handleDelete(skill.id)}>
-                        Delete
-                      </DropdownItemDelete>
-                    </Dropdown>
-                  )}
-                </ActionMenu>
-              </Td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-    </Container>
+    <>
+      {!isSuperAdmin && permissionsChecked ? (
+        <AdminAccessDenied />
+      ) : (
+        <Container>
+          <Header>
+            <Title>Manage Skills Page</Title>
+            <AddButton>Add new skill</AddButton>
+          </Header>
+          <Table>
+            <thead>
+              <tr>
+                <Th>Skill Name</Th>
+                <Th>Owner</Th>
+                <Th>Type</Th>
+                <Th>Labels</Th>
+                <Th>Status</Th>
+                <Th>Action</Th>
+              </tr>
+            </thead>
+            <tbody>
+              {skills.map((skill) => (
+                <tr key={skill.id}>
+                  <Td>{skill.name}</Td>
+                  <Td>{skill.ownerAlias}</Td>
+                  <Td>{skill.type}</Td>
+                  <Td>{skill.labels.join(', ')}</Td>
+                  <Td>{skill.status}</Td>
+                  <Td>
+                    <ActionMenu>
+                      <Ellipsis onClick={() => handleToggleMenu(skill.id)}>⋮</Ellipsis>
+                      {openMenu === skill.id && (
+                        <Dropdown>
+                          <DropdownItem>Edit</DropdownItem>
+                          <DropdownItemDelete onClick={() => handleDelete(skill.id)}>
+                            Delete
+                          </DropdownItemDelete>
+                        </Dropdown>
+                      )}
+                    </ActionMenu>
+                  </Td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </Container>
+      )}
+    </>
   );
 });
 
