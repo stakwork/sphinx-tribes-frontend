@@ -819,6 +819,8 @@ export interface Skill {
   ownerPubkey: string;
   chargeModel: ChargeModel;
   labels: string[];
+  type: string;
+  ownerAlias: string;
   status: SkillStatus;
   createdAt: string;
   updatedAt: string;
