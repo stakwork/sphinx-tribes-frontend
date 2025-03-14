@@ -20,7 +20,7 @@
     "prettier:check": "npx prettier --config .prettierrc.json --check ./src",
     "prepare": "husky install .husky",
     "test": "yarn run test-jest",
-    "test-jest": "REACT_APP_IS_TEST=true NODE_ENV=test NODE_OPTIONS=\"--max_old_space_size=12288\" yarn jest --coverage --maxWorkers 2 --no-cache --transformIgnorePatterns \"./svg/\"",
+    "test-jest": "REACT_APP_IS_TEST=true NODE_ENV=test yarn jest --coverage --maxWorkers 2 --no-cache --transformIgnorePatterns \"./svg/\"",
     "start:local:win": "Set REACT_APP_LOCAL_ENV=true && craco start",
     "start:local:unix": "REACT_APP_LOCAL_ENV=true craco start",
     "start:local": "node -e \"process.platform === 'win32' ? process.exit(1) : process.exit(0)\" && yarn start:local:unix || yarn start:local:win"
