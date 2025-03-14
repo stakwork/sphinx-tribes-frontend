@@ -214,6 +214,4 @@ describe('StartUpModal', () => {
 
     expect(screen.getByText('Step 2')).toBeInTheDocument();
   });
-
-  
 });
