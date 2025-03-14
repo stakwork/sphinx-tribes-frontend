@@ -73,7 +73,6 @@ const StartUpModal = ({ closeModal, buttonColor }: StartUpModalProps) => {
         setError(false);
       } catch (error) {
         setError(true);
-        console.error('Failed to fetch connection code:', error);
       }
     }
   }
