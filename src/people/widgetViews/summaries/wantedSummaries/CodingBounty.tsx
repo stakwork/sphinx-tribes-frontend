@@ -49,11 +49,14 @@ import {
   ErrorMsgText,
   ErrorWrapper,
   ProofContainer,
-  Section,
-  Title,
-  Description,
-  Status,
   DeleteButton,
+  Table,
+  TableRow,
+  TableCell,
+  TableHeader,
+  MenuButton,
+  DropdownMenu,
+  ProofDescription,
   ElapsedTimerContainer
 } from './style';
 import { getTwitterLink } from './lib';
@@ -141,7 +144,7 @@ function MobileView(props: CodingBountiesProps) {
   const [value, setValue] = useState('');
   const [isCompleteButtonClicked, setIsCompleteButtonClicked] = useState(false);
   const [toastShown, setToastShown] = useState(true);
-
+  const [menuOpen, setMenuOpen] = useState<number | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const bountyID = id?.toString() || '';
 
@@ -1033,69 +1036,75 @@ function MobileView(props: CodingBountiesProps) {
                     ) : null}
                   </DescriptionBox>
                   <ProofContainer>
-                    <Section>
-                      <Title>Proof of Work</Title>
+                    <Table>
+                      <TableHeader>Proof of Work</TableHeader>
+                      <TableHeader style={{ marginLeft: '15px' }}>Status</TableHeader>
+                      <TableHeader></TableHeader>
+
                       {proofs[bountyID]?.length ? (
-                        <div
-                          style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: '10px',
-                            width: '100%'
-                          }}
-                        >
-                          {proofs[bountyID].map((proof: any, index: any) => (
-                            <div
-                              key={index}
-                              style={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                width: '100%'
-                              }}
-                            >
-                              <Description style={{ flex: 1, textAlign: 'left' }}>
-                                {proof.description
-                                  .split(/(https?:\/\/[^\s]+)/)
-                                  .map((part: string, i: number) => {
-                                    if (part.match(/https?:\/\/[^\s]+/)) {
-                                      return (
-                                        <a
-                                          key={i}
-                                          href={part}
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                        >
-                                          {part}
-                                        </a>
-                                      );
-                                    }
-                                    return part;
-                                  })}
-                              </Description>
-                              {isAssigned && isAssignee && (
-                                <DeleteButton onClick={() => handleDeleteProof(bountyID, proof.id)}>
-                                  Delete
-                                </DeleteButton>
-                              )}
-                              <Status
-                                style={{ flex: 0.3, textAlign: 'right', marginBottom: '2px' }}
-                              >
-                                <StatusDropdown
-                                  bountyId={bountyID}
-                                  proofId={proof.id}
-                                  currentStatus={proof.status}
-                                  isAssigner={isAssigner}
-                                  onStatusUpdate={handleStatusUpdate}
-                                  shouldSetAccepted={isCompleteButtonClicked}
-                                />
-                              </Status>
-                            </div>
-                          ))}
-                        </div>
+                        proofs[bountyID].map((proof, index) => (
+                          <TableRow key={index}>
+                            <TableCell>
+                              <ProofDescription>
+                                {proof.description.split(/(https?:\/\/[^\s]+)/).map((part, i) =>
+                                  part.match(/https?:\/\/[^\s]+/) ? (
+                                    <a
+                                      key={i}
+                                      href={part}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                    >
+                                      {part}
+                                    </a>
+                                  ) : (
+                                    part
+                                  )
+                                )}
+                              </ProofDescription>
+                            </TableCell>
+                            <TableCell>
+                              <StatusDropdown
+                                bountyId={bountyID}
+                                proofId={proof.id}
+                                currentStatus={proof.status}
+                                isAssigner={isAssigner}
+                                onStatusUpdate={handleStatusUpdate}
+                                shouldSetAccepted={isCompleteButtonClicked}
+                              />
+                            </TableCell>
+                            {isAssigned && isAssignee ? (
+                              <TableCell style={{ position: 'relative' }}>
+                                <MenuButton
+                                  onClick={() => setMenuOpen(menuOpen === index ? null : index)}
+                                >
+                                  ⋮
+                                </MenuButton>
+                                {menuOpen === index && (
+                                  <DropdownMenu>
+                                    <DeleteButton
+                                      onClick={() => {
+                                        handleDeleteProof(bountyID, proof.id);
+                                        setMenuOpen(null);
+                                      }}
+                                    >
+                                      Delete
+                                    </DeleteButton>
+                                  </DropdownMenu>
+                                )}
+                              </TableCell>
+                            ) : (
+                              <TableCell></TableCell>
+                            )}
+                          </TableRow>
+                        ))
                       ) : (
-                        <p>No proofs available</p>
+                        <TableRow>
+                          <TableCell>No proof available</TableCell>
+                          <TableCell style={{ marginLeft: '20px' }}>---</TableCell>
+                          <TableCell></TableCell>
+                        </TableRow>
                       )}
-                    </Section>
+                    </Table>
                   </ProofContainer>
                 </CreatorDescription>
                 <AssigneeProfile color={color}>
@@ -1649,61 +1658,70 @@ function MobileView(props: CodingBountiesProps) {
               )}
             </DescriptionBox>
             <ProofContainer>
-              <Section>
-                <Title>Proof of Work</Title>
-                <Description>
-                  {proofs[bountyID]?.length ? (
-                    <ul>
-                      {proofs[bountyID].map((proof: any, index: any) => (
-                        <li key={index}>
-                          {proof.description
-                            .split(/(https?:\/\/[^\s]+)/)
-                            .map((part: string, i: number) => {
-                              if (part.match(/https?:\/\/[^\s]+/)) {
-                                return (
-                                  <a key={i} href={part} target="_blank" rel="noopener noreferrer">
-                                    {part}
-                                  </a>
-                                );
-                              }
-                              return part;
-                            })}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p>No proof available</p>
-                  )}
-                </Description>
-              </Section>
-              <Section style={{ flex: 0.3, textAlign: 'right' }}>
-                <Title>Status</Title>
-                <Status>
-                  {proofs[bountyID]?.length ? (
-                    <ul>
-                      {proofs[bountyID].map((proof: any, index: any) => (
-                        <div key={index} style={{ display: 'flex' }}>
-                          {isAssigned && isAssignee && (
-                            <DeleteButton onClick={() => handleDeleteProof(bountyID, proof.id)}>
-                              Delete
-                            </DeleteButton>
+              <Table>
+                <TableHeader>Proof of Work</TableHeader>
+                <TableHeader style={{ marginLeft: '15px' }}>Status</TableHeader>
+                <TableHeader></TableHeader>
+
+                {proofs[bountyID]?.length ? (
+                  proofs[bountyID].map((proof, index) => (
+                    <TableRow key={index}>
+                      <TableCell>
+                        <ProofDescription>
+                          {proof.description.split(/(https?:\/\/[^\s]+)/).map((part, i) =>
+                            part.match(/https?:\/\/[^\s]+/) ? (
+                              <a key={i} href={part} target="_blank" rel="noopener noreferrer">
+                                {part}
+                              </a>
+                            ) : (
+                              part
+                            )
                           )}
-                          <StatusDropdown
-                            bountyId={bountyID}
-                            proofId={proof.id}
-                            currentStatus={proof.status}
-                            isAssigner={isAssigner}
-                            onStatusUpdate={handleStatusUpdate}
-                            shouldSetAccepted={isCompleteButtonClicked}
-                          />
-                        </div>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p>---</p>
-                  )}
-                </Status>
-              </Section>
+                        </ProofDescription>
+                      </TableCell>
+                      <TableCell>
+                        <StatusDropdown
+                          bountyId={bountyID}
+                          proofId={proof.id}
+                          currentStatus={proof.status}
+                          isAssigner={isAssigner}
+                          onStatusUpdate={handleStatusUpdate}
+                          shouldSetAccepted={isCompleteButtonClicked}
+                        />
+                      </TableCell>
+                      {isAssigned && isAssignee ? (
+                        <TableCell style={{ position: 'relative' }}>
+                          <MenuButton
+                            onClick={() => setMenuOpen(menuOpen === index ? null : index)}
+                          >
+                            ⋮
+                          </MenuButton>
+                          {menuOpen === index && (
+                            <DropdownMenu>
+                              <DeleteButton
+                                onClick={() => {
+                                  handleDeleteProof(bountyID, proof.id);
+                                  setMenuOpen(null);
+                                }}
+                              >
+                                Delete
+                              </DeleteButton>
+                            </DropdownMenu>
+                          )}
+                        </TableCell>
+                      ) : (
+                        <TableCell></TableCell>
+                      )}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell>No proof available</TableCell>
+                    <TableCell style={{ marginLeft: '20px' }}>---</TableCell>
+                    <TableCell></TableCell>
+                  </TableRow>
+                )}
+              </Table>
             </ProofContainer>
           </CreatorDescription>
           <AssigneeProfile color={color}>
