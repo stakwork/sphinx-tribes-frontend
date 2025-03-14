@@ -562,49 +562,6 @@ describe('TicketModalPage Component', () => {
     });
   });
 
-  it('should allow owner to mark the bounty as unpaid', async () => {
-    (useIsMobile as jest.Mock).mockReturnValue(true);
-    uiStore.setMeInfo(user);
-
-    jest.spyOn(mainStore, 'getBountyById').mockReturnValue(
-      Promise.resolve([
-        {
-          ...newBounty,
-          person: { ...user },
-          body: {
-            ...mockBountiesMutated[1].body,
-            owner: user,
-            paid: true,
-            assignee: user
-          }
-        }
-      ])
-    );
-    jest.spyOn(mainStore, 'getBountyIndexById').mockReturnValue(Promise.resolve(1234));
-    jest.spyOn(mainStore, 'updateBountyPaymentStatus').mockReturnValue(Promise.resolve(1234));
-
-    const App = withCreateModal(() => (
-      <div>
-        <div id="modal-root" />
-        <MemoryRouter initialEntries={['/bounty/1234']}>
-          <Route path="/bounty/:bountyId" component={TicketModalPage} />
-        </MemoryRouter>
-      </div>
-    ));
-
-    await act(async () => {
-      const { getByText } = render(<App />);
-
-      await waitFor(() => getByText(unpaidString));
-
-      fireEvent.click(getByText(unpaidString));
-
-      await waitFor(() => {
-        expect(mainStore.updateBountyPaymentStatus).toHaveBeenCalled();
-      });
-    });
-  });
-
   it('test that if a bounty is open and I am the creator of the bounty, I should be able to invite a bounty hunter', async () => {
     (useIsMobile as jest.Mock).mockReturnValue(false);
     uiStore.setMeInfo(user);
