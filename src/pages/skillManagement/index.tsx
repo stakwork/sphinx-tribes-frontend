@@ -1,0 +1,155 @@
+import React, { useEffect, useState } from 'react';
+import { observer } from 'mobx-react-lite';
+import styled from 'styled-components';
+import { skillsStore } from '../../store/skillsStore.ts';
+
+const Container = styled.div`
+  padding: 20px 60px;
+`;
+
+const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+`;
+
+const Title = styled.h1`
+  font-size: 25px;
+  font-weight: bold;
+`;
+
+const AddButton = styled.button`
+  background-color: #007bff;
+  color: white;
+  border: none;
+  margin-top: 40px;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  &:hover {
+    background-color: #0056b3;
+  }
+`;
+
+const Table = styled.table`
+  width: 90%;
+  border-collapse: collapse;
+  border: none;
+`;
+
+const Th = styled.th`
+  text-align: left;
+  padding: 10px;
+  border: none;
+`;
+
+const Td = styled.td`
+  padding: 10px;
+  border: none;
+`;
+
+const ActionMenu = styled.div`
+  position: relative;
+  display: inline-block;
+`;
+
+const Ellipsis = styled.div`
+  cursor: pointer;
+  font-size: 20px;
+  transform: rotate(90deg);
+  margin-left: 10px;
+`;
+
+const Dropdown = styled.div`
+  position: absolute;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  left: 25px;
+  min-width: 100px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+`;
+
+const DropdownItem = styled.div`
+  padding: 10px;
+  cursor: pointer;
+  &:hover {
+    background: #e9e9e9;
+  }
+`;
+
+const DropdownItemDelete = styled(DropdownItem)`
+  color: red;
+  font-weight: bold;
+`;
+
+const ManageSkillsPage: React.FC = observer(() => {
+  const [skills, setSkills] = useState(Array.from(skillsStore.skills.values()));
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchSkills = async () => {
+      await skillsStore.loadAllSkills();
+      setSkills(Array.from(skillsStore.skills.values()));
+    };
+    fetchSkills();
+  }, []);
+
+  const handleDelete = async (id: string) => {
+    await skillsStore.deleteSkill(id);
+    setSkills(Array.from(skillsStore.skills.values()));
+  };
+
+  const handleToggleMenu = (id: string) => {
+    setOpenMenu((prev) => (prev === id ? null : id));
+  };
+
+  return (
+    <Container>
+      <Header>
+        <Title>Manage Skills Page</Title>
+        <AddButton>Add new skill</AddButton>
+      </Header>
+      <Table>
+        <thead>
+          <tr>
+            <Th>Skill Name</Th>
+            <Th>Owner</Th>
+            <Th>Type</Th>
+            <Th>Labels</Th>
+            <Th>Status</Th>
+            <Th>Action</Th>
+          </tr>
+        </thead>
+        <tbody>
+          {skills.map((skill) => (
+            <tr key={skill.id}>
+              <Td>{skill.name}</Td>
+              <Td>{skill.ownerAlias}</Td>
+              <Td>{skill.type}</Td>
+              <Td>{skill.labels.join(', ')}</Td>
+              <Td>{skill.status}</Td>
+              <Td>
+                <ActionMenu>
+                  <Ellipsis onClick={() => handleToggleMenu(skill.id)}>⋮</Ellipsis>
+                  {openMenu === skill.id && (
+                    <Dropdown>
+                      <DropdownItem>Edit</DropdownItem>
+                      <DropdownItemDelete onClick={() => handleDelete(skill.id)}>
+                        Delete
+                      </DropdownItemDelete>
+                    </Dropdown>
+                  )}
+                </ActionMenu>
+              </Td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+    </Container>
+  );
+});
+
+export default ManageSkillsPage;
