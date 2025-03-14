@@ -32,6 +32,7 @@ import { SuperAdmin } from './superadmin/index';
 import BountiesLandingPage from './BountiesLandingPage';
 import { SkillsPage } from './skills';
 import ManageSkillsPage from './skillManagement';
+import { NotFoundPage } from './notFound';
 
 const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
   community: () => (
@@ -116,6 +117,9 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
               </Route>
               <Route exact path="/skills/management">
                 <ManageSkillsPage />
+              </Route>
+              <Route path="*">
+                <NotFoundPage />
               </Route>
             </Switch>
           </MainLayout>
