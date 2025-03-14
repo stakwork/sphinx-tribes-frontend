@@ -361,6 +361,71 @@ export const Status = styled.div`
   font-weight: 500;
 `;
 
+export const Table = styled.div`
+  display: grid;
+  grid-template-columns: 3fr 0.5fr 0.5fr;
+  gap: 1rem;
+  width: 100%;
+  padding: 1rem 0;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+export const ProofDescription = styled.div`
+  max-width: 300px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+`;
+
+export const TableHeader = styled.div`
+  font-weight: bold;
+  font-size: 20px;
+  padding: 0.5rem 0;
+`;
+
+export const TableRow = styled.div`
+  display: contents;
+`;
+
+export const TableCell = styled.div`
+  padding: 0.5rem 0;
+`;
+
+export const MenuButton = styled.button`
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  font-weight: bold;
+  margin-left: 10px;
+  transform: rotate(90deg);
+`;
+
+export const DropdownMenu = styled.div`
+  position: absolute;
+  background: white;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  z-index: 10;
+`;
+
+export const DeleteButton = styled.button`
+  background: white;
+  padding: 0.3rem 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  border: 0.5px solid #a6a2a2;
+  border-radius: 4px;
+`;
+
 export const UnassignedPersonProfile = styled.div<containerProps>`
   min-width: 228px;
   min-height: 57.6px;
