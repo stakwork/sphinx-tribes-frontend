@@ -1093,7 +1093,7 @@ function MobileView(props: CodingBountiesProps) {
                                 )}
                               </TableCell>
                             ) : (
-                              <TableCell></TableCell>
+                              <TableCell />
                             )}
                           </TableRow>
                         ))
@@ -1718,7 +1718,7 @@ function MobileView(props: CodingBountiesProps) {
                   <TableRow>
                     <TableCell>No proof available</TableCell>
                     <TableCell style={{ marginLeft: '20px' }}>---</TableCell>
-                    <TableCell></TableCell>
+                    <TableCell />
                   </TableRow>
                 )}
               </Table>
