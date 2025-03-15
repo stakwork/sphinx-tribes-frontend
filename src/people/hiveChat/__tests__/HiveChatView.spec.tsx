@@ -47,7 +47,7 @@ describe('HiveChatView Feature Flag Tests', () => {
     jest.clearAllMocks();
   });
 
-  it('Test Case 1: Both feature flags disabled - renders nothing', () => {
+  it('Test Case 1: Both feature flags disabled renders nothing', () => {
     (useFeatureFlag as jest.Mock).mockImplementation(() => ({
       isEnabled: false
     }));
