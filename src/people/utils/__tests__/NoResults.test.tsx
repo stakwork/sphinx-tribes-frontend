@@ -15,9 +15,17 @@ jest.mock('mobx-react-lite', () => ({
 }));
 
 // Mock PageLoadSpinner component
-jest.mock('../PageLoadSpinner', () => function MockPageLoadSpinner({ show }: { show: boolean }) {
-    return <div data-testid="page-load-spinner" data-show={show}>Loading...</div>;
-  });
+jest.mock(
+  '../PageLoadSpinner',
+  () =>
+    function MockPageLoadSpinner({ show }: { show: boolean }) {
+      return (
+        <div data-testid="page-load-spinner" data-show={show}>
+          Loading...
+        </div>
+      );
+    }
+);
 
 describe('NoResults', () => {
   const mockUseStores = useStores as jest.Mock;
@@ -94,4 +102,4 @@ describe('NoResults', () => {
       }
     });
   });
-}); 
+});

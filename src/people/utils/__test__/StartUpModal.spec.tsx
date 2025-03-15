@@ -434,7 +434,7 @@ describe('StartUpModal', () => {
     });
   });
 
-   describe('getConnectionCode functionality', () => {
+  describe('getConnectionCode functionality', () => {
     it('should not call API when user is logged in (ui.meInfo exists)', async () => {
       (useStores as jest.Mock).mockReturnValue({
         ui: {
@@ -444,7 +444,11 @@ describe('StartUpModal', () => {
       });
 
       render(
-        <StartUpModal closeModal={mockCloseModal} buttonColor="primary" dataObject={mockDataObject} />
+        <StartUpModal
+          closeModal={mockCloseModal}
+          buttonColor="primary"
+          dataObject={mockDataObject}
+        />
       );
 
       await act(async () => {
@@ -456,10 +460,16 @@ describe('StartUpModal', () => {
 
     it('should not call API when connection string already exists', async () => {
       render(
-        <StartUpModal closeModal={mockCloseModal} buttonColor="primary" dataObject={mockDataObject} />
+        <StartUpModal
+          closeModal={mockCloseModal}
+          buttonColor="primary"
+          dataObject={mockDataObject}
+        />
       );
 
-      (api.get as jest.Mock).mockResolvedValueOnce({ connection_string: 'existing-connection-code' });
+      (api.get as jest.Mock).mockResolvedValueOnce({
+        connection_string: 'existing-connection-code'
+      });
 
       await act(async () => {
         fireEvent.click(screen.getByText('Reveal Connection Code'));
@@ -475,12 +485,16 @@ describe('StartUpModal', () => {
     });
 
     it('should fetch and set connection string when conditions are met', async () => {
-      (api.get as jest.Mock).mockResolvedValueOnce({ 
-        connection_string: 'new-code-123' 
+      (api.get as jest.Mock).mockResolvedValueOnce({
+        connection_string: 'new-code-123'
       });
 
       render(
-        <StartUpModal closeModal={mockCloseModal} buttonColor="primary" dataObject={mockDataObject} />
+        <StartUpModal
+          closeModal={mockCloseModal}
+          buttonColor="primary"
+          dataObject={mockDataObject}
+        />
       );
 
       await act(async () => {
@@ -497,7 +511,11 @@ describe('StartUpModal', () => {
       (api.get as jest.Mock).mockResolvedValueOnce({ connection_string: '' });
 
       render(
-        <StartUpModal closeModal={mockCloseModal} buttonColor="primary" dataObject={mockDataObject} />
+        <StartUpModal
+          closeModal={mockCloseModal}
+          buttonColor="primary"
+          dataObject={mockDataObject}
+        />
       );
 
       await act(async () => {
@@ -505,14 +523,16 @@ describe('StartUpModal', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText('We are out of codes to sign up! Please check again later.')).toBeInTheDocument();
+        expect(
+          screen.getByText('We are out of codes to sign up! Please check again later.')
+        ).toBeInTheDocument();
       });
     });
 
     it('should handle API errors appropriately', async () => {
       // Mock API to simulate failure
       (api.get as jest.Mock).mockRejectedValueOnce(new Error('Network failure'));
-      
+
       const { getByText, getByTestId } = render(
         <StartUpModal
           closeModal={mockCloseModal}
@@ -540,17 +560,19 @@ describe('StartUpModal', () => {
     });
 
     it('should handle asynchronous API responses', async () => {
-      (api.get as jest.Mock).mockImplementationOnce(() => 
-        new Promise(resolve => 
-          setTimeout(() => 
-            resolve({ connection_string: 'delayed-code-456' }), 
-            50
+      (api.get as jest.Mock).mockImplementationOnce(
+        () =>
+          new Promise((resolve) =>
+            setTimeout(() => resolve({ connection_string: 'delayed-code-456' }), 50)
           )
-        )
       );
 
       render(
-        <StartUpModal closeModal={mockCloseModal} buttonColor="primary" dataObject={mockDataObject} />
+        <StartUpModal
+          closeModal={mockCloseModal}
+          buttonColor="primary"
+          dataObject={mockDataObject}
+        />
       );
 
       await act(async () => {
@@ -563,12 +585,16 @@ describe('StartUpModal', () => {
     });
 
     it('should maintain connection string state and prevent subsequent API calls', async () => {
-      (api.get as jest.Mock).mockResolvedValueOnce({ 
-        connection_string: 'first-code' 
+      (api.get as jest.Mock).mockResolvedValueOnce({
+        connection_string: 'first-code'
       });
 
       render(
-        <StartUpModal closeModal={mockCloseModal} buttonColor="primary" dataObject={mockDataObject} />
+        <StartUpModal
+          closeModal={mockCloseModal}
+          buttonColor="primary"
+          dataObject={mockDataObject}
+        />
       );
 
       await act(async () => {

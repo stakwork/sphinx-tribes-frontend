@@ -16,7 +16,7 @@ describe('SvgMask', () => {
       size: 'auto',
       bgcolor: 'transparent'
     };
-    
+
     render(<SvgMask data-testid="svg-mask" {...defaultProps} {...props} />);
     return screen.getByTestId('svg-mask');
   };
@@ -36,7 +36,7 @@ describe('SvgMask', () => {
   };
 
   it('Test Case 1: Basic Default Rendering', () => {
-    const element = renderAndGetElement({ 
+    const element = renderAndGetElement({
       src: 'icon.svg',
       svgStyle: {},
       width: '24px',
@@ -44,7 +44,7 @@ describe('SvgMask', () => {
       size: 'auto',
       bgcolor: 'transparent'
     });
-    
+
     verifyStyles(element, {
       width: '24px',
       height: '24px',
@@ -63,7 +63,7 @@ describe('SvgMask', () => {
       bgcolor: '#ff0000',
       size: 'contain'
     });
-    
+
     verifyStyles(element, {
       width: '48px',
       height: '48px',
@@ -85,7 +85,7 @@ describe('SvgMask', () => {
       size: 'auto',
       bgcolor: 'transparent'
     });
-    
+
     verifyStyles(element, {
       width: '24px',
       height: '24px',
@@ -110,7 +110,7 @@ describe('SvgMask', () => {
       bgcolor: 'yellow',
       size: 'auto'
     });
-    
+
     // Component props should override svgStyle
     verifyStyles(element, {
       width: '32px',
@@ -130,7 +130,7 @@ describe('SvgMask', () => {
       size: 'auto',
       bgcolor: 'transparent'
     });
-    
+
     verifyStyles(element, {
       width: '40px',
       height: '40px',
@@ -152,11 +152,11 @@ describe('SvgMask', () => {
       className: 'my-svg-mask',
       'aria-label': 'SVG Mask Element'
     });
-    
+
     expect(element).toHaveAttribute('id', 'svg-mask-test');
     expect(element).toHaveAttribute('class', 'my-svg-mask');
     expect(element).toHaveAttribute('aria-label', 'SVG Mask Element');
-    
+
     verifyStyles(element, {
       width: '24px',
       height: '24px',
@@ -169,7 +169,7 @@ describe('SvgMask', () => {
   it('Test Case 7: Empty Props Object', () => {
     // Just use the default props from renderAndGetElement
     const element = renderAndGetElement({});
-    
+
     verifyStyles(element, {
       width: '24px',
       height: '24px',
@@ -189,7 +189,7 @@ describe('SvgMask', () => {
       size: 'auto',
       bgcolor: 'transparent'
     });
-    
+
     verifyStyles(element, {
       width: '24px',
       height: '24px',
@@ -208,7 +208,7 @@ describe('SvgMask', () => {
       size: 'auto',
       bgcolor: 'transparent'
     });
-    
+
     verifyStyles(element, {
       width: '50px',
       height: '50px',
@@ -219,8 +219,8 @@ describe('SvgMask', () => {
   });
 
   it('Test Case 10: Large Volume of Data (Long Strings for Performance)', () => {
-    const longSrc = `${'a'.repeat(5000)  }.svg`;
-    
+    const longSrc = `${'a'.repeat(5000)}.svg`;
+
     const element = renderAndGetElement({
       src: longSrc,
       width: '100px',
@@ -231,7 +231,7 @@ describe('SvgMask', () => {
         padding: '10px'
       }
     });
-    
+
     verifyStyles(element, {
       width: '100px',
       height: '24px',
@@ -251,7 +251,7 @@ describe('SvgMask', () => {
       size: 'auto',
       bgcolor: 'transparent'
     });
-    
+
     verifyStyles(element, {
       width: '30px',
       height: '30px',
@@ -270,7 +270,7 @@ describe('SvgMask', () => {
       size: 'auto',
       bgcolor: 'transparent'
     });
-    
+
     verifyStyles(element, {
       width: '60px',
       height: '60px',
