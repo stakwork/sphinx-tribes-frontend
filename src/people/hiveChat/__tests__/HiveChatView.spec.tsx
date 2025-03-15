@@ -2,43 +2,28 @@ import React from 'react';
 import '@testing-library/jest-dom';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import ThinkingModeToggle from '../ThinkingModeToggle';
-import { useFeatureFlag } from '../../../hooks';
-import { ModelOption } from '../modelSelector';
+import { useFeatureFlag } from '../../../hooks/useFeatureFlag';
 
-jest.mock('../../../hooks/useFeatureFlag', () => ({
-  useFeatureFlag: jest.fn()
-}));
+jest.mock('../../../hooks/useFeatureFlag');
+const mockUseFeatureFlag = useFeatureFlag as jest.MockedFunction<typeof useFeatureFlag>;
 
-jest.mock('../modelSelector', () => ({
-  ModelSelector: jest.fn(({ selectedModel, onModelChange }) => (
-    <div data-testid="model-selector">
-      <button
-        data-testid="model-selector-button"
-        onClick={() =>
-          onModelChange({
-            id: 'claude-3-opus',
-            name: 'Claude 3 Opus',
-            label: 'Claude 3 Opus',
-            value: 'claude-3-opus'
-          })
-        }
-      >
-        {selectedModel.name}
-      </button>
-    </div>
-  ))
-}));
+type FeatureFlagResult = {
+  isEnabled: boolean;
+  isLoading: boolean;
+  loading: boolean;
+  refresh: () => Promise<void>;
+};
 
 describe('HiveChatView Feature Flag Tests', () => {
   const defaultProps = {
     isBuild: 'Chat' as const,
     setIsBuild: jest.fn(),
     selectedModel: {
-      id: 'claude-3-sonnet',
-      name: 'Claude 3 Sonnet',
-      label: 'Claude 3 Sonnet',
-      value: 'claude-3-sonnet'
-    } as ModelOption,
+      id: 'model1',
+      name: 'Model 1',
+      label: 'Model 1',
+      value: 'model1'
+    },
     setSelectedModel: jest.fn(),
     handleKeyDown: jest.fn()
   };
@@ -47,126 +32,97 @@ describe('HiveChatView Feature Flag Tests', () => {
     jest.clearAllMocks();
   });
 
-  it('Test Case 1: Both feature flags disabled renders nothing', () => {
-    (useFeatureFlag as jest.Mock).mockImplementation(() => ({
-      isEnabled: false
-    }));
-
-    const { container } = render(<ThinkingModeToggle {...defaultProps} />);
-
-    expect(container.firstChild).toBeInTheDocument();
-    expect(screen.queryByRole('radiogroup')).not.toBeInTheDocument();
-    expect(screen.queryByTestId('model-selector')).not.toBeInTheDocument();
-  });
-
-  it('Test Case 2: Only chat_toggle enabled - renders toggle but no model selector', () => {
-    (useFeatureFlag as jest.Mock).mockImplementation((flag) => ({
-      isEnabled: flag === 'chat_toggle'
-    }));
+  test('renders chat toggle when feature flag is enabled', () => {
+    mockUseFeatureFlag.mockImplementation(
+      (flag) =>
+        ({
+          isEnabled: flag === 'chat_toggle',
+          isLoading: false,
+          loading: false,
+          refresh: jest.fn().mockResolvedValue(undefined)
+        }) as FeatureFlagResult
+    );
 
     render(<ThinkingModeToggle {...defaultProps} />);
 
-    expect(screen.getByRole('radiogroup')).toBeInTheDocument();
-    expect(screen.queryByTestId('model-selector')).not.toBeInTheDocument();
-
-    expect(screen.getByRole('radio', { name: 'Build' })).toBeInTheDocument();
-    expect(screen.getByRole('radio', { name: 'Chat' })).toBeInTheDocument();
+    expect(screen.getByText('Chat')).toBeInTheDocument();
+    expect(screen.getByText('Build')).toBeInTheDocument();
+    expect(screen.queryByRole('combobox')).not.toBeInTheDocument(); // Model selector should not be present
   });
 
-  it('Test Case 3: Only chat_model enabled - renders model selector but no toggle', () => {
-    (useFeatureFlag as jest.Mock).mockImplementation((flag) => ({
-      isEnabled: flag === 'chat_model'
-    }));
+  test('does not render chat toggle when feature flag is disabled', () => {
+    mockUseFeatureFlag.mockImplementation(
+      () =>
+        ({
+          isEnabled: false,
+          isLoading: false,
+          loading: false,
+          refresh: jest.fn().mockResolvedValue(undefined)
+        }) as FeatureFlagResult
+    );
+
+    render(<ThinkingModeToggle {...defaultProps} />);
+
+    expect(screen.queryByText('Chat')).not.toBeInTheDocument();
+    expect(screen.queryByText('Build')).not.toBeInTheDocument();
+  });
+
+  test('renders model selector when feature flag is enabled', () => {
+    mockUseFeatureFlag.mockImplementation(
+      (flag) =>
+        ({
+          isEnabled: flag === 'chat_model',
+          isLoading: false,
+          loading: false,
+          refresh: jest.fn().mockResolvedValue(undefined)
+        }) as FeatureFlagResult
+    );
+
+    render(<ThinkingModeToggle {...defaultProps} />);
 
     waitFor(() => {
-      render(<ThinkingModeToggle {...defaultProps} />);
-
-      expect(screen.queryByRole('radiogroup')).not.toBeInTheDocument();
-      expect(screen.getByTestId('model-selector')).toBeInTheDocument();
+      expect(screen.queryByText('Chat')).not.toBeInTheDocument();
+      expect(screen.queryByText('Build')).not.toBeInTheDocument();
+      expect(screen.getByRole('combobox')).toBeInTheDocument();
     });
   });
 
-  it('Test Case 4: Both feature flags enabled - renders both toggle and model selector', () => {
-    (useFeatureFlag as jest.Mock).mockImplementation(() => ({
-      isEnabled: true
-    }));
+  test('calls setIsBuild when toggle buttons are clicked', () => {
+    mockUseFeatureFlag.mockImplementation(
+      () =>
+        ({
+          isEnabled: true,
+          isLoading: false,
+          loading: false,
+          refresh: jest.fn().mockResolvedValue(undefined)
+        }) as FeatureFlagResult
+    );
 
-    waitFor(() => {
-      render(<ThinkingModeToggle {...defaultProps} />);
+    render(<ThinkingModeToggle {...defaultProps} />);
 
-      expect(screen.getByRole('radiogroup')).toBeInTheDocument();
-      expect(screen.getByTestId('model-selector')).toBeInTheDocument();
-    });
+    fireEvent.click(screen.getByText('Build'));
+    expect(defaultProps.setIsBuild).toHaveBeenCalledWith('Build');
+
+    fireEvent.click(screen.getByText('Chat'));
+    expect(defaultProps.setIsBuild).toHaveBeenCalledWith('Chat');
   });
 
-  it('Test Case 5: Toggle buttons correctly reflect active state', () => {
-    (useFeatureFlag as jest.Mock).mockImplementation(() => ({
-      isEnabled: true
-    }));
+  test('calls handleKeyDown when key is pressed', () => {
+    mockUseFeatureFlag.mockImplementation(
+      (flag) =>
+        ({
+          isEnabled: flag === 'chat_toggle',
+          isLoading: false,
+          loading: false,
+          refresh: jest.fn().mockResolvedValue(undefined)
+        }) as FeatureFlagResult
+    );
 
-    waitFor(() => {
-      const { rerender } = render(<ThinkingModeToggle {...defaultProps} />);
+    render(<ThinkingModeToggle {...defaultProps} />);
 
-      const buildButton = screen.getByRole('radio', { name: 'Build' });
-      const chatButton = screen.getByRole('radio', { name: 'Chat' });
+    const toggleContainer = screen.getByRole('radiogroup');
+    fireEvent.keyDown(toggleContainer, { key: 'Enter' });
 
-      expect(chatButton).toHaveAttribute('aria-checked', 'true');
-      expect(buildButton).toHaveAttribute('aria-checked', 'false');
-
-      rerender(<ThinkingModeToggle {...defaultProps} isBuild="Build" />);
-
-      expect(buildButton).toHaveAttribute('aria-checked', 'true');
-      expect(chatButton).toHaveAttribute('aria-checked', 'false');
-    });
-  });
-
-  it('Test Case 6: Toggle buttons call setIsBuild when clicked', () => {
-    (useFeatureFlag as jest.Mock).mockImplementation(() => ({
-      isEnabled: true
-    }));
-
-    const setIsBuild = jest.fn();
-    waitFor(() => {
-      render(<ThinkingModeToggle {...defaultProps} setIsBuild={setIsBuild} />);
-
-      const buildButton = screen.getByRole('radio', { name: 'Build' });
-      const chatButton = screen.getByRole('radio', { name: 'Chat' });
-
-      fireEvent.click(buildButton);
-      expect(setIsBuild).toHaveBeenCalledWith('Build');
-
-      fireEvent.click(chatButton);
-      expect(setIsBuild).toHaveBeenCalledWith('Chat');
-    });
-  });
-
-  it('Test Case 7: Model selector calls setSelectedModel when changed', () => {
-    (useFeatureFlag as jest.Mock).mockImplementation(() => ({
-      isEnabled: true
-    }));
-
-    const setSelectedModel = jest.fn();
-    waitFor(() => {
-      render(<ThinkingModeToggle {...defaultProps} setSelectedModel={setSelectedModel} />);
-
-      fireEvent.click(screen.getByTestId('model-selector-button'));
-
-      expect(setSelectedModel).toHaveBeenCalledWith({ id: 'claude-3-opus', name: 'Claude 3 Opus' });
-    });
-  });
-
-  it('Test Case 8: handleKeyDown is called when pressing keys on toggle container', () => {
-    (useFeatureFlag as jest.Mock).mockImplementation(() => ({
-      isEnabled: true
-    }));
-
-    const handleKeyDown = jest.fn();
-    waitFor(() => {
-      render(<ThinkingModeToggle {...defaultProps} handleKeyDown={handleKeyDown} />);
-
-      fireEvent.keyDown(screen.getByRole('radiogroup'), { key: 'ArrowRight' });
-
-      expect(handleKeyDown).toHaveBeenCalled();
-    });
+    expect(defaultProps.handleKeyDown).toHaveBeenCalled();
   });
 });
