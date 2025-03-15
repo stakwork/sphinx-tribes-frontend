@@ -61,12 +61,18 @@ const StartUpModal = ({ closeModal, buttonColor }: StartUpModalProps) => {
   const { ui } = useStores();
   const [step, setStep] = useState(2);
   const [connection_string, setConnectionString] = useState('');
+  const [error, setError] = useState(false);
 
   async function getConnectionCode() {
     if (!ui.meInfo && !connection_string) {
-      const code = await api.get('connectioncodes');
-      if (code.connection_string) {
-        setConnectionString(code.connection_string);
+      try {
+        const code = await api.get('connectioncodes');
+        if (code.connection_string) {
+          setConnectionString(code.connection_string);
+        }
+        setError(false);
+      } catch (error) {
+        setError(true);
       }
     }
   }
@@ -74,7 +80,7 @@ const StartUpModal = ({ closeModal, buttonColor }: StartUpModalProps) => {
   const DisplayQRCode = () => (
     <>
       <ModalContainer data-testid="qrcode">
-        {!connection_string ? (
+        {!connection_string || error ? (
           <QRText>We are out of codes to sign up! Please check again later.</QRText>
         ) : (
           <QrContainer>
