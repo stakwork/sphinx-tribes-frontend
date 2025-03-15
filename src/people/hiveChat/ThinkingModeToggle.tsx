@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useFeatureFlag } from '../../hooks/useFeatureFlag';
 import { ModelOption, ModelSelector } from './modelSelector';
 
 interface ThinkingModeToggleProps {
@@ -49,35 +50,44 @@ const ThinkingModeToggle: React.FC<ThinkingModeToggleProps> = ({
   selectedModel,
   setSelectedModel,
   handleKeyDown
-}) => (
-  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-    <ToggleContainer
-      tabIndex={0}
-      onKeyDown={handleKeyDown}
-      role="radiogroup"
-      aria-label="Toggle Thinking Mode"
-    >
-      <ToggleButton
-        isActive={isBuild === 'Build'}
-        onClick={() => setIsBuild('Build')}
-        tabIndex={0}
-        role="radio"
-        aria-checked={isBuild === 'Build'}
-      >
-        Build
-      </ToggleButton>
-      <ToggleButton
-        isActive={isBuild === 'Chat'}
-        onClick={() => setIsBuild('Chat')}
-        tabIndex={0}
-        role="radio"
-        aria-checked={isBuild === 'Chat'}
-      >
-        Chat
-      </ToggleButton>
-    </ToggleContainer>
-    <ModelSelector selectedModel={selectedModel} onModelChange={setSelectedModel} />
-  </div>
-);
+}) => {
+  const { isEnabled: isChatToggleEnabled } = useFeatureFlag('chat_toggle');
+  const { isEnabled: isModelSelectorEnabled } = useFeatureFlag('chat_model');
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+      {isChatToggleEnabled && (
+        <ToggleContainer
+          tabIndex={0}
+          onKeyDown={handleKeyDown}
+          role="radiogroup"
+          aria-label="Toggle Thinking Mode"
+        >
+          <ToggleButton
+            isActive={isBuild === 'Build'}
+            onClick={() => setIsBuild('Build')}
+            tabIndex={0}
+            role="radio"
+            aria-checked={isBuild === 'Build'}
+          >
+            Build
+          </ToggleButton>
+          <ToggleButton
+            isActive={isBuild === 'Chat'}
+            onClick={() => setIsBuild('Chat')}
+            tabIndex={0}
+            role="radio"
+            aria-checked={isBuild === 'Chat'}
+          >
+            Chat
+          </ToggleButton>
+        </ToggleContainer>
+      )}
+      {isModelSelectorEnabled && (
+        <ModelSelector selectedModel={selectedModel} onModelChange={setSelectedModel} />
+      )}
+    </div>
+  );
+};
 
 export default ThinkingModeToggle;

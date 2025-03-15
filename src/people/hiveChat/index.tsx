@@ -380,6 +380,7 @@ export const HiveChatView: React.FC = observer(() => {
   const [pdfUrl, setPdfUrl] = useState('');
   const { isEnabled: isVerboseLoggingEnabled } = useFeatureFlag('verbose_logging_sw');
   const { isEnabled: isArtifactLoggingEnabled } = useFeatureFlag('log_artefact');
+  const { isEnabled: isPdfUploadEnabled } = useFeatureFlag('chat_pdf');
   const [selectedModel, setSelectedModel] = useState<ModelOption>({
     label: 'Open AI - 4o',
     value: 'gpt-4o'
@@ -914,10 +915,12 @@ export const HiveChatView: React.FC = observer(() => {
                   placeholder="Type your message..."
                   disabled={isSending}
                 />
-                <AttachButton onClick={() => setIsUploadModalOpen(true)} disabled={isSending}>
-                  Attach
-                  <AttachIcon icon="attach_file" />
-                </AttachButton>
+                {isPdfUploadEnabled && (
+                  <AttachButton onClick={() => setIsUploadModalOpen(true)} disabled={isSending}>
+                    Attach
+                    <AttachIcon icon="attach_file" />
+                  </AttachButton>
+                )}
                 <SendButton onClick={handleSendMessage} disabled={!message.trim() || isSending}>
                   Send
                 </SendButton>
