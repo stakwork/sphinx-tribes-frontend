@@ -111,11 +111,11 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
               <Route path="/admin">
                 <SuperAdmin />
               </Route>
-              <Route path="/skills/management">
-                <ManageSkillsPage />
-              </Route>
-              <Route path="/skills">
+              <Route exact path="/skills">
                 <SkillsPage />
+              </Route>
+              <Route exact path="/skills/management">
+                <ManageSkillsPage />
               </Route>
             </Switch>
           </MainLayout>
