@@ -27,6 +27,8 @@ describe('SkillsService', () => {
     chargeModel: 'Free',
     labels: ['test', 'unit-testing'],
     status: 'Approved',
+    type: 'utility',
+    ownerAlias: 'Test Owner',
     createdAt: '2023-01-01T00:00:00Z',
     updatedAt: '2023-01-01T00:00:00Z'
   };
@@ -56,7 +58,9 @@ describe('SkillsService', () => {
         ownerPubkey: 'owner123',
         chargeModel: 'Free',
         labels: ['test', 'unit-testing'],
-        status: 'Approved'
+        status: 'Approved',
+        type: 'utility',
+        ownerAlias: 'Test Owner'
       });
 
       expect(fetch).toHaveBeenCalledWith(`${TribesURL}/skill`, {
@@ -86,7 +90,9 @@ describe('SkillsService', () => {
           ownerPubkey: 'owner123',
           chargeModel: 'Free',
           labels: ['test', 'unit-testing'],
-          status: 'Approved'
+          status: 'Approved',
+          type: 'utility',
+          ownerAlias: 'Test Owner'
         })
       ).resolves.toBeUndefined();
 
