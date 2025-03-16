@@ -21,12 +21,22 @@ export const ActivitiesContainer = styled.div`
   height: calc(100vh - 120px);
   overflow-y: auto;
   margin-bottom: 50px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+    height: calc(100vh - 80px);
+  }
 `;
 
 export const ActivitiesList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+
+  @media (max-width: 768px) {
+    display: ${(props) => (props.hidden ? 'none' : 'flex')};
+  }
 `;
 
 export const ActivityItem = styled.div<{ isSelected?: boolean }>`
@@ -47,6 +57,11 @@ export const DetailsPanel = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
+
+  @media (max-width: 768px) {
+    display: ${(props) => (props.hidden ? 'none' : 'flex')};
+    margin-bottom: 60px; /* Space for fixed buttons */
+  }
 `;
 
 export const DetailCard = styled.div`
@@ -208,6 +223,17 @@ const ActionButtons = styled.div`
   padding: 0.5rem 0;
   z-index: 1;
   border-radius: 5%;
+
+  @media (max-width: 768px) {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    justify-content: center;
+    border-radius: 0;
+    padding: 1rem;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  }
 `;
 
 const DeleteButton = styled(Button)`
@@ -285,6 +311,11 @@ const MainContainer = styled.div<{ collapsed: boolean }>`
   margin-left: ${({ collapsed }) => (collapsed ? '60px' : '250px')};
   width: ${({ collapsed }) => (collapsed ? 'calc(100% - 60px)' : 'calc(100% - 250px)')};
   overflow: hidden;
+
+  @media (max-width: 768px) {
+    margin-left: ${({ collapsed }) => (collapsed ? '0' : '0')};
+    width: 100%;
+  }
 `;
 
 const CommentInput = styled.textarea`
@@ -303,6 +334,28 @@ const PostButton = styled(Button)`
 
   &.visible {
     display: block;
+  }
+`;
+
+const BackButton = styled.button`
+  display: none;
+
+  @media (max-width: 768px) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f1f5f9;
+    border: none;
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    margin-bottom: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+
+    &:before {
+      content: '←';
+      margin-right: 0.5rem;
+    }
   }
 `;
 
@@ -340,6 +393,8 @@ const Activities = observer(() => {
   const [comment, setComment] = useState('');
   const [isCommentChanged, setIsCommentChanged] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [showDetailsMobile, setShowDetailsMobile] = useState(false);
 
   let interval: NodeJS.Timeout | null = null;
 
@@ -423,6 +478,24 @@ const Activities = observer(() => {
 
     return () => {
       window.removeEventListener('sidebarCollapse', handleCollapseChange as EventListener);
+    };
+  }, []);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    // Set collapsed to true by default on mobile
+    if (window.innerWidth <= 768) {
+      setCollapsed(true);
+    }
+
+    return () => {
+      window.removeEventListener('resize', checkMobile);
     };
   }, []);
 
@@ -572,6 +645,9 @@ const Activities = observer(() => {
 
   const handleActivityClick = (activity) => {
     setSelectedActivity(activity);
+    if (isMobile) {
+      setShowDetailsMobile(true);
+    }
   };
 
   const handleDeleteActivity = async (activityId: string) => {
@@ -665,6 +741,39 @@ const Activities = observer(() => {
     }
   };
 
+  const handleBackToList = () => {
+    if (isMobile) {
+      setShowDetailsMobile(false);
+    }
+  };
+
+  // Add touch swipe detection
+  useEffect(() => {
+    let touchStartX = 0;
+
+    const handleTouchStart = (e) => {
+      touchStartX = e.touches[0].clientX;
+    };
+
+    const handleTouchEnd = (e) => {
+      const touchEndX = e.changedTouches[0].clientX;
+      const diff = touchEndX - touchStartX;
+
+      // If swiped right more than 100px, go back to list view
+      if (diff > 100 && isMobile && showDetailsMobile) {
+        handleBackToList();
+      }
+    };
+
+    document.addEventListener('touchstart', handleTouchStart);
+    document.addEventListener('touchend', handleTouchEnd);
+
+    return () => {
+      document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [isMobile, showDetailsMobile]);
+
   const renderDetailsPanel = () => {
     if (!selectedActivity) {
       return (
@@ -677,6 +786,7 @@ const Activities = observer(() => {
 
     return (
       <>
+        {isMobile && <BackButton onClick={handleBackToList}>Back to list</BackButton>}
         <DetailCard>
           <Title>{selectedActivity.title}</Title>
           <div className="markdown-content">{renderMarkdown(selectedActivity.content)}</div>
@@ -722,7 +832,7 @@ const Activities = observer(() => {
           )) || <ActionItem>No actions defined</ActionItem>}
         </NextActionsSection>
 
-        <ActionButtons>
+        <ActionButtons data-testid="activity-details-buttons">
           <EditButton onClick={() => handleEditClick(selectedActivity)}>Reply</EditButton>
           <DeleteButton onClick={() => handleDeleteActivity(selectedActivity.ID)}>
             Delete
@@ -894,7 +1004,7 @@ const Activities = observer(() => {
             </ModalOverlay>
           )}
 
-          <ActivitiesList>
+          <ActivitiesList data-testid="activities-list" hidden={isMobile && showDetailsMobile}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Title style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Activities</Title>
             </div>
@@ -906,6 +1016,7 @@ const Activities = observer(() => {
                   key={activity.id}
                   isSelected={selectedActivity?.ID === activity.ID}
                   onClick={() => handleActivityClick(activity)}
+                  data-testid="touch-target"
                 >
                   {activity.title}
                   {activity.timeCreated && (
@@ -923,11 +1034,15 @@ const Activities = observer(() => {
               onClick={handlePostComment}
               className={isCommentChanged ? 'visible' : ''}
               disabled={isPosting}
+              data-testid="touch-target"
             >
               {isPosting ? 'Posting...' : 'Post'}
             </PostButton>
           </ActivitiesList>
-          <DetailsPanel>{selectedActivity ? renderDetailsPanel() : <></>}</DetailsPanel>
+
+          <DetailsPanel data-testid="activity-details" hidden={isMobile && !showDetailsMobile}>
+            {selectedActivity ? renderDetailsPanel() : <></>}
+          </DetailsPanel>
         </ActivitiesContainer>
       </MainContainer>
     </>
