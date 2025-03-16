@@ -9,6 +9,9 @@ import { useStores } from 'store';
 import { useParams } from 'react-router-dom';
 import { renderMarkdown } from 'people/utils/RenderMarkdown';
 import SidebarComponent from 'components/common/SidebarComponent';
+import { useSidebarCollapse } from 'hooks/useSidebarCollapse';
+import { useIsMobile } from 'hooks';
+import MaterialIcon from '@material/react-material-icon';
 import { Phase } from '../interface';
 import ActivitiesHeader from './header';
 
@@ -17,16 +20,25 @@ export const ActivitiesContainer = styled.div`
   grid-template-columns: 30% 70%;
   gap: 2rem;
   padding: 3.5rem;
-  background-color: #f8f9fa;
   height: calc(100vh - 120px);
   overflow-y: auto;
   margin-bottom: 50px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+    height: calc(100vh - 80px);
+  }
 `;
 
-export const ActivitiesList = styled.div`
+export const ActivityList = styled.div<{ showWhen?: boolean }>`
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+
+  @media (max-width: 768px) {
+    display: ${(props) => (props.showWhen ? 'flex' : 'none')};
+  }
 `;
 
 export const ActivityItem = styled.div<{ isSelected?: boolean }>`
@@ -41,12 +53,20 @@ export const ActivityItem = styled.div<{ isSelected?: boolean }>`
     border-color: #94a3b8;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   }
+
+  @media (max-width: 768px) {
+    display: ${(props) => (props.hidden ? 'none' : 'flex')};
+  }
 `;
 
-export const DetailsPanel = styled.div`
+export const DetailsPanel = styled.div<{ hidden?: boolean }>`
   display: flex;
   flex-direction: column;
   gap: 1rem;
+
+  @media (max-width: 768px) {
+    display: ${(props) => (props.hidden ? 'none' : 'flex')};
+  }
 `;
 
 export const DetailCard = styled.div`
@@ -55,6 +75,14 @@ export const DetailCard = styled.div`
   border-radius: 4px;
   padding: 1.5rem;
   min-height: 200px;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+
+  @media (max-width: 768px) {
+    & > h2 {
+      font-size: 1.2rem;
+    }
+  }
 
   .markdown-content {
     margin-top: 1rem;
@@ -275,6 +303,13 @@ const ThreadResponseCard = styled.div`
   padding: 1rem;
   margin-bottom: 1rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+
+  @media (max-width: 768px) {
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
 `;
 
 const MainContainer = styled.div<{ collapsed: boolean }>`
@@ -285,6 +320,25 @@ const MainContainer = styled.div<{ collapsed: boolean }>`
   margin-left: ${({ collapsed }) => (collapsed ? '60px' : '250px')};
   width: ${({ collapsed }) => (collapsed ? 'calc(100% - 60px)' : 'calc(100% - 250px)')};
   overflow: hidden;
+  background-color: #f8f9fa;
+`;
+
+export const ActivityHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0 0 1rem;
+  gap: 8px;
+
+  @media (max-width: 768px) {
+    justify-content: start;
+  }
+
+  h2 {
+    @media (max-width: 768px) {
+      margin-bottom: unset !important;
+    }
+  }
 `;
 
 const CommentInput = styled.textarea`
@@ -311,7 +365,9 @@ const Activities = observer(() => {
   const { main, ui } = useStores();
   const [phases, setPhases] = useState<Phase[]>([]);
   const [features, setFeatures] = useState<Feature[]>([]);
-  const [collapsed, setCollapsed] = useState(false);
+  const { collapsed } = useSidebarCollapse(false);
+  const isMobile = useIsMobile();
+  const [displayActivityList, setDisplayActivityList] = useState(true);
   const [isLoadingPhases, setIsLoadingPhases] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<IActivity | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -412,19 +468,6 @@ const Activities = observer(() => {
       setSelectedActivity(activityStore.rootActivities[0]);
     }
   }, [activityStore.rootActivities]);
-
-  useEffect(() => {
-    const handleCollapseChange = (e: Event) => {
-      const customEvent = e as CustomEvent<{ collapsed: boolean }>;
-      setCollapsed(customEvent.detail.collapsed);
-    };
-
-    window.addEventListener('sidebarCollapse', handleCollapseChange as EventListener);
-
-    return () => {
-      window.removeEventListener('sidebarCollapse', handleCollapseChange as EventListener);
-    };
-  }, []);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -571,6 +614,7 @@ const Activities = observer(() => {
   };
 
   const handleActivityClick = (activity) => {
+    isMobile && setDisplayActivityList(false);
     setSelectedActivity(activity);
   };
 
@@ -665,6 +709,10 @@ const Activities = observer(() => {
     }
   };
 
+  const handleBackToList = () => {
+    setDisplayActivityList(true);
+  };
+
   const renderDetailsPanel = () => {
     if (!selectedActivity) {
       return (
@@ -737,6 +785,12 @@ const Activities = observer(() => {
       <SidebarComponent uuid={uuid} />
       <MainContainer collapsed={collapsed}>
         <ActivitiesHeader uuid={uuid} />
+        <ActivityHeader>
+          {isMobile && !displayActivityList && (
+            <MaterialIcon icon="arrow_back" onClick={handleBackToList} />
+          )}
+          <Title style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Activities</Title>
+        </ActivityHeader>
         <ActivitiesContainer>
           {isModalOpen && (
             <ModalOverlay
@@ -893,11 +947,7 @@ const Activities = observer(() => {
               </ModalContent>
             </ModalOverlay>
           )}
-
-          <ActivitiesList>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Title style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Activities</Title>
-            </div>
+          <ActivityList showWhen={displayActivityList}>
             {activityStore.rootActivities.length === 0 ? (
               <div>No activities available</div>
             ) : (
@@ -926,8 +976,10 @@ const Activities = observer(() => {
             >
               {isPosting ? 'Posting...' : 'Post'}
             </PostButton>
-          </ActivitiesList>
-          <DetailsPanel>{selectedActivity ? renderDetailsPanel() : <></>}</DetailsPanel>
+          </ActivityList>
+          <DetailsPanel hidden={isMobile && displayActivityList}>
+            {selectedActivity ? renderDetailsPanel() : <></>}
+          </DetailsPanel>
         </ActivitiesContainer>
       </MainContainer>
     </>

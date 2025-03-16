@@ -24,6 +24,9 @@ import {
   EditPopoverContent,
   EditPopoverTail
 } from 'pages/tickets/style.ts';
+import { useSidebarCollapse } from 'hooks/useSidebarCollapse.ts';
+import { useIsMobile } from 'hooks/uiHooks.ts';
+import { mobileWidht } from 'config/mobileWidth.ts';
 import { colors } from '../../config/colors';
 import avatarIcon from '../../public/static/profile_avatar.svg';
 import WorkspaceBudget from '../../people/widgetViews/workspace/WorkspaceBudget.tsx';
@@ -50,7 +53,7 @@ const SidebarContainer = styled.div<{ collapsed: boolean }>`
   overflow-y: auto;
   cursor: ${({ collapsed }) => (collapsed ? 'pointer' : 'default')};
 
-  @media (max-width: 768px) {
+  @media (max-width: ${mobileWidht}px) {
     width: ${({ collapsed }) => (collapsed ? '60px' : '100%')};
   }
 
@@ -76,7 +79,7 @@ const HamburgerButton = styled.button`
   margin-left: 10px;
   z-index: 1000;
 
-  @media (max-width: 768px) {
+  @media (max-width: ${mobileWidht}px) {
     margin-top: 110px;
     transition: left 0.3s ease-in-out;
   }
@@ -328,7 +331,7 @@ export default function SidebarComponent({
   const { ui, main, chat } = useStores();
   const [activeItem, setActiveItem] = useState<'activities' | 'settings' | 'feature' | null>(null);
   const [features, setFeatures] = useState<Feature[]>([]);
-  const [collapsed, setCollapsed] = useState(defaultCollapsed);
+  const { collapsed, toggleCollapseSidebar } = useSidebarCollapse(defaultCollapsed);
   const history = useHistory();
   const [isFeaturesExpanded, setIsFeaturesExpanded] = useState(true);
   const [isWorkspaceExpanded, setIsWorkspaceExpanded] = useState(false);
@@ -345,6 +348,7 @@ export default function SidebarComponent({
   const CHATS_PER_PAGE = 5;
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [tooltipTop, setTooltipTop] = useState(0);
+  const isMobile = useIsMobile();
 
   const user_pubkey = ui.meInfo?.owner_pubkey;
 
@@ -387,6 +391,10 @@ export default function SidebarComponent({
       history.push(`/workspace/${uuid}/activities`);
     } else if (item === 'settings') {
       history.push(`/workspace/${uuid}`);
+    }
+
+    if (isMobile) {
+      toggleCollapseSidebar(true);
     }
   };
 
@@ -447,14 +455,6 @@ export default function SidebarComponent({
   const handleWorkspaceClick = (uuid: string) => {
     window.location.href = `/workspace/${uuid}/activities`;
     setShowDropdown(false);
-  };
-
-  const handleCollapse = (collapsed: boolean) => {
-    setCollapsed(collapsed);
-    const event = new CustomEvent('sidebarCollapse', {
-      detail: { collapsed }
-    });
-    window.dispatchEvent(event);
   };
 
   const toggleFeatureModal = () => {
@@ -638,11 +638,11 @@ export default function SidebarComponent({
       onClick={(e) => {
         e.stopPropagation();
         if (collapsed) {
-          handleCollapse(false);
+          toggleCollapseSidebar(false);
         }
       }}
     >
-      <HamburgerButton onClick={() => handleCollapse(!collapsed)}>
+      <HamburgerButton onClick={() => toggleCollapseSidebar(!collapsed)}>
         <MaterialIcon icon="menu" style={{ fontSize: 28 }} />
       </HamburgerButton>
 
