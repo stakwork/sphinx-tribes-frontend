@@ -60,7 +60,7 @@ export const DetailsPanel = styled.div`
 
   @media (max-width: 768px) {
     display: ${(props) => (props.hidden ? 'none' : 'flex')};
-    margin-bottom: 60px; /* Space for fixed buttons */
+    margin-bottom: 60px;
   }
 `;
 
@@ -217,17 +217,11 @@ const ActionButtons = styled.div`
   justify-content: flex-end;
   gap: 0.5rem;
   margin-top: 1rem;
-  position: sticky;
-  bottom: 0;
   background: white;
   padding: 0.5rem 0;
-  z-index: 1;
   border-radius: 5%;
 
   @media (max-width: 768px) {
-    position: fixed;
-    bottom: 0;
-    left: 0;
     width: 100%;
     justify-content: center;
     border-radius: 0;
@@ -313,8 +307,8 @@ const MainContainer = styled.div<{ collapsed: boolean }>`
   overflow: hidden;
 
   @media (max-width: 768px) {
-    margin-left: ${({ collapsed }) => (collapsed ? '0' : '0')};
-    width: 100%;
+    margin-left: ${({ collapsed }) => (collapsed ? '60px' : '0')};
+    width: ${({ collapsed }) => (collapsed ? 'calc(100% - 80px)' : '100%')};
   }
 `;
 
@@ -489,7 +483,6 @@ const Activities = observer(() => {
     checkMobile();
     window.addEventListener('resize', checkMobile);
 
-    // Set collapsed to true by default on mobile
     if (window.innerWidth <= 768) {
       setCollapsed(true);
     }
@@ -747,7 +740,6 @@ const Activities = observer(() => {
     }
   };
 
-  // Add touch swipe detection
   useEffect(() => {
     let touchStartX = 0;
 
@@ -759,7 +751,6 @@ const Activities = observer(() => {
       const touchEndX = e.changedTouches[0].clientX;
       const diff = touchEndX - touchStartX;
 
-      // If swiped right more than 100px, go back to list view
       if (diff > 100 && isMobile && showDetailsMobile) {
         handleBackToList();
       }
@@ -844,7 +835,7 @@ const Activities = observer(() => {
 
   return (
     <>
-      <SidebarComponent uuid={uuid} />
+      <SidebarComponent uuid={uuid} defaultCollapsed={window.innerWidth <= 768} />
       <MainContainer collapsed={collapsed}>
         <ActivitiesHeader uuid={uuid} />
         <ActivitiesContainer>
