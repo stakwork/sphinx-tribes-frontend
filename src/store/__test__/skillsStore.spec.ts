@@ -32,6 +32,8 @@ describe('SkillsStore', () => {
     iconUrl: 'https://example.com/icon.png',
     ownerPubkey: 'owner123',
     chargeModel: 'Free',
+    type: 'type',
+    ownerAlias: 'owner123',
     labels: ['test', 'unit-testing'],
     status: 'Approved',
     createdAt: '2023-01-01T00:00:00Z',
@@ -61,6 +63,8 @@ describe('SkillsStore', () => {
           iconUrl: 'https://example.com/icon.png',
           ownerPubkey: 'owner123',
           chargeModel: 'Free',
+          type: 'type',
+          ownerAlias: 'owner123',
           labels: ['test', 'unit-testing'],
           status: 'Approved'
         });
@@ -80,6 +84,8 @@ describe('SkillsStore', () => {
           iconUrl: 'https://example.com/icon.png',
           ownerPubkey: 'owner123',
           chargeModel: 'Free',
+          type: 'type',
+          ownerAlias: 'owner123',
           labels: ['test', 'unit-testing'],
           status: 'Approved'
         });
@@ -97,6 +103,8 @@ describe('SkillsStore', () => {
           description: 'This is a test skill for unit testing',
           iconUrl: 'https://example.com/icon.png',
           ownerPubkey: 'owner123',
+          type: 'type',
+          ownerAlias: 'owner123',
           chargeModel: 'Free',
           labels: ['test', 'unit-testing'],
           status: 'Approved'
@@ -787,6 +795,8 @@ describe('SkillsStore', () => {
           description: 'This is a new skill',
           iconUrl: 'https://example.com/icon.png',
           ownerPubkey: 'owner123',
+          type: 'type',
+          ownerAlias: 'owner123',
           chargeModel: 'Free',
           labels: ['test'],
           status: 'Draft'
