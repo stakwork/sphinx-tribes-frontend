@@ -36,6 +36,7 @@ import MaterialIcon from '@material/react-material-icon';
 import { EuiOverlayMask, EuiModalHeader, EuiModalFooter, EuiText } from '@elastic/eui';
 import { Box } from '@mui/system';
 import { userHasRole } from 'helpers/helpers-extended';
+import { useSidebarCollapse } from 'hooks/useSidebarCollapse.ts';
 import { createSocketInstance, SOCKET_MSG } from '../../config/socket.ts';
 import { useDeleteConfirmationModal } from '../../components/common';
 import SidebarComponent from '../../components/common/SidebarComponent.tsx';
@@ -379,7 +380,7 @@ const WorkspaceFeature = () => {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [userRoles, setUserRoles] = useState<any[]>([]);
   const [workspaceData, setWorkspaceData] = useState<Workspace>();
-  const [collapsed, setCollapsed] = useState(false);
+  const { collapsed } = useSidebarCollapse(false);
   const [editFeatureName, setEditFeatureName] = useState<string>(featureData?.name || '');
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [displayNameOptions, setDisplayNameOptions] = useState<boolean>(false);
@@ -402,19 +403,6 @@ const WorkspaceFeature = () => {
     const isWorkspaceAdmin = workspaceData.owner_pubkey === ui.meInfo.owner_pubkey;
     return !isWorkspaceAdmin && !userHasRole(main.bountyRoles, userRoles, 'EDIT ORGANIZATION');
   }, [workspaceData, ui.meInfo, userRoles, main.bountyRoles]);
-
-  useEffect(() => {
-    const handleCollapseChange = (e: Event) => {
-      const customEvent = e as CustomEvent<{ collapsed: boolean }>;
-      setCollapsed(customEvent.detail.collapsed);
-    };
-
-    window.addEventListener('sidebarCollapse', handleCollapseChange as EventListener);
-
-    return () => {
-      window.removeEventListener('sidebarCollapse', handleCollapseChange as EventListener);
-    };
-  }, []);
 
   useEffect(() => {
     const loadWorkspace = async () => {

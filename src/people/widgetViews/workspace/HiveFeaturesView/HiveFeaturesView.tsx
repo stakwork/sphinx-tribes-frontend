@@ -14,6 +14,7 @@ import { SOCKET_MSG } from 'config/socket';
 import { uiStore } from 'store/ui';
 import MaterialIcon from '@material/react-material-icon';
 import { v4 as uuidv4 } from 'uuid';
+import { useSidebarCollapse } from 'hooks/useSidebarCollapse.ts';
 import {
   QuickBountyTicket,
   quickBountyTicketStore
@@ -298,7 +299,7 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
 
   const history = useHistory();
   const [phaseNames, setPhaseNames] = useState<{ [key: string]: string }>({});
-  const [collapsed, setCollapsed] = useState(false);
+  const { collapsed } = useSidebarCollapse(false);
   const [data, setData] = useState<QuickBountyTicket[]>([]);
   const [expandedPhases, setExpandedPhases] = useState<{ [key: string]: boolean }>({});
   const { ui, main } = useStores();
@@ -358,19 +359,6 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
       getBounty();
     }
   }, [bountyID, getBounty]);
-
-  useEffect(() => {
-    const handleCollapseChange = (e: Event) => {
-      const customEvent = e as CustomEvent<{ collapsed: boolean }>;
-      setCollapsed(customEvent.detail.collapsed);
-    };
-
-    window.addEventListener('sidebarCollapse', handleCollapseChange as EventListener);
-
-    return () => {
-      window.removeEventListener('sidebarCollapse', handleCollapseChange as EventListener);
-    };
-  }, []);
 
   useEffect(() => {
     const fetchData = async () => {

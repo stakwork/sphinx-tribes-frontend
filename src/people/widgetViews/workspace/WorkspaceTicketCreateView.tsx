@@ -20,6 +20,7 @@ import { EuiGlobalToastList } from '@elastic/eui';
 import TicketEditor from 'components/common/TicketEditor/TicketEditor';
 import SidebarComponent from 'components/common/SidebarComponent';
 import styled from 'styled-components';
+import { useSidebarCollapse } from 'hooks/useSidebarCollapse';
 import { phaseTicketStore } from '../../../store/phase';
 import StakworkLogsPanel from '../../../components/common/TicketEditor/StakworkLogsPanel';
 import {
@@ -66,7 +67,7 @@ const WorkspaceTicketCreateView: React.FC = observer(() => {
   const history = useHistory();
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [workspace, setWorkspace] = useState<any>(null);
-  const [collapsed, setCollapsed] = useState(false);
+  const { collapsed } = useSidebarCollapse(false);
   const [ticketGroupId] = useState(uuidv4());
 
   const defaultTicket = useMemo(
@@ -327,19 +328,6 @@ const WorkspaceTicketCreateView: React.FC = observer(() => {
   const toastsEl = (
     <EuiGlobalToastList toasts={toasts} dismissToast={() => setToasts([])} toastLifeTimeMs={3000} />
   );
-
-  useEffect(() => {
-    const handleCollapseChange = (e: Event) => {
-      const customEvent = e as CustomEvent<{ collapsed: boolean }>;
-      setCollapsed(customEvent.detail.collapsed);
-    };
-
-    window.addEventListener('sidebarCollapse', handleCollapseChange as EventListener);
-
-    return () => {
-      window.removeEventListener('sidebarCollapse', handleCollapseChange as EventListener);
-    };
-  }, []);
 
   return (
     <MainContent collapsed={collapsed}>

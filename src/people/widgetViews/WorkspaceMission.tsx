@@ -42,6 +42,7 @@ import { CodeGraph } from 'store/interface';
 
 import { SchematicPreview } from 'people/SchematicPreviewer';
 
+import { useSidebarCollapse } from 'hooks/useSidebarCollapse.ts';
 import { colors } from '../../config/colors';
 import SidebarComponent from '../../components/common/SidebarComponent.tsx';
 import { useBrowserTabTitle } from '../../hooks';
@@ -174,7 +175,7 @@ const WorkspaceMission = () => {
   const [missionPreviewMode, setMissionPreviewMode] = useState<'preview' | 'edit'>('preview');
   const [tacticsPreviewMode, setTacticsPreviewMode] = useState<'preview' | 'edit'>('preview');
   const [toasts, setToasts] = useState<Toast[]>([]);
-  const [collapsed, setCollapsed] = useState(false);
+  const { collapsed } = useSidebarCollapse(false);
   const [permissionsChecked, setPermissionsChecked] = useState<boolean>(false);
   const [isSnippetModalVisible, setSnippetModalVisible] = useState(false);
   const [currentOpenMenu, setCurrentOpenMenu] = useState<string | number | null>(null);
@@ -275,19 +276,6 @@ const WorkspaceMission = () => {
     }
     setChatWorkflowModal(true);
   };
-
-  useEffect(() => {
-    const handleCollapseChange = (e: Event) => {
-      const customEvent = e as CustomEvent<{ collapsed: boolean }>;
-      setCollapsed(customEvent.detail.collapsed);
-    };
-
-    window.addEventListener('sidebarCollapse', handleCollapseChange as EventListener);
-
-    return () => {
-      window.removeEventListener('sidebarCollapse', handleCollapseChange as EventListener);
-    };
-  }, []);
 
   const closeCodeGraphModal = () => {
     setSelectedCodeGraph({

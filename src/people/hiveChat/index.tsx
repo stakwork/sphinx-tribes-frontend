@@ -12,6 +12,7 @@ import styled from 'styled-components';
 import { EuiLoadingSpinner } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
 import { chatHistoryStore } from 'store/chat.ts';
+import { useSidebarCollapse } from 'hooks/useSidebarCollapse.ts';
 import { renderMarkdown } from '../utils/RenderMarkdown.tsx';
 import { UploadModal } from '../../components/UploadModal';
 import { useFeatureFlag, useBrowserTabTitle } from '../../hooks';
@@ -365,7 +366,7 @@ export const HiveChatView: React.FC = observer(() => {
   // const history = useHistory();
   const [isUpdatingTitle, setIsUpdatingTitle] = useState(false);
   const [projectId, setProjectId] = useState('');
-  const [collapsed, setCollapsed] = useState(true);
+  const { collapsed } = useSidebarCollapse(true);
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [isChainVisible, setIsChainVisible] = useState(false);
   const [lastLogLine, setLastLogLine] = useState('');
@@ -464,19 +465,6 @@ export const HiveChatView: React.FC = observer(() => {
       setIsUpdatingTitle(false);
     }
   };
-
-  useEffect(() => {
-    const handleCollapseChange = (e: Event) => {
-      const customEvent = e as CustomEvent<{ collapsed: boolean }>;
-      setCollapsed(customEvent.detail.collapsed);
-    };
-
-    window.addEventListener('sidebarCollapse', handleCollapseChange as EventListener);
-
-    return () => {
-      window.removeEventListener('sidebarCollapse', handleCollapseChange as EventListener);
-    };
-  }, []);
 
   useEffect(() => {
     const initializeChat = async () => {

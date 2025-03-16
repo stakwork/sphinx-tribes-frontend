@@ -32,6 +32,7 @@ import { SOCKET_MSG } from 'config/socket';
 import { createSocketInstance } from 'config/socket';
 import SidebarComponent from 'components/common/SidebarComponent.tsx';
 import styled from 'styled-components';
+import { useSidebarCollapse } from 'hooks/useSidebarCollapse.ts';
 import { phaseTicketStore } from '../../store/phase';
 import StakworkLogsPanel from '../../components/common/TicketEditor/StakworkLogsPanel.tsx';
 import { useFeatureFlag, useBrowserTabTitle } from '../../hooks';
@@ -112,7 +113,7 @@ const PhasePlannerView: React.FC = observer(() => {
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const selectedWidget = 'bounties';
   const { isEnabled } = useFeatureFlag('display_planner_logs');
-  const [collapsed, setCollapsed] = useState(false);
+  const { collapsed } = useSidebarCollapse(false);
   const [selectedTickets, setSelectedTickets] = useState<Record<string, boolean>>({});
   const { isEnabled: isBulkCreateEnabled } = useFeatureFlag('bulk_ticket_create');
   const { isEnabled: isGeneratePhasePlanEnabled } = useFeatureFlag('phaseplanning');
@@ -542,19 +543,6 @@ const PhasePlannerView: React.FC = observer(() => {
   const toastsEl = (
     <EuiGlobalToastList toasts={toasts} dismissToast={() => setToasts([])} toastLifeTimeMs={3000} />
   );
-
-  useEffect(() => {
-    const handleCollapseChange = (e: Event) => {
-      const customEvent = e as CustomEvent<{ collapsed: boolean }>;
-      setCollapsed(customEvent.detail.collapsed);
-    };
-
-    window.addEventListener('sidebarCollapse', handleCollapseChange as EventListener);
-
-    return () => {
-      window.removeEventListener('sidebarCollapse', handleCollapseChange as EventListener);
-    };
-  }, []);
 
   const selectedTicketCount = Object.values(selectedTickets).filter(Boolean).length;
 

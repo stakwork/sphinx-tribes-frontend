@@ -230,11 +230,8 @@ const ActionButtons = styled.div`
   justify-content: flex-end;
   gap: 0.5rem;
   margin-top: 1rem;
-  position: sticky;
-  bottom: 0;
   background: white;
   padding: 0.5rem 0;
-  z-index: 1;
   border-radius: 5%;
 `;
 

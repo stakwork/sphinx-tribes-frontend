@@ -9,6 +9,7 @@ import { Feature, FeatureStatus, FeatureTabLabels, TAB_TO_STATUS_MAP } from 'sto
 import SidebarComponent from 'components/common/SidebarComponent';
 import { toCapitalize } from 'helpers/helpers-extended';
 import { DropResult } from 'react-beautiful-dnd';
+import { useSidebarCollapse } from 'hooks/useSidebarCollapse';
 import ActivitiesHeader from '../HiveFeaturesView/header';
 import TabBar from './TabBar';
 
@@ -307,7 +308,7 @@ const FeatureBacklogView = observer(() => {
   const params = useParams<{ workspace_uuid?: string }>();
   const workspaceUuid = params.workspace_uuid ?? '';
   const history = useHistory();
-  const [collapsed, setCollapsed] = useState(false);
+  const { collapsed } = useSidebarCollapse(false);
   const [features, setFeatures] = useState<Feature[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [newFeatureTitle, setNewFeatureTitle] = useState('');
@@ -317,18 +318,6 @@ const FeatureBacklogView = observer(() => {
     const params = new URLSearchParams(window.location.search);
     return (params.get('tab') as FeatureTabLabels) || 'focus';
   });
-
-  useEffect(() => {
-    const handleCollapseChange = (e: Event) => {
-      const customEvent = e as CustomEvent<{ collapsed: boolean }>;
-      setCollapsed(customEvent.detail.collapsed);
-    };
-
-    window.addEventListener('sidebarCollapse', handleCollapseChange as EventListener);
-    return () => {
-      window.removeEventListener('sidebarCollapse', handleCollapseChange as EventListener);
-    };
-  }, []);
 
   useEffect(() => {
     const loadFeatures = async () => {

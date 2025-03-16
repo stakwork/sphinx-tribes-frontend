@@ -11,6 +11,7 @@ import { Toast } from 'people/widgetViews/workspace/interface';
 import styled from 'styled-components';
 import { ActionPopover, ActionItem, ActionIcon } from 'pages/tickets/style.ts';
 import { archiveIcon } from 'components/common/DeleteConfirmationModal/archiveIcon.tsx';
+import { useSidebarCollapse } from 'hooks/useSidebarCollapse';
 import { useStores } from '../../store';
 import { Chat } from '../../store/interface';
 
@@ -270,7 +271,7 @@ export const ChatHistoryView: React.FC = observer(() => {
   const [loading, setLoading] = useState(true);
   const [chats, setChats] = useState<Chat[]>([]);
   const [toasts, setToasts] = useState<Toast[]>([]);
-  const [collapsed, setCollapsed] = useState(false);
+  const { collapsed } = useSidebarCollapse(false);
   const [visibleMenu, setVisibleMenu] = useState<{ [key: string]: boolean }>({});
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
@@ -301,19 +302,6 @@ export const ChatHistoryView: React.FC = observer(() => {
 
     loadChats();
   }, [workspaceId, chat]);
-
-  useEffect(() => {
-    const handleCollapseChange = (e: Event) => {
-      const customEvent = e as CustomEvent<{ collapsed: boolean }>;
-      setCollapsed(customEvent.detail.collapsed);
-    };
-
-    window.addEventListener('sidebarCollapse', handleCollapseChange as EventListener);
-
-    return () => {
-      window.removeEventListener('sidebarCollapse', handleCollapseChange as EventListener);
-    };
-  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

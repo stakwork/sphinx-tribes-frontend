@@ -7,6 +7,7 @@ import { useBountyCardStore } from 'store/bountyCard';
 import { BountyCard, BountyCardStatus } from 'store/interface';
 import history from 'config/history';
 import { autorun } from 'mobx';
+import { useSidebarCollapse } from 'hooks/useSidebarCollapse';
 import { useStores } from '../../store';
 import { colors } from '../../config';
 import SidebarComponent from '../../components/common/SidebarComponent';
@@ -151,23 +152,10 @@ const WorkspacePlanner = observer(() => {
   const [workspaceData, setWorkspaceData] = useState<any>(null);
   const [filterToggle, setFilterToggle] = useState(false);
   const [searchText, setSearchText] = useState('');
-  const [collapsed, setCollapsed] = useState(true);
+  const { collapsed } = useSidebarCollapse(true);
   const bountyCardStore = useBountyCardStore(uuid);
 
   useBrowserTabTitle('Workspace Planner');
-
-  useEffect(() => {
-    const handleCollapseChange = (e: Event) => {
-      const customEvent = e as CustomEvent<{ collapsed: boolean }>;
-      setCollapsed(customEvent.detail.collapsed);
-    };
-
-    window.addEventListener('sidebarCollapse', handleCollapseChange as EventListener);
-
-    return () => {
-      window.removeEventListener('sidebarCollapse', handleCollapseChange as EventListener);
-    };
-  }, []);
 
   useEffect(() => {
     bountyCardStore.restoreFilterState();

@@ -9,6 +9,7 @@ import { createSocketInstance, SOCKET_MSG } from 'config/socket';
 import SidebarComponent from 'components/common/SidebarComponent.tsx';
 import styled from 'styled-components';
 import TicketEditor from 'components/common/TicketEditor/TicketEditor';
+import { useSidebarCollapse } from 'hooks/useSidebarCollapse.ts';
 import { workspaceTicketStore } from '../../../store/workspace-ticket';
 import { phaseTicketStore } from '../../../store/phase';
 import { Feature, Ticket, TicketMessage } from '../../../store/interface';
@@ -58,7 +59,7 @@ const WorkspaceTicketView: React.FC = observer(() => {
   const [connections, setConnections] = useState<Connection[]>([]);
   const [isLoadingFeatures, setIsLoadingFeatures] = useState(false);
   const [isLoadingPhases, setIsLoadingPhases] = useState(false);
-  const [collapsed, setCollapsed] = useState(false);
+  const { collapsed } = useSidebarCollapse(false);
 
   const currentTicket = workspaceTicketStore.getTicket(currentTicketId);
 
@@ -412,19 +413,6 @@ const WorkspaceTicketView: React.FC = observer(() => {
       loadPhases();
     }
   }, [currentTicketId, main]);
-
-  useEffect(() => {
-    const handleCollapseChange = (e: Event) => {
-      const customEvent = e as CustomEvent<{ collapsed: boolean }>;
-      setCollapsed(customEvent.detail.collapsed);
-    };
-
-    window.addEventListener('sidebarCollapse', handleCollapseChange as EventListener);
-
-    return () => {
-      window.removeEventListener('sidebarCollapse', handleCollapseChange as EventListener);
-    };
-  }, []);
 
   const handleClose = () => {
     if (currentTicket?.feature_uuid) {
