@@ -754,7 +754,9 @@ export const HiveChatView: React.FC = observer(() => {
   const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value);
     e.target.style.height = 'auto';
-    e.target.style.height = `${Math.min(e.target.scrollHeight, 150)}px`;
+    // Calculate max height based on window size - use smaller height on mobile
+    const maxHeight = window.innerWidth < 600 ? 100 : 150;
+    e.target.style.height = `${Math.min(e.target.scrollHeight, maxHeight)}px`;
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
