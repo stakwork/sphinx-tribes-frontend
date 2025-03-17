@@ -49,6 +49,18 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
           <BountiesLandingPage />
         </Route>
 
+        <Route exact path="/skills">
+          <MainLayout header={<PeopleHeader />}>
+            <SkillsPage />
+          </MainLayout>
+        </Route>
+
+        <Route exact path="/skills/management">
+          <MainLayout header={<PeopleHeader />}>
+            <ManageSkillsPage />
+          </MainLayout>
+        </Route>
+
         <Route path="/">
           <MainLayout header={<PeopleHeader />}>
             <Switch>
@@ -111,12 +123,6 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
               </Route>
               <Route path="/admin">
                 <SuperAdmin />
-              </Route>
-              <Route exact path="/skills">
-                <SkillsPage />
-              </Route>
-              <Route exact path="/skills/management">
-                <ManageSkillsPage />
               </Route>
               <Route path="*">
                 <NotFoundPage />
