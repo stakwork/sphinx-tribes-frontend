@@ -1,7 +1,7 @@
 import { getHost } from '../config/host';
 import { mainStore } from '../store/main';
 
-function addMethod(m: string): (url: string, data?: any, incomingHeaders?: any) => void {
+function addMethods(m: string): (url: string, data?: any, incomingHeaders?: any) => void {
   const host = getHost();
   const rootUrl =
     host.includes('localhost') || host.includes('internal')
