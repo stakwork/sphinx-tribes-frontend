@@ -144,8 +144,6 @@ const ManageSkillsPage: React.FC = observer(() => {
           </Header>
           {isLoading ? (
             <div>Loading skills data...</div>
-          ) : skills.length === 0 ? (
-            <div>No skills found. Add a new skill to get started.</div>
           ) : (
             <Table>
               <thead>
@@ -159,28 +157,36 @@ const ManageSkillsPage: React.FC = observer(() => {
                 </tr>
               </thead>
               <tbody>
-                {skills.map((skill) => (
-                  <tr key={skill.id}>
-                    <Td>{skill.name}</Td>
-                    <Td>{skill.ownerAlias}</Td>
-                    <Td>{skill.type}</Td>
-                    <Td>{skill.labels.join(', ')}</Td>
-                    <Td>{skill.status}</Td>
-                    <Td>
-                      <ActionMenu>
-                        <Ellipsis onClick={() => handleToggleMenu(skill.id)}>⋮</Ellipsis>
-                        {openMenu === skill.id && (
-                          <Dropdown>
-                            <DropdownItem>Edit</DropdownItem>
-                            <DropdownItemDelete onClick={() => handleDelete(skill.id)}>
-                              Delete
-                            </DropdownItemDelete>
-                          </Dropdown>
-                        )}
-                      </ActionMenu>
+                {skills.length === 0 ? (
+                  <tr>
+                    <Td colSpan={6} style={{ textAlign: 'center' }}>
+                      No skills found. Add a new skill to get started.
                     </Td>
                   </tr>
-                ))}
+                ) : (
+                  skills.map((skill) => (
+                    <tr key={skill.id}>
+                      <Td>{skill.name}</Td>
+                      <Td>{skill.ownerAlias}</Td>
+                      <Td>{skill.type}</Td>
+                      <Td>{skill.labels.join(', ')}</Td>
+                      <Td>{skill.status}</Td>
+                      <Td>
+                        <ActionMenu>
+                          <Ellipsis onClick={() => handleToggleMenu(skill.id)}>⋮</Ellipsis>
+                          {openMenu === skill.id && (
+                            <Dropdown>
+                              <DropdownItem>Edit</DropdownItem>
+                              <DropdownItemDelete onClick={() => handleDelete(skill.id)}>
+                                Delete
+                              </DropdownItemDelete>
+                            </Dropdown>
+                          )}
+                        </ActionMenu>
+                      </Td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </Table>
           )}
