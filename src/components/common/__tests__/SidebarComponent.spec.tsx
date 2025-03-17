@@ -55,6 +55,17 @@ describe('SidebarComponent Tooltip Tests', () => {
       });
     });
 
+    test('should show tooltip for kanban when collapsed', async () => {
+      renderSidebar({ defaultCollapsed: true });
+      const activitiesButton = screen.getByLabelText('Kanban');
+
+      fireEvent.mouseEnter(activitiesButton);
+
+      waitFor(() => {
+        expect(screen.getByText('Kanban')).toBeInTheDocument();
+      });
+    });
+
     test('should show tooltip for settings when collapsed', async () => {
       renderSidebar({ defaultCollapsed: true });
       const settingsButton = screen.getByLabelText('Settings');
@@ -178,6 +189,49 @@ describe('SidebarComponent Tooltip Tests', () => {
       fireEvent.blur(activitiesButton);
       waitFor(() => {
         expect(screen.queryByText('Activities')).not.toBeInTheDocument();
+      });
+    });
+
+    test('should not show kanban tooltips when sidebar is expanded', async () => {
+      waitFor(() => {
+        renderSidebar({ defaultCollapsed: false });
+        const activitiesButton = screen.getByLabelText('Kanban');
+
+        fireEvent.mouseEnter(activitiesButton);
+
+        expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+      });
+    });
+
+    test('should hide kanban tooltip on mouse leave', async () => {
+      renderSidebar({ defaultCollapsed: true });
+      const activitiesButton = screen.getByLabelText('Kanban');
+
+      fireEvent.mouseEnter(activitiesButton);
+      waitFor(() => {
+        expect(screen.getByText('Kanban')).toBeInTheDocument();
+      });
+
+      fireEvent.mouseLeave(activitiesButton);
+      waitFor(() => {
+        expect(screen.queryByText('Kanban')).not.toBeInTheDocument();
+      });
+    });
+
+    test('should handle keyboard focus for kanban tooltips', async () => {
+      renderSidebar({ defaultCollapsed: true });
+      const activitiesButton = screen.getByLabelText('Kanban');
+
+      fireEvent.focus(activitiesButton);
+
+      waitFor(() => {
+        expect(activitiesButton).toHaveFocus();
+        expect(screen.getByText('Kanban')).toBeInTheDocument();
+      });
+
+      fireEvent.blur(activitiesButton);
+      waitFor(() => {
+        expect(screen.queryByText('Kanban')).not.toBeInTheDocument();
       });
     });
   });
