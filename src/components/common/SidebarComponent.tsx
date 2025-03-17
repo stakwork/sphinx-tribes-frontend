@@ -608,6 +608,10 @@ export default function SidebarComponent({
     history.push(`/workspace/${uuid}/feature_backlog`);
   };
 
+  const handleKanbanClick = () => {
+    history.push(`/workspace/${uuid}/planner`);
+  };
+
   const visibleChats = chats.slice(chatOffset, chatOffset + CHATS_PER_PAGE);
   const hasNextPage = chatOffset + CHATS_PER_PAGE < chats.length;
   const hasPreviousPage = chatOffset > 0;
@@ -757,6 +761,32 @@ export default function SidebarComponent({
         {(collapsed || hoveredItem === 'settings') && (
           <Tooltip visible={hoveredItem === 'settings'} top={tooltipTop} collapsed={collapsed}>
             Settings
+          </Tooltip>
+        )}
+      </NavItem>
+
+      <NavItem
+        active={window.location.pathname.includes('kanban')}
+        onClick={handleKanbanClick}
+        collapsed={collapsed}
+        onMouseEnter={(e) => handleMouseEnter(e, 'kanban')}
+        onMouseLeave={() => setHoveredItem(null)}
+        aria-label="Kanban"
+      >
+        <img
+          src="/static/kanban.png"
+          alt="kanban"
+          style={{
+            width: '22px',
+            height: '25px',
+            marginBottom: '4px',
+            marginLeft: '2px'
+          }}
+        />
+        <span>Kanban</span>
+        {(collapsed || hoveredItem === 'kanban') && (
+          <Tooltip visible={hoveredItem === 'kanban'} top={tooltipTop} collapsed={collapsed}>
+            Kanban
           </Tooltip>
         )}
       </NavItem>
