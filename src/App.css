@@ -71,6 +71,7 @@ button:focus-visible {
   left: 0;
   display: flex;
   flex-direction: column;
+  background-color: #17212a;
 }
 
 .euiCheckableCard__children {
