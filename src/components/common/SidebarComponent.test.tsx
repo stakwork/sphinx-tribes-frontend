@@ -175,3 +175,58 @@ describe('SidebarComponent Chat Section', () => {
     });
   });
 });
+
+describe('SidebarComponent Kanban Navigation', () => {
+  test('should display Kanban navigation item', () => {
+    waitFor(() => {
+      renderSidebar({ defaultCollapsed: false });
+      expect(screen.getByTestId('navbar-kanban')).toBeInTheDocument();
+      expect(screen.getByText('Kanban')).toBeInTheDocument();
+    });
+  });
+
+  test('should navigate to planner page when clicking Kanban item', () => {
+    const historyMock = { push: jest.fn() };
+
+    waitFor(() => {
+      renderSidebar({ defaultCollapsed: false });
+      const kanbanItem = screen.getByTestId('navbar-kanban');
+
+      fireEvent.click(kanbanItem);
+
+      expect(historyMock.push).toHaveBeenCalledWith('/workspace/test-uuid/planner');
+    });
+  });
+
+  test('should display Kanban icon in collapsed state', () => {
+    waitFor(() => {
+      renderSidebar({ defaultCollapsed: true });
+
+      const kanbanItem = screen.getByTestId('navbar-kanban');
+      expect(kanbanItem).toBeInTheDocument();
+
+      const kanbanIcon = kanbanItem.querySelector('img');
+      expect(kanbanIcon).toBeInTheDocument();
+      expect(kanbanIcon).toHaveAttribute('alt', 'kanban');
+    });
+  });
+
+  test('should position Kanban between Settings and Backlog', () => {
+    waitFor(() => {
+      renderSidebar({ defaultCollapsed: false });
+
+      const settingsItem = screen.getByLabelText('Settings');
+      const kanbanItem = screen.getByLabelText('Kanban');
+      const backlogItem = screen.getByLabelText('Feature Backlog');
+
+      const navItems = screen.getAllByRole('button');
+
+      const settingsIndex = navItems.indexOf(settingsItem);
+      const kanbanIndex = navItems.indexOf(kanbanItem);
+      const backlogIndex = navItems.indexOf(backlogItem);
+
+      expect(settingsIndex).toBeLessThan(kanbanIndex);
+      expect(kanbanIndex).toBeLessThan(backlogIndex);
+    });
+  });
+});

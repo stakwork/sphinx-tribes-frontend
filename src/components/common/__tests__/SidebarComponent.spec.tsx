@@ -76,6 +76,17 @@ describe('SidebarComponent Tooltip Tests', () => {
         expect(screen.getByText('Feature Backlog')).toBeInTheDocument();
       });
     });
+
+    test('should show tooltip for kanban when collapsed', async () => {
+      renderSidebar({ defaultCollapsed: true });
+      const kanbanButton = screen.getByLabelText('Kanban');
+
+      fireEvent.mouseEnter(kanbanButton);
+
+      waitFor(() => {
+        expect(screen.getByText('Kanban')).toBeInTheDocument();
+      });
+    });
   });
 
   describe('Action Button Tooltips', () => {
