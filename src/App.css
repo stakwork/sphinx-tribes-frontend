@@ -53,9 +53,11 @@ code {
 
 /* Default focus style for all buttons */
 button:focus-visible {
-  outline: 2px solid #608aff !important; /* Solid blue outline for high contrast */
+  outline: 2px solid #608aff !important;
+  /* Solid blue outline for high contrast */
   outline-offset: 2px;
-  box-shadow: 0 0 8px rgba(96, 138, 255, 0.5); /* Blue glow for visibility */
+  box-shadow: 0 0 8px rgba(96, 138, 255, 0.5);
+  /* Blue glow for visibility */
   transition:
     box-shadow 0.2s ease,
     outline 0.2s ease;
@@ -67,6 +69,8 @@ button:focus-visible {
   right: 0;
   bottom: 0;
   left: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .euiCheckableCard__children {
@@ -131,13 +135,11 @@ button:focus-visible {
 }
 
 #header .euiFieldSearch:focus {
-  background-image: linear-gradient(
-    to top,
-    #5d8fdd,
-    #5d8fdd 2px,
-    transparent 2px,
-    transparent 100%
-  );
+  background-image: linear-gradient(to top,
+      #5d8fdd,
+      #5d8fdd 2px,
+      transparent 2px,
+      transparent 100%);
 }
 
 #header-right {
@@ -521,13 +523,11 @@ textarea.qr-string {
 }
 
 #header .euiFieldSearch:focus {
-  background-image: linear-gradient(
-    to top,
-    #5d8fdd,
-    #5d8fdd 2px,
-    transparent 2px,
-    transparent 100%
-  );
+  background-image: linear-gradient(to top,
+      #5d8fdd,
+      #5d8fdd 2px,
+      transparent 2px,
+      transparent 100%);
 }
 
 #header-right {
@@ -883,7 +883,7 @@ textarea.qr-string {
   border: none;
 }
 
-.react-datepicker__year-dropdown-container > div:not([class*='read-view']),
+.react-datepicker__year-dropdown-container>div:not([class*='read-view']),
 .react-datepicker__month-dropdown {
   background: #fff !important;
   color: #000 !important;
@@ -982,10 +982,7 @@ textarea.qr-string {
   background-color: #ffffff00 !important;
 }
 
-.euiFormRow__fieldWrapper
-  .euiFormControlLayout--group
-  .euiFormLabel
-  .euiFormControlLayout__prepend {
+.euiFormRow__fieldWrapper .euiFormControlLayout--group .euiFormLabel .euiFormControlLayout__prepend {
   background-color: #ffffff00 !important;
 }
 
@@ -1029,8 +1026,8 @@ input::-webkit-search-cancel-button {
 }
 
 .euiPanel:focus-visible,
-.euiPanel > div:focus-visible,
-.euiPanel > div > div:focus-visible {
+.euiPanel>div:focus-visible,
+.euiPanel>div>div:focus-visible {
   outline: none;
   border: none;
 }
