@@ -93,6 +93,7 @@ const ManageSkillsPage: React.FC = observer(() => {
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [permissionsChecked, setPermissionsChecked] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const getIsSuperAdmin = useCallback(async () => {
     const isSuperAdmin = await main.getSuperAdmin();
@@ -107,8 +108,15 @@ const ManageSkillsPage: React.FC = observer(() => {
 
   useEffect(() => {
     const fetchSkills = async () => {
-      await skillsStore.loadAllSkills();
-      setSkills(Array.from(skillsStore.skills.values()));
+      setIsLoading(true);
+      try {
+        await skillsStore.loadAllSkills();
+        setSkills(Array.from(skillsStore.skills.values()));
+      } catch (error) {
+        console.error('Failed to load skills:', error);
+      } finally {
+        setIsLoading(false);
+      }
     };
     fetchSkills();
   }, []);
@@ -124,7 +132,9 @@ const ManageSkillsPage: React.FC = observer(() => {
 
   return (
     <>
-      {!isSuperAdmin && permissionsChecked ? (
+      {!permissionsChecked ? (
+        <Container>Loading permissions...</Container>
+      ) : !isSuperAdmin ? (
         <AdminAccessDenied />
       ) : (
         <Container>
@@ -132,42 +142,48 @@ const ManageSkillsPage: React.FC = observer(() => {
             <Title>Manage Skills Page</Title>
             <AddButton>Add new skill</AddButton>
           </Header>
-          <Table>
-            <thead>
-              <tr>
-                <Th>Skill Name</Th>
-                <Th>Owner</Th>
-                <Th>Type</Th>
-                <Th>Labels</Th>
-                <Th>Status</Th>
-                <Th>Action</Th>
-              </tr>
-            </thead>
-            <tbody>
-              {skills.map((skill) => (
-                <tr key={skill.id}>
-                  <Td>{skill.name}</Td>
-                  <Td>{skill.ownerAlias}</Td>
-                  <Td>{skill.type}</Td>
-                  <Td>{skill.labels.join(', ')}</Td>
-                  <Td>{skill.status}</Td>
-                  <Td>
-                    <ActionMenu>
-                      <Ellipsis onClick={() => handleToggleMenu(skill.id)}>⋮</Ellipsis>
-                      {openMenu === skill.id && (
-                        <Dropdown>
-                          <DropdownItem>Edit</DropdownItem>
-                          <DropdownItemDelete onClick={() => handleDelete(skill.id)}>
-                            Delete
-                          </DropdownItemDelete>
-                        </Dropdown>
-                      )}
-                    </ActionMenu>
-                  </Td>
+          {isLoading ? (
+            <div>Loading skills data...</div>
+          ) : skills.length === 0 ? (
+            <div>No skills found. Add a new skill to get started.</div>
+          ) : (
+            <Table>
+              <thead>
+                <tr>
+                  <Th>Skill Name</Th>
+                  <Th>Owner</Th>
+                  <Th>Type</Th>
+                  <Th>Labels</Th>
+                  <Th>Status</Th>
+                  <Th>Action</Th>
                 </tr>
-              ))}
-            </tbody>
-          </Table>
+              </thead>
+              <tbody>
+                {skills.map((skill) => (
+                  <tr key={skill.id}>
+                    <Td>{skill.name}</Td>
+                    <Td>{skill.ownerAlias}</Td>
+                    <Td>{skill.type}</Td>
+                    <Td>{skill.labels.join(', ')}</Td>
+                    <Td>{skill.status}</Td>
+                    <Td>
+                      <ActionMenu>
+                        <Ellipsis onClick={() => handleToggleMenu(skill.id)}>⋮</Ellipsis>
+                        {openMenu === skill.id && (
+                          <Dropdown>
+                            <DropdownItem>Edit</DropdownItem>
+                            <DropdownItemDelete onClick={() => handleDelete(skill.id)}>
+                              Delete
+                            </DropdownItemDelete>
+                          </Dropdown>
+                        )}
+                      </ActionMenu>
+                    </Td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          )}
         </Container>
       )}
     </>
