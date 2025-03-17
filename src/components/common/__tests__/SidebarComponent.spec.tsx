@@ -37,7 +37,7 @@ const renderSidebar = (props = {}) =>
     </BrowserRouter>
   );
 
-describe('SidebarComponent Tooltips Tests', () => {
+describe('SidebarComponent Tooltip Tests', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (useStores as jest.Mock).mockReturnValue(mockStores);
