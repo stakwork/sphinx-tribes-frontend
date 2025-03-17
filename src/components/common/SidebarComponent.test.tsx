@@ -185,7 +185,7 @@ describe('SidebarComponent Kanban Navigation', () => {
     });
   });
 
-  test('should navigate to planner page when clicking Kanban item', () => {
+  test('should navigate to planner page when clicking the Kanban item', () => {
     const historyMock = { push: jest.fn() };
 
     waitFor(() => {
