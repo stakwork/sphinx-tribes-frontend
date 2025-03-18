@@ -362,7 +362,7 @@ export const HiveChatView: React.FC = observer(() => {
   const [websocketSessionId, setWebsocketSessionId] = useState('');
   const chatHistoryRef = useRef<HTMLDivElement>(null);
   const [title, setTitle] = useState('Talk to Hive - Chat');
-  // const history = useHistory();
+  // const history = useHistory(); // Today work
   const [isUpdatingTitle, setIsUpdatingTitle] = useState(false);
   const [projectId, setProjectId] = useState('');
   const [collapsed, setCollapsed] = useState(true);
