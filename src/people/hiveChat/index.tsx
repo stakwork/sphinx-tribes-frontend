@@ -811,37 +811,47 @@ export const HiveChatView: React.FC = observer(() => {
     (textArtifact && textArtifact.length > 0);
 
   const handleSplashMessage = async (msg: string) => {
+    setMessage(msg);
+    setIsSending(true);
+
     try {
-      setMessage(msg);
-      setShowSplash(false);
+      const socketId = websocketSessionId || localStorage.getItem('websocket_token') || '';
 
-      const tempMessage: ChatMessage = {
-        id: `temp-${Date.now()}`,
-        role: 'user',
-        message: msg,
-        timestamp: new Date().toISOString(),
-        status: 'sending',
-        source: 'user'
-      };
+      const sentMessage = await chat.sendMessage(
+        chatId,
+        msg,
+        selectedModel.value,
+        socketId,
+        uuid,
+        isBuild,
+        undefined,
+        pdfUrl,
+        actionArtifact
+      );
 
-      chat.addMessage(tempMessage);
-
-      if (chatHistoryRef.current) {
-        chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
+      if (sentMessage) {
+        chat.addMessage(sentMessage);
+        setMessage('');
+        setPdfUrl('');
+        const textarea = document.querySelector('textarea');
+        if (textarea) {
+          textarea.style.height = '60px';
+        }
+        if (chatHistoryRef.current) {
+          chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
+        }
       }
-
-      await handleSendMessage();
-
-      await refreshChatHistory();
     } catch (error) {
-      console.error('Error handling splash message:', error);
+      console.error('Error sending message:', error);
       ui.setToasts([
         {
           title: 'Error',
           color: 'danger',
-          text: 'Failed to send message from splash screen'
+          text: 'Failed to send message'
         }
       ]);
+    } finally {
+      setIsSending(false);
     }
   };
 
