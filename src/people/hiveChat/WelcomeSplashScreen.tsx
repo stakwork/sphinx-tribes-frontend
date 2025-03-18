@@ -11,7 +11,10 @@ const SplashScreenContainer = styled.div`
   text-align: center;
   background: linear-gradient(to bottom, #ffffff, #f8f9fa);
   border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.08),
+    0 2px 4px rgba(0, 0, 0, 0.05),
+    0 0 1px rgba(0, 0, 0, 0.1);
   margin: 24px auto;
   max-width: 1000px;
   position: relative;
@@ -20,6 +23,10 @@ const SplashScreenContainer = styled.div`
   @media (max-width: 768px) {
     padding: 24px 16px;
     margin: 12px auto;
+    box-shadow:
+      0 4px 16px rgba(0, 0, 0, 0.06),
+      0 1px 3px rgba(0, 0, 0, 0.04),
+      0 0 1px rgba(0, 0, 0, 0.08);
   }
 
   &::before {
