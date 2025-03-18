@@ -19,6 +19,7 @@ import VisualScreenViewer from '../widgetViews/workspace/VisualScreenViewer.tsx'
 import { ModelOption } from './modelSelector.tsx';
 import { ActionArtifactRenderer } from './ActionArtifactRenderer';
 import ThinkingModeToggle from './ThinkingModeToggle.tsx';
+import SplashScreen from './ChatSplashScreen';
 
 interface RouteParams {
   uuid: string;
@@ -43,7 +44,7 @@ interface LogEntry {
 const Container = styled.div<{ collapsed: boolean }>`
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 95vh;
   padding: 0 25px 0 35px;
   overflow: hidden;
   background: var(--Search-bar-background, #f2f3f5);
@@ -144,6 +145,17 @@ const ChatHistory = styled.div`
   margin: 1px 0;
   border-radius: 8px;
   min-height: 0;
+  position: relative;
+`;
+
+const SplashContainer = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  max-width: 800px;
+  padding: 20px;
 `;
 
 const HiveThoughts = styled.h6`
@@ -386,6 +398,7 @@ export const HiveChatView: React.FC = observer(() => {
     value: 'gpt-4o'
   });
   const [artifactTab, setArtifactTab] = useState<'visual' | 'code' | 'text'>('code');
+  const [showSplash, setShowSplash] = useState(true);
   useBrowserTabTitle('Hive Chat');
 
   if (isVerboseLoggingEnabled) {
@@ -727,6 +740,7 @@ export const HiveChatView: React.FC = observer(() => {
         chat.addMessage(sentMessage);
         setMessage('');
         setPdfUrl('');
+        setShowSplash(false);
 
         const textarea = document.querySelector('textarea');
         if (textarea) {
@@ -796,6 +810,41 @@ export const HiveChatView: React.FC = observer(() => {
     (codeArtifact && codeArtifact.length > 0) ||
     (textArtifact && textArtifact.length > 0);
 
+  const handleSplashMessage = async (msg: string) => {
+    try {
+      setMessage(msg);
+      setShowSplash(false);
+
+      const tempMessage: ChatMessage = {
+        id: `temp-${Date.now()}`,
+        role: 'user',
+        message: msg,
+        timestamp: new Date().toISOString(),
+        status: 'sending',
+        source: 'user'
+      };
+
+      chat.addMessage(tempMessage);
+
+      if (chatHistoryRef.current) {
+        chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
+      }
+
+      await handleSendMessage();
+
+      await refreshChatHistory();
+    } catch (error) {
+      console.error('Error handling splash message:', error);
+      ui.setToasts([
+        {
+          title: 'Error',
+          color: 'danger',
+          text: 'Failed to send message from splash screen'
+        }
+      ]);
+    }
+  };
+
   if (loading) {
     return (
       <Container collapsed={collapsed}>
@@ -855,6 +904,14 @@ export const HiveChatView: React.FC = observer(() => {
 
             <ChatBody>
               <ChatHistory ref={chatHistoryRef}>
+                {showSplash && messages.length === 0 && (
+                  <SplashContainer>
+                    <SplashScreen
+                      user={{ alias: ui.meInfo?.owner_alias || 'User' }}
+                      onSendMessage={handleSplashMessage}
+                    />
+                  </SplashContainer>
+                )}
                 {messages.map((msg: ChatMessage) => (
                   <React.Fragment key={msg.id}>
                     <MessageBubble isUser={msg.role === 'user'}>
