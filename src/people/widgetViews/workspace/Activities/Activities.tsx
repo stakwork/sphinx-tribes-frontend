@@ -1,15 +1,20 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/typedef */
 import { observer } from 'mobx-react-lite';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { activityStore } from 'store/activityStore';
+import MaterialIcon from '@material/react-material-icon';
+import { EuiLoadingSpinner } from '@elastic/eui';
 import styled from 'styled-components';
+import { userHasRole } from 'helpers';
 import { AuthorType, ContentType, Feature, IActivity } from 'store/interface';
 import { useStores } from 'store';
 import { useParams } from 'react-router-dom';
 import { renderMarkdown } from 'people/utils/RenderMarkdown';
 import SidebarComponent from 'components/common/SidebarComponent';
+import { Body } from 'pages/tickets/style';
 import { Phase } from '../interface';
+import { FullNoBudgetWrap, FullNoBudgetText } from '../style';
 import ActivitiesHeader from './header';
 
 export const ActivitiesContainer = styled.div`
@@ -389,6 +394,10 @@ const Activities = observer(() => {
   const [isPosting, setIsPosting] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [showDetailsMobile, setShowDetailsMobile] = useState(false);
+  const [userRoles, setUserRoles] = useState<any[]>([]);
+  const [workspaceData, setWorkspaceData] = useState<any>(null);
+  const [permissionsChecked, setPermissionsChecked] = useState<boolean>(false);
+  const [loading, setLoading] = useState(true);
 
   let interval: NodeJS.Timeout | null = null;
 
@@ -765,6 +774,52 @@ const Activities = observer(() => {
     };
   }, [isMobile, showDetailsMobile]);
 
+  const getWorkspaceData = useCallback(async () => {
+    if (!uuid) return;
+    try {
+      const data = await main.getUserWorkspaceByUuid(uuid);
+      setWorkspaceData(data);
+    } catch (error) {
+      console.error('Error fetching workspace data:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [uuid, main]);
+
+  const getUserRoles = useCallback(async () => {
+    if (!uuid || !ui.meInfo?.owner_pubkey) {
+      setPermissionsChecked(true);
+      return;
+    }
+
+    try {
+      const roles = await main.getUserRoles(uuid, ui.meInfo.owner_pubkey);
+      setUserRoles(roles);
+    } catch (error) {
+      console.error('Error fetching user roles:', error);
+    } finally {
+      setPermissionsChecked(true);
+    }
+  }, [uuid, ui.meInfo?.owner_pubkey, main]);
+
+  useEffect(() => {
+    getWorkspaceData();
+    getUserRoles();
+  }, [getWorkspaceData, getUserRoles]);
+
+  const editWorkspaceDisabled = useMemo(() => {
+    if (!ui.meInfo) return true;
+    if (!workspaceData?.owner_pubkey) return false;
+
+    const isWorkspaceAdmin = workspaceData.owner_pubkey === ui.meInfo.owner_pubkey;
+    return (
+      !isWorkspaceAdmin &&
+      !userHasRole(main.bountyRoles, userRoles, 'EDIT ORGANIZATION') &&
+      !userHasRole(main.bountyRoles, userRoles, 'ADD USER') &&
+      !userHasRole(main.bountyRoles, userRoles, 'VIEW REPORT')
+    );
+  }, [workspaceData, ui.meInfo, userRoles, main.bountyRoles]);
+
   const renderDetailsPanel = () => {
     if (!selectedActivity) {
       return (
@@ -832,6 +887,33 @@ const Activities = observer(() => {
       </>
     );
   };
+
+  if (loading || !permissionsChecked) {
+    return (
+      <Body style={{ justifyContent: 'center', alignItems: 'center' }}>
+        <EuiLoadingSpinner size="xl" />
+      </Body>
+    );
+  }
+
+  if (editWorkspaceDisabled) {
+    return (
+      <FullNoBudgetWrap>
+        <MaterialIcon
+          icon={'lock'}
+          style={{
+            fontSize: 30,
+            cursor: 'pointer',
+            color: '#ccc'
+          }}
+        />
+        <FullNoBudgetText>
+          You have restricted permissions and you are unable to view this page. Reach out to the
+          workspace admin to get them updated.
+        </FullNoBudgetText>
+      </FullNoBudgetWrap>
+    );
+  }
 
   return (
     <>
