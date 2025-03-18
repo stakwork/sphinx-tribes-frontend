@@ -1,14 +1,14 @@
-import React from "react"
-import { useState } from "react"
-import styled, { keyframes } from "styled-components"
+import React from 'react';
+import { useState } from 'react';
+import styled, { keyframes } from 'styled-components';
 
 interface User {
-  alias: string
+  alias: string;
 }
 
 interface SplashScreenProps {
-  user: User
-  onSendMessage: (message: string) => void
+  user: User;
+  onSendMessage: (message: string) => void;
 }
 
 const ShapesContainer = styled.div`
@@ -20,7 +20,7 @@ const ShapesContainer = styled.div`
   left: 0;
   z-index: -1;
   border-radius: 16px;
-`
+`;
 
 const Circle1 = styled.div`
   position: absolute;
@@ -32,7 +32,7 @@ const Circle1 = styled.div`
   left: -100px;
   filter: blur(60px);
   opacity: 0.2;
-`
+`;
 
 const Circle2 = styled.div`
   position: absolute;
@@ -44,7 +44,7 @@ const Circle2 = styled.div`
   right: -80px;
   filter: blur(60px);
   opacity: 0.2;
-`
+`;
 
 const Circle3 = styled.div`
   position: absolute;
@@ -56,7 +56,7 @@ const Circle3 = styled.div`
   left: 30%;
   filter: blur(50px);
   opacity: 0.15;
-`
+`;
 
 const SplashScreenContainer = styled.div`
   position: relative;
@@ -76,7 +76,7 @@ const SplashScreenContainer = styled.div`
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
   overflow: hidden;
-`
+`;
 
 const WelcomeTagline = styled.p`
   font-size: 1.2rem;
@@ -85,7 +85,7 @@ const WelcomeTagline = styled.p`
   line-height: 1.6;
   max-width: 600px;
   text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
-`
+`;
 
 const ButtonsContainer = styled.div`
   display: flex;
@@ -93,11 +93,11 @@ const ButtonsContainer = styled.div`
   justify-content: center;
   gap: 1.2rem;
   width: 100%;
-  
+
   @media (max-width: 768px) {
     flex-direction: column;
   }
-`
+`;
 
 const ActionButton = styled.button`
   background: rgba(255, 255, 255, 0.7);
@@ -114,18 +114,18 @@ const ActionButton = styled.button`
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  
+
   &:hover {
     background: rgba(255, 255, 255, 0.9);
     transform: translateY(-3px);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
     border-color: rgba(74, 108, 247, 0.3);
   }
-  
+
   &:active {
     transform: translateY(0);
   }
-`
+`;
 
 const gradientAnimation = keyframes`
   0% {
@@ -137,7 +137,7 @@ const gradientAnimation = keyframes`
   100% {
     background-position: 0% 50%;
   }
-`
+`;
 
 const WelcomeHeader = styled.h1`
   font-size: 3rem;
@@ -149,17 +149,17 @@ const WelcomeHeader = styled.h1`
   -webkit-text-fill-color: transparent;
   background-clip: text;
   animation: ${gradientAnimation} 6s ease infinite;
-`
+`;
 
 const SplashScreen: React.FC<SplashScreenProps> = ({ user, onSendMessage }) => {
-  const [visible, setVisible] = useState(true)
+  const [visible, setVisible] = useState(true);
 
   const handleButtonClick = (message: string) => {
-    onSendMessage(message)
-    setVisible(false)
-  }
+    onSendMessage(message);
+    setVisible(false);
+  };
 
-  if (!visible) return null
+  if (!visible) return null;
 
   return (
     <SplashScreenContainer>
@@ -169,20 +169,24 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ user, onSendMessage }) => {
         <Circle3 />
       </ShapesContainer>
       <WelcomeHeader>Hello, {user.alias}</WelcomeHeader>
-      <WelcomeTagline>Welcome to Hive Chat, AI Native Product Development. How can I help you today?</WelcomeTagline>
+      <WelcomeTagline>
+        Welcome to Hive Chat, AI Native Product Development. How can I help you today?
+      </WelcomeTagline>
       <ButtonsContainer>
-        <ActionButton onClick={() => handleButtonClick("Make a change to the leaderboard")}>
+        <ActionButton onClick={() => handleButtonClick('Make a change to the leaderboard')}>
           Make a change to the leaderboard
         </ActionButton>
-        <ActionButton onClick={() => handleButtonClick("Update the ticket editor component")}>
+        <ActionButton onClick={() => handleButtonClick('Update the ticket editor component')}>
           Update the ticket editor component
         </ActionButton>
-        <ActionButton onClick={() => handleButtonClick("Can you explain how to create a new feature?")}>
+        <ActionButton
+          onClick={() => handleButtonClick('Can you explain how to create a new feature?')}
+        >
           Can you explain how to create a new feature?
         </ActionButton>
       </ButtonsContainer>
     </SplashScreenContainer>
-  )
-}
+  );
+};
 
-export default SplashScreen
+export default SplashScreen;
