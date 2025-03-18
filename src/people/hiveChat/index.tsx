@@ -145,6 +145,7 @@ const ChatHistory = styled.div`
   margin: 1px 0;
   border-radius: 8px;
   min-height: 0;
+  position: relative;
 `;
 
 const HiveThoughts = styled.h6`
@@ -307,6 +308,15 @@ const CopyButton = styled.button<{ $isUser?: boolean }>`
     color: ${(props) => (props.$isUser ? 'white' : '#202124')};
     border-radius: 50%;
   }
+`;
+
+const CenteredWelcomeContainer = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 1000px;
+  padding: 48px 32px;
 `;
 
 const connectToLogWebSocket = (
@@ -911,11 +921,13 @@ export const HiveChatView: React.FC = observer(() => {
             <ChatBody>
               <ChatHistory ref={chatHistoryRef}>
                 {isNewChat && !hasInteracted ? (
-                  <WelcomeSplashScreen
-                    userAlias={ui.meInfo?.owner_alias || ''}
-                    onActionClick={handleQuickAction}
-                    isSending={isSending}
-                  />
+                  <CenteredWelcomeContainer>
+                    <WelcomeSplashScreen
+                      userAlias={ui.meInfo?.owner_alias || ''}
+                      onActionClick={handleQuickAction}
+                      isSending={isSending}
+                    />
+                  </CenteredWelcomeContainer>
                 ) : (
                   <>
                     {messages.map((msg: ChatMessage) => (
