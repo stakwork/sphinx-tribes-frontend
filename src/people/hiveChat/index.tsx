@@ -19,6 +19,7 @@ import VisualScreenViewer from '../widgetViews/workspace/VisualScreenViewer.tsx'
 import { ModelOption } from './modelSelector.tsx';
 import { ActionArtifactRenderer } from './ActionArtifactRenderer';
 import ThinkingModeToggle from './ThinkingModeToggle.tsx';
+import WelcomeSplashScreen from './WelcomeSplashScreen';
 
 interface RouteParams {
   uuid: string;
@@ -93,7 +94,7 @@ const ViewerHeader = styled.div`
 const ChatBody = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 0 5px 0px 0 !important;
+  padding: 0 5px 60px 0 !important;
   flex: 1;
   overflow: hidden;
 `;
@@ -386,6 +387,7 @@ export const HiveChatView: React.FC = observer(() => {
     value: 'gpt-4o'
   });
   const [artifactTab, setArtifactTab] = useState<'visual' | 'code' | 'text'>('code');
+  const [hasInteracted, setHasInteracted] = useState(false);
   useBrowserTabTitle('Hive Chat');
 
   if (isVerboseLoggingEnabled) {
@@ -701,9 +703,60 @@ export const HiveChatView: React.FC = observer(() => {
     });
   };
 
+  const handleQuickAction = async (actionText: string) => {
+    setMessage(actionText);
+    setHasInteracted(true);
+
+    setIsSending(true);
+    try {
+      let socketId = websocketSessionId;
+      if (socketId === '') {
+        socketId = localStorage.getItem('websocket_token') || '';
+      }
+
+      const sentMessage = await chat.sendMessage(
+        chatId,
+        actionText,
+        selectedModel.value,
+        socketId,
+        uuid,
+        isBuild,
+        undefined,
+        pdfUrl,
+        actionArtifact
+      );
+
+      if (sentMessage) {
+        chat.addMessage(sentMessage);
+        setMessage('');
+        setPdfUrl('');
+
+        const textarea = document.querySelector('textarea');
+        if (textarea) {
+          textarea.style.height = '60px';
+        }
+        if (chatHistoryRef.current) {
+          chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
+        }
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      ui.setToasts([
+        {
+          title: 'Error',
+          color: 'danger',
+          text: 'Failed to send message'
+        }
+      ]);
+    } finally {
+      setIsSending(false);
+    }
+  };
+
   const handleSendMessage = async () => {
     if (!message.trim() || isSending) return;
 
+    setHasInteracted(true);
     setIsSending(true);
     try {
       let socketId = websocketSessionId;
@@ -796,6 +849,8 @@ export const HiveChatView: React.FC = observer(() => {
     (codeArtifact && codeArtifact.length > 0) ||
     (textArtifact && textArtifact.length > 0);
 
+  const isNewChat = messages && messages.length === 0;
+
   if (loading) {
     return (
       <Container collapsed={collapsed}>
@@ -855,56 +910,66 @@ export const HiveChatView: React.FC = observer(() => {
 
             <ChatBody>
               <ChatHistory ref={chatHistoryRef}>
-                {messages.map((msg: ChatMessage) => (
-                  <React.Fragment key={msg.id}>
-                    <MessageBubble isUser={msg.role === 'user'}>
-                      {renderMarkdown(msg.message, {
-                        codeBlockBackground: '#282c34',
-                        textColor: '#abb2bf',
-                        bubbleTextColor: msg.role === 'user' ? 'white' : '',
-                        borderColor: '#444',
-                        codeBlockFont: 'Courier New'
-                      })}
-                      {msg.role !== 'user' && (
-                        <CopyButton
-                          onClick={() => {
-                            navigator.clipboard.writeText(msg.message);
-                            const button = document.getElementById(`copy-${msg.id}`);
-                            if (button) {
-                              button.textContent = 'done';
-                              setTimeout(() => {
-                                button.textContent = 'content_copy';
-                              }, 2000);
-                            }
-                          }}
-                        >
-                          <MaterialIcon
-                            id={`copy-${msg.id}`}
-                            icon="content_copy"
-                            style={{ fontSize: '16px' }}
+                {isNewChat && !hasInteracted ? (
+                  <WelcomeSplashScreen
+                    userAlias={ui.meInfo?.owner_alias || ''}
+                    onActionClick={handleQuickAction}
+                    isSending={isSending}
+                  />
+                ) : (
+                  <>
+                    {messages.map((msg: ChatMessage) => (
+                      <React.Fragment key={msg.id}>
+                        <MessageBubble isUser={msg.role === 'user'}>
+                          {renderMarkdown(msg.message, {
+                            codeBlockBackground: '#282c34',
+                            textColor: '#abb2bf',
+                            bubbleTextColor: msg.role === 'user' ? 'white' : '',
+                            borderColor: '#444',
+                            codeBlockFont: 'Courier New'
+                          })}
+                          {msg.role !== 'user' && (
+                            <CopyButton
+                              onClick={() => {
+                                navigator.clipboard.writeText(msg.message);
+                                const button = document.getElementById(`copy-${msg.id}`);
+                                if (button) {
+                                  button.textContent = 'done';
+                                  setTimeout(() => {
+                                    button.textContent = 'content_copy';
+                                  }, 2000);
+                                }
+                              }}
+                            >
+                              <MaterialIcon
+                                id={`copy-${msg.id}`}
+                                icon="content_copy"
+                                style={{ fontSize: '16px' }}
+                              />
+                            </CopyButton>
+                          )}
+                        </MessageBubble>
+                        {!isActionSend && (
+                          <ActionArtifactRenderer
+                            messageId={msg.id}
+                            chatId={chatId}
+                            websocketSessionId={websocketSessionId}
+                            setIsActionSend={setIsActionSend}
                           />
-                        </CopyButton>
-                      )}
-                    </MessageBubble>
-                    {!isActionSend && (
-                      <ActionArtifactRenderer
-                        messageId={msg.id}
-                        chatId={chatId}
-                        websocketSessionId={websocketSessionId}
-                        setIsActionSend={setIsActionSend}
-                      />
+                        )}
+                      </React.Fragment>
+                    ))}
+                    {(isChainVisible || isActionSend) && (
+                      <MessageBubble isUser={false}>
+                        <HiveThoughts>Hive - Chain of Thought</HiveThoughts>
+                        <p>
+                          {lastLogLine
+                            ? lastLogLine
+                            : `Hi ${ui.meInfo?.owner_alias}, I've got your message. Let me have a think.`}
+                        </p>
+                      </MessageBubble>
                     )}
-                  </React.Fragment>
-                ))}
-                {(isChainVisible || isActionSend) && (
-                  <MessageBubble isUser={false}>
-                    <HiveThoughts>Hive - Chain of Thought</HiveThoughts>
-                    <p>
-                      {lastLogLine
-                        ? lastLogLine
-                        : `Hi ${ui.meInfo?.owner_alias}, I've got your message. Let me have a think.`}
-                    </p>
-                  </MessageBubble>
+                  </>
                 )}
               </ChatHistory>
               <InputContainer>
