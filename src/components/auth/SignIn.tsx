@@ -182,7 +182,7 @@ function SignIn(props: AuthProps) {
                   activecolor={'#5078F2'}
                   shadowcolor={'rgba(97, 138, 255, 0.5)'}
                 />
-                {window.location.href.includes('localhost') && (
+                {(window.location.href.includes('localhost') || window.location.host.endsWith('-13008.app.github.dev')) && (
                   <IconButton
                     text={'Login as Test User'}
                     height={48}
