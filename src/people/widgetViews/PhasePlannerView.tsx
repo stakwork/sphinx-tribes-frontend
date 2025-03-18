@@ -6,6 +6,9 @@ import { BountyStatus, Feature, Ticket, TicketMessage, TicketStatus } from 'stor
 import MaterialIcon from '@material/react-material-icon';
 import TicketEditor from 'components/common/TicketEditor/TicketEditor';
 import { useStores } from 'store';
+import { userHasRole } from 'helpers';
+import { EuiLoadingSpinner } from '@elastic/eui';
+import { Body } from 'pages/tickets/style';
 import {
   EuiDragDropContext,
   EuiDroppable,
@@ -41,7 +44,9 @@ import {
   WorkspaceName,
   PhaseFlexContainer,
   ActionButton,
-  DisplayBounties
+  DisplayBounties,
+  FullNoBudgetWrap,
+  FullNoBudgetText
 } from './workspace/style';
 import { Phase, Toast } from './workspace/interface';
 import { EditableField } from './workspace/EditableField.tsx';
@@ -103,7 +108,7 @@ const PhasePlannerView: React.FC = observer(() => {
   const [scopePreviewMode, setScopePreviewMode] = useState<'preview' | 'edit'>('preview');
   const [designPreviewMode, setDesignPreviewMode] = useState<'preview' | 'edit'>('preview');
   const [toasts, setToasts] = useState<Toast[]>([]);
-  const { main } = useStores();
+  const { main, ui } = useStores();
   const history = useHistory();
   const tickets = phaseTicketStore.getPhaseTickets(phase_uuid);
   const [page, setPage] = useState<number>(1);
@@ -118,7 +123,49 @@ const PhasePlannerView: React.FC = observer(() => {
   const { isEnabled: isGeneratePhasePlanEnabled } = useFeatureFlag('phaseplanning');
   const [isConversionModalOpen, setIsConversionModalOpen] = useState(false);
   const [isConverting, setIsConverting] = useState(false);
+  const [workspaceData, setWorkspaceData] = useState<any>(null);
+  const [userRoles, setUserRoles] = useState<any[]>([]);
+  const [permissionsChecked, setPermissionsChecked] = useState<boolean>(false);
   useBrowserTabTitle('Phase Planner');
+
+  const editWorkspaceDisabled = React.useMemo(() => {
+    if (!ui.meInfo) return true;
+    if (!workspaceData?.owner_pubkey) return false;
+
+    const isWorkspaceAdmin = workspaceData.owner_pubkey === ui.meInfo.owner_pubkey;
+    return (
+      !isWorkspaceAdmin &&
+      !userHasRole(main.bountyRoles, userRoles, 'EDIT ORGANIZATION') &&
+      !userHasRole(main.bountyRoles, userRoles, 'ADD USER') &&
+      !userHasRole(main.bountyRoles, userRoles, 'VIEW REPORT')
+    );
+  }, [workspaceData, ui.meInfo, userRoles, main.bountyRoles]);
+
+  const getWorkspaceData = React.useCallback(async () => {
+    if (!featureData?.workspace_uuid) return;
+    try {
+      const data = await main.getUserWorkspaceByUuid(featureData.workspace_uuid);
+      setWorkspaceData(data);
+    } catch (error) {
+      console.error('Error fetching workspace data:', error);
+    }
+  }, [featureData?.workspace_uuid, main]);
+
+  const getUserRoles = React.useCallback(async () => {
+    if (!featureData?.workspace_uuid || !ui.meInfo?.owner_pubkey) {
+      setPermissionsChecked(true);
+      return;
+    }
+
+    try {
+      const roles = await main.getUserRoles(featureData.workspace_uuid, ui.meInfo.owner_pubkey);
+      setUserRoles(roles);
+    } catch (error) {
+      console.error('Error fetching user roles:', error);
+    } finally {
+      setPermissionsChecked(true);
+    }
+  }, [featureData?.workspace_uuid, ui.meInfo?.owner_pubkey, main]);
 
   const handleSelectTicket = (ticketId: string) => {
     setSelectedTickets((prev) => ({
@@ -407,37 +454,61 @@ const PhasePlannerView: React.FC = observer(() => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const feature = await getFeatureData();
-        const phase = await getPhaseData();
-        const phaseTickets = await getPhaseTickets();
-
-        if (!feature || !phase || !Array.isArray(phaseTickets)) {
+        if (!feature) {
           history.push('/');
-        } else {
-          phaseTicketStore.clearPhaseTickets(phase_uuid);
+          return;
+        }
 
-          for (const ticket of phaseTickets) {
-            if (ticket.UUID) {
-              ticket.uuid = ticket.UUID;
+        setFeatureData(feature);
+
+        await getWorkspaceData();
+        await getUserRoles();
+
+        if (!editWorkspaceDisabled) {
+          const phase = await getPhaseData();
+          const phaseTickets = await getPhaseTickets();
+
+          if (!phase || !Array.isArray(phaseTickets)) {
+            history.push('/');
+          } else {
+            phaseTicketStore.clearPhaseTickets(phase_uuid);
+
+            for (const ticket of phaseTickets) {
+              if (ticket.UUID) {
+                ticket.uuid = ticket.UUID;
+              }
+              phaseTicketStore.addTicket(ticket);
             }
-            phaseTicketStore.addTicket(ticket);
+            setPhaseData(phase);
+            setPurpose(phase.phase_purpose || '');
+            setOutcome(phase.phase_outcome || '');
+            setScope(phase.phase_scope || '');
+            setDesign(phase.phase_design || '');
           }
-          setFeatureData(feature);
-          setPhaseData(phase);
-          setPurpose(phase.phase_purpose || '');
-          setOutcome(phase.phase_outcome || '');
-          setScope(phase.phase_scope || '');
-          setDesign(phase.phase_design || '');
         }
       } catch (error) {
         console.error('Error fetching data:', error);
         history.push('/');
+      } finally {
+        setPermissionsChecked(true);
+        setLoading(false);
       }
     };
 
     fetchData();
-  }, [getFeatureData, getPhaseData, history, getPhaseTickets, phase_uuid]);
+  }, [
+    getFeatureData,
+    getPhaseData,
+    history,
+    getPhaseTickets,
+    phase_uuid,
+    getWorkspaceData,
+    getUserRoles,
+    editWorkspaceDisabled
+  ]);
 
   const handleClose = () => {
     history.push(`/workspace/${featureData?.workspace_uuid}/feature/${feature_uuid}`);
@@ -608,6 +679,33 @@ const PhasePlannerView: React.FC = observer(() => {
       setIsConversionModalOpen(false);
     }
   };
+
+  if (loading || !permissionsChecked) {
+    return (
+      <Body style={{ justifyContent: 'center', alignItems: 'center' }}>
+        <EuiLoadingSpinner size="xl" />
+      </Body>
+    );
+  }
+
+  if (editWorkspaceDisabled) {
+    return (
+      <FullNoBudgetWrap>
+        <MaterialIcon
+          icon={'lock'}
+          style={{
+            fontSize: 30,
+            cursor: 'pointer',
+            color: '#ccc'
+          }}
+        />
+        <FullNoBudgetText>
+          You have restricted permissions and you are unable to view this page. Reach out to the
+          workspace admin to get them updated.
+        </FullNoBudgetText>
+      </FullNoBudgetWrap>
+    );
+  }
 
   return (
     <MainContent collapsed={collapsed}>

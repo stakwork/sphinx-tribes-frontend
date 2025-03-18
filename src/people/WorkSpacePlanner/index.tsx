@@ -4,6 +4,9 @@ import { useParams } from 'react-router-dom';
 import { EuiLoadingSpinner } from '@elastic/eui';
 import styled from 'styled-components';
 import { useBountyCardStore } from 'store/bountyCard';
+import { userHasRole } from 'helpers';
+import MaterialIcon from '@material/react-material-icon';
+import { Body } from 'pages/tickets/style';
 import { BountyCard, BountyCardStatus } from 'store/interface';
 import history from 'config/history';
 import { autorun } from 'mobx';
@@ -11,6 +14,7 @@ import { useStores } from '../../store';
 import { colors } from '../../config';
 import SidebarComponent from '../../components/common/SidebarComponent';
 import { useBrowserTabTitle } from '../../hooks';
+import { FullNoBudgetWrap, FullNoBudgetText } from '../widgetViews/workspace/style';
 import { WorkspacePlannerHeader } from './WorkspacePlannerHeader';
 import BountyCardComp from './BountyCard';
 
@@ -146,13 +150,45 @@ const getCardStatus = (card: BountyCard) => {
 
 const WorkspacePlanner = observer(() => {
   const { uuid } = useParams<{ uuid: string }>();
-  const { main } = useStores();
+  const { main, ui } = useStores();
   const [loading, setLoading] = useState(true);
   const [workspaceData, setWorkspaceData] = useState<any>(null);
   const [filterToggle, setFilterToggle] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [collapsed, setCollapsed] = useState(true);
   const bountyCardStore = useBountyCardStore(uuid);
+
+  const [userRoles, setUserRoles] = useState<any[]>([]);
+  const [permissionsChecked, setPermissionsChecked] = useState<boolean>(false);
+
+  const editWorkspaceDisabled = React.useMemo(() => {
+    if (!ui.meInfo) return true;
+    if (!workspaceData?.owner_pubkey) return false;
+
+    const isWorkspaceAdmin = workspaceData.owner_pubkey === ui.meInfo.owner_pubkey;
+    return (
+      !isWorkspaceAdmin &&
+      !userHasRole(main.bountyRoles, userRoles, 'EDIT ORGANIZATION') &&
+      !userHasRole(main.bountyRoles, userRoles, 'ADD USER') &&
+      !userHasRole(main.bountyRoles, userRoles, 'VIEW REPORT')
+    );
+  }, [workspaceData, ui.meInfo, userRoles, main.bountyRoles]);
+
+  const getUserRoles = React.useCallback(async () => {
+    if (!uuid || !ui.meInfo?.owner_pubkey) {
+      setPermissionsChecked(true);
+      return;
+    }
+
+    try {
+      const roles = await main.getUserRoles(uuid, ui.meInfo.owner_pubkey);
+      setUserRoles(roles);
+    } catch (error) {
+      console.error('Error fetching user roles:', error);
+    } finally {
+      setPermissionsChecked(true);
+    }
+  }, [uuid, ui.meInfo?.owner_pubkey, main]);
 
   useBrowserTabTitle('Workspace Planner');
 
@@ -178,11 +214,16 @@ const WorkspacePlanner = observer(() => {
       if (!uuid) return;
       const data = await main.getUserWorkspaceByUuid(uuid);
       setWorkspaceData(data);
-      bountyCardStore.loadWorkspaceBounties();
+
+      if (data) {
+        await getUserRoles();
+        bountyCardStore.loadWorkspaceBounties();
+      }
+
       setLoading(false);
     };
     fetchWorkspaceData();
-  }, [main, uuid, bountyCardStore]);
+  }, [main, uuid, bountyCardStore, getUserRoles]);
 
   const handleToggleInverse = () => {
     bountyCardStore.toggleInverseSearch();
@@ -199,13 +240,36 @@ const WorkspacePlanner = observer(() => {
     };
   }, [bountyCardStore]);
 
-  if (loading) {
+  if (loading || !permissionsChecked) {
     return (
       <PlannerContainer collapsed={collapsed}>
         <LoadingContainer>
           <EuiLoadingSpinner size="xl" />
         </LoadingContainer>
       </PlannerContainer>
+    );
+  }
+
+  if (editWorkspaceDisabled) {
+    return (
+      <Body
+        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}
+      >
+        <FullNoBudgetWrap>
+          <MaterialIcon
+            icon={'lock'}
+            style={{
+              fontSize: 30,
+              cursor: 'pointer',
+              color: '#ccc'
+            }}
+          />
+          <FullNoBudgetText>
+            You have restricted permissions and you are unable to view this page. Reach out to the
+            workspace admin to get them updated.
+          </FullNoBudgetText>
+        </FullNoBudgetWrap>
+      </Body>
     );
   }
 

@@ -9,7 +9,12 @@ import { Feature, FeatureStatus, FeatureTabLabels, TAB_TO_STATUS_MAP } from 'sto
 import SidebarComponent from 'components/common/SidebarComponent';
 import { toCapitalize } from 'helpers/helpers-extended';
 import { DropResult } from 'react-beautiful-dnd';
+import { useStores } from 'store';
+import { userHasRole } from 'helpers';
+import { Body } from 'pages/tickets/style';
+import { EuiLoadingSpinner } from '@elastic/eui';
 import ActivitiesHeader from '../HiveFeaturesView/header';
+import { FullNoBudgetWrap, FullNoBudgetText } from '../style';
 import TabBar from './TabBar';
 
 const MainContainer = styled.div`
@@ -307,6 +312,7 @@ const FeatureBacklogView = observer(() => {
   const params = useParams<{ workspace_uuid?: string }>();
   const workspaceUuid = params.workspace_uuid ?? '';
   const history = useHistory();
+  const { main, ui } = useStores();
   const [collapsed, setCollapsed] = useState(false);
   const [features, setFeatures] = useState<Feature[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -317,6 +323,50 @@ const FeatureBacklogView = observer(() => {
     const params = new URLSearchParams(window.location.search);
     return (params.get('tab') as FeatureTabLabels) || 'focus';
   });
+
+  const [workspaceData, setWorkspaceData] = useState<any>(null);
+  const [userRoles, setUserRoles] = useState<any[]>([]);
+  const [permissionsChecked, setPermissionsChecked] = useState<boolean>(false);
+  const [loading, setLoading] = useState(true);
+
+  const editWorkspaceDisabled = React.useMemo(() => {
+    if (!ui.meInfo) return true;
+    if (!workspaceData?.owner_pubkey) return false;
+
+    const isWorkspaceAdmin = workspaceData.owner_pubkey === ui.meInfo.owner_pubkey;
+    return (
+      !isWorkspaceAdmin &&
+      !userHasRole(main.bountyRoles, userRoles, 'EDIT ORGANIZATION') &&
+      !userHasRole(main.bountyRoles, userRoles, 'ADD USER') &&
+      !userHasRole(main.bountyRoles, userRoles, 'VIEW REPORT')
+    );
+  }, [workspaceData, ui.meInfo, userRoles, main.bountyRoles]);
+
+  const getWorkspaceData = React.useCallback(async () => {
+    if (!workspaceUuid) return;
+    try {
+      const data = await main.getUserWorkspaceByUuid(workspaceUuid);
+      setWorkspaceData(data);
+    } catch (error) {
+      console.error('Error fetching workspace data:', error);
+    }
+  }, [workspaceUuid, main]);
+
+  const getUserRoles = React.useCallback(async () => {
+    if (!workspaceUuid || !ui.meInfo?.owner_pubkey) {
+      setPermissionsChecked(true);
+      return;
+    }
+
+    try {
+      const roles = await main.getUserRoles(workspaceUuid, ui.meInfo.owner_pubkey);
+      setUserRoles(roles);
+    } catch (error) {
+      console.error('Error fetching user roles:', error);
+    } finally {
+      setPermissionsChecked(true);
+    }
+  }, [workspaceUuid, ui.meInfo?.owner_pubkey, main]);
 
   useEffect(() => {
     const handleCollapseChange = (e: Event) => {
@@ -331,13 +381,22 @@ const FeatureBacklogView = observer(() => {
   }, []);
 
   useEffect(() => {
-    const loadFeatures = async () => {
-      await featuresWorkspaceStore.fetchFeatures(workspaceUuid, {});
-      const workspaceFeatures = featuresWorkspaceStore.getWorkspaceFeatures(workspaceUuid);
-      setFeatures(workspaceFeatures);
+    const loadData = async () => {
+      setLoading(true);
+      await getWorkspaceData();
+      await getUserRoles();
+
+      if (!editWorkspaceDisabled) {
+        await featuresWorkspaceStore.fetchFeatures(workspaceUuid, {});
+        const workspaceFeatures = featuresWorkspaceStore.getWorkspaceFeatures(workspaceUuid);
+        setFeatures(workspaceFeatures);
+      }
+
+      setLoading(false);
     };
-    loadFeatures();
-  }, [workspaceUuid]);
+
+    loadData();
+  }, [workspaceUuid, getWorkspaceData, getUserRoles, editWorkspaceDisabled]);
 
   const handleStatusChange = async (feature: Feature, newStatus: FeatureStatus) => {
     await featuresWorkspaceStore.updateFeatureStatus(feature.uuid, newStatus);
@@ -424,6 +483,33 @@ const FeatureBacklogView = observer(() => {
   };
 
   const showNewFeatureRow = activeTab === 'focus' || activeTab === 'all';
+
+  if (loading || !permissionsChecked) {
+    return (
+      <Body style={{ justifyContent: 'center', alignItems: 'center' }}>
+        <EuiLoadingSpinner size="xl" />
+      </Body>
+    );
+  }
+
+  if (editWorkspaceDisabled) {
+    return (
+      <FullNoBudgetWrap>
+        <MaterialIcon
+          icon={'lock'}
+          style={{
+            fontSize: 30,
+            cursor: 'pointer',
+            color: '#ccc'
+          }}
+        />
+        <FullNoBudgetText>
+          You have restricted permissions and you are unable to view this page. Reach out to the
+          workspace admin to get them updated.
+        </FullNoBudgetText>
+      </FullNoBudgetWrap>
+    );
+  }
 
   return (
     <MainContainer>

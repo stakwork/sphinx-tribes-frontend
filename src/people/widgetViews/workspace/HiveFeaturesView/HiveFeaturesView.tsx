@@ -12,6 +12,9 @@ import { Author, BountyCardStatus, TicketStatus } from 'store/interface.ts';
 import { createSocketInstance } from 'config/socket';
 import { SOCKET_MSG } from 'config/socket';
 import { uiStore } from 'store/ui';
+import { EuiLoadingSpinner } from '@elastic/eui';
+import { Body } from 'pages/tickets/style';
+import { userHasRole } from 'helpers';
 import MaterialIcon from '@material/react-material-icon';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -21,6 +24,7 @@ import {
 import { AddPhaseModal } from '../WorkspacePhasingModals.tsx';
 import { PaymentConfirmationModal } from '../../../../components/common';
 import { WorkspaceName } from '../style.ts';
+import { FullNoBudgetWrap, FullNoBudgetText } from '../style';
 import { FeatureHeadNameWrap } from '../style.ts';
 import ActivitiesHeader from './header';
 
@@ -313,6 +317,60 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
   const [activeBounty, setActiveBounty] = React.useState<any[]>([]);
   const [bountyID, setBountyID] = useState<number>();
   const [featureCalls, setFeatureCalls] = useState<any>(null);
+  const [workspaceData, setWorkspaceData] = useState<any>(null);
+  const [userRoles, setUserRoles] = useState<any[]>([]);
+  const [permissionsChecked, setPermissionsChecked] = useState<boolean>(false);
+  const [loading, setLoading] = useState(true);
+
+  const editWorkspaceDisabled = React.useMemo(() => {
+    if (!ui.meInfo) return true;
+    if (!workspaceData?.owner_pubkey) return false;
+
+    const isWorkspaceAdmin = workspaceData.owner_pubkey === ui.meInfo.owner_pubkey;
+    return (
+      !isWorkspaceAdmin &&
+      !userHasRole(main.bountyRoles, userRoles, 'EDIT ORGANIZATION') &&
+      !userHasRole(main.bountyRoles, userRoles, 'ADD USER') &&
+      !userHasRole(main.bountyRoles, userRoles, 'VIEW REPORT')
+    );
+  }, [workspaceData, ui.meInfo, userRoles, main.bountyRoles]);
+
+  const getWorkspaceData = React.useCallback(async () => {
+    if (!workspaceUuid) return;
+    try {
+      const data = await main.getUserWorkspaceByUuid(workspaceUuid);
+      setWorkspaceData(data);
+    } catch (error) {
+      console.error('Error fetching workspace data:', error);
+    }
+  }, [workspaceUuid, main]);
+
+  const getUserRoles = React.useCallback(async () => {
+    if (!workspaceUuid || !ui.meInfo?.owner_pubkey) {
+      setPermissionsChecked(true);
+      return;
+    }
+
+    try {
+      const roles = await main.getUserRoles(workspaceUuid, ui.meInfo.owner_pubkey);
+      setUserRoles(roles);
+    } catch (error) {
+      console.error('Error fetching user roles:', error);
+    } finally {
+      setPermissionsChecked(true);
+    }
+  }, [workspaceUuid, ui.meInfo?.owner_pubkey, main]);
+
+  useEffect(() => {
+    const checkPermissions = async () => {
+      setLoading(true);
+      await getWorkspaceData();
+      await getUserRoles();
+      setLoading(false);
+    };
+
+    checkPermissions();
+  }, [getWorkspaceData, getUserRoles]);
 
   let interval: number;
 
@@ -802,6 +860,33 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
       ]);
     }
   };
+
+  if (loading || !permissionsChecked) {
+    return (
+      <Body style={{ justifyContent: 'center', alignItems: 'center' }}>
+        <EuiLoadingSpinner size="xl" />
+      </Body>
+    );
+  }
+
+  if (editWorkspaceDisabled) {
+    return (
+      <FullNoBudgetWrap>
+        <MaterialIcon
+          icon={'lock'}
+          style={{
+            fontSize: 30,
+            cursor: 'pointer',
+            color: '#ccc'
+          }}
+        />
+        <FullNoBudgetText>
+          You have restricted permissions and you are unable to view this page. Reach out to the
+          workspace admin to get them updated.
+        </FullNoBudgetText>
+      </FullNoBudgetWrap>
+    );
+  }
 
   return (
     <>
