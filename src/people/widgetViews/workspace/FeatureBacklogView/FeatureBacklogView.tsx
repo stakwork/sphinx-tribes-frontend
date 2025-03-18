@@ -100,7 +100,6 @@ const FeatureRow = styled.div`
   display: flex;
   align-items: center;
   padding: 0 16px;
-  height: 56px;
   border-bottom: 1px solid #e0e0e0;
   background: white;
 
@@ -120,9 +119,6 @@ const Cell = styled.div<{ collapsed?: boolean }>`
   &:nth-child(2) {
     width: 350px;
     min-width: 350px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
 
   &:nth-child(3) {
@@ -206,6 +202,9 @@ const FeatureCell = styled.div`
   color: #202124;
   font-weight: 500;
   cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   &:hover {
     color: #1a73e8;
@@ -216,7 +215,10 @@ const BriefCell = styled.div<{ empty: boolean }>`
   font-size: 14px;
   color: ${(props: { empty: boolean }) => (props.empty ? '#9AA0A6' : '#202124')};
   font-style: ${(props: { empty: boolean }) => (props.empty ? 'italic' : 'normal')};
-  white-space: nowrap;
+  height: 80px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
   overflow: hidden;
   text-overflow: ellipsis;
 `;
