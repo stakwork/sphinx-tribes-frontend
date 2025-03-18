@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { observer } from 'mobx-react-lite';
 import { AuthProps } from 'people/interfaces';
 import { SOCKET_MSG, createSocketInstance } from 'config/socket';
+import { testUserLnUrlLogin } from 'helpers/testUserLnUrl';
 import { useStores } from '../../store';
 import { Divider, QR, IconButton } from '../../components/common';
 import { useIsMobile } from '../../hooks';
@@ -63,6 +64,7 @@ const Imgg = styled.div<ImageProps>`
 function SignIn(props: AuthProps) {
   const { main, ui } = useStores();
   const [page, setPage] = useState('sphinx');
+  const [testUserLogin, setTestUserLogin] = useState(false);
   const [showSignIn, setShowSignIn] = useState(false);
 
   function redirect() {
@@ -105,6 +107,12 @@ function SignIn(props: AuthProps) {
       }
     }
   };
+
+  async function handleTestUserLogin() {
+    setTestUserLogin(true);
+    await testUserLnUrlLogin(main.lnauth.encode.toLocaleUpperCase());
+    setTestUserLogin(false);
+  }
 
   useEffect(() => {
     const socket: WebSocket = createSocketInstance();
@@ -161,18 +169,35 @@ function SignIn(props: AuthProps) {
             )}
 
             {page !== 'lnurl' && (
-              <IconButton
-                text={'Login with Sphinx'}
-                height={48}
-                endingIcon={'exit_to_app'}
-                width={210}
-                style={{ marginTop: 20 }}
-                color={'primary'}
-                onClick={() => setShowSignIn(true)}
-                hovercolor={'#5881F8'}
-                activecolor={'#5078F2'}
-                shadowcolor={'rgba(97, 138, 255, 0.5)'}
-              />
+              <>
+                <IconButton
+                  text={'Login with Sphinx'}
+                  height={48}
+                  endingIcon={'exit_to_app'}
+                  width={210}
+                  style={{ marginTop: 20 }}
+                  color={'primary'}
+                  onClick={() => setShowSignIn(true)}
+                  hovercolor={'#5881F8'}
+                  activecolor={'#5078F2'}
+                  shadowcolor={'rgba(97, 138, 255, 0.5)'}
+                />
+                {window.location.href.includes('localhost') && (
+                  <IconButton
+                    text={'Login as Test User'}
+                    height={48}
+                    endingIcon={'login'}
+                    width={210}
+                    style={{ marginTop: 20 }}
+                    color={'success'}
+                    onClick={() => handleTestUserLogin()}
+                    hovercolor={'#5881F8'}
+                    activecolor={'#5078F2'}
+                    shadowcolor={'rgba(97, 138, 255, 0.5)'}
+                    loading={testUserLogin}
+                  />
+                )}
+              </>
             )}
 
             {page === 'lnurl' ? (
