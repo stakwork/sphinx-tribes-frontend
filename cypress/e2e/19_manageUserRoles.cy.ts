@@ -51,8 +51,7 @@ describe('Alice Create an Workspace and then manage user roles', () => {
     cy.contains('bob').get('[data-testid="settings-icon"]').click();
     cy.wait(1000);
 
-    cy.contains('label', 'Withdraw from workspace')
-      .prev('input[type="checkbox"]')
+    cy.contains('label', 'Withdraw from workspace').prev('input[type="checkbox"]');
     cy.wait(1000);
 
     cy.get('body').click(0, 0);

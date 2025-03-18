@@ -371,7 +371,7 @@ export const HiveChatView: React.FC = observer(() => {
   const [lastLogLine, setLastLogLine] = useState('');
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
-  const [isBuild, setIsBuild] = useState<'Chat' | 'Build'>('Chat');
+  const [isBuild, setIsBuild] = useState<'Chat' | 'Build'>('Build');
   const [actionArtifact, setActionArtifact] = useState<Artifact>();
   const [visualArtifact, setVisualArtifact] = useState<Artifact[]>();
   const [textArtifact, setTextArtifact] = useState<Artifact[]>();
