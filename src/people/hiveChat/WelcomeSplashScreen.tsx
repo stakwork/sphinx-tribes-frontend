@@ -17,6 +17,11 @@ const SplashScreenContainer = styled.div`
   position: relative;
   overflow: hidden;
 
+  @media (max-width: 768px) {
+    padding: 24px 16px;
+    margin: 12px auto;
+  }
+
   &::before {
     content: '';
     position: absolute;
@@ -41,6 +46,10 @@ const Greeting = styled.h1`
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-bottom: 8px;
+
+  @media (max-width: 768px) {
+    font-size: 2rem;
+  }
 `;
 
 const WelcomeTagline = styled.p`
@@ -77,30 +86,39 @@ const WelcomeTagline = styled.p`
     opacity: 0.2;
     transform: rotate(180deg);
   }
+
+  @media (max-width: 768px) {
+    font-size: 1.1rem;
+    padding: 16px;
+    margin-bottom: 20px;
+  }
 `;
 
 const QuickActionButtons = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: 16px;
   width: 100%;
   max-width: 800px;
   margin-top: 20px;
-  padding: 0 16px;
 
-  & > button:last-child {
-    grid-column: 1 / -1;
-    max-width: 500px;
-    margin: 0 auto;
-    width: fit-content;
+  @media (min-width: 769px) {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    padding: 0 16px;
+
+    & > button:last-child {
+      grid-column: 1 / -1;
+      max-width: 500px;
+      margin: 0 auto;
+      width: fit-content;
+    }
   }
 
   @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-
-    & > button:last-child {
-      max-width: 100%;
-    }
+    gap: 12px;
+    margin-top: 12px;
+    padding: 0 8px;
   }
 `;
 
@@ -120,6 +138,14 @@ const ActionButton = styled.button`
   position: relative;
   text-align: left;
   width: 100%;
+
+  @media (max-width: 768px) {
+    padding: 12px 16px;
+    font-size: 0.9rem;
+    gap: 8px;
+    width: 100%;
+    max-width: 100%;
+  }
 
   &:hover {
     background-color: #f8f9fa;
@@ -164,6 +190,12 @@ const ButtonText = styled.span`
   overflow: hidden;
   text-overflow: ellipsis;
   margin-right: 24px;
+
+  @media (max-width: 768px) {
+    margin-right: 12px;
+    white-space: normal;
+    text-overflow: clip;
+  }
 `;
 
 interface WelcomeSplashScreenProps {

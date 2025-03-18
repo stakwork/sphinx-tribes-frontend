@@ -44,7 +44,7 @@ interface LogEntry {
 const Container = styled.div<{ collapsed: boolean }>`
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 95vh;
   padding: 0 25px 0 35px;
   overflow: hidden;
   background: var(--Search-bar-background, #f2f3f5);
@@ -94,9 +94,13 @@ const ViewerHeader = styled.div`
 const ChatBody = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 0 5px 60px 0 !important;
+  padding: 0 5px 0px 0 !important;
   flex: 1;
   overflow: hidden;
+
+  @media (max-width: 768px) {
+    padding: 0 5px 60px 0 !important;
+  }
 `;
 
 const SaveTitleContainer = styled.div`
@@ -317,6 +321,11 @@ const CenteredWelcomeContainer = styled.div`
   transform: translate(-50%, -50%);
   max-width: 1000px;
   padding: 48px 32px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    padding: 16px;
+  }
 `;
 
 const connectToLogWebSocket = (
