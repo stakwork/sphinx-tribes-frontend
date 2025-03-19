@@ -49,5 +49,5 @@ export const TribesURL = getHost().startsWith('localhost')
 // https://obscure-zebra-94rwjg6r9v37pwg.github.dev/
 
 export function isDevHost() {
-  return window.location.host.includes('localhost') || getCodespacesBackendUrl();
+  return window.location.host.includes('localhost') || !!getCodespacesBackendUrl();
 }
