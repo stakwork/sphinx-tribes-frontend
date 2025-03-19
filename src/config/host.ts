@@ -1,13 +1,13 @@
 const internalDockerHosts = ['localhost:13007', 'localhost:13000'];
 const externalDockerHosts = ['localhost:23007', 'localhost:23000'];
 
-export function getCodespacesBackendUrl(){
+export function getCodespacesBackendUrl() {
   if (window.location.host.endsWith('-13008.app.github.dev')) {
     const arr = window.location.host.split('-13008');
     const codespaceUrl = arr[0];
     return `${codespaceUrl}-5002.app.github.dev`;
   }
-  return ""
+  return '';
 }
 
 export function getHost(): string {
@@ -16,10 +16,10 @@ export function getHost(): string {
   }
 
   // codespace urls
-  const codespaceUrl = getCodespacesBackendUrl()
+  const codespaceUrl = getCodespacesBackendUrl();
 
-  if(codespaceUrl){
-    return codespaceUrl
+  if (codespaceUrl) {
+    return codespaceUrl;
   }
 
   const host = window.location.host.includes('localhost')

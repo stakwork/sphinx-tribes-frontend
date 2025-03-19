@@ -37,12 +37,12 @@ export async function testUserLnUrlLogin(encode: string) {
   const uint8Array = new Uint8Array(bech32.fromWords(bech32.decode(encode, 1500).words));
 
   const textDecoder = new TextDecoder('utf-8');
-  let rawUrl = textDecoder.decode(uint8Array)
+  let rawUrl = textDecoder.decode(uint8Array);
 
-  const codespaceUrl = getCodespacesBackendUrl()
+  const codespaceUrl = getCodespacesBackendUrl();
 
-  if (codespaceUrl){
-    rawUrl = rawUrl.replace("https://app.github.dev", `https://${codespaceUrl}`)
+  if (codespaceUrl) {
+    rawUrl = rawUrl.replace('https://app.github.dev', `https://${codespaceUrl}`);
   }
 
   const url = new URL(rawUrl);
@@ -69,7 +69,6 @@ export async function testUserLnUrlLogin(encode: string) {
   const response = await fetch(url.toString());
 
   if (!response.ok) {
-    console.log("Response from API Call", response)
-
+    console.log('Response from API Call', response);
   }
 }
