@@ -34,10 +34,13 @@ const CopyButton = styled.button`
 
 const LogItem = styled.div`
   padding: 8px;
+  border-bottom: 1px solid #444;
 `;
 
 interface SSEEvent {
-  message: string;
+  event_type: string;
+  id: string;
+  raw: string;
 }
 
 interface SSEMessage {
@@ -79,6 +82,7 @@ const LogsScreenViewer: React.FC<LogsScreenViewerProps> = ({ chatId }) => {
         const sortedLogs = response.data.messages.sort(
           (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
         );
+
         setLogs(sortedLogs);
       }
     } catch (error) {
@@ -91,7 +95,7 @@ const LogsScreenViewer: React.FC<LogsScreenViewerProps> = ({ chatId }) => {
   }, [chatId, fetchLogs]);
 
   const copyToClipboard = () => {
-    const logText = logs.map((log) => log.event.message).join('\n');
+    const logText = logs.map((log) => JSON.stringify(log.event)).join('\n');
     navigator.clipboard.writeText(logText).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -104,7 +108,7 @@ const LogsScreenViewer: React.FC<LogsScreenViewerProps> = ({ chatId }) => {
         {copied ? <MaterialIcon icon="check" /> : <MaterialIcon icon="content_copy" />}
       </CopyButton>
       {logs.length > 0 ? (
-        logs.map((log) => <LogItem key={log.id}>{log.event.message}</LogItem>)
+        logs.map((log) => <LogItem key={log.id}>{JSON.stringify(log.event)}</LogItem>)
       ) : (
         <LogItem>No logs available.</LogItem>
       )}

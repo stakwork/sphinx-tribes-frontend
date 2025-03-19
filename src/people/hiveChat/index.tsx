@@ -1051,7 +1051,7 @@ export const HiveChatView: React.FC = observer(() => {
                       active={artifactTab === 'logs'}
                       onClick={() => setArtifactTab('logs')}
                     >
-                      LOGs
+                      Logs
                     </TabButton>
                   )}
                   {codeArtifact && codeArtifact?.length > 0 && (
