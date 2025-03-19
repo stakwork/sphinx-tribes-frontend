@@ -130,17 +130,17 @@ function SignIn(props: AuthProps) {
     };
   }, []);
 
+  const handleSuccess = async () => {
+    if (props.onSuccess) props.onSuccess();
+    window.location.href = `/p/${ui.meInfo?.uuid}/workspaces`;
+    main.getPeople({ resetPage: true });
+  };
+
   return useObserver(() => (
     <div>
       {showSignIn ? (
         <Column>
-          <SphinxAppLoginDeepLink
-            onSuccess={async () => {
-              if (props.onSuccess) props.onSuccess();
-              window.location.href = `/p/${ui.meInfo?.uuid}/workspaces`;
-              main.getPeople({ resetPage: true });
-            }}
-          />
+          <SphinxAppLoginDeepLink onSuccess={handleSuccess} />
         </Column>
       ) : (
         <>
@@ -158,16 +158,7 @@ function SignIn(props: AuthProps) {
             {page === 'lnurl' ? (
               <QR value={main.lnauth.encode.toLocaleUpperCase()} size={200} />
             ) : (
-              !isMobile && (
-                <AuthQR
-                  onSuccess={async () => {
-                    if (props.onSuccess) props.onSuccess();
-                    window.location.href = `/p/${ui.meInfo?.uuid}/workspaces`;
-                    main.getPeople({ resetPage: true });
-                  }}
-                  style={{ marginBottom: 20 }}
-                />
-              )
+              !isMobile && <AuthQR onSuccess={handleSuccess} style={{ marginBottom: 20 }} />
             )}
 
             {page !== 'lnurl' && (
