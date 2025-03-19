@@ -54,16 +54,16 @@ describe('Alice tries to create 8 bounties and then assert that he can go to the
     }
 
     cy.contains('Navigation Bounty Title 0').click();
-    cy.wait(2000);
-
-    cy.contains('chevron_right').click();
-    cy.wait(2000);
+    cy.wait(3000);
 
     cy.contains('chevron_left').click();
-    cy.wait(2000);
+    cy.wait(3000);
+
+    cy.contains('chevron_right').click();
+    cy.wait(3000);
 
     cy.get('[data-testid="close-btn"]').click({ force: true });
-    cy.wait(2000);
+    cy.wait(3000);
 
     cy.contains('Filter').click();
     cy.contains('Paid').click();
