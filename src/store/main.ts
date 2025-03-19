@@ -5059,7 +5059,7 @@ export class MainStore {
       if (!uiStore.meInfo) return null;
       const info = uiStore.meInfo;
       const response = await fetch(
-        `${TribesURL}/codespace/workspaces/workspace/${workspace_uuid}`,
+        `${TribesURL}/codespace/workspaces/${workspace_uuid}/user/${info.pubkey}`,
         {
           method: 'GET',
           mode: 'cors',
