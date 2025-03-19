@@ -865,7 +865,7 @@ export const HiveChatView: React.FC = observer(() => {
                         borderColor: '#444',
                         codeBlockFont: 'Courier New'
                       })}
-                      {msg.role !== 'user' && (
+                      {msg.role !== 'user' && msg.message && msg.message.trim() !== '' && (
                         <CopyButton
                           onClick={() => {
                             navigator.clipboard.writeText(msg.message);
