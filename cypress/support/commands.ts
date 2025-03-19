@@ -97,6 +97,8 @@ Cypress.Commands.add('login', (userAlias: string) => {
     });
 
     cy.contains(userAlias).eq(0);
+
+    cy.visit('http://localhost:3007/bounties');
   });
 });
 
