@@ -970,14 +970,12 @@ export const HiveChatView: React.FC = observer(() => {
                         </CopyButton>
                       )}
                     </MessageBubble>
-                    {!isActionSend && (
-                      <ActionArtifactRenderer
-                        messageId={msg.id}
-                        chatId={chatId}
-                        websocketSessionId={websocketSessionId}
-                        setIsActionSend={setIsActionSend}
-                      />
-                    )}
+                    <ActionArtifactRenderer
+                      messageId={msg.id}
+                      chatId={chatId}
+                      websocketSessionId={websocketSessionId}
+                      setIsActionSend={setIsActionSend}
+                    />
                   </React.Fragment>
                 ))}
                 {(isChainVisible || isActionSend) && (
