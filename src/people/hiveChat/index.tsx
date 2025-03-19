@@ -377,7 +377,10 @@ export const HiveChatView: React.FC = observer(() => {
   // const history = useHistory();
   const [isUpdatingTitle, setIsUpdatingTitle] = useState(false);
   const [projectId, setProjectId] = useState('');
-  const [collapsed, setCollapsed] = useState(true);
+  const [collapsed, setCollapsed] = useState(() => {
+    const storedCollapsed = localStorage.getItem('sidebarCollapsed');
+    return storedCollapsed ? JSON.parse(storedCollapsed) : true;
+  });
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [isChainVisible, setIsChainVisible] = useState(false);
   const [lastLogLine, setLastLogLine] = useState('');
@@ -400,6 +403,7 @@ export const HiveChatView: React.FC = observer(() => {
   });
   const [artifactTab, setArtifactTab] = useState<'visual' | 'code' | 'text' | 'logs'>('code');
   const [showSplash, setShowSplash] = useState(true);
+  const containerRef = useRef<HTMLDivElement>(null);
   useBrowserTabTitle('Hive Chat');
 
   if (isVerboseLoggingEnabled) {
@@ -483,14 +487,24 @@ export const HiveChatView: React.FC = observer(() => {
     const handleCollapseChange = (e: Event) => {
       const customEvent = e as CustomEvent<{ collapsed: boolean }>;
       setCollapsed(customEvent.detail.collapsed);
+      localStorage.setItem('sidebarCollapsed', JSON.stringify(customEvent.detail.collapsed));
+
+      if (containerRef.current) {
+        containerRef.current.style.marginLeft = customEvent.detail.collapsed ? '50px' : '250px';
+      }
     };
 
     window.addEventListener('sidebarCollapse', handleCollapseChange as EventListener);
 
+    const sidebarEvent = new CustomEvent('sidebarCollapse', {
+      detail: { collapsed }
+    });
+    window.dispatchEvent(sidebarEvent);
+
     return () => {
       window.removeEventListener('sidebarCollapse', handleCollapseChange as EventListener);
     };
-  }, []);
+  }, [collapsed]);
 
   useEffect(() => {
     const initializeChat = async () => {
@@ -872,9 +886,21 @@ export const HiveChatView: React.FC = observer(() => {
     }
   };
 
+  useEffect(() => {
+    // When chatId changes, ensure sidebar is collapsed
+    setCollapsed(true);
+    localStorage.setItem('sidebarCollapsed', JSON.stringify(true));
+
+    // Dispatch event to update sidebar state
+    const sidebarEvent = new CustomEvent('sidebarCollapse', {
+      detail: { collapsed: true }
+    });
+    window.dispatchEvent(sidebarEvent);
+  }, [chatId]);
+
   if (loading) {
     return (
-      <Container collapsed={collapsed}>
+      <Container collapsed={collapsed} ref={containerRef}>
         <LoadingContainer>
           <EuiLoadingSpinner size="l" />
         </LoadingContainer>
@@ -884,7 +910,7 @@ export const HiveChatView: React.FC = observer(() => {
 
   if (error) {
     return (
-      <Container collapsed={collapsed}>
+      <Container collapsed={collapsed} ref={containerRef}>
         <Title>Error: {error}</Title>
       </Container>
     );
@@ -893,7 +919,7 @@ export const HiveChatView: React.FC = observer(() => {
   return (
     <>
       <SidebarComponent uuid={uuid} defaultCollapsed />
-      <Container collapsed={collapsed}>
+      <Container collapsed={collapsed} ref={containerRef}>
         <ChatBodyWrapper>
           <ChatSection>
             <ChatHeader>
