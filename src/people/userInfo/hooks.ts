@@ -18,13 +18,8 @@ export const useUserInfo = () => {
 
   function goBack() {
     ui.setSelectingPerson(0);
-    const path = localStorage.getItem('key');
-    if (path) {
-      ui.setSearchText('');
-      history.replace(path);
-    } else {
-      history.replace('/');
-    }
+    ui.setSearchText('');
+    history.replace('/');
   }
   const qrString = makeQR(owner_pubkey || '');
 
