@@ -23,6 +23,9 @@ describe('Signed Out Post Bounty Flow ', () => {
     cy.haves_phinx_login(activeUser);
     cy.wait(1000);
 
+    cy.visit('http://localhost:3007/bounties');
+    cy.wait(1000);
+
     cy.create_bounty(bounty);
     cy.wait(1000);
 
