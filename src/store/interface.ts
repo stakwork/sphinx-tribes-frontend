@@ -527,8 +527,14 @@ export interface Option {
   webhook: string;
 }
 
+export interface SseContent {
+  text_type: 'sse_logs';
+  chatID: string;
+  sse_url: string;
+}
+
 export interface TextContent {
-  text_type: 'code' | 'rag' | 'md';
+  text_type: 'code' | 'rag' | 'md' | 'sse_logs';
   content: string;
   language?: string;
 }
@@ -549,7 +555,7 @@ export interface Artifact {
   messageId: string;
   message_id?: string;
   type: 'text' | 'visual' | 'action';
-  content?: ActionContent | TextContent | VisualContent;
+  content?: ActionContent | TextContent | VisualContent | SseContent;
 }
 
 export interface ChatMessage {
