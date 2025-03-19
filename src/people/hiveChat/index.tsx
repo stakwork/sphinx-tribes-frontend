@@ -94,7 +94,7 @@ const ViewerHeader = styled.div`
 const ChatBody = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 0 5px 0px 0 !important;
+  padding: 0 5px 20px 0 !important;
   flex: 1;
   overflow: hidden;
 `;
@@ -387,6 +387,7 @@ export const HiveChatView: React.FC = observer(() => {
   const [actionArtifact, setActionArtifact] = useState<Artifact>();
   const [visualArtifact, setVisualArtifact] = useState<Artifact[]>();
   const [textArtifact, setTextArtifact] = useState<Artifact[]>();
+  const [sseArtifact, setSseArtifact] = useState<Artifact[]>();
   const [codeArtifact, setCodeArtifacts] = useState<Artifact[]>();
   const [isActionSend, setIsActionSend] = useState(false);
   const [pdfUrl, setPdfUrl] = useState('');
@@ -397,7 +398,7 @@ export const HiveChatView: React.FC = observer(() => {
     label: 'Open AI - 4o',
     value: 'gpt-4o'
   });
-  const [artifactTab, setArtifactTab] = useState<'visual' | 'code' | 'text'>('code');
+  const [artifactTab, setArtifactTab] = useState<'visual' | 'code' | 'text' | 'logs'>('code');
   const [showSplash, setShowSplash] = useState(true);
   useBrowserTabTitle('Hive Chat');
 
@@ -673,6 +674,19 @@ export const HiveChatView: React.FC = observer(() => {
           setTextArtifact(textArtifacts);
         }
 
+        const sseArtifacts = res?.filter(
+          (artifact) =>
+            artifact &&
+            artifact.type === 'text' &&
+            artifact.content &&
+            'text_type' in artifact.content &&
+            artifact.content.text_type === 'sse_logs'
+        );
+
+        if (sseArtifacts) {
+          setSseArtifact(sseArtifacts);
+        }
+
         const systemMessages = messages?.filter((msg) => msg.role !== 'user');
         const lastSystemMessageId =
           systemMessages?.length > 0 ? systemMessages[systemMessages.length - 1].id : null;
@@ -701,10 +715,13 @@ export const HiveChatView: React.FC = observer(() => {
   }, []);
 
   useEffect(() => {
+    if (sseArtifact && sseArtifact?.length > 0) {
+      setArtifactTab('logs');
+    }
     if (!visualArtifact && !codeArtifact) {
       setArtifactTab('text');
     }
-  }, [codeArtifact, visualArtifact]);
+  }, [codeArtifact, sseArtifact, visualArtifact]);
 
   const handleUploadComplete = (url: string) => {
     setPdfUrl(url);
@@ -1005,6 +1022,14 @@ export const HiveChatView: React.FC = observer(() => {
             <ViewerSection>
               <ViewerHeader>
                 <TabContainer>
+                  {sseArtifact && sseArtifact?.length > 0 && (
+                    <TabButton
+                      active={artifactTab === 'logs'}
+                      onClick={() => setArtifactTab('logs')}
+                    >
+                      LOGs
+                    </TabButton>
+                  )}
                   {codeArtifact && codeArtifact?.length > 0 && (
                     <TabButton
                       active={artifactTab === 'code'}
@@ -1044,6 +1069,8 @@ export const HiveChatView: React.FC = observer(() => {
                 visualArtifact={visualArtifact ?? []}
                 codeArtifact={codeArtifact ?? []}
                 textArtifact={textArtifact ?? []}
+                sseArtifact={sseArtifact ?? []}
+                chatId={chatId}
                 activeTab={artifactTab}
               />
             </ViewerSection>

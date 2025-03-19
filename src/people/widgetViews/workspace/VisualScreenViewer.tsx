@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import MaterialIcon from '@material/react-material-icon';
 import { Artifact, VisualContent, TextContent } from '../../../store/interface.ts';
 import { renderMarkdown } from '../../utils/RenderMarkdown.tsx';
+import LogsScreenViewer from './LogsScreenViewer.tsx';
 
 const ViewerContainer = styled.div`
   display: flex;
@@ -12,7 +13,7 @@ const ViewerContainer = styled.div`
   background-color: #f9f9f9;
   padding: 0 0 16px 0;
   box-sizing: border-box;
-  margin: 0px 0 0 10px;
+  margin: 0 0 0 10px;
   position: relative;
 `;
 
@@ -192,13 +193,17 @@ interface VisualScreenViewerProps {
   visualArtifact: Artifact[];
   codeArtifact: Artifact[];
   textArtifact: Artifact[];
-  activeTab: 'visual' | 'code' | 'text';
+  sseArtifact: Artifact[];
+  chatId: string;
+  activeTab: 'visual' | 'code' | 'text' | 'logs';
 }
 
 const VisualScreenViewer: React.FC<VisualScreenViewerProps> = ({
   visualArtifact,
   codeArtifact,
   textArtifact,
+  sseArtifact,
+  chatId,
   activeTab
 }) => {
   const [visualIndex, setVisualIndex] = useState(0);
@@ -354,6 +359,12 @@ const VisualScreenViewer: React.FC<VisualScreenViewerProps> = ({
               {'>'}
             </Button>
           </PaginationControls>
+        </>
+      )}
+
+      {activeTab === 'logs' && sseArtifact && (
+        <>
+          <LogsScreenViewer chatId={chatId} />
         </>
       )}
 
