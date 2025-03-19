@@ -57,6 +57,7 @@ import { Toast } from './workspace/interface';
 import TextSnippetModal from './workspace/TextSnippetModal.tsx';
 import ActivitiesHeader from './workspace/Activities/header.tsx';
 import AddChatWorkflow from './workspace/AddChatWorkflowModal.tsx';
+import ManageCodeSpaceModal from './workspace/ManageCodeSpaceModal.tsx';
 
 const color = colors['light'];
 
@@ -179,6 +180,7 @@ const WorkspaceMission = () => {
   const [isSnippetModalVisible, setSnippetModalVisible] = useState(false);
   const [currentOpenMenu, setCurrentOpenMenu] = useState<string | number | null>(null);
   const [chatWorkflowModal, setChatWorkflowModal] = useState(false);
+  const [codeSpaceModal, setCodeSpaceModal] = useState(false);
   const [selectedChatWorkflow, setSelectedChatWorkflow] = useState<ChatWorkflow | null>(null);
   const [currentChatWorkflowUrl, setCurrentChatWorkflowUrl] = useState('');
 
@@ -276,6 +278,10 @@ const WorkspaceMission = () => {
     setChatWorkflowModal(true);
   };
 
+  const openCodeSpaceModal = () => {
+    setCodeSpaceModal(true);
+  };
+
   useEffect(() => {
     const handleCollapseChange = (e: Event) => {
       const customEvent = e as CustomEvent<{ collapsed: boolean }>;
@@ -312,6 +318,14 @@ const WorkspaceMission = () => {
     setSelectedChatWorkflow(null);
     setCurrentChatWorkflowUrl('');
     setChatWorkflowModal(false);
+  };
+
+  const closeCodeSpaceModal = () => {
+    setCodeSpaceModal(false);
+  };
+
+  const updateCodeSpace = (url: string) => {
+    console.log(url);
   };
 
   const handleDeleteCodeGraph = async () => {
@@ -534,6 +548,8 @@ const WorkspaceMission = () => {
     setDidplaySchematic(false);
     setSchematicModal(!schematicModal);
   };
+
+  const selectedWorkspace = main.workspaces.find((workspace: Workspace) => workspace.uuid === uuid);
 
   const avatarList = useMemo(
     () => users.map((user: Person) => ({ name: user.owner_alias, imageUrl: user.img })),
@@ -1063,7 +1079,7 @@ const WorkspaceMission = () => {
                 <Button
                   style={{
                     borderRadius: '5px',
-                    margin: 0,
+                    margin: '0 0 20px 0',
                     padding: '10px 20px',
                     width: '100%',
                     backgroundColor: '#4285f4',
@@ -1076,6 +1092,22 @@ const WorkspaceMission = () => {
                   onClick={() => openSnippetModal()}
                   dataTestId="workspace-planner-btn"
                   text="Manage Text snippets"
+                />
+                <Button
+                  style={{
+                    borderRadius: '5px',
+                    margin: 0,
+                    padding: '10px 20px',
+                    width: '100%',
+                    backgroundColor: '#4285f4',
+                    color: 'white',
+                    textAlign: 'center',
+                    border: 'none',
+                    fontSize: '16px',
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => openCodeSpaceModal()}
+                  text="Manage My Code Space"
                 />
               </WorkspaceFieldWrap>
             </RightSection>
@@ -1293,6 +1325,37 @@ const WorkspaceMission = () => {
               currentId={selectedChatWorkflow?.id}
               handleDelete={handleDeleteChatWorkflow}
               url={currentChatWorkflowUrl}
+            />
+          </Modal>
+          <Modal
+            visible={codeSpaceModal}
+            style={{
+              height: '100%',
+              flexDirection: 'column'
+            }}
+            envStyle={{
+              marginTop: isMobile ? 64 : 0,
+              background: color.pureWhite,
+              zIndex: 20,
+              maxHeight: '100%',
+              borderRadius: '10px',
+              minWidth: isMobile ? '100%' : '30%',
+              minHeight: isMobile ? '100%' : '20%'
+            }}
+            overlayClick={closeCodeSpaceModal}
+            bigCloseImage={closeCodeSpaceModal}
+            bigCloseImageStyle={{
+              top: '-18px',
+              right: '-18px',
+              background: '#000',
+              borderRadius: '50%'
+            }}
+          >
+            <ManageCodeSpaceModal
+              closeHandler={closeCodeSpaceModal}
+              workspaceName={selectedWorkspace?.name}
+              workspaceUUID={selectedWorkspace?.uuid as string}
+              userAlias={ui.meInfo?.owner_alias}
             />
           </Modal>
           <EuiGlobalToastList
