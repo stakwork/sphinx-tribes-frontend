@@ -137,6 +137,7 @@ function SignIn(props: AuthProps) {
           <SphinxAppLoginDeepLink
             onSuccess={async () => {
               if (props.onSuccess) props.onSuccess();
+              window.location.href = `/p/${ui.meInfo?.uuid}/workspaces`;
               main.getPeople({ resetPage: true });
             }}
           />
@@ -161,7 +162,7 @@ function SignIn(props: AuthProps) {
                 <AuthQR
                   onSuccess={async () => {
                     if (props.onSuccess) props.onSuccess();
-
+                    window.location.href = `/p/${ui.meInfo?.uuid}/workspaces`;
                     main.getPeople({ resetPage: true });
                   }}
                   style={{ marginBottom: 20 }}
