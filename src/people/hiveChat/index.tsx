@@ -44,22 +44,17 @@ interface LogEntry {
 const Container = styled.div<{ collapsed: boolean }>`
   display: flex;
   flex-direction: column;
-  height: 96vh;
-  padding: 0 15px;
+  height: 95vh;
+  padding: 0 25px 0 35px;
   overflow: hidden;
   background: var(--Search-bar-background, #f2f3f5);
   margin-left: ${({ collapsed }: { collapsed: boolean }) => (collapsed ? '50px' : '250px')};
   transition: margin-left 0.3s ease-in-out;
-  box-sizing: border-box;
-
-  @media (max-width: 900px) {
-    height: 92vh;
-  }
 `;
 
 const ChatBodyWrapper = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   padding: 0 !important;
   flex: 1;
   overflow: hidden;
@@ -68,8 +63,8 @@ const ChatBodyWrapper = styled.div`
 const ViewerSection = styled.div`
   display: flex;
   flex-direction: column;
-  width: 100%;
-  height: 40%;
+  padding-bottom: 60px !important;
+  width: 70%;
   overflow: hidden;
 `;
 
@@ -86,9 +81,6 @@ const ChatSection = styled.div`
   flex-direction: column;
   flex: 1;
   overflow: hidden;
-  @media (min-width: 768px) {
-    height: 96%;
-  }
 `;
 
 const ViewerHeader = styled.div`
@@ -146,7 +138,7 @@ const TitleInput = styled.input`
 const ChatHistory = styled.div`
   flex-grow: 1;
   overflow-y: auto;
-  padding: 10px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   background: white;
@@ -185,8 +177,8 @@ const MessageBubble = styled.div<MessageBubbleProps>`
 
 const InputContainer = styled.div`
   display: flex;
-  gap: 8px;
-  padding: 8px 0;
+  gap: 12px;
+  padding: 16px 0;
   border-radius: 0 0 8px 8px;
   position: sticky;
   bottom: 0;
@@ -195,12 +187,12 @@ const InputContainer = styled.div`
 
 const TextArea = styled.textarea`
   flex-grow: 1;
-  padding: 8px;
+  padding: 12px;
   border: 2px solid #848484;
   border-radius: 8px;
   resize: none;
   min-height: 24px;
-  max-height: 80px;
+  max-height: 150px;
   font-family: inherit;
   font-size: 14px;
   line-height: 1.4;
