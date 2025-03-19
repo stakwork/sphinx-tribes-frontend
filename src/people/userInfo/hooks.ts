@@ -37,7 +37,7 @@ export const useUserInfo = () => {
     ui.setMeInfo(null);
     main.getPeople({ resetPage: true });
     main.setLnToken('');
-    goBack();
+    history.push('/');
   }
 
   const onEdit = () => {

@@ -462,7 +462,7 @@ const BountyNavBar: React.FC = () => {
           onSuccess={() => {
             ui.setShowSignIn(false);
             setShowWelcome(true);
-            window.location.reload();
+            goToEditSelf();
           }}
         />
       </StyledModal>
