@@ -9,12 +9,13 @@ import styled from 'styled-components';
 import { userHasRole } from 'helpers';
 import { AuthorType, ContentType, Feature, IActivity } from 'store/interface';
 import { useStores } from 'store';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import { renderMarkdown } from 'people/utils/RenderMarkdown';
 import SidebarComponent from 'components/common/SidebarComponent';
 import { Body } from 'pages/tickets/style';
 import { Phase } from '../interface';
 import { FullNoBudgetWrap, FullNoBudgetText } from '../style';
+import { createAndNavigateToHivechat } from '../../../../utils/hivechatUtils';
 import ActivitiesHeader from './header';
 
 export const ActivitiesContainer = styled.div`
@@ -358,9 +359,19 @@ const BackButton = styled.button`
   }
 `;
 
+const BuildButton = styled(Button)`
+  background: #4285f4;
+  &:hover {
+    background-color: #3367d6;
+  }
+  margin-bottom: 10px;
+  margin-left: 10px;
+  margin-right: 8px;
+`;
+
 const Activities = observer(() => {
   const { uuid } = useParams<{ uuid: string }>();
-  const { main, ui } = useStores();
+  const { main, ui, chat } = useStores();
   const [phases, setPhases] = useState<Phase[]>([]);
   const [features, setFeatures] = useState<Feature[]>([]);
   const [collapsed, setCollapsed] = useState(false);
@@ -398,6 +409,7 @@ const Activities = observer(() => {
   const [workspaceData, setWorkspaceData] = useState<any>(null);
   const [permissionsChecked, setPermissionsChecked] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
+  const history = useHistory();
 
   let interval: NodeJS.Timeout | null = null;
 
@@ -820,6 +832,10 @@ const Activities = observer(() => {
     );
   }, [workspaceData, ui.meInfo, userRoles, main.bountyRoles]);
 
+  const handleBuildWithHiveChat = async (activity) => {
+    await createAndNavigateToHivechat(uuid, activity.title, activity.content, chat, ui, history);
+  };
+
   const renderDetailsPanel = () => {
     if (!selectedActivity) {
       return (
@@ -880,6 +896,14 @@ const Activities = observer(() => {
 
         <ActionButtons data-testid="activity-details-buttons">
           <EditButton onClick={() => handleEditClick(selectedActivity)}>Reply</EditButton>
+          {selectedActivity && selectedActivity.content_type === 'feature_creation' && (
+            <BuildButton
+              onClick={() => handleBuildWithHiveChat(selectedActivity)}
+              data-testid="build-with-hivechat-btn"
+            >
+              Build with Hivechat
+            </BuildButton>
+          )}
           <DeleteButton onClick={() => handleDeleteActivity(selectedActivity.ID)}>
             Delete
           </DeleteButton>

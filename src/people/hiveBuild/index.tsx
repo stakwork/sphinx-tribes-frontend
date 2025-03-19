@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/typedef */
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useHistory, useParams } from 'react-router-dom';
 import { ChatMessage } from 'store/interface';
@@ -20,13 +20,6 @@ interface MessageBubbleProps {
 
 interface SendButtonProps {
   disabled: boolean;
-}
-
-interface LogEntry {
-  timestamp: string;
-  projectId: string;
-  chatId: string;
-  message: string;
 }
 
 const Container = styled.div`
@@ -164,34 +157,9 @@ export const HiveBuildView: React.FC = observer(() => {
     history.push(`/workspace/${uuid}`);
   };
 
-  useEffect(() => {
-    const initializeChat = async () => {
-      setLoading(true);
-      try {
-        if (chatId) {
-          await chat.loadChatHistory(chatId);
-        }
-      } catch (err) {
-        console.error('Error initializing chat:', err);
-        setError('Failed to load chat history');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    initializeChat();
-  }, [chatId, chat]);
-
-  const messages = chat.chatMessages[chatId] || [];
-
-  useEffect(() => {
-    if (chatHistoryRef.current) {
-      chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
-    }
-  }, [messages]);
-
-  const handleSendMessage = async () => {
-    if (!message.trim() || isSending) return;
+  const handleSendMessage = async (messageToSend?: string) => {
+    const messageText = messageToSend || message;
+    if (!messageText.trim() || isSending) return;
 
     setIsSending(true);
     const timestamp = new Date().toISOString();
@@ -200,7 +168,7 @@ export const HiveBuildView: React.FC = observer(() => {
       chat.addMessage({
         id: Date.now().toString(),
         chatId: chatId,
-        message,
+        message: messageText,
         role: 'user',
         timestamp,
         status: 'sent',
@@ -208,7 +176,7 @@ export const HiveBuildView: React.FC = observer(() => {
         workspaceUUID: uuid
       });
 
-      await mainStore.createStakworkProject(message);
+      await mainStore.createStakworkProject(messageText);
       setMessage('');
 
       chat.addMessage({
@@ -225,7 +193,7 @@ export const HiveBuildView: React.FC = observer(() => {
       await fetch('/api/generate-pr', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: message, uuid })
+        body: JSON.stringify({ query: messageText, uuid })
       });
     } catch (error) {
       console.error('Error sending message:', error);
@@ -240,6 +208,42 @@ export const HiveBuildView: React.FC = observer(() => {
       setIsSending(false);
     }
   };
+
+  useEffect(() => {
+    const initializeChat = async () => {
+      setLoading(true);
+      try {
+        if (chatId) {
+          await chat.loadChatHistory(chatId);
+
+          const pendingMessage = sessionStorage.getItem('pending-hivechat-message');
+          if (pendingMessage) {
+            sessionStorage.removeItem('pending-hivechat-message');
+
+            setTimeout(() => {
+              setMessage(pendingMessage);
+              handleSendMessage(pendingMessage);
+            }, 500);
+          }
+        }
+      } catch (error) {
+        console.error('Error initializing chat:', error);
+        setError('Failed to load chat history');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initializeChat();
+  }, [chatId, chat]);
+
+  const messages = useMemo(() => chat.chatMessages[chatId] || [], [chat.chatMessages, chatId]);
+
+  useEffect(() => {
+    if (chatHistoryRef.current) {
+      chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value);
@@ -297,7 +301,7 @@ export const HiveBuildView: React.FC = observer(() => {
             placeholder="Type your message..."
             disabled={isSending}
           />
-          <SendButton onClick={handleSendMessage} disabled={!message.trim() || isSending}>
+          <SendButton onClick={() => handleSendMessage()} disabled={!message.trim() || isSending}>
             Send
           </SendButton>
         </InputContainer>
