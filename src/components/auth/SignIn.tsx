@@ -8,6 +8,7 @@ import { testUserLnUrlLogin } from 'helpers/testUserLnUrl';
 import { useStores } from '../../store';
 import { Divider, QR, IconButton } from '../../components/common';
 import { useIsMobile } from '../../hooks';
+import { isDevHost } from '../../config/host';
 import AuthQR from './AuthQR';
 import SphinxAppLoginDeepLink from './SphinxAppLoginDeepLink';
 
@@ -182,8 +183,7 @@ function SignIn(props: AuthProps) {
                   activecolor={'#5078F2'}
                   shadowcolor={'rgba(97, 138, 255, 0.5)'}
                 />
-                {(window.location.href.includes('localhost') ||
-                  window.location.host.endsWith('-13008.app.github.dev')) && (
+                {isDevHost() && (
                   <IconButton
                     text={'Login as Test User'}
                     height={48}

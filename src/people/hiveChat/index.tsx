@@ -19,6 +19,7 @@ import VisualScreenViewer from '../widgetViews/workspace/VisualScreenViewer.tsx'
 import { ModelOption } from './modelSelector.tsx';
 import { ActionArtifactRenderer } from './ActionArtifactRenderer';
 import ThinkingModeToggle from './ThinkingModeToggle.tsx';
+import SplashScreen from './ChatSplashScreen';
 
 interface RouteParams {
   uuid: string;
@@ -43,17 +44,22 @@ interface LogEntry {
 const Container = styled.div<{ collapsed: boolean }>`
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  padding: 0 25px 0 35px;
+  height: 96vh;
+  padding: 0 15px;
   overflow: hidden;
   background: var(--Search-bar-background, #f2f3f5);
   margin-left: ${({ collapsed }: { collapsed: boolean }) => (collapsed ? '50px' : '250px')};
   transition: margin-left 0.3s ease-in-out;
+  box-sizing: border-box;
+
+  @media (max-width: 900px) {
+    height: 92vh;
+  }
 `;
 
 const ChatBodyWrapper = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   padding: 0 !important;
   flex: 1;
   overflow: hidden;
@@ -62,8 +68,8 @@ const ChatBodyWrapper = styled.div`
 const ViewerSection = styled.div`
   display: flex;
   flex-direction: column;
-  padding-bottom: 60px !important;
-  width: 70%;
+  width: 100%;
+  height: 40%;
   overflow: hidden;
 `;
 
@@ -80,6 +86,9 @@ const ChatSection = styled.div`
   flex-direction: column;
   flex: 1;
   overflow: hidden;
+  @media (min-width: 768px) {
+    height: 96%;
+  }
 `;
 
 const ViewerHeader = styled.div`
@@ -93,7 +102,7 @@ const ViewerHeader = styled.div`
 const ChatBody = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 0 5px 0px 0 !important;
+  padding: 0 5px 20px 0 !important;
   flex: 1;
   overflow: hidden;
 `;
@@ -137,13 +146,24 @@ const TitleInput = styled.input`
 const ChatHistory = styled.div`
   flex-grow: 1;
   overflow-y: auto;
-  padding: 20px;
+  padding: 10px;
   display: flex;
   flex-direction: column;
   background: white;
   margin: 1px 0;
   border-radius: 8px;
   min-height: 0;
+  position: relative;
+`;
+
+const SplashContainer = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  max-width: 800px;
+  padding: 20px;
 `;
 
 const HiveThoughts = styled.h6`
@@ -165,8 +185,8 @@ const MessageBubble = styled.div<MessageBubbleProps>`
 
 const InputContainer = styled.div`
   display: flex;
-  gap: 12px;
-  padding: 16px 0;
+  gap: 8px;
+  padding: 8px 0;
   border-radius: 0 0 8px 8px;
   position: sticky;
   bottom: 0;
@@ -175,12 +195,12 @@ const InputContainer = styled.div`
 
 const TextArea = styled.textarea`
   flex-grow: 1;
-  padding: 12px;
+  padding: 8px;
   border: 2px solid #848484;
   border-radius: 8px;
   resize: none;
   min-height: 24px;
-  max-height: 150px;
+  max-height: 80px;
   font-family: inherit;
   font-size: 14px;
   line-height: 1.4;
@@ -365,7 +385,10 @@ export const HiveChatView: React.FC = observer(() => {
   // const history = useHistory();
   const [isUpdatingTitle, setIsUpdatingTitle] = useState(false);
   const [projectId, setProjectId] = useState('');
-  const [collapsed, setCollapsed] = useState(true);
+  const [collapsed, setCollapsed] = useState(() => {
+    const storedCollapsed = localStorage.getItem('sidebarCollapsed');
+    return storedCollapsed ? JSON.parse(storedCollapsed) : true;
+  });
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [isChainVisible, setIsChainVisible] = useState(false);
   const [lastLogLine, setLastLogLine] = useState('');
@@ -375,6 +398,7 @@ export const HiveChatView: React.FC = observer(() => {
   const [actionArtifact, setActionArtifact] = useState<Artifact>();
   const [visualArtifact, setVisualArtifact] = useState<Artifact[]>();
   const [textArtifact, setTextArtifact] = useState<Artifact[]>();
+  const [sseArtifact, setSseArtifact] = useState<Artifact[]>();
   const [codeArtifact, setCodeArtifacts] = useState<Artifact[]>();
   const [isActionSend, setIsActionSend] = useState(false);
   const [pdfUrl, setPdfUrl] = useState('');
@@ -385,7 +409,9 @@ export const HiveChatView: React.FC = observer(() => {
     label: 'Open AI - 4o',
     value: 'gpt-4o'
   });
-  const [artifactTab, setArtifactTab] = useState<'visual' | 'code' | 'text'>('code');
+  const [artifactTab, setArtifactTab] = useState<'visual' | 'code' | 'text' | 'logs'>('code');
+  const [showSplash, setShowSplash] = useState(true);
+  const containerRef = useRef<HTMLDivElement>(null);
   useBrowserTabTitle('Hive Chat');
 
   if (isVerboseLoggingEnabled) {
@@ -469,14 +495,75 @@ export const HiveChatView: React.FC = observer(() => {
     const handleCollapseChange = (e: Event) => {
       const customEvent = e as CustomEvent<{ collapsed: boolean }>;
       setCollapsed(customEvent.detail.collapsed);
+      localStorage.setItem('sidebarCollapsed', JSON.stringify(customEvent.detail.collapsed));
+
+      if (containerRef.current) {
+        containerRef.current.style.marginLeft = customEvent.detail.collapsed ? '50px' : '250px';
+      }
     };
 
     window.addEventListener('sidebarCollapse', handleCollapseChange as EventListener);
 
+    const sidebarEvent = new CustomEvent('sidebarCollapse', {
+      detail: { collapsed }
+    });
+    window.dispatchEvent(sidebarEvent);
+
     return () => {
       window.removeEventListener('sidebarCollapse', handleCollapseChange as EventListener);
     };
-  }, []);
+  }, [collapsed]);
+
+  const handleSendMessage = async (messageToSend?: string) => {
+    const messageText = messageToSend || message;
+    if (!messageText.trim() || isSending) return;
+
+    setIsSending(true);
+    try {
+      let socketId = websocketSessionId;
+      if (socketId === '') {
+        socketId = localStorage.getItem('websocket_token') || '';
+      }
+
+      const sentMessage = await chat.sendMessage(
+        chatId,
+        messageText,
+        selectedModel.value,
+        socketId,
+        uuid,
+        isBuild,
+        undefined,
+        pdfUrl,
+        actionArtifact
+      );
+
+      if (sentMessage) {
+        chat.addMessage(sentMessage);
+        setMessage('');
+        setPdfUrl('');
+        setShowSplash(false);
+
+        const textarea = document.querySelector('textarea');
+        if (textarea) {
+          textarea.style.height = '60px';
+        }
+        if (chatHistoryRef.current) {
+          chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
+        }
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      ui.setToasts([
+        {
+          title: 'Error',
+          color: 'danger',
+          text: 'Failed to send message'
+        }
+      ]);
+    } finally {
+      setIsSending(false);
+    }
+  };
 
   useEffect(() => {
     const initializeChat = async () => {
@@ -484,6 +571,20 @@ export const HiveChatView: React.FC = observer(() => {
       try {
         if (chatId) {
           await chat.loadChatHistory(chatId);
+          const selectedChat = chat.getChat(chatId);
+          if (selectedChat?.title) {
+            setTitle(selectedChat.title);
+          }
+
+          const pendingMessage = sessionStorage.getItem('pending-hivechat-message');
+          if (pendingMessage) {
+            sessionStorage.removeItem('pending-hivechat-message');
+
+            setTimeout(() => {
+              setMessage(pendingMessage);
+              handleSendMessage(pendingMessage);
+            }, 500);
+          }
         }
       } catch (err) {
         console.error('Error initializing chat:', err);
@@ -660,6 +761,19 @@ export const HiveChatView: React.FC = observer(() => {
           setTextArtifact(textArtifacts);
         }
 
+        const sseArtifacts = res?.filter(
+          (artifact) =>
+            artifact &&
+            artifact.type === 'text' &&
+            artifact.content &&
+            'text_type' in artifact.content &&
+            artifact.content.text_type === 'sse_logs'
+        );
+
+        if (sseArtifacts) {
+          setSseArtifact(sseArtifacts);
+        }
+
         const systemMessages = messages?.filter((msg) => msg.role !== 'user');
         const lastSystemMessageId =
           systemMessages?.length > 0 ? systemMessages[systemMessages.length - 1].id : null;
@@ -688,10 +802,13 @@ export const HiveChatView: React.FC = observer(() => {
   }, []);
 
   useEffect(() => {
+    if (sseArtifact && sseArtifact?.length > 0) {
+      setArtifactTab('logs');
+    }
     if (!visualArtifact && !codeArtifact) {
       setArtifactTab('text');
     }
-  }, [codeArtifact, visualArtifact]);
+  }, [codeArtifact, sseArtifact, visualArtifact]);
 
   const handleUploadComplete = (url: string) => {
     setPdfUrl(url);
@@ -699,56 +816,6 @@ export const HiveChatView: React.FC = observer(() => {
       const pdfLink = `\n[PDF Document](${url})`;
       return prevMessage + pdfLink;
     });
-  };
-
-  const handleSendMessage = async () => {
-    if (!message.trim() || isSending) return;
-
-    setIsSending(true);
-    try {
-      let socketId = websocketSessionId;
-      if (socketId === '') {
-        socketId = localStorage.getItem('websocket_token') || '';
-      }
-
-      const sentMessage = await chat.sendMessage(
-        chatId,
-        message,
-        selectedModel.value,
-        socketId,
-        uuid,
-        isBuild,
-        undefined,
-        pdfUrl,
-        actionArtifact
-      );
-
-      if (sentMessage) {
-        chat.addMessage(sentMessage);
-        setMessage('');
-        setPdfUrl('');
-
-        const textarea = document.querySelector('textarea');
-        if (textarea) {
-          textarea.style.height = '60px';
-        }
-        if (chatHistoryRef.current) {
-          chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
-        }
-      }
-    } catch (error) {
-      console.error('Error sending message:', error);
-      ui.setToasts([
-        {
-          title: 'Error',
-          color: 'danger',
-          text: 'Failed to send message'
-        }
-      ]);
-    } finally {
-      setIsSending(false);
-      setMessage('');
-    }
   };
 
   const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -796,9 +863,66 @@ export const HiveChatView: React.FC = observer(() => {
     (codeArtifact && codeArtifact.length > 0) ||
     (textArtifact && textArtifact.length > 0);
 
+  const handleSplashMessage = async (msg: string) => {
+    setMessage(msg);
+    setIsSending(true);
+
+    try {
+      const socketId = websocketSessionId || localStorage.getItem('websocket_token') || '';
+
+      const sentMessage = await chat.sendMessage(
+        chatId,
+        msg,
+        selectedModel.value,
+        socketId,
+        uuid,
+        isBuild,
+        undefined,
+        pdfUrl,
+        actionArtifact
+      );
+
+      if (sentMessage) {
+        chat.addMessage(sentMessage);
+        setMessage('');
+        setPdfUrl('');
+        const textarea = document.querySelector('textarea');
+        if (textarea) {
+          textarea.style.height = '60px';
+        }
+        if (chatHistoryRef.current) {
+          chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
+        }
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      ui.setToasts([
+        {
+          title: 'Error',
+          color: 'danger',
+          text: 'Failed to send message'
+        }
+      ]);
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  useEffect(() => {
+    // When chatId changes, ensure sidebar is collapsed
+    setCollapsed(true);
+    localStorage.setItem('sidebarCollapsed', JSON.stringify(true));
+
+    // Dispatch event to update sidebar state
+    const sidebarEvent = new CustomEvent('sidebarCollapse', {
+      detail: { collapsed: true }
+    });
+    window.dispatchEvent(sidebarEvent);
+  }, [chatId]);
+
   if (loading) {
     return (
-      <Container collapsed={collapsed}>
+      <Container collapsed={collapsed} ref={containerRef}>
         <LoadingContainer>
           <EuiLoadingSpinner size="l" />
         </LoadingContainer>
@@ -808,7 +932,7 @@ export const HiveChatView: React.FC = observer(() => {
 
   if (error) {
     return (
-      <Container collapsed={collapsed}>
+      <Container collapsed={collapsed} ref={containerRef}>
         <Title>Error: {error}</Title>
       </Container>
     );
@@ -817,7 +941,7 @@ export const HiveChatView: React.FC = observer(() => {
   return (
     <>
       <SidebarComponent uuid={uuid} defaultCollapsed />
-      <Container collapsed={collapsed}>
+      <Container collapsed={collapsed} ref={containerRef}>
         <ChatBodyWrapper>
           <ChatSection>
             <ChatHeader>
@@ -855,6 +979,14 @@ export const HiveChatView: React.FC = observer(() => {
 
             <ChatBody>
               <ChatHistory ref={chatHistoryRef}>
+                {showSplash && messages.length === 0 && (
+                  <SplashContainer>
+                    <SplashScreen
+                      user={{ alias: ui.meInfo?.owner_alias || 'User' }}
+                      onSendMessage={handleSplashMessage}
+                    />
+                  </SplashContainer>
+                )}
                 {messages.map((msg: ChatMessage) => (
                   <React.Fragment key={msg.id}>
                     <MessageBubble isUser={msg.role === 'user'}>
@@ -865,7 +997,7 @@ export const HiveChatView: React.FC = observer(() => {
                         borderColor: '#444',
                         codeBlockFont: 'Courier New'
                       })}
-                      {msg.role !== 'user' && (
+                      {msg.role !== 'user' && msg.message && msg.message.trim() !== '' && (
                         <CopyButton
                           onClick={() => {
                             navigator.clipboard.writeText(msg.message);
@@ -886,14 +1018,12 @@ export const HiveChatView: React.FC = observer(() => {
                         </CopyButton>
                       )}
                     </MessageBubble>
-                    {!isActionSend && (
-                      <ActionArtifactRenderer
-                        messageId={msg.id}
-                        chatId={chatId}
-                        websocketSessionId={websocketSessionId}
-                        setIsActionSend={setIsActionSend}
-                      />
-                    )}
+                    <ActionArtifactRenderer
+                      messageId={msg.id}
+                      chatId={chatId}
+                      websocketSessionId={websocketSessionId}
+                      setIsActionSend={setIsActionSend}
+                    />
                   </React.Fragment>
                 ))}
                 {(isChainVisible || isActionSend) && (
@@ -921,7 +1051,10 @@ export const HiveChatView: React.FC = observer(() => {
                     <AttachIcon icon="attach_file" />
                   </AttachButton>
                 )}
-                <SendButton onClick={handleSendMessage} disabled={!message.trim() || isSending}>
+                <SendButton
+                  onClick={() => handleSendMessage()}
+                  disabled={!message.trim() || isSending}
+                >
                   Send
                 </SendButton>
                 {isUploadModalOpen && (
@@ -938,6 +1071,14 @@ export const HiveChatView: React.FC = observer(() => {
             <ViewerSection>
               <ViewerHeader>
                 <TabContainer>
+                  {sseArtifact && sseArtifact?.length > 0 && (
+                    <TabButton
+                      active={artifactTab === 'logs'}
+                      onClick={() => setArtifactTab('logs')}
+                    >
+                      Logs
+                    </TabButton>
+                  )}
                   {codeArtifact && codeArtifact?.length > 0 && (
                     <TabButton
                       active={artifactTab === 'code'}
@@ -977,6 +1118,8 @@ export const HiveChatView: React.FC = observer(() => {
                 visualArtifact={visualArtifact ?? []}
                 codeArtifact={codeArtifact ?? []}
                 textArtifact={textArtifact ?? []}
+                sseArtifact={sseArtifact ?? []}
+                chatId={chatId}
                 activeTab={artifactTab}
               />
             </ViewerSection>
