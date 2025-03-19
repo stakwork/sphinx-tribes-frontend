@@ -68,7 +68,8 @@ export async function testUserLnUrlLogin(encode: string) {
 
   const response = await fetch(url.toString());
 
-  if (response.ok) {
-    console.log(await response.json());
+  if (!response.ok) {
+    console.log("Response from API Call", response)
+
   }
 }
