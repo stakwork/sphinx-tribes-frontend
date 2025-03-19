@@ -806,6 +806,15 @@ export interface ChatWorkflow {
   updatedAt?: string;
 }
 
+export interface CodeSpaceMap {
+  id?: string | undefined;
+  createdAt?: string;
+  updatedAt?: string;
+  workspaceID: string;
+  codeSpaceURL: string;
+  userPubkey: string;
+}
+
 export type ChargeModel = 'Free' | 'PAYG';
 export type SkillStatus = 'Approved' | 'Draft' | 'Archived';
 export type ClientType = 'Claude Desktop' | 'Cursor' | 'Cline' | 'Goose';
