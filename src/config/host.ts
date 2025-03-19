@@ -35,7 +35,11 @@ export function getHostIncludingDockerHosts() {
 export const TribesURL = getHost().startsWith('localhost')
   ? `http://${getHost()}`
   : getHost().startsWith('http')
-  ? getHost()
-  : `https://${getHost()}`;
+    ? getHost()
+    : `https://${getHost()}`;
 
 // https://obscure-zebra-94rwjg6r9v37pwg.github.dev/
+
+export function isDevHost() {
+  return window.location.host.includes('localhost') || window.location.host.endsWith('-13008.app.github.dev')
+}
