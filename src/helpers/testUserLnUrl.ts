@@ -1,4 +1,5 @@
 import { bech32 } from 'bech32';
+import { getCodespacesBackendUrl } from 'config';
 import { ec as EC } from 'elliptic';
 
 function hexToBytes(hex: string): Uint8Array {
@@ -36,7 +37,15 @@ export async function testUserLnUrlLogin(encode: string) {
   const uint8Array = new Uint8Array(bech32.fromWords(bech32.decode(encode, 1500).words));
 
   const textDecoder = new TextDecoder('utf-8');
-  const url = new URL(textDecoder.decode(uint8Array));
+  let rawUrl = textDecoder.decode(uint8Array);
+
+  const codespaceUrl = getCodespacesBackendUrl();
+
+  if (codespaceUrl) {
+    rawUrl = rawUrl.replace('https://app.github.dev', `https://${codespaceUrl}`);
+  }
+
+  const url = new URL(rawUrl);
 
   const message = 'lnurl+cypress+auth';
   const hash = await sha256(message);
@@ -59,7 +68,7 @@ export async function testUserLnUrlLogin(encode: string) {
 
   const response = await fetch(url.toString());
 
-  if (response.ok) {
-    console.log(await response.json());
+  if (!response.ok) {
+    console.log('Response from API Call', response);
   }
 }

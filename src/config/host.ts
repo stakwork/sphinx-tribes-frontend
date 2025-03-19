@@ -1,17 +1,25 @@
 const internalDockerHosts = ['localhost:13007', 'localhost:13000'];
 const externalDockerHosts = ['localhost:23007', 'localhost:23000'];
 
+export function getCodespacesBackendUrl() {
+  if (window.location.host.endsWith('-13008.app.github.dev')) {
+    const arr = window.location.host.split('-13008');
+    const codespaceUrl = arr[0];
+    return `${codespaceUrl}-5002.app.github.dev`;
+  }
+  return '';
+}
+
 export function getHost(): string {
   if (process.env.REACT_APP_LOCAL_ENV) {
     return 'people-test.sphinx.chat';
   }
 
   // codespace urls
-  if (window.location.host.endsWith('-13008.app.github.dev')) {
-    const arr = window.location.host.split('-13008');
-    const codespaceUrl = arr[0];
-    console.log(`${codespaceUrl}-5002.app.github.dev`);
-    return `${codespaceUrl}-5002.app.github.dev`;
+  const codespaceUrl = getCodespacesBackendUrl();
+
+  if (codespaceUrl) {
+    return codespaceUrl;
   }
 
   const host = window.location.host.includes('localhost')
@@ -41,8 +49,5 @@ export const TribesURL = getHost().startsWith('localhost')
 // https://obscure-zebra-94rwjg6r9v37pwg.github.dev/
 
 export function isDevHost() {
-  return (
-    window.location.host.includes('localhost') ||
-    window.location.host.endsWith('-13008.app.github.dev')
-  );
+  return window.location.host.includes('localhost') || !!getCodespacesBackendUrl();
 }
