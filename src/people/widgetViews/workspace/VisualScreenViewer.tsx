@@ -107,6 +107,18 @@ const NavigationButtons = styled.div`
   gap: 2px;
 `;
 
+const CodeMetadata = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  background-color: white;
+`;
+const CodeMetadataHeader = styled.span`
+  font-weight: bold;
+  padding-right: 4px;
+`;
+
 const ToolbarButton = styled.button`
   background: none;
   border: none;
@@ -340,6 +352,22 @@ const VisualScreenViewer: React.FC<VisualScreenViewerProps> = ({
       {activeTab === 'code' && currentCode && (
         <>
           <CodeViewer>
+            {currentCode.content && (currentCode.content as TextContent).code_metadata && (
+              <CodeMetadata>
+                <span>
+                  <CodeMetadataHeader>File:</CodeMetadataHeader>
+                  {(currentCode.content as TextContent).code_metadata?.File}
+                </span>
+                <span>
+                  <CodeMetadataHeader>Change:</CodeMetadataHeader>
+                  {(currentCode.content as TextContent).code_metadata?.Change}
+                </span>
+                <span>
+                  <CodeMetadataHeader>Action:</CodeMetadataHeader>
+                  {(currentCode.content as TextContent).code_metadata?.Action}
+                </span>
+              </CodeMetadata>
+            )}
             {renderMarkdown((currentCode.content as TextContent).content || '', {
               codeBlockBackground: '#282c34',
               textColor: '#abb2bf',
