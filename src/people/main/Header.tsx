@@ -490,7 +490,8 @@ function Header() {
           width: '100%',
           height: 64,
           padding: '0 20px',
-          background: headerBackground
+          background: headerBackground,
+          zIndex: 1001
         }}
       >
         <div
