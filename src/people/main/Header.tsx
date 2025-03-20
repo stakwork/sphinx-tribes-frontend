@@ -613,8 +613,7 @@ function Header() {
           onSuccess={() => {
             ui.setShowSignIn(false);
             setShowWelcome(true);
-            // if page is not /p, go to /p (people)
-            window.location.reload();
+            goToEditSelf();
           }}
         />
       </Modal>
