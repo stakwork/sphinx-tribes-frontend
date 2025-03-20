@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { skillsStore } from '../../store/skillsStore.ts';
 import AdminAccessDenied from '../superadmin/accessDenied';
 import { useStores } from '../../store';
+import AddNewSkillModal from './AddNewSkillModal';
 
 const Container = styled.div`
   padding: 20px 60px;
@@ -94,6 +95,8 @@ const ManageSkillsPage: React.FC = observer(() => {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [permissionsChecked, setPermissionsChecked] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [users, setUsers] = useState<any[]>([]);
 
   const getIsSuperAdmin = useCallback(async () => {
     const isSuperAdmin = await main.getSuperAdmin();
@@ -121,6 +124,18 @@ const ManageSkillsPage: React.FC = observer(() => {
     fetchSkills();
   }, []);
 
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const usersList = await main.getPeople();
+        setUsers(usersList || []);
+      } catch (error) {
+        console.error('Failed to load users:', error);
+      }
+    };
+    fetchUsers();
+  }, [main]);
+
   const handleDelete = async (id: string) => {
     await skillsStore.deleteSkill(id);
     setSkills(Array.from(skillsStore.skills.values()));
@@ -128,6 +143,23 @@ const ManageSkillsPage: React.FC = observer(() => {
 
   const handleToggleMenu = (id: string) => {
     setOpenMenu((prev) => (prev === id ? null : id));
+  };
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleSkillCreated = async () => {
+    try {
+      await skillsStore.loadAllSkills();
+      setSkills(Array.from(skillsStore.skills.values()));
+    } catch (error) {
+      console.error('Failed to refresh skills:', error);
+    }
   };
 
   return (
@@ -140,7 +172,7 @@ const ManageSkillsPage: React.FC = observer(() => {
         <Container>
           <Header>
             <Title>Manage Skills Page</Title>
-            <AddButton>Add new skill</AddButton>
+            <AddButton onClick={handleOpenModal}>Add new skill</AddButton>
           </Header>
           {isLoading ? (
             <div>Loading skills data...</div>
@@ -190,6 +222,13 @@ const ManageSkillsPage: React.FC = observer(() => {
               </tbody>
             </Table>
           )}
+
+          <AddNewSkillModal
+            isOpen={isModalOpen}
+            onClose={handleCloseModal}
+            onSuccess={handleSkillCreated}
+            users={users}
+          />
         </Container>
       )}
     </>
