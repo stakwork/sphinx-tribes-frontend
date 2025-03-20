@@ -334,33 +334,38 @@ interface AddNewSkillModalProps {
 }
 
 const CustomPeopleListStyles = createGlobalStyle`
-#custom-people-list-wrapper  .SearchSkillContainer{
+#custom-people-list-wrapper .SearchSkillContainer {
   margin-left: 27% !important;
   margin-bottom: 0 !important;
   margin-top: 3% !important;
 }
 
 #custom-people-list-wrapper .OuterContainer {
-    margin-left: 27% !important;
-  }
+  margin-left: 27% !important;
+}
 
-  #custom-people-list-wrapper .OuterContainer .PeopleList {
-    width: 320px !important;
-    padding: 0 10px 16px !important;
-    background: none !important;
-    box-shadow: none !important;
-  }
+#custom-people-list-wrapper .OuterContainer .PeopleList {
+  width: 320px !important;
+  padding: 0 10px 16px !important;
+  background: none !important;
+  box-shadow: none !important;
+}
 
+#custom-people-list-wrapper .People.selected div[style*="width: 86px"] {
+  background: #4589ee !important;
+}
+
+#custom-people-list-wrapper .People.selected div[style*="width: 86px"] .nextText {
+  content: "Selected";
+}
+
+#custom-people-list-wrapper .People div[color] {
+  display: none !important;
+}
 `;
 
 const validationSchema = Yup.object().shape({
-  name: Yup.string().required('Skill name is required'),
-  tagline: Yup.string().required('Tag line is required'),
-  description: Yup.string().required('Description is required'),
   ownerPubkey: Yup.string().required('Owner assignment is required'),
-  iconUrl: Yup.string().required('Icon URL is required'),
-  chargeModel: Yup.string().required('Charging model is required'),
-  status: Yup.string().required('Status is required'),
   labels: Yup.array().min(1, 'At least one label is required')
 });
 
@@ -466,15 +471,19 @@ const AddNewSkillModal: React.FC<AddNewSkillModalProps> = ({ isOpen, onClose, on
                 <FormLayout>
                   <LeftSection>
                     <FormField>
-                      <Field as={StyledInput} id="name" name="name" placeholder=" " />
+                      <Field as={StyledInput} id="name" name="name" placeholder=" " required />
                       <FloatingLabel htmlFor="name">Skill Name</FloatingLabel>
-                      {errors.name && touched.name && <ErrorMessage>{errors.name}</ErrorMessage>}
                     </FormField>
 
                     <FormField>
-                      <Field as={StyledInput} id="tagline" name="tagline" placeholder=" " />
+                      <Field
+                        as={StyledInput}
+                        id="tagline"
+                        name="tagline"
+                        placeholder=" "
+                        required
+                      />
                       <FloatingLabel htmlFor="name">Tag line</FloatingLabel>
-                      {errors.name && touched.name && <ErrorMessage>{errors.tagline}</ErrorMessage>}
                     </FormField>
 
                     <FormField>
@@ -483,11 +492,9 @@ const AddNewSkillModal: React.FC<AddNewSkillModalProps> = ({ isOpen, onClose, on
                         id="description"
                         name="description"
                         placeholder=""
+                        required
                       />
                       <FloatingLabel htmlFor="description">Description</FloatingLabel>
-                      {errors.description && touched.description && (
-                        <ErrorMessage>{errors.description}</ErrorMessage>
-                      )}
                     </FormField>
 
                     <FormField>
@@ -500,6 +507,7 @@ const AddNewSkillModal: React.FC<AddNewSkillModalProps> = ({ isOpen, onClose, on
                           handleIconPaste(e, setFieldValue)
                         }
                         placeholder=" "
+                        required
                       />
                       {previewImage && (
                         <ImagePreview>
@@ -509,9 +517,6 @@ const AddNewSkillModal: React.FC<AddNewSkillModalProps> = ({ isOpen, onClose, on
                       <FloatingLabel htmlFor="iconUrl">
                         Icon URL - Paste Picture or URL
                       </FloatingLabel>
-                      {errors.iconUrl && touched.iconUrl && (
-                        <ErrorMessage>{errors.iconUrl}</ErrorMessage>
-                      )}
                     </FormField>
 
                     <FormField>
@@ -523,9 +528,6 @@ const AddNewSkillModal: React.FC<AddNewSkillModalProps> = ({ isOpen, onClose, on
                         <option value="PAYG">Paid</option>
                       </Field>
                       <FloatingLabel htmlFor="chargeModel">Charging</FloatingLabel>
-                      {errors.chargeModel && touched.chargeModel && (
-                        <ErrorMessage>{errors.chargeModel}</ErrorMessage>
-                      )}
                     </FormField>
 
                     <FormField>
@@ -538,9 +540,6 @@ const AddNewSkillModal: React.FC<AddNewSkillModalProps> = ({ isOpen, onClose, on
                         <option value="Archived">Archived</option>
                       </Field>
                       <FloatingLabel htmlFor="status">Status</FloatingLabel>
-                      {errors.status && touched.status && (
-                        <ErrorMessage>{errors.status}</ErrorMessage>
-                      )}
                     </FormField>
                   </LeftSection>
 
@@ -553,6 +552,24 @@ const AddNewSkillModal: React.FC<AddNewSkillModalProps> = ({ isOpen, onClose, on
                             peopleList={peopleList}
                             isProvidingHandler={true}
                             handleAssigneeDetails={(value) => {
+                              const peopleElements = document.querySelectorAll(
+                                '#custom-people-list-wrapper .People'
+                              );
+                              peopleElements.forEach((el) => {
+                                el.classList.remove('selected');
+                                if (
+                                  el.querySelector('.PeopleName')?.textContent?.trim() ===
+                                  value.owner_alias
+                                ) {
+                                  el.classList.add('selected');
+
+                                  const buttonText = el.querySelector('.nextText');
+                                  if (buttonText) {
+                                    buttonText.textContent = 'Selected';
+                                  }
+                                }
+                              });
+
                               setFieldValue('ownerPubkey', value.owner_pubkey);
                               setFieldValue('ownerAlias', value.owner_alias);
                             }}
@@ -604,7 +621,10 @@ const AddNewSkillModal: React.FC<AddNewSkillModalProps> = ({ isOpen, onClose, on
                           }}
                           onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
                             if (
-                              (e.key === 'Tab' || e.key === 'Enter' || e.key === ',') &&
+                              (e.key === 'Tab' ||
+                                e.key === 'Enter' ||
+                                e.key === ',' ||
+                                e.key === ' ') &&
                               e.currentTarget.value.trim()
                             ) {
                               e.preventDefault();
