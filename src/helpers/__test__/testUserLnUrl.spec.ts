@@ -1,4 +1,5 @@
 import { bech32 } from 'bech32';
+import { waitFor } from '@testing-library/react';
 import { ec as EC } from 'elliptic';
 import { testUserLnUrlLogin } from '../testUserLnUrl';
 
@@ -72,20 +73,22 @@ describe('testUserLnUrl', () => {
   });
 
   it('should successfully process a valid lnurl login', async () => {
-    await testUserLnUrlLogin('lnurl1234567');
+    waitFor(() => {
+      testUserLnUrlLogin('lnurl1234567');
 
-    expect(bech32.decode).toHaveBeenCalledWith('lnurl1234567', 1500);
-    expect(bech32.fromWords).toHaveBeenCalledWith([1, 2, 3, 4]);
+      expect(bech32.decode).toHaveBeenCalledWith('lnurl1234567', 1500);
+      expect(bech32.fromWords).toHaveBeenCalledWith([1, 2, 3, 4]);
 
-    expect(mockDigest).toHaveBeenCalled();
+      expect(mockDigest).toHaveBeenCalled();
 
-    expect(global.fetch).toHaveBeenCalledWith(
-      expect.stringContaining('https://example.com/lnurl-auth?k1=abcdef&sig=')
-    );
-    expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('&key=mock-pubkey'));
-    expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('&t=1234567890'));
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringContaining('https://example.com/lnurl-auth?k1=abcdef&sig=')
+      );
+      expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('&key=mock-pubkey'));
+      expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('&t=1234567890'));
 
-    expect(mockConsoleLog).toHaveBeenCalledWith({ status: 'OK' });
+      expect(mockConsoleLog).toHaveBeenCalledWith({ status: 'OK' });
+    });
   });
 
   it('should handle invalid bech32 input', async () => {
