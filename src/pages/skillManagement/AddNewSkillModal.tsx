@@ -1,10 +1,11 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
-import styled from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 import { useStores } from '../../store';
 import { skillsStore } from '../../store/skillsStore';
 import { ChargeModel, SkillStatus } from '../../store/interface';
+import InvitePeopleSearch from '../../components/form/inputs/widgets/PeopleSearch';
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -56,7 +57,7 @@ const CloseButton = styled.button`
 const FormLayout = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 30px;
+  gap: 35px;
   margin-bottom: 20px;
 `;
 
@@ -78,68 +79,17 @@ const FormGroup = styled.div`
   gap: 5px;
 `;
 
+const PeopleSearchContainer = styled.div`
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  padding: 15px;
+`;
+
 const Label = styled.label`
-  font-size: 13px;
-  color: #666;
+  font-size: 16px;
+  font-weight: 700;
+  color: #878787;
   margin-bottom: 4px;
-`;
-
-const Input = styled.input`
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-  &:focus {
-    outline: none;
-    border-color: #007bff;
-  }
-`;
-
-const UserList = styled.div`
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  max-height: 200px;
-  overflow-y: auto;
-`;
-
-const UserItem = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 8px 12px;
-  gap: 10px;
-  cursor: pointer;
-  &:hover {
-    background-color: #f5f5f5;
-  }
-`;
-
-const UserAvatar = styled.img`
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  object-fit: cover;
-`;
-
-const UserInfo = styled.div`
-  flex: 1;
-`;
-
-const UserName = styled.div`
-  font-size: 14px;
-  font-weight: 500;
-`;
-
-const AssignButton = styled.button<{ assigned?: boolean }>`
-  padding: 6px 12px;
-  border-radius: 16px;
-  border: none;
-  font-size: 12px;
-  cursor: pointer;
-  background-color: ${(props) => (props.assigned ? '#E8F0FE' : '#f1f1f1')};
-  color: ${(props) => (props.assigned ? '#1967D2' : '#666')};
-  &:hover {
-    background-color: ${(props) => (props.assigned ? '#D2E3FC' : '#e1e1e1')};
-  }
 `;
 
 const ButtonContainer = styled.div`
@@ -287,26 +237,121 @@ const StyledSelect = styled.select`
     font-weight: 500;
   }
 
-  /* Apply color to the select when showing placeholder */
   &:invalid,
   &:required:invalid {
     color: #666;
   }
 `;
 
-interface User {
-  id: string;
-  pubkey: string;
-  alias: string;
-  img?: string;
-}
+const getLabelColor = (label: string) => {
+  const hash = label.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+
+  const colors = [
+    { bg: '#ffcdd2', text: '#c62828' },
+    { bg: '#f8bbd0', text: '#ad1457' },
+    { bg: '#e1bee7', text: '#6a1b9a' },
+    { bg: '#d1c4e9', text: '#4527a0' },
+    { bg: '#c5cae9', text: '#283593' },
+    { bg: '#bbdefb', text: '#1565c0' },
+    { bg: '#b3e5fc', text: '#0277bd' },
+    { bg: '#b2ebf2', text: '#00838f' },
+    { bg: '#b2dfdb', text: '#00695c' },
+    { bg: '#c8e6c9', text: '#2e7d32' },
+    { bg: '#dcedc8', text: '#558b2f' },
+    { bg: '#f0f4c3', text: '#9e9d24' },
+    { bg: '#fff9c4', text: '#f9a825' },
+    { bg: '#ffecb3', text: '#ff8f00' },
+    { bg: '#ffe0b2', text: '#ef6c00' },
+    { bg: '#ffccbc', text: '#d84315' }
+  ];
+
+  return colors[hash % colors.length];
+};
+
+const InlineLabelBubble = styled.div<{ bgColor: string; textColor: string }>`
+  background-color: ${(props) => props.bgColor};
+  color: ${(props) => props.textColor};
+  padding: 4px 10px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  margin: 3px 5px 3px 0;
+  font-weight: 500;
+`;
+
+const InlineRemoveLabel = styled.span`
+  margin-left: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+  line-height: 1;
+  &:hover {
+    opacity: 0.8;
+  }
+`;
+
+const InlineInput = styled.input`
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  padding: 5px;
+  min-width: 100px;
+  background: transparent;
+`;
+
+const StyledInputContainer = styled.div`
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 5px 8px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  background: white;
+  min-height: 42px;
+
+  &:focus-within {
+    border-color: #82b4ff;
+    outline: none;
+  }
+
+  &.focused ~ label,
+  &:has(${InlineLabelBubble}) ~ label {
+    transform: translateY(-24px) scale(0.8);
+    color: #666;
+    background: white;
+    padding: 0 6px;
+    font-weight: 500;
+  }
+`;
 
 interface AddNewSkillModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
-  users: User[];
 }
+
+const CustomPeopleListStyles = createGlobalStyle`
+#custom-people-list-wrapper  .SearchSkillContainer{
+  margin-left: 27% !important;
+  margin-bottom: 0 !important;
+  margin-top: 3% !important;
+}
+
+#custom-people-list-wrapper .OuterContainer {
+    margin-left: 27% !important;
+  }
+
+  #custom-people-list-wrapper .OuterContainer .PeopleList {
+    width: 320px !important;
+    padding: 0 10px 16px !important;
+    background: none !important;
+    box-shadow: none !important;
+  }
+
+`;
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required('Skill name is required'),
@@ -332,25 +377,26 @@ const initialValues = {
   labels: [] as string[]
 };
 
-const AddNewSkillModal: React.FC<AddNewSkillModalProps> = ({
-  isOpen,
-  onClose,
-  onSuccess,
-  users
-}) => {
+const AddNewSkillModal: React.FC<AddNewSkillModalProps> = ({ isOpen, onClose, onSuccess }) => {
   const { main } = useStores();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filteredUsers, setFilteredUsers] = useState(users);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const iconInputRef = useRef<HTMLInputElement>(null);
+  const [peopleList, setPeopleList] = useState<any[]>([]);
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const query = e.target.value;
-    setSearchQuery(query);
+  useEffect(() => {
+    const fetchPeople = async () => {
+      try {
+        const people = await main.getPeople();
+        setPeopleList(people || []);
+      } catch (error) {
+        console.error('Failed to fetch people:', error);
+      }
+    };
 
-    const filtered = users.filter((user) => user.alias.toLowerCase().includes(query.toLowerCase()));
-    setFilteredUsers(filtered);
-  };
+    if (isOpen) {
+      fetchPeople();
+    }
+  }, [isOpen, main]);
 
   const handleIconPaste = async (
     e: React.ClipboardEvent<HTMLInputElement>,
@@ -401,145 +447,199 @@ const AddNewSkillModal: React.FC<AddNewSkillModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <ModalOverlay onClick={onClose}>
-      <ModalContent onClick={(e) => e.stopPropagation()}>
-        <ModalHeader>
-          <ModalTitle>New Skill</ModalTitle>
-          <CloseButton onClick={onClose}>&times;</CloseButton>
-        </ModalHeader>
+    <>
+      <CustomPeopleListStyles />
+      <ModalOverlay onClick={onClose}>
+        <ModalContent onClick={(e) => e.stopPropagation()}>
+          <ModalHeader>
+            <ModalTitle>New Skill</ModalTitle>
+            <CloseButton onClick={onClose}>&times;</CloseButton>
+          </ModalHeader>
 
-        <Formik
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={handleSubmit}
-        >
-          {({ isSubmitting, setFieldValue, errors, touched }) => (
-            <Form>
-              <FormLayout>
-                <LeftSection>
-                  <FormField>
-                    <Field as={StyledInput} id="name" name="name" placeholder=" " />
-                    <FloatingLabel htmlFor="name">Skill Name</FloatingLabel>
-                    {errors.name && touched.name && <ErrorMessage>{errors.name}</ErrorMessage>}
-                  </FormField>
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={handleSubmit}
+          >
+            {({ isSubmitting, setFieldValue, errors, touched, values }) => (
+              <Form>
+                <FormLayout>
+                  <LeftSection>
+                    <FormField>
+                      <Field as={StyledInput} id="name" name="name" placeholder=" " />
+                      <FloatingLabel htmlFor="name">Skill Name</FloatingLabel>
+                      {errors.name && touched.name && <ErrorMessage>{errors.name}</ErrorMessage>}
+                    </FormField>
 
-                  <FormField>
-                    <Field as={StyledInput} id="tagline" name="tagline" placeholder=" " />
-                    <FloatingLabel htmlFor="name">Tag line</FloatingLabel>
-                    {errors.name && touched.name && <ErrorMessage>{errors.tagline}</ErrorMessage>}
-                  </FormField>
+                    <FormField>
+                      <Field as={StyledInput} id="tagline" name="tagline" placeholder=" " />
+                      <FloatingLabel htmlFor="name">Tag line</FloatingLabel>
+                      {errors.name && touched.name && <ErrorMessage>{errors.tagline}</ErrorMessage>}
+                    </FormField>
 
-                  <FormField>
-                    <Field as={StyledTextArea} id="description" name="description" placeholder="" />
-                    <FloatingLabel htmlFor="description">Description</FloatingLabel>
-                    {errors.description && touched.description && (
-                      <ErrorMessage>{errors.description}</ErrorMessage>
-                    )}
-                  </FormField>
+                    <FormField>
+                      <Field
+                        as={StyledTextArea}
+                        id="description"
+                        name="description"
+                        placeholder=""
+                      />
+                      <FloatingLabel htmlFor="description">Description</FloatingLabel>
+                      {errors.description && touched.description && (
+                        <ErrorMessage>{errors.description}</ErrorMessage>
+                      )}
+                    </FormField>
 
-                  <FormField>
-                    <Field
-                      as={StyledInput}
-                      id="iconUrl"
-                      name="iconUrl"
-                      innerRef={iconInputRef}
-                      onPaste={(e: React.ClipboardEvent<HTMLInputElement>) =>
-                        handleIconPaste(e, setFieldValue)
-                      }
-                      placeholder=" "
-                    />
-                    {previewImage && (
-                      <ImagePreview>
-                        <img src={previewImage} alt="Icon preview" />
-                      </ImagePreview>
-                    )}
-                    <FloatingLabel htmlFor="iconUrl">Icon URL - Paste Picture or URL</FloatingLabel>
-                    {errors.iconUrl && touched.iconUrl && (
-                      <ErrorMessage>{errors.iconUrl}</ErrorMessage>
-                    )}
-                  </FormField>
+                    <FormField>
+                      <Field
+                        as={StyledInput}
+                        id="iconUrl"
+                        name="iconUrl"
+                        innerRef={iconInputRef}
+                        onPaste={(e: React.ClipboardEvent<HTMLInputElement>) =>
+                          handleIconPaste(e, setFieldValue)
+                        }
+                        placeholder=" "
+                      />
+                      {previewImage && (
+                        <ImagePreview>
+                          <img src={previewImage} alt="Icon preview" />
+                        </ImagePreview>
+                      )}
+                      <FloatingLabel htmlFor="iconUrl">
+                        Icon URL - Paste Picture or URL
+                      </FloatingLabel>
+                      {errors.iconUrl && touched.iconUrl && (
+                        <ErrorMessage>{errors.iconUrl}</ErrorMessage>
+                      )}
+                    </FormField>
 
-                  <FormField>
-                    <Field as={StyledSelect} id="chargeModel" name="chargeModel" required>
-                      <option value="" style={{ color: '#666' }}>
-                        Select charging model
-                      </option>
-                      <option value="Free">Free</option>
-                      <option value="PAYG">Paid</option>
-                    </Field>
-                    <FloatingLabel htmlFor="chargeModel">Charging</FloatingLabel>
-                    {errors.chargeModel && touched.chargeModel && (
-                      <ErrorMessage>{errors.chargeModel}</ErrorMessage>
-                    )}
-                  </FormField>
+                    <FormField>
+                      <Field as={StyledSelect} id="chargeModel" name="chargeModel" required>
+                        <option value="" style={{ color: '#666' }}>
+                          Select charging model
+                        </option>
+                        <option value="Free">Free</option>
+                        <option value="PAYG">Paid</option>
+                      </Field>
+                      <FloatingLabel htmlFor="chargeModel">Charging</FloatingLabel>
+                      {errors.chargeModel && touched.chargeModel && (
+                        <ErrorMessage>{errors.chargeModel}</ErrorMessage>
+                      )}
+                    </FormField>
 
-                  <FormField>
-                    <Field as={StyledSelect} id="status" name="status" required>
-                      <option value="" style={{ color: '#666' }}>
-                        Select status
-                      </option>
-                      <option value="Draft">Draft</option>
-                      <option value="Approved">Approved</option>
-                      <option value="Archived">Archived</option>
-                    </Field>
-                    <FloatingLabel htmlFor="status">Status</FloatingLabel>
-                    {errors.status && touched.status && (
-                      <ErrorMessage>{errors.status}</ErrorMessage>
-                    )}
-                  </FormField>
-                </LeftSection>
+                    <FormField>
+                      <Field as={StyledSelect} id="status" name="status" required>
+                        <option value="" style={{ color: '#666' }}>
+                          Select status
+                        </option>
+                        <option value="Draft">Draft</option>
+                        <option value="Approved">Approved</option>
+                        <option value="Archived">Archived</option>
+                      </Field>
+                      <FloatingLabel htmlFor="status">Status</FloatingLabel>
+                      {errors.status && touched.status && (
+                        <ErrorMessage>{errors.status}</ErrorMessage>
+                      )}
+                    </FormField>
+                  </LeftSection>
 
-                <RightSection>
-                  <FormGroup>
-                    <Label>Assign Owner</Label>
-                    <Input
-                      type="text"
-                      placeholder="Type to search"
-                      value={searchQuery}
-                      onChange={handleSearchChange}
-                    />
-                    <UserList>
-                      {filteredUsers.map((user) => (
-                        <UserItem
-                          key={user.id}
-                          onClick={() => {
-                            setFieldValue('ownerPubkey', user.pubkey);
-                            setFieldValue('ownerAlias', user.alias);
+                  <RightSection>
+                    <FormGroup>
+                      <PeopleSearchContainer>
+                        <Label>Assign Owner</Label>
+                        <div id="custom-people-list-wrapper">
+                          <InvitePeopleSearch
+                            peopleList={peopleList}
+                            isProvidingHandler={true}
+                            handleAssigneeDetails={(value) => {
+                              setFieldValue('ownerPubkey', value.owner_pubkey);
+                              setFieldValue('ownerAlias', value.owner_alias);
+                            }}
+                          />
+                        </div>
+                      </PeopleSearchContainer>
+                      {errors.ownerPubkey && touched.ownerPubkey && (
+                        <ErrorMessage>{errors.ownerPubkey}</ErrorMessage>
+                      )}
+                    </FormGroup>
+
+                    <FormField>
+                      <StyledInputContainer className="label-input-container">
+                        {values.labels &&
+                          values.labels.map((label: string) => {
+                            const colorSet = getLabelColor(label);
+                            return (
+                              <InlineLabelBubble
+                                key={label}
+                                bgColor={colorSet.bg}
+                                textColor={colorSet.text}
+                              >
+                                {label}
+                                <InlineRemoveLabel
+                                  onClick={() => {
+                                    const currentLabels = values.labels || [];
+                                    setFieldValue(
+                                      'labels',
+                                      currentLabels.filter((l: string) => l !== label)
+                                    );
+                                  }}
+                                >
+                                  ×
+                                </InlineRemoveLabel>
+                              </InlineLabelBubble>
+                            );
+                          })}
+                        <InlineInput
+                          id="labelInput"
+                          name="labelInput"
+                          placeholder=" "
+                          onFocus={(e) => {
+                            e.currentTarget.parentElement?.classList.add('focused');
                           }}
-                        >
-                          <UserAvatar src={user.img || '/default-avatar.png'} alt={user.alias} />
-                          <UserInfo>
-                            <UserName>{user.alias}</UserName>
-                          </UserInfo>
-                          <AssignButton
-                            type="button"
-                            assigned={user.pubkey === initialValues.ownerPubkey}
-                          >
-                            {user.pubkey === initialValues.ownerPubkey ? 'Assigned' : 'Assign'}
-                          </AssignButton>
-                        </UserItem>
-                      ))}
-                    </UserList>
-                    {errors.ownerPubkey && touched.ownerPubkey && (
-                      <ErrorMessage>{errors.ownerPubkey}</ErrorMessage>
-                    )}
-                  </FormGroup>
-                </RightSection>
-              </FormLayout>
+                          onBlur={(e) => {
+                            if (!e.currentTarget.value) {
+                              e.currentTarget.parentElement?.classList.remove('focused');
+                            }
+                          }}
+                          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                            if (
+                              (e.key === 'Tab' || e.key === 'Enter' || e.key === ',') &&
+                              e.currentTarget.value.trim()
+                            ) {
+                              e.preventDefault();
+                              const newLabel = e.currentTarget.value.trim().replace(/,+$/, '');
+                              const currentLabels = values.labels || [];
+                              if (newLabel && !currentLabels.includes(newLabel)) {
+                                setFieldValue('labels', [...currentLabels, newLabel]);
+                              }
+                              e.currentTarget.value = '';
+                            }
+                          }}
+                        />
+                      </StyledInputContainer>
+                      <FloatingLabel htmlFor="labelInput">Labels</FloatingLabel>
+                      {errors.labels && touched.labels && (
+                        <ErrorMessage>{errors.labels}</ErrorMessage>
+                      )}
+                    </FormField>
+                  </RightSection>
+                </FormLayout>
 
-              <ButtonContainer>
-                <CancelButton type="button" onClick={onClose}>
-                  Cancel
-                </CancelButton>
-                <SubmitButton type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? 'Submitting...' : 'Submit'}
-                </SubmitButton>
-              </ButtonContainer>
-            </Form>
-          )}
-        </Formik>
-      </ModalContent>
-    </ModalOverlay>
+                <ButtonContainer>
+                  <CancelButton type="button" onClick={onClose}>
+                    Cancel
+                  </CancelButton>
+                  <SubmitButton type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? 'Submitting...' : 'Submit'}
+                  </SubmitButton>
+                </ButtonContainer>
+              </Form>
+            )}
+          </Formik>
+        </ModalContent>
+      </ModalOverlay>
+    </>
   );
 };
 

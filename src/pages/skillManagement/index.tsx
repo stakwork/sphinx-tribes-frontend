@@ -96,7 +96,6 @@ const ManageSkillsPage: React.FC = observer(() => {
   const [permissionsChecked, setPermissionsChecked] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [users, setUsers] = useState<any[]>([]);
 
   const getIsSuperAdmin = useCallback(async () => {
     const isSuperAdmin = await main.getSuperAdmin();
@@ -123,18 +122,6 @@ const ManageSkillsPage: React.FC = observer(() => {
     };
     fetchSkills();
   }, []);
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const usersList = await main.getPeople();
-        setUsers(usersList || []);
-      } catch (error) {
-        console.error('Failed to load users:', error);
-      }
-    };
-    fetchUsers();
-  }, [main]);
 
   const handleDelete = async (id: string) => {
     await skillsStore.deleteSkill(id);
@@ -227,7 +214,6 @@ const ManageSkillsPage: React.FC = observer(() => {
             isOpen={isModalOpen}
             onClose={handleCloseModal}
             onSuccess={handleSkillCreated}
-            users={users}
           />
         </Container>
       )}
