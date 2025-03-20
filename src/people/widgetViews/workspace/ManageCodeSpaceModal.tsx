@@ -105,8 +105,8 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
     const fetchCodeSpace = async () => {
       try {
         const response = await main.getCodeSpace(workspaceUUID);
-        if (response && response.length > 0) {
-          setCodeSpace(response[0]);
+        if (response) {
+          setCodeSpace(response);
         } else {
           setCodeSpace({
             id: '',
