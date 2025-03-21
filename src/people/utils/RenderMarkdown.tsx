@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { colors } from '../../config';
 import 'highlight.js/styles/night-owl.css';
 
-const MarkdownContainer = styled.div<{ textColor?: string }>`
+const MarkdownContainer = styled.div<{ textColor?: string; codeBlockFont?: string }>`
   font-size: 1rem;
   line-height: 1.6;
   color: ${(props: any) => props.textColor || '#3c3f41'};
@@ -72,6 +72,8 @@ const MarkdownContainer = styled.div<{ textColor?: string }>`
     border: 1px solid #444;
     margin: 1rem 0;
     overflow-x: auto;
+    display: block;
+    position: relative;
 
     code {
       background: none;
@@ -80,8 +82,14 @@ const MarkdownContainer = styled.div<{ textColor?: string }>`
       border-radius: 0;
       margin: 0;
       display: block;
-      overflow-x: auto;
-      white-space: pre;
+      white-space: pre !important;
+      word-spacing: normal;
+      word-break: normal;
+      overflow-wrap: normal;
+      tab-size: 2;
+      hyphens: none;
+      font-family: ${(props) => props.codeBlockFont || 'monospace'};
+      line-height: 1.6;
     }
   }
 
@@ -103,6 +111,11 @@ const MarkdownContainer = styled.div<{ textColor?: string }>`
     word-break: break-word;
     display: inline;
   }
+
+  pre code {
+    white-space: pre !important;
+    word-break: normal;
+  }
 `;
 
 interface CustomStyles {
@@ -123,12 +136,21 @@ export function renderMarkdown(markdown: any, customStyles?: CustomStyles) {
     borderColor = '#444'
   } = customStyles || {};
 
+  const processCodeContent = (content: string) => {
+    try {
+      const decoded = JSON.parse(`"${content}"`);
+      return decoded;
+    } catch {
+      return content.replace(/\\n/g, '\n').replace(/\\t/g, '  ').replace(/\\/g, '');
+    }
+  };
+
   return (
-    <MarkdownContainer textColor={bubbleTextColor}>
+    <MarkdownContainer textColor={bubbleTextColor} codeBlockFont={codeBlockFont}>
       <ReactMarkdown
         children={markdown}
         remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeRaw]} // highlight rendering functionality for code blocks
+        rehypePlugins={[rehypeRaw]}
         components={{
           code({ inline, className, children, ...props }: any) {
             if (inline) {
@@ -138,6 +160,8 @@ export function renderMarkdown(markdown: any, customStyles?: CustomStyles) {
                 </code>
               );
             }
+
+            const content = processCodeContent(children.toString());
 
             return (
               <pre
@@ -151,9 +175,21 @@ export function renderMarkdown(markdown: any, customStyles?: CustomStyles) {
                   margin: '1rem 0',
                   overflowX: 'auto'
                 }}
-                {...props}
               >
-                <code className={className}>{children}</code>
+                <code
+                  className={className}
+                  style={{
+                    whiteSpace: 'pre',
+                    display: 'block'
+                  }}
+                  dangerouslySetInnerHTML={{
+                    __html: content
+                      .split('\n')
+                      .map((line) => (line.trim() ? line : '&nbsp;'))
+                      .join('\n')
+                  }}
+                  {...props}
+                />
               </pre>
             );
           },
