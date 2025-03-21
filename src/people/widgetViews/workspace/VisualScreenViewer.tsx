@@ -9,9 +9,8 @@ const ViewerContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  flex: 1;
+  height: 76vh;
   background-color: #f9f9f9;
-  padding: 0 0 16px 0;
   box-sizing: border-box;
   margin: 0 0 0 10px;
   position: relative;
@@ -61,7 +60,7 @@ const TextViewer = styled.div`
   border: 1px solid #ddd;
   padding: 12px;
   min-height: 50vh;
-  max-height: 70vh;
+  max-height: 75vh;
 
   @media (min-width: 2560px) {
     max-height: 80vh;
@@ -82,8 +81,7 @@ const PaginationControls = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: auto;
-  padding: 12px;
+  margin: 6px;
   background-color: #f9f9f9;
 `;
 
