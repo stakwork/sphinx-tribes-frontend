@@ -69,16 +69,16 @@ const SidebarContainer = styled.div<{ collapsed: boolean }>`
   }
 `;
 
-const HamburgerButton = styled.button`
+const HamburgerButton = styled.button<{ topPosition?: string }>`
   background: none;
   border: none;
   cursor: pointer;
-  margin-top: 80px;
+  margin-top: ${(props) => props.topPosition || '80px'};
   margin-left: 10px;
   z-index: 1000;
 
   @media (max-width: 768px) {
-    margin-top: 110px;
+    margin-top: ${(props) => props.topPosition || '110px'};
     transition: left 0.3s ease-in-out;
   }
 `;
@@ -319,11 +319,13 @@ const Tooltip = styled.div<{ visible: boolean; top: number; collapsed: boolean }
 interface SidebarComponentProps {
   uuid?: string;
   defaultCollapsed?: boolean;
+  hamburgerTopPosition?: string;
 }
 
 export default function SidebarComponent({
   uuid,
-  defaultCollapsed = false
+  defaultCollapsed = false,
+  hamburgerTopPosition
 }: SidebarComponentProps) {
   const { ui, main, chat } = useStores();
   const [activeItem, setActiveItem] = useState<'activities' | 'settings' | 'feature' | null>(null);
@@ -646,7 +648,10 @@ export default function SidebarComponent({
         }
       }}
     >
-      <HamburgerButton onClick={() => handleCollapse(!collapsed)}>
+      <HamburgerButton
+        onClick={() => handleCollapse(!collapsed)}
+        topPosition={hamburgerTopPosition}
+      >
         <MaterialIcon icon="menu" style={{ fontSize: 28 }} />
       </HamburgerButton>
 

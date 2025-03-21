@@ -49,6 +49,10 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
           <BountiesLandingPage />
         </Route>
 
+        <Route exact path="/workspace/:uuid/hivechat/:chatId">
+          <HiveChatView />
+        </Route>
+
         <Route exact path="/skills">
           <MainLayout header={<PeopleHeader />}>
             <SkillsPage />
@@ -99,9 +103,6 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
               </Route>
               <Route path="/workspace/:workspaceId/hivechat/history">
                 <ChatHistoryView />
-              </Route>
-              <Route path="/workspace/:uuid/hivechat/:chatId">
-                <HiveChatView />
               </Route>
               <Route path="/hivechat/:uuid/build">
                 <HiveBuildView />

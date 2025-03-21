@@ -44,7 +44,7 @@ interface LogEntry {
 const Container = styled.div<{ collapsed: boolean }>`
   display: flex;
   flex-direction: column;
-  height: 95vh;
+  height: 100vh;
   padding: 0 25px 0 35px;
   overflow: hidden;
   background: var(--Search-bar-background, #f2f3f5);
@@ -94,7 +94,7 @@ const ViewerHeader = styled.div`
 const ChatBody = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 0 5px 20px 0 !important;
+  padding: 0 5px 0 0 !important;
   flex: 1;
   overflow: hidden;
 `;
@@ -981,7 +981,7 @@ export const HiveChatView: React.FC = observer(() => {
 
   return (
     <>
-      <SidebarComponent uuid={uuid} defaultCollapsed />
+      <SidebarComponent uuid={uuid} defaultCollapsed hamburgerTopPosition="25px" />
       <Container collapsed={collapsed} ref={containerRef}>
         <ChatBodyWrapper>
           <ChatSection>
