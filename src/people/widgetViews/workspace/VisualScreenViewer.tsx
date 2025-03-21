@@ -201,6 +201,31 @@ const NewTabButton = styled(ToolbarButton)`
   }
 `;
 
+const CopyButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  transition: color 0.3s;
+  z-index: 10;
+
+  &:hover {
+    color: #aaa;
+  }
+`;
+
+const TextCopyButton = styled(CopyButton)`
+  color: #333;
+
+  &:hover {
+    color: #666;
+  }
+`;
+
 interface VisualScreenViewerProps {
   visualArtifact: Artifact[];
   codeArtifact: Artifact[];
@@ -223,6 +248,8 @@ const VisualScreenViewer: React.FC<VisualScreenViewerProps> = ({
   const [textIndex, setTextIndex] = useState(0);
   const [currentUrl, setCurrentUrl] = useState('');
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [codeCopied, setCodeCopied] = useState(false);
+  const [textCopied, setTextCopied] = useState(false);
 
   useEffect(() => {
     if (visualArtifact.length > 0) {
@@ -280,6 +307,26 @@ const VisualScreenViewer: React.FC<VisualScreenViewerProps> = ({
       }
     }
   }, [activeTab, currentVisual]);
+
+  const copyCodeToClipboard = () => {
+    if (currentCode?.content) {
+      const content = (currentCode.content as TextContent).content || '';
+      navigator.clipboard.writeText(content).then(() => {
+        setCodeCopied(true);
+        setTimeout(() => setCodeCopied(false), 2000);
+      });
+    }
+  };
+
+  const copyTextToClipboard = () => {
+    if (currentText?.content) {
+      const content = (currentText.content as TextContent).content || '';
+      navigator.clipboard.writeText(content).then(() => {
+        setTextCopied(true);
+        setTimeout(() => setTextCopied(false), 2000);
+      });
+    }
+  };
 
   const renderBrowserTools = (visualContent: VisualContent) => {
     if (visualContent.visual_type !== 'screen') return null;
@@ -352,6 +399,9 @@ const VisualScreenViewer: React.FC<VisualScreenViewerProps> = ({
       {activeTab === 'code' && currentCode && (
         <>
           <CodeViewer>
+            <CopyButton onClick={copyCodeToClipboard}>
+              {codeCopied ? <MaterialIcon icon="check" /> : <MaterialIcon icon="content_copy" />}
+            </CopyButton>
             {currentCode.content && (currentCode.content as TextContent).code_metadata && (
               <CodeMetadata>
                 <span>
@@ -399,6 +449,9 @@ const VisualScreenViewer: React.FC<VisualScreenViewerProps> = ({
       {activeTab === 'text' && currentText && (
         <>
           <TextViewer>
+            <TextCopyButton onClick={copyTextToClipboard}>
+              {textCopied ? <MaterialIcon icon="check" /> : <MaterialIcon icon="content_copy" />}
+            </TextCopyButton>
             {renderMarkdown((currentText.content as TextContent).content || '')}
           </TextViewer>
           <PaginationControls>
