@@ -43,6 +43,7 @@ const SidebarContainer = styled.div<{ collapsed: boolean }>`
   overflow: hidden;
   position: fixed;
   height: 100vh;
+  z-index: 1000;
   left: 0;
   top: 0;
   background: #f4f4f4;
@@ -296,7 +297,6 @@ const Tooltip = styled.div<{ visible: boolean; top: number; collapsed: boolean }
   opacity: ${(props) => (props.visible ? 1 : 0)};
   visibility: ${(props) => (props.visible ? 'visible' : 'hidden')};
   transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 9999;
   white-space: nowrap;
   top: ${(props) => props.top}px;
   pointer-events: none;
