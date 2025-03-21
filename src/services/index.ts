@@ -180,10 +180,6 @@ export class ChatService {
     }
   }
 
-  hasActionOptions(content: Artifact['content']): content is ActionContent {
-    return !!content && 'options' in content && Array.isArray(content.options);
-  }
-
   async sendMessage(
     chat_id: string,
     message: string,
@@ -192,15 +188,14 @@ export class ChatService {
     mode: string,
     contextTags?: ContextTag[],
     pdfUrl?: string,
-    modelSelection?: string,
-    actionArtifact?: Artifact
+    modelSelection?: string
   ): Promise<ChatMessage | undefined> {
     try {
       if (!uiStore.meInfo) return undefined;
       const info = uiStore.meInfo;
 
-      let endpoint = `${TribesURL}/hivechat/send`;
-      let body: any = {
+      const endpoint = `${TribesURL}/hivechat/send`;
+      const body: any = {
         chat_id,
         message,
         context_tags: contextTags,
@@ -210,25 +205,6 @@ export class ChatService {
         modelSelection,
         mode
       };
-
-      if (
-        actionArtifact &&
-        actionArtifact.type === 'action' &&
-        this.hasActionOptions(actionArtifact.content)
-      ) {
-        const firstOption = actionArtifact.content.options[0];
-
-        if (firstOption?.action_type === 'chat') {
-          endpoint = `${TribesURL}/hivechat/send/action`;
-          body = {
-            action_webhook: firstOption.webhook,
-            chatId: chat_id,
-            messageId: actionArtifact.message_id,
-            message,
-            sourceWebsocketId: sourceWebsocketID
-          };
-        }
-      }
 
       const response = await fetch(endpoint, {
         method: 'POST',

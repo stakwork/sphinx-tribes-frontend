@@ -411,7 +411,6 @@ export const HiveChatView: React.FC = observer(() => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isBuild, setIsBuild] = useState<'Chat' | 'Build'>('Build');
-  const [actionArtifact, setActionArtifact] = useState<Artifact>();
   const [visualArtifact, setVisualArtifact] = useState<Artifact[]>();
   const [textArtifact, setTextArtifact] = useState<Artifact[]>();
   const [sseArtifact, setSseArtifact] = useState<Artifact[]>();
@@ -549,8 +548,7 @@ export const HiveChatView: React.FC = observer(() => {
         uuid,
         isBuild,
         undefined,
-        pdfUrl,
-        actionArtifact
+        pdfUrl
       );
 
       if (sentMessage) {
@@ -727,7 +725,6 @@ export const HiveChatView: React.FC = observer(() => {
       if (chatId && isArtifactLoggingEnabled) {
         const res = await chat.loadArtifactsForChat(chatId);
         console.log('Artifacts for that chat', res);
-        setActionArtifact({} as Artifact);
         const screenArtifacts = res?.filter(
           (artifact) =>
             artifact &&
@@ -750,9 +747,8 @@ export const HiveChatView: React.FC = observer(() => {
             artifact.content.text_type === 'code'
         );
 
-        const isTextContent = (content: any): content is TextContent => {
-          return content && typeof content.text_type === 'string' && 'language' in content;
-        };
+        const isTextContent = (content: any): content is TextContent =>
+          content && typeof content.text_type === 'string' && 'language' in content;
 
         codeArtifacts.forEach((artifact) => {
           if (isTextContent(artifact.content)) {
@@ -788,19 +784,6 @@ export const HiveChatView: React.FC = observer(() => {
 
         if (sseArtifacts) {
           setSseArtifact(sseArtifacts);
-        }
-
-        const systemMessages = messages?.filter((msg) => msg.role !== 'user');
-        const lastSystemMessageId =
-          systemMessages?.length > 0 ? systemMessages[systemMessages.length - 1].id : null;
-
-        if (lastSystemMessageId) {
-          const artifacts = chat.getMessageArtifacts(lastSystemMessageId);
-          for (const artifact of artifacts) {
-            if (artifact.type === 'action' && chat.isActionContent(artifact.content)) {
-              setActionArtifact(artifact);
-            }
-          }
         }
       }
     };
@@ -894,8 +877,7 @@ export const HiveChatView: React.FC = observer(() => {
         uuid,
         isBuild,
         undefined,
-        pdfUrl,
-        actionArtifact
+        pdfUrl
       );
 
       if (sentMessage) {
