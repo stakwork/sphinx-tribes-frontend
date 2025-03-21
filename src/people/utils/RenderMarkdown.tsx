@@ -128,7 +128,7 @@ export function renderMarkdown(markdown: any, customStyles?: CustomStyles) {
       <ReactMarkdown
         children={markdown}
         remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeRaw]}
+        rehypePlugins={[rehypeRaw]} // highlight rendering functionality for code blocks
         components={{
           code({ inline, className, children, ...props }: any) {
             if (inline) {
