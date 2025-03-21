@@ -50,6 +50,14 @@ const Container = styled.div<{ collapsed: boolean }>`
   background: var(--Search-bar-background, #f2f3f5);
   margin-left: ${({ collapsed }: { collapsed: boolean }) => (collapsed ? '50px' : '250px')};
   transition: margin-left 0.3s ease-in-out;
+
+  @media (max-width: 1200px) {
+    height: 93vh;
+  }
+
+  @media (max-width: 480px) {
+    height: 90vh;
+  }
 `;
 
 const ChatBodyWrapper = styled.div`
