@@ -406,15 +406,17 @@ function Header() {
               </EuiHeaderSection>
 
               <Corner>
-                <Button
-                  text={'Get Sphinx'}
-                  color="transparent"
-                  onClick={(e: any) => {
-                    e.preventDefault();
-                    clickHandler();
-                  }}
-                  style={{ marginRight: 14, width: 98 }}
-                />
+                {!ui.meInfo && (
+                  <Button
+                    text={'Get Sphinx'}
+                    color="transparent"
+                    onClick={(e: any) => {
+                      e.preventDefault();
+                      clickHandler();
+                    }}
+                    style={{ marginRight: 14, width: 98 }}
+                  />
+                )}
 
                 {ui.meInfo ? (
                   <Imgg
@@ -542,14 +544,17 @@ function Header() {
           </Row>
 
           <Corner>
-            <GetSphinxsBtn
-              onClick={(e: any) => {
-                e.preventDefault();
-                clickHandler();
-              }}
-            >
-              Get Sphinx
-            </GetSphinxsBtn>
+            {!ui.meInfo && (
+              <GetSphinxsBtn
+                onClick={(e: any) => {
+                  e.preventDefault();
+                  clickHandler();
+                }}
+              >
+                Get Sphinx
+              </GetSphinxsBtn>
+            )}
+
             <PostModal
               isOpen={isOpenPostModal}
               onClose={() => setIsOpenPostModal(false)}
