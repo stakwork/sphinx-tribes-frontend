@@ -320,6 +320,30 @@ const CopyButton = styled.button<{ $isUser?: boolean }>`
   }
 `;
 
+const AddButton = styled.button`
+  padding: 8px;
+  margin-left: 8px;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover:not(:disabled) {
+    background-color: #f5f5f5;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+`;
+
 const connectToLogWebSocket = (
   projectId: string,
   chatId: string,
@@ -912,6 +936,31 @@ export const HiveChatView: React.FC = observer(() => {
     window.dispatchEvent(sidebarEvent);
   }, [chatId]);
 
+  const handleNewChat = async () => {
+    try {
+      const newChat = await chat.createChat(uuid as string, 'New Chat');
+      if (newChat && newChat.id) {
+        window.location.href = `/workspace/${uuid}/hivechat/${newChat.id}`;
+      } else {
+        ui.setToasts([
+          {
+            title: 'Error',
+            color: 'danger',
+            text: 'Failed to create new chat. Please try again.'
+          }
+        ]);
+      }
+    } catch (error) {
+      ui.setToasts([
+        {
+          title: 'Error',
+          color: 'danger',
+          text: 'An error occurred while creating the chat.'
+        }
+      ]);
+    }
+  };
+
   if (loading) {
     return (
       <Container collapsed={collapsed} ref={containerRef}>
@@ -956,6 +1005,9 @@ export const HiveChatView: React.FC = observer(() => {
                     Save
                   </SendButton>
                 )}
+                <AddButton onClick={() => handleNewChat()} disabled={isUpdatingTitle}>
+                  <MaterialIcon icon="add" style={{ fontSize: '16px', color: '#5f6368' }} />
+                </AddButton>
               </SaveTitleContainer>
 
               {!showArtifactView ? (
