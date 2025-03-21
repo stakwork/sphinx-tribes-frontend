@@ -533,10 +533,17 @@ export interface SseContent {
   sse_url: string;
 }
 
+export interface CodeMetadata {
+  File: string;
+  Change: string;
+  Action: string;
+}
+
 export interface TextContent {
   text_type: 'code' | 'rag' | 'md' | 'sse_logs';
   content: string;
   language?: string;
+  code_metadata?: CodeMetadata;
 }
 
 export interface VisualContent {
