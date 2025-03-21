@@ -89,7 +89,7 @@ const MarkdownContainer = styled.div<{ textColor?: string }>`
     background-color: rgba(175, 184, 193, 0.2);
     color: #24292f;
     padding: 0.2em 0.4em;
-    border-radius: 6px;
+    border-radius: 6px; // TODO: make this a variable
     font-family:
       ui-monospace,
       SFMono-Regular,
