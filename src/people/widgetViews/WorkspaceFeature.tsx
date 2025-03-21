@@ -27,7 +27,6 @@ import {
   FeatureOptionsWrap
 } from 'pages/tickets/style';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useBrowserTabTitle } from 'hooks';
 import { useParams, useHistory } from 'react-router-dom';
 import { useStores } from 'store';
 import { mainStore } from 'store/main';
@@ -67,112 +66,9 @@ import { Phase, Toast } from './workspace/interface';
 import ActivitiesHeader from './workspace/Activities/header';
 import { EditableField } from './workspace/EditableField';
 
-interface AudioRecordingModalProps {
-  open: boolean;
-  handleClose: () => void;
-  handleSubmit: (audioLink: string) => Promise<void>;
-  featureUUID: string;
-}
 
-const AudioRecordingModal: React.FC<AudioRecordingModalProps> = ({
-  open,
-  handleClose,
-  handleSubmit
-}: AudioRecordingModalProps) => {
-  const [audioLink, setAudioLink] = useState<string>('');
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [showResultModal, setShowResultModal] = useState<boolean>(false);
-  const [isSuccess, setIsSuccess] = useState<boolean>(false);
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setAudioLink(event.target.value);
-  };
 
-  const onSubmit = async () => {
-    setIsSubmitting(true);
-    try {
-      await handleSubmit(audioLink);
-      setIsSuccess(true);
-    } catch (error) {
-      setIsSuccess(false);
-    }
-    setIsSubmitting(false);
-    handleClose();
-    setShowResultModal(true);
-  };
-
-  const handleResultClose = () => {
-    setShowResultModal(false);
-    setAudioLink('');
-  };
-
-  return (
-    <>
-      {open && (
-        <EuiOverlayMask>
-          <StyledModal>
-            <EuiModalHeader>
-              <EuiText>
-                <h2>Enter Audio Recording URL</h2>
-              </EuiText>
-            </EuiModalHeader>
-            <AudioModalBody>
-              <Label>Audio URL</Label>
-              <Input
-                placeholder="Enter public URL for AudioDataWorkflow"
-                onChange={handleInputChange}
-                value={audioLink}
-                data-testid="audio-url-input"
-              />
-            </AudioModalBody>
-            <StyledEuiModalFooter>
-              <AudioButtonGroup>
-                <AudioButtonWrap>
-                  <ActionButton color="cancel" onClick={handleClose}>
-                    Cancel
-                  </ActionButton>
-                  <ActionButton
-                    data-testid="audio-submit-btn"
-                    onClick={onSubmit}
-                    disabled={isSubmitting}
-                  >
-                    Submit
-                  </ActionButton>
-                </AudioButtonWrap>
-              </AudioButtonGroup>
-            </StyledEuiModalFooter>
-          </StyledModal>
-        </EuiOverlayMask>
-      )}
-
-      {showResultModal && (
-        <EuiOverlayMask>
-          <StyledModal>
-            <EuiModalHeader>
-              <EuiText>
-                <h2>Request Submitted</h2>
-              </EuiText>
-            </EuiModalHeader>
-            <AudioModalBody>
-              <div>
-                {isSuccess
-                  ? 'Your request has been submitted and the feature brief will be updated soon.'
-                  : 'Your request has failed please contact the Hive Product Manager.'}
-              </div>
-            </AudioModalBody>
-            <StyledEuiModalFooter>
-              <AudioButtonGroup>
-                <AudioButtonWrap>
-                  <ActionButton onClick={handleResultClose}>Close</ActionButton>
-                </AudioButtonWrap>
-              </AudioButtonGroup>
-            </StyledEuiModalFooter>
-          </StyledModal>
-        </EuiOverlayMask>
-      )}
-    </>
-  );
-};
 
 interface WSEditableFieldProps {
   label: string;
@@ -186,7 +82,7 @@ interface WSEditableFieldProps {
   dataTestIdPrefix: string;
   onSubmit: () => Promise<void>;
   main: typeof mainStore;
-  showAudioButton?: boolean;
+  showAudioButton?: false;
   feature_uuid?: string;
   previewMode: 'preview' | 'edit';
   setPreviewMode: DispatchSetStateAction<'preview' | 'edit'>;
@@ -215,9 +111,7 @@ const WorkspaceEditableField = ({
 
   const [showAudioModal, setShowAudioModal] = useState(false);
 
-  const handleAudioGeneration = () => {
-    setShowAudioModal(true);
-  };
+  
 
   const handleAudioModalClose = () => {
     setShowAudioModal(false);
@@ -243,23 +137,7 @@ const WorkspaceEditableField = ({
     <FieldWrap>
       <FlexContainer>
         <Label>{label}</Label>
-        {showAudioButton && (
-          <>
-            <ActionButton
-              color="primary"
-              onClick={handleAudioGeneration}
-              data-testid="audio-generation-btn"
-            >
-              Audio Generation
-            </ActionButton>
-            <AudioRecordingModal
-              open={showAudioModal}
-              handleClose={handleAudioModalClose}
-              handleSubmit={handleAudioModalSubmit}
-              featureUUID={feature_uuid ?? ''}
-            />
-          </>
-        )}
+       
       </FlexContainer>
       <Data>
         <EditableField
@@ -391,7 +269,6 @@ const WorkspaceFeature = () => {
     'preview'
   );
   const [permissionsChecked, setPermissionsChecked] = useState<boolean>(false);
-  useBrowserTabTitle(`Feature: ${featureData?.name || ''}`);
 
   const history = useHistory();
 
@@ -499,7 +376,7 @@ const WorkspaceFeature = () => {
   }, [getWorkspaceData]);
 
   useEffect(() => {
-    const socket = createSocketInstance();
+    let socket = createSocketInstance();
 
     socket.onmessage = async (event: MessageEvent) => {
       console.log('Raw websocket message received:', event.data);
@@ -769,9 +646,7 @@ const WorkspaceFeature = () => {
         <FeatureHeadWrap>
           <FeatureHeadNameWrap>
             <MaterialIcon
-              onClick={() =>
-                history.push(`/workspace/${workspaceData?.uuid}/feature/${feature_uuid}`)
-              }
+              onClick={() => history.push(`/workspace/${workspaceData?.uuid}`)}
               icon={'arrow_back'}
               style={{
                 fontSize: 25,
@@ -852,7 +727,7 @@ const WorkspaceFeature = () => {
             dataTestIdPrefix="brief"
             onSubmit={() => submitField('brief', brief, setEditBrief)}
             main={main}
-            showAudioButton={true}
+            showAudioButton={false}
             feature_uuid={feature_uuid}
             previewMode={briefPreviewMode}
             setPreviewMode={setBriefPreviewMode}
