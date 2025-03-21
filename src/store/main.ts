@@ -1021,9 +1021,12 @@ export class MainStore {
     }
   }
 
-  async getBountyById(id: number): Promise<PersonBounty[]> {
+  async getBountyById(id: number, unlockCode?: string): Promise<PersonBounty[]> {
     try {
-      const ps2 = await api.get(`gobounties/id/${id}`);
+      const endpoint = unlockCode
+        ? `gobounties/id/${id}?unlock=${unlockCode}`
+        : `gobounties/id/${id}`;
+      const ps2 = await api.get(endpoint);
       const ps3: any[] = [];
 
       if (ps2 && ps2.length) {
@@ -1066,9 +1069,12 @@ export class MainStore {
     }
   }
 
-  async getBountyByCreated(created: number): Promise<PersonBounty[]> {
+  async getBountyByCreated(created: number, unlockCode?: string): Promise<PersonBounty[]> {
     try {
-      const ps2 = await api.get(`gobounties/created/${created}`);
+      const endpoint = unlockCode
+        ? `gobounties/created/${created}?unlock=${unlockCode}`
+        : `gobounties/created/${created}`;
+      const ps2 = await api.get(endpoint);
       const ps3: any[] = [];
 
       if (ps2 && ps2.length) {

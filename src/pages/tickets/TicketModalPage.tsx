@@ -73,11 +73,16 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
     let bounty;
     let bountyIndex = 0;
 
+    const searchParams = new URLSearchParams(location.search);
+    const unlockCodeParam = searchParams.get('unlock');
+
+    const unlockCode = unlockCodeParam || undefined;
+
     if (bountyId) {
-      bounty = await main.getBountyById(Number(bountyId));
+      bounty = await main.getBountyById(Number(bountyId), unlockCode);
       bountyIndex = await main.getBountyIndexById(Number(bountyId));
     } else if (search && search.created) {
-      bounty = await main.getBountyByCreated(Number(search.created));
+      bounty = await main.getBountyByCreated(Number(search.created), unlockCode);
       bountyIndex = await main.getBountyIndexById(Number(search.created));
     }
 
@@ -86,8 +91,10 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
       const isOwner = bounty[0].body.owner_id === ui.meInfo?.owner_pubkey;
       const isAssigned = bounty[0].body.assignee?.owner_pubkey === ui.meInfo?.owner_pubkey;
 
+      const hasValidUnlockCode = unlockCode && bounty[0].body.unlock_code === unlockCode;
+
       if (accessRestriction === 'workspace') {
-        if (!isOwner) {
+        if (!isOwner && !hasValidUnlockCode) {
           const workspaceUser = await main.getWorkspaceUser(bounty[0].body.workspace_uuid);
           const isWorkspaceAdmin = bounty[0].organization?.owner_pubkey === ui.meInfo?.owner_pubkey;
           const isWorkspaceMember = workspaceUser?.owner_pubkey === ui.meInfo?.owner_pubkey;
@@ -99,20 +106,20 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
           }
         }
       } else if (accessRestriction === 'owner') {
-        if (!isOwner) {
+        if (!isOwner && !hasValidUnlockCode) {
           setAccessDenied(true);
           setVisible(false);
           return;
         }
       } else if (accessRestriction === 'assigned') {
-        if (!isOwner && !isAssigned) {
+        if (!isOwner && !isAssigned && !hasValidUnlockCode) {
           setAccessDenied(true);
           setVisible(false);
           return;
         }
       } else if (accessRestriction === 'admins') {
         const isAdmin = await main.getSuperAdmin();
-        if (!isOwner && !isAdmin) {
+        if (!isOwner && !isAdmin && !hasValidUnlockCode) {
           setAccessDenied(true);
           setVisible(false);
           return;
@@ -131,7 +138,7 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
     setActiveBounty(bounty);
     setAccessDenied(false);
     setVisible(visible);
-  }, [bountyId, main, search, ui.meInfo]);
+  }, [bountyId, main, search, ui.meInfo, location.search]);
 
   useEffect(() => {
     getBounty();
