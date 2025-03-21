@@ -73,10 +73,8 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
     let bounty;
     let bountyIndex = 0;
 
-    const searchParams = new URLSearchParams(location.search);
-    const unlockCodeParam = searchParams.get('unlock');
-
-    const unlockCode = unlockCodeParam || undefined;
+    const urlParams = new URLSearchParams(location.search);
+    const unlockCode = urlParams.get('unlock');
 
     if (bountyId) {
       bounty = await main.getBountyById(Number(bountyId), unlockCode);
@@ -87,42 +85,59 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
     }
 
     if (bounty && bounty.length > 0) {
-      const accessRestriction = bounty[0].body.access_restriction;
-      const isOwner = bounty[0].body.owner_id === ui.meInfo?.owner_pubkey;
-      const isAssigned = bounty[0].body.assignee?.owner_pubkey === ui.meInfo?.owner_pubkey;
+      const isPrivate = bounty[0].body.show === false;
 
-      const hasValidUnlockCode = unlockCode && bounty[0].body.unlock_code === unlockCode;
+      if (isPrivate) {
+        const isOwner = ui.meInfo && bounty[0].body.owner_id === ui.meInfo.owner_pubkey;
+        const isAssigned =
+          ui.meInfo && bounty[0].body.assignee?.owner_pubkey === ui.meInfo.owner_pubkey;
+        const hasValidUnlockCode = unlockCode && bounty[0].body.unlock_code === unlockCode;
 
-      if (accessRestriction === 'workspace') {
-        if (!isOwner && !hasValidUnlockCode) {
-          const workspaceUser = await main.getWorkspaceUser(bounty[0].body.workspace_uuid);
-          const isWorkspaceAdmin = bounty[0].organization?.owner_pubkey === ui.meInfo?.owner_pubkey;
-          const isWorkspaceMember = workspaceUser?.owner_pubkey === ui.meInfo?.owner_pubkey;
-
-          if (!workspaceUser || (!isWorkspaceAdmin && !isWorkspaceMember)) {
-            setAccessDenied(true);
-            setVisible(false);
-            return;
-          }
-        }
-      } else if (accessRestriction === 'owner') {
-        if (!isOwner && !hasValidUnlockCode) {
-          setAccessDenied(true);
-          setVisible(false);
-          return;
-        }
-      } else if (accessRestriction === 'assigned') {
         if (!isOwner && !isAssigned && !hasValidUnlockCode) {
           setAccessDenied(true);
           setVisible(false);
           return;
         }
-      } else if (accessRestriction === 'admins') {
-        const isAdmin = await main.getSuperAdmin();
-        if (!isOwner && !isAdmin && !hasValidUnlockCode) {
-          setAccessDenied(true);
-          setVisible(false);
-          return;
+      }
+
+      const accessRestriction = bounty[0].body.access_restriction;
+      if (accessRestriction) {
+        const isOwner = ui.meInfo && bounty[0].body.owner_id === ui.meInfo.owner_pubkey;
+        const isAssigned =
+          ui.meInfo && bounty[0].body.assignee?.owner_pubkey === ui.meInfo.owner_pubkey;
+
+        if (accessRestriction === 'workspace') {
+          if (!isOwner) {
+            const workspaceUser = await main.getWorkspaceUser(bounty[0].body.workspace_uuid);
+            const isWorkspaceAdmin =
+              ui.meInfo && bounty[0].organization?.owner_pubkey === ui.meInfo.owner_pubkey;
+            const isWorkspaceMember = workspaceUser?.owner_pubkey === ui.meInfo?.owner_pubkey;
+
+            if (!workspaceUser || (!isWorkspaceAdmin && !isWorkspaceMember)) {
+              setAccessDenied(true);
+              setVisible(false);
+              return;
+            }
+          }
+        } else if (accessRestriction === 'owner') {
+          if (!isOwner) {
+            setAccessDenied(true);
+            setVisible(false);
+            return;
+          }
+        } else if (accessRestriction === 'assigned') {
+          if (!isOwner && !isAssigned) {
+            setAccessDenied(true);
+            setVisible(false);
+            return;
+          }
+        } else if (accessRestriction === 'admins') {
+          const isAdmin = await main.getSuperAdmin();
+          if (!isOwner && !isAdmin) {
+            setAccessDenied(true);
+            setVisible(false);
+            return;
+          }
         }
       }
     }
