@@ -1311,6 +1311,47 @@ function MobileView(props: CodingBountiesProps) {
                       showGithubBtn={!!ticket_url}
                       showProof={isAssignee}
                       showProofAction={proofHandler}
+                      isOwner={person?.owner_pubkey === ui.meInfo?.owner_pubkey}
+                      show={props.show}
+                      generateShareableLinkAction={() => {
+                        const unlockCode = props.unlock_code;
+
+                        if (unlockCode) {
+                          const shareableLink = `${window.location.origin}/bounty/${id}?unlock=${unlockCode}`;
+
+                          navigator.clipboard
+                            .writeText(shareableLink)
+                            .then(() => {
+                              setToasts([
+                                {
+                                  id: `${Math.random()}`,
+                                  title: 'Shareable Link Copied',
+                                  color: 'success'
+                                }
+                              ]);
+                            })
+                            .catch((err) => {
+                              console.error('Failed to copy link: ', err);
+                              setToasts([
+                                {
+                                  id: `${Math.random()}`,
+                                  title: 'Copy Failed',
+                                  color: 'danger'
+                                }
+                              ]);
+                            });
+                        } else {
+                          console.error('Could not find unlock code');
+                          setToasts([
+                            {
+                              id: `${Math.random()}`,
+                              title: 'Could not generate link',
+                              color: 'danger',
+                              text: 'Unlock code not found'
+                            }
+                          ]);
+                        }
+                      }}
                     />
                   </div>
                   {isOpenProofModal && (
