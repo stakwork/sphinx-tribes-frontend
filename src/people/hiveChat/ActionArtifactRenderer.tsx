@@ -31,11 +31,39 @@ const ActionBubble = styled.div`
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 `;
 
+const AnimatedContainer = styled.div<{ isAnimating: boolean }>`
+  margin: 8px 0;
+  max-width: 70%;
+  align-self: flex-start;
+  width: 70%;
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: ${(props) =>
+      props.isAnimating ? 'pulseAttention 2s ease-in-out infinite' : 'none'};
+  }
+
+  @keyframes pulseAttention {
+    0% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(var(--primary-rgb), 0.2);
+    }
+    50% {
+      transform: scale(1.02);
+      box-shadow: 0 0 0 10px rgba(var(--primary-rgb), 0);
+    }
+    100% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(var(--primary-rgb), 0);
+    }
+  }
+`;
+
 export const ActionArtifactRenderer: React.FC<ActionArtifactRendererProps> = observer(
   ({ messageId, chatId, websocketSessionId, setIsActionSend }) => {
     const { chat } = useStores();
     const [isSending, setIsSending] = useState(false);
     const [isActionCompleted, setIsActionCompleted] = useState(false);
+    const [isAnimating, setIsAnimating] = useState(true);
 
     const artifacts = chat.getMessageArtifacts(messageId);
 
@@ -90,27 +118,39 @@ export const ActionArtifactRenderer: React.FC<ActionArtifactRendererProps> = obs
       }
     };
 
-    return (
-      <ActionContainer>
-        {(hasButtonOptions || content.actionText) && (
-          <ActionBubble>
-            {content.actionText &&
-              renderMarkdown(content.actionText, {
-                codeBlockBackground: '#282c34',
-                textColor: '#abb2bf',
-                bubbleTextColor: '',
-                borderColor: '#444',
-                codeBlockFont: 'Courier New'
-              })}
+    const handleInteraction = () => {
+      setIsAnimating(false);
+    };
 
-            <ActionButtons
-              options={content.options}
-              onButtonClick={handleButtonClick}
-              disabled={isSending || isActionCompleted}
-            />
-          </ActionBubble>
-        )}
-      </ActionContainer>
+    return (
+      <AnimatedContainer
+        isAnimating={isAnimating}
+        onClick={handleInteraction}
+        onKeyDown={handleInteraction}
+        role="button"
+        tabIndex={0}
+      >
+        <ActionContainer>
+          {(hasButtonOptions || content.actionText) && (
+            <ActionBubble>
+              {content.actionText &&
+                renderMarkdown(content.actionText, {
+                  codeBlockBackground: '#282c34',
+                  textColor: '#abb2bf',
+                  bubbleTextColor: '',
+                  borderColor: '#444',
+                  codeBlockFont: 'Courier New'
+                })}
+
+              <ActionButtons
+                options={content.options}
+                onButtonClick={handleButtonClick}
+                disabled={isSending || isActionCompleted}
+              />
+            </ActionBubble>
+          )}
+        </ActionContainer>
+      </AnimatedContainer>
     );
   }
 );
