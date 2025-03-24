@@ -63,7 +63,7 @@ const ChatBodyWrapper = styled.div`
 const ViewerSection = styled.div`
   display: flex;
   flex-direction: column;
-  padding-bottom: 60px !important;
+  padding-bottom: 30px !important;
   width: 70%;
   overflow: hidden;
 `;

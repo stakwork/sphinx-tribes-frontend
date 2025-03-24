@@ -9,11 +9,33 @@ const ViewerContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 76vh;
+  height: 93vh;
+  max-height: 90vh;
   background-color: #f9f9f9;
   box-sizing: border-box;
   margin: 0 0 0 10px;
   position: relative;
+
+  @media (max-width: 2560px) {
+    width: 100%;
+    height: 90vh;
+    max-height: 90vh;
+    margin: 0 auto;
+  }
+
+  @media (max-width: 768px) {
+    width: 90%;
+    height: 92vh;
+    max-height: 92vh;
+    margin: 0 auto;
+  }
+
+  @media (max-width: 480px) {
+    width: 100%;
+    height: 70vh;
+    max-height: 70vh;
+    margin: 0;
+  }
 `;
 
 const IframeWrapper = styled.div`
@@ -31,50 +53,18 @@ const StyledIframe = styled.iframe`
 `;
 
 const CodeViewer = styled.div`
-  flex-grow: 1;
   overflow-y: auto;
   border: 1px solid #ddd;
   background-color: #1e1e1e;
   padding: 12px;
-  min-height: 65vh;
-  max-height: 70vh;
-
-  @media (min-width: 2560px) {
-    max-height: 80vh;
-  }
-
-  @media (max-width: 768px) {
-    min-height: 40vh;
-    max-height: 60vh;
-  }
-
-  @media (max-width: 480px) {
-    min-height: 30vh;
-    max-height: 40vh;
-  }
+  height: 100%;
 `;
 
 const TextViewer = styled.div`
-  flex-grow: 1;
   overflow-y: auto;
   border: 1px solid #ddd;
   padding: 12px;
-  min-height: 50vh;
-  max-height: 75vh;
-
-  @media (min-width: 2560px) {
-    max-height: 80vh;
-  }
-
-  @media (max-width: 768px) {
-    min-height: 40vh;
-    max-height: 60vh;
-  }
-
-  @media (max-width: 480px) {
-    min-height: 30vh;
-    max-height: 40vh;
-  }
+  height: 100%;
 `;
 
 const PaginationControls = styled.div`
