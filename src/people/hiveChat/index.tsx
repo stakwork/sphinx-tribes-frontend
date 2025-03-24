@@ -290,11 +290,22 @@ const TabButton = styled.button<{ active: boolean }>`
   border-radius: 8px 8px 0 0;
   margin-right: 4px;
   min-width: 120px;
+  position: relative;
 
   &:hover {
     background: ${({ active }) => (active ? '#808080' : '#e6e6e6')};
     color: ${({ active }) => (active ? 'white' : '#1e1f25')};
   }
+`;
+
+const UpdateIndicator = styled.span`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 8px;
+  height: 8px;
+  background-color: #f44336;
+  border-radius: 50%;
 `;
 
 const CopyButton = styled.button<{ $isUser?: boolean }>`
@@ -399,7 +410,6 @@ export const HiveChatView: React.FC = observer(() => {
   const [websocketSessionId, setWebsocketSessionId] = useState('');
   const chatHistoryRef = useRef<HTMLDivElement>(null);
   const [title, setTitle] = useState('Talk to Hive - Chat');
-  // const history = useHistory();
   const [isUpdatingTitle, setIsUpdatingTitle] = useState(false);
   const [projectId, setProjectId] = useState('');
   const [collapsed, setCollapsed] = useState(() => {
@@ -426,6 +436,13 @@ export const HiveChatView: React.FC = observer(() => {
     value: 'gpt-4o'
   });
   const [artifactTab, setArtifactTab] = useState<'visual' | 'code' | 'text' | 'logs'>('code');
+  const [updatedTabs, setUpdatedTabs] = useState<Record<string, boolean>>({
+    visual: false,
+    code: false,
+    text: false,
+    logs: false
+  });
+  const [lastProcessedMessageId, setLastProcessedMessageId] = useState<string | null>(null);
   const [showSplash, setShowSplash] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
   useBrowserTabTitle('Hive Chat');
@@ -801,6 +818,65 @@ export const HiveChatView: React.FC = observer(() => {
     processArtifacts();
   }, []);
 
+  useEffect(() => {
+    const checkForNewArtifacts = async () => {
+      if (!chatId || !isArtifactLoggingEnabled || messages.length === 0) return;
+
+      const latestMessage = messages[messages.length - 1];
+      if (latestMessage && latestMessage.id !== lastProcessedMessageId) {
+        setLastProcessedMessageId(latestMessage.id);
+
+        const res = await chat.loadArtifactsForChat(chatId);
+
+        if (!res) return;
+
+        const messageArtifacts = res.filter((artifact) => artifact.message_id === latestMessage.id);
+
+        const hasVisualUpdates = messageArtifacts.some(
+          (artifact) =>
+            artifact.type === 'visual' &&
+            artifact.content &&
+            'visual_type' in artifact.content &&
+            artifact.content.visual_type === 'screen'
+        );
+
+        const hasCodeUpdates = messageArtifacts.some(
+          (artifact) =>
+            artifact.type === 'text' &&
+            artifact.content &&
+            'text_type' in artifact.content &&
+            artifact.content.text_type === 'code'
+        );
+
+        const hasTextUpdates = messageArtifacts.some(
+          (artifact) =>
+            artifact.type === 'text' &&
+            artifact.content &&
+            'text_type' in artifact.content &&
+            artifact.content.text_type !== 'code' &&
+            artifact.content.text_type !== 'sse_logs'
+        );
+
+        const hasLogUpdates = messageArtifacts.some(
+          (artifact) =>
+            artifact.type === 'text' &&
+            artifact.content &&
+            'text_type' in artifact.content &&
+            artifact.content.text_type === 'sse_logs'
+        );
+
+        setUpdatedTabs({
+          visual: hasVisualUpdates,
+          code: hasCodeUpdates,
+          text: hasTextUpdates,
+          logs: hasLogUpdates
+        });
+      }
+    };
+
+    checkForNewArtifacts();
+  }, [chat, chatId, isArtifactLoggingEnabled, messages, lastProcessedMessageId]);
+
   const handleUploadComplete = (url: string) => {
     setPdfUrl(url);
     setMessage((prevMessage: string) => {
@@ -933,6 +1009,14 @@ export const HiveChatView: React.FC = observer(() => {
         }
       ]);
     }
+  };
+
+  const handleTabClick = (tabName: 'visual' | 'code' | 'text' | 'logs') => {
+    setArtifactTab(tabName);
+    setUpdatedTabs((prev) => ({
+      ...prev,
+      [tabName]: false
+    }));
   };
 
   if (loading) {
@@ -1092,33 +1176,37 @@ export const HiveChatView: React.FC = observer(() => {
                   {sseArtifact && sseArtifact?.length > 0 && (
                     <TabButton
                       active={artifactTab === 'logs'}
-                      onClick={() => setArtifactTab('logs')}
+                      onClick={() => handleTabClick('logs')}
                     >
                       Logs
+                      {updatedTabs.logs && <UpdateIndicator />}
                     </TabButton>
                   )}
                   {codeArtifact && codeArtifact?.length > 0 && (
                     <TabButton
                       active={artifactTab === 'code'}
-                      onClick={() => setArtifactTab('code')}
+                      onClick={() => handleTabClick('code')}
                     >
                       Code
+                      {updatedTabs.code && <UpdateIndicator />}
                     </TabButton>
                   )}
                   {visualArtifact && visualArtifact?.length > 0 && (
                     <TabButton
                       active={artifactTab === 'visual'}
-                      onClick={() => setArtifactTab('visual')}
+                      onClick={() => handleTabClick('visual')}
                     >
                       Screen
+                      {updatedTabs.visual && <UpdateIndicator />}
                     </TabButton>
                   )}
                   {textArtifact && textArtifact?.length > 0 && (
                     <TabButton
                       active={artifactTab === 'text'}
-                      onClick={() => setArtifactTab('text')}
+                      onClick={() => handleTabClick('text')}
                     >
                       Text
+                      {updatedTabs.text && <UpdateIndicator />}
                     </TabButton>
                   )}
                 </TabContainer>
