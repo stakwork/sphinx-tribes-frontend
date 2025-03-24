@@ -71,6 +71,9 @@ describe('AboutView Component', () => {
     jest.spyOn(mainStore, 'getIsAdmin').mockReturnValue(Promise.resolve(false));
     jest.spyOn(mainStore, 'getPersonById').mockReturnValue(Promise.resolve(person));
     jest.spyOn(mainStore, 'getSelf').mockReturnValue(Promise.resolve());
+
+    uiStore.setMeInfo(null);
+
     const history = createMemoryHistory();
     await act(async () => {
       const { getByText } = render(
