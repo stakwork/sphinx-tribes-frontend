@@ -800,15 +800,6 @@ export const HiveChatView: React.FC = observer(() => {
     processArtifacts();
   }, []);
 
-  useEffect(() => {
-    if (sseArtifact && sseArtifact?.length > 0) {
-      setArtifactTab('logs');
-    }
-    if (!visualArtifact && !codeArtifact) {
-      setArtifactTab('text');
-    }
-  }, [codeArtifact, sseArtifact, visualArtifact]);
-
   const handleUploadComplete = (url: string) => {
     setPdfUrl(url);
     setMessage((prevMessage: string) => {
