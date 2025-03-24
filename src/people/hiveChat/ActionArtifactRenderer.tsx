@@ -97,6 +97,7 @@ export const ActionArtifactRenderer: React.FC<ActionArtifactRendererProps> = obs
     const [isSending, setIsSending] = useState(false);
     const [isActionCompleted, setIsActionCompleted] = useState(false);
     const [hasInteracted, setHasInteracted] = useState(false);
+    const [selectedOptionId, setSelectedOptionId] = useState<string | undefined>(undefined);
 
     const artifacts = chat.getMessageArtifacts(messageId);
 
@@ -125,6 +126,7 @@ export const ActionArtifactRenderer: React.FC<ActionArtifactRendererProps> = obs
       setIsSending(true);
       setIsActionSend(true);
       setHasInteracted(true);
+      setSelectedOptionId(option.webhook);
 
       try {
         const payload = {
@@ -176,6 +178,7 @@ export const ActionArtifactRenderer: React.FC<ActionArtifactRendererProps> = obs
               options={content.options}
               onButtonClick={handleButtonClick}
               disabled={isSending || isActionCompleted}
+              selectedOptionId={selectedOptionId}
             />
           </ActionBubble>
         )}
