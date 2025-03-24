@@ -4667,7 +4667,7 @@ export class MainStore {
   ): Promise<boolean> {
     try {
       const response = await fetch(`${TribesURL}/activities/${id}`, {
-        method: 'PATCH',
+        method: 'PUT',
         mode: 'cors',
         headers: {
           'x-jwt': uiStore.meInfo?.tribe_jwt || '',
