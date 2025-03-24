@@ -173,6 +173,7 @@ const MessageBubble = styled.div<MessageBubbleProps>`
   background-color: ${(props) => (props.isUser ? '#808080' : '#F2F3F5')};
   color: ${(props) => (props.isUser ? 'white' : '#202124')};
   position: relative;
+  padding-right: ${(props) => (!props.isUser ? '30px' : '20px')};
 `;
 
 const InputContainer = styled.div`
