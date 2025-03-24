@@ -1,8 +1,9 @@
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import HiveFeaturesView from '../HiveFeaturesView';
+import { quickBountyTicketStore } from '../../../../../store/quickBountyTicketStore';
 
 jest.mock('../HiveFeaturesView', () => ({
   __esModule: true,
@@ -91,6 +92,82 @@ describe('HiveFeaturesView', () => {
     it('should show error state when fetch fails', () => {
       renderComponent();
       expect(screen.getByTestId('mock-component')).toBeInTheDocument();
+    });
+  });
+
+  describe('Phase Expansion State', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should initialize phases with stored expansion states', async () => {
+      const mockExpandedStates = {
+        'phase-1': true,
+        'phase-2': false
+      };
+
+      quickBountyTicketStore.expandedPhases = mockExpandedStates;
+
+      renderComponent();
+
+      waitFor(() => {
+        const phase1Header = screen.getByText('Phase 1').closest('div');
+        const phase2Header = screen.getByText('Phase 2').closest('div');
+
+        expect(phase1Header).toHaveAttribute('aria-expanded', 'true');
+        expect(phase2Header).toHaveAttribute('aria-expanded', 'false');
+      });
+    });
+
+    it('should default new phases to expanded state', async () => {
+      quickBountyTicketStore.expandedPhases = {};
+
+      renderComponent();
+
+      waitFor(() => {
+        const phaseHeaders = screen.getAllByRole('button', { name: /Phase \d/ });
+        phaseHeaders.forEach((header) => {
+          expect(header).toHaveAttribute('aria-expanded', 'true');
+        });
+      });
+    });
+
+    it('should persist phase state changes', async () => {
+      renderComponent();
+
+      waitFor(() => {
+        const phaseHeader = screen.getByText('Phase 1').closest('div');
+        if (phaseHeader) {
+          fireEvent.click(phaseHeader);
+          expect(quickBountyTicketStore.setPhaseExpanded).toHaveBeenCalledWith('phase-1', false);
+        }
+      });
+    });
+
+    it('should maintain phase states after data refresh', async () => {
+      const mockExpandedStates = {
+        'phase-1': false,
+        'phase-2': true
+      };
+
+      quickBountyTicketStore.expandedPhases = mockExpandedStates;
+
+      const { rerender } = renderComponent();
+
+      quickBountyTicketStore.fetchAndSetQuickData('test-feature');
+      rerender(
+        <MemoryRouter>
+          <HiveFeaturesView />
+        </MemoryRouter>
+      );
+
+      waitFor(() => {
+        const phase1Header = screen.getByText('Phase 1').closest('div');
+        const phase2Header = screen.getByText('Phase 2').closest('div');
+
+        expect(phase1Header).toHaveAttribute('aria-expanded', 'false');
+        expect(phase2Header).toHaveAttribute('aria-expanded', 'true');
+      });
     });
   });
 });
