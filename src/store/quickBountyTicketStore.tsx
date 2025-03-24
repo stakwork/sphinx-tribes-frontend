@@ -18,9 +18,11 @@ export interface QuickBountyTicket {
 
 class QuickBountyTicketStore {
   quickBountyTickets: QuickBountyTicket[] = [];
+  phaseStates = {};
 
   constructor() {
     makeAutoObservable(this);
+    this.loadPhaseStates();
   }
 
   async fetchAndSetQuickData(featureUUID: string) {
@@ -68,6 +70,20 @@ class QuickBountyTicketStore {
     } catch (error) {
       console.error('Failed to fetch quick bounty and ticket data:', error);
     }
+  }
+
+  loadPhaseStates() {
+    const savedState = localStorage.getItem('phaseStates');
+    this.phaseStates = savedState ? JSON.parse(savedState) : {};
+  }
+
+  togglePhaseState(phaseId) {
+    this.phaseStates[phaseId] = !this.phaseStates[phaseId];
+    localStorage.setItem('phaseStates', JSON.stringify(this.phaseStates));
+  }
+
+  isPhaseExpanded(phaseId) {
+    return this.phaseStates[phaseId] !== false;
   }
 }
 

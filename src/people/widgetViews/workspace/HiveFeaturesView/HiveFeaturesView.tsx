@@ -536,10 +536,7 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
   }, [workspaceUuid, main]);
 
   const togglePhase = (phaseID: string) => {
-    setExpandedPhases((prev) => ({
-      ...prev,
-      [phaseID]: !prev[phaseID]
-    }));
+    quickBountyTicketStore.togglePhaseState(phaseID);
   };
 
   const getNavigationURL = (item: QuickBountyTicket) => {
@@ -916,8 +913,8 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
             ) : (
               Object.entries(phaseNames).map(([phaseID, phaseName], index) => {
                 const items = groupedData[phaseID] || [];
-                const isExpanded = expandedPhases[phaseID] !== false;
                 const draftText = draftTexts[phaseID] || '';
+                const isExpanded = quickBountyTicketStore.isPhaseExpanded(phaseID);
 
                 return (
                   <div key={phaseID}>
