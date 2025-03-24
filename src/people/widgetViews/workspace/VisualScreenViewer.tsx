@@ -419,9 +419,6 @@ const VisualScreenViewer: React.FC<VisualScreenViewerProps> = ({
       {activeTab === 'code' && currentCode && (
         <>
           <CodeViewer>
-            <CopyButton onClick={copyCodeToClipboard}>
-              {codeCopied ? <MaterialIcon icon="check" /> : <MaterialIcon icon="content_copy" />}
-            </CopyButton>
             {currentCode.content && (currentCode.content as TextContent).code_metadata && (
               <CodeMetadata>
                 <span>
@@ -438,6 +435,17 @@ const VisualScreenViewer: React.FC<VisualScreenViewerProps> = ({
                 </span>
               </CodeMetadata>
             )}
+            <CopyButton
+              onClick={copyCodeToClipboard}
+              style={{
+                position: 'relative',
+                float: 'right',
+                top: '10px',
+                right: '10px'
+              }}
+            >
+              {codeCopied ? <MaterialIcon icon="check" /> : <MaterialIcon icon="content_copy" />}
+            </CopyButton>
             {renderMarkdown((currentCode.content as TextContent).content || '', {
               codeBlockBackground: '#282c34',
               textColor: '#abb2bf',
