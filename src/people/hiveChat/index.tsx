@@ -58,14 +58,16 @@ const ChatBodyWrapper = styled.div`
   padding: 0 !important;
   flex: 1;
   overflow: hidden;
+  position: relative;
 `;
 
-const ViewerSection = styled.div`
+const ViewerSection = styled.div<{ width: string }>`
   display: flex;
   flex-direction: column;
   padding-bottom: 30px !important;
-  width: 70%;
+  width: ${(props) => props.width};
   overflow: hidden;
+  transition: width 0.1s ease;
 `;
 
 const ChatHeader = styled.div`
@@ -76,11 +78,13 @@ const ChatHeader = styled.div`
   border-radius: 8px 8px 0 0;
 `;
 
-const ChatSection = styled.div`
+const ChatSection = styled.div<{ width: string }>`
   display: flex;
   flex-direction: column;
   flex: 1;
+  width: ${(props) => props.width};
   overflow: hidden;
+  transition: width 0.1s ease;
 `;
 
 const ViewerHeader = styled.div`
@@ -356,6 +360,105 @@ const AddButton = styled.button`
   }
 `;
 
+const DividerHandle = styled.div`
+  position: absolute;
+  width: 28px;
+  height: 43px;
+  background-color: #4285f4;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  left: -8px;
+
+  &::before,
+  &::after,
+  &::before {
+    content: '';
+    width: 2px;
+    height: 16px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 2px;
+  }
+`;
+
+const DividerContainer = styled.div`
+  width: 12px;
+  margin: 0 -2px;
+  background-color: transparent;
+  cursor: col-resize;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  transition: all 0.2s ease;
+  z-index: 10;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 100%;
+    background-color: #e0e0e0;
+    transition: all 0.2s ease;
+  }
+
+  &:hover::after,
+  &:focus::after {
+    width: 4px;
+    background-color: #4285f4;
+    box-shadow: 0 0 8px rgba(66, 133, 244, 0.3);
+  }
+
+  &:active::after {
+    width: 4px;
+    background-color: #3367d6;
+  }
+
+  &:hover ${DividerHandle}, &:focus ${DividerHandle} {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  &:active ${DividerHandle} {
+    background-color: #3367d6;
+    transform: scale(0.95);
+    opacity: 1;
+  }
+
+  &:focus {
+    outline: none;
+  }
+`;
+
+const DragTooltip = styled.div<{ visible: boolean }>`
+  position: absolute;
+  top: -36px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(51, 51, 51, 0.95);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: ${(props) => (props.visible ? 1 : 0)};
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 101;
+`;
+
 const connectToLogWebSocket = (
   projectId: string,
   chatId: string,
@@ -445,6 +548,20 @@ export const HiveChatView: React.FC = observer(() => {
   const [lastProcessedMessageId, setLastProcessedMessageId] = useState<string | null>(null);
   const [showSplash, setShowSplash] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [chatSectionWidth, setChatSectionWidth] = useState(() => {
+    const storedWidth = localStorage.getItem('hiveChatSectionWidth');
+    return storedWidth ? storedWidth : '30%';
+  });
+  const [viewerSectionWidth, setViewerSectionWidth] = useState(() => {
+    const storedWidth = localStorage.getItem('hiveViewerSectionWidth');
+    return storedWidth ? storedWidth : '70%';
+  });
+  const isDraggingRef = useRef(false);
+  const startXRef = useRef(0);
+  const startChatWidthRef = useRef(0);
+  const startViewerWidthRef = useRef(0);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const dividerRef = useRef<HTMLDivElement>(null);
   useBrowserTabTitle('Hive Chat');
 
   if (isVerboseLoggingEnabled) {
@@ -1019,6 +1136,87 @@ export const HiveChatView: React.FC = observer(() => {
     }));
   };
 
+  const handleDividerMouseDown = (e: React.MouseEvent) => {
+    isDraggingRef.current = true;
+    startXRef.current = e.clientX;
+    startChatWidthRef.current = parseFloat(chatSectionWidth);
+    startViewerWidthRef.current = parseFloat(viewerSectionWidth);
+
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+
+    e.preventDefault();
+  };
+
+  const handleDividerKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const step = 2;
+    let newChatWidth = parseFloat(chatSectionWidth);
+
+    switch (e.key) {
+      case 'ArrowLeft':
+        e.preventDefault();
+        e.stopPropagation();
+        newChatWidth = Math.max(20, newChatWidth - step);
+        break;
+      case 'ArrowRight':
+        e.preventDefault();
+        e.stopPropagation();
+        newChatWidth = Math.min(80, newChatWidth + step);
+        break;
+      default:
+        return;
+    }
+
+    const newViewerWidth = 100 - newChatWidth;
+
+    setChatSectionWidth(`${newChatWidth}%`);
+    setViewerSectionWidth(`${newViewerWidth}%`);
+
+    localStorage.setItem('hiveChatSectionWidth', `${newChatWidth}%`);
+    localStorage.setItem('hiveViewerSectionWidth', `${newViewerWidth}%`);
+  };
+
+  const handleDividerClick = () => {
+    dividerRef.current?.focus();
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDraggingRef.current) return;
+
+      const containerWidth = containerRef.current?.clientWidth || 1000;
+      const deltaX = e.clientX - startXRef.current;
+      const deltaPercentage = (deltaX / containerWidth) * 100;
+
+      let newChatWidth = startChatWidthRef.current + deltaPercentage;
+
+      newChatWidth = Math.max(20, Math.min(80, newChatWidth));
+      const newViewerWidth = 100 - newChatWidth;
+
+      setChatSectionWidth(`${newChatWidth}%`);
+      setViewerSectionWidth(`${newViewerWidth}%`);
+    };
+
+    const handleMouseUp = () => {
+      if (isDraggingRef.current) {
+        isDraggingRef.current = false;
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+
+        localStorage.setItem('hiveChatSectionWidth', chatSectionWidth);
+        localStorage.setItem('hiveViewerSectionWidth', viewerSectionWidth);
+      }
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [chatSectionWidth, viewerSectionWidth]);
+
   if (loading) {
     return (
       <Container collapsed={collapsed} ref={containerRef}>
@@ -1042,7 +1240,7 @@ export const HiveChatView: React.FC = observer(() => {
       <SidebarComponent uuid={uuid} defaultCollapsed hamburgerTopPosition="25px" />
       <Container collapsed={collapsed} ref={containerRef}>
         <ChatBodyWrapper>
-          <ChatSection>
+          <ChatSection width={chatSectionWidth}>
             <ChatHeader>
               <SaveTitleContainer>
                 <TitleInput
@@ -1169,67 +1367,91 @@ export const HiveChatView: React.FC = observer(() => {
               </InputContainer>
             </ChatBody>
           </ChatSection>
-          {showArtifactView ? (
-            <ViewerSection>
-              <ViewerHeader>
-                <TabContainer>
-                  {sseArtifact && sseArtifact?.length > 0 && (
-                    <TabButton
-                      active={artifactTab === 'logs'}
-                      onClick={() => handleTabClick('logs')}
-                    >
-                      Logs
-                      {updatedTabs.logs && <UpdateIndicator />}
-                    </TabButton>
-                  )}
-                  {codeArtifact && codeArtifact?.length > 0 && (
-                    <TabButton
-                      active={artifactTab === 'code'}
-                      onClick={() => handleTabClick('code')}
-                    >
-                      Code
-                      {updatedTabs.code && <UpdateIndicator />}
-                    </TabButton>
-                  )}
-                  {visualArtifact && visualArtifact?.length > 0 && (
-                    <TabButton
-                      active={artifactTab === 'visual'}
-                      onClick={() => handleTabClick('visual')}
-                    >
-                      Screen
-                      {updatedTabs.visual && <UpdateIndicator />}
-                    </TabButton>
-                  )}
-                  {textArtifact && textArtifact?.length > 0 && (
-                    <TabButton
-                      active={artifactTab === 'text'}
-                      onClick={() => handleTabClick('text')}
-                    >
-                      Text
-                      {updatedTabs.text && <UpdateIndicator />}
-                    </TabButton>
-                  )}
-                </TabContainer>
 
-                <ThinkingModeToggle
-                  isBuild={isBuild}
-                  setIsBuild={setIsBuild}
-                  selectedModel={selectedModel}
-                  setSelectedModel={setSelectedModel}
-                  handleKeyDown={handleKeyDown}
+          {showArtifactView && (
+            <>
+              <DividerContainer
+                ref={dividerRef}
+                onMouseDown={handleDividerMouseDown}
+                onKeyDown={handleDividerKeyDown}
+                onClick={handleDividerClick}
+                onMouseEnter={() => setShowTooltip(true)}
+                onMouseLeave={() => setShowTooltip(false)}
+                tabIndex={0}
+                role="separator"
+                aria-valuenow={parseInt(chatSectionWidth)}
+                aria-valuemin={20}
+                aria-valuemax={80}
+                aria-orientation="horizontal"
+                aria-label="Resize panels"
+              >
+                <DragTooltip visible={showTooltip}>
+                  Drag to resize • Arrow keys to adjust
+                </DragTooltip>
+                <DividerHandle />
+              </DividerContainer>
+
+              <ViewerSection width={viewerSectionWidth}>
+                <ViewerHeader>
+                  <TabContainer>
+                    {sseArtifact && sseArtifact?.length > 0 && (
+                      <TabButton
+                        active={artifactTab === 'logs'}
+                        onClick={() => handleTabClick('logs')}
+                      >
+                        Logs
+                        {updatedTabs.logs && <UpdateIndicator />}
+                      </TabButton>
+                    )}
+                    {codeArtifact && codeArtifact?.length > 0 && (
+                      <TabButton
+                        active={artifactTab === 'code'}
+                        onClick={() => handleTabClick('code')}
+                      >
+                        Code
+                        {updatedTabs.code && <UpdateIndicator />}
+                      </TabButton>
+                    )}
+                    {visualArtifact && visualArtifact?.length > 0 && (
+                      <TabButton
+                        active={artifactTab === 'visual'}
+                        onClick={() => handleTabClick('visual')}
+                      >
+                        Screen
+                        {updatedTabs.visual && <UpdateIndicator />}
+                      </TabButton>
+                    )}
+                    {textArtifact && textArtifact?.length > 0 && (
+                      <TabButton
+                        active={artifactTab === 'text'}
+                        onClick={() => handleTabClick('text')}
+                      >
+                        Text
+                        {updatedTabs.text && <UpdateIndicator />}
+                      </TabButton>
+                    )}
+                  </TabContainer>
+
+                  <ThinkingModeToggle
+                    isBuild={isBuild}
+                    setIsBuild={setIsBuild}
+                    selectedModel={selectedModel}
+                    setSelectedModel={setSelectedModel}
+                    handleKeyDown={handleKeyDown}
+                  />
+                </ViewerHeader>
+
+                <VisualScreenViewer
+                  visualArtifact={visualArtifact ?? []}
+                  codeArtifact={codeArtifact ?? []}
+                  textArtifact={textArtifact ?? []}
+                  sseArtifact={sseArtifact ?? []}
+                  chatId={chatId}
+                  activeTab={artifactTab}
                 />
-              </ViewerHeader>
-
-              <VisualScreenViewer
-                visualArtifact={visualArtifact ?? []}
-                codeArtifact={codeArtifact ?? []}
-                textArtifact={textArtifact ?? []}
-                sseArtifact={sseArtifact ?? []}
-                chatId={chatId}
-                activeTab={artifactTab}
-              />
-            </ViewerSection>
-          ) : null}
+              </ViewerSection>
+            </>
+          )}
         </ChatBodyWrapper>
       </Container>
     </>
