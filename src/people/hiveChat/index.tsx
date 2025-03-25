@@ -538,12 +538,12 @@ export const HiveChatView: React.FC = observer(() => {
     label: 'Open AI - 4o',
     value: 'gpt-4o'
   });
-  const [artifactTab, setArtifactTab] = useState<'visual' | 'code' | 'text' | 'logs'>('code');
+  const [artifactTab, setArtifactTab] = useState<'visual' | 'code' | 'text' | 'logs'>('logs');
   const [updatedTabs, setUpdatedTabs] = useState<Record<string, boolean>>({
-    visual: false,
+    logs: false,
     code: false,
-    text: false,
-    logs: false
+    visual: false,
+    text: false
   });
   const [lastProcessedMessageId, setLastProcessedMessageId] = useState<string | null>(null);
   const [showSplash, setShowSplash] = useState(true);
@@ -983,16 +983,27 @@ export const HiveChatView: React.FC = observer(() => {
         );
 
         setUpdatedTabs({
-          visual: hasVisualUpdates,
+          logs: hasLogUpdates,
           code: hasCodeUpdates,
-          text: hasTextUpdates,
-          logs: hasLogUpdates
+          visual: hasVisualUpdates,
+          text: hasTextUpdates
         });
+
+        const availableTabs = [
+          hasLogUpdates ? 'logs' : null,
+          hasCodeUpdates ? 'code' : null,
+          hasVisualUpdates ? 'screen' : null,
+          hasTextUpdates ? 'text' : null
+        ].filter(Boolean) as ('visual' | 'code' | 'text' | 'logs')[];
+
+        if (availableTabs.length > 0 && !availableTabs.includes(artifactTab)) {
+          setArtifactTab(availableTabs[0]);
+        }
       }
     };
 
     checkForNewArtifacts();
-  }, [chat, chatId, isArtifactLoggingEnabled, messages, lastProcessedMessageId]);
+  }, [chat, chatId, isArtifactLoggingEnabled, messages, lastProcessedMessageId, artifactTab]);
 
   const handleUploadComplete = (url: string) => {
     setPdfUrl(url);
