@@ -10,7 +10,7 @@ import { EuiDragDropContext } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
 import { Modal, useDeleteConfirmationModal } from 'components/common';
 import AddFeature from 'people/widgetViews/workspace/AddFeatureModal';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useStores } from 'store';
@@ -485,6 +485,8 @@ export default function SidebarComponent({
     };
   }, [showDropdown]);
 
+  const chatList = useMemo(() => Array.from(chat.chats.values()), [chat.chats]);
+
   useEffect(() => {
     const loadChats = async () => {
       setIsLoadingChats(true);
@@ -513,8 +515,9 @@ export default function SidebarComponent({
         setIsLoadingChats(false);
       }
     };
+
     loadChats();
-  }, [uuid, chat, ui]);
+  }, [chat, uuid, chatList, ui]);
 
   const handleArchiveChat = async (chatId: string) => {
     try {

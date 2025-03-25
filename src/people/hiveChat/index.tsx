@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/typedef */
+/* eslint-disable prefer-const */
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useParams } from 'react-router-dom';
@@ -501,6 +502,29 @@ const connectToLogWebSocket = (
   return ws;
 };
 
+function debounce<F extends (...args: any[]) => any>(func: F, wait: number) {
+  let timeout: NodeJS.Timeout | null = null;
+
+  const debounced = (...args: Parameters<F>) => {
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+    timeout = setTimeout(() => {
+      func(...args);
+      timeout = null;
+    }, wait);
+  };
+
+  debounced.cancel = () => {
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
+  };
+
+  return debounced;
+}
+
 export const HiveChatView: React.FC = observer(() => {
   const { uuid, chatId } = useParams<RouteParams>();
   const { chat, ui } = useStores();
@@ -561,6 +585,7 @@ export const HiveChatView: React.FC = observer(() => {
   const startViewerWidthRef = useRef(0);
   const [showTooltip, setShowTooltip] = useState(false);
   const dividerRef = useRef<HTMLDivElement>(null);
+  const TITLE_REFRESH_INTERVAL = 1000;
   useBrowserTabTitle('Hive Chat');
 
   if (isVerboseLoggingEnabled) {
@@ -1255,6 +1280,27 @@ export const HiveChatView: React.FC = observer(() => {
       document.removeEventListener('mouseup', handleMouseUp);
     };
   }, [chatSectionWidth, viewerSectionWidth]);
+
+  useEffect(() => {
+    if (!chatId || isEditingTitle) return;
+
+    let refreshTimer: NodeJS.Timeout;
+
+    const refreshWithDebounce = debounce(async () => {
+      if (document.visibilityState === 'visible' && !isEditingTitle) {
+        await refreshChatHistory();
+      }
+    }, 1000);
+
+    refreshTimer = setInterval(() => {
+      refreshWithDebounce();
+    }, TITLE_REFRESH_INTERVAL);
+
+    return () => {
+      clearInterval(refreshTimer);
+      refreshWithDebounce.cancel();
+    };
+  }, [chatId, refreshChatHistory, isEditingTitle]);
 
   if (loading) {
     return (

@@ -245,6 +245,13 @@ export class ChatHistoryStore implements ChatStore {
     try {
       await chatService.updateChatTitle(chat_id, newTitle);
       this.updateChat(chat_id, { title: newTitle });
+
+      const updatedChats = new Map(this.chats);
+      const chatToUpdate = updatedChats.get(chat_id);
+      if (chatToUpdate) {
+        updatedChats.set(chat_id, { ...chatToUpdate, title: newTitle });
+        this.chats = updatedChats;
+      }
     } catch (error) {
       console.error('Error updating chat title in store:', error);
       throw error;
