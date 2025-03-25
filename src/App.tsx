@@ -9,6 +9,7 @@ import './App.css';
 import { ThemeProvider, createTheme } from '@mui/system';
 import { usePostHog } from 'posthog-js/react';
 import { ModeDispatcher } from './config/ModeDispatcher';
+import PostHogPageviewTracker from './helpers/posthogViewTracker.ts';
 import { Pages } from './pages';
 import { appEnv } from './config/env';
 import { mainStore } from './store/main';
@@ -90,6 +91,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <Router history={history}>
+        <PostHogPageviewTracker />
         <ModeDispatcher>{(mode: any) => <Pages mode={mode} />}</ModeDispatcher>
       </Router>
     </ThemeProvider>
