@@ -30,8 +30,7 @@ export const formatCodeWithPrettier = (code: string, language = 'javascript') =>
     const cleanedCode = code.trim();
     if (!cleanedCode) return code;
 
-    const normalizedLang = language.charAt(0).toUpperCase() + language.slice(1).toLowerCase();
-    const config = parserMap[normalizedLang] || parserMap.javaScript;
+    const config = parserMap[language] || parserMap.javaScript;
 
     return prettier.format(cleanedCode, {
       parser: config.parser,
