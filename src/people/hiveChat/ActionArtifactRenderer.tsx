@@ -98,6 +98,11 @@ export const ActionArtifactRenderer: React.FC<ActionArtifactRendererProps> = obs
     const [isActionCompleted, setIsActionCompleted] = useState(false);
     const [hasInteracted, setHasInteracted] = useState(false);
 
+    const storedOptionId = localStorage.getItem(`selected_option_${messageId}`);
+    const [selectedOptionId, setSelectedOptionId] = useState<string | undefined>(
+      storedOptionId || undefined
+    );
+
     const artifacts = chat.getMessageArtifacts(messageId);
 
     const actionArtifact = artifacts.find(
@@ -125,6 +130,9 @@ export const ActionArtifactRenderer: React.FC<ActionArtifactRendererProps> = obs
       setIsSending(true);
       setIsActionSend(true);
       setHasInteracted(true);
+
+      localStorage.setItem(`selected_option_${messageId}`, option.webhook);
+      setSelectedOptionId(option.webhook);
 
       try {
         const payload = {
@@ -177,6 +185,7 @@ export const ActionArtifactRenderer: React.FC<ActionArtifactRendererProps> = obs
               options={content.options}
               onButtonClick={handleButtonClick}
               disabled={isSending || isActionCompleted}
+              selectedOptionId={selectedOptionId}
             />
           </ActionBubble>
         )}
