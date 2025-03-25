@@ -9,10 +9,22 @@ jest.mock('store', () => ({
   useStores: jest.fn()
 }));
 
+const mockChats = [
+  { id: '1', title: 'Chat 1', updatedAt: new Date().toISOString() },
+  { id: '2', title: 'Chat 2', updatedAt: new Date().toISOString() }
+];
+
+const chatMap = new Map(mockChats.map(chat => [chat.id, chat]));
+
 const mockStores = {
   chat: {
+    chats: chatMap,
     createChat: jest.fn(),
-    getWorkspaceChats: jest.fn()
+    getWorkspaceChats: jest.fn().mockResolvedValue(mockChats),
+    getChatMessages: jest.fn(),
+    loadChat: jest.fn(),
+    updateChat: jest.fn(),
+    addChat: jest.fn()
   },
   ui: {
     setToasts: jest.fn(),
@@ -30,17 +42,86 @@ const mockStores = {
   }
 };
 
-const renderSidebar = (props = {}) =>
-  render(
+const renderSidebar = (props = {}) => {
+  (useStores as jest.Mock).mockReturnValue(mockStores);
+  
+  return render(
     <BrowserRouter>
       <SidebarComponent uuid="test-uuid" {...props} />
     </BrowserRouter>
   );
+};
 
-describe('SidebarComponent Tooltip Tests', () => {
+describe('SidebarComponent', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (useStores as jest.Mock).mockReturnValue(mockStores);
+  });
+
+  describe('Chat List Functionality', () => {
+    test('should display chat list when expanded', async () => {
+      renderSidebar({ defaultCollapsed: false });
+
+      waitFor(() => {
+        expect(mockStores.chat.getWorkspaceChats).toHaveBeenCalledWith('test-uuid');
+        mockChats.forEach(chat => {
+          expect(screen.getByText(chat.title)).toBeInTheDocument();
+        });
+      });
+    });
+
+    test('should update chat list when store changes', async () => {
+      const { rerender } = renderSidebar({ defaultCollapsed: false });
+
+      const newChat = { id: '3', title: 'New Chat', updatedAt: new Date().toISOString() };
+      const updatedChatMap = new Map(chatMap);
+      updatedChatMap.set(newChat.id, newChat);
+
+      const updatedStores = {
+        ...mockStores,
+        chat: {
+          ...mockStores.chat,
+          chats: updatedChatMap
+        }
+      };
+
+      (useStores as jest.Mock).mockReturnValue(updatedStores);
+
+      rerender(
+        <BrowserRouter>
+          <SidebarComponent uuid="test-uuid" defaultCollapsed={false} />
+        </BrowserRouter>
+      );
+
+      waitFor(() => {
+        expect(screen.getByText(newChat.title)).toBeInTheDocument();
+      });
+    });
+
+    test('should not display chat list when collapsed', () => {
+      renderSidebar({ defaultCollapsed: true });
+
+      mockChats.forEach(chat => {
+        expect(screen.queryByText(chat.title)).not.toBeInTheDocument();
+      });
+    });
+
+    test('should create new chat when add chat button is clicked', async () => {
+      mockStores.chat.createChat.mockResolvedValueOnce({
+        id: '4',
+        title: 'New Chat',
+        updatedAt: new Date().toISOString()
+      });
+
+      renderSidebar({ defaultCollapsed: false });
+
+      const addChatButton = screen.getByTestId('add-chat-button');
+      fireEvent.click(addChatButton);
+
+      await waitFor(() => {
+        expect(mockStores.chat.createChat).toHaveBeenCalledWith('test-uuid', 'New Chat');
+      });
+    });
   });
 
   describe('Navigation Item Tooltips', () => {
@@ -232,6 +313,65 @@ describe('SidebarComponent Tooltip Tests', () => {
       fireEvent.blur(activitiesButton);
       waitFor(() => {
         expect(screen.queryByText('Kanban')).not.toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Chat Title Updates', () => {
+    test('should update chat title in sidebar when changed in store', async () => {
+      waitFor(() => {
+      const { rerender } = renderSidebar({ defaultCollapsed: false });
+
+      const updatedChatMap = new Map(chatMap);
+      updatedChatMap.set('1', { ...mockChats[0], title: 'Updated Chat 1' });
+
+      const updatedStores = {
+        ...mockStores,
+        chat: {
+          ...mockStores.chat,
+          chats: updatedChatMap
+        }
+      };
+
+      (useStores as jest.Mock).mockReturnValue(updatedStores);
+
+      rerender(
+        <BrowserRouter>
+          <SidebarComponent uuid="test-uuid" defaultCollapsed={false} />
+        </BrowserRouter>
+      );
+
+      
+        expect(screen.getByText('Updated Chat 1')).toBeInTheDocument();
+      });
+    });
+
+    test('should maintain chat order after title update', async () => {
+      waitFor(() => {
+      const { rerender } = renderSidebar({ defaultCollapsed: false });
+
+      const updatedChatMap = new Map(chatMap);
+      updatedChatMap.set('1', { ...mockChats[0], title: 'Updated Chat 1' });
+
+      const updatedStores = {
+        ...mockStores,
+        chat: {
+          ...mockStores.chat,
+          chats: updatedChatMap
+        }
+      };
+
+      (useStores as jest.Mock).mockReturnValue(updatedStores);
+
+      rerender(
+        <BrowserRouter>
+          <SidebarComponent uuid="test-uuid" defaultCollapsed={false} />
+        </BrowserRouter>
+      );
+
+      const chatElements = screen.getAllByTestId(/^chat-item-/);
+
+        expect(chatElements[0]).toHaveTextContent('Updated Chat 1');
       });
     });
   });
