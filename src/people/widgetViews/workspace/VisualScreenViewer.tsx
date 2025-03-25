@@ -458,12 +458,6 @@ const VisualScreenViewer: React.FC<VisualScreenViewerProps> = ({
         </>
       )}
 
-      {activeTab === 'logs' && sseArtifact && (
-        <>
-          <LogsScreenViewer chatId={chatId} />
-        </>
-      )}
-
       {activeTab === 'text' && currentText && (
         <>
           <TextViewer>
@@ -483,6 +477,12 @@ const VisualScreenViewer: React.FC<VisualScreenViewerProps> = ({
               {'>'}
             </Button>
           </PaginationControls>
+        </>
+      )}
+
+      {activeTab === 'logs' && sseArtifact && (
+        <>
+          <LogsScreenViewer chatId={chatId} />
         </>
       )}
     </ViewerContainer>
