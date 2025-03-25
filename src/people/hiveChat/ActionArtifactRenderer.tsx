@@ -149,6 +149,7 @@ export const ActionArtifactRenderer: React.FC<ActionArtifactRendererProps> = obs
         console.error('Error sending action response:', error);
       } finally {
         setIsSending(false);
+        setIsActionSend(false);
       }
     };
 
