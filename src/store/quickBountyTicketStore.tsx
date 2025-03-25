@@ -18,9 +18,35 @@ export interface QuickBountyTicket {
 
 class QuickBountyTicketStore {
   quickBountyTickets: QuickBountyTicket[] = [];
+  expandedPhases: { [key: string]: boolean } = {};
 
   constructor() {
     makeAutoObservable(this);
+    this.loadExpandedStates();
+  }
+
+  private loadExpandedStates() {
+    try {
+      const savedState = localStorage.getItem('expandedPhases');
+      if (savedState) {
+        this.expandedPhases = JSON.parse(savedState);
+      }
+    } catch (error) {
+      console.error('Error loading expanded states:', error);
+    }
+  }
+
+  setPhaseExpanded(phaseId: string, expanded: boolean) {
+    this.expandedPhases[phaseId] = expanded;
+    this.saveExpandedStates();
+  }
+
+  private saveExpandedStates() {
+    try {
+      localStorage.setItem('expandedPhases', JSON.stringify(this.expandedPhases));
+    } catch (error) {
+      console.error('Error saving expanded states:', error);
+    }
   }
 
   async fetchAndSetQuickData(featureUUID: string) {
