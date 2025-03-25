@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import MaterialIcon from '@material/react-material-icon';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { coldarkDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Artifact, VisualContent, TextContent } from '../../../store/interface.ts';
 import { renderMarkdown } from '../../utils/RenderMarkdown.tsx';
 import LogsScreenViewer from './LogsScreenViewer.tsx';
@@ -318,14 +320,23 @@ const VisualScreenViewer: React.FC<VisualScreenViewerProps> = ({
     }
   }, [activeTab, currentVisual]);
 
-  const copyCodeToClipboard = () => {
-    if (currentCode?.content) {
-      const content = (currentCode.content as TextContent).content || '';
-      navigator.clipboard.writeText(content).then(() => {
-        setCodeCopied(true);
-        setTimeout(() => setCodeCopied(false), 2000);
-      });
+  const getCodeContent = (): { code: string; language: string } => {
+    if (currentCode?.content && 'content' in currentCode.content) {
+      const htmlContent = (currentCode.content as TextContent).content || '';
+
+      const language = (currentCode.content as TextContent).language?.toLowerCase() || 'javascript';
+
+      return { code: htmlContent, language };
     }
+    return { code: '', language: 'javascript' };
+  };
+
+  const copyCodeToClipboard = () => {
+    const { code } = getCodeContent();
+    navigator.clipboard.writeText(code).then(() => {
+      setCodeCopied(true);
+      setTimeout(() => setCodeCopied(false), 2000);
+    });
   };
 
   const copyTextToClipboard = () => {
@@ -436,13 +447,16 @@ const VisualScreenViewer: React.FC<VisualScreenViewerProps> = ({
             >
               {codeCopied ? <MaterialIcon icon="check" /> : <MaterialIcon icon="content_copy" />}
             </CopyButton>
-            {renderMarkdown((currentCode.content as TextContent).content || '', {
-              codeBlockBackground: '#282c34',
-              textColor: '#abb2bf',
-              bubbleTextColor: 'white',
-              borderColor: '#444',
-              codeBlockFont: 'Courier New'
-            })}
+
+            <SyntaxHighlighter
+              language={getCodeContent().language}
+              style={coldarkDark}
+              customStyle={{ background: '#1e1e1e', padding: '10px' }}
+              wrapLines={true}
+              wrapLongLines={true}
+            >
+              {getCodeContent().code}
+            </SyntaxHighlighter>
           </CodeViewer>
           <PaginationControls>
             <Button onClick={handlePrevious} disabled={codeIndex === 0}>

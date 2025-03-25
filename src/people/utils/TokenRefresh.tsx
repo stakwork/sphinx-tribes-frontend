@@ -54,7 +54,6 @@ function TokenRefresh() {
     }
   };
 
-
   // Separate function for logout logic
   const handleLogout = () => {
     ui.setMeInfo(null);
@@ -89,10 +88,10 @@ function TokenRefresh() {
   }
 
   useEffect(() => {
-    checkLoginStatus()
+    checkLoginStatus();
     // Create the interval
     const intervalId = setInterval(async () => {
-      checkLoginStatus()
+      checkLoginStatus();
     }, 1000 * 30);
 
     // Cleanup function to prevent memory leaks
@@ -100,7 +99,6 @@ function TokenRefresh() {
       clearInterval(intervalId);
     };
   }, [main, ui]);
-
 
   return (
     <>
