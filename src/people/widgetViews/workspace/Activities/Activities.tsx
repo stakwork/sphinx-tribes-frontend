@@ -416,7 +416,7 @@ const Activities = observer(() => {
   const [editedContent, setEditedContent] = useState('');
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  let interval: NodeJS.Timeout | null = null;
+  let interval: NodeJS.Timeout | number | null = null;
 
   useEffect(() => {
     if (uuid) {

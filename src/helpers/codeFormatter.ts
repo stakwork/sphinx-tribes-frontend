@@ -17,8 +17,7 @@ export const formatCodeWithPrettier = (code: string, language = 'javascript') =>
       html: { parser: 'html', plugins: [parserHtml] },
       css: { parser: 'css', plugins: [parserPostcss] },
       md: { parser: 'markdown', plugins: [parserMarkdown] },
-      json: { parser: 'json', plugins: [parserBabel] },
-      go: { parser: 'babel', plugins: [parserBabel] }
+      json: { parser: 'json', plugins: [parserBabel] }
     };
 
     const normalizedLang = language.toLowerCase().trim();
