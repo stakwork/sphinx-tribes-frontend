@@ -71,7 +71,7 @@ export const LoadMoreContainer = styled.div<PanelProps>`
 
 function WidgetSwitchViewer(props: any) {
   const color = colors['light'];
-  const { main } = useStores();
+  const { main, ui } = useStores();
   const isMobile = useIsMobile();
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [deletePayload, setDeletePayload] = useState<object>({});
@@ -146,20 +146,35 @@ function WidgetSwitchViewer(props: any) {
     offer: peopleOffers
   };
 
-  const activeList = [...listSource[selectedWidget]].filter(({ body }: any) => {
+  const activeList = [...listSource[selectedWidget]].filter(({ body, person }: any) => {
     const value = { ...body };
+
+    const isOwner = ui.meInfo?.owner_pubkey === person?.owner_pubkey;
+    const isAssignee = value.assignee?.owner_pubkey === ui.meInfo?.owner_pubkey;
+
+    if (!value.show && !isOwner && !isAssignee) {
+      return false;
+    }
+
     if (org_uuid) {
       return value.org_uuid === org_uuid;
     }
-    return value;
+    return true;
   });
 
-  const activePhaseList = [...phaseListSource[selectedWidget]].filter(({ body }: any) => {
+  const activePhaseList = [...phaseListSource[selectedWidget]].filter(({ body, person }: any) => {
     const value = { ...body };
+    const isOwner = ui.meInfo?.owner_pubkey === person?.owner_pubkey;
+    const isAssignee = value.assignee?.owner_pubkey === ui.meInfo?.owner_pubkey;
+
+    if (!value.show && !isOwner && !isAssignee) {
+      return false;
+    }
+
     if (org_uuid) {
       return value.org_uuid === org_uuid;
     }
-    return value;
+    return true;
   });
 
   const foundDynamicSchema = widgetConfigs[selectedWidget]?.schema?.find(
