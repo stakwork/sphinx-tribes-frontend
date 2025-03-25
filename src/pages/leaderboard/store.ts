@@ -51,7 +51,8 @@ export class LeaderboardStore {
     return this.sortedBySats.slice(0, 3);
   }
   get others() {
-    return this.sortedBySats.slice(3);
+    // Limit to 22 entries so total number of entries (top3 + others) doesn't exceed 25
+    return this.sortedBySats.slice(3, 25);
   }
 
   get topEarners() {
