@@ -14,7 +14,7 @@ const mockChats = [
   { id: '2', title: 'Chat 2', updatedAt: new Date().toISOString() }
 ];
 
-const chatMap = new Map(mockChats.map(chat => [chat.id, chat]));
+const chatMap = new Map(mockChats.map((chat) => [chat.id, chat]));
 
 const mockStores = {
   chat: {
@@ -44,7 +44,7 @@ const mockStores = {
 
 const renderSidebar = (props = {}) => {
   (useStores as jest.Mock).mockReturnValue(mockStores);
-  
+
   return render(
     <BrowserRouter>
       <SidebarComponent uuid="test-uuid" {...props} />
@@ -64,7 +64,7 @@ describe('SidebarComponent', () => {
 
       waitFor(() => {
         expect(mockStores.chat.getWorkspaceChats).toHaveBeenCalledWith('test-uuid');
-        mockChats.forEach(chat => {
+        mockChats.forEach((chat) => {
           expect(screen.getByText(chat.title)).toBeInTheDocument();
         });
       });
@@ -101,7 +101,7 @@ describe('SidebarComponent', () => {
     test('should not display chat list when collapsed', () => {
       renderSidebar({ defaultCollapsed: true });
 
-      mockChats.forEach(chat => {
+      mockChats.forEach((chat) => {
         expect(screen.queryByText(chat.title)).not.toBeInTheDocument();
       });
     });
@@ -320,56 +320,55 @@ describe('SidebarComponent', () => {
   describe('Chat Title Updates', () => {
     test('should update chat title in sidebar when changed in store', async () => {
       waitFor(() => {
-      const { rerender } = renderSidebar({ defaultCollapsed: false });
+        const { rerender } = renderSidebar({ defaultCollapsed: false });
 
-      const updatedChatMap = new Map(chatMap);
-      updatedChatMap.set('1', { ...mockChats[0], title: 'Updated Chat 1' });
+        const updatedChatMap = new Map(chatMap);
+        updatedChatMap.set('1', { ...mockChats[0], title: 'Updated Chat 1' });
 
-      const updatedStores = {
-        ...mockStores,
-        chat: {
-          ...mockStores.chat,
-          chats: updatedChatMap
-        }
-      };
+        const updatedStores = {
+          ...mockStores,
+          chat: {
+            ...mockStores.chat,
+            chats: updatedChatMap
+          }
+        };
 
-      (useStores as jest.Mock).mockReturnValue(updatedStores);
+        (useStores as jest.Mock).mockReturnValue(updatedStores);
 
-      rerender(
-        <BrowserRouter>
-          <SidebarComponent uuid="test-uuid" defaultCollapsed={false} />
-        </BrowserRouter>
-      );
+        rerender(
+          <BrowserRouter>
+            <SidebarComponent uuid="test-uuid" defaultCollapsed={false} />
+          </BrowserRouter>
+        );
 
-      
         expect(screen.getByText('Updated Chat 1')).toBeInTheDocument();
       });
     });
 
     test('should maintain chat order after title update', async () => {
       waitFor(() => {
-      const { rerender } = renderSidebar({ defaultCollapsed: false });
+        const { rerender } = renderSidebar({ defaultCollapsed: false });
 
-      const updatedChatMap = new Map(chatMap);
-      updatedChatMap.set('1', { ...mockChats[0], title: 'Updated Chat 1' });
+        const updatedChatMap = new Map(chatMap);
+        updatedChatMap.set('1', { ...mockChats[0], title: 'Updated Chat 1' });
 
-      const updatedStores = {
-        ...mockStores,
-        chat: {
-          ...mockStores.chat,
-          chats: updatedChatMap
-        }
-      };
+        const updatedStores = {
+          ...mockStores,
+          chat: {
+            ...mockStores.chat,
+            chats: updatedChatMap
+          }
+        };
 
-      (useStores as jest.Mock).mockReturnValue(updatedStores);
+        (useStores as jest.Mock).mockReturnValue(updatedStores);
 
-      rerender(
-        <BrowserRouter>
-          <SidebarComponent uuid="test-uuid" defaultCollapsed={false} />
-        </BrowserRouter>
-      );
+        rerender(
+          <BrowserRouter>
+            <SidebarComponent uuid="test-uuid" defaultCollapsed={false} />
+          </BrowserRouter>
+        );
 
-      const chatElements = screen.getAllByTestId(/^chat-item-/);
+        const chatElements = screen.getAllByTestId(/^chat-item-/);
 
         expect(chatElements[0]).toHaveTextContent('Updated Chat 1');
       });
