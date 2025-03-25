@@ -54,31 +54,53 @@ function TokenRefresh() {
     }
   };
 
-  useEffect(() => {
-    setInterval(
-      async () => {
-        if ((ui.meInfo, ui.meInfo?.tribe_jwt)) {
-          const tokenExpireCheck = isTokenExpiring(ui.meInfo?.tribe_jwt);
-          console.log('TOken Expired Check', tokenExpireCheck);
-          if (tokenExpireCheck.expired) {
-            const res = await main.refreshJwt();
-            if (res && res.jwt) {
-              ui.setMeInfo({ ...ui.meInfo, tribe_jwt: res.jwt });
-            } else {
-              console.log('Token refresh failed, logging out!', res);
-              ui.setMeInfo(null);
-              ui.setSelectedPerson(0);
-              ui.setSelectingPerson(0);
-              setShow(true);
-              // run this to reset state
-              main.getPeople();
-            }
+
+  // Separate function for logout logic
+  const handleLogout = () => {
+    ui.setMeInfo(null);
+    ui.setSelectedPerson(0);
+    ui.setSelectingPerson(0);
+    setShow(true);
+    // Consider deferring this call or ensuring it handles the logged-out state correctly
+    setTimeout(() => main.getPeople(), 100);
+  };
+
+  async function checkLoginStatus() {
+    // Proper conditional check
+    if (ui.meInfo && ui.meInfo.tribe_jwt) {
+      const tokenExpireCheck = isTokenExpiring(ui.meInfo.tribe_jwt);
+      console.log('Token Expired Check', tokenExpireCheck);
+
+      if (tokenExpireCheck.expired) {
+        try {
+          const res = await main.refreshJwt();
+          if (res && res.jwt) {
+            ui.setMeInfo({ ...ui.meInfo, tribe_jwt: res.jwt });
+          } else {
+            console.log('Token refresh failed, logging out!', res);
+            handleLogout();
           }
+        } catch (error) {
+          console.log('Token refresh error:', error);
+          handleLogout();
         }
-      },
-      1000 * 60 * 60
-    );
+      }
+    }
+  }
+
+  useEffect(() => {
+    checkLoginStatus()
+    // Create the interval
+    const intervalId = setInterval(async () => {
+      checkLoginStatus()
+    }, 1000 * 30);
+
+    // Cleanup function to prevent memory leaks
+    return () => {
+      clearInterval(intervalId);
+    };
   }, [main, ui]);
+
 
   return (
     <>
