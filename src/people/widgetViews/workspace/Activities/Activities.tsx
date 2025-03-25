@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite';
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { activityStore } from 'store/activityStore';
 import MaterialIcon from '@material/react-material-icon';
-import { EuiLoadingSpinner } from '@elastic/eui';
+import { EuiLoadingSpinner, EuiGlobalToastList } from '@elastic/eui';
 import styled from 'styled-components';
 import { userHasRole } from 'helpers';
 import { AuthorType, ContentType, Feature, IActivity } from 'store/interface';
@@ -13,9 +13,10 @@ import { useParams, useHistory } from 'react-router-dom';
 import { renderMarkdown } from 'people/utils/RenderMarkdown';
 import SidebarComponent from 'components/common/SidebarComponent';
 import { Body } from 'pages/tickets/style';
-import { Phase } from '../interface';
+import { Phase, Toast } from '../interface';
 import { FullNoBudgetWrap, FullNoBudgetText } from '../style';
 import { createAndNavigateToHivechat } from '../../../../utils/hivechatUtils';
+import { EditableField } from '../EditableField';
 import ActivitiesHeader from './header';
 
 export const ActivitiesContainer = styled.div`
@@ -410,6 +411,10 @@ const Activities = observer(() => {
   const [permissionsChecked, setPermissionsChecked] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
   const history = useHistory();
+  const [editingActivity, setEditingActivity] = useState(false);
+  const [activityPreviewMode, setActivityPreviewMode] = useState<'preview' | 'edit'>('preview');
+  const [editedContent, setEditedContent] = useState('');
+  const [toasts, setToasts] = useState<Toast[]>([]);
 
   let interval: NodeJS.Timeout | null = null;
 
@@ -512,6 +517,12 @@ const Activities = observer(() => {
       window.removeEventListener('resize', checkMobile);
     };
   }, []);
+
+  useEffect(() => {
+    if (selectedActivity) {
+      setEditedContent(selectedActivity.content);
+    }
+  }, [selectedActivity]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -832,8 +843,94 @@ const Activities = observer(() => {
     );
   }, [workspaceData, ui.meInfo, userRoles, main.bountyRoles]);
 
+  const isWorkspaceAdmin = useMemo(
+    () => workspaceData?.owner_pubkey === ui.meInfo?.owner_pubkey,
+    [workspaceData, ui.meInfo]
+  );
+
+  const canManageWorkspace = useMemo(
+    () => isWorkspaceAdmin || userHasRole(main.bountyRoles, userRoles, 'EDIT ORGANIZATION'),
+    [isWorkspaceAdmin, userRoles, main.bountyRoles]
+  );
+
   const handleBuildWithHiveChat = async (activity) => {
     await createAndNavigateToHivechat(uuid, activity.title, activity.content, chat, ui, history);
+  };
+
+  const handleEditButtonClick = (activity: IActivity) => {
+    setSelectedActivity(activity);
+    setEditingActivity(true);
+    setActivityPreviewMode('edit');
+    setEditedContent(activity.content);
+  };
+
+  const handleUpdateActivity = async () => {
+    try {
+      if (!selectedActivity) return;
+      const updatePayload = {
+        workspace: selectedActivity.workspace,
+        content: editedContent,
+        content_type: selectedActivity.content_type,
+        author: selectedActivity.author,
+        author_ref: selectedActivity.author_ref,
+        title: selectedActivity.title,
+        description: '',
+        details: '',
+        notes: [],
+        nextActions: [],
+        feature_uuid: selectedActivity.feature_uuid || '',
+        phase_uuid: selectedActivity.phase_uuid || '',
+        thread_id: selectedActivity.thread_id || '',
+        feedback: selectedActivity.feedback || '',
+        actions: selectedActivity.actions || [],
+        questions: selectedActivity.questions || [],
+        actions_input: '',
+        questions_input: ''
+      };
+
+      const success = await activityStore.updateActivity(selectedActivity.ID, updatePayload);
+
+      if (success) {
+        setSelectedActivity({
+          ...selectedActivity,
+          content: editedContent
+        });
+
+        if (uuid) {
+          await activityStore.fetchWorkspaceActivities(uuid);
+        }
+
+        setEditingActivity(false);
+        setActivityPreviewMode('preview');
+        setToasts([
+          {
+            id: `${Date.now()}-activity-success`,
+            title: 'Success',
+            color: 'success',
+            text: 'Activity updated successfully!'
+          }
+        ]);
+      } else {
+        setToasts([
+          {
+            id: `${Date.now()}-activity-error`,
+            title: 'Error',
+            color: 'danger',
+            text: 'Failed to update activity'
+          }
+        ]);
+      }
+    } catch (error) {
+      console.error('Error updating activity:', error);
+      setToasts([
+        {
+          id: `${Date.now()}-activity-error`,
+          title: 'Error',
+          color: 'danger',
+          text: 'Error updating activity'
+        }
+      ]);
+    }
   };
 
   const renderDetailsPanel = () => {
@@ -851,7 +948,24 @@ const Activities = observer(() => {
         {isMobile && <BackButton onClick={handleBackToList}>Back to list</BackButton>}
         <DetailCard>
           <Title>{selectedActivity.title}</Title>
-          <div className="markdown-content">{renderMarkdown(selectedActivity.content)}</div>
+          <div className="markdown-content">
+            <EditableField
+              value={editedContent || selectedActivity.content}
+              setValue={setEditedContent}
+              isEditing={editingActivity}
+              previewMode={activityPreviewMode}
+              setPreviewMode={setActivityPreviewMode}
+              placeholder="Activity content"
+              dataTestIdPrefix="activity"
+              workspaceUUID={uuid}
+              onCancel={() => {
+                setEditingActivity(false);
+                setActivityPreviewMode('preview');
+                setEditedContent(selectedActivity.content);
+              }}
+              onUpdate={handleUpdateActivity}
+            />
+          </div>
           {selectedActivity.feedback && (
             <Feedback>Feedback: {renderMarkdown(selectedActivity.feedback)}</Feedback>
           )}
@@ -896,6 +1010,15 @@ const Activities = observer(() => {
 
         <ActionButtons data-testid="activity-details-buttons">
           <EditButton onClick={() => handleEditClick(selectedActivity)}>Reply</EditButton>
+          {canManageWorkspace && (
+            <EditButton
+              onClick={() => handleEditButtonClick(selectedActivity)}
+              data-testid="edit-activity-btn"
+              style={{ backgroundColor: '#2563eb' }}
+            >
+              Edit
+            </EditButton>
+          )}
           {selectedActivity && selectedActivity.content_type === 'feature_creation' && (
             <BuildButton
               onClick={() => handleBuildWithHiveChat(selectedActivity)}
@@ -1142,6 +1265,12 @@ const Activities = observer(() => {
           </DetailsPanel>
         </ActivitiesContainer>
       </MainContainer>
+
+      <EuiGlobalToastList
+        toasts={toasts}
+        dismissToast={() => setToasts([])}
+        toastLifeTimeMs={3000}
+      />
     </>
   );
 });
