@@ -2,7 +2,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useParams } from 'react-router-dom';
-import hljs from 'highlight.js';
 import { ChatMessage, Artifact, TextContent } from 'store/interface';
 import { useStores } from 'store';
 import { createSocketInstance } from 'config/socket';
@@ -15,6 +14,7 @@ import { chatHistoryStore } from 'store/chat.ts';
 import { renderMarkdown } from '../utils/RenderMarkdown.tsx';
 import { UploadModal } from '../../components/UploadModal';
 import { useFeatureFlag, useBrowserTabTitle } from '../../hooks';
+import { formatCodeWithPrettier } from '../../helpers/codeFormatter';
 import VisualScreenViewer from '../widgetViews/workspace/VisualScreenViewer.tsx';
 import { ModelOption } from './modelSelector.tsx';
 import { ActionArtifactRenderer } from './ActionArtifactRenderer';
@@ -501,8 +501,6 @@ const connectToLogWebSocket = (
   return ws;
 };
 
-const highlightCode = (code: string): string => hljs.highlightAuto(code).value;
-
 export const HiveChatView: React.FC = observer(() => {
   const { uuid, chatId } = useParams<RouteParams>();
   const { chat, ui } = useStores();
@@ -885,9 +883,18 @@ export const HiveChatView: React.FC = observer(() => {
         const isTextContent = (content: any): content is TextContent =>
           content && typeof content.text_type === 'string' && 'language' in content;
 
-        codeArtifacts.forEach((artifact) => {
+        codeArtifacts.forEach(async (artifact) => {
           if (isTextContent(artifact.content)) {
-            artifact.content.content = highlightCode(artifact.content.content);
+            try {
+              const language =
+                (artifact.content as TextContent).code_metadata?.File.split('.').pop() || 'jsx';
+              artifact.content.content = await formatCodeWithPrettier(
+                artifact.content.content,
+                language
+              );
+            } catch (error) {
+              console.error('Failed to format code:', error);
+            }
           }
         });
 
