@@ -214,6 +214,8 @@
   },
   "devDependencies": {
     "@types/react-syntax-highlighter": "^15.5.13",
-    "cypress": "^13.6.3"
+    "cypress": "^13.6.3",
+    "prettier-plugin-go-template": "^0.0.15",
+    "prettier-plugin-rust": "^0.1.9"
   }
 }

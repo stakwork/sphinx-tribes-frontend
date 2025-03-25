@@ -893,8 +893,7 @@ export const HiveChatView: React.FC = observer(() => {
         codeArtifacts.forEach(async (artifact) => {
           if (isTextContent(artifact.content)) {
             try {
-              const language =
-                (artifact.content as TextContent).code_metadata?.File.split('.').pop() || 'jsx';
+              const language = (artifact.content as TextContent).language || 'javascript';
               artifact.content.content = await formatCodeWithPrettier(
                 artifact.content.content,
                 language
