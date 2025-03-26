@@ -561,6 +561,11 @@ export const HiveChatView: React.FC = observer(() => {
   const startViewerWidthRef = useRef(0);
   const [showTooltip, setShowTooltip] = useState(false);
   const dividerRef = useRef<HTMLDivElement>(null);
+  const lastRefreshTime = useRef<number>(Date.now()).current;
+  const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [isRefreshingTitle, setIsRefreshingTitle] = useState(false);
+  const [lastTitleRefreshTime, setLastTitleRefreshTime] = useState(Date.now());
+  const titleRefreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
   useBrowserTabTitle('Hive Chat');
 
   if (isVerboseLoggingEnabled) {
@@ -590,10 +595,41 @@ export const HiveChatView: React.FC = observer(() => {
   }, [chat, chatId, ui]);
 
   useEffect(() => {
+    if (!chatId) return;
+
+    refreshChatHistory();
+
+    const setupRefreshInterval = () => {
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
+      }
+
+      refreshIntervalRef.current = setInterval(() => {
+        if (document.visibilityState === 'visible' && !isEditingTitle) {
+          if (Date.now() - lastRefreshTime > 1000) {
+            refreshChatHistory();
+          }
+        }
+      }, 30000);
+    };
+
+    setupRefreshInterval();
+
+    return () => {
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
+        refreshIntervalRef.current = null;
+      }
+    };
+  }, [chatId, refreshChatHistory, isEditingTitle, lastRefreshTime]);
+
+  useEffect(() => {
     const refreshChatOnFocus = async () => {
       try {
-        if (document.visibilityState === 'visible') {
-          await refreshChatHistory();
+        if (document.visibilityState === 'visible' && !isEditingTitle) {
+          if (Date.now() - lastRefreshTime > 1000) {
+            await refreshChatHistory();
+          }
         }
       } catch (error) {
         console.error('Error refreshing chat history on focus:', error);
@@ -607,7 +643,7 @@ export const HiveChatView: React.FC = observer(() => {
       window.removeEventListener('visibilitychange', refreshChatOnFocus);
       window.removeEventListener('focus', refreshChatOnFocus);
     };
-  }, [refreshChatHistory]);
+  }, [refreshChatHistory, isEditingTitle, lastRefreshTime]);
 
   const updateChatTitle = async (
     chatId: string,
@@ -1254,6 +1290,79 @@ export const HiveChatView: React.FC = observer(() => {
       document.removeEventListener('mouseup', handleMouseUp);
     };
   }, [chatSectionWidth, viewerSectionWidth]);
+
+  const refreshChatTitle = useCallback(async () => {
+    if (isEditingTitle || isRefreshingTitle) return;
+
+    try {
+      setIsRefreshingTitle(true);
+
+      const currentChat = await chat.getWorkspaceChats(uuid as string);
+      const updatedChat = currentChat?.find((c) => c.id === chatId);
+
+      if (updatedChat?.title && updatedChat.title !== title) {
+        setTitle(updatedChat.title);
+        chat.updateChat(chatId, { title: updatedChat.title });
+      }
+
+      setLastTitleRefreshTime(Date.now());
+    } catch (error) {
+      console.error('Error refreshing chat title:', error);
+    } finally {
+      setIsRefreshingTitle(false);
+    }
+  }, [chat, chatId, uuid, title, isEditingTitle, isRefreshingTitle]);
+
+  useEffect(() => {
+    if (!chatId || !uuid) return;
+
+    refreshChatTitle();
+
+    const setupTitleRefreshInterval = () => {
+      if (titleRefreshIntervalRef.current) {
+        clearInterval(titleRefreshIntervalRef.current);
+      }
+
+      titleRefreshIntervalRef.current = setInterval(() => {
+        if (document.visibilityState === 'visible' && !isEditingTitle) {
+          if (Date.now() - lastTitleRefreshTime > 1000) {
+            refreshChatTitle();
+          }
+        }
+      }, 30000);
+    };
+
+    setupTitleRefreshInterval();
+
+    return () => {
+      if (titleRefreshIntervalRef.current) {
+        clearInterval(titleRefreshIntervalRef.current);
+        titleRefreshIntervalRef.current = null;
+      }
+    };
+  }, [chatId, uuid, refreshChatTitle, isEditingTitle, lastTitleRefreshTime]);
+
+  useEffect(() => {
+    const refreshTitleOnFocus = async () => {
+      try {
+        if (document.visibilityState === 'visible' && !isEditingTitle) {
+          if (Date.now() - lastTitleRefreshTime > 1000) {
+            await refreshChatTitle();
+          }
+        }
+      } catch (error) {
+        console.error('Error refreshing chat title on focus:', error);
+      }
+    };
+
+    window.addEventListener('visibilitychange', refreshTitleOnFocus);
+    window.addEventListener('focus', refreshTitleOnFocus);
+
+    return () => {
+      window.removeEventListener('visibilitychange', refreshTitleOnFocus);
+      window.removeEventListener('focus', refreshTitleOnFocus);
+    };
+  }, [refreshChatTitle, isEditingTitle, lastTitleRefreshTime]);
 
   if (loading) {
     return (

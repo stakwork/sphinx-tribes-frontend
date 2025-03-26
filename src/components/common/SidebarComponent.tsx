@@ -516,6 +516,47 @@ export default function SidebarComponent({
     loadChats();
   }, [uuid, chat, ui]);
 
+  useEffect(() => {
+    if (!uuid) return;
+
+    const refreshChats = async () => {
+      try {
+        const workspaceChats = await chat.getWorkspaceChats(uuid as string);
+        if (workspaceChats && workspaceChats.length > 0) {
+          const sortedChats = workspaceChats
+            .filter((chat: Chat) => chat && chat.id)
+            .sort((a: Chat, b: Chat) => {
+              const dateA = new Date(a.updatedAt || a.createdAt || 0).getTime();
+              const dateB = new Date(b.updatedAt || b.createdAt || 0).getTime();
+              return dateB - dateA;
+            });
+          setChats(sortedChats);
+        }
+      } catch (error) {
+        console.error('Error refreshing chats:', error);
+      }
+    };
+
+    const intervalId = setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        refreshChats();
+      }
+    }, 10000);
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        refreshChats();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      clearInterval(intervalId);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [uuid, chat]);
+
   const handleArchiveChat = async (chatId: string) => {
     try {
       setIsLoadingChats(true);
