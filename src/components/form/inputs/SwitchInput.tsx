@@ -78,6 +78,10 @@ export default function SwitchInput({
 
   const color = colors['light'];
 
+  if (name === 'isStakable' && values?.estimated_session_length === undefined) {
+    return <></>;
+  }
+
   return (
     <>
       <Container style={style} color={color}>

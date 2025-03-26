@@ -798,6 +798,17 @@ export const wantedCodingTaskSchema: FormField[] = [
     type: 'switch'
   },
   {
+    name: 'isStakable',
+    label: 'Self Assign',
+    type: 'switch'
+  },
+  {
+    name: 'stakeMin',
+    label: 'Stake Amount (Sats)',
+    validator: strValidatorNotRequired,
+    type: 'numbersats'
+  },
+  {
     name: 'assignee',
     label: 'Assignee',
     type: 'searchableselect',

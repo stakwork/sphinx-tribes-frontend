@@ -3,7 +3,7 @@ import { EuiText } from '@elastic/eui';
 import { Formik } from 'formik';
 import { observer } from 'mobx-react-lite';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useIsMobile } from 'hooks';
+import { useFeatureFlag, useIsMobile } from 'hooks';
 import { RefineDescriptionModal } from 'components/common/RefineDescriptionModal';
 import { snippetStore } from 'store/snippetStore';
 import { toCapitalize } from '../../../helpers/helpers';
@@ -41,7 +41,7 @@ function Form(props: FormProps) {
   } = props;
   const page = 1;
   const isMobile = useIsMobile();
-
+  const { isEnabled } = useFeatureFlag('staking');
   const [loading, setLoading] = useState(true);
   const [dynamicInitialValues, setDynamicInitialValues]: any = useState(null);
   const [dynamicSchema, setDynamicSchema]: any = useState(null);
@@ -605,7 +605,12 @@ function Form(props: FormProps) {
                             >
                               <Input
                                 {...item}
-                                type={item.type}
+                                type={
+                                  (item.name === 'isStakable' || item.name === 'stakeMin') &&
+                                  !isEnabled
+                                    ? 'hidden'
+                                    : item.type
+                                }
                                 newDesign={item.name === 'description' ? false : true}
                                 values={values}
                                 setAssigneefunction={item.name === 'assignee' && setAssigneeName}

@@ -53,7 +53,8 @@ export default function NumberInputNew({
   value,
   handleChange,
   handleBlur,
-  handleFocus
+  handleFocus,
+  values
 }: Props) {
   let labeltext = label;
 
@@ -75,6 +76,10 @@ export default function NumberInputNew({
       setIsError(false);
     }
   }, [textValue]);
+
+  if (name === 'stakeMin' && values?.estimated_session_length === undefined) {
+    return <></>;
+  }
 
   return (
     <InputOuterBox color={color} borderColor={isError ? color.red2 : color.grayish.G600}>
