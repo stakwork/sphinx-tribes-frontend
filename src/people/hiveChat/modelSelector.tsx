@@ -15,6 +15,9 @@ export interface ModelSelectorProps {
 const DropdownContainer = styled.div`
   position: relative;
   width: 200px;
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
 const DropdownHeader = styled.div`
@@ -26,6 +29,9 @@ const DropdownHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  @media (max-width: 768px) {
+    padding: 12px;
+  }
 `;
 
 const DropdownList = styled.ul`
@@ -41,12 +47,18 @@ const DropdownList = styled.ul`
   max-height: 150px;
   overflow-y: auto;
   z-index: 1000;
+  @media (max-width: 768px) {
+    max-height: 200px;
+  }
 `;
 
 const DropdownListItem = styled.li`
   padding: 10px;
   &:hover {
     background-color: #f5f5f5;
+  }
+  @media (max-width: 768px) {
+    padding: 12px;
   }
 `;
 
