@@ -114,41 +114,41 @@ export const Wanted = observer(() => {
     setCheckboxIdToSelectedMap({ ...defaultStatus, [id]: !checkboxIdToSelectedMap[id] });
   };
 
-  // Function to fetch user tickets with pagination
+  const isOwner = ui.meInfo?.owner_pubkey === person?.owner_pubkey;
+
   const getUserTickets = useCallback(async () => {
     setIsLoading(true);
-    setPage(1);
-    // Fetch bounties for the specified page and limit
     const response = await main.getPersonCreatedBounties(
-      { page: 1, limit: paginationQueryLimit, sortBy: 'created', ...checkboxIdToSelectedMap },
+      { page: 1, limit: paginationQueryLimit, ...checkboxIdToSelectedMap },
       uuid
     );
 
-    // Check if the response has fewer bounties than the limit, indicating no more bounties to load
-    if (response.length < paginationQueryLimit) {
-      setHasMoreBounties(false);
-    } else {
-      setHasMoreBounties(true);
-    }
-    // Update the displayed bounties by appending the new bounties
-    setDisplayedBounties(response);
+    const filteredBounties = response.filter((bounty: any) => {
+      if (isOwner) return true;
+      return bounty.body.show !== false;
+    });
+
+    setDisplayedBounties(filteredBounties);
     setIsLoading(false);
-  }, [main, uuid, checkboxIdToSelectedMap]);
+  }, [main, uuid, checkboxIdToSelectedMap, isOwner]);
 
   const nextBounties = async () => {
     const nextPage = page + 1;
     setPage(nextPage);
-    // Fetch bounties for the next page
     const response = await main.getPersonCreatedBounties(
       { page: nextPage, limit: paginationQueryLimit, ...checkboxIdToSelectedMap },
       uuid
     );
-    // Check if the response has fewer bounties than the limit, indicating no more bounties to load
-    if (response.length < paginationQueryLimit) {
+
+    const filteredBounties = response.filter((bounty: any) => {
+      if (isOwner) return true;
+      return bounty.body.show !== false;
+    });
+
+    if (filteredBounties.length < paginationQueryLimit) {
       setHasMoreBounties(false);
     }
-    // Update the displayed bounties by appending the new bounties
-    setDisplayedBounties((prevBounties: BountyType[]) => [...prevBounties, ...response]);
+    setDisplayedBounties((prevBounties: BountyType[]) => [...prevBounties, ...filteredBounties]);
   };
 
   useEffect(() => {

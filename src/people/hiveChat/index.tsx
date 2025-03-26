@@ -523,6 +523,7 @@ export const HiveChatView: React.FC = observer(() => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isBuild, setIsBuild] = useState<'Chat' | 'Build'>('Build');
+  const [actionArtifact, setActionArtifact] = useState<Artifact>();
   const [visualArtifact, setVisualArtifact] = useState<Artifact[]>();
   const [textArtifact, setTextArtifact] = useState<Artifact[]>();
   const [sseArtifact, setSseArtifact] = useState<Artifact[]>();
@@ -681,8 +682,13 @@ export const HiveChatView: React.FC = observer(() => {
         uuid,
         isBuild,
         undefined,
-        pdfUrl
+        pdfUrl,
+        actionArtifact
       );
+
+      if (sentMessage === undefined) {
+        setMessage('');
+      }
 
       if (sentMessage) {
         chat.addMessage(sentMessage);
@@ -858,6 +864,7 @@ export const HiveChatView: React.FC = observer(() => {
       if (chatId && isArtifactLoggingEnabled) {
         const res = await chat.loadArtifactsForChat(chatId);
         console.log('Artifacts for that chat', res);
+        setActionArtifact({} as Artifact);
         const screenArtifacts = res?.filter(
           (artifact) =>
             artifact &&
@@ -886,8 +893,7 @@ export const HiveChatView: React.FC = observer(() => {
         codeArtifacts.forEach(async (artifact) => {
           if (isTextContent(artifact.content)) {
             try {
-              const language =
-                (artifact.content as TextContent).code_metadata?.File.split('.').pop() || 'jsx';
+              const language = (artifact.content as TextContent).language || 'javascript';
               artifact.content.content = await formatCodeWithPrettier(
                 artifact.content.content,
                 language
@@ -926,6 +932,19 @@ export const HiveChatView: React.FC = observer(() => {
 
         if (sseArtifacts) {
           setSseArtifact(sseArtifacts);
+        }
+
+        const systemMessages = messages?.filter((msg) => msg.role !== 'user');
+        const lastSystemMessageId =
+          systemMessages?.length > 0 ? systemMessages[systemMessages.length - 1].id : null;
+
+        if (lastSystemMessageId) {
+          const artifacts = chat.getMessageArtifacts(lastSystemMessageId);
+          for (const artifact of artifacts) {
+            if (artifact.type === 'action' && chat.isActionContent(artifact.content)) {
+              setActionArtifact(artifact);
+            }
+          }
         }
       }
     };
@@ -1080,7 +1099,8 @@ export const HiveChatView: React.FC = observer(() => {
         uuid,
         isBuild,
         undefined,
-        pdfUrl
+        pdfUrl,
+        actionArtifact
       );
 
       if (sentMessage) {

@@ -126,7 +126,8 @@ describe('ChatHistoryStore', () => {
         'Chat',
         undefined,
         undefined,
-        'gpt-4o'
+        'gpt-4o',
+        undefined
       );
     });
 
@@ -150,7 +151,8 @@ describe('ChatHistoryStore', () => {
         'Chat',
         undefined,
         undefined,
-        'claude-3-5-sonnet-latest'
+        'claude-3-5-sonnet-latest',
+        undefined
       );
     });
 
@@ -174,7 +176,8 @@ describe('ChatHistoryStore', () => {
         'Chat',
         undefined,
         undefined,
-        'o3-mini'
+        'o3-mini',
+        undefined
       );
     });
   });
