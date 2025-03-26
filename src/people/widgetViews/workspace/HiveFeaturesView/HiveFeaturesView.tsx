@@ -11,6 +11,7 @@ import { EuiGlobalToastList } from '@elastic/eui';
 import { Author, BountyCardStatus, TicketStatus } from 'store/interface.ts';
 import { createSocketInstance } from 'config/socket';
 import { SOCKET_MSG } from 'config/socket';
+import { Box } from '@mui/system';
 import { uiStore } from 'store/ui';
 import { EuiLoadingSpinner } from '@elastic/eui';
 import { Body } from 'pages/tickets/style';
@@ -26,6 +27,7 @@ import { PaymentConfirmationModal } from '../../../../components/common';
 import { WorkspaceName } from '../style.ts';
 import { FullNoBudgetWrap, FullNoBudgetText } from '../style';
 import { FeatureHeadNameWrap } from '../style.ts';
+import { useDeleteConfirmationModal } from '../../../../components/common/DeleteConfirmationModal/DeleteConfirmationModal';
 import ActivitiesHeader from './header';
 
 const TableContainer = styled.div`
@@ -248,6 +250,12 @@ const MenuButton = styled.button`
   background: none;
   padding: 4px;
   cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background: #f0f0f0;
+  }
 `;
 
 const Dropdown = styled.div`
@@ -257,24 +265,39 @@ const Dropdown = styled.div`
   margin-top: 4px;
   background: white;
   border: 1px solid #ddd;
-  border-radius: 4px;
+  border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  min-width: 120px;
+  min-width: 140px;
   z-index: 9999;
+  overflow: hidden;
 `;
 
 const DropdownItem = styled.button`
-  display: block;
+  display: flex;
   width: 100%;
-  padding: 8px;
+  padding: 10px 12px;
   text-align: left;
   background: none;
   border: none;
   cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  align-items: center;
+  transition: background-color 0.2s ease;
 
   &:hover {
-    background: #f0f0f0;
+    background: #f5f7fa;
   }
+
+  &:not(:last-child) {
+    border-bottom: 1px solid #f0f0f0;
+  }
+`;
+
+const MenuIcon = styled.span`
+  margin-right: 8px;
+  display: inline-flex;
+  align-items: center;
 `;
 
 interface HiveFeaturesViewProps {
@@ -320,6 +343,7 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
   const [userRoles, setUserRoles] = useState<any[]>([]);
   const [permissionsChecked, setPermissionsChecked] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
+  const { openDeleteConfirmation } = useDeleteConfirmationModal();
 
   const editWorkspaceDisabled = React.useMemo(() => {
     if (!ui.meInfo) return true;
@@ -744,20 +768,28 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
   const ActionMenu = ({
     status,
     bountyId,
-    onPay
+    itemType,
+    onPay,
+    onDelete
   }: {
     status?: BountyCardStatus;
-    bountyId: number;
-    onPay: () => void;
+    bountyId?: number;
+    ticketUUID?: string;
+    itemType: 'bounty' | 'ticket';
+    onPay?: () => void;
+    onDelete?: () => void;
   }) => {
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement | null>(null);
 
     const toggleMenu = (e: React.MouseEvent) => {
       e.stopPropagation();
-      setBountyID(bountyId);
+      if (bountyId) {
+        setBountyID(bountyId);
+      }
       setIsOpen((prev) => !prev);
     };
+
     const closeMenu = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setIsOpen(false);
@@ -769,16 +801,31 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
       return () => document.removeEventListener('click', closeMenu);
     }, []);
 
-    const showMenu = ['COMPLETED', 'IN_REVIEW', 'IN_PROGRESS'].includes(status || '');
+    const showBountyMenu =
+      itemType === 'bounty' && ['COMPLETED', 'IN_REVIEW', 'IN_PROGRESS'].includes(status || '');
+    const showTicketMenu = itemType === 'ticket';
 
-    if (!showMenu) return null;
+    if (!showBountyMenu && !showTicketMenu) return null;
 
     return (
       <MenuContainer ref={menuRef}>
-        <MenuButton onClick={toggleMenu}>...</MenuButton>
+        <MenuButton onClick={toggleMenu} title="Actions">
+          ...
+        </MenuButton>
         {isOpen && (
           <Dropdown>
-            <DropdownItem onClick={onPay}>Pay Bounty</DropdownItem>
+            {showBountyMenu && onPay && (
+              <DropdownItem onClick={onPay}>
+                <MenuIcon>💰</MenuIcon>
+                Pay Bounty
+              </DropdownItem>
+            )}
+            {showTicketMenu && onDelete && (
+              <DropdownItem onClick={onDelete} style={{ color: '#e74c3c' }}>
+                <MenuIcon>🗑️</MenuIcon>
+                Delete Ticket
+              </DropdownItem>
+            )}
           </Dropdown>
         )}
       </MenuContainer>
@@ -842,6 +889,58 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
         }
       ]);
     }
+  };
+
+  const handleDeleteTicket = async (ticketUUID: string) => {
+    try {
+      const success = await main.deleteTicket(ticketUUID);
+      if (success) {
+        setToasts([
+          {
+            id: `${Date.now()}-delete-success`,
+            title: 'Ticket',
+            color: 'success',
+            text: 'Ticket deleted successfully!'
+          }
+        ]);
+
+        const updatedData = await quickBountyTicketStore.fetchAndSetQuickData(featureUuid);
+        setData(updatedData || []);
+      } else {
+        setToasts([
+          {
+            id: `${Date.now()}-delete-error`,
+            title: 'Error',
+            color: 'danger',
+            text: 'Failed to delete ticket'
+          }
+        ]);
+      }
+    } catch (error) {
+      console.error('Error deleting ticket:', error);
+      setToasts([
+        {
+          id: `${Date.now()}-delete-error`,
+          title: 'Error',
+          color: 'danger',
+          text: 'An error occurred while deleting the ticket'
+        }
+      ]);
+    }
+  };
+
+  const confirmDeleteTicket = (ticketUUID: string) => {
+    openDeleteConfirmation({
+      onDelete: () => handleDeleteTicket(ticketUUID),
+      children: (
+        <Box fontSize={20} textAlign="center">
+          Are you sure you want to <br />
+          <Box component="span" fontWeight="500">
+            delete this ticket?
+          </Box>
+        </Box>
+      )
+    });
   };
 
   if (loading || !permissionsChecked) {
@@ -970,13 +1069,28 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
                                   {item.assignedAlias || '...'}
                                 </Td>
                                 <Td style={{ textAlign: 'center' }}>
-                                  {item.bountyTicket === 'bounty' && (
-                                    <ActionMenu
-                                      status={item.status}
-                                      bountyId={item.bountyID as number}
-                                      onPay={confirmPaymentHandler}
-                                    />
-                                  )}
+                                  <ActionMenu
+                                    status={item.status}
+                                    bountyId={
+                                      item.bountyTicket === 'bounty'
+                                        ? (item.bountyID as number)
+                                        : undefined
+                                    }
+                                    ticketUUID={
+                                      item.bountyTicket === 'ticket' ? item.ticketUUID : undefined
+                                    }
+                                    itemType={item.bountyTicket as 'bounty' | 'ticket'}
+                                    onPay={
+                                      item.bountyTicket === 'bounty'
+                                        ? confirmPaymentHandler
+                                        : undefined
+                                    }
+                                    onDelete={
+                                      item.bountyTicket === 'ticket'
+                                        ? () => confirmDeleteTicket(item.ticketUUID as string)
+                                        : undefined
+                                    }
+                                  />
                                 </Td>
                               </tr>
                             ))}
