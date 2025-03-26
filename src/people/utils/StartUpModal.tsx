@@ -63,6 +63,36 @@ const StartUpModal = ({ closeModal, buttonColor }: StartUpModalProps) => {
   const [connection_string, setConnectionString] = useState('');
   const [error, setError] = useState(false);
 
+  // Add focus trap for accessibility
+  const modalRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        closeModal();
+      }
+      // Trap focus within modal
+      if (e.key === 'Tab' && modalRef.current) {
+        const focusableElements = modalRef.current.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        const firstElement = focusableElements[0] as HTMLElement;
+        const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+        if (e.shiftKey && document.activeElement === firstElement) {
+          lastElement.focus();
+          e.preventDefault();
+        } else if (!e.shiftKey && document.activeElement === lastElement) {
+          firstElement.focus();
+          e.preventDefault();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [closeModal]);
+
   async function getConnectionCode() {
     if (!ui.meInfo && !connection_string) {
       try {
@@ -79,12 +109,12 @@ const StartUpModal = ({ closeModal, buttonColor }: StartUpModalProps) => {
 
   const DisplayQRCode = () => (
     <>
-      <ModalContainer data-testid="qrcode">
+      <ModalContainer data-testid="qrcode" role="region" aria-label="QR Code Section">
         {!connection_string || error ? (
           <QRText>We are out of codes to sign up! Please check again later.</QRText>
         ) : (
           <QrContainer>
-            <QR size={200} value={connection_string} />
+            <QR size={200} value={connection_string} aria-label="Connection QR Code" />
             <QRText>Install the Sphinx app on your phone and then scan this QRcode</QRText>
           </QrContainer>
         )}
@@ -116,9 +146,9 @@ const StartUpModal = ({ closeModal, buttonColor }: StartUpModalProps) => {
 
   const StepTwo = () => (
     <>
-      <ModalContainer data-testid="step-two">
+      <ModalContainer data-testid="step-two" role="region" aria-label="Download Instructions">
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <p style={{ textAlign: 'center', fontWeight: 600 }}>Step 1</p>
+          <h2 style={{ textAlign: 'center', fontWeight: 600, margin: 0 }}>Step 1</h2>
           <p style={{ textAlign: 'center' }}>Download App</p>
           <AndroidIosButtonConatiner>
             <IconButton
@@ -140,7 +170,14 @@ const StartUpModal = ({ closeModal, buttonColor }: StartUpModalProps) => {
                 top: '14px'
               }}
               color={buttonColor}
+              aria-label="Download Android App"
+              aria-pressed={false}
+              aria-disabled={false}
+              aria-describedby="android-desc"
             />
+            <span id="android-desc" style={{ display: 'none' }}>
+              Opens Google Play Store in new window
+            </span>
             <IconButton
               text={'IOS'}
               width={100}
@@ -155,11 +192,18 @@ const StartUpModal = ({ closeModal, buttonColor }: StartUpModalProps) => {
                 top: '14px'
               }}
               color={buttonColor}
+              aria-label="Download iOS App"
+              aria-pressed={false}
+              aria-disabled={false}
+              aria-describedby="ios-desc"
             />
+            <span id="ios-desc" style={{ display: 'none' }}>
+              Opens Apple TestFlight in new window
+            </span>
           </AndroidIosButtonConatiner>
         </div>
       </ModalContainer>
-      <p style={{ textAlign: 'center', fontWeight: 600 }}>Step 2</p>
+      <h2 style={{ textAlign: 'center', fontWeight: 600, margin: 0 }}>Step 2</h2>
       <p style={{ textAlign: 'center' }}>Scan Code</p>
       <ButtonContainer>
         <IconButton
@@ -178,6 +222,7 @@ const StartUpModal = ({ closeModal, buttonColor }: StartUpModalProps) => {
             setStep(4);
           }}
           color={buttonColor}
+          aria-label="Reveal Connection Code"
         />
         <DirectionWrap>
           <IconButton
@@ -200,6 +245,7 @@ const StartUpModal = ({ closeModal, buttonColor }: StartUpModalProps) => {
               top: '14px'
             }}
             color={buttonColor}
+            aria-label="Sign in"
           />
         </DirectionWrap>
       </ButtonContainer>
@@ -207,8 +253,30 @@ const StartUpModal = ({ closeModal, buttonColor }: StartUpModalProps) => {
   );
 
   return (
-    <BaseModal data-testid="startup-modal" open onClose={closeModal}>
-      <Box p={4} bgcolor={palette.grayish.G950} borderRadius={2} maxWidth={400} minWidth={350}>
+    <BaseModal
+      data-testid="startup-modal"
+      open
+      onClose={closeModal}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="startup-modal-title"
+      aria-describedby="startup-modal-description"
+    >
+      <Box
+        p={4}
+        bgcolor={palette.grayish.G950}
+        borderRadius={2}
+        maxWidth={400}
+        minWidth={350}
+        ref={modalRef}
+        tabIndex={-1}
+      >
+        <h1 id="startup-modal-title" style={{ display: 'none' }}>
+          Get Started with Sphinx
+        </h1>
+        <p id="startup-modal-description" style={{ display: 'none' }}>
+          Modal for setting up Sphinx application
+        </p>
         {step === 2 ? <StepTwo /> : <DisplayQRCode />}
       </Box>
     </BaseModal>
