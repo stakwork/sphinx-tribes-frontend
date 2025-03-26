@@ -374,6 +374,11 @@ function Form(props: FormProps) {
                   <Input
                     {...item}
                     key={item.name}
+                    type={
+                      (item.name === 'isStakable' || item.name === 'stakeMin') && !isEnabled
+                        ? 'hidden'
+                        : item.type
+                    }
                     newDesign={item.name === 'description' ? false : true}
                     values={values}
                     testId={item.name}
