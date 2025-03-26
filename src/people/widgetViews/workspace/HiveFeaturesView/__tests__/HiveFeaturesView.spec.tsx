@@ -239,7 +239,7 @@ describe('HiveFeaturesView Delete Ticket Functionality', () => {
     });
   });
 
-  it('should refresh data after successful ticket deletion', async () => {
+  it('should the refresh data after successful ticket deletion', async () => {
     mockDeleteTicket.mockResolvedValue(true);
     mockFetchAndSetQuickData.mockResolvedValue([]);
 
