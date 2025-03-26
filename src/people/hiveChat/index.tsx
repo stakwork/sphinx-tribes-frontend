@@ -77,6 +77,10 @@ const ChatHeader = styled.div`
   gap: 10px;
   padding: 16px 10px 8px 0;
   border-radius: 8px 8px 0 0;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
 `;
 
 const ChatSection = styled.div<{ width: string }>`
@@ -132,7 +136,9 @@ const TitleInput = styled.input`
   width: 80%;
   border-radius: 4px;
   background: white;
-  transition: border-color 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    width 0.2s ease;
 
   &:hover {
     border-color: #848484;
