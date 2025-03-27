@@ -4,35 +4,26 @@ import styled from 'styled-components';
 import { formatDistanceToNow } from 'date-fns';
 
 const StatusContainer = styled.div<{ isError: boolean }>`
-  position: relative;
+  position: sticky;
   bottom: 0;
   left: 0;
-  margin-top: 10px;
-  border-radius: 8px;
-  max-width: 70%;
+  width: 100%;
   padding: 12px 16px;
   background-color: #f2f3f5;
-  border-left: 5px solid ${(props) => (props.isError ? '#e53935' : '#2196f3')};
-  font-size: 14px;
-  word-wrap: break-word;
-  white-space: pre-wrap;
+  border: 1px solid ${(props) => (props.isError ? '#e53935' : '#2196f3')};
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
 `;
 
 const StatusText = styled.div`
   color: #424242;
   display: flex;
-  flex-direction: column;
-  max-width: 90%;
-`;
-
-const TimeStamp = styled.span`
-  color: #757575;
-  font-size: 12px;
-  margin-top: 4px;
-  white-space: nowrap;
+  gap: 10px;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  max-width: 100%;
 `;
 
 interface ChatStatusDisplayProps {
@@ -48,8 +39,7 @@ const ChatStatusDisplay: React.FC<ChatStatusDisplayProps> = observer(({ chatStat
   return (
     <StatusContainer isError={isError}>
       <StatusText>
-        <span>Hive: {chatStatus.message}</span>
-        <TimeStamp>Last Update: {formattedTime}</TimeStamp>
+        <strong>Hive:</strong> {chatStatus.message} Last Update: {formattedTime}
       </StatusText>
     </StatusContainer>
   );
