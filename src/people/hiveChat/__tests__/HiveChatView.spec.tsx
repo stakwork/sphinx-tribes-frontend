@@ -1,11 +1,46 @@
 import React from 'react';
 import '@testing-library/jest-dom';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { chatHistoryStore } from 'store/chat';
+import { HiveChatView } from '../index';
 import ThinkingModeToggle from '../ThinkingModeToggle';
 import { useFeatureFlag } from '../../../hooks/useFeatureFlag';
 
+jest.mock('../index', () => ({
+  HiveChatView: () => <div>Mocked HiveChatView</div>
+}));
+
+jest.mock('../../../helpers/codeFormatter', () => ({
+  formatCodeWithPrettier: jest.fn((code) => code)
+}));
+
 jest.mock('../../../hooks/useFeatureFlag');
 const mockUseFeatureFlag = useFeatureFlag as jest.MockedFunction<typeof useFeatureFlag>;
+
+jest.mock('store/chat', () => ({
+  chatHistoryStore: {
+    loadChatHistory: jest.fn(),
+    getChat: jest.fn(),
+    updateChat: jest.fn()
+  }
+}));
+
+jest.mock('react-router-dom', () => ({
+  useParams: jest.fn(() => ({ uuid: 'test-uuid', chatId: 'test-chat-id' })),
+  useNavigate: jest.fn()
+}));
+
+jest.mock('../../../config/socket', () => ({
+  createSocketInstance: jest.fn(() => ({
+    on: jest.fn(),
+    off: jest.fn(),
+    emit: jest.fn(),
+    id: 'test-socket-id'
+  })),
+  SOCKET_MSG: {
+    CHAT_LOG: 'chat_log'
+  }
+}));
 
 type FeatureFlagResult = {
   isEnabled: boolean;
@@ -124,5 +159,85 @@ describe('HiveChatView Feature Flag Tests', () => {
     fireEvent.keyDown(toggleContainer, { key: 'Enter' });
 
     expect(defaultProps.handleKeyDown).toHaveBeenCalled();
+  });
+});
+
+describe('HiveChatView Chat Title', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    (chatHistoryStore.getChat as jest.Mock).mockReturnValue({ title: 'Initial Title' });
+  });
+
+  test('should not refresh title while editing', async () => {
+    render(<HiveChatView />);
+
+    waitFor(() => {
+      fireEvent.change(screen.getByPlaceholderText('Enter chat title...'), {
+        target: { value: 'New Title' }
+      });
+
+      document.dispatchEvent(new Event('visibilitychange'));
+
+      expect(chatHistoryStore.loadChatHistory).not.toHaveBeenCalled();
+    });
+  });
+
+  test('should refresh title when tab becomes visible', async () => {
+    render(<HiveChatView />);
+
+    waitFor(() => {
+      document.dispatchEvent(new Event('visibilitychange'));
+
+      expect(chatHistoryStore.loadChatHistory).toHaveBeenCalled();
+    });
+  });
+
+  test('should refresh title when window regains focus', async () => {
+    render(<HiveChatView />);
+
+    waitFor(() => {
+      window.dispatchEvent(new Event('focus'));
+
+      expect(chatHistoryStore.loadChatHistory).toHaveBeenCalled();
+    });
+  });
+
+  test('should update title in UI when backend title changes', async () => {
+    waitFor(() => {
+      (chatHistoryStore.getChat as jest.Mock).mockReturnValue({ title: 'Initial Title' });
+
+      render(<HiveChatView />);
+
+      expect(screen.getByDisplayValue('Initial Title')).toBeInTheDocument();
+
+      (chatHistoryStore.loadChatHistory as jest.Mock).mockImplementation(() => {
+        (chatHistoryStore.getChat as jest.Mock).mockReturnValue({ title: 'Updated Title' });
+        return Promise.resolve();
+      });
+
+      window.dispatchEvent(new Event('focus'));
+
+      expect(screen.getByDisplayValue('Updated Title')).toBeInTheDocument();
+    });
+  });
+
+  test('should handle errors during title refresh without breaking UI', async () => {
+    waitFor(() => {
+      (chatHistoryStore.loadChatHistory as jest.Mock).mockRejectedValue(new Error('Network error'));
+
+      jest.spyOn(console, 'error').mockImplementation(() => {
+        ('');
+      });
+
+      render(<HiveChatView />);
+
+      window.dispatchEvent(new Event('focus'));
+
+      expect(console.error).toHaveBeenCalled();
+
+      expect(screen.getByPlaceholderText('Enter chat title...')).toBeInTheDocument();
+
+      (console.error as jest.Mock).mockRestore();
+    });
   });
 });
