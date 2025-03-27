@@ -55,7 +55,13 @@ export const BountyDetailsCreationData = {
     schemaName: 'Freelance Job Request',
     heading: 'Price and Estimate',
     sub_heading: ' ',
-    schema: ['price', 'estimated_session_length', 'estimated_completion_date'],
+    schema: [
+      'price',
+      'estimated_session_length',
+      'estimated_completion_date',
+      'isStakable',
+      'stakeMin'
+    ],
     schema2: ['tribe', 'deliverables', 'access_restriction', 'show'],
     required: ['price'],
     outerContainerStyle: {
