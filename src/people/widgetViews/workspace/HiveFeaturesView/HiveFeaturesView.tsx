@@ -313,6 +313,8 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
   const [featureName, setFeatureName] = useState<string>('');
   const [connectPersonBody, setConnectPersonBody] = React.useState<any>({});
   const [isOpenPaymentConfirmation, setIsOpenPaymentConfirmation] = React.useState(false);
+  const [isOpenDeleteConfirmation, setIsOpenDeleteConfirmation] = React.useState(false);
+  const [ticketToDelete, setTicketToDelete] = React.useState<string | null>(null);
   const [activeBounty, setActiveBounty] = React.useState<any[]>([]);
   const [bountyID, setBountyID] = useState<number>();
   const [featureCalls, setFeatureCalls] = useState<any>(null);
@@ -627,6 +629,46 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
     }
   };
 
+  const handleDeleteTicket = async (ticketUuid: string) => {
+    try {
+      const response = await main.deleteTicket(ticketUuid);
+      if (response) {
+        // Remove the ticket from local state
+        const updatedData = data.filter(item => 
+          item.bountyTicket !== 'ticket' || item.ticketUUID !== ticketUuid
+        );
+        setData(updatedData);
+        
+        setToasts([
+          {
+            id: `${Date.now()}-delete-success`,
+            title: 'Success',
+            color: 'success',
+            text: 'Ticket deleted successfully'
+          }
+        ]);
+      }
+    } catch (error) {
+      console.error('Error deleting ticket:', error);
+      setToasts([
+        {
+          id: `${Date.now()}-delete-error`,
+          title: 'Error',
+          color: 'danger',
+          text: 'Failed to delete ticket'
+        }
+      ]);
+    } finally {
+      setIsOpenDeleteConfirmation(false);
+      setTicketToDelete(null);
+    }
+  };
+
+  const confirmDeleteTicket = (ticketUuid: string) => {
+    setTicketToDelete(ticketUuid);
+    setIsOpenDeleteConfirmation(true);
+  };
+
   const handleAddPhaseClick = () => {
     setShowAddPhaseModal(true);
   };
@@ -744,20 +786,25 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
   const ActionMenu = ({
     status,
     bountyId,
-    onPay
+    ticketUuid,
+    onPay,
+    onDelete
   }: {
     status?: BountyCardStatus;
-    bountyId: number;
-    onPay: () => void;
+    bountyId?: number;
+    ticketUuid?: string;
+    onPay?: () => void;
+    onDelete?: () => void;
   }) => {
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement | null>(null);
 
     const toggleMenu = (e: React.MouseEvent) => {
       e.stopPropagation();
-      setBountyID(bountyId);
+      if (bountyId) setBountyID(bountyId);
       setIsOpen((prev) => !prev);
     };
+
     const closeMenu = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setIsOpen(false);
@@ -769,16 +816,25 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
       return () => document.removeEventListener('click', closeMenu);
     }, []);
 
-    const showMenu = ['COMPLETED', 'IN_REVIEW', 'IN_PROGRESS'].includes(status || '');
+    const showPayOption = ['COMPLETED', 'IN_REVIEW', 'IN_PROGRESS'].includes(status || '');
+    const showDeleteOption = ticketUuid !== undefined;
 
-    if (!showMenu) return null;
+    if (!showPayOption && !showDeleteOption) return null;
 
     return (
       <MenuContainer ref={menuRef}>
         <MenuButton onClick={toggleMenu}>...</MenuButton>
         {isOpen && (
           <Dropdown>
-            <DropdownItem onClick={onPay}>Pay Bounty</DropdownItem>
+            {showPayOption && <DropdownItem onClick={onPay}>Pay Bounty</DropdownItem>}
+            {showDeleteOption && (
+              <DropdownItem 
+                onClick={onDelete}
+                style={{ color: 'red' }}
+              >
+                Delete Ticket
+              </DropdownItem>
+            )}
           </Dropdown>
         )}
       </MenuContainer>
@@ -970,19 +1026,27 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
                                   {item.assignedAlias || '...'}
                                 </Td>
                                 <Td style={{ textAlign: 'center' }}>
-                                  {item.bountyTicket === 'bounty' && (
-                                    <ActionMenu
-                                      status={item.status}
-                                      bountyId={item.bountyID as number}
-                                      onPay={confirmPaymentHandler}
-                                    />
-                                  )}
+                                  <ActionMenu
+                                    status={item.status}
+                                    bountyId={item.bountyTicket === 'bounty' ? item.bountyID : undefined}
+                                    ticketUuid={item.bountyTicket === 'ticket' ? item.ticketUUID : undefined}
+                                    onPay={
+                                      item.bountyTicket === 'bounty' 
+                                        ? confirmPaymentHandler 
+                                        : undefined
+                                    }
+                                    onDelete={
+                                      item.bountyTicket === 'ticket' 
+                                        ? () => confirmDeleteTicket(item.ticketUUID as string) 
+                                        : undefined
+                                    }
+                                  />
                                 </Td>
                               </tr>
                             ))}
                             {items.length === 0 && (
                               <tr>
-                                <Td colSpan={3} style={{ textAlign: 'center' }}>
+                                <Td colSpan={4} style={{ textAlign: 'center' }}>
                                   No tickets in this phase
                                 </Td>
                               </tr>
@@ -1037,6 +1101,20 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
             onConfirmPayment={handlePayment}
           />
         )}
+
+        {isOpenDeleteConfirmation && (
+          <PaymentConfirmationModal
+            onClose={() => {
+              setIsOpenDeleteConfirmation(false);
+              setTicketToDelete(null);
+            }}
+            onConfirmPayment={() => ticketToDelete && handleDeleteTicket(ticketToDelete)}
+            title="Delete Ticket"
+            description="Are you sure you want to delete this ticket? This action cannot be undone."
+            confirmText="Delete"
+          />
+        )}
+
         <EuiGlobalToastList
           toasts={toasts}
           dismissToast={() => setToasts([])}
