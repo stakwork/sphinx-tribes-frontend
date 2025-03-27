@@ -8,7 +8,8 @@ import {
   ContextTag,
   Example,
   TextContent,
-  VisualContent
+  VisualContent,
+  ChatStatuses
 } from './interface';
 
 interface ChatMessages {
@@ -19,7 +20,7 @@ export interface ChatStore {
   chats: Map<string, Chat>;
   chatMessages: ChatMessages;
   currentChatId: string | null;
-
+  chatStatuses: Map<string, ChatStatuses>;
   createChat: (workspace_uuid: string, title: string) => Promise<Chat | undefined>;
   addChat: (chat: Chat) => void;
   updateChat: (id: string, chat: Partial<Chat>) => void;
@@ -34,13 +35,68 @@ export class ChatHistoryStore implements ChatStore {
   chats: Map<string, Chat> = new Map();
   chatMessages: ChatMessages = {};
   currentChatId: string | null = null;
-
+  chatStatuses: Map<string, ChatStatuses> = new Map();
   artifacts: Map<string, Artifact> = new Map();
   messageArtifacts: { [message_id: string]: Artifact[] } = {};
   chatArtifacts: { [chat_id: string]: Artifact[] } = {};
 
   constructor() {
     makeAutoObservable(this);
+  }
+
+  async getChatStatus(chatId: string): Promise<ChatStatuses | undefined> {
+    const status = await chatService.getLatestChatStatus(chatId);
+
+    if (status) {
+      this.chatStatuses.set(chatId, status);
+    }
+
+    return status;
+  }
+
+  updateChatStatus(chatId: string, status: string, message?: string): void {
+    const existingStatus = this.chatStatuses.get(chatId);
+
+    let statusMessage = message;
+
+    if (!statusMessage) {
+      if (status === 'success') {
+        statusMessage = 'Agent workflow completed';
+      } else if (status === 'error') {
+        statusMessage = 'An error occurred during the workflow';
+      } else {
+        statusMessage = status;
+      }
+    }
+
+    const updatedStatus: ChatStatuses = {
+      ...(existingStatus || {}),
+      chatId,
+      status,
+      message: statusMessage,
+      updatedAt: new Date().toISOString()
+    };
+
+    this.chatStatuses.set(chatId, updatedStatus);
+  }
+
+  processChatStatusUpdate(chatId: string, webhookData: any): void {
+    let status = '';
+    let message = '';
+
+    if (webhookData.project_status === 'completed') {
+      status = 'success';
+    } else if (webhookData.project_status === 'error') {
+      status = 'error';
+      if (webhookData.error && webhookData.error.message) {
+        const { message: errorMessage } = webhookData.error.message;
+        message = errorMessage;
+      }
+    } else {
+      status = webhookData.project_status;
+    }
+
+    this.updateChatStatus(chatId, status, message);
   }
 
   addArtifact(artifact: Artifact) {
