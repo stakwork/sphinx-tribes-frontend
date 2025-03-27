@@ -157,7 +157,7 @@ const AddBudgetModal = (props: AddBudgetModalProps) => {
       try {
         setIsLoading(true);
         const data = await main.getBudgetInvoice({
-          amount: Number(amount), // Use the raw numeric value here
+          amount: Number(amount),
           sender_pubkey: ui.meInfo?.owner_pubkey ?? '',
           workspace_uuid: uuid,
           payment_type: 'deposit'
@@ -184,15 +184,13 @@ const AddBudgetModal = (props: AddBudgetModalProps) => {
 
   const handleInputAmountChange = (e: any) => {
     const inputValue = e.target.value;
-    // Remove existing commas first
+
     const withoutCommas = inputValue.replace(/,/g, '');
-    // Then remove any other non-numeric characters
+
     const numericValue = withoutCommas.replace(/[^0-9]/g, '');
-    
-    // Store the raw numeric value for calculations
+
     setAmount(numericValue);
-    
-    // Format the display value with commas using similar approach to DollarConverter
+
     if (numericValue) {
       const intValue = parseInt(numericValue, 10);
       const formatted = intValue.toLocaleString('en-US');
