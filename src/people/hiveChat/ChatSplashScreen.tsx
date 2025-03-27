@@ -1,5 +1,4 @@
 import React from 'react';
-import { useState } from 'react';
 import styled from 'styled-components';
 
 interface User {
@@ -8,7 +7,6 @@ interface User {
 
 interface SplashScreenProps {
   user: User;
-  onSendMessage: (message: string) => void;
 }
 
 const SplashScreenContainer = styled.div`
@@ -44,71 +42,13 @@ const WelcomeTagline = styled.p`
   max-width: 600px;
 `;
 
-const ButtonsContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1rem;
-  width: 100%;
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-  }
-`;
-
-const ActionButton = styled.button`
-  background-color: #f8fafc;
-  color: #334155;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 1rem 1.5rem;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  flex: 1;
-  min-width: 200px;
-
-  &:hover {
-    background-color: #f1f5f9;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-`;
-
-const SplashScreen: React.FC<SplashScreenProps> = ({ user, onSendMessage }) => {
-  const [visible, setVisible] = useState(true);
-
-  const handleButtonClick = (message: string) => {
-    onSendMessage(message);
-    setVisible(false);
-  };
-
-  if (!visible) return null;
-
+const SplashScreen: React.FC<SplashScreenProps> = ({ user }) => {
   return (
     <SplashScreenContainer>
       <WelcomeHeader>Hello, {user.alias}</WelcomeHeader>
       <WelcomeTagline>
         Welcome to Hive Chat, AI Native Product Development. How can I help you today?
       </WelcomeTagline>
-      <ButtonsContainer>
-        <ActionButton onClick={() => handleButtonClick('Make a change to the leaderboard')}>
-          Make a change to the leaderboard
-        </ActionButton>
-        <ActionButton onClick={() => handleButtonClick('Update the ticket editor component')}>
-          Update the ticket editor component
-        </ActionButton>
-        <ActionButton
-          onClick={() => handleButtonClick('Can you explain how to create a new feature?')}
-        >
-          Can you explain how to create a new feature?
-        </ActionButton>
-      </ButtonsContainer>
     </SplashScreenContainer>
   );
 };
