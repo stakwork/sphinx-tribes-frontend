@@ -18,6 +18,7 @@ import { formatCodeWithPrettier } from '../../helpers/codeFormatter';
 import VisualScreenViewer from '../widgetViews/workspace/VisualScreenViewer.tsx';
 import { ModelOption } from './modelSelector.tsx';
 import { ActionArtifactRenderer } from './ActionArtifactRenderer';
+import ChatStatusDisplay from './ChatStatusDisplay.tsx';
 import ThinkingModeToggle from './ThinkingModeToggle.tsx';
 import SplashScreen from './ChatSplashScreen';
 
@@ -597,6 +598,11 @@ export const HiveChatView: React.FC = observer(() => {
   const [isMinimized, setIsMinimized] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [chatStatus, setChatStatus] = useState<{
+    status: string;
+    message: string;
+    updatedAt: string;
+  } | null>(null);
   useBrowserTabTitle('Hive Chat');
 
   if (isVerboseLoggingEnabled) {
@@ -612,6 +618,12 @@ export const HiveChatView: React.FC = observer(() => {
       }
       if (chatHistoryRef.current) {
         chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
+      }
+      if (chatId) {
+        const status = await chat.getChatStatus(chatId);
+        if (status) {
+          setChatStatus(status);
+        }
       }
     } catch (error) {
       console.error('Error refreshing chat history:', error);
@@ -1474,6 +1486,8 @@ export const HiveChatView: React.FC = observer(() => {
                     </p>
                   </MessageBubble>
                 )}
+
+                {chatStatus && <ChatStatusDisplay chatStatus={chatStatus} />}
               </ChatHistory>
               <InputContainer>
                 <TextArea
