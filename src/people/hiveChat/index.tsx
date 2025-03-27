@@ -61,13 +61,14 @@ const ChatBodyWrapper = styled.div`
   position: relative;
 `;
 
-const ViewerSection = styled.div<{ width: string }>`
+const ViewerSection = styled.div<{ width: string; isMinimized: boolean }>`
   display: flex;
   flex-direction: column;
-  padding-bottom: 30px !important;
+  padding-bottom: ${({ isMinimized }) => (isMinimized ? '0' : '30px')} !important;
   width: ${(props) => props.width};
   overflow: hidden;
   transition: width 0.1s ease;
+  height: ${({ isMinimized }) => (isMinimized ? '40px' : 'auto')};
 `;
 
 const ChatHeader = styled.div`
@@ -76,6 +77,10 @@ const ChatHeader = styled.div`
   gap: 10px;
   padding: 16px 10px 8px 0;
   border-radius: 8px 8px 0 0;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
 `;
 
 const ChatSection = styled.div<{ width: string }>`
@@ -89,10 +94,14 @@ const ChatSection = styled.div<{ width: string }>`
 
 const ViewerHeader = styled.div`
   display: flex;
-  align-items: center;
   justify-content: space-between;
   padding-top: 16px;
   border-radius: 8px 8px 0 0;
+  flex-direction: row-reverse;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
 `;
 
 const ChatBody = styled.div`
@@ -124,10 +133,12 @@ const TitleInput = styled.input`
   color: #5f6368;
   border: 2px solid #e4e7eb;
   padding: 4px 8px;
-  width: 400px;
+  width: 80%;
   border-radius: 4px;
   background: white;
-  transition: border-color 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    width 0.2s ease;
 
   &:hover {
     border-color: #848484;
@@ -277,6 +288,28 @@ const AttachIcon = styled(MaterialIcon)`
 const TabContainer = styled.div`
   display: flex;
   margin-left: 10px;
+  margin-top: 10px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #4285f4 #f2f3f5;
+
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f2f3f5;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #4285f4;
+    border-radius: 3px;
+  }
+
+  @media (max-width: 768px) {
+    max-width: calc(100vw - 40px);
+  }
 `;
 
 const TabButton = styled.button<{ active: boolean }>`
@@ -561,11 +594,15 @@ export const HiveChatView: React.FC = observer(() => {
   const startViewerWidthRef = useRef(0);
   const [showTooltip, setShowTooltip] = useState(false);
   const dividerRef = useRef<HTMLDivElement>(null);
+  const [isMinimized, setIsMinimized] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const lastRefreshTime = useRef<number>(Date.now()).current;
   const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [isRefreshingTitle, setIsRefreshingTitle] = useState(false);
   const [lastTitleRefreshTime, setLastTitleRefreshTime] = useState(Date.now());
   const titleRefreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
   useBrowserTabTitle('Hive Chat');
 
   if (isVerboseLoggingEnabled) {
@@ -1364,6 +1401,62 @@ export const HiveChatView: React.FC = observer(() => {
     };
   }, [refreshChatTitle, isEditingTitle, lastTitleRefreshTime]);
 
+  const handleMinimizeToggle = () => {
+    setIsMinimized((prev) => {
+      if (!prev) {
+        setChatSectionWidth('0%');
+        setViewerSectionWidth('100%');
+      } else {
+        setChatSectionWidth('100%');
+        setViewerSectionWidth('0%');
+      }
+      return !prev;
+    });
+  };
+
+  const handleFullscreenToggle = () => {
+    setIsFullscreen((prev) => !prev);
+    if (!isFullscreen) {
+      setChatSectionWidth('0%');
+      setViewerSectionWidth('100%');
+    } else {
+      setChatSectionWidth('30%');
+      setViewerSectionWidth('70%');
+    }
+  };
+
+  const handleRestore = () => {
+    setIsMinimized(false);
+    setChatSectionWidth('0%');
+    setViewerSectionWidth('100%');
+  };
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    if (isMobile) {
+      if (showArtifactView) {
+        setChatSectionWidth('0%');
+        setViewerSectionWidth('100%');
+      } else {
+        setChatSectionWidth('100%');
+        setViewerSectionWidth('0%');
+      }
+    } else {
+      const storedChatWidth = localStorage.getItem('hiveChatSectionWidth');
+      const storedViewerWidth = localStorage.getItem('hiveViewerSectionWidth');
+      setChatSectionWidth(storedChatWidth || '30%');
+      setViewerSectionWidth(storedViewerWidth || '70%');
+    }
+  }, [isMobile, showArtifactView]);
+
   if (loading) {
     return (
       <Container collapsed={collapsed} ref={containerRef}>
@@ -1387,7 +1480,7 @@ export const HiveChatView: React.FC = observer(() => {
       <SidebarComponent uuid={uuid} defaultCollapsed hamburgerTopPosition="25px" />
       <Container collapsed={collapsed} ref={containerRef}>
         <ChatBodyWrapper>
-          <ChatSection width={chatSectionWidth}>
+          <ChatSection width={isMinimized || isFullscreen ? '100%' : chatSectionWidth}>
             <ChatHeader>
               <SaveTitleContainer>
                 <TitleInput
@@ -1411,6 +1504,14 @@ export const HiveChatView: React.FC = observer(() => {
                 <AddButton onClick={() => handleNewChat()} disabled={isUpdatingTitle}>
                   <MaterialIcon icon="add" style={{ fontSize: '16px', color: '#5f6368' }} />
                 </AddButton>
+                {isMinimized && (
+                  <AddButton onClick={handleRestore} title="Show Artifacts">
+                    <MaterialIcon
+                      icon="open_in_full"
+                      style={{ fontSize: '16px', color: '#5f6368' }}
+                    />
+                  </AddButton>
+                )}
               </SaveTitleContainer>
 
               {!showArtifactView ? (
@@ -1515,7 +1616,7 @@ export const HiveChatView: React.FC = observer(() => {
             </ChatBody>
           </ChatSection>
 
-          {showArtifactView && (
+          {showArtifactView && !isMinimized && (
             <>
               <DividerContainer
                 ref={dividerRef}
@@ -1538,8 +1639,41 @@ export const HiveChatView: React.FC = observer(() => {
                 <DividerHandle />
               </DividerContainer>
 
-              <ViewerSection width={viewerSectionWidth}>
+              <ViewerSection
+                width={isFullscreen ? '100%' : viewerSectionWidth}
+                isMinimized={isMinimized}
+              >
                 <ViewerHeader>
+                  <div
+                    style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '10px' }}
+                  >
+                    <ThinkingModeToggle
+                      isBuild={isBuild}
+                      setIsBuild={setIsBuild}
+                      selectedModel={selectedModel}
+                      setSelectedModel={setSelectedModel}
+                      handleKeyDown={handleKeyDown}
+                    />
+                    {isMobile && (
+                      <AddButton
+                        onClick={handleMinimizeToggle}
+                        title={isMinimized ? 'Show Chat' : 'Show Artifacts'}
+                      >
+                        <MaterialIcon
+                          icon="open_in_full"
+                          style={{ fontSize: '20px', color: '#5f6368' }}
+                        />
+                      </AddButton>
+                    )}
+                    {!isMobile && (
+                      <AddButton
+                        onClick={handleFullscreenToggle}
+                        title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
+                      >
+                        <MaterialIcon icon={isFullscreen ? 'fullscreen_exit' : 'fullscreen'} />
+                      </AddButton>
+                    )}
+                  </div>
                   <TabContainer>
                     {sseArtifact && sseArtifact?.length > 0 && (
                       <TabButton
@@ -1578,14 +1712,6 @@ export const HiveChatView: React.FC = observer(() => {
                       </TabButton>
                     )}
                   </TabContainer>
-
-                  <ThinkingModeToggle
-                    isBuild={isBuild}
-                    setIsBuild={setIsBuild}
-                    selectedModel={selectedModel}
-                    setSelectedModel={setSelectedModel}
-                    handleKeyDown={handleKeyDown}
-                  />
                 </ViewerHeader>
 
                 <VisualScreenViewer
