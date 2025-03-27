@@ -112,6 +112,7 @@ const InvoiceQrWrapper = styled.div`
 
 const AddBudgetModal = (props: AddBudgetModalProps) => {
   const [amount, setAmount] = useState('');
+  const [displayAmount, setDisplayAmount] = useState('');
   const [lnInvoice, setLnInvoice] = useState('');
   const [invoiceState, setInvoiceState] = useState<InvoiceState>(null);
 
@@ -156,7 +157,7 @@ const AddBudgetModal = (props: AddBudgetModalProps) => {
       try {
         setIsLoading(true);
         const data = await main.getBudgetInvoice({
-          amount: Number(amount),
+          amount: Number(amount), // Use the raw numeric value here
           sender_pubkey: ui.meInfo?.owner_pubkey ?? '',
           workspace_uuid: uuid,
           payment_type: 'deposit'
@@ -183,8 +184,22 @@ const AddBudgetModal = (props: AddBudgetModalProps) => {
 
   const handleInputAmountChange = (e: any) => {
     const inputValue = e.target.value;
-    const numericValue = inputValue.replace(/[^0-9]/g, '');
+    // Remove existing commas first
+    const withoutCommas = inputValue.replace(/,/g, '');
+    // Then remove any other non-numeric characters
+    const numericValue = withoutCommas.replace(/[^0-9]/g, '');
+    
+    // Store the raw numeric value for calculations
     setAmount(numericValue);
+    
+    // Format the display value with commas using similar approach to DollarConverter
+    if (numericValue) {
+      const intValue = parseInt(numericValue, 10);
+      const formatted = intValue.toLocaleString('en-US');
+      setDisplayAmount(formatted);
+    } else {
+      setDisplayAmount('');
+    }
   };
 
   useEffect(() => {
@@ -244,7 +259,7 @@ const AddBudgetModal = (props: AddBudgetModalProps) => {
                     data-testid="input-amount"
                     placeholder="0"
                     type="text"
-                    value={amount}
+                    value={displayAmount}
                     onChange={handleInputAmountChange}
                   />
                   <CurrencyUnit>sats</CurrencyUnit>
