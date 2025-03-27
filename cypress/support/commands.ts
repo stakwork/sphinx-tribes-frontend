@@ -38,7 +38,7 @@
 //   }
 // }
 import { bech32 } from 'bech32';
-const EC = require('elliptic').ec;
+const EC = require('elliptic').ec; //Today Cypress Task
 
 const v2AdminToken = 'xyzxyzxyz';
 
