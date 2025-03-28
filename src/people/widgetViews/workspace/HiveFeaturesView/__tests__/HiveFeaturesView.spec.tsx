@@ -4,6 +4,24 @@ import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import HiveFeaturesView from '../HiveFeaturesView';
 import { quickBountyTicketStore } from '../../../../../store/quickBountyTicketStore';
+import { useDeleteConfirmationModal } from '../../../../../components/common/DeleteConfirmationModal';
+import { useStores } from '../../../../../store';
+
+jest.mock('../../../../../store', () => ({
+  useStores: jest.fn()
+}));
+
+jest.mock('../../../../../components/common/DeleteConfirmationModal', () => ({
+  useDeleteConfirmationModal: jest.fn()
+}));
+
+jest.mock('../../../../../store/quickBountyTicketStore', () => ({
+  quickBountyTicketStore: {
+    fetchAndSetQuickData: jest.fn(),
+    expandedPhases: {},
+    setPhaseExpanded: jest.fn()
+  }
+}));
 
 jest.mock('../HiveFeaturesView', () => ({
   __esModule: true,
@@ -169,5 +187,153 @@ describe('HiveFeaturesView', () => {
         expect(phase2Header).toHaveAttribute('aria-expanded', 'true');
       });
     });
+  });
+});
+
+describe('HiveFeaturesView Delete Ticket Functionality', () => {
+  const mockDeleteTicket = jest.fn();
+  const mockOpenDeleteConfirmation = jest.fn();
+  const mockSetToasts = jest.fn();
+  const mockFetchAndSetQuickData = jest.fn();
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    (useStores as jest.Mock).mockReturnValue({
+      main: {
+        deleteTicket: mockDeleteTicket
+      }
+    });
+
+    (useDeleteConfirmationModal as jest.Mock).mockReturnValue({
+      openDeleteConfirmation: mockOpenDeleteConfirmation
+    });
+
+    quickBountyTicketStore.fetchAndSetQuickData = mockFetchAndSetQuickData;
+  });
+
+  it('should call deleteTicket with correct UUID when delete is confirmed', () => {
+    mockDeleteTicket.mockResolvedValue(true);
+
+    const ticketUUID = 'test-ticket-uuid';
+    const deleteHandler = () => mockDeleteTicket(ticketUUID);
+
+    deleteHandler();
+
+    expect(mockDeleteTicket).toHaveBeenCalledWith(ticketUUID);
+  });
+
+  it('should open delete confirmation dialog before deleting ticket', () => {
+    const confirmDeleteTicket = (ticketUUID: string) => {
+      mockOpenDeleteConfirmation({
+        onDelete: () => mockDeleteTicket(ticketUUID),
+        children: expect.anything()
+      });
+    };
+
+    confirmDeleteTicket('test-ticket-uuid');
+
+    expect(mockOpenDeleteConfirmation).toHaveBeenCalledWith({
+      onDelete: expect.any(Function),
+      children: expect.anything()
+    });
+  });
+
+  it('should refresh data after successful ticket deletion', async () => {
+    mockDeleteTicket.mockResolvedValue(true);
+    mockFetchAndSetQuickData.mockResolvedValue([]);
+
+    const handleDeleteTicket = async (ticketUUID: string) => {
+      const success = await mockDeleteTicket(ticketUUID);
+      if (success) {
+        mockSetToasts([
+          {
+            id: expect.any(String),
+            title: 'Ticket',
+            color: 'success',
+            text: 'Ticket deleted successfully!'
+          }
+        ]);
+
+        await mockFetchAndSetQuickData('feature-uuid');
+      }
+    };
+
+    await handleDeleteTicket('test-ticket-uuid');
+
+    expect(mockDeleteTicket).toHaveBeenCalledWith('test-ticket-uuid');
+    expect(mockSetToasts).toHaveBeenCalledWith([
+      {
+        id: expect.any(String),
+        title: 'Ticket',
+        color: 'success',
+        text: 'Ticket deleted successfully!'
+      }
+    ]);
+    expect(mockFetchAndSetQuickData).toHaveBeenCalledWith('feature-uuid');
+  });
+
+  it('should show error toast when ticket deletion fails', async () => {
+    mockDeleteTicket.mockResolvedValue(false);
+
+    const handleDeleteTicket = async (ticketUUID: string) => {
+      const success = await mockDeleteTicket(ticketUUID);
+      if (success) {
+        console.log('success');
+      } else {
+        mockSetToasts([
+          {
+            id: expect.any(String),
+            title: 'Error',
+            color: 'danger',
+            text: 'Failed to delete ticket'
+          }
+        ]);
+      }
+    };
+
+    await handleDeleteTicket('test-ticket-uuid');
+
+    expect(mockDeleteTicket).toHaveBeenCalledWith('test-ticket-uuid');
+    expect(mockSetToasts).toHaveBeenCalledWith([
+      {
+        id: expect.any(String),
+        title: 'Error',
+        color: 'danger',
+        text: 'Failed to delete ticket'
+      }
+    ]);
+    expect(mockFetchAndSetQuickData).not.toHaveBeenCalled();
+  });
+
+  it('should handle errors during ticket deletion', async () => {
+    mockDeleteTicket.mockRejectedValue(new Error('Network error'));
+
+    const handleDeleteTicket = async (ticketUUID: string) => {
+      try {
+        await mockDeleteTicket(ticketUUID);
+      } catch (error) {
+        mockSetToasts([
+          {
+            id: expect.any(String),
+            title: 'Error',
+            color: 'danger',
+            text: 'An error occurred while deleting the ticket'
+          }
+        ]);
+      }
+    };
+
+    await handleDeleteTicket('test-ticket-uuid');
+
+    expect(mockDeleteTicket).toHaveBeenCalledWith('test-ticket-uuid');
+    expect(mockSetToasts).toHaveBeenCalledWith([
+      {
+        id: expect.any(String),
+        title: 'Error',
+        color: 'danger',
+        text: 'An error occurred while deleting the ticket'
+      }
+    ]);
   });
 });
