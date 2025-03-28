@@ -2,7 +2,7 @@ describe('Super Admin Bounty Filter Status Dropdown ', () => {
   let activeUser = 'alice';
 
   const bounty: Cypress.Bounty = {
-    title: 'Syed',
+    title: 'Syededed',
     category: 'Web development',
     description: 'This is available',
     amount: '123',
@@ -17,13 +17,13 @@ describe('Super Admin Bounty Filter Status Dropdown ', () => {
 
   it('Should create six bounties with different status and verify that changing the bounties filter status displays only bounties with that specific status', () => {
     for (let i = 1; i <= 4; i++) {
-      const updatedBounty = { ...bounty, title: `Syed${i}` };
+      const updatedBounty = { ...bounty, title: `Syeded${i}` };
       cy.create_bounty(updatedBounty);
       cy.wait(1000);
     }
 
     for (let i = 5; i <= 6; i++) {
-      const updatedBounty = { ...bounty, title: `Syed${i}`, assign: '' };
+      const updatedBounty = { ...bounty, title: `Syeded${i}`, assign: '' };
       cy.create_bounty(updatedBounty);
       cy.wait(1000);
     }
@@ -34,7 +34,7 @@ describe('Super Admin Bounty Filter Status Dropdown ', () => {
     cy.wait(1000);
 
     for (let i = 1; i <= 2; i++) {
-      cy.contains(`Syed${i}`).click();
+      cy.contains(`Syeded${i}`).click();
       cy.wait(1000);
 
       cy.contains('Mark as Paid').click();
@@ -55,7 +55,7 @@ describe('Super Admin Bounty Filter Status Dropdown ', () => {
     cy.wait(3000);
 
     for (let i = 1; i <= 6; i++) {
-      cy.contains(`Syed${i}`, { timeout: 10000 }).should('exist');
+      cy.contains(`Syeded${i}`, { timeout: 10000 }).should('exist');
     }
 
     cy.contains('Status').click();
@@ -64,11 +64,11 @@ describe('Super Admin Bounty Filter Status Dropdown ', () => {
     cy.wait(1000);
 
     for (let i = 5; i <= 6; i++) {
-      cy.contains(`Syed${i}`, { timeout: 10000 }).should('exist');
+      cy.contains(`Syeded${i}`, { timeout: 10000 }).should('exist');
     }
 
     for (let i = 1; i <= 4; i++) {
-      cy.contains(`Syed${i}`, { timeout: 10000 }).should('not.exist');
+      cy.contains(`Syeded${i}`, { timeout: 10000 }).should('not.exist');
     }
 
     cy.contains('Status:').click();
@@ -78,15 +78,15 @@ describe('Super Admin Bounty Filter Status Dropdown ', () => {
     cy.wait(1000);
 
     for (let i = 3; i <= 4; i++) {
-      cy.contains(`Syed${i}`, { timeout: 10000 }).should('exist');
+      cy.contains(`Syeded${i}`, { timeout: 10000 }).should('exist');
     }
 
     for (let i = 1; i <= 2; i++) {
-      cy.contains(`Syed${i}`, { timeout: 10000 }).should('not.exist');
+      cy.contains(`Syeded${i}`, { timeout: 10000 }).should('not.exist');
     }
 
     for (let i = 5; i <= 6; i++) {
-      cy.contains(`Syed${i}`, { timeout: 10000 }).should('not.exist');
+      cy.contains(`Syeded${i}`, { timeout: 10000 }).should('not.exist');
     }
 
     cy.contains('Status').click();
@@ -96,11 +96,11 @@ describe('Super Admin Bounty Filter Status Dropdown ', () => {
     cy.wait(1000);
 
     for (let i = 1; i <= 2; i++) {
-      cy.contains(`Syed${i}`, { timeout: 10000 }).should('exist');
+      cy.contains(`Syeded${i}`, { timeout: 10000 }).should('exist');
     }
 
     for (let i = 3; i <= 6; i++) {
-      cy.contains(`Syed${i}`, { timeout: 10000 }).should('not.exist');
+      cy.contains(`Syeded${i}`, { timeout: 10000 }).should('not.exist');
     }
 
     cy.wait(1000);
