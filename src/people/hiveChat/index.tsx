@@ -77,9 +77,11 @@ const ChatHeader = styled.div`
   gap: 10px;
   padding: 16px 10px 8px 0;
   border-radius: 8px 8px 0 0;
+  flex-wrap: wrap;
 
   @media (max-width: 768px) {
     flex-direction: column;
+    align-items: flex-start;
   }
 `;
 
@@ -117,6 +119,11 @@ const SaveTitleContainer = styled.div`
   align-items: center;
   gap: 8px;
   flex: 1;
+  min-width: 0;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
 const Title = styled.h2`
@@ -125,6 +132,9 @@ const Title = styled.h2`
   color: #5f6368;
   margin: 0;
   flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 const TitleInput = styled.input`
@@ -134,11 +144,14 @@ const TitleInput = styled.input`
   border: 2px solid #e4e7eb;
   padding: 4px 8px;
   width: 80%;
+  max-width: calc(100% - 100px);
   border-radius: 4px;
   background: white;
   transition:
     border-color 0.2s ease,
     width 0.2s ease;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   &:hover {
     border-color: #848484;
@@ -147,6 +160,11 @@ const TitleInput = styled.input`
   &:focus {
     border-color: #4285f4;
     outline: none;
+  }
+
+  @media (max-width: 768px) {
+    width: calc(100% - 100px);
+    min-width: 0;
   }
 `;
 
