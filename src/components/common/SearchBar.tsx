@@ -147,7 +147,11 @@ function SearchBar({
       height={height}
       marginLeft={marginLeft}
     >
+      <label htmlFor="search" hidden>
+        Search
+      </label>
       <input
+        id="search"
         className="SearchText"
         {...props}
         onFocus={() => setExpand(true)}
@@ -162,11 +166,21 @@ function SearchBar({
         }}
         placeholder={props.placeholder}
         style={{ ...props.style }}
+        aria-autocomplete="list"
+        aria-expanded={searchValue.length > 0}
       />
       {searchValue ? (
         <MaterialIcon
           icon="close"
+          role="button"
+          aria-label="Clear search"
+          tabIndex={0}
           onClick={() => erase()}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              erase();
+            }
+          }}
           style={{
             position: 'absolute',
             color: color.grayish.G300,
