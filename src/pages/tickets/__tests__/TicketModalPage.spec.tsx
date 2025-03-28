@@ -8,15 +8,14 @@ import { MemoryRouter, Route } from 'react-router-dom';
 import { mainStore } from 'store/main';
 import { useIsMobile } from 'hooks';
 import { uiStore } from 'store/ui';
-import { unpaidString } from 'people/widgetViews/summaries/constants';
 import userEvent from '@testing-library/user-event';
 import * as helpers from 'helpers';
-import { people } from '__test__/__mockData__/persons';
 import { TicketModalPage } from '../TicketModalPage';
 import { withCreateModal } from '../../../components/common/withCreateModal';
 
 jest.mock('hooks', () => ({
-  useIsMobile: jest.fn()
+  useIsMobile: jest.fn(),
+  useFeatureFlag: jest.fn().mockReturnValue({ isEnabled: true })
 }));
 
 const mockPush = jest.fn();
@@ -36,7 +35,9 @@ jest.mock('react-router-dom', () => ({
   useParams: () => ({
     uuid: 'ck95pe04nncjnaefo08g',
     bountyId: '1239'
-  })
+  }),
+  MemoryRouter: jest.requireActual('react-router-dom').MemoryRouter,
+  Route: jest.requireActual('react-router-dom').Route
 }));
 
 jest.mock('helpers', () => ({
@@ -582,17 +583,19 @@ describe('TicketModalPage Component', () => {
     jest.spyOn(mainStore, 'saveBounty').mockResolvedValue();
 
     await act(async () => {
-      const { getByText } = render(
+      render(
         <MemoryRouter initialEntries={['/bounty/1234']}>
-          <Route path="/bounty/:bountyId" component={TicketModalPage} />
+          <Route path="/bounty/:bountyId">
+            <TicketModalPage setConnectPerson={jest.fn()} />
+          </Route>
         </MemoryRouter>
       );
 
-      await waitFor(() => getByText('Not Assigned'));
-      fireEvent.click(getByText('Not Assigned'));
+      await waitFor(() => screen.getByText('Not Assigned'));
+      fireEvent.click(screen.getByText('Not Assigned'));
 
       await waitFor(() => {
-        expect(getByText('Assign Developer')).toBeInTheDocument();
+        expect(screen.getByText('Assign Developer')).toBeInTheDocument();
       });
     });
   });

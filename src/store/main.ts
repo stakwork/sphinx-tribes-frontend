@@ -1533,7 +1533,7 @@ export class MainStore {
     }
   }
 
-  async refreshJwt() {
+  async refreshJwt(signal?: AbortSignal) {
     try {
       if (!uiStore.meInfo) return null;
       const info = uiStore.meInfo;
@@ -1546,7 +1546,8 @@ export class MainStore {
           'x-jwt': info.tribe_jwt,
           'Content-Type': 'application/json',
           Accept: 'application/json'
-        }
+        },
+        signal
       });
 
       const j = await r.json();

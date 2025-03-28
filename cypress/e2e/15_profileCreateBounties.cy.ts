@@ -24,15 +24,15 @@ describe('Alice tries to create a bounty on the user profile page and view them'
       );
     }
 
-    cy.wait(1000);
+    cy.wait(2000);
 
     cy.contains(`Open`).click();
-    cy.wait(1000);
+    cy.wait(2000);
 
     for (let i = 1; i <= 2; i++) {
       cy.contains(`Bounty Title ${i}`);
     }
-    cy.wait(1000);
+    cy.wait(2000);
 
     // click outside the modal
     cy.get('body').click(0, 0);
