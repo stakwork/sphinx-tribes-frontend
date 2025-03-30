@@ -241,3 +241,58 @@ describe('HiveChatView Chat Title', () => {
     });
   });
 });
+
+describe('HiveChatView New Chat Button', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    (chatHistoryStore.getChat as jest.Mock).mockReturnValue({ title: 'Test Chat' });
+
+    Object.defineProperty(window, 'innerWidth', {
+      writable: true,
+      configurable: true,
+      value: 1024
+    });
+  });
+
+  test('should ensure New Chat button remains visible on all screen sizes', async () => {
+    waitFor(() => {
+      render(<HiveChatView />);
+
+      expect(screen.getByRole('button', { name: /add/i })).toBeInTheDocument();
+
+      Object.defineProperty(window, 'innerWidth', { value: 768 });
+      window.dispatchEvent(new Event('resize'));
+
+      expect(screen.getByRole('button', { name: /add/i })).toBeInTheDocument();
+
+      Object.defineProperty(window, 'innerWidth', { value: 480 });
+      window.dispatchEvent(new Event('resize'));
+
+      expect(screen.getByRole('button', { name: /add/i })).toBeInTheDocument();
+    });
+  });
+
+  test('should maintain button visibility when title is very long', async () => {
+    (chatHistoryStore.getChat as jest.Mock).mockReturnValue({
+      title:
+        'This is an extremely long chat title that could potentially cause layout issues on smaller screens by pushing buttons out of view'
+    });
+
+    waitFor(() => {
+      render(<HiveChatView />);
+
+      Object.defineProperty(window, 'innerWidth', { value: 600 });
+      window.dispatchEvent(new Event('resize'));
+
+      const titleInput = screen.getByPlaceholderText('Enter chat title...');
+      const addButton = screen.getByRole('button', { name: /add/i });
+
+      expect(titleInput).toBeInTheDocument();
+      expect(addButton).toBeInTheDocument();
+
+      const buttonRect = addButton.getBoundingClientRect();
+
+      expect(buttonRect.right).toBeLessThanOrEqual(window.innerWidth);
+    });
+  });
+});
