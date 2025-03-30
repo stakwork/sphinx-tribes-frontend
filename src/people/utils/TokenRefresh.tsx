@@ -72,30 +72,50 @@ function TokenRefresh() {
 
       if (tokenExpireCheck.expired) {
         try {
-          const res = await main.refreshJwt();
-          if (res && res.jwt) {
+          const abortController = new AbortController();
+          const timeoutId = setTimeout(() => abortController.abort(), 10000);
+
+          const currentMeInfo = ui.meInfo;
+
+          const res = await main.refreshJwt(abortController.signal);
+
+          clearTimeout(timeoutId);
+
+          if (res && res.jwt && ui.meInfo === currentMeInfo) {
             ui.setMeInfo({ ...ui.meInfo, tribe_jwt: res.jwt });
-          } else {
-            console.log('Token refresh failed, logging out!', res);
+          } else if (res === null) {
+            console.log('Token refresh failed, logging out!');
             handleLogout();
           }
-        } catch (error) {
-          console.log('Token refresh error:', error);
-          handleLogout();
+        } catch (error: unknown) {
+          if (error instanceof Error && error.name === 'AbortError') {
+            console.log('Token refresh request was aborted');
+          } else {
+            console.log('Token refresh error:', error);
+            handleLogout();
+          }
         }
       }
     }
   }
 
   useEffect(() => {
-    checkLoginStatus();
+    let isMounted = true;
+
+    const runCheckIfMounted = async () => {
+      if (isMounted) await checkLoginStatus();
+    };
+
+    runCheckIfMounted();
+
     // Create the interval
-    const intervalId = setInterval(async () => {
-      checkLoginStatus();
+    const intervalId = setInterval(() => {
+      if (isMounted) runCheckIfMounted();
     }, 1000 * 30);
 
     // Cleanup function to prevent memory leaks
     return () => {
+      isMounted = false;
       clearInterval(intervalId);
     };
   }, [main, ui]);
