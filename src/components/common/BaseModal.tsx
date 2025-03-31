@@ -68,14 +68,33 @@ export const BaseModal = ({ children, backdrop, ...props }: BaseModalProps) => (
           <Box
             onClick={(e) => props.onClose?.(e, 'backdropClick')}
             p={1}
-            sx={{ cursor: 'pointer' }}
-            component="img"
-            src="/static/close-thin.svg"
-            alt="close_icon"
+            sx={{
+              cursor: 'pointer',
+              '&:focus': {
+                outline: '2px solid #1976d2',
+                outlineOffset: '2px'
+              }
+            }}
+            component="button"
+            role="button"
+            aria-label="Close modal"
+            tabIndex={0}
             position="absolute"
             right={1}
             top={1}
-          />
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            bgcolor="transparent"
+            border="none"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                props.onClose?.(e, 'backdropClick');
+              }
+            }}
+          >
+            <img src="/static/close-thin.svg" alt="" width={16} height={16} aria-hidden="true" />
+          </Box>
         )}
         {children}
       </>
