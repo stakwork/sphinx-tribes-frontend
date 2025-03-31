@@ -34,8 +34,18 @@ import { SkillsPage } from './skills';
 import ManageSkillsPage from './skillManagement';
 import { NotFoundPage } from './notFound';
 
-const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
-  community: () => (
+export const Pages = observer(({ mode }: { mode: AppMode }) => {
+  if (mode === 'tribes') {
+    return (
+      <>
+        <MainLayout header={<Header />}>
+          <Body />
+        </MainLayout>
+        <Modals />
+      </>
+    )
+  }
+  return (
     <>
       <TokenRefresh />
       <Switch>
@@ -132,19 +142,7 @@ const modeDispatchPages: Record<AppMode, () => React.ReactElement> = {
           </MainLayout>
         </Route>
       </Switch>
+      <Modals />
     </>
-  ),
-  people: () => <></>,
-  tribes: () => (
-    <MainLayout header={<Header />}>
-      <Body />
-    </MainLayout>
   )
-};
-
-export const Pages = observer(({ mode }: { mode: AppMode }) => (
-  <>
-    {modeDispatchPages[mode]()}
-    <Modals />
-  </>
-));
+});
