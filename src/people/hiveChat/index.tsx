@@ -18,6 +18,7 @@ import { formatCodeWithPrettier } from '../../helpers/codeFormatter';
 import VisualScreenViewer from '../widgetViews/workspace/VisualScreenViewer.tsx';
 import { ModelOption } from './modelSelector.tsx';
 import { ActionArtifactRenderer } from './ActionArtifactRenderer';
+import ChatStatusDisplay from './ChatStatusDisplay.tsx';
 import ThinkingModeToggle from './ThinkingModeToggle.tsx';
 import SplashScreen from './ChatSplashScreen';
 
@@ -171,7 +172,7 @@ const TitleInput = styled.input`
 const ChatHistory = styled.div`
   flex-grow: 1;
   overflow-y: auto;
-  padding: 20px;
+  padding: 20px 20px 0 20px;
   display: flex;
   flex-direction: column;
   background: white;
@@ -615,6 +616,11 @@ export const HiveChatView: React.FC = observer(() => {
   const [isMinimized, setIsMinimized] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [chatStatus, setChatStatus] = useState<{
+    status: string;
+    message: string;
+    updatedAt: string;
+  } | null>(null);
   const lastRefreshTime = useRef<number>(Date.now()).current;
   const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [isRefreshingTitle, setIsRefreshingTitle] = useState(false);
@@ -636,6 +642,12 @@ export const HiveChatView: React.FC = observer(() => {
       }
       if (chatHistoryRef.current) {
         chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
+      }
+      if (chatId) {
+        const status = await chat.getChatStatus(chatId);
+        if (status) {
+          setChatStatus(status);
+        }
       }
     } catch (error) {
       console.error('Error refreshing chat history:', error);
@@ -1602,6 +1614,8 @@ export const HiveChatView: React.FC = observer(() => {
                     </p>
                   </MessageBubble>
                 )}
+
+                {chatStatus && <ChatStatusDisplay chatStatus={chatStatus} />}
               </ChatHistory>
               <InputContainer>
                 <TextArea

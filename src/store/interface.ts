@@ -598,6 +598,15 @@ export interface Chat {
   updatedAt: string;
 }
 
+export interface ChatStatuses {
+  uuid?: string;
+  chatId: string;
+  status: string;
+  message: string;
+  createdAt?: string;
+  updatedAt: string;
+}
+
 export interface CodeGraph {
   id?: number;
   uuid: string;

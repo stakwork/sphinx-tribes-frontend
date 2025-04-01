@@ -5,11 +5,38 @@ import {
   Artifact,
   Chat,
   ChatMessage,
+  ChatStatuses,
   ContextTag
 } from '../store/interface';
 import { uiStore } from '../store/ui';
 
 export class ChatService {
+  async getLatestChatStatus(chatId: string): Promise<ChatStatuses | undefined> {
+    try {
+      if (!uiStore.meInfo) return undefined;
+      const info = uiStore.meInfo;
+      const response = await fetch(`${TribesURL}/hivechat/status/${chatId}/latest`, {
+        method: 'GET',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          return undefined;
+        }
+        throw new Error(`Failed to fetch chat status`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error getting latest chat status:', error);
+      return undefined;
+    }
+  }
+
   async createChat(workspace_uuid: string, title: string): Promise<Chat | undefined> {
     try {
       if (!uiStore.meInfo) return undefined;
