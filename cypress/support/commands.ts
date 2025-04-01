@@ -40,7 +40,7 @@
 import { bech32 } from 'bech32';
 const EC = require('elliptic').ec;
 
-const v2AdminToken = 'xyzxyzxyz';
+const v2AdminToken = 'xyzxyzxyz'; // Cypress Task
 
 Cypress.Commands.add('login', (userAlias: string) => {
   let user;
