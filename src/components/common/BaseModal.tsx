@@ -133,9 +133,9 @@ export const BaseModal = ({ children, backdrop, ...props }: BaseModalProps) => {
               aria-label="Close modal"
               tabIndex={0}
             >
-              <img 
-                src="/static/close-thin.svg" 
-                alt="" 
+              <img
+                src="/static/close-thin.svg"
+                alt=""
                 width={30}
                 height={30}
                 aria-hidden="true"
