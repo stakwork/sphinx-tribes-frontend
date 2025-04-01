@@ -127,19 +127,19 @@ const FilterContainer = styled.div<styledProps>`
     line-height: 19px;
     display: flex;
     align-items: center;
-    color: ${(p: any) => p.color && p.color.grayish.G200};
+    color: ${(p: any) => p.color && p.color.grayish.G50};
   }
   &:hover {
     .filterImageContainer {
       .materialIconImage {
-        color: ${(p: any) => p.color && p.color.grayish.G50} !important;
+        color: ${(p: any) => p.color && p.color.grayish.G10} !important;
         cursor: pointer;
         font-size: 18px;
         margin-top: 4px;
       }
     }
     .filterText {
-      color: ${(p: any) => p.color && p.color.grayish.G50};
+      color: ${(p: any) => p.color && p.color.grayish.G10};
     }
   }
   &:active {
@@ -490,18 +490,31 @@ const BountyHeader = ({
                 iconStyle={{
                   top: '13px'
                 }}
-                TextColor={color.grayish.G100}
-                TextColorHover={color.grayish.G50}
+                TextColor={color.grayish.G50}
+                TextColorHover={color.grayish.G10}
                 border={`1px solid ${color.grayish.G600}`}
                 borderHover={`1px solid ${color.grayish.G400}`}
                 borderActive={`1px solid ${color.light_blue100}`}
-                iconColor={color.grayish.G300}
-                iconColorHover={color.grayish.G50}
+                iconColor={color.grayish.G50}
+                iconColorHover={color.grayish.G10}
               />
 
               <EuiPopover
                 button={
-                  <FilterContainer onClick={onButtonClick} color={color}>
+                  <FilterContainer
+                    onClick={onButtonClick}
+                    color={color}
+                    role="button"
+                    aria-label={`Filter search, ${filterCountNumber} filter${
+                      filterCountNumber === 1 ? '' : 's'
+                    } applied`}
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        onButtonClick();
+                      }
+                    }}
+                  >
                     <div className="filterImageContainer">
                       <MaterialIcon
                         className="materialIconImage"
@@ -576,9 +589,21 @@ const BountyHeader = ({
                 </FilterCount>
               )}
             </B>
-            <div onClick={() => history.replace('/p')}>
+            <div
+              onClick={() => history.replace('/p')}
+              role="button"
+              aria-label={`Developers, ${developerCount} developers${
+                developerCount === 1 ? '' : 's'
+              } found`}
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  history.replace('/p');
+                }
+              }}
+            >
               <D color={color}>
-                <EuiText className="DText" color={color.grayish.G200}>
+                <EuiText className="DText" color={color.grayish.G50}>
                   Developers
                 </EuiText>
                 <div className="ImageOuterContainer">
@@ -639,18 +664,26 @@ const BountyHeader = ({
               iconStyle={{
                 top: '4px'
               }}
-              TextColor={color.grayish.G400}
-              TextColorHover={color.grayish.G100}
+              TextColor={color.grayish.G50}
+              TextColorHover={color.grayish.G10}
               border={`1px solid ${color.grayish.G500}`}
               borderHover={`1px solid ${color.grayish.G400}`}
               borderActive={`1px solid ${color.light_blue100}`}
-              iconColor={color.grayish.G300}
-              iconColorHover={color.grayish.G100}
+              iconColor={color.grayish.G50}
+              iconColorHover={color.grayish.G10}
             />
 
             <EuiPopover
               button={
-                <FilterContainer onClick={onButtonClick} color={color}>
+                <FilterContainer
+                  onClick={onButtonClick}
+                  color={color}
+                  role="button"
+                  aria-label={`Filter search, ${filterCountNumber} filter${
+                    filterCountNumber === 1 ? '' : 's'
+                  } applied`}
+                  tabIndex={0}
+                >
                   <div className="filterImageContainer">
                     <MaterialIcon
                       className="materialIconImage"
