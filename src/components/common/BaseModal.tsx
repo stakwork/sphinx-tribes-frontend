@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/typedef */
 import { Modal, ModalProps } from '@mui/base';
-import { Box, styled } from '@mui/system';
+import { styled } from '@mui/system';
 import clsx from 'clsx';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 export type BackdropProps = {
   backdrop?: 'white' | 'black';
@@ -52,52 +52,102 @@ const Inner = styled('div')(() => ({
   fontFamily: 'Barlow'
 }));
 
-export const BaseModal = ({ children, backdrop, ...props }: BaseModalProps) => (
-  <StyledModal
-    {...props}
-    slots={{ backdrop: StyledBackdrop }}
-    slotProps={{
-      backdrop: {
-        backdrop
-      } as any
-    }}
-  >
-    <Inner>
-      <>
-        {props.onClose && (
-          <Box
-            onClick={(e) => props.onClose?.(e, 'backdropClick')}
-            p={1}
-            sx={{
-              cursor: 'pointer',
-              '&:focus': {
-                outline: '2px solid #1976d2',
-                outlineOffset: '2px'
-              }
-            }}
-            component="button"
-            role="button"
-            aria-label="Close modal"
-            tabIndex={0}
-            position="absolute"
-            right={1}
-            top={1}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            bgcolor="transparent"
-            border="none"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                props.onClose?.(e, 'backdropClick');
-              }
-            }}
-          >
-            <img src="/static/close-thin.svg" alt="" width={16} height={16} aria-hidden="true" />
-          </Box>
-        )}
-        {children}
-      </>
-    </Inner>
-  </StyledModal>
-);
+const CloseButton = styled('button')(() => ({
+  cursor: 'pointer',
+  padding: '12px',
+  position: 'absolute',
+  right: '8px',
+  top: '8px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  backgroundColor: 'transparent',
+  border: 'none',
+  outline: 'none',
+  width: '20px',
+  height: '20px',
+  borderRadius: '50%',
+  transition: 'background-color 0.2s',
+  '&:hover': {
+    backgroundColor: 'rgba(0, 0, 0, 0.1)'
+  }
+}));
+
+export const BaseModal = ({ children, backdrop, ...props }: BaseModalProps) => {
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const modalContentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (props.open && closeButtonRef.current) {
+      closeButtonRef.current.focus();
+    }
+  }, [props.open]);
+
+  useEffect(() => {
+    const handleTabKey = (e: KeyboardEvent) => {
+      if (!props.open || !modalContentRef.current) return;
+
+      const focusableElements = modalContentRef.current.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      const firstElement = focusableElements[0] as HTMLElement;
+      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+      if (e.key === 'Tab') {
+        if (e.shiftKey && document.activeElement === firstElement) {
+          lastElement.focus();
+          e.preventDefault();
+        } else if (!e.shiftKey && document.activeElement === lastElement) {
+          firstElement.focus();
+          e.preventDefault();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleTabKey);
+    return () => document.removeEventListener('keydown', handleTabKey);
+  }, [props.open]);
+
+  return (
+    <StyledModal
+      {...props}
+      slots={{ backdrop: StyledBackdrop }}
+      slotProps={{
+        backdrop: {
+          backdrop
+        } as any
+      }}
+    >
+      <Inner ref={modalContentRef}>
+        <>
+          {props.onClose && (
+            <CloseButton
+              ref={closeButtonRef}
+              onClick={(e) => props.onClose?.(e, 'backdropClick')}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  props.onClose?.(e, 'backdropClick');
+                }
+              }}
+              aria-label="Close modal"
+              tabIndex={0}
+            >
+              <img 
+                src="/static/close-thin.svg" 
+                alt="" 
+                width={30}
+                height={30}
+                aria-hidden="true"
+                style={{
+                  filter: backdrop === 'white' ? 'brightness(0)' : 'brightness(1)'
+                }}
+              />
+            </CloseButton>
+          )}
+          {children}
+        </>
+      </Inner>
+    </StyledModal>
+  );
+};
