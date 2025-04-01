@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import MaterialIcon from '@material/react-material-icon';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { coldarkDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { Artifact, VisualContent, TextContent } from '../../../store/interface.ts';
+import { Artifact, VisualContent, TextContent, SSEMessage } from '../../../store/interface.ts';
 import { renderMarkdown } from '../../utils/RenderMarkdown.tsx';
 import LogsScreenViewer from './LogsScreenViewer.tsx';
 
@@ -243,7 +243,7 @@ interface VisualScreenViewerProps {
   codeArtifact: Artifact[];
   textArtifact: Artifact[];
   sseArtifact: Artifact[];
-  chatId: string;
+  sseLogs: SSEMessage[];
   activeTab: 'visual' | 'code' | 'text' | 'logs';
 }
 
@@ -252,7 +252,7 @@ const VisualScreenViewer: React.FC<VisualScreenViewerProps> = ({
   codeArtifact,
   textArtifact,
   sseArtifact,
-  chatId,
+  sseLogs,
   activeTab
 }) => {
   const [visualIndex, setVisualIndex] = useState(0);
@@ -393,6 +393,11 @@ const VisualScreenViewer: React.FC<VisualScreenViewerProps> = ({
 
   return (
     <ViewerContainer>
+      {activeTab === 'logs' && sseArtifact && (
+        <>
+          <LogsScreenViewer sseLogs={sseLogs} />
+        </>
+      )}
       {activeTab === 'visual' && currentVisual && (
         <>
           <IframeWrapper>
@@ -491,12 +496,6 @@ const VisualScreenViewer: React.FC<VisualScreenViewerProps> = ({
               {'>'}
             </Button>
           </PaginationControls>
-        </>
-      )}
-
-      {activeTab === 'logs' && sseArtifact && (
-        <>
-          <LogsScreenViewer chatId={chatId} />
         </>
       )}
     </ViewerContainer>

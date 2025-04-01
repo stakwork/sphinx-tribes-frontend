@@ -43,7 +43,7 @@ export const Pages = observer(({ mode }: { mode: AppMode }) => {
         </MainLayout>
         <Modals />
       </>
-    )
+    );
   }
   return (
     <>
@@ -144,5 +144,5 @@ export const Pages = observer(({ mode }: { mode: AppMode }) => {
       </Switch>
       <Modals />
     </>
-  )
+  );
 });
