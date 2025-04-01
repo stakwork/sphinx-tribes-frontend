@@ -51,7 +51,7 @@ export class LeaderboardStore {
     return this.sortedBySats.slice(0, 3);
   }
   get others() {
-    return this.sortedBySats.slice(3);
+    return this.sortedBySats.slice(3, 5);
   }
 
   get topEarners() {
