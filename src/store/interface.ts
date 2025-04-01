@@ -582,6 +582,34 @@ export interface ChatMessage {
   artifacts?: Artifact[];
 }
 
+export interface SSEEvent {
+  event_type: string;
+  id: string;
+  raw: string;
+}
+
+export interface SSEMessage {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  event: SSEEvent;
+  chat_id: string;
+  from: string;
+  to: string;
+  status: string;
+}
+
+export interface APIResponse {
+  success: boolean;
+  message: string;
+  data: {
+    limit: number;
+    messages: SSEMessage[];
+    offset: number;
+    total: number;
+  };
+}
+
 export interface ActionResponsePayload {
   action_webhook: string;
   chatId: string;

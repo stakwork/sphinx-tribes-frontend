@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import MaterialIcon from '@material/react-material-icon';
-import { useStores } from '../../../store';
 
 const CodeViewer = styled.div`
   flex-grow: 1;
@@ -54,48 +53,15 @@ interface SSEMessage {
   status: string;
 }
 
-interface APIResponse {
-  success: boolean;
-  message: string;
-  data: {
-    limit: number;
-    messages: SSEMessage[];
-    offset: number;
-    total: number;
-  };
-}
-
 interface LogsScreenViewerProps {
-  chatId: string;
+  sseLogs: SSEMessage[];
 }
 
-const LogsScreenViewer: React.FC<LogsScreenViewerProps> = ({ chatId }) => {
-  const { main } = useStores();
-  const [logs, setLogs] = useState<SSEMessage[]>([]);
+const LogsScreenViewer: React.FC<LogsScreenViewerProps> = ({ sseLogs }) => {
   const [copied, setCopied] = useState(false);
 
-  const fetchLogs = async () => {
-    try {
-      const response: APIResponse = await main.getAllSSEMessages(chatId);
-
-      if (response.success && response.data.messages) {
-        const sortedLogs = response.data.messages.sort(
-          (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-        );
-
-        setLogs(sortedLogs);
-      }
-    } catch (error) {
-      console.error('Error fetching logs:', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchLogs();
-  }, [chatId, fetchLogs]);
-
   const copyToClipboard = () => {
-    const logText = logs.map((log) => JSON.stringify(log.event)).join('\n');
+    const logText = sseLogs.map((log) => JSON.stringify(log.event)).join('\n');
     navigator.clipboard.writeText(logText).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -107,8 +73,8 @@ const LogsScreenViewer: React.FC<LogsScreenViewerProps> = ({ chatId }) => {
       <CopyButton onClick={copyToClipboard}>
         {copied ? <MaterialIcon icon="check" /> : <MaterialIcon icon="content_copy" />}
       </CopyButton>
-      {logs.length > 0 ? (
-        logs.map((log) => <LogItem key={log.id}>{JSON.stringify(log.event)}</LogItem>)
+      {sseLogs.length > 0 ? (
+        sseLogs.map((log) => <LogItem key={log.id}>{JSON.stringify(log.event)}</LogItem>)
       ) : (
         <LogItem>No logs available.</LogItem>
       )}

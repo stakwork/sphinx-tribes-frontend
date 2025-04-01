@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useParams } from 'react-router-dom';
-import { ChatMessage, Artifact, TextContent } from 'store/interface';
+import { ChatMessage, Artifact, TextContent, SSEMessage, APIResponse } from 'store/interface';
 import { useStores } from 'store';
 import { createSocketInstance } from 'config/socket';
 import SidebarComponent from 'components/common/SidebarComponent.tsx';
@@ -555,7 +555,7 @@ const connectToLogWebSocket = (
 
 export const HiveChatView: React.FC = observer(() => {
   const { uuid, chatId } = useParams<RouteParams>();
-  const { chat, ui } = useStores();
+  const { chat, ui, main } = useStores();
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -626,7 +626,7 @@ export const HiveChatView: React.FC = observer(() => {
   const [isRefreshingTitle, setIsRefreshingTitle] = useState(false);
   const [lastTitleRefreshTime, setLastTitleRefreshTime] = useState(Date.now());
   const titleRefreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
-
+  const [sseLogs, setSseLogs] = useState<SSEMessage[]>([]);
   useBrowserTabTitle('Hive Chat');
 
   if (isVerboseLoggingEnabled) {
@@ -968,6 +968,32 @@ export const HiveChatView: React.FC = observer(() => {
         const res = await chat.loadArtifactsForChat(chatId);
         console.log('Artifacts for that chat', res);
         setActionArtifact({} as Artifact);
+
+        const sseArtifacts = res?.filter(
+          (artifact) =>
+            artifact &&
+            artifact.type === 'text' &&
+            artifact.content &&
+            'text_type' in artifact.content &&
+            artifact.content.text_type === 'sse_logs'
+        );
+
+        console.log('sseArtifacts', sseArtifacts);
+
+        if (sseArtifacts) {
+          setSseArtifact(sseArtifacts);
+
+          const response: APIResponse = await main.getAllSSEMessages(chatId);
+
+          if (response.success && response.data.messages) {
+            const sortedLogs = response.data.messages.sort(
+              (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+            );
+
+            setSseLogs(sortedLogs);
+          }
+        }
+
         const screenArtifacts = res?.filter(
           (artifact) =>
             artifact &&
@@ -1024,19 +1050,6 @@ export const HiveChatView: React.FC = observer(() => {
           setTextArtifact(textArtifacts);
         }
 
-        const sseArtifacts = res?.filter(
-          (artifact) =>
-            artifact &&
-            artifact.type === 'text' &&
-            artifact.content &&
-            'text_type' in artifact.content &&
-            artifact.content.text_type === 'sse_logs'
-        );
-
-        if (sseArtifacts) {
-          setSseArtifact(sseArtifacts);
-        }
-
         const systemMessages = messages?.filter((msg) => msg.role !== 'user');
         const lastSystemMessageId =
           systemMessages?.length > 0 ? systemMessages[systemMessages.length - 1].id : null;
@@ -1052,7 +1065,7 @@ export const HiveChatView: React.FC = observer(() => {
       }
     };
     logArtifacts();
-  }, [chat, chatId, isArtifactLoggingEnabled, messages]);
+  }, [chat, chatId, isArtifactLoggingEnabled, main, messages]);
 
   useEffect(() => {
     const processArtifacts = () => {
@@ -1751,7 +1764,7 @@ export const HiveChatView: React.FC = observer(() => {
                   codeArtifact={codeArtifact ?? []}
                   textArtifact={textArtifact ?? []}
                   sseArtifact={sseArtifact ?? []}
-                  chatId={chatId}
+                  sseLogs={sseLogs}
                   activeTab={artifactTab}
                 />
               </ViewerSection>
