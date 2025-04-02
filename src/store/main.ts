@@ -5166,6 +5166,32 @@ export class MainStore {
       return null;
     }
   }
+
+  async refreshCodeSpace(workspaceId: string): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+
+      const response = await fetch(`${TribesURL}/workspaces/codegraph/refresh/${workspaceId}`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json',
+          'x-session-id': this.getSessionId()
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return response.json();
+    } catch (e) {
+      console.log('Error refreshCodeSpace', e);
+      return null;
+    }
+  }
 }
 
 export const mainStore = new MainStore();
