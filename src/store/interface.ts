@@ -626,13 +626,19 @@ export interface Chat {
   updatedAt: string;
 }
 
-export interface ChatStatuses {
+interface ChatStatusData {
   uuid?: string;
   chatId: string;
   status: string;
   message: string;
-  createdAt?: string;
-  updatedAt: string;
+  created_at?: string;
+  updated_at: string;
+}
+
+export interface ChatStatuses {
+  success: boolean;
+  message: string;
+  data: ChatStatusData;
 }
 
 export interface CodeGraph {

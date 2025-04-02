@@ -70,11 +70,15 @@ export class ChatHistoryStore implements ChatStore {
     }
 
     const updatedStatus: ChatStatuses = {
-      ...(existingStatus || {}),
-      chatId,
-      status,
-      message: statusMessage,
-      updatedAt: new Date().toISOString()
+      success: existingStatus?.success ?? true,
+      message: existingStatus?.message ?? 'Status updated',
+      data: {
+        ...(existingStatus?.data || {}),
+        chatId,
+        status,
+        message: statusMessage,
+        updated_at: new Date().toISOString()
+      }
     };
 
     this.chatStatuses.set(chatId, updatedStatus);
