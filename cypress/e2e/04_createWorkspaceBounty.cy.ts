@@ -37,7 +37,7 @@ describe('User creates a bounty attached to a workspace', () => {
 
     cy.contains(workspace.name).click();
     cy.wait(2000);
-    
+
     cy.logout(workspace.loggedInAs);
   });
 });

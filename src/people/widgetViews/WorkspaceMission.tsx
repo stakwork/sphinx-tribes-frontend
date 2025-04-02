@@ -183,6 +183,7 @@ const WorkspaceMission = () => {
   const [codeSpaceModal, setCodeSpaceModal] = useState(false);
   const [selectedChatWorkflow, setSelectedChatWorkflow] = useState<ChatWorkflow | null>(null);
   const [currentChatWorkflowUrl, setCurrentChatWorkflowUrl] = useState('');
+  const [featureFlags, setFeatureFlags] = useState<any>({});
 
   const openSnippetModal = () => {
     setSnippetModalVisible(true);
@@ -222,6 +223,24 @@ const WorkspaceMission = () => {
     }
   }, [main, uuid]);
 
+  const fetchFeatureFlags = useCallback(async () => {
+    try {
+      const response = await main.getFeatureFlags();
+
+      console.log(response);
+      if (response?.success) {
+        setFeatureFlags(
+          response.data.reduce((acc: any, flag: any) => {
+            acc[flag.name] = flag.enabled;
+            return acc;
+          }, {})
+        );
+      }
+    } catch (error) {
+      console.error('Error fetching feature flags:', error);
+    }
+  }, [main]);
+
   useBrowserTabTitle('Workspace');
 
   useEffect(() => {
@@ -235,6 +254,10 @@ const WorkspaceMission = () => {
   useEffect(() => {
     fetchChatWorkflow();
   }, [fetchChatWorkflow]);
+
+  useEffect(() => {
+    fetchFeatureFlags();
+  }, [fetchFeatureFlags]);
 
   const openCodeGraphModal = (type: 'add' | 'edit', graph?: CodeGraph) => {
     if (type === 'edit' && graph) {
@@ -511,6 +534,16 @@ const WorkspaceMission = () => {
           text: 'Failed to update mission'
         }
       ]);
+    }
+  };
+
+  const refreshCodeSpace = async () => {
+    try {
+      console.log('Refreshing Code Space', uuid);
+      const response = await main.refreshCodeSpace(uuid);
+      console.log('Refresh Code Space Response:', response);
+    } catch (error) {
+      console.error('Error refreshing code space:', error);
     }
   };
 
@@ -1109,6 +1142,24 @@ const WorkspaceMission = () => {
                   onClick={() => openCodeSpaceModal()}
                   text="Manage My Code Space"
                 />
+                {featureFlags && (
+                  <Button
+                    style={{
+                      borderRadius: '5px',
+                      margin: '20px 0 0 0',
+                      padding: '10px 20px',
+                      width: '100%',
+                      backgroundColor: '#4285f4',
+                      color: 'white',
+                      textAlign: 'center',
+                      border: 'none',
+                      fontSize: '16px',
+                      cursor: 'pointer'
+                    }}
+                    onClick={() => refreshCodeSpace()}
+                    text="Refresh Code Space"
+                  />
+                )}
               </WorkspaceFieldWrap>
             </RightSection>
           </DataWrapper>
