@@ -1,11 +1,20 @@
+import { waitFor } from '@testing-library/react';
 import { ChatHistoryStore } from '../chat';
 import { Chat } from '../interface';
 import { chatService } from '../../services/index';
+
+jest.mock('../../services/index', () => ({
+  chatService: {
+    sendMessage: jest.fn(),
+    getWorkspaceChatsWithPagination: jest.fn()
+  }
+}));
 
 describe('ChatHistoryStore', () => {
   let store: ChatHistoryStore;
   beforeEach(() => {
     store = new ChatHistoryStore();
+    jest.clearAllMocks();
   });
   describe('getChat', () => {
     const mockChat: Chat = {
@@ -178,6 +187,121 @@ describe('ChatHistoryStore', () => {
         undefined,
         'o3-mini',
         undefined
+      );
+    });
+  });
+
+  describe('getWorkspaceChatsWithPagination', () => {
+    const mockChats: Chat[] = [
+      {
+        id: 'chat1',
+        workspaceId: 'workspace123',
+        title: 'Chat 1',
+        createdAt: '2024-03-20T10:00:00Z',
+        updatedAt: '2024-03-20T10:00:00Z'
+      },
+      {
+        id: 'chat2',
+        workspaceId: 'workspace123',
+        title: 'Chat 2',
+        createdAt: '2024-03-20T10:00:00Z',
+        updatedAt: '2024-03-20T10:00:00Z'
+      }
+    ];
+
+    it('should return paginated chats and total count', async () => {
+      const mockResponse = { chats: mockChats, total: 10 };
+      (chatService.getWorkspaceChatsWithPagination as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await store.getWorkspaceChatsWithPagination('workspace123', 5, 0);
+
+      expect(chatService.getWorkspaceChatsWithPagination).toHaveBeenCalledWith(
+        'workspace123',
+        5,
+        0
+      );
+      expect(result).toEqual(mockResponse);
+
+      expect(store.getChat('chat1')).toEqual(mockChats[0]);
+      expect(store.getChat('chat2')).toEqual(mockChats[1]);
+    });
+
+    it('should handle custom limit and offset values', async () => {
+      const mockResponse = { chats: mockChats, total: 10 };
+      (chatService.getWorkspaceChatsWithPagination as jest.Mock).mockResolvedValue(mockResponse);
+
+      await store.getWorkspaceChatsWithPagination('workspace123', 10, 5);
+
+      expect(chatService.getWorkspaceChatsWithPagination).toHaveBeenCalledWith(
+        'workspace123',
+        10,
+        5
+      );
+    });
+
+    it('should return empty array and zero total when service returns undefined', async () => {
+      (chatService.getWorkspaceChatsWithPagination as jest.Mock).mockResolvedValue(undefined);
+
+      const result = await store.getWorkspaceChatsWithPagination('workspace123');
+
+      expect(result).toEqual({ chats: [], total: 0 });
+    });
+
+    it('should return empty array and zero total when service returns non-array chats', async () => {
+      (chatService.getWorkspaceChatsWithPagination as jest.Mock).mockResolvedValue({
+        chats: 'not an array',
+        total: 5
+      });
+
+      const result = await store.getWorkspaceChatsWithPagination('workspace123');
+
+      expect(result).toEqual({ chats: [], total: 0 });
+    });
+
+    it('should handle service errors gracefully', async () => {
+      (chatService.getWorkspaceChatsWithPagination as jest.Mock).mockRejectedValue(
+        new Error('Service error')
+      );
+
+      const result = await store.getWorkspaceChatsWithPagination('workspace123');
+
+      expect(result).toEqual({ chats: [], total: 0 });
+    });
+
+    it('should skip adding invalid chats to the store', async () => {
+      const invalidChats = [
+        { id: 'valid', workspaceId: 'workspace123', title: 'Valid' },
+        { workspaceId: 'workspace123', title: 'No ID' },
+        { id: '', workspaceId: 'workspace123', title: 'Empty ID' },
+        null,
+        undefined
+      ];
+
+      (chatService.getWorkspaceChatsWithPagination as jest.Mock).mockResolvedValue({
+        chats: invalidChats,
+        total: 5
+      });
+
+      await store.getWorkspaceChatsWithPagination('workspace123');
+
+      waitFor(() => {
+        expect(store.getChat('valid')).toBeDefined();
+        expect(Object.keys(store.chats).length).toBe(1);
+      });
+    });
+
+    it('should use default values for limit and offset when not provided', async () => {
+      (chatService.getWorkspaceChatsWithPagination as jest.Mock).mockResolvedValue({
+        chats: [],
+        total: 0
+      });
+
+      await store.getWorkspaceChatsWithPagination('workspace123');
+
+      expect(chatService.getWorkspaceChatsWithPagination).toHaveBeenCalledWith(
+        'workspace123',
+        5,
+        0
       );
     });
   });
