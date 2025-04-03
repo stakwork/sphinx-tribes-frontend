@@ -281,9 +281,9 @@ export const ChatHistoryView: React.FC = observer(() => {
     const loadChats = async () => {
       setLoading(true);
       try {
-        const workspaceChats = await chat.getWorkspaceChats(workspaceId);
-        if (workspaceChats) {
-          const sortedChats = workspaceChats
+        const workspaceChats = await chat.getWorkspaceChatsWithPagination(workspaceId, -1, 0);
+        if (workspaceChats && workspaceChats.chats) {
+          const sortedChats = workspaceChats.chats
             .filter((chat: Chat) => chat && chat.id)
             .sort((a: Chat, b: Chat) => {
               const dateA = new Date(a.updatedAt || a.createdAt || 0).getTime();

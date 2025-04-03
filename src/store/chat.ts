@@ -602,6 +602,33 @@ export class ChatHistoryStore implements ChatStore {
   isActionContent(content: Artifact['content']): content is ActionContent {
     return !!content && (content as ActionContent).actionText !== undefined;
   }
+
+  async getWorkspaceChatsWithPagination(
+    workspace_uuid: string,
+    limit = 5,
+    offset = 0
+  ): Promise<{ chats: Chat[]; total: number }> {
+    try {
+      const result = await chatService.getWorkspaceChatsWithPagination(
+        workspace_uuid,
+        limit,
+        offset
+      );
+
+      if (result && Array.isArray(result.chats)) {
+        result.chats.forEach((chat: Chat) => {
+          if (chat && chat.id) {
+            this.addChat(chat);
+          }
+        });
+        return result;
+      }
+      return { chats: [], total: 0 };
+    } catch (error) {
+      console.error('Error getting paginated workspace chats:', error);
+      return { chats: [], total: 0 };
+    }
+  }
 }
 
 export const chatHistoryStore = new ChatHistoryStore();

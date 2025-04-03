@@ -344,6 +344,9 @@ export default function SidebarComponent({
   const [isLoadingChats, setIsLoadingChats] = useState(true);
   const [isChatsExpanded, setIsChatsExpanded] = useState(false);
   const [chatOffset, setChatOffset] = useState(0);
+  const [chatPage, setChatPage] = useState(1);
+  const [totalChats, setTotalChats] = useState(0);
+  const [paginatedChats, setPaginatedChats] = useState<Chat[]>([]);
   const CHATS_PER_PAGE = 5;
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [tooltipTop, setTooltipTop] = useState(0);
@@ -486,22 +489,23 @@ export default function SidebarComponent({
   }, [showDropdown]);
 
   useEffect(() => {
-    const loadChats = async () => {
+    const loadPaginatedChats = async () => {
+      if (!uuid) return;
+
       setIsLoadingChats(true);
       try {
-        const workspaceChats = await chat.getWorkspaceChats(uuid as string);
-        if (workspaceChats && workspaceChats.length > 0) {
-          const sortedChats = workspaceChats
-            .filter((chat: Chat) => chat && chat.id)
-            .sort((a: Chat, b: Chat) => {
-              const dateA = new Date(a.updatedAt || a.createdAt || 0).getTime();
-              const dateB = new Date(b.updatedAt || b.createdAt || 0).getTime();
-              return dateB - dateA;
-            });
-          setChats(sortedChats);
+        const result = await chat.getWorkspaceChatsWithPagination(
+          uuid as string,
+          CHATS_PER_PAGE,
+          chatOffset
+        );
+
+        if (result) {
+          setPaginatedChats(result.chats);
+          setTotalChats(result.total);
         }
       } catch (error) {
-        console.error('Error loading chats:', error);
+        console.error('Error loading paginated chats:', error);
         ui.setToasts([
           {
             title: 'Error',
@@ -513,49 +517,11 @@ export default function SidebarComponent({
         setIsLoadingChats(false);
       }
     };
-    loadChats();
-  }, [uuid, chat, ui]);
 
-  useEffect(() => {
-    if (!uuid) return;
-
-    const refreshChats = async () => {
-      try {
-        const workspaceChats = await chat.getWorkspaceChats(uuid as string);
-        if (workspaceChats && workspaceChats.length > 0) {
-          const sortedChats = workspaceChats
-            .filter((chat: Chat) => chat && chat.id)
-            .sort((a: Chat, b: Chat) => {
-              const dateA = new Date(a.updatedAt || a.createdAt || 0).getTime();
-              const dateB = new Date(b.updatedAt || b.createdAt || 0).getTime();
-              return dateB - dateA;
-            });
-          setChats(sortedChats);
-        }
-      } catch (error) {
-        console.error('Error refreshing chats:', error);
-      }
-    };
-
-    const intervalId = setInterval(() => {
-      if (document.visibilityState === 'visible') {
-        refreshChats();
-      }
-    }, 10000);
-
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        refreshChats();
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    return () => {
-      clearInterval(intervalId);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [uuid, chat]);
+    if (isChatsExpanded) {
+      loadPaginatedChats();
+    }
+  }, [uuid, chatOffset, isChatsExpanded, chat, ui]);
 
   const handleArchiveChat = async (chatId: string) => {
     try {
@@ -655,21 +621,22 @@ export default function SidebarComponent({
     history.push(`/workspace/${uuid}/planner`);
   };
 
-  const visibleChats = chats.slice(chatOffset, chatOffset + CHATS_PER_PAGE);
-  const hasNextPage = chatOffset + CHATS_PER_PAGE < chats.length;
+  const hasNextPage = chatOffset + CHATS_PER_PAGE < totalChats;
   const hasPreviousPage = chatOffset > 0;
 
   const handleNextPage = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (hasNextPage) {
+    if (chatOffset + CHATS_PER_PAGE < totalChats) {
       setChatOffset(chatOffset + CHATS_PER_PAGE);
+      setChatPage(chatPage + 1);
     }
   };
 
   const handlePreviousPage = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (hasPreviousPage) {
-      setChatOffset(chatOffset - CHATS_PER_PAGE);
+    if (chatOffset > 0) {
+      setChatOffset(Math.max(0, chatOffset - CHATS_PER_PAGE));
+      setChatPage(chatPage - 1);
     }
   };
 
@@ -910,7 +877,7 @@ export default function SidebarComponent({
                 </LoadingContainer>
               ) : (
                 <>
-                  {visibleChats.map((chat) => (
+                  {paginatedChats.map((chat) => (
                     <NavItem
                       data-testid={`chat-item-${chat.id}`}
                       key={chat.id}
@@ -950,7 +917,7 @@ export default function SidebarComponent({
                       </MissionRowFlex>
                     </NavItem>
                   ))}
-                  {!collapsed && chats.length > 0 && (
+                  {!collapsed && paginatedChats.length > 0 && (
                     <PaginationContainer>
                       <div
                         style={{
