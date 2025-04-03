@@ -114,6 +114,42 @@ const TextArea = styled.textarea`
   }
 `;
 
+const MessageBubble = styled.div<{ isUser: boolean }>`
+  max-width: 70%;
+  padding: 12px 16px;
+  border-radius: 18px;
+  margin-bottom: 16px;
+  align-self: ${props => (props.isUser ? 'flex-end' : 'flex-start')};
+  background-color: ${props => (props.isUser ? '#4285f4' : '#f1f3f4')};
+  color: ${props => (props.isUser ? 'white' : '#202124')};
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+`;
+
+const SendButton = styled.button`
+  background-color: #4285f4;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #3b78e7;
+  }
+
+  &:disabled {
+    background-color: #dadce0;
+    cursor: not-allowed;
+    color: #5f6368;
+  }
+`;
+
 const SendButton = styled.button<{ disabled: boolean }>`
   padding: 8px 24px;
   background-color: ${(props: SendButtonProps) => (props.disabled ? '#e4e7eb' : '#4285f4')};
