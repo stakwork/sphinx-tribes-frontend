@@ -4,17 +4,16 @@ import styled from 'styled-components';
 import { formatDistanceToNow } from 'date-fns';
 
 const StatusContainer = styled.div<{ isError: boolean }>`
-  position: sticky;
-  bottom: 0;
-  left: 0;
   width: 100%;
   padding: 12px 16px;
   background-color: #f2f3f5;
   border: 1px solid ${(props) => (props.isError ? '#e53935' : '#2196f3')};
   display: flex;
   align-items: center;
-  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
+  margin-top: auto;
+  margin-bottom: 10px;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
 `;
 
 const StatusText = styled.div`
