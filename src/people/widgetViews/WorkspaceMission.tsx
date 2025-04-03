@@ -539,11 +539,11 @@ const WorkspaceMission = () => {
 
   const refreshCodeSpace = async () => {
     try {
-      console.log('Refreshing Code Space', uuid);
+      console.log('Refreshing Code Graph', uuid);
       const response = await main.refreshCodeSpace(uuid);
-      console.log('Refresh Code Space Response:', response);
+      console.log('Refresh Code Graph Response:', response);
     } catch (error) {
-      console.error('Error refreshing code space:', error);
+      console.error('Error refreshing code graph:', error);
     }
   };
 
@@ -1157,7 +1157,7 @@ const WorkspaceMission = () => {
                       cursor: 'pointer'
                     }}
                     onClick={() => refreshCodeSpace()}
-                    text="Refresh Code Space"
+                    text="Refresh Code Graph"
                   />
                 )}
               </WorkspaceFieldWrap>
