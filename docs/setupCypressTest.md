@@ -61,7 +61,7 @@ docker pull --platform linux/x86_64 sphinxlightning/sphinx-tribes:latest
 1. Go to the sphinx-stack folder, locate the `NODES.json` file located in `sphinx-stack/relay/NODES.json` and copy the content of the file.
 PS: the content should be an array of objects
 
-2. In your frontend folder locate the `cypres/fixtures` folder, create a new file called `nodes.json` and paste the content you copied from the above step.
+2. In your frontend folder locate the `cypres/fixtures` folder, create a new file called `v2nodes.json` and paste the content you copied from the above step.
 
 ## Cypress Test
 
