@@ -61,7 +61,7 @@ docker pull --platform linux/x86_64 sphinxlightning/sphinx-tribes:latest
 1. Go to the sphinx-stack folder, locate the `NODES.json` file located in `sphinx-stack/relay/NODES.json` and copy the content of the file.
 PS: the content should be an array of objects
 
-2. In your frontend folder locate the `cypres/fixtures` folder, create a new file called `nodes.json` and paste the content you copied from the above step.
+2. In your frontend folder locate the `cypres/fixtures` folder, create a new file called `nodes.json` and `v2nodes.json` and paste the content you copied from the above step.
 
 ## Cypress Test
 
@@ -153,3 +153,7 @@ docker-compose down
 Running `docker-compose down` instead of sending a SIGINT or SIGTERM is very important! Otherwise `bitcoind` will not finish writing to its database, and on the next run `LND` will crash with a block index mismatch.
 
 You can also run with Docker Desktop and just use the "play" and "stop" buttons (and view the logs from each container).
+
+## if you like video Please review here: 
+
+https://drive.google.com/file/d/1vIKbQEZjYfpc3Y-QwNFpmFzvystIIBus/view?usp=sharing
