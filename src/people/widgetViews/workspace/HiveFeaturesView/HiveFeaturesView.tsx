@@ -1108,6 +1108,7 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
                             type="text"
                             placeholder="Quick draft a new ticket..."
                             value={draftText}
+                            data-testid="ticket-draft-input"
                             onChange={(e) => handleDraftChange(phaseID, e.target.value)}
                             onKeyDown={(e) => {
                               if (e.key === 'Enter' && draftText) {
@@ -1119,6 +1120,7 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
                             <DraftButton
                               onClick={() => handleCreateTicket(phaseID)}
                               disabled={!draftText}
+                              data-testid="create-ticket-btn"
                             >
                               Draft
                             </DraftButton>
@@ -1140,7 +1142,9 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
                 Feature Backlog
               </FeatureBacklogButton>
               <FeatureButton onClick={handleFeatureDetailsClick}>Feature Details</FeatureButton>
-              <NewPhaseButton onClick={handleAddPhaseClick}>+ New Phase</NewPhaseButton>
+              <NewPhaseButton data-testid="new-phase-btn" onClick={handleAddPhaseClick}>
+                + New Phase
+              </NewPhaseButton>
             </BottomButtonContainer>
           </TableContainer>
         </ActivitiesContainer>
