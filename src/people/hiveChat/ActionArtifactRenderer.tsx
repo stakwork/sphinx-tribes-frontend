@@ -16,6 +16,7 @@ interface ActionArtifactRendererProps {
 
 const ActionContainer = styled.div`
   margin: 8px 0;
+  margin-bottom: 20px !important;
   max-width: 70%;
   align-self: flex-start;
   width: 70%;

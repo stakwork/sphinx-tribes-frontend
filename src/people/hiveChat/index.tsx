@@ -648,7 +648,7 @@ export const HiveChatView: React.FC = observer(() => {
         if (status) {
           setChatStatus({
             status: status.data.status,
-            message: status.message,
+            message: status.data.message,
             updatedAt: status.data.updated_at
           });
         } else {
