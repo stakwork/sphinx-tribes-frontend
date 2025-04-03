@@ -317,7 +317,11 @@ export const WorkspacePlannerHeader = observer(
               <NewStatusContainer>
                 <EuiPopover
                   button={
-                    <StatusContainer onClick={onFeatureButtonClick} color={color}>
+                    <StatusContainer
+                      onClick={onFeatureButtonClick}
+                      color={color}
+                      data-testid="feature-filter-btn"
+                    >
                       <InnerContainer>
                         <EuiText
                           className="statusText"
@@ -366,7 +370,10 @@ export const WorkspacePlannerHeader = observer(
                   anchorPosition="downLeft"
                 >
                   <ScrollablePopoverContent>
-                    <div style={{ display: 'flex', flex: 'row' }}>
+                    <div
+                      style={{ display: 'flex', flex: 'row' }}
+                      data-testid="feature-filter-dropdown"
+                    >
                       <CustomEuiPopOverCheckbox className="CheckboxOuter" color={color}>
                         <EuiCheckboxGroup
                           options={getFeatureOptions()}
@@ -390,6 +397,7 @@ export const WorkspacePlannerHeader = observer(
                             }}
                           >
                             <ClearButton
+                              data-testid="clear-feature-filters-btn"
                               onClick={(e: React.MouseEvent): void => {
                                 e.stopPropagation();
                                 bountyCardStore.clearAllFilters();
@@ -411,6 +419,7 @@ export const WorkspacePlannerHeader = observer(
                   button={
                     <StatusContainer
                       onClick={isPhaseFilterDisabled ? undefined : onPhaseButtonClick}
+                      data-testid="phase-filter-btn"
                       color={color}
                       style={{
                         opacity: isPhaseFilterDisabled ? 0.5 : 1,
@@ -450,7 +459,10 @@ export const WorkspacePlannerHeader = observer(
                   anchorPosition="downLeft"
                 >
                   <ScrollablePopoverContent>
-                    <div style={{ display: 'flex', flex: 'row' }}>
+                    <div
+                      style={{ display: 'flex', flex: 'row' }}
+                      data-testid="phase-filter-dropdown"
+                    >
                       <CustomEuiPopOverCheckbox className="CheckboxOuter" color={color}>
                         <EuiCheckboxGroup
                           options={bountyCardStore.availablePhases.map((phase: any) => ({
@@ -477,6 +489,7 @@ export const WorkspacePlannerHeader = observer(
                             }}
                           >
                             <ClearButton
+                              data-testid="clear-phase-filters-btn"
                               onClick={(e: React.MouseEvent): void => {
                                 e.stopPropagation();
                                 bountyCardStore.clearPhaseFilters();
@@ -509,6 +522,7 @@ export const WorkspacePlannerHeader = observer(
                           )}
                         </Formatter>
                         <MaterialIcon
+                          data-testid="status-filter-btn"
                           icon={isStatusPopoverOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}
                         />
                       </InnerContainer>
@@ -531,7 +545,11 @@ export const WorkspacePlannerHeader = observer(
                   anchorPosition="downLeft"
                 >
                   <div style={{ display: 'flex', flex: 'row' }}>
-                    <EuiPopOverCheckbox className="CheckboxOuter" color={color}>
+                    <EuiPopOverCheckbox
+                      className="CheckboxOuter"
+                      color={color}
+                      data-testid="status-filter-dropdown"
+                    >
                       <EuiCheckboxGroup
                         options={[
                           { label: 'DRAFT', id: 'DRAFT' },
@@ -558,6 +576,7 @@ export const WorkspacePlannerHeader = observer(
                           }}
                         >
                           <ClearButton
+                            data-testid="clear-status-filters-btn"
                             onClick={(e: React.MouseEvent): void => {
                               e.stopPropagation();
                               bountyCardStore.clearStatusFilters();
@@ -576,7 +595,11 @@ export const WorkspacePlannerHeader = observer(
               <NewStatusContainer>
                 <EuiPopover
                   button={
-                    <StatusContainer onClick={onAssigneeButtonClick} color={color}>
+                    <StatusContainer
+                      onClick={onAssigneeButtonClick}
+                      color={color}
+                      data-testid="assignee-filter-btn"
+                    >
                       <InnerContainer>
                         <EuiText className="statusText">Assignee</EuiText>
                         <Formatter>
@@ -610,7 +633,10 @@ export const WorkspacePlannerHeader = observer(
                   panelPaddingSize="none"
                   anchorPosition="downLeft"
                 >
-                  <div style={{ display: 'flex', flex: 'row' }}>
+                  <div
+                    style={{ display: 'flex', flex: 'row' }}
+                    data-testid="assignee-filter-dropdown"
+                  >
                     <EuiPopOverCheckbox className="CheckboxOuter" color={color}>
                       <EuiCheckboxGroup
                         options={bountyCardStore.availableAssignees.map((assignee: any) => ({
@@ -639,6 +665,7 @@ export const WorkspacePlannerHeader = observer(
                           }}
                         >
                           <ClearButton
+                            data-testid="clear-assignee-filters-btn"
                             onClick={(e: React.MouseEvent): void => {
                               e.stopPropagation();
                               bountyCardStore.clearAssigneeFilters();
