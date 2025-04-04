@@ -59,6 +59,10 @@ export const Pages = observer(({ mode }: { mode: AppMode }) => {
           <BountiesLandingPage />
         </Route>
 
+        <Route exact path="/workspace/:workspaceId/hivechat/history">
+          <ChatHistoryView />
+        </Route>
+
         <Route exact path="/workspace/:uuid/hivechat/:chatId">
           <HiveChatView />
         </Route>
@@ -110,9 +114,6 @@ export const Pages = observer(({ mode }: { mode: AppMode }) => {
               </Route>
               <Route path="/workspace/:workspace_uuid/feature/:feature_uuid">
                 <HiveFeaturesView />
-              </Route>
-              <Route path="/workspace/:workspaceId/hivechat/history">
-                <ChatHistoryView />
               </Route>
               <Route path="/hivechat/:uuid/build">
                 <HiveBuildView />

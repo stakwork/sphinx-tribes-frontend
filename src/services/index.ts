@@ -438,6 +438,50 @@ export class ChatService {
     });
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
   }
+
+  async getWorkspaceChatsWithPagination(
+    workspace_uuid: string,
+    limit = 5,
+    offset = 0
+  ): Promise<{ chats: Chat[]; total: number } | undefined> {
+    try {
+      if (!uiStore.meInfo) return undefined;
+      const info = uiStore.meInfo;
+
+      const limitParam = limit > 0 ? `&limit=${limit}` : '';
+      const offsetParam = offset > 0 ? `&offset=${offset}` : '';
+
+      const response = await fetch(
+        `${TribesURL}/hivechat?workspace_id=${workspace_uuid}${limitParam}${offsetParam}`,
+        {
+          method: 'GET',
+          mode: 'cors',
+          headers: {
+            'x-jwt': info.tribe_jwt,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (!result.success || !result.data) {
+        throw new Error('Invalid workspace chats response');
+      }
+
+      return {
+        chats: result.data.chats || [],
+        total: result.data.total || 0
+      };
+    } catch (e) {
+      console.error('Error loading paginated workspace chats:', e);
+      return undefined;
+    }
+  }
 }
 
 export const chatService = new ChatService();
