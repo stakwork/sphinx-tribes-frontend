@@ -12,7 +12,6 @@ const StatusContainer = styled.div<{ isError: boolean }>`
   align-items: center;
   border-radius: 8px;
   margin-top: auto;
-  margin-bottom: 10px;
   box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
 `;
 
