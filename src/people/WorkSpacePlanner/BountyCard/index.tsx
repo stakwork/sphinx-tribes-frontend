@@ -310,7 +310,11 @@ const BountyCardComponent: React.FC<BountyCardProps> = ({
 
   return (
     <>
-      <CardContainer isDraft={status === 'DRAFT'} onClick={() => onclick(id, status, ticket_group)}>
+      <CardContainer
+        data-testid="bounty-card"
+        isDraft={status === 'DRAFT'}
+        onClick={() => onclick(id, status, ticket_group)}
+      >
         <CardHeader>
           <CardTitle
             role="button"
@@ -320,8 +324,13 @@ const BountyCardComponent: React.FC<BountyCardProps> = ({
               onclick(id, status, ticket_group);
             }}
           >
-            {title}
-            <span style={{ fontSize: '16px', marginTop: '10px' }}>{assignee_name}</span>
+            <span data-testid="bounty-card-title">{title}</span>
+            <span
+              style={{ fontSize: '16px', marginTop: '10px' }}
+              data-testid="bounty-card-assignee"
+            >
+              {assignee_name}
+            </span>
           </CardTitle>
           <div
             style={{ display: 'flex', alignItems: 'center', gap: '8px', alignSelf: 'flex-start' }}
@@ -341,7 +350,7 @@ const BountyCardComponent: React.FC<BountyCardProps> = ({
           <span title={workspace?.name ?? 'No Workspace'}>
             {truncate(workspace?.name ?? 'No Workspace', 20)}
           </span>
-          <StatusText className="last-span" status={status}>
+          <StatusText className="last-span" data-testid="bounty-card-status" status={status}>
             {status}
           </StatusText>
         </RowB>

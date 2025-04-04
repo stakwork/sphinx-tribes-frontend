@@ -61,4 +61,16 @@ declare namespace Cypress {
   type AddInvoice = {
     amount: number;
   };
+
+  type User = {
+    alias: string;
+    pubkey: string;
+    ip: string;
+    external_ip: string;
+    authToken: string;
+    transportToken: string;
+    privkey: string;
+    exported_keys: string;
+    pin: string;
+  };
 }
