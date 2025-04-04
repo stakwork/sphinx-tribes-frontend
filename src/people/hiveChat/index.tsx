@@ -182,6 +182,10 @@ const ChatHistory = styled.div`
   position: relative;
 `;
 
+const StatusWrapper = styled.div`
+  margin-top: 20px;
+`;
+
 const SplashContainer = styled.div`
   position: absolute;
   top: 50%;
@@ -1633,9 +1637,14 @@ export const HiveChatView: React.FC = observer(() => {
                     </p>
                   </MessageBubble>
                 )}
-
-                {chatStatus && <ChatStatusDisplay chatStatus={chatStatus} />}
               </ChatHistory>
+
+              {chatStatus && (
+                <StatusWrapper>
+                  <ChatStatusDisplay chatStatus={chatStatus} />
+                </StatusWrapper>
+              )}
+
               <InputContainer>
                 <TextArea
                   value={message}
