@@ -195,7 +195,9 @@ export const AddPhaseModal = (props: EditOrAddPhaseModalProps) => {
 
       <ModalContainer>
         <CancelButton onClick={onClose}>Cancel</CancelButton>
-        <SaveButton onClick={onSave}>Save</SaveButton>
+        <SaveButton data-testid="add-phase-btn" onClick={onSave}>
+          Save
+        </SaveButton>
       </ModalContainer>
     </ModalWrapper>
   );

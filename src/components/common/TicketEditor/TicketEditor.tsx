@@ -816,6 +816,7 @@ const TicketEditor = observer(
                 onChange={handleAmountChange}
                 placeholder="Enter amount..."
                 min="0"
+                data-testid="ticket-price-input"
               />
               <VersionSelect
                 value={versionTicketData.category || ''}
