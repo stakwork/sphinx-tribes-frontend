@@ -265,6 +265,7 @@ export interface WantedSummaryProps {
   owner_id?: string;
   markPaidOrUnpaid?: ReactNode;
   isEditButtonDisable?: boolean;
+  stakeMin?: number;
 }
 
 export type LocalPaymeentState = 'UNKNOWN' | 'PAID' | 'UNPAID';
@@ -342,6 +343,8 @@ export interface CodingBountiesProps extends WantedSummaryProps {
   assigneeLabel?: { [key: string]: any };
   actionButtons?: boolean | JSX.Element;
   unlock_code?: string;
+  stakeMin?: number;
+  isStakable?: boolean;
 }
 
 export interface CodingViewProps extends WantedSummaryProps {

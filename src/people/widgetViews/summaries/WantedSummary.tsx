@@ -60,7 +60,8 @@ function WantedSummary(props: WantedSummaryProps) {
     feature_uuid,
     phase_uuid,
     id,
-    isEditButtonDisable
+    isEditButtonDisable,
+    stakeMin
   } = props;
   const titleString = one_sentence_summary || title || '';
   const bountyPath = `/bounty/${id}`;
@@ -621,6 +622,7 @@ function WantedSummary(props: WantedSummaryProps) {
           isEditButtonDisable={isEditButtonDisable}
           phase_uuid={phase_uuid}
           feature_uuid={feature_uuid}
+          stakeMin={stakeMin}
         />
       );
     }
