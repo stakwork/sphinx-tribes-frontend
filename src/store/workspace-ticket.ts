@@ -54,10 +54,10 @@ export class WorkspaceTicketStore {
 
   getLatestVersionFromGroup(groupId: string): Ticket | undefined {
     const ticketsInGroup = this.getTicketsByGroup(groupId);
-    if (!ticketsInGroup.length) return undefined;
+    if (ticketsInGroup.length === 0) return undefined;
 
     return ticketsInGroup.reduce((latest: Ticket, current: Ticket) =>
-      (current.version || 0) > (latest.version || 0) ? current : latest
+      current.version > latest.version ? current : latest
     );
   }
 
