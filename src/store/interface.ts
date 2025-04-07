@@ -123,6 +123,10 @@ export interface PersonBounty {
   text_snippet_id?: string;
   access_restriction?: string;
   unlock_code?: string;
+  is_stakable?: boolean;
+  stake_min?: number;
+  max_stakers?: number;
+  current_stakers?: number;
 }
 
 export type WorkspaceTransactionType = 'deposit' | 'payment' | 'withdraw' | 'failed' | 'pending';
