@@ -355,7 +355,7 @@ function FocusedView(props: FocusViewProps) {
       if (wanted.is_stakable !== undefined) {
         initialValues.isStakable = wanted.is_stakable;
       }
-      
+
       if (wanted.stake_min !== undefined) {
         initialValues.stakeMin = wanted.stake_min.toString();
       }
