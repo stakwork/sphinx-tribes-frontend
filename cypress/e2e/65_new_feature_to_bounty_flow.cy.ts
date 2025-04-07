@@ -48,9 +48,20 @@ describe('New Feature to Bounty Flow', () => {
     // Create three new tickets under the phase
     tickets.forEach((ticket) => {
       cy.get('[data-testid="ticket-draft-input"]').type(ticket);
+      cy.intercept('POST', '/bounties/ticket/*', (req) => {
+        const ticketUuid = req.url.split('/')[5];
+        req.continue((res) => {
+          res.send({
+            statusCode: 200,
+            body: {
+              UUID: ticketUuid
+            }
+          });
+        });
+      }).as('createTicket');
       cy.get('[data-testid="create-ticket-btn"]').click();
-      cy.wait(100);
-      cy.contains(ticket).should('exist');
+      cy.wait('@createTicket');
+      cy.contains(ticket, { timeout: 5000 }).should('exist');
     });
 
     // Navigate to the last ticket created
