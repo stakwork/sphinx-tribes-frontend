@@ -63,6 +63,7 @@ import { getTwitterLink } from './lib';
 import CodingMobile from './CodingMobile';
 import { BountyEstimates, SelfAssignButton } from './Components';
 import CodingBountyProofModal from './CodingBountyProofModal';
+import ProcessStakeModal from './ProcessStakeModal';
 let interval;
 
 function MobileView(props: CodingBountiesProps) {
@@ -875,6 +876,8 @@ function MobileView(props: CodingBountiesProps) {
                   onClick={() => setShowComingSoonModal(true)}
                   stakeMin={stake_min || 0}
                   EstimatedSessionLength={props.estimated_session_length || ''}
+                  workspaceUuid={props.org_uuid}
+                  bountyId={props.created}
                 />
               )}
 
@@ -1327,6 +1330,8 @@ function MobileView(props: CodingBountiesProps) {
                       onClick={() => setShowComingSoonModal(true)}
                       stakeMin={stake_min || 0}
                       EstimatedSessionLength={props.estimated_session_length || ''}
+                      workspaceUuid={props.org_uuid}
+                      bountyId={props.created}
                     />
                   )}
                   <div className="buttonSet">
@@ -1932,6 +1937,8 @@ function MobileView(props: CodingBountiesProps) {
                     onClick={() => setShowComingSoonModal(true)}
                     stakeMin={stake_min || 0}
                     EstimatedSessionLength={props.estimated_session_length || ''}
+                    workspaceUuid={props.org_uuid}
+                    bountyId={props.created}
                   />
                 )}
                 <ButtonSet
@@ -2029,6 +2036,8 @@ function MobileView(props: CodingBountiesProps) {
                     onClick={() => setShowComingSoonModal(true)}
                     stakeMin={stake_min || 0}
                     EstimatedSessionLength={props.estimated_session_length || ''}
+                    workspaceUuid={props.org_uuid}
+                    bountyId={props.created}
                   />
                 )}
                 <ButtonSet
@@ -2055,59 +2064,13 @@ function MobileView(props: CodingBountiesProps) {
         </NormalUser>
       )}
       {showComingSoonModal && (
-        <Modal
-          visible={true}
-          envStyle={{
-            borderRadius: '12px',
-            background: color.pureWhite,
-            padding: '32px 24px',
-            width: '400px',
-            maxWidth: '90vw',
-            boxShadow: '0px 8px 24px rgba(0, 0, 0, 0.1)'
-          }}
-          bigCloseImage={() => setShowComingSoonModal(false)}
-          bigCloseImageStyle={{
-            top: '-12px',
-            right: '-12px',
-            background: color.pureWhite,
-            borderRadius: '50%',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-            padding: '4px'
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              textAlign: 'center',
-              gap: '16px'
-            }}
-          >
-            <EuiText
-              style={{
-                fontSize: '24px',
-                fontWeight: 600,
-                color: color.grayish.G100,
-                marginBottom: '8px'
-              }}
-            >
-              Staking Coming Soon!
-            </EuiText>
-            <Button
-              color="primary"
-              onClick={() => setShowComingSoonModal(false)}
-              text="Got It!"
-              style={{
-                width: '120px',
-                height: '40px',
-                fontSize: '16px',
-                fontWeight: 600,
-                borderRadius: '8px'
-              }}
-            />
-          </div>
-        </Modal>
+        <ProcessStakeModal
+          isOpen={showComingSoonModal}
+          onClose={() => setShowComingSoonModal(false)}
+          bountyId={props.created || 0}
+          stakeMin={stake_min || 0}
+          workspaceUuid={props.org_uuid || ''}
+        />
       )}
       <EuiGlobalToastList toasts={toasts} dismissToast={removeToast} toastLifeTimeMs={6000} />
     </div>

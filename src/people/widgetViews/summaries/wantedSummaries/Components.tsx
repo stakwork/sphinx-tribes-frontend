@@ -1,5 +1,5 @@
 /* eslint-disable func-style */
-import React from 'react';
+import React, { useState } from 'react';
 import { CodingLanguageLabel } from 'people/interfaces';
 import { EuiText } from '@elastic/eui';
 import moment from 'moment';
@@ -11,6 +11,7 @@ import { getSessionValue, sendToRedirect } from '../../../../helpers';
 import IconButton from '../../../../components/common/IconButton2';
 import { getTwitterLink } from './lib';
 import { DividerContainer } from './style';
+import ProcessStakeModal from './ProcessStakeModal';
 
 export const Heart = () => <FavoriteButton />;
 
@@ -277,59 +278,84 @@ type SelfAssignButtonProps = {
   onClick: () => void;
   stakeMin: number;
   EstimatedSessionLength: string;
+  workspaceUuid?: string;
+  bountyId?: number;
 };
 
 export const SelfAssignButton = ({
   onClick,
   stakeMin,
-  EstimatedSessionLength
+  EstimatedSessionLength,
+  workspaceUuid,
+  bountyId
 }: SelfAssignButtonProps) => {
   const color = colors['light'];
+  const [showStakeModal, setShowStakeModal] = useState(false);
+
+  const handleClick = () => {
+    if (bountyId && workspaceUuid) {
+      setShowStakeModal(true);
+    } else {
+      onClick();
+    }
+  };
 
   return (
-    <div style={{ width: '100%', marginTop: '16px' }}>
-      <IconButton
-        text={'Self Assign'}
-        endingIcon={'arrow_forward'}
-        width={'100%'}
-        height={48}
-        onClick={onClick}
-        color="primary"
-        hovercolor={color.button_secondary.hover}
-        activecolor={color.button_secondary.active}
-        shadowcolor={color.button_secondary.shadow}
-        iconSize={'16px'}
-        iconStyle={{
-          top: '16px',
-          right: '14px'
-        }}
-        textStyle={{
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'center',
-          fontFamily: 'Barlow'
-        }}
-      />
+    <>
+      <div style={{ width: '100%', marginTop: '16px' }}>
+        <IconButton
+          text={'Self Assign'}
+          endingIcon={'arrow_forward'}
+          width={'100%'}
+          height={48}
+          onClick={handleClick}
+          color="primary"
+          hovercolor={color.button_secondary.hover}
+          activecolor={color.button_secondary.active}
+          shadowcolor={color.button_secondary.shadow}
+          iconSize={'16px'}
+          iconStyle={{
+            top: '16px',
+            right: '14px'
+          }}
+          textStyle={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            fontFamily: 'Barlow'
+          }}
+        />
 
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          marginTop: 16,
-          marginBottom: 8
-        }}
-      >
-        <span style={{ fontSize: 12, color: color.grayish.G100 }}>
-          Deposit this amount to Self Assign
-        </span>
-        <span style={{ fontSize: 16, fontWeight: 600 }}>{stakeMin?.toLocaleString()} SAT</span>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            marginTop: 16,
+            marginBottom: 8
+          }}
+        >
+          <span style={{ fontSize: 12, color: color.grayish.G100 }}>
+            Deposit this amount to Self Assign
+          </span>
+          <span style={{ fontSize: 16, fontWeight: 600 }}>{stakeMin?.toLocaleString()} SAT</span>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <span style={{ fontSize: 12, color: color.grayish.G100 }}>Time to Complete</span>
+          <span style={{ fontSize: 16, fontWeight: 600 }}>{EstimatedSessionLength}</span>
+        </div>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <span style={{ fontSize: 12, color: color.grayish.G100 }}>Time to Complete</span>
-        <span style={{ fontSize: 16, fontWeight: 600 }}>{EstimatedSessionLength}</span>
-      </div>
-    </div>
+      {showStakeModal && bountyId && workspaceUuid && (
+        <ProcessStakeModal
+          isOpen={showStakeModal}
+          onClose={() => setShowStakeModal(false)}
+          bountyId={bountyId}
+          stakeMin={stakeMin}
+          workspaceUuid={workspaceUuid}
+        />
+      )}
+    </>
   );
 };
