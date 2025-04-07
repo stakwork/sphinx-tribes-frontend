@@ -10,7 +10,6 @@ import SidebarComponent from 'components/common/SidebarComponent.tsx';
 import styled from 'styled-components';
 import TicketEditor from 'components/common/TicketEditor/TicketEditor';
 import { workspaceTicketStore } from '../../../store/workspace-ticket';
-import { phaseTicketStore } from '../../../store/phase';
 import { Feature, Ticket, TicketMessage } from '../../../store/interface';
 import { FeatureBody, FeatureDataWrap, LabelValue, StyledLink } from '../../../pages/tickets/style';
 import {
@@ -83,19 +82,16 @@ const WorkspaceTicketView: React.FC = observer(() => {
           groupTickets.forEach((t) => {
             if (t.UUID) t.uuid = t.UUID;
             workspaceTicketStore.addTicket(t);
-            phaseTicketStore.addTicket(t);
           });
         } else {
           workspaceTicketStore.addTicket(ticket);
-          phaseTicketStore.addTicket(ticket);
         }
 
         const latestTicket = workspaceTicketStore.getLatestVersionFromGroup(groupId);
 
-        if (latestTicket) {
-          workspaceTicketStore.updateTicket(latestTicket.uuid, latestTicket);
-          setCurrentTicketId(latestTicket.uuid);
-        }
+        workspaceTicketStore.updateTicket(latestTicket?.uuid as string, latestTicket as Ticket);
+
+        setCurrentTicketId(latestTicket?.uuid as string);
       } catch (error) {
         console.error('Error on refreshing ticket:', error);
       }
@@ -111,14 +107,7 @@ const WorkspaceTicketView: React.FC = observer(() => {
           return;
         }
 
-        if (data.ticket) {
-          const updatedTicket = data.ticket;
-          workspaceTicketStore.addTicket(updatedTicket);
-          phaseTicketStore.addTicket(updatedTicket);
-          setCurrentTicketId(updatedTicket.uuid);
-        }
-
-        if (data.action === 'swrun' && data.message && data.ticketDetails?.ticketUUID) {
+        if (data?.action === 'swrun' && data?.message && data?.ticketDetails?.ticketUUID) {
           try {
             const stakworkId = data.message.replace(
               'https://jobs.stakwork.com/admin/projects/',
@@ -140,17 +129,13 @@ const WorkspaceTicketView: React.FC = observer(() => {
 
         switch (ticketMessage.action) {
           case 'message':
-            if (ticketMessage.message) {
-              setLogs((prevLogs) => [
-                ...prevLogs,
-                {
-                  timestamp: new Date().toISOString(),
-                  projectId: '',
-                  ticketUUID: ticketMessage.ticketDetails?.ticketUUID || '',
-                  message: ticketMessage.message
-                }
-              ]);
-            }
+            console.log('Received ticket message Single Ticket: ', ticketMessage.message);
+            console.log('Single Ticket details:', {
+              broadcastType: ticketMessage.broadcastType,
+              sourceSessionID: ticketMessage.sourceSessionID,
+              action: ticketMessage.action,
+              ticketDetails: ticketMessage.ticketDetails
+            });
             break;
 
           case 'process':
@@ -257,17 +242,14 @@ const WorkspaceTicketView: React.FC = observer(() => {
         const groupTickets = await main.getTicketsByGroup(groupId);
 
         workspaceTicketStore.clearTickets();
-        phaseTicketStore.clearPhaseTickets(ticket.phase_uuid);
 
         if (groupTickets?.length) {
           groupTickets.forEach((t) => {
             if (t.UUID) t.uuid = t.UUID;
             workspaceTicketStore.addTicket(t);
-            phaseTicketStore.addTicket(t);
           });
         } else {
           workspaceTicketStore.addTicket(ticket);
-          phaseTicketStore.addTicket(ticket);
         }
 
         const latestTicket = workspaceTicketStore.getLatestVersionFromGroup(groupId);
@@ -434,15 +416,6 @@ const WorkspaceTicketView: React.FC = observer(() => {
     }
   };
 
-  useEffect(
-    () => () => {
-      if (currentTicketId) {
-        phaseTicketStore.clearPhaseTickets(currentTicketId);
-      }
-    },
-    [currentTicketId]
-  );
-
   if (isLoading) {
     return (
       <MainContent collapsed={collapsed}>
@@ -572,7 +545,6 @@ const WorkspaceTicketView: React.FC = observer(() => {
             workspaceUUID={workspaceId}
             onTicketUpdate={(updatedTicket: Ticket) => {
               workspaceTicketStore.updateTicket(updatedTicket.uuid, updatedTicket);
-              phaseTicketStore.updateTicket(updatedTicket.uuid, updatedTicket);
 
               if (updatedTicket.version > currentTicket.version) {
                 setCurrentTicketId(updatedTicket.uuid);
