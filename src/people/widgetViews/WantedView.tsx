@@ -125,6 +125,8 @@ function WantedView(props: WantedViews2Props) {
       return (
         <MobileView
           {...props}
+          is_stakable={props.is_stakable}
+          stake_min={props.stake_min}
           labels={labels}
           key={ticketUrl}
           saving={saving ?? false}

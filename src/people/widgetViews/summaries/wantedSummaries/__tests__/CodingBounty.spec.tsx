@@ -1,3 +1,4 @@
+/* eslint-disable no-empty */
 import '@testing-library/jest-dom';
 import {
   fireEvent,
@@ -18,6 +19,9 @@ import MobileView from '../CodingBounty';
 
 jest.mock('remark-gfm', () => ({}));
 
+jest.mock('rehype-raw', () => ({}));
+
+jest.mock('remark-gfm', () => ({}));
 jest.mock('rehype-raw', () => ({}));
 
 describe('MobileView component', () => {
@@ -514,5 +518,47 @@ describe('MobileView component', () => {
         expect(screen.getByText(defaultProps.titleString)).toBeInTheDocument();
       });
     })();
+  });
+
+  it('does not render Self Assignment Component when isStakable is false', async () => {
+    const mockGetFeatureFlags = jest.spyOn(mainStore, 'getFeatureFlags').mockResolvedValue({
+      success: true,
+      data: [{ name: 'staking', enabled: true }]
+    });
+
+    const props = {
+      ...defaultProps,
+      isStakable: false,
+      stakeMin: 1000
+    };
+
+    render(<MobileView {...props} />);
+
+    await waitFor(() => {
+      expect(screen.queryByText('Self Assign')).not.toBeInTheDocument();
+    });
+
+    mockGetFeatureFlags.mockRestore();
+  });
+
+  it('does not render Self Assignment Component when staking feature flag is false', async () => {
+    const mockGetFeatureFlags = jest.spyOn(mainStore, 'getFeatureFlags').mockResolvedValue({
+      success: true,
+      data: [{ name: 'staking', enabled: false }]
+    });
+
+    const props = {
+      ...defaultProps,
+      isStakable: true,
+      stakeMin: 1000
+    };
+
+    render(<MobileView {...props} />);
+
+    await waitFor(() => {
+      expect(screen.queryByText('Self Assign')).not.toBeInTheDocument();
+    });
+
+    mockGetFeatureFlags.mockRestore();
   });
 });

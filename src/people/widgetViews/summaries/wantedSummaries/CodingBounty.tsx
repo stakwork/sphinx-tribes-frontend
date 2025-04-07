@@ -61,7 +61,7 @@ import {
 } from './style';
 import { getTwitterLink } from './lib';
 import CodingMobile from './CodingMobile';
-import { BountyEstimates } from './Components';
+import { BountyEstimates, SelfAssignButton } from './Components';
 import CodingBountyProofModal from './CodingBountyProofModal';
 let interval;
 
@@ -123,7 +123,9 @@ function MobileView(props: CodingBountiesProps) {
     isEditButtonDisable,
     completed,
     payment_failed,
-    payment_pending
+    payment_pending,
+    stake_min,
+    is_stakable
   } = props;
   const color = colors['light'];
 
@@ -147,6 +149,8 @@ function MobileView(props: CodingBountiesProps) {
   const [menuOpen, setMenuOpen] = useState<number | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const bountyID = id?.toString() || '';
+  const [showComingSoonModal, setShowComingSoonModal] = useState(false);
+  const [featureFlags, setFeatureFlags] = useState<any>({});
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -415,7 +419,7 @@ function MobileView(props: CodingBountiesProps) {
 
   const makePayment = async () => {
     setPaymentLoading(true);
-    // If the bounty has a commitment fee, add the fee to the user payment
+    // If the bounty has a commitment fee, add the fee to the user's payment
     const price = Number(props.price);
     // if there is an workspace and the workspace's
     // buudget is sufficient keysend to the user immediately
@@ -717,6 +721,25 @@ function MobileView(props: CodingBountiesProps) {
   let pillColor = color.statusAssigned;
   let pillText = 'assigned';
 
+  useEffect(() => {
+    const fetchFeatureFlags = async () => {
+      try {
+        const response = await main.getFeatureFlags();
+        if (response?.success) {
+          setFeatureFlags(
+            response.data.reduce((acc: any, flag: any) => {
+              acc[flag.name] = flag.enabled;
+              return acc;
+            }, {})
+          );
+        }
+      } catch (error) {
+        console.error('Error fetching feature flags:', error);
+      }
+    };
+    fetchFeatureFlags();
+  }, [main]);
+
   if (isMobile) {
     return (
       <CodingMobile
@@ -844,6 +867,14 @@ function MobileView(props: CodingBountiesProps) {
                   hovercolor={color.button_secondary.hover}
                   shadowcolor={color.button_secondary.shadow}
                   onClick={confirmPaymentHandler}
+                />
+              )}
+
+              {featureFlags.staking && is_stakable && (
+                <SelfAssignButton
+                  onClick={() => setShowComingSoonModal(true)}
+                  stakeMin={stake_min || 0}
+                  EstimatedSessionLength={props.estimated_session_length || ''}
                 />
               )}
 
@@ -1291,6 +1322,13 @@ function MobileView(props: CodingBountiesProps) {
                     completion_date={props.estimated_completion_date}
                     session_length={props.estimated_session_length}
                   />
+                  {featureFlags.staking && is_stakable && (
+                    <SelfAssignButton
+                      onClick={() => setShowComingSoonModal(true)}
+                      stakeMin={stake_min || 0}
+                      EstimatedSessionLength={props.estimated_session_length || ''}
+                    />
+                  )}
                   <div className="buttonSet">
                     <ButtonSet
                       githubShareAction={() => {
@@ -1889,6 +1927,13 @@ function MobileView(props: CodingBountiesProps) {
                   completion_date={props.estimated_completion_date}
                   session_length={props.estimated_session_length}
                 />
+                {featureFlags.staking && is_stakable && (
+                  <SelfAssignButton
+                    onClick={() => setShowComingSoonModal(true)}
+                    stakeMin={stake_min || 0}
+                    EstimatedSessionLength={props.estimated_session_length || ''}
+                  />
+                )}
                 <ButtonSet
                   showGithubBtn={!!ticket_url}
                   githubShareAction={() => {
@@ -1979,6 +2024,13 @@ function MobileView(props: CodingBountiesProps) {
                   completion_date={props.estimated_completion_date}
                   session_length={props.estimated_session_length}
                 />
+                {featureFlags.staking && is_stakable && (
+                  <SelfAssignButton
+                    onClick={() => setShowComingSoonModal(true)}
+                    stakeMin={stake_min || 0}
+                    EstimatedSessionLength={props.estimated_session_length || ''}
+                  />
+                )}
                 <ButtonSet
                   showGithubBtn={!!ticket_url}
                   githubShareAction={() => {
@@ -2001,6 +2053,61 @@ function MobileView(props: CodingBountiesProps) {
             )}
           </AssigneeProfile>
         </NormalUser>
+      )}
+      {showComingSoonModal && (
+        <Modal
+          visible={true}
+          envStyle={{
+            borderRadius: '12px',
+            background: color.pureWhite,
+            padding: '32px 24px',
+            width: '400px',
+            maxWidth: '90vw',
+            boxShadow: '0px 8px 24px rgba(0, 0, 0, 0.1)'
+          }}
+          bigCloseImage={() => setShowComingSoonModal(false)}
+          bigCloseImageStyle={{
+            top: '-12px',
+            right: '-12px',
+            background: color.pureWhite,
+            borderRadius: '50%',
+            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+            padding: '4px'
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              textAlign: 'center',
+              gap: '16px'
+            }}
+          >
+            <EuiText
+              style={{
+                fontSize: '24px',
+                fontWeight: 600,
+                color: color.grayish.G100,
+                marginBottom: '8px'
+              }}
+            >
+              Staking Coming Soon!
+            </EuiText>
+            <Button
+              color="primary"
+              onClick={() => setShowComingSoonModal(false)}
+              text="Got It!"
+              style={{
+                width: '120px',
+                height: '40px',
+                fontSize: '16px',
+                fontWeight: 600,
+                borderRadius: '8px'
+              }}
+            />
+          </div>
+        </Modal>
       )}
       <EuiGlobalToastList toasts={toasts} dismissToast={removeToast} toastLifeTimeMs={6000} />
     </div>
