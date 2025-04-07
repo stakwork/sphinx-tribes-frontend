@@ -1753,6 +1753,18 @@ export class MainStore {
       body.coding_languages = languages;
     }
 
+    if (body.isStakable !== undefined) {
+      body.is_stakable = body.isStakable;
+      delete body.isStakable;
+    }
+
+    if (body.stakeMin !== undefined) {
+      body.stake_min = parseInt(body.stakeMin, 10) || 0;
+      delete body.stakeMin;
+    }
+
+    body.max_stakers = body.max_stakers || 1;
+
     // eslint-disable-next-line no-useless-catch
     try {
       const request = `gobounties?token=${info?.tribe_jwt}`;

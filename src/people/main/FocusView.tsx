@@ -352,6 +352,14 @@ function FocusedView(props: FocusViewProps) {
         ? moment(wanted?.estimated_completion_date)
         : '';
 
+      if (wanted.is_stakable !== undefined) {
+        initialValues.isStakable = wanted.is_stakable;
+      }
+      
+      if (wanted.stake_min !== undefined) {
+        initialValues.stakeMin = wanted.stake_min.toString();
+      }
+
       if (wanted.type) {
         const thisDynamicSchema = dynamicSchemasByType[wanted.type];
         const newValues = thisDynamicSchema.map((s: any) => {
@@ -378,6 +386,14 @@ function FocusedView(props: FocusViewProps) {
           } else if (s.name === 'feature_uuid') {
             return {
               [s.name]: wanted['feature_uuid'] || feature_uuid || ''
+            };
+          } else if (s.name === 'isStakable') {
+            return {
+              [s.name]: initialValues.isStakable
+            };
+          } else if (s.name === 'stakeMin') {
+            return {
+              [s.name]: initialValues.stakeMin
             };
           }
           return {
