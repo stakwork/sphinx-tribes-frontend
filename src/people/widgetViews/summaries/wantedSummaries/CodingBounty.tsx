@@ -419,7 +419,7 @@ function MobileView(props: CodingBountiesProps) {
 
   const makePayment = async () => {
     setPaymentLoading(true);
-    // If the bounty has a commitment fee, add the fee to the user payment
+    // If the bounty has a commitment fee, add the fee to the user's payment
     const price = Number(props.price);
     // if there is an workspace and the workspace's
     // buudget is sufficient keysend to the user immediately
