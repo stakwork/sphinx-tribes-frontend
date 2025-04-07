@@ -124,8 +124,8 @@ function MobileView(props: CodingBountiesProps) {
     completed,
     payment_failed,
     payment_pending,
-    stakeMin,
-    isStakable
+    stake_min,
+    is_stakable
   } = props;
   const color = colors['light'];
 
@@ -740,8 +740,6 @@ function MobileView(props: CodingBountiesProps) {
     fetchFeatureFlags();
   }, [main]);
 
-  console.log(featureFlags);
-
   if (isMobile) {
     return (
       <CodingMobile
@@ -872,10 +870,10 @@ function MobileView(props: CodingBountiesProps) {
                 />
               )}
 
-              {featureFlags.staking && isStakable && (
+              {featureFlags.staking && is_stakable && (
                 <SelfAssignButton
                   onClick={() => setShowComingSoonModal(true)}
-                  stakeMin={stakeMin || 0}
+                  stakeMin={stake_min || 0}
                   EstimatedSessionLength={props.estimated_session_length || ''}
                 />
               )}
@@ -1324,10 +1322,10 @@ function MobileView(props: CodingBountiesProps) {
                     completion_date={props.estimated_completion_date}
                     session_length={props.estimated_session_length}
                   />
-                  {featureFlags.staking && isStakable && (
+                  {featureFlags.staking && is_stakable && (
                     <SelfAssignButton
                       onClick={() => setShowComingSoonModal(true)}
-                      stakeMin={stakeMin || 0}
+                      stakeMin={stake_min || 0}
                       EstimatedSessionLength={props.estimated_session_length || ''}
                     />
                   )}
@@ -1929,10 +1927,10 @@ function MobileView(props: CodingBountiesProps) {
                   completion_date={props.estimated_completion_date}
                   session_length={props.estimated_session_length}
                 />
-                {featureFlags.staking && isStakable && (
+                {featureFlags.staking && is_stakable && (
                   <SelfAssignButton
                     onClick={() => setShowComingSoonModal(true)}
-                    stakeMin={stakeMin || 0}
+                    stakeMin={stake_min || 0}
                     EstimatedSessionLength={props.estimated_session_length || ''}
                   />
                 )}
@@ -2026,10 +2024,10 @@ function MobileView(props: CodingBountiesProps) {
                   completion_date={props.estimated_completion_date}
                   session_length={props.estimated_session_length}
                 />
-                {featureFlags.staking && isStakable && (
+                {featureFlags.staking && is_stakable && (
                   <SelfAssignButton
                     onClick={() => setShowComingSoonModal(true)}
-                    stakeMin={stakeMin || 0}
+                    stakeMin={stake_min || 0}
                     EstimatedSessionLength={props.estimated_session_length || ''}
                   />
                 )}

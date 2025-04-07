@@ -343,8 +343,8 @@ export interface CodingBountiesProps extends WantedSummaryProps {
   assigneeLabel?: { [key: string]: any };
   actionButtons?: boolean | JSX.Element;
   unlock_code?: string;
-  stakeMin?: number;
-  isStakable?: boolean;
+  stake_min?: number;
+  is_stakable?: boolean;
 }
 
 export interface CodingViewProps extends WantedSummaryProps {
@@ -446,6 +446,8 @@ export interface WantedViews2Props extends WantedViewsProps {
   fromBountyPage?: boolean;
   activeWorkspace?: string;
   isBountyLandingPage?: boolean;
+  is_stakable?: boolean;
+  stake_min?: number;
 }
 
 export interface AboutViewProps {
