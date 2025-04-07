@@ -555,6 +555,7 @@ const WorkspaceTicketView: React.FC = observer(() => {
             showDragHandle={false}
             showSWWFLink={true}
             showCheckbox={false}
+            isSingleTicket={true}
           />
         </FeatureDataWrap>
       </FeatureBody>
