@@ -63,6 +63,7 @@ interface TicketEditorProps {
   showSWWFLink?: boolean;
   onTicketUpdate?: (updatedTicket: Ticket) => void;
   showCheckbox?: boolean;
+  isSingleTicket?: boolean;
 }
 
 const SwitcherContainer = styled.div`
@@ -275,7 +276,8 @@ const TicketEditor = observer(
     showDragHandle,
     showSWWFLink,
     showCheckbox = true,
-    onTicketUpdate
+    onTicketUpdate,
+    isSingleTicket
   }: TicketEditorProps) => {
     const [toasts, setToasts] = useState<Toast[]>([]);
     const [versions, setVersions] = useState<number[]>([]);
@@ -332,7 +334,8 @@ const TicketEditor = observer(
       const groupTickets = workspaceTicketStore.getTicketsByGroup(
         ticketData.ticket_group as string
       );
-      const versions = groupTickets.map((ticket) => ticket.version || 0);
+
+      const versions = groupTickets.map((ticket) => ticket.version || 0).sort((a, b) => b - a);
       setVersions(versions);
 
       const latestTicket = workspaceTicketStore.getLatestVersionFromGroup(
@@ -352,7 +355,10 @@ const TicketEditor = observer(
         { length: Math.min(latestVersion, maxLimit) },
         (_: number, index: number) => latestVersion - index
       );
-      setVersions(versionsArray);
+
+      if (!isSingleTicket) {
+        setVersions(versionsArray);
+      }
     }, [groupTickets, latestTicket?.version]);
 
     useEffect(() => {
@@ -541,7 +547,15 @@ const TicketEditor = observer(
           ticketData?.ticket_group || '',
           selectedVersion
         );
-        setVersionTicketData(selectedTicket || ticketData || DEFAULT_TICKET);
+
+        const selectedSingleTicket = workspaceTicketStore.getTicketByVersion(
+          ticketData?.ticket_group || '',
+          selectedVersion
+        );
+
+        setVersionTicketData(
+          selectedTicket || selectedSingleTicket || ticketData || DEFAULT_TICKET
+        );
       };
       updateTicketData();
     }, [selectedVersion, ticketData, ticketData?.ticket_group]);

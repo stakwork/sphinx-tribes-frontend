@@ -52,6 +52,22 @@ export class WorkspaceTicketStore {
     return this.groupTickets[groupId] || [];
   }
 
+  getTicketByVersion(groupId: string, version: number): Ticket | undefined {
+    const ticketsInGroup = Array.from(this.tickets.values()).filter(
+      (ticket: Ticket) => ticket.ticket_group === groupId || ticket.uuid === groupId
+    );
+
+    const ticket = ticketsInGroup.find(
+      (ticket: Ticket) => Number(ticket.version) === Number(version)
+    );
+
+    if (!ticket) {
+      console.warn(`No ticket found with version ${version} in group ${groupId}`);
+    }
+
+    return ticket;
+  }
+
   getLatestVersionFromGroup(groupId: string): Ticket | undefined {
     const ticketsInGroup = this.getTicketsByGroup(groupId);
     if (ticketsInGroup.length === 0) return undefined;
