@@ -156,13 +156,15 @@ const ProcessStakeModal: React.FC<ProcessStakeModalProps> = ({
 
       const stakeProcesses: BountyStakeProcess[] = await main.checkBountyStakeStatus(bountyId);
 
-      const hasOpenStake =
-        stakeProcesses.length === 0 ||
-        stakeProcesses.every((process) => process.status === 'FAILED');
+      const hasActiveStake = stakeProcesses.some((process) =>
+        ['NEW', 'PENDING', 'PAID'].includes(process.status)
+      );
 
-      setIsStakeOpen(hasOpenStake);
+      const isStakeOpen = !hasActiveStake;
 
-      if (hasOpenStake) {
+      setIsStakeOpen(isStakeOpen);
+
+      if (isStakeOpen) {
         await generateInvoice();
       }
 
