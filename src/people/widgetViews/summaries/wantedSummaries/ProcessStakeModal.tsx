@@ -156,8 +156,9 @@ const ProcessStakeModal: React.FC<ProcessStakeModalProps> = ({
 
       const stakeProcesses: BountyStakeProcess[] = await main.checkBountyStakeStatus(bountyId);
 
-      const hasActiveStake = stakeProcesses.some((process) =>
-        ['NEW', 'PENDING', 'PAID'].includes(process.status)
+      const hasActiveStake = stakeProcesses.some(
+        (process) =>
+          process.status === 'NEW' || process.status === 'PENDING' || process.status === 'PAID'
       );
 
       const isStakeOpen = !hasActiveStake;
@@ -213,6 +214,7 @@ const ProcessStakeModal: React.FC<ProcessStakeModalProps> = ({
               alignItems: 'center',
               height: '200px'
             }}
+            role="status"
           >
             <EuiLoadingSpinner size="l" />
           </div>
