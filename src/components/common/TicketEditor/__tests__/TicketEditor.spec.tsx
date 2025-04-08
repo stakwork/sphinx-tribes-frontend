@@ -31,7 +31,9 @@ jest.mock('store/workspace-ticket.ts', () => ({
   workspaceTicketStore: {
     getTicketsByGroup: jest.fn().mockReturnValue([]),
     getLatestVersionFromGroup: jest.fn().mockReturnValue({ version: 1 }),
-    getTicketByVersion: jest.fn().mockReturnValue({ name: 'Test Ticket', description: 'Test Description' }),
+    getTicketByVersion: jest
+      .fn()
+      .mockReturnValue({ name: 'Test Ticket', description: 'Test Description' }),
     addTicket: jest.fn(),
     clearTickets: jest.fn()
   }
