@@ -877,7 +877,7 @@ function MobileView(props: CodingBountiesProps) {
                   stakeMin={stake_min || 0}
                   EstimatedSessionLength={props.estimated_session_length || ''}
                   workspaceUuid={props.org_uuid}
-                  bountyId={props.created}
+                  bountyId={props.id}
                 />
               )}
 
@@ -1331,7 +1331,7 @@ function MobileView(props: CodingBountiesProps) {
                       stakeMin={stake_min || 0}
                       EstimatedSessionLength={props.estimated_session_length || ''}
                       workspaceUuid={props.org_uuid}
-                      bountyId={props.created}
+                      bountyId={props.id}
                     />
                   )}
                   <div className="buttonSet">
@@ -1938,7 +1938,7 @@ function MobileView(props: CodingBountiesProps) {
                     stakeMin={stake_min || 0}
                     EstimatedSessionLength={props.estimated_session_length || ''}
                     workspaceUuid={props.org_uuid}
-                    bountyId={props.created}
+                    bountyId={props.id}
                   />
                 )}
                 <ButtonSet
@@ -2037,7 +2037,7 @@ function MobileView(props: CodingBountiesProps) {
                     stakeMin={stake_min || 0}
                     EstimatedSessionLength={props.estimated_session_length || ''}
                     workspaceUuid={props.org_uuid}
-                    bountyId={props.created}
+                    bountyId={props.id}
                   />
                 )}
                 <ButtonSet
@@ -2067,7 +2067,7 @@ function MobileView(props: CodingBountiesProps) {
         <ProcessStakeModal
           isOpen={showComingSoonModal}
           onClose={() => setShowComingSoonModal(false)}
-          bountyId={props.created || 0}
+          bountyId={props.id || 0}
           stakeMin={stake_min || 0}
           workspaceUuid={props.org_uuid || ''}
         />
