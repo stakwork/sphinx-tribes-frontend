@@ -5204,6 +5204,71 @@ export class MainStore {
       return null;
     }
   }
+
+  async checkBountyStakeStatus(bountyId: number): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+      const response = await fetch(
+        `${TribesURL}/gobounties/stake/stakeprocessing/bounty/${bountyId}`,
+        {
+          method: 'GET',
+          mode: 'cors',
+          headers: {
+            'x-jwt': info.tribe_jwt,
+            'Content-Type': 'application/json',
+            'x-session-id': this.getSessionId()
+          }
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return response.json();
+    } catch (e) {
+      console.log('Error checkBountyStakeStatus', e);
+      return null;
+    }
+  }
+
+  async generateStakeInvoice(
+    bountyId: number,
+    amount: number,
+    senderPubKey: string,
+    workspaceUuid: string
+  ): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+      const response = await fetch(`${TribesURL}/gobounties/process_stake/${bountyId}`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json',
+          'x-session-id': this.getSessionId()
+        },
+        body: JSON.stringify({
+          amount,
+          sender_pubkey: senderPubKey,
+          workspace_uuid: workspaceUuid,
+          payment_type: 'stake',
+          is_stake: true
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return response.json();
+    } catch (e) {
+      console.log('Error generateStakeInvoice', e);
+      return null;
+    }
+  }
 }
 
 export const mainStore = new MainStore();
