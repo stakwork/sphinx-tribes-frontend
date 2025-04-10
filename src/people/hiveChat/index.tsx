@@ -628,8 +628,6 @@ export const HiveChatView: React.FC = observer(() => {
   const lastRefreshTime = useRef<number>(Date.now()).current;
   const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [isRefreshingTitle, setIsRefreshingTitle] = useState(false);
-  const [lastTitleRefreshTime, setLastTitleRefreshTime] = useState(Date.now());
-  const titleRefreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [sseLogs, setSseLogs] = useState<SSEMessage[]>([]);
   useBrowserTabTitle('Hive Chat');
 
@@ -908,7 +906,7 @@ export const HiveChatView: React.FC = observer(() => {
           setIsChainVisible(false);
           setIsActionSend(false);
 
-          if (data.artifacts.length === 0) {
+          if (data.artifacts?.length === 0) {
             setLogs([]);
             setLastLogLine('');
           }
@@ -947,7 +945,7 @@ export const HiveChatView: React.FC = observer(() => {
   }, [projectId, chatId, isVerboseLoggingEnabled, isActionSend]);
 
   useEffect(() => {
-    if (logs.length > 0) {
+    if (logs?.length > 0) {
       setLastLogLine(logs[logs.length - 1]?.message || '');
     }
   }, [logs]);
@@ -1089,7 +1087,7 @@ export const HiveChatView: React.FC = observer(() => {
 
   useEffect(() => {
     const checkForNewArtifacts = async () => {
-      if (!chatId || !isArtifactLoggingEnabled || messages.length === 0) return;
+      if (!chatId || !isArtifactLoggingEnabled || messages?.length === 0) return;
 
       const latestMessage = messages[messages.length - 1];
       if (latestMessage && latestMessage.id !== lastProcessedMessageId) {
@@ -1148,7 +1146,7 @@ export const HiveChatView: React.FC = observer(() => {
           hasTextUpdates ? 'text' : null
         ].filter(Boolean) as ('visual' | 'code' | 'text' | 'logs')[];
 
-        if (availableTabs.length > 0 && !availableTabs.includes(artifactTab)) {
+        if (availableTabs?.length > 0 && !availableTabs.includes(artifactTab)) {
           setArtifactTab(availableTabs[0]);
         }
       }
@@ -1344,50 +1342,22 @@ export const HiveChatView: React.FC = observer(() => {
     dividerRef.current?.focus();
   };
 
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!isDraggingRef.current) return;
-
-      const containerWidth = containerRef.current?.clientWidth || 1000;
-      const deltaX = e.clientX - startXRef.current;
-      const deltaPercentage = (deltaX / containerWidth) * 100;
-
-      let newChatWidth = startChatWidthRef.current + deltaPercentage;
-
-      newChatWidth = Math.max(20, Math.min(80, newChatWidth));
-      const newViewerWidth = 100 - newChatWidth;
-
-      setChatSectionWidth(`${newChatWidth}%`);
-      setViewerSectionWidth(`${newViewerWidth}%`);
-    };
-
-    const handleMouseUp = () => {
-      if (isDraggingRef.current) {
-        isDraggingRef.current = false;
-        document.body.style.cursor = '';
-        document.body.style.userSelect = '';
-
-        localStorage.setItem('hiveChatSectionWidth', chatSectionWidth);
-        localStorage.setItem('hiveViewerSectionWidth', viewerSectionWidth);
-      }
-    };
-
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [chatSectionWidth, viewerSectionWidth]);
+  // Initialize refs at the top of your component
+  const lastTitleRefreshTimeRef = useRef(Date.now());
+  const titleRefreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const isRefreshingTitleRef = useRef(false);
 
   const refreshChatTitle = useCallback(async () => {
-    if (isEditingTitle || isRefreshingTitle) return;
+    // Use ref for internal state check to avoid dependency cycle
+    if (isEditingTitle || isRefreshingTitleRef.current) return;
 
     try {
+      // Track refreshing state in ref
+      isRefreshingTitleRef.current = true;
+      // Also update state for UI purposes
       setIsRefreshingTitle(true);
 
-      const currentChat = await chat.getWorkspaceChats(uuid as string);
+      const currentChat = await chat.getWorkspaceChats(uuid);
       const updatedChat = currentChat?.find((c) => c.id === chatId);
 
       if (updatedChat?.title && updatedChat.title !== title) {
@@ -1395,13 +1365,15 @@ export const HiveChatView: React.FC = observer(() => {
         chat.updateChat(chatId, { title: updatedChat.title });
       }
 
-      setLastTitleRefreshTime(Date.now());
+      // Update timestamp ref
+      lastTitleRefreshTimeRef.current = Date.now();
     } catch (error) {
       console.error('Error refreshing chat title:', error);
     } finally {
+      isRefreshingTitleRef.current = false;
       setIsRefreshingTitle(false);
     }
-  }, [chat, chatId, uuid, title, isEditingTitle, isRefreshingTitle]);
+  }, [chat, chatId, uuid, title, isEditingTitle]); // Removed isRefreshingTitle from deps
 
   useEffect(() => {
     if (!chatId || !uuid) return;
@@ -1415,7 +1387,7 @@ export const HiveChatView: React.FC = observer(() => {
 
       titleRefreshIntervalRef.current = setInterval(() => {
         if (document.visibilityState === 'visible' && !isEditingTitle) {
-          if (Date.now() - lastTitleRefreshTime > 1000) {
+          if (Date.now() - lastTitleRefreshTimeRef.current > 1000) {
             refreshChatTitle();
           }
         }
@@ -1430,18 +1402,14 @@ export const HiveChatView: React.FC = observer(() => {
         titleRefreshIntervalRef.current = null;
       }
     };
-  }, [chatId, uuid, refreshChatTitle, isEditingTitle, lastTitleRefreshTime]);
+  }, [chatId, uuid, refreshChatTitle, isEditingTitle]);
 
   useEffect(() => {
-    const refreshTitleOnFocus = async () => {
-      try {
-        if (document.visibilityState === 'visible' && !isEditingTitle) {
-          if (Date.now() - lastTitleRefreshTime > 1000) {
-            await refreshChatTitle();
-          }
+    const refreshTitleOnFocus = () => {
+      if (document.visibilityState === 'visible' && !isEditingTitle) {
+        if (Date.now() - lastTitleRefreshTimeRef.current > 1000) {
+          refreshChatTitle();
         }
-      } catch (error) {
-        console.error('Error refreshing chat title on focus:', error);
       }
     };
 
@@ -1452,7 +1420,7 @@ export const HiveChatView: React.FC = observer(() => {
       window.removeEventListener('visibilitychange', refreshTitleOnFocus);
       window.removeEventListener('focus', refreshTitleOnFocus);
     };
-  }, [refreshChatTitle, isEditingTitle, lastTitleRefreshTime]);
+  }, [refreshChatTitle, isEditingTitle]);
 
   const handleMinimizeToggle = () => {
     setIsMinimized((prev) => {
