@@ -189,12 +189,9 @@ export const HiveBuildView: React.FC = observer(() => {
         source: 'agent',
         workspaceUUID: uuid
       });
-
-      await fetch('/api/generate-pr', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: messageText, uuid })
-      });
+      
+      // Removed the separate build/chat API call to ensure all build operations
+      // go through mainStore.createStakworkProject
     } catch (error) {
       console.error('Error sending message:', error);
       ui.setToasts([
