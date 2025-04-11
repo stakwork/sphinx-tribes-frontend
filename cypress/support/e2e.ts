@@ -14,6 +14,7 @@
 // ***********************************************************
 
 // Import commands.js using ES2015 syntax:
+import "cypress-real-events";
 import './commands';
 import nodes from '../fixtures/nodes.json';
 import nodesv2 from '../fixtures/v2nodes.json';
