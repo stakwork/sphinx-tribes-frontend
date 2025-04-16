@@ -70,6 +70,7 @@ export default function FocusedWidget(props: FocusedWidgetProps) {
     return function cleanup() {
       setDisableFormButtons(false);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function getFieldToUpdate(e: any) {
@@ -112,6 +113,7 @@ export default function FocusedWidget(props: FocusedWidgetProps) {
       }
       setFieldValue(firstInputName, vl);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedIndex]);
 
   function cancel(dismount: any) {

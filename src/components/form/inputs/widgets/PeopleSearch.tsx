@@ -325,6 +325,7 @@ const InvitePeopleSearch = (props: InvitePeopleSearchProps) => {
       );
     }
     updatePeopleData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [checkboxIdToSelectedMap, searchValue]);
 
   useEffect(() => {

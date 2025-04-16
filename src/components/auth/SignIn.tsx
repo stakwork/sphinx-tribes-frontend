@@ -81,6 +81,7 @@ function SignIn(props: AuthProps) {
     if (ui.websocketToken) {
       await main.getLnAuth();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ui.websocketToken]);
 
   useEffect(() => {
@@ -128,6 +129,7 @@ function SignIn(props: AuthProps) {
     socket.onclose = () => {
       console.log('Socket disconnected');
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return useObserver(() => (
@@ -235,7 +237,7 @@ function SignIn(props: AuthProps) {
           </Column>
           <Divider />
           <Column style={{ paddingTop: 0 }}>
-            <Description>I don't have Sphinx!</Description>
+            <Description>I don&apos;t have Sphinx!</Description>
             <IconButton
               text={'Get Sphinx'}
               endingIcon={'launch'}

@@ -205,6 +205,7 @@ const AddBudgetModal = (props: AddBudgetModalProps) => {
       setInvoiceState('PAID');
       props.setInvoiceStatus(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [invoiceStatus]);
 
   return (

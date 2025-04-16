@@ -76,6 +76,7 @@ export default function SphinxAppLoginDeeplink(props: AuthProps) {
 
   useEffect(() => {
     getChallenge();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -84,6 +85,7 @@ export default function SphinxAppLoginDeeplink(props: AuthProps) {
       el.href = qrString;
       el.click();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [challenge, ts]);
 
   return (

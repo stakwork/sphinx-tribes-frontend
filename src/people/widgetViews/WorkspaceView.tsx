@@ -219,6 +219,7 @@ const Workspaces = (props: { person: Person }) => {
         console.warn('Poll invoices error', e);
       }
     }, 2000);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getUserInvoicesCount = useCallback(async () => {

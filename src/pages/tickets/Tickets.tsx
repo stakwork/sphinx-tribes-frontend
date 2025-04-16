@@ -66,6 +66,7 @@ function BodyComponent() {
     } else {
       setCheckboxIdToSelectedMap(main.bountiesStatus);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, loading, main.bountiesStatus]);
 
   useEffect(() => {

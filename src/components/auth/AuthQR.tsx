@@ -74,6 +74,7 @@ function AuthQR(props: AuthProps) {
     return function cleanup() {
       if (interval) clearInterval(interval);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

@@ -122,6 +122,7 @@ export const SuperAdmin = () => {
         setLoading(false);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [main, startDate, endDate, sortOrder, currentPage, selectedProviders, workspace, search]);
 
   const getProviders = useCallback(
@@ -173,6 +174,7 @@ export const SuperAdmin = () => {
 
   useEffect(() => {
     getBounties();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -267,6 +269,7 @@ export const SuperAdmin = () => {
         setTotalBounties(totalBounties);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [main, startDate, endDate, checkboxIdToSelectedMap, selectedProviders, workspace]);
 
   useEffect(() => {

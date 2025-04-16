@@ -250,6 +250,7 @@ export const userHasRole = (
       userRolesMap[user.role] = user.role;
     });
 
+    // eslint-disable-next-line no-prototype-builtins
     if (bountyRolesMap.hasOwnProperty(role) && userRolesMap.hasOwnProperty(role)) {
       return true;
     }

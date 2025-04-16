@@ -308,6 +308,7 @@ function FocusedView(props: FocusViewProps) {
         setLoading(false);
       }
       if (
+        // eslint-disable-next-line no-prototype-builtins
         ui?.meInfo?.hasOwnProperty('url') &&
         !isNotHttps(ui?.meInfo?.url) &&
         props?.ReCallBounties
