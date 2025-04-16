@@ -8,7 +8,7 @@ import posthog from 'posthog-js';
 import api from '../api';
 import { getHostIncludingDockerHosts } from '../config/host';
 import { TribesURL } from '../config/host';
-import { randomString } from '../helpers';
+import { convertLocaleToNumber, randomString } from '../helpers';
 import { getUserAvatarPlaceholder } from './lib';
 import { uiStore } from './ui';
 import {
@@ -1759,7 +1759,7 @@ export class MainStore {
     }
 
     if (body.stakeMin !== undefined) {
-      body.stake_min = parseInt(body.stakeMin, 10) || 0;
+      body.stake_min = convertLocaleToNumber(body.stakeMin);
       delete body.stakeMin;
     }
 
