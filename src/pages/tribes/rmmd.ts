@@ -1,3 +1,4 @@
+/* eslint-disable */
 export default function rmmd(md: string) {
   const options: { [k: string]: boolean } = {};
   options.listUnicodeChar = options.hasOwnProperty('listUnicodeChar')

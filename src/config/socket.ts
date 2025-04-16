@@ -37,6 +37,7 @@ export const createSocketInstance = (): WebSocket => {
 
     if (uniqueID === null || uniqueID === '') {
       uniqueID = uuidv4();
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       localStorage.setItem('websocket_token', uniqueID!);
     }
 

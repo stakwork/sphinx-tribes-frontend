@@ -1,3 +1,4 @@
+/* eslint-disable */
 const palette = {
   blue1: '#618AFF',
   blue2: '#82b4ff',

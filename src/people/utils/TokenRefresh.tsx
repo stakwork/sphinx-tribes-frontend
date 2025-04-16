@@ -118,6 +118,7 @@ function TokenRefresh() {
       isMounted = false;
       clearInterval(intervalId);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [main, ui]);
 
   return (

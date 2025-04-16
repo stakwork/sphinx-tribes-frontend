@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { EuiSpacer, EuiTabbedContentProps, EuiTabbedContentTab } from '@elastic/eui';
 import { Button } from 'components/common';

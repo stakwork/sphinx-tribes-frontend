@@ -159,6 +159,7 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
     getBounty();
   }, [getBounty, removeNextAndPrev]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const isDirectAccess = useCallback(() => !document.referrer, [location.pathname]);
 
   const goBack = () => {

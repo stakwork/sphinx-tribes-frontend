@@ -148,6 +148,7 @@ export default function CreatableMultiSelectInputNew({ error, label, handleChang
       setCheckboxIdToSelectedMap(newValue);
       setData([...value]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <div

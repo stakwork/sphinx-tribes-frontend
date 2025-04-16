@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import { N } from 'people/utils/style';
 import { useIsMobile } from '../../hooks';
 
 const FooterContainer = styled.footer<{ isMobile: boolean }>`

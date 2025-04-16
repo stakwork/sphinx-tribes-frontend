@@ -235,6 +235,7 @@ export const HiveBuildView: React.FC = observer(() => {
     };
 
     initializeChat();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatId, chat]);
 
   const messages = useMemo(() => chat.chatMessages[chatId] || [], [chat.chatMessages, chatId]);

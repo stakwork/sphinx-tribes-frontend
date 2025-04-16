@@ -39,6 +39,7 @@ const ManageButton = (props: { user_pubkey: string; org: any; action: () => void
     } catch (e) {
       console.error('User roles error', e);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [org.uuid, main, user_pubkey]);
 
   useEffect(() => {

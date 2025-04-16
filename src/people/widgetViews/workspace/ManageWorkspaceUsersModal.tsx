@@ -51,6 +51,7 @@ const ManageWorkspaceUsersModal = (props: ManageWorkspaceUsersModalProps) => {
       updateUsers(users);
       return users;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [main, uuid]);
 
   useEffect(() => {

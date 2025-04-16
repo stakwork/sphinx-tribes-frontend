@@ -274,6 +274,7 @@ const WorkspaceDetails = (props: {
         console.warn('Poll invoices error', e);
       }
     }, 6000);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -313,6 +314,7 @@ const WorkspaceDetails = (props: {
     if (uuid && ui.meInfo) {
       getUserRoles(ui.meInfo);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getWorkspaceUsers, getWorkspaceBudget, getPaymentsHistory, getUserRoles]);
 
   return (

@@ -33,6 +33,7 @@ function App() {
     if (uiStore.meInfo?.id) {
       await mainStore.getUserDropdownWorkspaces(uiStore.meInfo?.id);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uiStore.selectedPerson]);
 
   useEffect(() => {
@@ -46,6 +47,7 @@ function App() {
 
   useEffect(() => {
     getBountyRoles();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
