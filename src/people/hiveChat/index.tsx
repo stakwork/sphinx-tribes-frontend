@@ -19,7 +19,7 @@ import VisualScreenViewer from '../widgetViews/workspace/VisualScreenViewer.tsx'
 import { ModelOption } from './modelSelector.tsx';
 import { ActionArtifactRenderer } from './ActionArtifactRenderer';
 import ChatStatusDisplay from './ChatStatusDisplay.tsx';
-import ThinkingModeToggle from './ThinkingModeToggle.tsx';
+
 import SplashScreen from './ChatSplashScreen';
 
 interface RouteParams {
@@ -578,7 +578,7 @@ export const HiveChatView: React.FC = observer(() => {
   const [lastLogLine, setLastLogLine] = useState('');
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
-  const [isBuild, setIsBuild] = useState<'Chat' | 'Build'>('Build');
+  // Removed isBuild state and toggle logic. Always use 'Build' mode.
   const [actionArtifact, setActionArtifact] = useState<Artifact>();
   const [visualArtifact, setVisualArtifact] = useState<Artifact[]>();
   const [textArtifact, setTextArtifact] = useState<Artifact[]>();
@@ -791,7 +791,7 @@ export const HiveChatView: React.FC = observer(() => {
         selectedModel.value,
         socketId,
         uuid,
-        isBuild,
+        'Build',
         undefined,
         pdfUrl,
         actionArtifact
@@ -1176,32 +1176,7 @@ export const HiveChatView: React.FC = observer(() => {
     }
   };
 
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLDivElement>) => {
-      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-        setIsBuild((prev) => {
-          const newMode = prev === 'Chat' ? 'Build' : 'Chat';
-
-          setTimeout(() => {
-            const buttonToFocus = document.querySelector(
-              `[role="radio"][aria-checked="true"]`
-            ) as HTMLElement;
-            if (buttonToFocus) {
-              buttonToFocus.focus();
-            }
-          }, 0);
-
-          return newMode;
-        });
-      }
-
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        setIsBuild((prev) => (prev === 'Chat' ? 'Build' : 'Chat'));
-      }
-    },
-    [setIsBuild]
-  );
+  // Removed handleKeyDown and toggle logic.
 
   const showArtifactView =
     (visualArtifact && visualArtifact.length > 0) ||
@@ -1221,7 +1196,7 @@ export const HiveChatView: React.FC = observer(() => {
         selectedModel.value,
         socketId,
         uuid,
-        isBuild,
+        'Build',
         undefined,
         pdfUrl,
         actionArtifact
@@ -1535,15 +1510,7 @@ export const HiveChatView: React.FC = observer(() => {
                 )}
               </SaveTitleContainer>
 
-              {!showArtifactView ? (
-                <ThinkingModeToggle
-                  isBuild={isBuild}
-                  setIsBuild={setIsBuild}
-                  selectedModel={selectedModel}
-                  setSelectedModel={setSelectedModel}
-                  handleKeyDown={handleKeyDown}
-                />
-              ) : null}
+              {/* Build/Chat toggle removed */}
             </ChatHeader>
 
             <ChatBody>
@@ -1675,13 +1642,7 @@ export const HiveChatView: React.FC = observer(() => {
                   <div
                     style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '10px' }}
                   >
-                    <ThinkingModeToggle
-                      isBuild={isBuild}
-                      setIsBuild={setIsBuild}
-                      selectedModel={selectedModel}
-                      setSelectedModel={setSelectedModel}
-                      handleKeyDown={handleKeyDown}
-                    />
+                    {/* Build/Chat toggle removed */}
                     {isMobile && (
                       <AddButton
                         onClick={handleMinimizeToggle}
