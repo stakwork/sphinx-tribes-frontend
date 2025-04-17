@@ -46,7 +46,6 @@ export const SuperAdmin = () => {
   const [loading, setLoading] = useState(false);
   const [activeTabs, setActiveTabs] = useState<number[]>([]);
   const [totalBounties, setTotalBounties] = useState(0);
-  const [search, setSearch] = useState(false);
   const [providers, setProviders] = useState<any[]>([]);
   const [providersCurrentPage, setProvidersCurrentPage] = useState(1);
   const [providersCheckboxSelected, setProvidersCheckboxSelected] = useState<Person[]>([]);
@@ -122,7 +121,7 @@ export const SuperAdmin = () => {
         setLoading(false);
       }
     }
-  }, [main, startDate, endDate, sortOrder, currentPage, selectedProviders, workspace, search]);
+  }, [main, startDate, endDate, sortOrder, currentPage, selectedProviders, workspace, checkboxIdToSelectedMap]);
 
   const getProviders = useCallback(
     async (curPage?: number) => {
@@ -168,19 +167,14 @@ export const SuperAdmin = () => {
 
   useEffect(() => {
     getBounties();
-    setSearch(false);
   }, [getBounties]);
-
-  useEffect(() => {
-    getBounties();
-  }, []);
 
   useEffect(() => {
     getProviders();
   }, [getProviders]);
 
   const onClickApply = () => {
-    setSearch(true);
+    getBounties();
   };
 
   const onChangeStatus = (optionId: any) => {
@@ -267,7 +261,7 @@ export const SuperAdmin = () => {
         setTotalBounties(totalBounties);
       }
     }
-  }, [main, startDate, endDate, checkboxIdToSelectedMap, selectedProviders, workspace]);
+  }, [main, startDate, endDate, checkboxIdToSelectedMap, selectedProviders, workspace, sortOrder]);
 
   useEffect(() => {
     getTotalBounties();

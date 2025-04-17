@@ -1,12 +1,12 @@
 export default function rmmd(md: string) {
   const options: { [k: string]: boolean } = {};
-  options.listUnicodeChar = options.hasOwnProperty('listUnicodeChar')
+  options.listUnicodeChar = Object.prototype.hasOwnProperty.call(options, 'listUnicodeChar')
     ? options.listUnicodeChar
     : false;
-  options.stripListLeaders = options.hasOwnProperty('stripListLeaders')
+  options.stripListLeaders = Object.prototype.hasOwnProperty.call(options, 'stripListLeaders')
     ? options.stripListLeaders
     : true;
-  options.gfm = options.hasOwnProperty('gfm') ? options.gfm : true;
+  options.gfm = Object.prototype.hasOwnProperty.call(options, 'gfm') ? options.gfm : true;
   options.useImgAltText = false;
 
   let output = md || '';
@@ -40,9 +40,9 @@ export default function rmmd(md: string) {
       .replace(/\[\^.+?\](: .*?$)?/g, '')
       .replace(/\s{0,2}\[.*?\]: .*?$/g, '')
       // Remove images
-      .replace(/!\[(.*?)\][\[\(].*?[\]\)]/g, options.useImgAltText ? '$1' : '')
+      .replace(/!\[(.*?)\][([].*?[\])]/g, options.useImgAltText ? '$1' : '')
       // Remove inline links
-      .replace(/\[(.*?)\][\[\(].*?[\]\)]/g, '$1')
+      .replace(/\[(.*?)\][([].*?[\])]/g, '$1')
       // Remove blockquotes
       .replace(/^\s{0,3}>\s?/g, '')
       // Remove reference-style links?

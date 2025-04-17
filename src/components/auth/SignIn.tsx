@@ -81,13 +81,13 @@ function SignIn(props: AuthProps) {
     if (ui.websocketToken) {
       await main.getLnAuth();
     }
-  }, [ui.websocketToken]);
+  }, [ui.websocketToken, main]);
 
   useEffect(() => {
     getLnUrl();
   }, [getLnUrl]);
 
-  const onHandle = (event: any) => {
+  const onHandle = useCallback((event: any) => {
     const res = JSON.parse(event.data);
     ui.setWebsocketToken(res.body);
 
@@ -107,7 +107,7 @@ function SignIn(props: AuthProps) {
         main.setLnToken(res.jwt);
       }
     }
-  };
+  }, [ui, main]);
 
   async function handleTestUserLogin() {
     setTestUserLogin(true);
@@ -128,7 +128,7 @@ function SignIn(props: AuthProps) {
     socket.onclose = () => {
       console.log('Socket disconnected');
     };
-  }, []);
+  }, [onHandle]);
 
   return useObserver(() => (
     <div>
@@ -235,7 +235,7 @@ function SignIn(props: AuthProps) {
           </Column>
           <Divider />
           <Column style={{ paddingTop: 0 }}>
-            <Description>I don't have Sphinx!</Description>
+            <Description>I don&apos;t have Sphinx!</Description>
             <IconButton
               text={'Get Sphinx'}
               endingIcon={'launch'}

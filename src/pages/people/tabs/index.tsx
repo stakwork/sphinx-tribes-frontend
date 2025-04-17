@@ -111,7 +111,7 @@ export const TabsPages = observer(() => {
     [history, url]
   );
 
-  const getBountiesCount = async (personKey: string, name: string) => {
+  const getBountiesCount = useCallback(async (personKey: string, name: string) => {
     if (personKey) {
       const count = await main.getBountyCount(personKey, name);
       if (name === 'bounties') {
@@ -120,7 +120,7 @@ export const TabsPages = observer(() => {
         setAssignedCount(count);
       }
     }
-  };
+  }, [main]);
 
   const toTitleCase = (str: string) =>
     str
@@ -141,7 +141,7 @@ export const TabsPages = observer(() => {
       getBountiesCount(person?.owner_pubkey || '', 'bounties');
       getBountiesCount(person?.owner_pubkey || '', 'assigned');
     }
-  }, [changeTabHandler, location.pathname, tabsNames, person]);
+  }, [changeTabHandler, location.pathname, tabsNames, person, getBountiesCount]);
 
   const fullSelectedWidget = (name: any) => person?.extras?.[name];
 

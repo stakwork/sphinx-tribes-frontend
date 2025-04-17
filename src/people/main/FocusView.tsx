@@ -308,7 +308,8 @@ function FocusedView(props: FocusViewProps) {
         setLoading(false);
       }
       if (
-        ui?.meInfo?.hasOwnProperty('url') &&
+        ui?.meInfo &&
+        Object.prototype.hasOwnProperty.call(ui.meInfo, 'url') &&
         !isNotHttps(ui?.meInfo?.url) &&
         props?.ReCallBounties
       )

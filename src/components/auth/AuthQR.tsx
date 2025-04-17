@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { EuiLoadingSpinner } from '@elastic/eui';
 import styled from 'styled-components';
 import { observer } from 'mobx-react-lite';
@@ -35,7 +35,7 @@ function AuthQR(props: AuthProps) {
 
   const qrString = makeQR(challenge, ts);
 
-  async function startPolling(challenge: string) {
+  const startPolling = useCallback(async (challenge: string) => {
     let i = 0;
     interval = setInterval(async () => {
       try {
@@ -58,8 +58,9 @@ function AuthQR(props: AuthProps) {
         console.log(e, 'Error');
       }
     }, 3000);
-  }
-  async function getChallenge() {
+  }, [main, props, ui]);
+
+  const getChallenge = useCallback(async () => {
     const res = await api.get('ask');
     if (res.challenge) {
       setChallenge(res.challenge);
@@ -68,13 +69,14 @@ function AuthQR(props: AuthProps) {
     if (res.ts) {
       setTS(res.ts);
     }
-  }
+  }, [startPolling]);
+  
   useEffect(() => {
     getChallenge();
     return function cleanup() {
       if (interval) clearInterval(interval);
     };
-  }, []);
+  }, [getChallenge]);
 
   return (
     <ConfirmWrap style={{ ...props.style }}>

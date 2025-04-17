@@ -66,7 +66,7 @@ function BodyComponent() {
     } else {
       setCheckboxIdToSelectedMap(main.bountiesStatus);
     }
-  }, [searchParams, loading, main.bountiesStatus]);
+  }, [searchParams, loading, main.bountiesStatus, main]);
 
   useEffect(() => {
     (async () => {

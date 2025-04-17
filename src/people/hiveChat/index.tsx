@@ -774,7 +774,7 @@ export const HiveChatView: React.FC = observer(() => {
     };
   }, [collapsed]);
 
-  const handleSendMessage = async (messageToSend?: string) => {
+  const handleSendMessage = useCallback(async (messageToSend?: string) => {
     const messageText = messageToSend || message;
     if (!messageText.trim() || isSending) return;
 
@@ -827,7 +827,20 @@ export const HiveChatView: React.FC = observer(() => {
     } finally {
       setIsSending(false);
     }
-  };
+  }, [
+    message,
+    isSending,
+    websocketSessionId,
+    chat,
+    chatId,
+    selectedModel.value,
+    uuid,
+    isBuild,
+    pdfUrl,
+    actionArtifact,
+    ui,
+    chatHistoryRef
+  ]);
 
   useEffect(() => {
     const initializeChat = async () => {
@@ -859,7 +872,7 @@ export const HiveChatView: React.FC = observer(() => {
     };
 
     initializeChat();
-  }, [chatId, chat]);
+  }, [chatId, chat, handleSendMessage]);
 
   const onTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newTitle = event.target.value;
@@ -1508,9 +1521,9 @@ export const HiveChatView: React.FC = observer(() => {
                   value={title}
                   onChange={onTitleChange}
                   placeholder="Enter chat title..."
-                  disabled={isUpdatingTitle}
+                  disabled={isUpdatingTitle || isRefreshingTitle}
                   style={{
-                    cursor: isUpdatingTitle ? 'not-allowed' : 'text'
+                    cursor: isUpdatingTitle || isRefreshingTitle ? 'not-allowed' : 'text'
                   }}
                 />
                 {isEditingTitle && (

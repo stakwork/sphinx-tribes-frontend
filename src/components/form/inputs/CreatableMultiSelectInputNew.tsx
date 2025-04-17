@@ -148,7 +148,7 @@ export default function CreatableMultiSelectInputNew({ error, label, handleChang
       setCheckboxIdToSelectedMap(newValue);
       setData([...value]);
     }
-  }, []);
+  }, [value]);
   return (
     <div
       style={{

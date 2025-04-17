@@ -250,7 +250,8 @@ export const userHasRole = (
       userRolesMap[user.role] = user.role;
     });
 
-    if (bountyRolesMap.hasOwnProperty(role) && userRolesMap.hasOwnProperty(role)) {
+    if (Object.prototype.hasOwnProperty.call(bountyRolesMap, role) &&
+        Object.prototype.hasOwnProperty.call(userRolesMap, role)) {
       return true;
     }
 

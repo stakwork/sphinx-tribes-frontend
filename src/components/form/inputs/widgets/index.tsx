@@ -24,17 +24,19 @@ async function sleep(ms: number) {
 }
 
 export default function Widgets(props: any) {
+  const { scrollToTop } = props;
   const [selected, setSelected] = useState(null);
   const [showFocused, setShowFocused] = useState(false);
 
-  async function doDelayedScrollTop() {
-    // we do this so there is no jumping with the animation
-    await sleep(140);
-    if (props.scrollToTop) props.scrollToTop();
-  }
   useEffect(() => {
+    async function doDelayedScrollTop() {
+      // we do this so there is no jumping with the animation
+      await sleep(140);
+      if (scrollToTop) scrollToTop();
+    }
+    
     doDelayedScrollTop();
-  }, [selected, showFocused]);
+  }, [selected, showFocused, scrollToTop]);
 
   return (
     <Wrap>

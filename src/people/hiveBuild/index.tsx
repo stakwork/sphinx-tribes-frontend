@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/typedef */
-import React, { useEffect, useState, useRef, useMemo } from 'react';
+import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useHistory, useParams } from 'react-router-dom';
 import { ChatMessage } from 'store/interface';
@@ -157,7 +157,7 @@ export const HiveBuildView: React.FC = observer(() => {
     history.push(`/workspace/${uuid}`);
   };
 
-  const handleSendMessage = async (messageToSend?: string) => {
+  const handleSendMessage = useCallback(async (messageToSend?: string) => {
     const messageText = messageToSend || message;
     if (!messageText.trim() || isSending) return;
 
@@ -207,7 +207,7 @@ export const HiveBuildView: React.FC = observer(() => {
     } finally {
       setIsSending(false);
     }
-  };
+  }, [message, isSending, chat, chatId, ui, uuid]);
 
   useEffect(() => {
     const initializeChat = async () => {
@@ -235,7 +235,7 @@ export const HiveBuildView: React.FC = observer(() => {
     };
 
     initializeChat();
-  }, [chatId, chat]);
+  }, [chatId, chat, handleSendMessage]);
 
   const messages = useMemo(() => chat.chatMessages[chatId] || [], [chat.chatMessages, chatId]);
 

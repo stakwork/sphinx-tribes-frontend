@@ -137,9 +137,7 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
     []
   );
 
-  const checkboxIdToSelectedMapLanguage = {};
   const languageString = '';
-
   const selectedWidget = 'bounties';
 
   const history = useHistory();
@@ -151,13 +149,13 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
     setCurrentItems(phaseBountyLimit);
   };
 
-  const onPanelClick = (activeWorkspace?: string, bounty?: any) => {
+  const onPanelClick = useCallback((activeWorkspace?: string, bounty?: any) => {
     if (bounty?.id) {
       history.push(`/bounty/${bounty.id}`);
     } else {
       history.push(`/feature/${props.workspace_uuid}`);
     }
-  };
+  }, [history, props.workspace_uuid]);
 
   const handleAddPhaseClick = () => {
     setShowAddPhaseModal(true);
@@ -183,12 +181,12 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
     setIsPostBountyModalOpen(true);
   };
 
-  const handlePhasePlannerClick = () => {
+  const handlePhasePlannerClick = useCallback(() => {
     if (phases[selectedIndex]) {
       const phase = phases[selectedIndex];
       history.push(`/feature/${phase.feature_uuid}/phase/${phase.uuid}/planner`);
     }
-  };
+  }, [history, phases, selectedIndex]);
 
   const getTotalBounties = useCallback(
     async (statusData: any) => {
@@ -323,8 +321,10 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
   }, [ui.meInfo, props.workspace_uuid, main]);
 
   const tabs: EuiTabbedContentProps['tabs'] = useMemo(
-    () =>
-      phases.map((phase: Phase, index: number) => ({
+    () => {
+      const checkboxIdToSelectedMapLanguage = {};
+      
+      return phases.map((phase: Phase, index: number) => ({
         id: `${index}`,
         name: phase.name,
         prepend: <PhaseOptions handleClose={handleEditPhaseClick} />,
@@ -398,7 +398,8 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
             </DisplayBounties>
           </TabContent>
         )
-      })),
+      }));
+    },
     [
       phases,
       canPostBounty,
@@ -406,12 +407,12 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
       totalBounties,
       onPanelClick,
       checkboxIdToSelectedMap,
-      checkboxIdToSelectedMapLanguage,
       loading,
       currentItems,
       page,
       selectedIndex,
-      phaseTickets
+      phaseTickets,
+      languageString
     ]
   );
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { EuiLoadingSpinner } from '@elastic/eui';
 import styled from 'styled-components';
 import { AuthProps } from '../../people/interfaces';
@@ -39,7 +39,7 @@ export default function SphinxAppLoginDeeplink(props: AuthProps) {
 
   const qrString = makeQR(challenge, ts);
 
-  async function startPolling(challenge: string) {
+  const startPolling = useCallback(async (challenge: string) => {
     let i = 0;
     interval = setInterval(async () => {
       try {
@@ -61,9 +61,9 @@ export default function SphinxAppLoginDeeplink(props: AuthProps) {
         console.log('Auth interval error', e);
       }
     }, 3000);
-  }
+  }, [main, props, ui]);
 
-  async function getChallenge() {
+  const getChallenge = useCallback(async () => {
     const res = await api.get('ask');
     if (res.challenge) {
       setChallenge(res.challenge);
@@ -72,11 +72,14 @@ export default function SphinxAppLoginDeeplink(props: AuthProps) {
     if (res.ts) {
       setTS(res.ts);
     }
-  }
+  }, [startPolling]);
 
   useEffect(() => {
     getChallenge();
-  }, []);
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [getChallenge]);
 
   useEffect(() => {
     if (challenge && ts) {
@@ -84,7 +87,7 @@ export default function SphinxAppLoginDeeplink(props: AuthProps) {
       el.href = qrString;
       el.click();
     }
-  }, [challenge, ts]);
+  }, [challenge, ts, qrString]);
 
   return (
     <ConfirmWrap>

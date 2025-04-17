@@ -325,7 +325,7 @@ const InvitePeopleSearch = (props: InvitePeopleSearchProps) => {
       );
     }
     updatePeopleData();
-  }, [checkboxIdToSelectedMap, searchValue]);
+  }, [checkboxIdToSelectedMap, searchValue, main, props?.peopleList]);
 
   useEffect(() => {
     if (

@@ -274,7 +274,7 @@ const WorkspaceDetails = (props: {
         console.warn('Poll invoices error', e);
       }
     }, 6000);
-  }, []);
+  }, [main, uuid, getWorkspaceBudget]);
 
   useEffect(() => {
     pollInvoices();
@@ -313,7 +313,7 @@ const WorkspaceDetails = (props: {
     if (uuid && ui.meInfo) {
       getUserRoles(ui.meInfo);
     }
-  }, [getWorkspaceUsers, getWorkspaceBudget, getPaymentsHistory, getUserRoles]);
+  }, [getWorkspaceUsers, getWorkspaceBudget, getPaymentsHistory, getUserRoles, uuid, ui.meInfo]);
 
   return (
     <Container>

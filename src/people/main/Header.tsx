@@ -269,10 +269,10 @@ function Header() {
 
   const getUserWorkspaces = useCallback(async () => {
     const id = ui._meInfo?.id || 0;
-    if (id != 0) {
+    if (id !== 0) {
       await main.getUserWorkspaces(id);
     }
-  }, [main, ui.selectedPerson]);
+  }, [main, ui._meInfo?.id]);
 
   useEffect(() => {
     getUserWorkspaces();
@@ -319,7 +319,7 @@ function Header() {
 
   const [showWelcome, setShowWelcome] = useState(false);
 
-  async function testChallenge(chal: string) {
+  const testChallenge = useCallback(async (chal: string) => {
     try {
       const me: any = await api.get(`poll/${chal}`);
       if (me && me.pubkey) {
@@ -330,7 +330,7 @@ function Header() {
     } catch (e: any) {
       console.log(e);
     }
-  }
+  }, [ui, setShowWelcome]);
 
   const showSignIn = () => {
     setIsOpenStartupModal(true);
@@ -371,7 +371,7 @@ function Header() {
         console.log('e', e);
       }
     })();
-  }, []);
+  }, [history, location.pathname, main, testChallenge]);
 
   function goToEditSelf() {
     if (ui.meInfo?.id && !location.pathname.includes(`/p/${ui.meInfo.uuid}`)) {
