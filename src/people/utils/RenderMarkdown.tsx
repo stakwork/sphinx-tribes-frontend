@@ -125,7 +125,6 @@ export function renderMarkdown(markdown: any, customStyles?: CustomStyles) {
   return (
     <MarkdownContainer textColor={bubbleTextColor}>
       <ReactMarkdown
-        children={markdown}
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeRaw]}
         components={{
@@ -173,7 +172,9 @@ export function renderMarkdown(markdown: any, customStyles?: CustomStyles) {
             );
           }
         }}
-      />
+      >
+        {markdown}
+      </ReactMarkdown>
     </MarkdownContainer>
   );
 }

@@ -3,7 +3,7 @@ import { Button, QR } from '../../components/common';
 
 export interface TorSaveQRProps {
   url: string;
-  goBack: Function;
+  goBack: () => void;
 }
 
 export default function TorSaveQR(props: TorSaveQRProps) {

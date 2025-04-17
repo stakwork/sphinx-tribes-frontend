@@ -399,7 +399,7 @@ const WorkspaceFeature = () => {
     } else {
       setPermissionsChecked(true);
     }
-  }, [getUserRoles, ui.meInfo]);
+  }, [getUserRoles, ui.meInfo, featureData?.workspace_uuid]);
 
   const submitField = async (
     field: string,

@@ -135,7 +135,7 @@ export const BudgetWrapComponent = (props: { org: Workspace | undefined; uuid: s
       .catch((e: any) => {
         console.log('Update Payment Histories error', e);
       });
-  }, [main, getPaymentsHistory]);
+  }, [main, getPaymentsHistory, uuid]);
 
   const openPaymentHistory = () => {
     updateWorkspaceBudget();

@@ -39,7 +39,7 @@ const ManageButton = (props: { user_pubkey: string; org: any; action: () => void
     } catch (e) {
       console.error('User roles error', e);
     }
-  }, [org.uuid, main, user_pubkey]);
+  }, [org.uuid, main]);
 
   useEffect(() => {
     getUserRoles();
