@@ -20,7 +20,6 @@ import { ModelOption } from './modelSelector.tsx';
 import { ActionArtifactRenderer } from './ActionArtifactRenderer';
 import ChatStatusDisplay from './ChatStatusDisplay.tsx';
 
-
 import SplashScreen from './ChatSplashScreen';
 
 interface RouteParams {
