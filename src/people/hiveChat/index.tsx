@@ -774,60 +774,76 @@ export const HiveChatView: React.FC = observer(() => {
     };
   }, [collapsed]);
 
-  const handleSendMessage = async (messageToSend?: string) => {
-    const messageText = messageToSend || message;
-    if (!messageText.trim() || isSending) return;
+  const handleSendMessage = useCallback(
+    async (messageToSend?: string) => {
+      const messageText = messageToSend || message;
+      if (!messageText.trim() || isSending) return;
 
-    setIsSending(true);
-    try {
-      let socketId = websocketSessionId;
-      if (socketId === '') {
-        socketId = localStorage.getItem('websocket_token') || '';
-      }
-
-      const sentMessage = await chat.sendMessage(
-        chatId,
-        messageText,
-        selectedModel.value,
-        socketId,
-        uuid,
-        isBuild,
-        undefined,
-        pdfUrl,
-        actionArtifact
-      );
-
-      if (sentMessage === undefined) {
-        setMessage('');
-      }
-
-      if (sentMessage) {
-        chat.addMessage(sentMessage);
-        setMessage('');
-        setPdfUrl('');
-        setShowSplash(false);
-
-        const textarea = document.querySelector('textarea');
-        if (textarea) {
-          textarea.style.height = '60px';
+      setIsSending(true);
+      try {
+        let socketId = websocketSessionId;
+        if (socketId === '') {
+          socketId = localStorage.getItem('websocket_token') || '';
         }
-        if (chatHistoryRef.current) {
-          chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
+
+        const sentMessage = await chat.sendMessage(
+          chatId,
+          messageText,
+          selectedModel.value,
+          socketId,
+          uuid,
+          isBuild,
+          undefined,
+          pdfUrl,
+          actionArtifact
+        );
+
+        if (sentMessage === undefined) {
+          setMessage('');
         }
+
+        if (sentMessage) {
+          chat.addMessage(sentMessage);
+          setMessage('');
+          setPdfUrl('');
+          setShowSplash(false);
+
+          const textarea = document.querySelector('textarea');
+          if (textarea) {
+            textarea.style.height = '60px';
+          }
+          if (chatHistoryRef.current) {
+            chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
+          }
+        }
+      } catch (error) {
+        console.error('Error sending message:', error);
+        ui.setToasts([
+          {
+            title: 'Error',
+            color: 'danger',
+            text: 'Failed to send message'
+          }
+        ]);
+      } finally {
+        setIsSending(false);
       }
-    } catch (error) {
-      console.error('Error sending message:', error);
-      ui.setToasts([
-        {
-          title: 'Error',
-          color: 'danger',
-          text: 'Failed to send message'
-        }
-      ]);
-    } finally {
-      setIsSending(false);
-    }
-  };
+    },
+    [
+      message,
+      isSending,
+      websocketSessionId,
+      chat,
+      chatId,
+      selectedModel.value,
+      uuid,
+      isBuild,
+      pdfUrl,
+      actionArtifact,
+      ui,
+      chatHistoryRef
+    ]
+  );
 
   useEffect(() => {
     const initializeChat = async () => {

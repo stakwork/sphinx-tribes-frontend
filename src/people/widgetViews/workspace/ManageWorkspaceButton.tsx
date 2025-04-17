@@ -24,7 +24,7 @@ const ManageButton = (props: { user_pubkey: string; org: any; action: () => void
   const [workspaceUser, setWorkspaceUser] = useState<WorkspaceUser | undefined>();
   const { main, ui } = useStores();
 
-  const { user_pubkey, org, action } = props;
+  const { org, action } = props;
 
   const isWorkspaceAdmin = org?.owner_pubkey === ui.meInfo?.owner_pubkey;
   const pubkey = workspaceUser?.owner_pubkey;
