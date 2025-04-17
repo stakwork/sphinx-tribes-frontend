@@ -25,7 +25,7 @@ const RemoveButtonContainer = styled.div<styledProps>`
   right: 45px;
   display: flex;
   justify-content: flex-end;
-  align-item: center;
+  align-items: center;
   cursor: pointer;
   .buttonText {
     font-family: 'Barlow';
@@ -74,7 +74,7 @@ export default function LoomViewerRecorderNew(props: LoomViewProps) {
     }
 
     setupLoom();
-  }, []);
+  }, [onChange, setIsVideo]);
 
   if (readOnly && !videoUrl) {
     return null;

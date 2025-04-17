@@ -359,7 +359,7 @@ const TicketEditor = observer(
       if (!isSingleTicket) {
         setVersions(versionsArray);
       }
-    }, [groupTickets, latestTicket?.version]);
+    }, [groupTickets, latestTicket?.version, isSingleTicket]);
 
     useEffect(() => {
       const isChanged =

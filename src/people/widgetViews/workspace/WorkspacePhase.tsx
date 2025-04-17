@@ -137,9 +137,7 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
     []
   );
 
-  const checkboxIdToSelectedMapLanguage = {};
   const languageString = '';
-
   const selectedWidget = 'bounties';
 
   const history = useHistory();
@@ -151,13 +149,16 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
     setCurrentItems(phaseBountyLimit);
   };
 
-  const onPanelClick = (activeWorkspace?: string, bounty?: any) => {
-    if (bounty?.id) {
-      history.push(`/bounty/${bounty.id}`);
-    } else {
-      history.push(`/feature/${props.workspace_uuid}`);
-    }
-  };
+  const onPanelClick = useCallback(
+    (activeWorkspace?: string, bounty?: any) => {
+      if (bounty?.id) {
+        history.push(`/bounty/${bounty.id}`);
+      } else {
+        history.push(`/feature/${props.workspace_uuid}`);
+      }
+    },
+    [history, props.workspace_uuid]
+  );
 
   const handleAddPhaseClick = () => {
     setShowAddPhaseModal(true);
@@ -183,12 +184,12 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
     setIsPostBountyModalOpen(true);
   };
 
-  const handlePhasePlannerClick = () => {
+  const handlePhasePlannerClick = useCallback(() => {
     if (phases[selectedIndex]) {
       const phase = phases[selectedIndex];
       history.push(`/feature/${phase.feature_uuid}/phase/${phase.uuid}/planner`);
     }
-  };
+  }, [history, phases, selectedIndex]);
 
   const getTotalBounties = useCallback(
     async (statusData: any) => {
@@ -322,98 +323,98 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
     }
   }, [ui.meInfo, props.workspace_uuid, main]);
 
-  const tabs: EuiTabbedContentProps['tabs'] = useMemo(
-    () =>
-      phases.map((phase: Phase, index: number) => ({
-        id: `${index}`,
-        name: phase.name,
-        prepend: <PhaseOptions handleClose={handleEditPhaseClick} />,
-        content: (
-          <TabContent>
-            <PostABounty>
-              {canPostBounty && (
+  const tabs: EuiTabbedContentProps['tabs'] = useMemo(() => {
+    const checkboxIdToSelectedMapLanguage = {};
+
+    return phases.map((phase: Phase, index: number) => ({
+      id: `${index}`,
+      name: phase.name,
+      prepend: <PhaseOptions handleClose={handleEditPhaseClick} />,
+      content: (
+        <TabContent>
+          <PostABounty>
+            {canPostBounty && (
+              <>
+                <Button
+                  onClick={handlePhasePlannerClick}
+                  style={{
+                    backgroundColor: '#49C998',
+                    borderRadius: '6px',
+                    padding: '15px 20px'
+                  }}
+                >
+                  <div>Phase Planner</div>
+                </Button>
+                <Button
+                  onClick={handlePostBountyClick}
+                  style={{
+                    backgroundColor: '#49C998',
+                    borderRadius: '6px'
+                  }}
+                >
+                  <div>
+                    <img src={addBounty} alt="" />
+                    Post a Bounty
+                  </div>
+                </Button>
+              </>
+            )}
+          </PostABounty>
+          <DisplayBounties>
+            <div
+              style={{
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                height: '100%',
+                overflowY: 'auto'
+              }}
+            >
+              {totalBounties > 0 || phaseTickets.length > 0 ? (
                 <>
-                  <Button
-                    onClick={handlePhasePlannerClick}
-                    style={{
-                      backgroundColor: '#49C998',
-                      borderRadius: '6px',
-                      padding: '15px 20px'
-                    }}
-                  >
-                    <div>Phase Planner</div>
-                  </Button>
-                  <Button
-                    onClick={handlePostBountyClick}
-                    style={{
-                      backgroundColor: '#49C998',
-                      borderRadius: '6px'
-                    }}
-                  >
-                    <div>
-                      <img src={addBounty} alt="" />
-                      Post a Bounty
-                    </div>
-                  </Button>
+                  {totalBounties > 0 && (
+                    <WidgetSwitchViewer
+                      onPanelClick={onPanelClick}
+                      checkboxIdToSelectedMap={checkboxIdToSelectedMap}
+                      checkboxIdToSelectedMapLanguage={checkboxIdToSelectedMapLanguage}
+                      fromBountyPage={true}
+                      selectedWidget={selectedWidget}
+                      loading={loading}
+                      currentItems={currentItems}
+                      setCurrentItems={setCurrentItems}
+                      page={page}
+                      setPage={setPage}
+                      languageString={languageString}
+                      phaseTotalBounties={totalBounties}
+                      featureUuid={phases[selectedIndex].feature_uuid}
+                      phaseUuid={phases[selectedIndex].uuid}
+                    />
+                  )}
+                  <PhaseTicketGroups tickets={phaseTickets} />
                 </>
+              ) : (
+                <p>No Bounties Yet!</p>
               )}
-            </PostABounty>
-            <DisplayBounties>
-              <div
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  height: '100%',
-                  overflowY: 'auto'
-                }}
-              >
-                {totalBounties > 0 || phaseTickets.length > 0 ? (
-                  <>
-                    {totalBounties > 0 && (
-                      <WidgetSwitchViewer
-                        onPanelClick={onPanelClick}
-                        checkboxIdToSelectedMap={checkboxIdToSelectedMap}
-                        checkboxIdToSelectedMapLanguage={checkboxIdToSelectedMapLanguage}
-                        fromBountyPage={true}
-                        selectedWidget={selectedWidget}
-                        loading={loading}
-                        currentItems={currentItems}
-                        setCurrentItems={setCurrentItems}
-                        page={page}
-                        setPage={setPage}
-                        languageString={languageString}
-                        phaseTotalBounties={totalBounties}
-                        featureUuid={phases[selectedIndex].feature_uuid}
-                        phaseUuid={phases[selectedIndex].uuid}
-                      />
-                    )}
-                    <PhaseTicketGroups tickets={phaseTickets} />
-                  </>
-                ) : (
-                  <p>No Bounties Yet!</p>
-                )}
-              </div>
-            </DisplayBounties>
-          </TabContent>
-        )
-      })),
-    [
-      phases,
-      canPostBounty,
-      handlePhasePlannerClick,
-      totalBounties,
-      onPanelClick,
-      checkboxIdToSelectedMap,
-      checkboxIdToSelectedMapLanguage,
-      loading,
-      currentItems,
-      page,
-      selectedIndex,
-      phaseTickets
-    ]
-  );
+            </div>
+          </DisplayBounties>
+        </TabContent>
+      )
+    }));
+  }, [
+    phases,
+    canPostBounty,
+    handlePhasePlannerClick,
+    totalBounties,
+    onPanelClick,
+    checkboxIdToSelectedMap,
+    loading,
+    currentItems,
+    page,
+    selectedIndex,
+    phaseTickets,
+    languageString
+  ]);
 
   const selectedTab = useMemo(() => tabs[selectedIndex], [selectedIndex, tabs]);
 

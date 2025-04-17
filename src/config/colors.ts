@@ -98,7 +98,7 @@ const palette = {
 
 type PalletType = 'dark' | 'light';
 
-const colors: { [key in PalletType]: typeof palette } = {
+const colors: Record<PalletType, typeof palette> = {
   dark: {
     ...palette
   },

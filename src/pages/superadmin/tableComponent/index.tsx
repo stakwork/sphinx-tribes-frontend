@@ -414,7 +414,7 @@ export const MyTable = ({
         observer.unobserve(currentLoaderRef);
       }
     };
-  }, [isProviderPopoverOpen]);
+  }, [isProviderPopoverOpen, getProviders, providersCurrentPage]);
 
   return (
     <>

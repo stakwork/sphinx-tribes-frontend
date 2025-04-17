@@ -205,7 +205,7 @@ const AddBudgetModal = (props: AddBudgetModalProps) => {
       setInvoiceState('PAID');
       props.setInvoiceStatus(false);
     }
-  }, [invoiceStatus]);
+  }, [invoiceStatus, props]);
 
   return (
     <Modal
