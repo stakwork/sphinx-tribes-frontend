@@ -13,10 +13,12 @@ import { useParams, useHistory } from 'react-router-dom';
 import { renderMarkdown } from 'people/utils/RenderMarkdown';
 import SidebarComponent from 'components/common/SidebarComponent';
 import { Body } from 'pages/tickets/style';
+import { Box } from '@mui/system';
 import { Phase, Toast } from '../interface';
 import { FullNoBudgetWrap, FullNoBudgetText } from '../style';
 import { createAndNavigateToHivechat } from '../../../../utils/hivechatUtils';
 import { EditableField } from '../EditableField';
+import { useDeleteConfirmationModal } from '../../../../components/common';
 import ActivitiesHeader from './header';
 
 export const ActivitiesContainer = styled.div`
@@ -416,6 +418,8 @@ const Activities = observer(() => {
   const [editedContent, setEditedContent] = useState('');
   const [toasts, setToasts] = useState<Toast[]>([]);
 
+  const { openDeleteConfirmation } = useDeleteConfirmationModal();
+
   let interval: NodeJS.Timeout | number | null = null;
 
   useEffect(() => {
@@ -676,22 +680,48 @@ const Activities = observer(() => {
   };
 
   const handleDeleteActivity = async (activityId: string) => {
-    if (window.confirm('Are you sure you want to delete this activity?')) {
-      try {
-        const success = await activityStore.deleteActivity(activityId);
-        if (success) {
-          if (selectedActivity?.ID === activityId) {
-            setSelectedActivity(null);
+    try {
+      const success = await activityStore.deleteActivity(activityId);
+      if (success) {
+        setToasts([
+          {
+            id: `${Date.now()}-activity-success`,
+            title: 'Success',
+            color: 'success',
+            text: 'Activity deleted successfully!'
           }
-          await activityStore.fetchWorkspaceActivities(uuid);
-        } else {
-          alert('Failed to delete activity');
+        ]);
+        if (selectedActivity?.ID === activityId) {
+          setSelectedActivity(null);
         }
-      } catch (error) {
-        console.error('Error deleting activity:', error);
-        alert('Failed to delete activity');
+        await activityStore.fetchWorkspaceActivities(uuid);
+      } else {
+        setToasts([
+          {
+            id: `${Date.now()}-activity-success`,
+            title: 'Error',
+            color: 'danger',
+            text: 'Failed to delete Activity!'
+          }
+        ]);
       }
+    } catch (error) {
+      console.error('Error deleting activity:', error);
     }
+  };
+
+  const handleDeleteClick = (activityId: string) => {
+    openDeleteConfirmation({
+      onDelete: () => handleDeleteActivity(activityId),
+      children: (
+        <Box fontSize={20} textAlign="center">
+          Are you sure you want to <br />
+          <Box component="span" fontWeight="500">
+            Delete this activity?
+          </Box>
+        </Box>
+      )
+    });
   };
 
   const removeItem = (field: 'actions' | 'questions', index: number) => {
@@ -1027,9 +1057,7 @@ const Activities = observer(() => {
               Build with Hivechat
             </BuildButton>
           )}
-          <DeleteButton onClick={() => handleDeleteActivity(selectedActivity.ID)}>
-            Delete
-          </DeleteButton>
+          <DeleteButton onClick={() => handleDeleteClick(selectedActivity.ID)}>Delete</DeleteButton>
         </ActionButtons>
       </>
     );
