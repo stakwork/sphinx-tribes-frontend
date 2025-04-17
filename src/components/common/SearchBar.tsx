@@ -167,7 +167,6 @@ function SearchBar({
         placeholder={props.placeholder}
         style={{ ...props.style }}
         aria-autocomplete="list"
-        aria-expanded={searchValue.length > 0}
       />
       {searchValue ? (
         <MaterialIcon

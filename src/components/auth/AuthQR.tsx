@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { EuiLoadingSpinner } from '@elastic/eui';
 import styled from 'styled-components';
 import { observer } from 'mobx-react-lite';
@@ -35,31 +35,35 @@ function AuthQR(props: AuthProps) {
 
   const qrString = makeQR(challenge, ts);
 
-  async function startPolling(challenge: string) {
-    let i = 0;
-    interval = setInterval(async () => {
-      try {
-        const me: MeInfo = await api.get(`poll/${challenge}`);
-        if (me && me?.pubkey) {
-          await ui.setMeInfo(me);
-          const person = formatRelayPerson(me);
-          await main.saveProfile(person);
+  const startPolling = useCallback(
+    async (challenge: string) => {
+      let i = 0;
+      interval = setInterval(async () => {
+        try {
+          const me: MeInfo = await api.get(`poll/${challenge}`);
+          if (me && me?.pubkey) {
+            await ui.setMeInfo(me);
+            const person = formatRelayPerson(me);
+            await main.saveProfile(person);
 
-          await main.getSelf(me);
-          setChallenge('');
-          if (props.onSuccess) props.onSuccess();
-          if (interval) clearInterval(interval);
+            await main.getSelf(me);
+            setChallenge('');
+            if (props.onSuccess) props.onSuccess();
+            if (interval) clearInterval(interval);
+          }
+          i++;
+          if (i > 100) {
+            if (interval) clearInterval(interval);
+          }
+        } catch (e) {
+          console.log(e, 'Error');
         }
-        i++;
-        if (i > 100) {
-          if (interval) clearInterval(interval);
-        }
-      } catch (e) {
-        console.log(e, 'Error');
-      }
-    }, 3000);
-  }
-  async function getChallenge() {
+      }, 3000);
+    },
+    [main, props, ui]
+  );
+
+  const getChallenge = useCallback(async () => {
     const res = await api.get('ask');
     if (res.challenge) {
       setChallenge(res.challenge);
@@ -68,13 +72,14 @@ function AuthQR(props: AuthProps) {
     if (res.ts) {
       setTS(res.ts);
     }
-  }
+  }, [startPolling]);
+
   useEffect(() => {
     getChallenge();
     return function cleanup() {
       if (interval) clearInterval(interval);
     };
-  }, []);
+  }, [getChallenge]);
 
   return (
     <ConfirmWrap style={{ ...props.style }}>

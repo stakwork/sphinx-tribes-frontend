@@ -81,33 +81,36 @@ function SignIn(props: AuthProps) {
     if (ui.websocketToken) {
       await main.getLnAuth();
     }
-  }, [ui.websocketToken]);
+  }, [ui.websocketToken, main]);
 
   useEffect(() => {
     getLnUrl();
   }, [getLnUrl]);
 
-  const onHandle = (event: any) => {
-    const res = JSON.parse(event.data);
-    ui.setWebsocketToken(res.body);
+  const onHandle = useCallback(
+    (event: any) => {
+      const res = JSON.parse(event.data);
+      ui.setWebsocketToken(res.body);
 
-    if (res.msg === SOCKET_MSG.user_connect) {
-      const user = ui.meInfo;
-      if (user) {
-        user.websocketToken = res.body;
-        ui.setMeInfo(user);
-      }
-    } else if (res.msg === SOCKET_MSG.lnauth_success && res.k1 === main.lnauth.k1) {
-      if (res.status) {
-        ui.setShowSignIn(false);
-        ui.setMeInfo({ ...res.user, tribe_jwt: res.jwt, jwt: res.jwt });
-        ui.setSelectedPerson(res.id);
+      if (res.msg === SOCKET_MSG.user_connect) {
+        const user = ui.meInfo;
+        if (user) {
+          user.websocketToken = res.body;
+          ui.setMeInfo(user);
+        }
+      } else if (res.msg === SOCKET_MSG.lnauth_success && res.k1 === main.lnauth.k1) {
+        if (res.status) {
+          ui.setShowSignIn(false);
+          ui.setMeInfo({ ...res.user, tribe_jwt: res.jwt, jwt: res.jwt });
+          ui.setSelectedPerson(res.id);
 
-        main.setLnAuth({ encode: '', k1: '' });
-        main.setLnToken(res.jwt);
+          main.setLnAuth({ encode: '', k1: '' });
+          main.setLnToken(res.jwt);
+        }
       }
-    }
-  };
+    },
+    [ui, main]
+  );
 
   async function handleTestUserLogin() {
     setTestUserLogin(true);
@@ -128,7 +131,7 @@ function SignIn(props: AuthProps) {
     socket.onclose = () => {
       console.log('Socket disconnected');
     };
-  }, []);
+  }, [onHandle]);
 
   return useObserver(() => (
     <div>
@@ -235,7 +238,7 @@ function SignIn(props: AuthProps) {
           </Column>
           <Divider />
           <Column style={{ paddingTop: 0 }}>
-            <Description>I don't have Sphinx!</Description>
+            <Description>I don&apos;t have Sphinx!</Description>
             <IconButton
               text={'Get Sphinx'}
               endingIcon={'launch'}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { EuiButton } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
@@ -70,15 +70,18 @@ export default function FocusedWidget(props: FocusedWidgetProps) {
     return function cleanup() {
       setDisableFormButtons(false);
     };
-  }, []);
+  }, [setDisableFormButtons]);
 
-  function getFieldToUpdate(e: any) {
-    let valueToUpdate = `${name}.${item.name}.${e.name}`;
-    if (!single) {
-      valueToUpdate = `${name}.${item.name}[${selectedIndex}].${e.name}`;
-    }
-    return valueToUpdate;
-  }
+  const getFieldToUpdate = useCallback(
+    (e: any) => {
+      let valueToUpdate = `${name}.${item.name}.${e.name}`;
+      if (!single) {
+        valueToUpdate = `${name}.${item.name}[${selectedIndex}].${e.name}`;
+      }
+      return valueToUpdate;
+    },
+    [name, item.name, single, selectedIndex]
+  );
 
   function getInitialValueByType(type: any) {
     let value: any = '';
@@ -112,7 +115,7 @@ export default function FocusedWidget(props: FocusedWidgetProps) {
       }
       setFieldValue(firstInputName, vl);
     }
-  }, [selectedIndex]);
+  }, [selectedIndex, getFieldToUpdate, item.fields, newState, setFieldValue, single]);
 
   function cancel(dismount: any) {
     // new widget cancelled, revert form state
