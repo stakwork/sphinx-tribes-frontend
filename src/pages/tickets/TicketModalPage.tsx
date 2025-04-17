@@ -159,7 +159,7 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
     getBounty();
   }, [getBounty, removeNextAndPrev]);
 
-  const isDirectAccess = useCallback(() => !document.referrer, [location.pathname]);
+  const isDirectAccess = useCallback(() => !document.referrer, []);
 
   const goBack = () => {
     setVisible(false);

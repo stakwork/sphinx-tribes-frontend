@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/typedef */
-import React, { useEffect, useState, useRef, useMemo } from 'react';
+import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useHistory, useParams } from 'react-router-dom';
 import { ChatMessage } from 'store/interface';
@@ -157,57 +157,60 @@ export const HiveBuildView: React.FC = observer(() => {
     history.push(`/workspace/${uuid}`);
   };
 
-  const handleSendMessage = async (messageToSend?: string) => {
-    const messageText = messageToSend || message;
-    if (!messageText.trim() || isSending) return;
+  const handleSendMessage = useCallback(
+    async (messageToSend?: string) => {
+      const messageText = messageToSend || message;
+      if (!messageText.trim() || isSending) return;
 
-    setIsSending(true);
-    const timestamp = new Date().toISOString();
+      setIsSending(true);
+      const timestamp = new Date().toISOString();
 
-    try {
-      chat.addMessage({
-        id: Date.now().toString(),
-        chatId: chatId,
-        message: messageText,
-        role: 'user',
-        timestamp,
-        status: 'sent',
-        source: 'user',
-        workspaceUUID: uuid
-      });
+      try {
+        chat.addMessage({
+          id: Date.now().toString(),
+          chatId: chatId,
+          message: messageText,
+          role: 'user',
+          timestamp,
+          status: 'sent',
+          source: 'user',
+          workspaceUUID: uuid
+        });
 
-      await mainStore.createStakworkProject(messageText);
-      setMessage('');
+        await mainStore.createStakworkProject(messageText);
+        setMessage('');
 
-      chat.addMessage({
-        id: (Date.now() + 1).toString(),
-        chatId: chatId,
-        message: "I'm on it. Let me generate a PR.",
-        role: 'assistant',
-        timestamp,
-        status: 'sent',
-        source: 'agent',
-        workspaceUUID: uuid
-      });
+        chat.addMessage({
+          id: (Date.now() + 1).toString(),
+          chatId: chatId,
+          message: "I'm on it. Let me generate a PR.",
+          role: 'assistant',
+          timestamp,
+          status: 'sent',
+          source: 'agent',
+          workspaceUUID: uuid
+        });
 
-      await fetch('/api/generate-pr', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: messageText, uuid })
-      });
-    } catch (error) {
-      console.error('Error sending message:', error);
-      ui.setToasts([
-        {
-          title: 'Error',
-          color: 'danger',
-          text: 'Failed to send message'
-        }
-      ]);
-    } finally {
-      setIsSending(false);
-    }
-  };
+        await fetch('/api/generate-pr', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: messageText, uuid })
+        });
+      } catch (error) {
+        console.error('Error sending message:', error);
+        ui.setToasts([
+          {
+            title: 'Error',
+            color: 'danger',
+            text: 'Failed to send message'
+          }
+        ]);
+      } finally {
+        setIsSending(false);
+      }
+    },
+    [message, isSending, chat, chatId, ui, uuid]
+  );
 
   useEffect(() => {
     const initializeChat = async () => {
@@ -235,7 +238,7 @@ export const HiveBuildView: React.FC = observer(() => {
     };
 
     initializeChat();
-  }, [chatId, chat]);
+  }, [chatId, chat, handleSendMessage]);
 
   const messages = useMemo(() => chat.chatMessages[chatId] || [], [chat.chatMessages, chatId]);
 
