@@ -21,19 +21,25 @@ export function useScroll() {
 
 export function usePageScroll(goForward: any, goBackwards?: any) {
   const [loadingBottom, setLoadingBottom] = useState(false);
+  const [loadingTop, setLoadingTop] = useState(false);
 
   async function handleScroll(e: any) {
     const bottom = e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
+    const top = e.target.scrollTop === 0;
 
     try {
       if (bottom) {
         setLoadingBottom(true);
         await goForward();
         setLoadingBottom(false);
+      } else if (top && goBackwards) {
+        setLoadingTop(true);
+        await goBackwards();
+        setLoadingTop(false);
       }
     } catch (e) {
       console.log('oops!', e);
     }
   }
-  return { handleScroll, loadingBottom, loadingTop: false };
+  return { handleScroll, loadingBottom, loadingTop };
 }

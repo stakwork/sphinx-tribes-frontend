@@ -37,7 +37,7 @@ export const createSocketInstance = (): WebSocket => {
 
     if (uniqueID === null || uniqueID === '') {
       uniqueID = uuidv4();
-      localStorage.setItem('websocket_token', uniqueID!);
+      localStorage.setItem('websocket_token', uniqueID);
     }
 
     socket = new WebSocket(`${URL}?uniqueId=${uniqueID}`);
