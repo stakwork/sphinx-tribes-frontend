@@ -275,6 +275,19 @@ function Header() {
   }, [main, ui.selectedPerson]);
 
   useEffect(() => {
+    const meInfo = localStorage.getItem('meInfo');
+    const user = JSON.parse(meInfo as string);
+    if (user.tribe_jwt && meInfo) {
+      try {
+        ui.setMeInfo(user);
+        ui.setShowSignIn(false);
+      } catch (e) {
+        console.error('Error parsing meInfo from storage');
+      }
+    }
+  }, [ui]);
+
+  useEffect(() => {
     getUserWorkspaces();
   }, [getUserWorkspaces]);
 
