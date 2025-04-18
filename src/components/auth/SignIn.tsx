@@ -107,13 +107,17 @@ function SignIn(props: AuthProps) {
         if (res.jwt) {
           localStorage.setItem('sphinx_jwt', res.jwt);
         }
-        localStorage.setItem('meInfo', JSON.stringify({ ...res.user, tribe_jwt: res.jwt, jwt: res.jwt }));
-
+        localStorage.setItem(
+          'meInfo',
+          JSON.stringify({ ...res.user, tribe_jwt: res.jwt, jwt: res.jwt })
+        );
         main.setLnAuth({ encode: '', k1: '' });
         main.setLnToken(res.jwt);
 
         // Optionally, refresh the page or trigger a UI update to reflect login
-        if (props.onSuccess) props.onSuccess();
+        if (props.onSuccess) {
+          props.onSuccess();
+        }
         main.getPeople({ resetPage: true });
       }
     }
