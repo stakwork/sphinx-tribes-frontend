@@ -282,7 +282,7 @@ function Header() {
         ui.setMeInfo(user);
         ui.setShowSignIn(false);
       } catch (e) {
-        console.error('Error parsing meInfo from storage');
+        console.error('Error parsing meInfo from local storage');
       }
     }
   }, [ui]);
