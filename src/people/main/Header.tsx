@@ -276,9 +276,9 @@ function Header() {
 
   useEffect(() => {
     const meInfo = localStorage.getItem('meInfo');
-    const user = JSON.parse(meInfo as string);
-    if (user.tribe_jwt && meInfo) {
+    if (meInfo) {
       try {
+        const user = JSON.parse(meInfo);
         ui.setMeInfo(user);
         ui.setShowSignIn(false);
       } catch (e) {
