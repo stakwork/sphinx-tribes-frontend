@@ -97,17 +97,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ user, onSendMessage }) => {
         Welcome to Hive Chat, AI Native Product Development. How can I help you today?
       </WelcomeTagline>
       <ButtonsContainer>
-        <ActionButton onClick={() => handleButtonClick('Make a change to the leaderboard')}>
-          Make a change to the leaderboard
-        </ActionButton>
-        <ActionButton onClick={() => handleButtonClick('Update the ticket editor component')}>
-          Update the ticket editor component
-        </ActionButton>
-        <ActionButton
-          onClick={() => handleButtonClick('Can you explain how to create a new feature?')}
-        >
-          Can you explain how to create a new feature?
-        </ActionButton>
+        {/* Buttons removed as requested */}
       </ButtonsContainer>
     </SplashScreenContainer>
   );
