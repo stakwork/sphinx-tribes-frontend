@@ -3571,7 +3571,7 @@ export class MainStore {
         end_date: date_range.end_date
       };
 
-      const r: any = await fetch(`${TribesURL}/metrics/csv?workspace=${workspace}`, {
+      const r: Response = await fetch(`${TribesURL}/metrics/csv?workspace=${workspace}`, {
         method: 'POST',
         mode: 'cors',
         body: JSON.stringify(body),
@@ -3582,7 +3582,13 @@ export class MainStore {
         }
       });
 
-      return r.json();
+      if (!r.ok) {
+        console.error('Error in CSV export API response:', r.status, r.statusText);
+        return undefined;
+      }
+
+      const responseData = await r.json();
+      return responseData;
     } catch (e) {
       console.error('exportMetricsBountiesCsv', e);
       return undefined;
