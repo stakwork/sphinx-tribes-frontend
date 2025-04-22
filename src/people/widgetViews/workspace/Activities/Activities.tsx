@@ -395,7 +395,7 @@ const BuildButton = styled(Button)`
   }
   margin-bottom: 10px;
   margin-left: 10px;
-  margin-right: 8px;
+  margin-right: 9px;
 `;
 
 const Activities = observer(() => {
