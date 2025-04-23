@@ -88,7 +88,7 @@ function App() {
   }, [setPosthog]);
 
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={theme} data-testid="app-component">
       <Router history={history}>
         <ModeDispatcher>{(mode: any) => <Pages mode={mode} />}</ModeDispatcher>
       </Router>
