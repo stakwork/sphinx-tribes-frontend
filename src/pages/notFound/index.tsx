@@ -16,7 +16,7 @@ export function NotFoundPage() {
   const history = useHistory();
 
   return (
-    <NotFoundPageContainer>
+    <NotFoundPageContainer data-testid="not-found-page-component">
       <ContentWrapper>
         <TextContent>
           <div>

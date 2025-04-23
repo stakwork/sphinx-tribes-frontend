@@ -58,7 +58,7 @@ const ExpiredInvoice = (props: {
     props.setLnInvoice('');
   };
   return (
-    <Container>
+    <Container data-testid="expired-invoice-component">
       <ImgWrapper>
         <img src="/static/expired_invoice.svg" alt="expired" />
       </ImgWrapper>

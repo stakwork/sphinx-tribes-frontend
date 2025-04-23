@@ -11,7 +11,7 @@ const Row = styled.div`
 `;
 export default function Wanted(props: I.Wanted) {
   return (
-    <Wrap>
+    <Wrap data-testid="wanted-component">
       <div>{props.title}</div>
       <Row>
         <div>{props.priceMin}</div>

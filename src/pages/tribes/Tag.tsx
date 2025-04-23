@@ -28,7 +28,7 @@ export default function T(props: { type: string; iconOnly?: boolean }) {
   const Icon = tags[type].icon;
   const { color } = tags[type];
   return (
-    <Wrap className="tag-wrapper">
+    <Wrap className="tag-wrapper" data-testid="t-component">
       <IconWrap style={{ borderColor: color, background: `${color}22` }}>
         <Icon height="8" width="8" />
       </IconWrap>

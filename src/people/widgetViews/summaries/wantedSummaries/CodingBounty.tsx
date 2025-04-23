@@ -920,7 +920,7 @@ function MobileView(props: CodingBountiesProps) {
   }
 
   return (
-    <div>
+    <div data-testid="mobile-view-component">
       {hasAccess ? (
         /*
          * creator view
@@ -1111,7 +1111,7 @@ function MobileView(props: CodingBountiesProps) {
                                 <MenuButton
                                   onClick={() => setMenuOpen(menuOpen === index ? null : index)}
                                 >
-                                  ⋮
+                                  
                                 </MenuButton>
                                 {menuOpen === index && (
                                   <DropdownMenu>
@@ -1778,7 +1778,7 @@ function MobileView(props: CodingBountiesProps) {
                           <MenuButton
                             onClick={() => setMenuOpen(menuOpen === index ? null : index)}
                           >
-                            ⋮
+                            
                           </MenuButton>
                           {menuOpen === index && (
                             <DropdownMenu>

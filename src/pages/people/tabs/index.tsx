@@ -146,7 +146,7 @@ export const TabsPages = observer(() => {
   const fullSelectedWidget = (name: any) => person?.extras?.[name];
 
   return (
-    <Container isMobile={isMobile}>
+    <Container isMobile={isMobile} data-testid="tabs-pages-component">
       <Tabs canEdit={canEdit}>
         {tabs &&
           tabsNames.map((name: any, i: number) => {

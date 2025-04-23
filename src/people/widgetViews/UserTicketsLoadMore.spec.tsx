@@ -23,7 +23,7 @@ jest.mock('../../bounties/__mock__/mockBounties.data', () => ({
 describe('UserTickets component', () => {
   it('displays "Load More" button when scrolling down', async () => {
     const { getByText } = render(
-      <MemoryRouter>
+      <MemoryRouter data-testid="user-tickets-view-component">
         <UserTickets />
       </MemoryRouter>
     );

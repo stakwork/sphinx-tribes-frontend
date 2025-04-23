@@ -100,7 +100,7 @@ export default function Invoice(props: {
   return (
     <>
       {timeLeft.seconds >= 0 || timeLeft.minutes >= 0 || (timeLeft.hours && timeLeft.hours >= 0) ? (
-        <InvoiceWrap>
+        <InvoiceWrap data-testid="invoice-component">
           <CountDownTimerWrap>
             <CountDownTextWrapper>
               <CountDownIconContainer>

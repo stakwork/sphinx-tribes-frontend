@@ -49,7 +49,7 @@ export default function LoomViewerRecorder(props: LoomViewProps) {
     <div
       dangerouslySetInnerHTML={{
         __html: `<div class="lo-emb-vid"
-        style="position: relative; padding-bottom: 75%; height: 0;">
+        style="position: relative; padding-bottom: 75%; height: 0;" data-testid="loom-viewer-recorder-component">
         <iframe src="${videoUrl}"
             style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div>`
       }}

@@ -258,7 +258,7 @@ export const HiveBuildView: React.FC = observer(() => {
 
   if (loading) {
     return (
-      <Container>
+      <Container data-testid="hive-build-view-component">
         <LoadingContainer>
           <EuiLoadingSpinner size="l" />
         </LoadingContainer>

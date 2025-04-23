@@ -13,7 +13,7 @@ export const UserInfoMobileView = observer(({ setShowSupport }: UserInfoProps) =
   return (
     <>
       <HeaderMobile canEdit={canEdit} goBack={goBack} logout={logout} onEdit={onEdit} />
-      <Head>
+      <Head data-testid="user-info-mobile-view-component">
         <Img src={userImg} />
         <RowWrap>
           <Name>{owner_alias}</Name>

@@ -89,7 +89,7 @@ const App = ({ filterStartDate, filterEndDate, setShowCalendar }: Props) => {
 
   return (
     <>
-      <MainContainer>
+      <MainContainer data-testid="app-component">
         <HeaderDiv>
           <FlexDiv>
             <h1

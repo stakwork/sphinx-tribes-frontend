@@ -46,7 +46,7 @@ export default function SupportMeView(props: SupportMe) {
 
   const showImages = gallery && gallery.length;
   return (
-    <Wrap>
+    <Wrap data-testid="support-me-view-component">
       <T>Support Me</T>
       <M>{description || 'No description'} </M>
       <U>{url || 'No link'}</U>

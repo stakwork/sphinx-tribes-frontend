@@ -298,9 +298,9 @@ const CreateFeatureFlagModal = ({
         position: 'relative'
       }}
       overlayClick={close}
-    >
+     data-testid="create-feature-flag-modal-component">
       <ModalContent>
-        <CloseButton onClick={close}>✕</CloseButton>
+        <CloseButton onClick={close}></CloseButton>
         <Wrapper>
           <ModalTitle>{editData ? 'Edit' : 'Create'} Feature Flag</ModalTitle>
           <FormGroup>

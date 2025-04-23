@@ -19,7 +19,7 @@ function Header() {
   });
 
   return (
-    <EuiHeader id="header">
+    <EuiHeader id="header" data-testid="header-component">
       <div className="row" style={{ marginLeft: 15 }}>
         <EuiHeaderSection grow={false} className="col-xs-12 col-sm-12 col-md-6 col-lg-6">
           <img id="logo" src="/static/tribes_logo.svg" alt="Logo" />

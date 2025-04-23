@@ -164,7 +164,7 @@ const AddCodeGraph: React.FC<AddCodeGraphProps> = ({
   };
 
   return (
-    <AddWorkspaceWrapper>
+    <AddWorkspaceWrapper data-testid="add-code-graph-component">
       <AddWorkspaceHeader>
         {modalType === 'add' ? 'Add New Code Graph' : 'Edit Code Graph'}
       </AddWorkspaceHeader>

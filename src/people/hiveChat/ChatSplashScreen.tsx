@@ -91,7 +91,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ user, onSendMessage }) => {
   if (!visible) return null;
 
   return (
-    <SplashScreenContainer>
+    <SplashScreenContainer data-testid="splash-screen-component">
       <WelcomeHeader>Hello, {user.alias}</WelcomeHeader>
       <WelcomeTagline>
         Welcome to Hive Chat, AI Native Product Development. How can I help you today?

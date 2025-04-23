@@ -107,7 +107,7 @@ export default function TextAreaInputNew({
   };
 
   return (
-    <div>
+    <div data-testid="text-area-input-new-component">
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: '20px' }}>
         <SnippetDropdown items={filteredSnippets} onSelect={handleSnippetSelect} />
         <SwitcherContainer>

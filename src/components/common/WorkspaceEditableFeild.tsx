@@ -44,7 +44,7 @@ export const WorkspaceEditableField = ({
   };
 
   return (
-    <FieldWrap>
+    <FieldWrap data-testid="workspace-editable-field-component">
       <Label>{label}</Label>
       <Data>
         <OptionsWrap>

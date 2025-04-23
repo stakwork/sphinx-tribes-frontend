@@ -117,7 +117,7 @@ describe('LoomViewerRecorder', () => {
     });
   });
 
-  it("Test Case 6: sdkButton's Event Handler Registration – Multiple Invocations", async () => {
+  it("Test Case 6: sdkButton's Event Handler Registration  Multiple Invocations", async () => {
     (isSupported as jest.Mock).mockResolvedValue({ supported: true });
 
     const sdkButtonMock = {
@@ -133,7 +133,7 @@ describe('LoomViewerRecorder', () => {
       expect(sdkButtonMock.on).toHaveBeenCalledTimes(1);
     });
 
-    rerender(<LoomViewerRecorder onChange={() => void 0} style={defaultStyle} />);
+    rerender(<LoomViewerRecorder onChange={() = data-testid="loom-viewer-recorder-component"> void 0} style={defaultStyle} />);
 
     await waitFor(() => {
       expect(sdkButtonMock.on).toHaveBeenCalledTimes(2);

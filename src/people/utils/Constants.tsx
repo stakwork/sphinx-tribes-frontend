@@ -104,7 +104,7 @@ const widgetConfigs = {
       otherUser: {
         img: 'no_wanted2.png',
         text: 'No Tickets Yet',
-        sub: 'Looks like this person doesn’t need anything yet.'
+        sub: 'Looks like this person doesnt need anything yet.'
       }
     }
   },
@@ -128,7 +128,7 @@ const widgetConfigs = {
       noResult: {
         img: 'no_wanted2.png',
         text: 'No Assigned Tickets Yet',
-        sub: 'Looks like this person doesn’t need anything yet.'
+        sub: 'Looks like this person doesnt need anything yet.'
       }
     }
   }

@@ -32,7 +32,7 @@ describe('Workspace Details component', () => {
 
   it('Renders Deposit Modal', async () => {
     const { getByText, container } = render(
-      <MemoryRouter>
+      <MemoryRouter data-testid="workspace-details-component">
         <WorkspaceDetails
           close={closeFn}
           getWorkspaces={getWorkspaceFn}

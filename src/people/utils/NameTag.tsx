@@ -122,7 +122,7 @@ function NameTag(props: NameTagProps) {
     return (
       <Wrap
         isSelected={isSelected}
-        onClick={(e: any) => {
+        onClick={(e: any) = data-testid="name-tag-component"> {
           selectPerson(e);
         }}
         style={style}

@@ -177,7 +177,7 @@ function WorkspaceBodyComponent() {
   return (
     !loading && (
       <WorkspaceBody
-        onScroll={(e: any) => {
+        onScroll={(e: any) = data-testid="workspace-body-component"> {
           setScrollValue(e?.currentTarget?.scrollTop >= 20);
         }}
         style={{

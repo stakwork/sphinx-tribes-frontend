@@ -59,7 +59,7 @@ describe('Wanted component', () => {
     });
 
     const { getByText } = render(
-      <MemoryRouter>
+      <MemoryRouter data-testid="wanted-component">
         <Wanted />
       </MemoryRouter>
     );

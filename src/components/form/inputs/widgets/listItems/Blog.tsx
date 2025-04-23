@@ -7,7 +7,7 @@ const Wrap = styled.div`
 `;
 export default function Blog(props: BlogPost) {
   return (
-    <Wrap>
+    <Wrap data-testid="blog-component">
       <div>{props.title}</div>
       <div>{props.created}</div>
     </Wrap>

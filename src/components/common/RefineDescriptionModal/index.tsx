@@ -33,7 +33,7 @@ export const RefineDescriptionModal = () => {
                 }
               : {})
           }}
-        >
+         data-testid="refine-description-modal-component">
           Refine Description
         </ActionButton>
       }

@@ -45,7 +45,7 @@ const PaidBounty = (props: PaidBountiesProps) => {
         onClick={props.onPanelClick}
         Bounty_Container_Background={color.pureWhite}
         color={color}
-      >
+       data-testid="paid-bounty-component">
         <BountyDescription
           {...props}
           title={props.title}

@@ -356,7 +356,7 @@ const BountyNavBar: React.FC = () => {
 
   return (
     <>
-      <Nav>
+      <Nav data-testid="bounty-nav-bar-component">
         <Logo>
           <HamburgerButton
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}

@@ -39,7 +39,7 @@ function NoResults({ loaded = false }: { loaded?: boolean }) {
           width: '100%',
           marginTop: 20
         }}
-      >
+       data-testid="no-results-component">
         <H>No results</H>
       </div>
     );

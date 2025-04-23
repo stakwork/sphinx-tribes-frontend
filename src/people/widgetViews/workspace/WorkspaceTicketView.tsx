@@ -418,7 +418,7 @@ const WorkspaceTicketView: React.FC = observer(() => {
 
   if (isLoading) {
     return (
-      <MainContent collapsed={collapsed}>
+      <MainContent collapsed={collapsed} data-testid="workspace-ticket-view-component">
         <FeatureBody>
           <FeatureHeadWrap>
             <FeatureHeadNameWrap>

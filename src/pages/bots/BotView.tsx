@@ -320,7 +320,7 @@ function BotView(props: BotViewProps) {
     );
   }
 
-  return <Content>{isMobile ? renderMobileView() : renderDesktopView()}</Content>;
+  return <Content data-testid="bot-view-component">{isMobile ? renderMobileView() : renderDesktopView()}</Content>;
 }
 
 export default observer(BotView);

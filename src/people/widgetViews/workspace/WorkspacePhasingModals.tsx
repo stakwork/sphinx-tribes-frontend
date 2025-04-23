@@ -122,7 +122,7 @@ export const DeletePhaseModal = (props: ModalProps) => {
   const { onClose, onConfirmDelete } = props;
 
   return (
-    <ModalWrapper title="" onClose={onClose}>
+    <ModalWrapper title="" onClose={onClose} data-testid="phase-modals-component">
       <DeleteIcon src="/static/Delete.svg" alt="delete icon" />
       <CenteredText>
         Are you sure you want to <br />

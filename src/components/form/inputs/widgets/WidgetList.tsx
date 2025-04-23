@@ -85,7 +85,7 @@ export default function WidgetList(props: WidgetListProps) {
   }
 
   return (
-    <Wrap>
+    <Wrap data-testid="widget-list-component">
       <List>{props.values && props.values.map((v: any, i: number) => renderByType(v, i))}</List>
 
       {(!props.values || props.values.length < 1) && (

@@ -84,7 +84,7 @@ export const GeneratePhasePlanButton: React.FC<GeneratePhasePlanButtonProps> = (
 
   return (
     <>
-      <BuildPhasePlanButton onClick={handleGenerate} disabled={isLoading}>
+      <BuildPhasePlanButton onClick={handleGenerate} disabled={isLoading} data-testid="">
         {isLoading ? 'Generating...' : 'Generate Phase Plan'}
       </BuildPhasePlanButton>
       <EuiGlobalToastList

@@ -316,7 +316,7 @@ const WorkspaceDetails = (props: {
   }, [getWorkspaceUsers, getWorkspaceBudget, getPaymentsHistory, getUserRoles]);
 
   return (
-    <Container>
+    <Container data-testid="workspace-details-component">
       <HeadWrap>
         <HeadNameWrap>
           <MaterialIcon

@@ -139,7 +139,7 @@ export default function Modal(props: ModalProps) {
     : {};
 
   return (
-    <Portal>
+    <Portal data-testid="modal-component">
       <FadeLeft
         withOverlay={!hideOverlay}
         drift={100}

@@ -109,7 +109,7 @@ const AddChatWorkflow: React.FC<AddChatWorkflowProps> = ({
   };
 
   return (
-    <AddWorkspaceWrapper>
+    <AddWorkspaceWrapper data-testid="add-chat-workflow-component">
       <AddWorkspaceHeader>Edit Chat Workflow URL</AddWorkspaceHeader>
       <WorkspaceDetailsContainer>
         <WorkspaceInputContainer

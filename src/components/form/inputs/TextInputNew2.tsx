@@ -70,7 +70,7 @@ export default function TextInputNew({
       color={color}
       borderColor={characterError || isError ? color.red2 : color.grayish.G600}
       characterError={characterError}
-    >
+     data-testid="text-input-new-component">
       <input
         className="inputText"
         id={name}

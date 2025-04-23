@@ -117,7 +117,7 @@ export const BaseModal = ({ children, backdrop, ...props }: BaseModalProps) => {
           backdrop
         } as any
       }}
-    >
+     data-testid="base-modal-component">
       <Inner ref={modalContentRef}>
         <>
           {props.onClose && (

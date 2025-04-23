@@ -30,7 +30,7 @@ export const Summary = ({
   bounties: number;
   className?: string;
 }) => (
-  <SummaryContainer className={className}>
+  <SummaryContainer className={className} data-testid="summary-component">
     <EuiStat
       className="stats"
       title={`${DollarConverter(sats)}`}

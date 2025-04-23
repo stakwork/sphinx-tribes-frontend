@@ -45,7 +45,7 @@ export default function LoomVideoInputNew({
   const [isVideo, setIsVideo] = useState<boolean>(false);
 
   return (
-    <LoomVideoContainer color={color} isVideo={isVideo} style={style}>
+    <LoomVideoContainer color={color} isVideo={isVideo} style={style} data-testid="loom-video-input-new-component">
       <LoomViewerRecorderNew
         name="loomVideo"
         onChange={(e: any) => {

@@ -72,7 +72,7 @@ const AddUserModal = (props: AddUserModalProps) => {
         background: '#000',
         borderRadius: '50%'
       }}
-    >
+     data-testid="add-user-modal-component">
       <AddUserContainer>
         <AddUserHeaderContainer>
           <AddUserHeader>Add New User</AddUserHeader>

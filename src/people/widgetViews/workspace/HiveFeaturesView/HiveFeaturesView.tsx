@@ -816,13 +816,13 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
           <Dropdown>
             {showBountyMenu && onPay && (
               <DropdownItem onClick={onPay}>
-                <MenuIcon>💰</MenuIcon>
+                <MenuIcon></MenuIcon>
                 Pay Bounty
               </DropdownItem>
             )}
             {showTicketMenu && onDelete && (
               <DropdownItem onClick={onDelete}>
-                <MenuIcon>🗑️</MenuIcon>
+                <MenuIcon></MenuIcon>
                 Delete Ticket
               </DropdownItem>
             )}
@@ -972,7 +972,7 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
 
   return (
     <>
-      <MainContainer>
+      <MainContainer data-testid="hive-features-view-component">
         <SidebarComponent uuid={workspaceUuid} />
         <ActivitiesHeader uuid={workspaceUuid} collapsed={collapsed} />
         <FeatureHeadWrap collapsed={collapsed}>
@@ -1040,7 +1040,7 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
                       >
                         Phase Planner
                       </PlannerButton>
-                      <span>{isExpanded ? '▼' : '▶'}</span>
+                      <span>{isExpanded ? '' : ''}</span>
                     </PhaseHeader>
                     {isExpanded && (
                       <>

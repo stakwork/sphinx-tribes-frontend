@@ -83,7 +83,7 @@ describe('HistoryModal component', () => {
       <HistoryModal
         isOpen
         paymentsHistory={mockPaymentsHistory}
-        close={() => {
+        close={() = data-testid="history-modal-component"> {
           jest.fn();
         }}
         url=""

@@ -101,7 +101,7 @@ const WorkspaceBudget = (props: { user_pubkey: string; org: any }) => {
   }, [getUserRoles]);
 
   return (
-    <WorkspaceTextWrap className="org-text-wrap">
+    <WorkspaceTextWrap className="org-text-wrap" data-testid="workspace-budget-component">
       <WorkspaceText href={`/workspace/${org.uuid}/activities`} hasAccess={hasAccess}>
         {org.name}
       </WorkspaceText>

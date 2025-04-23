@@ -27,7 +27,7 @@ export const PaymentConfirmationModal = ({
   };
 
   return (
-    <BaseModal backdrop="white" open onClose={closeHandler}>
+    <BaseModal backdrop="white" open onClose={closeHandler} data-testid="payment-confirmation-modal-component">
       <Stack minWidth={350} p={4} alignItems="center" spacing={3}>
         {children}
         <Stack width="100%" direction="row" justifyContent="space-between">

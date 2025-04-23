@@ -454,7 +454,7 @@ const AddNewSkillModal: React.FC<AddNewSkillModalProps> = ({ isOpen, onClose, on
   return (
     <>
       <CustomPeopleListStyles />
-      <ModalOverlay onClick={onClose}>
+      <ModalOverlay onClick={onClose} data-testid="add-new-skill-modal-component">
         <ModalContent onClick={(e) => e.stopPropagation()}>
           <ModalHeader>
             <ModalTitle>New Skill</ModalTitle>
@@ -602,7 +602,7 @@ const AddNewSkillModal: React.FC<AddNewSkillModalProps> = ({ isOpen, onClose, on
                                     );
                                   }}
                                 >
-                                  ×
+                                  
                                 </InlineRemoveLabel>
                               </InlineLabelBubble>
                             );

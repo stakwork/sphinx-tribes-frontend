@@ -196,7 +196,7 @@ export const BudgetWrapComponent = (props: { org: Workspace | undefined; uuid: s
 
   return (
     <>
-      <ActionWrap>
+      <ActionWrap data-testid="budget-wrap-component-component">
         <ActionHeader>
           Balance{' '}
           <BalanceImg src={balanceIcon} onClick={toggleBalances} style={{ cursor: 'pointer' }} />

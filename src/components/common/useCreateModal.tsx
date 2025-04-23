@@ -27,7 +27,7 @@ export function CreateModalPortal<T>(
   return createPortal(
     <Component
       {...props}
-      onClose={() => {
+      onClose={() = data-testid="create-modal-portal-component"> {
         props.onClose?.();
       }}
     />,

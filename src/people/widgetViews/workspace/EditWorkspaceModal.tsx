@@ -302,7 +302,7 @@ const EditWorkspaceModal = (props: EditWorkspaceModalProps) => {
           background: '#000',
           borderRadius: '50%'
         }}
-      >
+       data-testid="edit-workspace-modal-component">
         <EditWorkspaceWrapper>
           <EditWorkspaceRow>
             <EditWorkspaceTitle>Edit Workspace</EditWorkspaceTitle>

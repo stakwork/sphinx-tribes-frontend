@@ -203,7 +203,7 @@ export default function ActivitiesHeader({ uuid }: { uuid: string }) {
   }, []);
 
   return (
-    <HeaderContainer>
+    <HeaderContainer data-testid="activities-header-component">
       <SubHeader>
         <BountiesHeader>
           <WorkspaceImage

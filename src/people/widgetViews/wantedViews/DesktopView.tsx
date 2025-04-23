@@ -43,7 +43,7 @@ function DesktopView(props: WantedViewsProps) {
   const color = colors['light'];
 
   return (
-    <div key={key} onClick={onPanelClick}>
+    <div key={key} onClick={onPanelClick} data-testid="desktop-view-component">
       {paid && (
         <Img
           src={'/static/paid_ribbon.svg'}

@@ -37,7 +37,7 @@ interface StatisticsProps {
 
 export const Statistics = ({ freezeHeaderRef, metrics }: StatisticsProps) => (
   <>
-    <Wrapper ref={freezeHeaderRef}>
+    <Wrapper ref={freezeHeaderRef} data-testid="statistics-component">
       <Card>
         <UpperCardWrapper>
           <TitleWrapper>

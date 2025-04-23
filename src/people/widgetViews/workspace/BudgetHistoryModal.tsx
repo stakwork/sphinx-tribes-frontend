@@ -40,7 +40,7 @@ const BudgetHistoryModal = (props: BudgetHistoryModalProps) => {
         background: '#000',
         borderRadius: '50%'
       }}
-    >
+     data-testid="budget-history-modal-component">
       <WorkspaceWrap>
         <ModalTitle>Budget history</ModalTitle>
         <table>

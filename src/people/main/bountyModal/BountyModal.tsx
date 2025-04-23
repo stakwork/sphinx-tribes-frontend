@@ -131,7 +131,7 @@ export const BountyModal = ({ basePath, fromPage, bountyOwner }: BountyModalProp
           zIndex: 20
         }}
         overlayClick={onGoBack}
-      >
+       data-testid="bounty-modal-component">
         <AccessDenied onClose={onGoBack} />
       </Modal>
     );

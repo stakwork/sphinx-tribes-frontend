@@ -14,7 +14,7 @@ const Sub = styled.div`
 `;
 export default function Offer(props: I.Offer) {
   return (
-    <Wrap>
+    <Wrap data-testid="offer-component">
       <div>
         <div>{props.title}</div>
         <Sub>

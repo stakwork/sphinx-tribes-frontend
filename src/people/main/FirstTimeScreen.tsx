@@ -52,7 +52,7 @@ export default function FirstTimeScreen() {
         width: '100%',
         maxWidth: 600
       }}
-    >
+     data-testid="first-time-screen-component">
       <div style={{ height: '100%', padding: 20, paddingTop: 0, width: '100%' }}>
         <AboutFocusedView
           formHeader={formHeader}
