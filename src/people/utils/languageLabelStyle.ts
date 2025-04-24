@@ -1,5 +1,11 @@
 export const LanguageObject = [
   {
+    label: 'Three.js',
+    border: '1px solid rgba(0, 173, 181, 0.1)',
+    background: 'rgba(0, 173, 181, 0.1)',
+    color: '#00ADB5'
+  },
+  {
     label: 'Lightning',
     border: '1px solid rgba(184, 37, 95, 0.1)',
     background: 'rgba(184, 37, 95, 0.1)',
@@ -122,6 +128,7 @@ export const LanguageObject = [
 ];
 
 export const coding_languages = [
+  'Three.js',
   'Lightning',
   'Javascript',
   'Typescript',
@@ -216,6 +223,13 @@ export interface ColourOption {
 }
 
 export const colourOptions: readonly ColourOption[] = [
+  {
+    label: 'Three.js',
+    value: 'Three.js',
+    border: '1px solid rgba(0, 173, 181, 0.1)',
+    background: 'rgba(0, 173, 181, 0.1)',
+    color: '#00ADB5'
+  },
   {
     label: 'Lightning',
     value: 'Lightning',
