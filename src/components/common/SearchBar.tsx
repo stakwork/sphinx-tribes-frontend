@@ -133,6 +133,7 @@ function SearchBar({
 
   return (
     <Container
+      data-testid="search-bar-component"
       style={{ position: 'relative' }}
       border={border}
       borderActive={borderActive}

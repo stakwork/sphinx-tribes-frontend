@@ -12,6 +12,7 @@ export const RefineDescriptionModal = () => {
 
   return (
     <EuiPopover
+      data-testid="refine-description-modal-component"
       button={
         <ActionButton
           onClick={togglePopover}
