@@ -729,7 +729,7 @@ const TicketEditor = observer(
     };
 
     return (
-      <TicketContainer>
+      <TicketContainer data-testid="ticket-editor-component">
         <EuiFlexGroup alignItems="center" gutterSize="s">
           {showDragHandle && (
             <EuiFlexItem grow={false}>
