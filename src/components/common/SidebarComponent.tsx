@@ -750,30 +750,13 @@ export default function SidebarComponent({
         collapsed={collapsed}
         onMouseEnter={(e) => handleMouseEnter(e, 'activities')}
         onMouseLeave={() => setHoveredItem(null)}
-        aria-label="Activities"
+        aria-label="Home"
       >
         <MaterialIcon icon="home" />
-        <span>Activities</span>
+        <span>Home</span>
         {(collapsed || hoveredItem === 'activities') && (
           <Tooltip visible={hoveredItem === 'activities'} top={tooltipTop} collapsed={collapsed}>
-            Activities
-          </Tooltip>
-        )}
-      </NavItem>
-
-      <NavItem
-        active={activeItem === 'settings'}
-        onClick={() => handleItemClick('settings')}
-        collapsed={collapsed}
-        onMouseEnter={(e) => handleMouseEnter(e, 'settings')}
-        onMouseLeave={() => setHoveredItem(null)}
-        aria-label="Settings"
-      >
-        <MaterialIcon icon="settings" />
-        <span>Settings</span>
-        {(collapsed || hoveredItem === 'settings') && (
-          <Tooltip visible={hoveredItem === 'settings'} top={tooltipTop} collapsed={collapsed}>
-            Settings
+            Home
           </Tooltip>
         )}
       </NavItem>
@@ -826,6 +809,23 @@ export default function SidebarComponent({
         {(collapsed || hoveredItem === 'backlog') && (
           <Tooltip visible={hoveredItem === 'backlog'} top={tooltipTop} collapsed={collapsed}>
             Feature Backlog
+          </Tooltip>
+        )}
+      </NavItem>
+
+      <NavItem
+        active={activeItem === 'settings'}
+        onClick={() => handleItemClick('settings')}
+        collapsed={collapsed}
+        onMouseEnter={(e) => handleMouseEnter(e, 'settings')}
+        onMouseLeave={() => setHoveredItem(null)}
+        aria-label="Settings"
+      >
+        <MaterialIcon icon="settings" />
+        <span>Settings</span>
+        {(collapsed || hoveredItem === 'settings') && (
+          <Tooltip visible={hoveredItem === 'settings'} top={tooltipTop} collapsed={collapsed}>
+            Settings
           </Tooltip>
         )}
       </NavItem>
