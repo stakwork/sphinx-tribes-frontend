@@ -48,16 +48,16 @@ const L = styled.div`
 `;
 
 function Title(props: ElementProps) {
-  return <T {...props}>{props.children}</T>;
+  return <T data-testid="text-components-component" {...props}>{props.children}</T>;
 }
 function Date(props: ElementProps) {
-  return <D {...props}>{props.children}</D>;
+  return <D data-testid="text-components-component" {...props}>{props.children}</D>;
 }
 function Paragraph(props: ElementProps) {
-  return <P {...props}>{props.children}</P>;
+  return <P data-testid="text-components-component" {...props}>{props.children}</P>;
 }
 function Link(props: ElementProps) {
-  return <L {...props}>{props.children}</L>;
+  return <L data-testid="text-components-component" {...props}>{props.children}</L>;
 }
 
 export { Title, Date, Paragraph, Link };

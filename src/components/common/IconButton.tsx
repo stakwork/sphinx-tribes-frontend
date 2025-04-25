@@ -55,6 +55,7 @@ export default function IconButton(props: IconButtonProps) {
 
   return (
     <B
+      data-testid="icon-button-component"
       background={props.style && props.style.background}
       width={props.style && props.style.width}
       style={{ ...ButtonColors[props.color || 'primary'], ...props.style }}
