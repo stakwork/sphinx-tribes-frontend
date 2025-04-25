@@ -1,3 +1,4 @@
+```
 import { EuiText } from '@elastic/eui';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
@@ -162,7 +163,8 @@ const BountyDescription = (props: BountiesDescriptionProps) => {
 
   return (
     <>
-      <BountyDescriptionContainer
+      <BountyDescriptionContainer 
+        data-testid="bounty-description-component"
         style={{ ...props.style }}
         isBountyLandingPage={isBountyLandingPage}
       >
@@ -268,3 +270,4 @@ const BountyDescription = (props: BountiesDescriptionProps) => {
 };
 
 export default BountyDescription;
+```

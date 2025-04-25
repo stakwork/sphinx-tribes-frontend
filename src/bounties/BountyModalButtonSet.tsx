@@ -1,3 +1,4 @@
+```
 import { EuiText } from '@elastic/eui';
 import React from 'react';
 import MaterialIcon from '@material/react-material-icon';
@@ -17,6 +18,7 @@ const ButtonSet = ({ showGithubBtn, ...props }: any) => {
   const color = colors['light'];
   return (
     <ButtonSetContainer
+      data-testid="button-set-component"
       style={{
         ...props.ButtonSetContainerStyle
       }}
@@ -234,3 +236,4 @@ const ButtonSet = ({ showGithubBtn, ...props }: any) => {
 };
 
 export default ButtonSet;
+```
