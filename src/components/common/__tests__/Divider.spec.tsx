@@ -20,7 +20,7 @@ beforeAll(() => {
 describe('Button Component', () => {
   nock(user.url).get('/person/id/1').reply(200, {});
   test('display text and click button', async () => {
-    render(<Divider style={{ color: 'blue' }} />);
+    render(<Divider data-testid="divider-component" style={{ color: 'blue' }} />);
 
     expect(screen.getByTestId('testid-divider')).toBeInTheDocument();
     expect(screen.getByTestId('testid-divider')).toHaveAttribute('style', 'color: blue;');

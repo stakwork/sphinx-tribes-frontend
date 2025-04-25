@@ -26,6 +26,7 @@ export function CreateModalPortal<T>(
   if (!modal) throw new Error('"#modal-root" element not found');
   return createPortal(
     <Component
+      data-testid="create-modal-portal-component"
       {...props}
       onClose={() => {
         props.onClose?.();
