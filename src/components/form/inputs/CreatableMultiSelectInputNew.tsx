@@ -150,7 +150,7 @@ export default function CreatableMultiSelectInputNew({ error, label, handleChang
     }
   }, []);
   return (
-    <div
+    <div data-testid="creatable-multi-select-input-new-component"
       style={{
         paddingTop: '5px'
       }}

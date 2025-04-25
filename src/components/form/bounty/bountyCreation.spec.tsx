@@ -6,7 +6,7 @@ import Form from './index.tsx';
 describe('Bounty index', () => {
   beforeEach(async () => {
     act(async () => {
-      render(<Form onSubmit={jest.fn()} schema={wantedCodingTaskSchema} />);
+      render(<Form data-testid="form-component" onSubmit={jest.fn()} schema={wantedCodingTaskSchema} />);
       const PostBountyButton = await screen.findByRole('button', { name: /Post a Bounty/i });
       expect(PostBountyButton).toBeInTheDocument();
       fireEvent.click(PostBountyButton);
@@ -122,7 +122,7 @@ describe('Bounty index', () => {
       fireEvent.change(descriptionInput, { target: { value: '   Te st Descri ption   ' } });
 
       const mockOnSubmit = jest.fn();
-      render(<Form onSubmit={mockOnSubmit} schema={wantedCodingTaskSchema} />);
+      render(<Form data-testid="form-component" onSubmit={mockOnSubmit} schema={wantedCodingTaskSchema} />);
 
       const submitButton = await screen.findByRole('button', { name: /Next/i });
       fireEvent.click(submitButton);

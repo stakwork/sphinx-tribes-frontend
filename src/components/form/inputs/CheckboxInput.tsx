@@ -19,7 +19,7 @@ export default function CheckBox({
   }, [handleChange, name, value]);
 
   return (
-    <>
+    <> data-testid="check-box-component"
       <EuiCheckbox
         id="hi"
         label=""
