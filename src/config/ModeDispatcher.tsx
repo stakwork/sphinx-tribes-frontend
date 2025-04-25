@@ -1,3 +1,4 @@
+```
 /* eslint-disable no-unused-vars */
 import React from 'react';
 
@@ -35,5 +36,6 @@ export const ModeDispatcher = ({
   children: (mode: AppMode) => React.ReactElement;
 }) => {
   const mode = getMode();
-  return children(mode);
+  return <div data-testid="mode-dispatcher-component">{children(mode)}</div>;
 };
+```

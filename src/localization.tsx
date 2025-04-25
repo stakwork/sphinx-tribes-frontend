@@ -1,3 +1,4 @@
+```
 const loc: { [key: string]: any } = {
   English: {
     tribes: 'Tribes',
@@ -18,3 +19,5 @@ const loc: { [key: string]: any } = {
 const languageOptions = ['English', 'Spanish', 'Russian'];
 
 export { loc, languageOptions };
+
+```

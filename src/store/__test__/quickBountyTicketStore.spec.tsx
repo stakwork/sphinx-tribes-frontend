@@ -1,3 +1,4 @@
+```
 import { waitFor } from '@testing-library/react';
 import { quickBountyTicketStore } from '../quickBountyTicketStore';
 
@@ -150,3 +151,4 @@ describe('QuickBountyTicketStore', () => {
     });
   });
 });
+```
