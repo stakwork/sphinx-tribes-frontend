@@ -73,7 +73,7 @@ describe('useMockUsdToSatExchangeRate', () => {
 
   test('Null Enabled Value', () => {
     mockMath.random = () => 0.5;
-    renderHook(() => useMockUsdToSatExchangeRate({ enabled: null as any }));
+    renderHook(() => useMockUsdToSatExchangeRate(data-testid="use-mock-usd-to-sat-exchange-rate-component" { enabled: null as any }));
 
     expect(mockSetUsdToSatsExchangeRate).not.toHaveBeenCalled();
     act(() => {
