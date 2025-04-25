@@ -708,10 +708,7 @@ export class MainStore {
       search: uiStore.searchText ?? ''
     };
 
-    const query2 = makeQueryParams(
-      queryLimit,
-      params ? queryParams : this.getWantedsPrevParams
-    );
+    const query2 = makeQueryParams(queryLimit, params ? queryParams : this.getWantedsPrevParams);
 
     try {
       const ps2 = await api.get(`gobounties/all?${query2}`);
@@ -790,24 +787,24 @@ export class MainStore {
     }
 
     // if we don't pass the params, we should use previous params for invalidate query
-    const query2 = makeQueryParams(
-      queryLimit,
-      queryParams
-    );
+    const query2 = makeQueryParams(queryLimit, queryParams);
 
     try {
       if (!uiStore.meInfo) return 0;
       const info = uiStore.meInfo;
 
-      const response = await fetch(`${TribesURL}/features/${feature_uuid}/phase/${phase_uuid}/bounty?${query2}`, {
-        method: 'GET',
-        mode: 'cors',
-        headers: {
-          'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json',
-          'x-session-id': this.getSessionId()
+      const response = await fetch(
+        `${TribesURL}/features/${feature_uuid}/phase/${phase_uuid}/bounty?${query2}`,
+        {
+          method: 'GET',
+          mode: 'cors',
+          headers: {
+            'x-jwt': info.tribe_jwt,
+            'Content-Type': 'application/json',
+            'x-session-id': this.getSessionId()
+          }
         }
-      });
+      );
 
       if (!response.ok) {
         console.log('fetch failed getPhaseBounties: ', response.statusText);
@@ -874,15 +871,18 @@ export class MainStore {
       if (!uiStore.meInfo) return 0;
       const info = uiStore.meInfo;
 
-      const response = await fetch(`${TribesURL}/features/${feature_uuid}/phase/${phase_uuid}/bounty/count?Open=${open}&Assigned=${assigned}&Paid=${paid}`, {
-        method: 'GET',
-        mode: 'cors',
-        headers: {
-          'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json',
-          'x-session-id': this.getSessionId()
+      const response = await fetch(
+        `${TribesURL}/features/${feature_uuid}/phase/${phase_uuid}/bounty/count?Open=${open}&Assigned=${assigned}&Paid=${paid}`,
+        {
+          method: 'GET',
+          mode: 'cors',
+          headers: {
+            'x-jwt': info.tribe_jwt,
+            'Content-Type': 'application/json',
+            'x-session-id': this.getSessionId()
+          }
         }
-      });
+      );
 
       if (!response.ok) {
         console.log('fetch failed getTotalPhaseBountyCount: ', response.statusText);
@@ -1272,10 +1272,7 @@ export class MainStore {
     };
 
     // if we don't pass the params, we should use previous params for invalidate query
-    const query2 = makeQueryParams(
-      orgQuerLimit,
-      params ? queryParams : undefined,
-    );
+    const query2 = makeQueryParams(orgQuerLimit, params ? queryParams : undefined);
     try {
       const ps2 = await api.get(`workspaces/bounties/${uuid}?${query2}`);
       const ps3: any[] = [];
@@ -1988,8 +1985,7 @@ export class MainStore {
   async getWorkspaceNextBountyByCreated(org_uuid: string, created: number): Promise<number> {
     try {
       const workspaceBountiesStatus =
-        JSON.parse(localStorage.getItem('workspaceBountyStatus') || `{}`) ||
-        defaultBountyStatus;
+        JSON.parse(localStorage.getItem('workspaceBountyStatus') || `{}`) || defaultBountyStatus;
       const params = { languages: this.bountyLanguages, ...workspaceBountiesStatus };
 
       const queryParams: QueryParams = {
@@ -2002,10 +1998,7 @@ export class MainStore {
       };
 
       // if we don't pass the params, we should use previous params for invalidate query
-      const query = makeQueryParams(
-        queryLimit,
-        queryParams
-      );
+      const query = makeQueryParams(queryLimit, queryParams);
 
       const bounty = await api.get(`gobounties/workspace/next/${org_uuid}/${created}?${query}`);
       return bounty;
@@ -2018,8 +2011,7 @@ export class MainStore {
   async getWorkspacePreviousBountyByCreated(org_uuid: string, created: number): Promise<number> {
     try {
       const workspaceBountiesStatus =
-        JSON.parse(localStorage.getItem('workspaceBountyStatus') || `{}`) ||
-        defaultBountyStatus;
+        JSON.parse(localStorage.getItem('workspaceBountyStatus') || `{}`) || defaultBountyStatus;
       const params = { languages: this.bountyLanguages, ...workspaceBountiesStatus };
 
       const queryParams: QueryParams = {
@@ -2032,10 +2024,7 @@ export class MainStore {
       };
 
       // if we don't pass the params, we should use previous params for invalidate query
-      const query = makeQueryParams(
-        queryLimit,
-        queryParams
-      );
+      const query = makeQueryParams(queryLimit, queryParams);
 
       const bounty = await api.get(`gobounties/workspace/previous/${org_uuid}/${created}?${query}`);
       return bounty;
@@ -2083,10 +2072,7 @@ export class MainStore {
       };
 
       // if we don't pass the params, we should use previous params for invalidate query
-      const query = makeQueryParams(
-        queryLimit,
-        queryParams
-      );
+      const query = makeQueryParams(queryLimit, queryParams);
       const bounty = await api.get(`gobounties/previous/${created}?${query}`);
       return bounty;
     } catch (e) {
@@ -3287,10 +3273,7 @@ export class MainStore {
       };
 
       // if we don't pass the params, we should use previous params for invalidate query
-      const query = makeQueryParams(
-        featureLimit,
-        queryParams
-      );
+      const query = makeQueryParams(featureLimit, queryParams);
 
       const r: any = await fetch(`${TribesURL}/features/forworkspace/${uuid}?${query}`, {
         method: 'GET',
