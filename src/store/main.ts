@@ -71,8 +71,22 @@ function makeTorSaveURL(host: string, key: string) {
   return `sphinx.chat://?action=save&host=${host}&key=${key}`;
 }
 
+function makeQueryParams(limit: number, queryParams?: QueryParams): string {
+  const adaptedParams = {
+    ...queryParams,
+    limit: String(limit),
+    ...(queryParams?.resetPage ? { resetPage: String(queryParams.resetPage) } : {}),
+    ...(queryParams?.page ? { page: String(queryParams.page) } : {}),
+    ...(queryParams?.languages ? { languages: queryParams.languages } : {})
+  } as Record<string, string>;
+
+  const searchParams = new URLSearchParams(adaptedParams);
+
+  return searchParams.toString();
+}
+
 export class MainStore {
-  [x: string]: any;
+  // [x: string]: any;
   tribes: Tribe[] = [];
   ownerTribes: Tribe[] = [];
 
@@ -96,12 +110,12 @@ export class MainStore {
     }
     queryParams = { ...queryParams, search: uiStore.searchText, tags };
 
-    const query = this.appendQueryParams('tribes', queryLimitTribes, {
+    const query = makeQueryParams(queryLimitTribes, {
       ...queryParams,
       sortBy: 'last_active=0, last_active',
       direction: 'desc'
     });
-    const ts = await api.get(query);
+    const ts = await api.get(`tribes?${query}`);
 
     this.tribes = this.doPageListMerger(
       this.tribes,
@@ -117,8 +131,8 @@ export class MainStore {
   myBots: Bot[] = [];
 
   async getBots(uniqueName?: string, queryParams?: any): Promise<any> {
-    const query = this.appendQueryParams('bots', 100, queryParams);
-    const b = await api.get(query);
+    const query = makeQueryParams(100, queryParams);
+    const b = await api.get(`bots?${query}`);
 
     const info = uiStore.meInfo;
 
@@ -486,27 +500,13 @@ export class MainStore {
     return torSaveURL;
   }
 
-  appendQueryParams(path: string, limit: number, queryParams?: QueryParams): string {
-    const adaptedParams = {
-      ...queryParams,
-      limit: String(limit),
-      ...(queryParams?.resetPage ? { resetPage: String(queryParams.resetPage) } : {}),
-      ...(queryParams?.page ? { page: String(queryParams.page) } : {}),
-      ...(queryParams?.languages ? { languages: queryParams.languages } : {})
-    } as Record<string, string>;
-
-    const searchParams = new URLSearchParams(adaptedParams);
-
-    return `${path}?${searchParams.toString()}`;
-  }
-
   async getPeopleByNameAliasPubkey(alias: string): Promise<Person[]> {
     const smallQueryLimit = 10;
-    const query = this.appendQueryParams('people/search', smallQueryLimit, {
+    const query = makeQueryParams(smallQueryLimit, {
       search: alias.toLowerCase(),
       sortBy: 'owner_alias'
     });
-    const ps = await api.get(query);
+    const ps = await api.get(`people/search?${query}`);
     return ps;
   }
 
@@ -576,11 +576,11 @@ export class MainStore {
   })
   private async fetchPeople(search: string, queryParams?: any): Promise<Person[]> {
     const params = { ...queryParams, search };
-    const query = this.appendQueryParams('people', peopleQueryLimit, {
+    const query = makeQueryParams(peopleQueryLimit, {
       ...params,
       sortBy: 'last_login'
     });
-    const ps = await api.get(query);
+    const ps = await api.get(`people?${query}`);
     return ps;
   }
 
@@ -600,12 +600,12 @@ export class MainStore {
   async getPeoplePosts(queryParams?: any): Promise<PersonPost[]> {
     queryParams = { ...queryParams, search: uiStore.searchText };
 
-    const query = this.appendQueryParams('people/posts', queryLimit, {
+    const query = makeQueryParams(queryLimit, {
       ...queryParams,
       sortBy: 'created'
     });
     try {
-      let ps = await this.fetchPeoplePosts(query);
+      let ps = await this.fetchPeoplePosts(`people/posts?${query}`);
       ps = this.decodeListJSON(ps);
 
       // for search always reset page
@@ -708,14 +708,13 @@ export class MainStore {
       search: uiStore.searchText ?? ''
     };
 
-    const query2 = this.appendQueryParams(
-      'gobounties/all',
+    const query2 = makeQueryParams(
       queryLimit,
       params ? queryParams : this.getWantedsPrevParams
     );
 
     try {
-      const ps2 = await api.get(query2);
+      const ps2 = await api.get(`gobounties/all?${query2}`);
 
       const ps3: any[] = [];
 
@@ -745,7 +744,7 @@ export class MainStore {
 
           ps3.push({
             body: { ...bounty, assignee: assignee || '' },
-            person: { ...owner, wanteds: [] } || { wanteds: [] },
+            person: { ...owner, wanteds: [] },
             organization: { ...organization }
           });
         }
@@ -791,8 +790,7 @@ export class MainStore {
     }
 
     // if we don't pass the params, we should use previous params for invalidate query
-    const query2 = this.appendQueryParams(
-      `features/${feature_uuid}/phase/${phase_uuid}/bounty`,
+    const query2 = makeQueryParams(
       queryLimit,
       queryParams
     );
@@ -801,7 +799,7 @@ export class MainStore {
       if (!uiStore.meInfo) return 0;
       const info = uiStore.meInfo;
 
-      const response = await fetch(`${TribesURL}/${query2}`, {
+      const response = await fetch(`${TribesURL}/features/${feature_uuid}/phase/${phase_uuid}/bounty?${query2}`, {
         method: 'GET',
         mode: 'cors',
         headers: {
@@ -836,7 +834,7 @@ export class MainStore {
 
           ps3.push({
             body: { ...bounty, assignee: assignee || '' },
-            person: { ...owner, wanteds: [] } || { wanteds: [] },
+            person: { ...owner, wanteds: [] },
             organization: { ...organization }
           });
         }
@@ -876,9 +874,7 @@ export class MainStore {
       if (!uiStore.meInfo) return 0;
       const info = uiStore.meInfo;
 
-      const query = `features/${feature_uuid}/phase/${phase_uuid}/bounty/count?Open=${open}&Assigned=${assigned}&Paid=${paid}`;
-
-      const response = await fetch(`${TribesURL}/${query}`, {
+      const response = await fetch(`${TribesURL}/features/${feature_uuid}/phase/${phase_uuid}/bounty/count?Open=${open}&Assigned=${assigned}&Paid=${paid}`, {
         method: 'GET',
         mode: 'cors',
         headers: {
@@ -911,14 +907,14 @@ export class MainStore {
   async getPersonAssignedBounties(queryParams?: any, uuid?: string): Promise<PersonBounty[]> {
     queryParams = { ...queryParams, ...(uiStore.searchText ? { search: uiStore.searchText } : {}) };
 
-    const query = this.appendQueryParams(`people/wanteds/assigned/${uuid}`, paginationQueryLimit, {
+    const query = makeQueryParams(paginationQueryLimit, {
       sortBy: 'created',
       ...queryParams,
       direction: 'DESC'
     });
 
     try {
-      const ps2 = await api.get(query);
+      const ps2 = await api.get(`people/wanteds/assigned/${uuid}?${query}`);
       const ps3: any[] = [];
 
       if (ps2 && ps2.length) {
@@ -938,7 +934,7 @@ export class MainStore {
 
           ps3.push({
             body: { ...bounty, assignee: assignee || '' },
-            person: { ...owner, wanteds: [] } || { wanteds: [] },
+            person: { ...owner, wanteds: [] },
             organization: { ...organization }
           });
         }
@@ -959,14 +955,14 @@ export class MainStore {
   async getPersonCreatedBounties(queryParams?: any, uuid?: string): Promise<PersonBounty[]> {
     queryParams = { ...queryParams, ...(uiStore.searchText ? { search: uiStore.searchText } : {}) };
 
-    const query = this.appendQueryParams(`people/wanteds/created/${uuid}`, paginationQueryLimit, {
+    const query = makeQueryParams(paginationQueryLimit, {
       ...queryParams,
       sortBy: 'created',
       direction: 'DESC'
     });
 
     try {
-      const ps2 = await api.get(query);
+      const ps2 = await api.get(`people/wanteds/created/${uuid}?${query}`);
       const ps3: any[] = [];
 
       if (ps2 && ps2.length) {
@@ -1005,7 +1001,7 @@ export class MainStore {
 
             ps3.push({
               body: { ...bounty, assignee: assignee || '' },
-              person: { ...owner, wanteds: [] } || { wanteds: [] },
+              person: { ...owner, wanteds: [] },
               organization: { ...organization }
             });
           }
@@ -1048,7 +1044,7 @@ export class MainStore {
 
           ps3.push({
             body: { ...bounty, assignee: assignee || '' },
-            person: { ...owner, wanteds: [] } || { wanteds: [] },
+            person: { ...owner, wanteds: [] },
             organization: { ...organization }
           });
         }
@@ -1098,7 +1094,7 @@ export class MainStore {
 
           ps3.push({
             body: { ...bounty, assignee: assignee || '' },
-            person: { ...owner, wanteds: [] } || { wanteds: [] },
+            person: { ...owner, wanteds: [] },
             organization: { ...organization }
           });
         }
@@ -1150,14 +1146,13 @@ export class MainStore {
         ? newParams
         : params;
 
-    const query2 = this.appendQueryParams(
-      `workspaces/bounties/${uuid}`,
+    const query2 = makeQueryParams(
       queryLimit,
       params ? queryParams : this.getWantedsSpecWorkspacePrevParams
     );
 
     try {
-      const ps2 = await api.get(query2);
+      const ps2 = await api.get(`workspaces/bounties/${uuid}?${query2}`);
       const ps3: any[] = [];
 
       if (ps2) {
@@ -1186,7 +1181,7 @@ export class MainStore {
 
           ps3.push({
             body: { ...bounty, assignee: assignee || '' },
-            person: { ...owner, wanteds: [] } || { wanteds: [] },
+            person: { ...owner, wanteds: [] },
             organization: { ...organization }
           });
         }
@@ -1236,7 +1231,7 @@ export class MainStore {
 
           ps3.push({
             body: { ...bounty, assignee: assignee || '' },
-            person: { ...owner, wanteds: [] } || { wanteds: [] },
+            person: { ...owner, wanteds: [] },
             organization: { ...organization }
           });
         }
@@ -1276,19 +1271,13 @@ export class MainStore {
       ...params
     };
 
-    if (params) {
-      // save previous params
-      this.getWantedsTotalWorkspacePrevParams = queryParams;
-    }
-
     // if we don't pass the params, we should use previous params for invalidate query
-    const query2 = this.appendQueryParams(
-      `workspaces/bounties/${uuid}`,
+    const query2 = makeQueryParams(
       orgQuerLimit,
-      params ? queryParams : this.getWantedsWorkspacePrevParams
+      params ? queryParams : undefined,
     );
     try {
-      const ps2 = await api.get(query2);
+      const ps2 = await api.get(`workspaces/bounties/${uuid}?${query2}`);
       const ps3: any[] = [];
 
       if (ps2 && ps2.length) {
@@ -1308,7 +1297,7 @@ export class MainStore {
           if (bounty.org_uuid === uuid) {
             ps3.push({
               body: { ...bounty, assignee: assignee || '' },
-              person: { ...owner, wanteds: [] } || { wanteds: [] },
+              person: { ...owner, wanteds: [] },
               organization: { ...organization }
             });
           }
@@ -1372,12 +1361,12 @@ export class MainStore {
   async getPeopleOffers(queryParams?: any): Promise<PersonOffer[]> {
     queryParams = { ...queryParams, search: uiStore.searchText };
 
-    const query = this.appendQueryParams('people/offers', queryLimit, {
+    const query = makeQueryParams(queryLimit, {
       ...queryParams,
       sortBy: 'created'
     });
     try {
-      let ps = await api.get(query);
+      let ps = await api.get(`people/offers?${query}`);
       ps = this.decodeListJSON(ps);
 
       // for search always reset page
@@ -2000,7 +1989,7 @@ export class MainStore {
     try {
       const workspaceBountiesStatus =
         JSON.parse(localStorage.getItem('workspaceBountyStatus') || `{}`) ||
-        this.defaultWorkspaceBountyStatus;
+        defaultBountyStatus;
       const params = { languages: this.bountyLanguages, ...workspaceBountiesStatus };
 
       const queryParams: QueryParams = {
@@ -2013,13 +2002,12 @@ export class MainStore {
       };
 
       // if we don't pass the params, we should use previous params for invalidate query
-      const query = this.appendQueryParams(
-        `gobounties/workspace/next/${org_uuid}/${created}`,
+      const query = makeQueryParams(
         queryLimit,
         queryParams
       );
 
-      const bounty = await api.get(query);
+      const bounty = await api.get(`gobounties/workspace/next/${org_uuid}/${created}?${query}`);
       return bounty;
     } catch (e) {
       console.log('fetch failed getWorkspaceNextBountyById: ', e);
@@ -2031,7 +2019,7 @@ export class MainStore {
     try {
       const workspaceBountiesStatus =
         JSON.parse(localStorage.getItem('workspaceBountyStatus') || `{}`) ||
-        this.defaultWorkspaceBountyStatus;
+        defaultBountyStatus;
       const params = { languages: this.bountyLanguages, ...workspaceBountiesStatus };
 
       const queryParams: QueryParams = {
@@ -2044,13 +2032,12 @@ export class MainStore {
       };
 
       // if we don't pass the params, we should use previous params for invalidate query
-      const query = this.appendQueryParams(
-        `gobounties/workspace/previous/${org_uuid}/${created}`,
+      const query = makeQueryParams(
         queryLimit,
         queryParams
       );
 
-      const bounty = await api.get(query);
+      const bounty = await api.get(`gobounties/workspace/previous/${org_uuid}/${created}?${query}`);
       return bounty;
     } catch (e) {
       console.log('fetch failed getWorkspacePreviousBountyById: ', e);
@@ -2072,9 +2059,9 @@ export class MainStore {
       };
 
       // if we don't pass the params, we should use previous params for invalidate query
-      const query = this.appendQueryParams(`gobounties/next/${created}`, queryLimit, queryParams);
+      const query = makeQueryParams(queryLimit, queryParams);
 
-      const bounty = await api.get(query);
+      const bounty = await api.get(`gobounties/next/${created}?${query}`);
       return bounty;
     } catch (e) {
       console.log('fetch failed getBountyCount: ', e);
@@ -2096,12 +2083,11 @@ export class MainStore {
       };
 
       // if we don't pass the params, we should use previous params for invalidate query
-      const query = this.appendQueryParams(
-        `gobounties/previous/${created}`,
+      const query = makeQueryParams(
         queryLimit,
         queryParams
       );
-      const bounty = await api.get(query);
+      const bounty = await api.get(`gobounties/previous/${created}?${query}`);
       return bounty;
     } catch (e) {
       console.log('fetch failed getBountyCount: ', e);
@@ -2320,7 +2306,7 @@ export class MainStore {
   @observable
   dropDownWorkspaces: Workspace[] = [];
 
-  @action setDropDownWorkspaces(workspaces: Workspace[]) {
+  @action setDropdownWorkspaces(workspaces: Workspace[]) {
     this.dropDownWorkspaces = workspaces;
   }
 
@@ -2362,7 +2348,7 @@ export class MainStore {
       });
 
       const data = await r.json();
-      this.setDropDownWorkspaces(data);
+      this.setDropdownWorkspaces(data);
       return await data;
     } catch (e) {
       console.log('Error getUserDropdownWorkspaces', e);
@@ -3301,13 +3287,12 @@ export class MainStore {
       };
 
       // if we don't pass the params, we should use previous params for invalidate query
-      const query = this.appendQueryParams(
-        `features/forworkspace/${uuid}`,
+      const query = makeQueryParams(
         featureLimit,
         queryParams
       );
 
-      const r: any = await fetch(`${TribesURL}/${query}`, {
+      const r: any = await fetch(`${TribesURL}/features/forworkspace/${uuid}?${query}`, {
         method: 'GET',
         mode: 'cors',
         headers: {
@@ -3453,14 +3438,14 @@ export class MainStore {
         ...params
       };
 
-      const query = this.appendQueryParams('metrics/bounties/providers', 5, queryParams);
+      const query = makeQueryParams(5, queryParams);
 
       const body = {
         start_date: date_range.start_date,
         end_date: date_range.end_date
       };
 
-      const r: any = await fetch(`${TribesURL}/${query}`, {
+      const r: any = await fetch(`${TribesURL}/metrics/bounties/providers?${query}`, {
         method: 'POST',
         mode: 'cors',
         body: JSON.stringify(body),
@@ -3494,14 +3479,14 @@ export class MainStore {
       };
 
       // if we don't pass the params, we should use previous params for invalidate query
-      const query = this.appendQueryParams(`metrics/bounties`, 20, queryParams);
+      const query = makeQueryParams(20, queryParams);
 
       const body = {
         start_date: date_range.start_date,
         end_date: date_range.end_date
       };
 
-      const r: any = await fetch(`${TribesURL}/${query}`, {
+      const r: any = await fetch(`${TribesURL}/metrics/bounties?${query}`, {
         method: 'POST',
         mode: 'cors',
         body: JSON.stringify(body),
@@ -3533,11 +3518,11 @@ export class MainStore {
         end_date
       };
 
-      const query = this.appendQueryParams(`${TribesURL}/metrics/bounties/count`, 0, {
+      const query = makeQueryParams(0, {
         ...queryParams
       });
 
-      const r: any = await fetch(query, {
+      const r: any = await fetch(`${TribesURL}/metrics/bounties/count?${query}`, {
         method: 'POST',
         mode: 'cors',
         body: JSON.stringify(body),
