@@ -49,7 +49,7 @@ export default function MultiSelectInput({
   const [isTop, setIsTop] = useState<boolean>(false);
 
   return (
-    <>
+    <> data-testid="multi-select-input-component"
       <FieldEnv
         color={color}
         label={labeltext}
