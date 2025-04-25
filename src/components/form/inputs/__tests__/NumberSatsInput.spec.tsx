@@ -7,7 +7,7 @@ import NumberInputNew from '../NumberSatsInput.tsx';
 describe('NumberInputNew Component', () => {
   test('accepts numbers greater than or equal to 1', () => {
     render(
-      <NumberInputNew
+      <NumberInputNew data-testid="number-sats-input-component"
         error={''}
         label="Test Label"
         name="testInput"
@@ -31,7 +31,7 @@ describe('NumberInputNew Component', () => {
 
   test('does not accept symbols', () => {
     render(
-      <NumberInputNew
+      <NumberInputNew data-testid="number-sats-input-component"
         error={''}
         label="Test Label"
         name="testInput"
@@ -55,7 +55,7 @@ describe('NumberInputNew Component', () => {
 
   test('does not accept text', () => {
     render(
-      <NumberInputNew
+      <NumberInputNew data-testid="number-sats-input-component"
         error={''}
         label="Test Label"
         name="testInput"
@@ -79,7 +79,7 @@ describe('NumberInputNew Component', () => {
 
   test('does not accept negative numbers', () => {
     render(
-      <NumberInputNew
+      <NumberInputNew data-testid="number-sats-input-component"
         error={''}
         label="Test Label"
         name="testInput"
@@ -103,7 +103,7 @@ describe('NumberInputNew Component', () => {
 
   test('does not accept numbers less than to 0', () => {
     render(
-      <NumberInputNew
+      <NumberInputNew data-testid="number-sats-input-component"
         error={''}
         label="Test Label"
         name="testInput"

@@ -84,7 +84,7 @@ export default function TextInput({
 
   const padStyle = prepend && active ? { paddingLeft: 0 } : {};
   return (
-    <OuterContainer color={color}>
+    <OuterContainer data-testid="text-input-component" color={color}>
       <FieldEnv
         color={color}
         onClick={() => {
