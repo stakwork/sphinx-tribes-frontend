@@ -1872,7 +1872,7 @@ describe('getPeople', () => {
   });
 });
 
-describe('setDropDownWorkspaces', () => {
+describe('setDropdownWorkspaces', () => {
   let mainStore: MainStore;
 
   beforeEach(() => {
@@ -1905,12 +1905,12 @@ describe('setDropDownWorkspaces', () => {
       }
     ];
 
-    mainStore.setDropDownWorkspaces(workspaces);
+    mainStore.setDropdownWorkspaces(workspaces);
     expect(mainStore.dropDownWorkspaces).toEqual(workspaces);
   });
 
   it('should handle empty array input', () => {
-    mainStore.setDropDownWorkspaces([]);
+    mainStore.setDropdownWorkspaces([]);
     expect(mainStore.dropDownWorkspaces).toEqual([]);
   });
 
@@ -1927,7 +1927,7 @@ describe('setDropDownWorkspaces', () => {
       show: true
     };
 
-    mainStore.setDropDownWorkspaces([workspace]);
+    mainStore.setDropdownWorkspaces([workspace]);
     expect(mainStore.dropDownWorkspaces).toHaveLength(1);
     expect(mainStore.dropDownWorkspaces[0]).toEqual(workspace);
   });
@@ -1945,24 +1945,24 @@ describe('setDropDownWorkspaces', () => {
       show: true
     }));
 
-    mainStore.setDropDownWorkspaces(workspaces);
+    mainStore.setDropdownWorkspaces(workspaces);
     expect(mainStore.dropDownWorkspaces).toHaveLength(1000);
     expect(mainStore.dropDownWorkspaces).toEqual(workspaces);
   });
 
   it('should handle null input', () => {
-    mainStore.setDropDownWorkspaces(null as any);
+    mainStore.setDropdownWorkspaces(null as any);
     expect(mainStore.dropDownWorkspaces).toEqual(null);
   });
 
   it('should handle undefined input', () => {
-    mainStore.setDropDownWorkspaces(undefined as any);
+    mainStore.setDropdownWorkspaces(undefined as any);
     expect(mainStore.dropDownWorkspaces).toEqual(undefined);
   });
 
   it('should handle invalid data type', () => {
     const invalidInput = 'not an array' as any;
-    mainStore.setDropDownWorkspaces(invalidInput);
+    mainStore.setDropdownWorkspaces(invalidInput);
     expect(mainStore.dropDownWorkspaces).toEqual(invalidInput);
   });
 
@@ -1996,7 +1996,7 @@ describe('setDropDownWorkspaces', () => {
       }
     ];
 
-    mainStore.setDropDownWorkspaces(mixedWorkspaces as any);
+    mainStore.setDropdownWorkspaces(mixedWorkspaces as any);
     expect(mainStore.dropDownWorkspaces).toEqual(mixedWorkspaces);
   });
 
@@ -2015,7 +2015,7 @@ describe('setDropDownWorkspaces', () => {
 
     const duplicateWorkspaces = [workspace, workspace, workspace];
 
-    mainStore.setDropDownWorkspaces(duplicateWorkspaces);
+    mainStore.setDropdownWorkspaces(duplicateWorkspaces);
     expect(mainStore.dropDownWorkspaces).toHaveLength(3);
     expect(mainStore.dropDownWorkspaces).toEqual(duplicateWorkspaces);
   });
@@ -2034,7 +2034,7 @@ describe('setDropDownWorkspaces', () => {
       additionalData: Array(1000).fill('large data')
     } as Workspace;
 
-    mainStore.setDropDownWorkspaces([largeWorkspace]);
+    mainStore.setDropdownWorkspaces([largeWorkspace]);
     expect(mainStore.dropDownWorkspaces).toHaveLength(1);
     expect(mainStore.dropDownWorkspaces[0]).toEqual(largeWorkspace);
   });
@@ -2061,7 +2061,7 @@ describe('setDropDownWorkspaces', () => {
       }
     } as Workspace;
 
-    mainStore.setDropDownWorkspaces([nestedWorkspace]);
+    mainStore.setDropdownWorkspaces([nestedWorkspace]);
     expect(mainStore.dropDownWorkspaces).toHaveLength(1);
     expect(mainStore.dropDownWorkspaces[0]).toEqual(nestedWorkspace);
   });
@@ -2093,7 +2093,7 @@ describe('setDropDownWorkspaces', () => {
 
     const workspacesWithNulls = [null, validWorkspace1, undefined, validWorkspace2] as any[];
 
-    mainStore.setDropDownWorkspaces(workspacesWithNulls);
+    mainStore.setDropdownWorkspaces(workspacesWithNulls);
     expect(mainStore.dropDownWorkspaces).toEqual(workspacesWithNulls);
     expect(mainStore.dropDownWorkspaces).toHaveLength(4);
   });
