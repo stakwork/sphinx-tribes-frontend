@@ -101,8 +101,10 @@ describe('Test Kanban Board Filters', { testIsolation: false }, () => {
     });
 
     cy.get('[data-testid="feature-filter-btn"]').click();
+    cy.get('[data-testid="feature-filter-dropdown"]').contains('Feature 100').click();
+    cy.wait(2000);
     cy.get('[data-testid="clear-feature-filters-btn"]').click();
-
+    cy.wait(2000);
     cy.get('[data-testid="status-filter-btn"]').click();
 
     cy.get('[data-testid="status-filter-dropdown"]')
