@@ -758,6 +758,7 @@ const TicketEditor = observer(
               )}
               <TicketHeader>Ticket:</TicketHeader>
               <TicketInput
+                data-testid="ticket-name-input"
                 value={versionTicketData.name}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setVersionTicketData({ ...versionTicketData, name: e.target.value })
@@ -859,6 +860,7 @@ const TicketEditor = observer(
                     <EuiIcon type="copy" />
                   </FloatingCopyButton>
                   <TicketTextAreaComp
+                    data-testid="ticket-description-input"
                     value={versionTicketData.description}
                     onChange={(value: string) =>
                       setVersionTicketData({ ...versionTicketData, description: value })
@@ -937,7 +939,7 @@ const TicketEditor = observer(
               <ActionButton
                 color="primary"
                 onClick={handleUpdate}
-                data-testid="story-input-update-btn"
+                data-testid="ticket-input-save-btn"
               >
                 Save
               </ActionButton>
