@@ -762,23 +762,6 @@ export default function SidebarComponent({
       </NavItem>
 
       <NavItem
-        active={activeItem === 'settings'}
-        onClick={() => handleItemClick('settings')}
-        collapsed={collapsed}
-        onMouseEnter={(e) => handleMouseEnter(e, 'settings')}
-        onMouseLeave={() => setHoveredItem(null)}
-        aria-label="Settings"
-      >
-        <MaterialIcon icon="settings" />
-        <span>Settings</span>
-        {(collapsed || hoveredItem === 'settings') && (
-          <Tooltip visible={hoveredItem === 'settings'} top={tooltipTop} collapsed={collapsed}>
-            Settings
-          </Tooltip>
-        )}
-      </NavItem>
-
-      <NavItem
         active={window.location.pathname.includes('kanban')}
         onClick={handleKanbanClick}
         collapsed={collapsed}
@@ -826,6 +809,23 @@ export default function SidebarComponent({
         {(collapsed || hoveredItem === 'backlog') && (
           <Tooltip visible={hoveredItem === 'backlog'} top={tooltipTop} collapsed={collapsed}>
             Feature Backlog
+          </Tooltip>
+        )}
+      </NavItem>
+      
+      <NavItem
+        active={activeItem === 'settings'}
+        onClick={() => handleItemClick('settings')}
+        collapsed={collapsed}
+        onMouseEnter={(e) => handleMouseEnter(e, 'settings')}
+        onMouseLeave={() => setHoveredItem(null)}
+        aria-label="Settings"
+      >
+        <MaterialIcon icon="settings" />
+        <span>Settings</span>
+        {(collapsed || hoveredItem === 'settings') && (
+          <Tooltip visible={hoveredItem === 'settings'} top={tooltipTop} collapsed={collapsed}>
+            Settings
           </Tooltip>
         )}
       </NavItem>
