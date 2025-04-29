@@ -392,6 +392,51 @@ const CopyButton = styled.button<{ $isUser?: boolean }>`
   }
 `;
 
+// Tooltip styled component (adapted from SidebarComponent.tsx)
+const Tooltip = styled.div<{ visible: boolean }>`
+  position: absolute;
+  left: calc(100% + 8px); // Position to the right of the container + 8px margin
+  top: 50%;
+  transform: translateY(-50%); // Vertically center
+  background: rgba(31, 41, 55, 0.95);
+  color: #ffffff;
+  padding: 8px 12px; // Adjusted padding slightly
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  max-width: 200px;
+  opacity: ${(props) => (props.visible ? 1 : 0)};
+  visibility: ${(props) => (props.visible ? 'visible' : 'hidden')};
+  transition:
+    opacity 200ms cubic-bezier(0.4, 0, 0.2, 1),
+    visibility 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  z-index: 10; // Ensure tooltip is above other elements if necessary
+  pointer-events: none;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+  /* Simple arrow pointing left */
+  &::before {
+    content: '';
+    position: absolute;
+    right: 100%; /* Position arrow on the left side of the tooltip */
+    top: 50%;
+    transform: translateY(-50%);
+    border-style: solid;
+    border-width: 6px 6px 6px 0; /* Arrow shape */
+    border-color: transparent rgba(31, 41, 55, 0.95) transparent transparent; /* Arrow color */
+  }
+`;
+
+// Container for the AddButton and its Tooltip
+const AddButtonContainer = styled.div`
+  position: relative;
+  display: inline-block; // Or flex, depending on layout needs
+  vertical-align: middle; // Align with other elements in the header if needed
+`;
+
 const AddButton = styled.button`
   padding: 8px;
   margin-left: 8px;
@@ -629,6 +674,7 @@ export const HiveChatView: React.FC = observer(() => {
   const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [isRefreshingTitle, setIsRefreshingTitle] = useState(false);
   const [sseLogs, setSseLogs] = useState<SSEMessage[]>([]);
+  const [showNewChatTooltip, setShowNewChatTooltip] = useState(false); // State for the tooltip
   useBrowserTabTitle('Hive Chat');
 
   if (isVerboseLoggingEnabled) {
@@ -1497,9 +1543,15 @@ export const HiveChatView: React.FC = observer(() => {
                     Save
                   </SendButton>
                 )}
-                <AddButton onClick={() => handleNewChat()} disabled={isUpdatingTitle}>
-                  <MaterialIcon icon="add" style={{ fontSize: '16px', color: '#5f6368' }} />
-                </AddButton>
+                {/* Wrap AddButton and Tooltip */}
+                <AddButtonContainer
+                  onMouseEnter={() => setShowNewChatTooltip(true)}
+                  onMouseLeave={() => setShowNewChatTooltip(false)}>
+                  <AddButton onClick={() => handleNewChat()} disabled={isUpdatingTitle} aria-label="New Chat">
+                    <MaterialIcon icon="add" style={{ fontSize: '16px', color: '#5f6368' }} />
+                  </AddButton>
+                  <Tooltip visible={showNewChatTooltip}>New Chat</Tooltip>
+                </AddButtonContainer>
                 {isMinimized && (
                   <AddButton onClick={handleRestore} title="Show Artifacts">
                     <MaterialIcon
