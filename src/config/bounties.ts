@@ -32,6 +32,8 @@ export const help_wanted_coding_task_schema = [
   'Desktop app',
   'Dev ops',
   'Bitcoin / Lightning',
+  'Knowledge Graph',
+  'ML / AI',
   'Other'
 ];
 
