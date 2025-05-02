@@ -335,6 +335,7 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
                 <>
                   <Button
                     onClick={handlePhasePlannerClick}
+                    dataTestId="phase-planner-btn-test"
                     style={{
                       backgroundColor: '#49C998',
                       borderRadius: '6px',

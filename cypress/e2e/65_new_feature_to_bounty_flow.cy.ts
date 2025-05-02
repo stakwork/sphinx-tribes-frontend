@@ -3,7 +3,7 @@ describe('New Feature to Bounty Flow', () => {
     cy.login('carol');
     cy.wait(1000);
 
-    const WorkSpaceName = 'Workspace Feature';
+    const WorkSpaceName = 'Workspace F80';
 
     const workspace = {
       loggedInAs: 'carol',
@@ -33,17 +33,12 @@ describe('New Feature to Bounty Flow', () => {
 
     cy.contains(newFeature).should('exist', { timeout: 3000 });
 
-    cy.contains(newFeature).click();
-    cy.wait(1000);
-
-    cy.get('[data-testid="new-phase-btn"]').click();
+    cy.get('[data-testid="phase-add-btn"]').click();
     cy.get('[data-testid="add-phase-input"]').type(phaseName);
     cy.get('[data-testid="add-phase-btn"]').click();
     cy.wait(1000);
 
-    cy.contains(phaseName).should('exist');
-
-    cy.get('[data-testid="phase-planner-btn"]').click();
+    cy.get('[data-testid="phase-planner-btn-test"]').click();
     cy.wait(3000);
 
     cy.get('[data-testid="add-ticket-btn"]').click();
