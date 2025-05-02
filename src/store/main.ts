@@ -246,6 +246,7 @@ export class MainStore {
       const response = await fetch(`${TribesURL}/features/brief/send`, {
         method: 'POST',
         mode: 'cors',
+        // Body now includes githubPAT if passed in the 'body' parameter
         body: JSON.stringify(body),
         headers: {
           'x-jwt': info.tribe_jwt,
@@ -2623,6 +2624,7 @@ export class MainStore {
       const r: any = await fetch(`${TribesURL}/workspaces/users/role/${uuid}/${user}`, {
         method: 'POST',
         mode: 'cors',
+        // Body now includes githubPAT if passed in the 'body' parameter
         body: JSON.stringify(body),
         headers: {
           'x-jwt': info.tribe_jwt,
@@ -2708,6 +2710,7 @@ export class MainStore {
       const r: any = await fetch(`${TribesURL}/gobounties/pay/${body.id}`, {
         method: 'POST',
         mode: 'cors',
+        // Body now includes githubPAT if passed in the 'body' parameter
         body: JSON.stringify(body),
         headers: {
           'x-jwt': info.tribe_jwt,
@@ -2755,6 +2758,7 @@ export class MainStore {
       const r: any = await fetch(`${TribesURL}/gobounties/payment/status/${body.id}`, {
         method: 'PUT',
         mode: 'cors',
+        // Body now includes githubPAT if passed in the 'body' parameter
         body: JSON.stringify(body),
         headers: {
           'x-jwt': info.tribe_jwt,
@@ -2893,6 +2897,7 @@ export class MainStore {
       const r: any = await fetch(`${TribesURL}/gobounties/budget/withdraw`, {
         method: 'POST',
         mode: 'cors',
+        // Body now includes githubPAT if passed in the 'body' parameter
         body: JSON.stringify(body),
         headers: {
           'x-jwt': info.tribe_jwt,
@@ -3352,6 +3357,7 @@ export class MainStore {
       const response = await fetch(`${TribesURL}/features/stories/send`, {
         method: 'POST',
         mode: 'cors',
+        // Body now includes githubPAT if passed in the 'body' parameter
         body: JSON.stringify(body),
         headers: {
           'x-jwt': info.tribe_jwt,
@@ -3391,6 +3397,7 @@ export class MainStore {
       const r: any = await fetch(`${TribesURL}/metrics/bounty_stats?workspace=${workspace}`, {
         method: 'POST',
         mode: 'cors',
+        // Body now includes githubPAT if passed in the 'body' parameter
         body: JSON.stringify(body),
         headers: {
           'x-jwt': info.tribe_jwt,
@@ -3431,6 +3438,7 @@ export class MainStore {
       const r: any = await fetch(`${TribesURL}/metrics/bounties/providers?${query}`, {
         method: 'POST',
         mode: 'cors',
+        // Body now includes githubPAT if passed in the 'body' parameter
         body: JSON.stringify(body),
         headers: {
           'x-jwt': info.tribe_jwt,
@@ -3472,6 +3480,7 @@ export class MainStore {
       const r: any = await fetch(`${TribesURL}/metrics/bounties?${query}`, {
         method: 'POST',
         mode: 'cors',
+        // Body now includes githubPAT if passed in the 'body' parameter
         body: JSON.stringify(body),
         headers: {
           'x-jwt': info.tribe_jwt,
@@ -3508,6 +3517,7 @@ export class MainStore {
       const r: any = await fetch(`${TribesURL}/metrics/bounties/count?${query}`, {
         method: 'POST',
         mode: 'cors',
+        // Body now includes githubPAT if passed in the 'body' parameter
         body: JSON.stringify(body),
         headers: {
           'x-jwt': info.tribe_jwt,
@@ -3542,6 +3552,7 @@ export class MainStore {
       const r: any = await fetch(`${TribesURL}/metrics/csv?workspace=${workspace}`, {
         method: 'POST',
         mode: 'cors',
+        // Body now includes githubPAT if passed in the 'body' parameter
         body: JSON.stringify(body),
         headers: {
           'x-jwt': info.tribe_jwt,
@@ -5079,6 +5090,7 @@ export class MainStore {
       const response = await fetch(`${TribesURL}/codespace/workspaces`, {
         method: 'POST',
         mode: 'cors',
+        // Body now includes githubPAT if passed in the 'body' parameter
         body: JSON.stringify(body),
         headers: {
           'x-jwt': info.tribe_jwt,
@@ -5104,6 +5116,7 @@ export class MainStore {
       const response = await fetch(`${TribesURL}/codespace/workspaces/${id}`, {
         method: 'PUT',
         mode: 'cors',
+        // Body now includes githubPAT if passed in the 'body' parameter
         body: JSON.stringify(body),
         headers: {
           'x-jwt': info.tribe_jwt,

@@ -73,6 +73,7 @@ interface CodeSpaceMap {
   workspaceID: string;
   codeSpaceURL: string;
   userPubkey: string;
+  githubPAT?: string;
 }
 
 interface CodeSpaceProps {
@@ -90,6 +91,7 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
 }) => {
   const { main, ui } = useStores();
   const [codeSpace, setCodeSpace] = useState<CodeSpaceMap | null>(null);
+  const [githubPAT, setGithubPAT] = useState('');
   const [urlError, setUrlError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
@@ -107,6 +109,7 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
         const response = await main.getCodeSpace(workspaceUUID);
         if (response) {
           setCodeSpace(response);
+          setGithubPAT(response.githubPAT || ''); // Initialize PAT state
         } else {
           setCodeSpace({
             id: '',
@@ -114,8 +117,10 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
             updatedAt: '',
             workspaceID: workspaceUUID,
             codeSpaceURL: '',
-            userPubkey: ui.meInfo?.pubkey || ''
+            userPubkey: ui.meInfo?.pubkey || '',
+            githubPAT: '' // Initialize PAT state for new code space
           });
+          setGithubPAT(''); // Ensure PAT state is empty for new
         }
       } catch (error) {
         console.error('Error fetching CodeSpace:', error);
@@ -170,23 +175,34 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
     setUrlError(!isValidUrl(newUrl));
   };
 
+  const handlePatChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setGithubPAT(e.target.value);
+  };
+
   const handleSave = async () => {
     if (!codeSpace || !isValidUrl(codeSpace.codeSpaceURL)) return;
 
     setIsLoading(true);
     try {
+      const payload = {
+        ...codeSpace,
+        githubPAT: githubPAT // Include PAT in payload
+      };
+
       if (codeSpace.id) {
-        await main.updateCodeSpace(codeSpace, codeSpace.id);
+        await main.updateCodeSpace(payload, codeSpace.id);
         addToast('Success', 'success', 'Code Space updated successfully!');
       } else {
-        const payload = {
+        const createPayload = {
           workspaceID: workspaceUUID,
           codeSpaceURL: codeSpace.codeSpaceURL,
-          userPubkey: ui.meInfo?.pubkey || ''
+          userPubkey: ui.meInfo?.pubkey || '',
+          githubPAT: githubPAT // Include PAT in create payload
         };
-        const newCodeSpace = await main.createCodeSpace(payload);
+        const newCodeSpace = await main.createCodeSpace(createPayload);
         if (newCodeSpace) {
           setCodeSpace(newCodeSpace);
+          setGithubPAT(newCodeSpace.githubPAT || ''); // Update state with returned PAT if available
           addToast('Success', 'success', 'Code Space created successfully!');
         }
       }
@@ -222,6 +238,15 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
             value={codeSpace?.codeSpaceURL || ''}
             onChange={handleUrlChange}
             style={{ borderColor: urlError ? '#FF8F80' : '' }}
+          />
+        </Wrapper>
+        <Wrapper>
+          <Label>GitHub PAT:</Label>
+          <TextInput
+            type="password" // Use password type to obscure PAT
+            placeholder="Enter GitHub Personal Access Token"
+            value={githubPAT}
+            onChange={handlePatChange}
           />
         </Wrapper>
         {urlError && (
