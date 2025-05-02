@@ -5072,7 +5072,8 @@ export class MainStore {
       return null;
     }
   }
-  async createCodeSpace(body: CodeSpaceMap): Promise<any> {
+  // Update body type to allow githubPat
+  async createCodeSpace(body: Omit<CodeSpaceMap, 'id' | 'createdAt' | 'updatedAt'> & { githubPat?: string }): Promise<any> {
     try {
       if (!uiStore.meInfo) return null;
       const info = uiStore.meInfo;
@@ -5097,7 +5098,8 @@ export class MainStore {
       return null;
     }
   }
-  async updateCodeSpace(body: any, id: string): Promise<any> {
+  // Update body type to CodeSpaceMap including optional githubPat
+  async updateCodeSpace(body: CodeSpaceMap, id: string): Promise<any> {
     try {
       if (!uiStore.meInfo) return null;
       const info = uiStore.meInfo;

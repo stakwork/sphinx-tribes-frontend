@@ -73,6 +73,7 @@ interface CodeSpaceMap {
   workspaceID: string;
   codeSpaceURL: string;
   userPubkey: string;
+  githubPat?: string;
 }
 
 interface CodeSpaceProps {
@@ -90,6 +91,7 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
 }) => {
   const { main, ui } = useStores();
   const [codeSpace, setCodeSpace] = useState<CodeSpaceMap | null>(null);
+  const [githubPat, setGithubPat] = useState('');
   const [urlError, setUrlError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
@@ -101,13 +103,25 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
     setToasts([{ id: `${Date.now()}-codespace`, title, color, text }]);
   };
 
+  const isValidUrl = (url: string) => {
+    try {
+      const validUrl = new URL(url);
+      return validUrl.protocol === 'https:';
+    } catch {
+      return false;
+    }
+  };
+
   useEffect(() => {
     const fetchCodeSpace = async () => {
       try {
         const response = await main.getCodeSpace(workspaceUUID);
-        if (response) {
+        if (response && response.id) { // Check if response is valid and has an ID
           setCodeSpace(response);
+          setGithubPat(response.githubPat || ''); // Initialize PAT state
+          setUrlError(!isValidUrl(response.codeSpaceURL)); // Also validate fetched URL
         } else {
+          // Initialize state for creating a new code space
           setCodeSpace({
             id: '',
             createdAt: '',
@@ -154,15 +168,6 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
     });
   };
 
-  const isValidUrl = (url: string) => {
-    try {
-      const validUrl = new URL(url);
-      return validUrl.protocol === 'https:';
-    } catch {
-      return false;
-    }
-  };
-
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!codeSpace) return;
     const newUrl = e.target.value;
@@ -170,21 +175,37 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
     setUrlError(!isValidUrl(newUrl));
   };
 
+  const handlePatChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setGithubPat(e.target.value);
+  };
+
   const handleSave = async () => {
     if (!codeSpace || !isValidUrl(codeSpace.codeSpaceURL)) return;
 
     setIsLoading(true);
     try {
+      // Prepare the payload including the githubPat
+      const payload = {
+        ...codeSpace,
+        githubPat: githubPat, // Add the PAT from state
+        workspaceID: workspaceUUID, // Ensure workspaceID is always set
+        userPubkey: ui.meInfo?.pubkey || '' // Ensure userPubkey is always set
+      };
+
       if (codeSpace.id) {
-        await main.updateCodeSpace(codeSpace, codeSpace.id);
+        // Update existing code space
+        await main.updateCodeSpace(payload, codeSpace.id);
         addToast('Success', 'success', 'Code Space updated successfully!');
       } else {
-        const payload = {
+         // Create new code space
+        // Remove id, createdAt, updatedAt before creating
+        const createPayload: Omit<CodeSpaceMap, 'id' | 'createdAt' | 'updatedAt'> & { githubPat?: string } = {
           workspaceID: workspaceUUID,
           codeSpaceURL: codeSpace.codeSpaceURL,
-          userPubkey: ui.meInfo?.pubkey || ''
+          userPubkey: ui.meInfo?.pubkey || '',
+          githubPat: githubPat
         };
-        const newCodeSpace = await main.createCodeSpace(payload);
+        const newCodeSpace = await main.createCodeSpace(createPayload);
         if (newCodeSpace) {
           setCodeSpace(newCodeSpace);
           addToast('Success', 'success', 'Code Space created successfully!');
@@ -223,6 +244,15 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
             onChange={handleUrlChange}
             style={{ borderColor: urlError ? '#FF8F80' : '' }}
           />
+        </Wrapper>
+        <Wrapper>
+           <Label>GitHub PAT:</Label>
+           <TextInput
+             type="password" // Use password type for masking
+             placeholder="Enter GitHub Personal Access Token"
+             value={githubPat}
+             onChange={handlePatChange}
+           />
         </Wrapper>
         {urlError && (
           <p style={{ color: 'red', fontSize: '12px', marginLeft: '33%' }}>
