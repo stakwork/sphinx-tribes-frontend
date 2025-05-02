@@ -275,6 +275,19 @@ function Header() {
   }, [main, ui.selectedPerson]);
 
   useEffect(() => {
+    const meInfo = localStorage.getItem('meInfo');
+    if (meInfo) {
+      try {
+        const user = JSON.parse(meInfo);
+        ui.setMeInfo(user);
+        ui.setShowSignIn(false);
+      } catch (e) {
+        console.error('Error parsing meInfo from local storage');
+      }
+    }
+  }, [ui]);
+
+  useEffect(() => {
     getUserWorkspaces();
   }, [getUserWorkspaces]);
 
