@@ -868,7 +868,7 @@ const PhasePlannerView: React.FC = observer(() => {
                 <ActionButton
                   color="primary"
                   onClick={addTicketHandler}
-                  data-testid="audio-generation-btn"
+                  data-testid="add-ticket-btn"
                 >
                   Add Ticket
                 </ActionButton>
