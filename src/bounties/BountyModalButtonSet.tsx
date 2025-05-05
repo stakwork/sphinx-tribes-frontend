@@ -174,6 +174,34 @@ const ButtonSet = ({ showGithubBtn, ...props }: any) => {
         </div>
         <EuiText className="ButtonText">Share to Twitter</EuiText>
       </ButtonContainer>
+      {props.showCallLink && (
+        <ButtonContainer 
+          topMargin={'16px'}
+          onClick={props.callLinkAction}
+          color={color}
+          title="Call Link"
+        >
+          <div className="LeadingImageContainer" style={{ marginLeft: '14px', marginRight: '10px' }}>
+            <MaterialIcon
+              icon={'videocam'}
+              style={{
+                fontSize: 24,
+                color: '#acb4bc'
+              }}
+            />
+          </div>
+          <EuiText className="ButtonText">Call Link</EuiText>
+          <div className="ImageContainer">
+            <img
+              className="buttonImage"
+              src={'/static/github_ticket.svg'}
+              alt={'external_link'}
+              height={'14px'}
+              width={'14px'}
+            />
+          </div>
+        </ButtonContainer>
+      )}
       {props.isOwner && props.show === false && (
         <>
           <div

@@ -720,6 +720,12 @@ export const wantedCodingTaskSchema: FormField[] = [
     options: codingLanguages
   },
   {
+    name: 'call_link',
+    label: 'Call Link',
+    type: 'text',
+    testId: 'CallLink'
+  },
+  {
     name: 'text_snippet',
     label: 'Insert Text Snippet',
     type: 'select',

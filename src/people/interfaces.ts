@@ -246,6 +246,7 @@ export interface WantedSummaryProps {
   badgeRecipient: string;
   loomEmbedUrl?: string;
   coding_languages: string[];
+  call_link: string;
   estimated_session_length?: string;
   estimated_completion_date?: string;
   assignee: Person;

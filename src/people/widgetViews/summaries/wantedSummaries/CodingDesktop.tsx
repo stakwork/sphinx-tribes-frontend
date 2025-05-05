@@ -2,6 +2,7 @@
 import React from 'react';
 import { EuiText } from '@elastic/eui';
 import { CodingViewProps } from 'people/interfaces';
+import Button from '../../../../components/common/Button';
 import { Divider, Paragraph, Title } from '../../../../components/common';
 import StatusPill from '../../parts/StatusPill';
 import LoomViewerRecorder from '../../../utils/LoomViewerRecorder';
@@ -14,6 +15,7 @@ import { ButtonRow, Y, P, B, Img, Wrap, SectionPad, LoomIcon, GithubIcon } from 
 export default function DesktopView(props: CodingViewProps) {
   const {
     paid,
+    call_link,
     titleString,
     labels,
     price,
@@ -30,6 +32,22 @@ export default function DesktopView(props: CodingViewProps) {
     created
   } = props;
   const color = colors['light'];
+
+  const callLinkElement = call_link && (
+    <div style={{ display: 'inline-block', marginLeft: 10 }}>
+      <Button
+        color={'primary'}
+        iconSize={14}
+        style={{ fontSize: 14, height: 36, width: 36, padding: 0 }}
+        endingIcon={'videocam'}
+        text="Call Link"
+        onClick={(e: any) => {
+          e.stopPropagation();
+          window.open(call_link, '_blank');
+        }}
+      />
+    </div>
+  );
 
   return (
     <>
@@ -195,6 +213,7 @@ export default function DesktopView(props: CodingViewProps) {
                 labels={labels}
                 titleString={titleString}
               />
+              {callLinkElement}
             </ButtonRow>
 
             {actionButtons}

@@ -624,6 +624,12 @@ function MobileView(props: CodingBountiesProps) {
     sendToRedirect(twitterLink);
   };
 
+  const openCallLink = () => {
+    if (props.call_link) {
+      window.open(props.call_link, '_blank');
+    }
+  };
+
   useEffect(() => {
     const onHandle = (event: any) => {
       const res = JSON.parse(event.data);
@@ -1355,6 +1361,8 @@ function MobileView(props: CodingBountiesProps) {
                       showProof={isAssignee}
                       showProofAction={proofHandler}
                       isOwner={person?.owner_pubkey === ui.meInfo?.owner_pubkey}
+                      showCallLink={!!props.call_link}
+                      callLinkAction={openCallLink}
                       show={props.show}
                       generateShareableLinkAction={() => {
                         const unlockCode = props.unlock_code;
@@ -1878,6 +1886,8 @@ function MobileView(props: CodingBountiesProps) {
                     const profileUrl = `https://community.sphinx.chat/t/${tribe}`;
                     sendToRedirect(profileUrl);
                   }}
+                  showCallLink={!!props.call_link}
+                  callLinkAction={openCallLink}
                 />
               </>
             ) : assignee?.owner_alias ? (
@@ -1960,6 +1970,8 @@ function MobileView(props: CodingBountiesProps) {
                   }}
                   showProof={isAssignee}
                   showProofAction={proofHandler}
+                  showCallLink={!!props.call_link}
+                  callLinkAction={openCallLink}
                 />
                 {isOpenProofModal && (
                   <CodingBountyProofModal
@@ -2057,6 +2069,8 @@ function MobileView(props: CodingBountiesProps) {
                     const profileUrl = `https://community.sphinx.chat/t/${tribe}`;
                     sendToRedirect(profileUrl);
                   }}
+                  showCallLink={!!props.call_link}
+                  callLinkAction={openCallLink}
                 />
               </>
             )}

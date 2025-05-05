@@ -61,7 +61,8 @@ function WantedSummary(props: WantedSummaryProps) {
     phase_uuid,
     id,
     isEditButtonDisable,
-    stakeMin
+    stakeMin,
+    call_link
   } = props;
   const titleString = one_sentence_summary || title || '';
   const bountyPath = `/bounty/${id}`;
@@ -639,6 +640,7 @@ function WantedSummary(props: WantedSummaryProps) {
           loomEmbedUrl={loomEmbedUrl}
           titleString={titleString}
           isCopied={isCopied}
+          call_link={call_link}
         />
       </div>
     );
