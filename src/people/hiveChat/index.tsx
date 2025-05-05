@@ -1564,7 +1564,7 @@ export const HiveChatView: React.FC = observer(() => {
                 ))}
                 {(isChainVisible || isActionSend) && (
                   <MessageBubble isUser={false}>
-                    <HiveThoughts>Hive - Chain of Thought</HiveThoughts>
+                    <HiveThoughts>Hive</HiveThoughts>
                     <p>
                       {lastLogLine
                         ? lastLogLine
