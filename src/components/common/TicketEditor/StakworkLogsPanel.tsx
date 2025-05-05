@@ -182,7 +182,7 @@ const StakworkLogsPanel = ({ swwfLinks, logs, setLogs }: StakworkLogsPanelProps)
   return (
     <PanelWrapper collapsed={collapsed}>
       <Header>
-        <Title>Hive - Chain of Thought</Title>
+        <Title>Hive</Title>
         <CollapseButton onClick={() => setCollapsed(!collapsed)}>
           {collapsed ? 'Expand' : 'Collapse'}
         </CollapseButton>

@@ -874,7 +874,7 @@ const TicketEditor = observer(
             <TicketButtonGroup>
               {showSWWFLink && swwfLink && (
                 <ChainOfThought>
-                  <h6>Hive - Chain of Thought</h6>
+                  <h6>Hive</h6>
                   <p>
                     {lastLogLine
                       ? lastLogLine
