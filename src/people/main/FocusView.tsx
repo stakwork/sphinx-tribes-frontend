@@ -456,7 +456,7 @@ function FocusedView(props: FocusViewProps) {
         width: '100%',
         height: '100%'
       }}
-    >
+     data-testid="focused-view-component">
       {editMode ? (
         <B ref={scrollDiv} hide={false}>
           {formHeader && formHeader}

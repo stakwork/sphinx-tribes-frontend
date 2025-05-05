@@ -162,7 +162,7 @@ const WithdrawBudgetModal = (props: WithdrawModalProps) => {
         borderRadius: '50%'
       }}
     >
-      <Wrapper>
+      <Wrapper data-testid="withdraw-budget-modal-component">
         {paymentSettled && (
           <PaymentDetailsWrap>
             <SuccessImage src={successIcon} />

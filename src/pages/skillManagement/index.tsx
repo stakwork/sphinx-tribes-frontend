@@ -152,7 +152,7 @@ const ManageSkillsPage: React.FC = observer(() => {
   return (
     <>
       {!permissionsChecked ? (
-        <Container>Loading permissions...</Container>
+        <Container data-testid="manage-skills-page-component">Loading permissions...</Container>
       ) : !isSuperAdmin ? (
         <AdminAccessDenied />
       ) : (
@@ -192,7 +192,7 @@ const ManageSkillsPage: React.FC = observer(() => {
                       <Td>{skill.status}</Td>
                       <Td>
                         <ActionMenu>
-                          <Ellipsis onClick={() => handleToggleMenu(skill.id)}>⋮</Ellipsis>
+                          <Ellipsis onClick={() => handleToggleMenu(skill.id)}></Ellipsis>
                           {openMenu === skill.id && (
                             <Dropdown>
                               <DropdownItem>Edit</DropdownItem>

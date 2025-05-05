@@ -48,7 +48,7 @@ export const Pages = observer(({ mode }: { mode: AppMode }) => {
   return (
     <>
       <TokenRefresh />
-      <Switch>
+      <Switch data-testid="pages-component">
         <Route exact path="/bounties">
           <MainLayout header={<PeopleHeader />}>
             <TicketsPage />

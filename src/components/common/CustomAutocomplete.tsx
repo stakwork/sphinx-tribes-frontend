@@ -106,7 +106,7 @@ const AutoComplete = (props: AutoCompleteProps) => {
   }, [searchValue, props]);
 
   return (
-    <SearchOuterContainer color={color}>
+    <SearchOuterContainer color={color} data-testid="auto-complete-component">
       <input
         className="SearchInput"
         onChange={handler}

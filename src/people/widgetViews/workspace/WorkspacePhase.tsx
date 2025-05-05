@@ -418,7 +418,7 @@ const WorkspacePhasingTabs = (props: WorkspacePhaseProps) => {
   const selectedTab = useMemo(() => tabs[selectedIndex], [selectedIndex, tabs]);
 
   return (
-    <Container style={{ marginBottom: '3rem' }}>
+    <Container style={{ marginBottom: '3rem' }} data-testid="workspace-phasing-tabs-component">
       <RowFlex>
         <Label>Phases</Label>
         <Button

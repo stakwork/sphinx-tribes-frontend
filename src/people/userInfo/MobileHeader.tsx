@@ -13,7 +13,7 @@ export const HeaderMobile = ({ goBack, canEdit, logout, onEdit }: PeopleMobileeH
       width: '100%',
       padding: '0 20px'
     }}
-  >
+   data-testid="header-mobile-component">
     <IconButton onClick={goBack} icon="arrow_back" />
     {canEdit ? (
       <>

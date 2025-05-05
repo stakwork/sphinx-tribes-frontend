@@ -1455,7 +1455,7 @@ export const HiveChatView: React.FC = observer(() => {
 
   if (loading) {
     return (
-      <Container collapsed={collapsed} ref={containerRef}>
+      <Container collapsed={collapsed} ref={containerRef} data-testid="hive-chat-view-component">
         <LoadingContainer>
           <EuiLoadingSpinner size="l" />
         </LoadingContainer>
@@ -1629,7 +1629,7 @@ export const HiveChatView: React.FC = observer(() => {
                 aria-label="Resize panels"
               >
                 <DragTooltip visible={showTooltip}>
-                  Drag to resize • Arrow keys to adjust
+                  Drag to resize  Arrow keys to adjust
                 </DragTooltip>
                 <DividerHandle />
               </DividerContainer>

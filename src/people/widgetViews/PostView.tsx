@@ -34,7 +34,7 @@ export default function PostView(props: OfferViewProps) {
   const noGallery = !gallery || !gallery.length;
 
   return (
-    <Wrap style={{ maxHeight: expand ? '' : 472 }}>
+    <Wrap style={{ maxHeight: expand ? '' : 472 }} data-testid="post-view-component">
       <Pad>
         <Title>{title}</Title>
         <NameTag {...person} created={created} widget={'post'} />

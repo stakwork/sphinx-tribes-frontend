@@ -103,7 +103,7 @@ const TopEarners = observer(({ limit = 5, className, style, onError }: TopEarner
   }
 
   return (
-    <Container data-testId={'main'} className={className} style={style}>
+    <Container data-testId={'main'} className={className} style={style} data-testid="top-earners-component">
       <div className="inner">
         {leaderboard?.topEarners
           .slice(0, limit)

@@ -42,7 +42,7 @@ const BountiesLandingPage: React.FC = () => {
   useBrowserTabTitle('Bounties');
 
   return (
-    <Body isMobile={isMobile}>
+    <Body isMobile={isMobile} data-testid="bounties-landing-page-component">
       <ContentWrapper>
         <header>
           <BountyNavBar />

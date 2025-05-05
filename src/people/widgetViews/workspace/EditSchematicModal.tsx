@@ -176,7 +176,7 @@ const EditSchematic = (props: {
   };
 
   return (
-    <AddWorkspaceWrapper>
+    <AddWorkspaceWrapper data-testid="edit-schematic-component">
       <AddWorkspaceHeader>Edit Schematic</AddWorkspaceHeader>
       <WorkspaceDetailsContainer>
         <WorkspaceImgOutterContainer>

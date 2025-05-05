@@ -47,7 +47,7 @@ export default function DesktopView(props: CodingViewProps) {
           }}
         />
       )}
-      <Wrap color={color}>
+      <Wrap color={color} data-testid="desktop-view-component">
         <div
           style={{
             width: 700,

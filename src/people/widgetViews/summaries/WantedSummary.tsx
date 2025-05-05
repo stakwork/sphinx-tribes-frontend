@@ -519,7 +519,7 @@ function WantedSummary(props: WantedSummaryProps) {
               marginTop: isMobile ? 20 : 0,
               marginLeft: '-16px'
             }}
-          >
+           data-testid="wanted-summary-component">
             <Img
               src={assigneeInfo.img || '/static/person_placeholder.png'}
               style={{ borderRadius: 30 }}

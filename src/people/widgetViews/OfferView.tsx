@@ -140,7 +140,7 @@ export default function OfferView(props: OfferViewProps) {
   }
 
   return (
-    <DWrap>
+    <DWrap data-testid="offer-view-component">
       <GalleryViewer
         cover
         showAll={false}

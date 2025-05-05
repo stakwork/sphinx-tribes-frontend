@@ -47,7 +47,7 @@ export const UserInfo = observer(({ id }: { id: string }) => {
 
   if (!person) {
     return (
-      <UserItemContainer>
+      <UserItemContainer data-testid="user-info-component">
         <EuiAvatar size="xl" name={''} imageUrl={'/static/person_placeholder.png'} />
       </UserItemContainer>
     );

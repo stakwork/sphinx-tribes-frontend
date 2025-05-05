@@ -81,7 +81,7 @@ export const SnippetDropdown: React.FC<DropdownProps> = ({ items, onSelect }) =>
   };
 
   return (
-    <DropdownContainer ref={dropdownRef}>
+    <DropdownContainer ref={dropdownRef} data-testid="snippet-dropdown-component">
       <InputField
         type="text"
         value={inputValue}
@@ -89,7 +89,7 @@ export const SnippetDropdown: React.FC<DropdownProps> = ({ items, onSelect }) =>
         onClick={() => setIsOpen(!isOpen)}
         placeholder="Select a snippet"
       />
-      <Arrow>{isOpen ? '▲' : '▼'}</Arrow>
+      <Arrow>{isOpen ? '' : ''}</Arrow>
       <DropdownContent isOpen={isOpen}>
         {items.map((item: any) => (
           <DropdownItem key={item.value} onClick={() => handleItemClick(item.label, item.snippet)}>

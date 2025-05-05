@@ -37,7 +37,7 @@ export default function Widgets(props: any) {
   }, [selected, showFocused]);
 
   return (
-    <Wrap>
+    <Wrap data-testid="widgets-component">
       <FadeLeft
         isMounted={!selected}
         style={{ maxWidth: 500 }}

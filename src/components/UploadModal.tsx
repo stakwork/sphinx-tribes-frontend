@@ -202,7 +202,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
   };
 
   return (
-    <ModalOverlay onClick={onClose}>
+    <ModalOverlay onClick={onClose} data-testid="upload-modal-component">
       <ModalContent onClick={(e: React.MouseEvent) => e.stopPropagation()}>
         <UploadArea
           onDrop={handleDrop}

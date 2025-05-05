@@ -199,5 +199,5 @@ export default function Input(props: any) {
     }
   }
 
-  return <FieldWrap color={color}>{getInput()}</FieldWrap>;
+  return <FieldWrap color={color} data-testid="input-component">{getInput()}</FieldWrap>;
 }

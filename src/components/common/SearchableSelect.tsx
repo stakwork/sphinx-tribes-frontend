@@ -36,7 +36,7 @@ export default function SearchableSelect(props: SelProps) {
     : [];
 
   return (
-    <div id="dropdown-wrapper" style={{ position: 'relative', ...style }}>
+    <div id="dropdown-wrapper" style={{ position: 'relative', ...style }} data-testid="searchable-select-component">
       <S
         options={opts}
         isLoading={loading}

@@ -214,7 +214,7 @@ export default function FocusedWidget(props: FocusedWidgetProps) {
   );
 
   return (
-    <Wrap>
+    <Wrap data-testid="focused-widget-component">
       {widgetHeader}
 
       {/* single widgets will only show these fields */}

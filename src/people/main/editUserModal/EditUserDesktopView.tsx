@@ -25,7 +25,7 @@ export const EditUserDesktopView = observer(() => {
       }}
       overlayClick={closeHandler}
       bigClose={closeHandler}
-    >
+     data-testid="edit-user-desktop-view-component">
       <AboutFocusView
         person={person}
         canEdit={canEdit}

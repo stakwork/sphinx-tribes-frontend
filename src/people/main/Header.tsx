@@ -393,7 +393,7 @@ function Header() {
             background: headerBackground,
             paddingBottom: 0
           }}
-        >
+         data-testid="header-component">
           <div className="container">
             <Row style={{ justifyContent: 'space-between' }}>
               <EuiHeaderSection grow={false}>

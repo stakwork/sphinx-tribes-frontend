@@ -96,7 +96,7 @@ const Item = ({ owner_pubkey, total_sats_earned, place }: ItemProps) => {
 export const Top3 = () => {
   const { leaderboard } = useStores();
   return (
-    <Top3Container data-testId={'top-contributors'}>
+    <Top3Container data-testId={'top-contributors'} data-testid="top3-component">
       {leaderboard.top3.map((item: any, index: number) => (
         <Item place={index + 1} key={item.owner_pubkey} {...item} />
       ))}

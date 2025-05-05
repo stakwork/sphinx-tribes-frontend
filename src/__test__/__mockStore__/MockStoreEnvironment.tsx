@@ -33,7 +33,7 @@ export function MockStoreEnvironment({
   useMockSelfProfileStore({ enabled: hooks.includes(MOCK_ENVIRONMENT_HOOKS.SELF_PROFILE_STORE) });
 
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={theme} data-testid="mock-store-environment-component">
       <Router history={history}>{children}</Router>
     </ThemeProvider>
   );

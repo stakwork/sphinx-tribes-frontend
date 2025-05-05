@@ -258,7 +258,7 @@ const AddWorkspace = (props: {
   };
 
   return (
-    <AddWorkspaceWrapper>
+    <AddWorkspaceWrapper data-testid="add-workspace-component">
       <AddWorkspaceHeader>Add New Workspace</AddWorkspaceHeader>
       <WorkspaceDetailsContainer>
         <WorkspaceImgOutterContainer>

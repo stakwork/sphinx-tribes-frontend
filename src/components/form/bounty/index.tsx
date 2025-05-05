@@ -490,7 +490,7 @@ function Form(props: FormProps) {
               ...schemaData.outerContainerStyle
             }}
             newDesign={props?.newDesign}
-          >
+           data-testid="form-component">
             {props?.newDesign && schema ? (
               <>
                 <CreateBountyHeaderContainer color={color}>

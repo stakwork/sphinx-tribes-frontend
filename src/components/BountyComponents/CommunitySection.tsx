@@ -128,7 +128,7 @@ const CommunitySection: React.FC = () => {
   };
 
   return (
-    <Section>
+    <Section data-testid="community-section-component">
       <Container>
         <Header>
           <h2>

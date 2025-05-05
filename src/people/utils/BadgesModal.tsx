@@ -31,7 +31,7 @@ function BadgesModal({
   return (
     <Modal
       visible={visible}
-      close={() => {
+      close={() = data-testid="badges-modal-component"> {
         setBadgeToPush(null);
       }}
     >

@@ -104,7 +104,7 @@ function SearchableSelectInput({
         style={{
           border: isBorder ? `1px solid ${color.grayish.G600} ` : `1px solid ${color.pureWhite}`
         }}
-      >
+       data-testid="searchable-select-input-component">
         <R>
           <SearchableSelect
             selectStyle={{ border: 'none' }}

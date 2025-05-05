@@ -47,7 +47,7 @@ export const WithStores = ({ children }: any) => (
       leaderboard: leaderboardStore,
       chat: chatHistoryStore
     }}
-  >
+   data-testid="with-stores-component">
     {children}
   </Context.Provider>
 );

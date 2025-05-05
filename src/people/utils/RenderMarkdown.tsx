@@ -123,7 +123,7 @@ export function renderMarkdown(markdown: any, customStyles?: CustomStyles) {
   } = customStyles || {};
 
   return (
-    <MarkdownContainer textColor={bubbleTextColor}>
+    <MarkdownContainer textColor={bubbleTextColor} data-testid="markdown-container-component">
       <ReactMarkdown
         children={markdown}
         remarkPlugins={[remarkGfm]}

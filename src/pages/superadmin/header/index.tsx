@@ -196,7 +196,7 @@ export const Header = ({
   };
 
   return (
-    <Container>
+    <Container data-testid="header-component">
       <AlternateWrapper>
         <LeftWrapper data-testid="leftWrapper">
           {startDate && endDate ? (

@@ -89,7 +89,7 @@ const UserInfo = (props: PaymentHistoryUserInfo) => {
     return `${name.substring(0, 12)}...`;
   };
   return (
-    <UserInfoWrapper>
+    <UserInfoWrapper data-testid="user-info-component">
       <Wrapper>
         <Image src={props.image} />
       </Wrapper>

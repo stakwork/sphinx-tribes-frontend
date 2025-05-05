@@ -187,7 +187,7 @@ export default function MobileView(props: CodingViewProps) {
           }}
         />
       )}
-      <div style={{ padding: 20, overflow: 'auto', height: 'calc(100% - 60px)' }}>
+      <div style={{ padding: 20, overflow: 'auto', height: 'calc(100% - 60px)' }} data-testid="mobile-view-component">
         <Pad>
           {!bountyPaid && hasAccess && isAssigner && (
             <div

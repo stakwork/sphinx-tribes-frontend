@@ -17,7 +17,7 @@ describe('Test for UserInfoDesktopView', () => {
 
   it('Test that user profile photo is visible', async () => {
     render(
-      <MockStoreEnvironment>
+      <MockStoreEnvironment data-testid="user-info-desktop-view-component">
         <UserInfoDesktopView setShowSupport={setShowSupport} />
       </MockStoreEnvironment>
     );

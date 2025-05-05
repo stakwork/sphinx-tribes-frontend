@@ -192,7 +192,7 @@ export const BountyEstimates = (props: BountyEstimatesProp) => {
       ) : (
         <></>
       )}
-      <div className="d-flex align-items-center">
+      <div className="d-flex align-items-center" data-testid="heart-component">
         {props.completion_date || props.session_length ? (
           <SessionContainer>
             <img className="schedule_img" src="/static/schedule.svg" alt="" />

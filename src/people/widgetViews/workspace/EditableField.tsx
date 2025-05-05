@@ -138,7 +138,7 @@ export const EditableField: React.FC<EditableFieldProps> = ({
 
   return (
     <>
-      <ButtonContainer>
+      <ButtonContainer data-testid="editable-field-component">
         {isExpanded && previewMode !== 'edit' && (
           <ExpandText onClick={() => setIsExpanded(!isExpanded)}>
             <span>-</span>

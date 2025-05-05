@@ -37,7 +37,7 @@ describe('AboutView Component', () => {
     history.push('/p');
     await act(async () => {
       const { getByText } = render(
-        <Router history={history}>
+        <Router history={history} data-testid="header-component">
           <Header />
         </Router>
       );

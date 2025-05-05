@@ -15,7 +15,7 @@ export function Button({ children, targetSection, variant = 'default' }: ButtonP
   const scrollToElement = useScrollToElement();
 
   return (
-    <StyledButton variant={variant} onClick={() => scrollToElement(targetSection)}>
+    <StyledButton variant={variant} onClick={() = data-testid="button-component"> scrollToElement(targetSection)}>
       {children}
     </StyledButton>
   );

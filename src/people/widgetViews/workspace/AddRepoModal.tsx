@@ -186,7 +186,7 @@ const AddRepo = (props: {
   };
 
   return (
-    <AddWorkspaceWrapper>
+    <AddWorkspaceWrapper data-testid="add-repo-component">
       <AddWorkspaceHeader>Add New Repository</AddWorkspaceHeader>
       <WorkspaceDetailsContainer>
         <WorkspaceInputContainer feature={true} style={{ color: repoNameError ? errcolor : '' }}>

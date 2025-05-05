@@ -275,7 +275,7 @@ const FeatureFlagsModal = ({ open, close, addToast }: FeatureFlagsProps) => {
         background: '#000',
         borderRadius: '50%'
       }}
-    >
+     data-testid="feature-flags-modal-component">
       <Wrapper>
         <ModalTitle>Feature Flags</ModalTitle>
         <CreateButton onClick={() => setShowCreateModal(true)}>Create Feature Flag</CreateButton>
@@ -292,11 +292,11 @@ const FeatureFlagsModal = ({ open, close, addToast }: FeatureFlagsProps) => {
                   <thead>
                     <tr>
                       <Th onClick={() => handleSort('name')}>
-                        Name {sortField === 'name' && (sortDirection === 'asc' ? '↑' : '↓')}
+                        Name {sortField === 'name' && (sortDirection === 'asc' ? '' : '')}
                       </Th>
                       <Th onClick={() => handleSort('description')}>
                         Description{' '}
-                        {sortField === 'description' && (sortDirection === 'asc' ? '↑' : '↓')}
+                        {sortField === 'description' && (sortDirection === 'asc' ? '' : '')}
                       </Th>
                       <Th>Status</Th>
                       <Th>Actions</Th>

@@ -50,7 +50,7 @@ export default function SearchTextInput({
 
   return (
     <>
-      <R>
+      <R data-testid="search-text-input-component">
         <Text
           color={color}
           name="first"

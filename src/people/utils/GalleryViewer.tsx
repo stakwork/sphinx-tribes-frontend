@@ -115,7 +115,7 @@ export default function GalleryViewer(props: any) {
       <Gallery
         style={{ width: big || wrap ? '100%' : 'fit-content', ...style }}
         ref={props.innerRef}
-      >
+       data-testid="gallery-viewer-component">
         {showAll ? (
           <div style={{ textAlign: 'center' }}>
             {g.map((ga: any, i: number) => (

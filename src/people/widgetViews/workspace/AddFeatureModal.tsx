@@ -121,7 +121,7 @@ const AddFeature = (props: {
   };
 
   return (
-    <AddWorkspaceWrapper>
+    <AddWorkspaceWrapper data-testid="add-feature-component">
       <AddWorkspaceHeader>Add New Feature</AddWorkspaceHeader>
       <WorkspaceDetailsContainer style={{ display: 'flex' }}>
         <WorkspaceInputContainer feature={true} style={{ color: featureNameError ? errcolor : '' }}>

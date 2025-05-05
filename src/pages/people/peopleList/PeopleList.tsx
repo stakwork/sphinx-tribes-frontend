@@ -99,7 +99,7 @@ export const PeopleList = observer(() => {
   );
 
   return (
-    <PeopleListContainer>
+    <PeopleListContainer data-testid="people-list-component">
       <DBack>
         <Button color="clear" leadingIcon="arrow_back" text="Back" onClick={goBack} />
 

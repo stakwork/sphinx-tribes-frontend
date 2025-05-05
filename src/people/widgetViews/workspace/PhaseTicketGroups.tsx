@@ -75,7 +75,7 @@ const PhaseTicketGroups: React.FC<PhaseTicketGroupsProps> = ({
   }, {});
 
   return (
-    <TicketGroupContainer>
+    <TicketGroupContainer data-testid="phase-ticket-groups-component">
       {Object.values(ticketGroups).map((ticket: Ticket) => (
         <TicketCard key={ticket.uuid}>
           <TicketInfo>

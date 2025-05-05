@@ -67,7 +67,7 @@ export const PersonPage = observer(() => {
   const { person, canEdit } = usePerson(personId);
 
   return (
-    <Content>
+    <Content data-testid="person-page-component">
       {!isMobile && (
         <div className="desktop">
           {!canEdit && <PeopleList />}

@@ -220,7 +220,7 @@ export default function IconButton(props: IconButtonProps) {
       disabled={props.disabled}
       className="test"
       onClick={props.onClick}
-    >
+     data-testid="icon-button-component">
       <div>
         {props.icon && (
           <div

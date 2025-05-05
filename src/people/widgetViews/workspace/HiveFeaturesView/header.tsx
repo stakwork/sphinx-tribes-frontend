@@ -142,7 +142,7 @@ export default function ActivitiesHeader({
   }, [main]);
 
   return (
-    <HeaderContainer>
+    <HeaderContainer data-testid="activities-header-component">
       <SubHeader>
         <BountiesHeader collapsed={collapsed}>
           <ButtonGroup>

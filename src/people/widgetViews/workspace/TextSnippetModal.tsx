@@ -196,7 +196,7 @@ const TextSnippetModal: React.FC<TextSnippetModalProps> = observer(
     if (!isVisible) return null;
 
     return (
-      <ModalContent>
+      <ModalContent data-testid="text-snippet-modal-component">
         {!isFormVisible && <ModalHeader>Text Snippets</ModalHeader>}
 
         {!isFormVisible && (

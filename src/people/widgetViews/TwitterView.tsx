@@ -24,7 +24,7 @@ const Icon = styled.div<IconProps>`
 
 export default function TwitterView(props: { handle: string }) {
   return (
-    <Wrap>
+    <Wrap data-testid="twitter-view-component">
       <Icon source={`/static/twitter.png`} />
       <div>@{props.handle}</div>
     </Wrap>

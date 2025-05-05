@@ -8,7 +8,7 @@ describe('PaymentConfirmationModal', () => {
     const onCloseMock = jest.fn();
     const onConfirmPaymentMock = jest.fn();
     const { getByText } = render(
-      <PaymentConfirmationModal onClose={onCloseMock} onConfirmPayment={onConfirmPaymentMock}>
+      <PaymentConfirmationModal onClose={onCloseMock} onConfirmPayment={onConfirmPaymentMock} data-testid="payment-confirmation-modal-component">
         Are you sure you want to pay this bounty?
       </PaymentConfirmationModal>
     );

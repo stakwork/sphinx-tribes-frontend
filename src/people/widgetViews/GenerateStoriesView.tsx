@@ -83,7 +83,7 @@ const GenerateStoriesView: React.FC = () => {
   };
 
   return (
-    <EuiOverlayMask>
+    <EuiOverlayMask data-testid="generate-stories-view-component">
       <GenerateStoriesModal>
         <GenerateStoriesHeader>
           <GenerateStoriesTitle>User Story Automation</GenerateStoriesTitle>

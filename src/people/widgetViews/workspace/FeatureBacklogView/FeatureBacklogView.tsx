@@ -514,7 +514,7 @@ const FeatureBacklogView = observer(() => {
   }
 
   return (
-    <MainContainer>
+    <MainContainer data-testid="feature-backlog-view-component">
       <SidebarComponent uuid={workspaceUuid} />
       <ActivitiesHeader uuid={workspaceUuid} collapsed={collapsed} />
       <FeatureHeadNameWrap collapsed={collapsed}>

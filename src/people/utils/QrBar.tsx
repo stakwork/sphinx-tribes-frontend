@@ -78,7 +78,7 @@ export default function QrBar(props: QRBarProps) {
   }
 
   return (
-    <Row style={props.style} onClick={() => copyToClipboard(value)}>
+    <Row style={props.style} onClick={() = data-testid="qr-bar-component"> copyToClipboard(value)}>
       <QRWrap
         style={{
           display: 'flex',

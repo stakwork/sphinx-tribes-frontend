@@ -215,7 +215,7 @@ const ViewInvitesModal = ({ open, close, addToast }: ViewInvitesProps) => {
         background: '#000',
         borderRadius: '50%'
       }}
-    >
+     data-testid="view-invites-modal-component">
       <Wrapper>
         <ModalTitle>Available Invite Codes</ModalTitle>
         <TotalCodesWrapper>

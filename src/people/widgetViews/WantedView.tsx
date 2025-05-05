@@ -144,7 +144,7 @@ function WantedView(props: WantedViews2Props) {
 
     if (props?.fromBountyPage) {
       return (
-        <div>
+        <div data-testid="wanted-view-component">
           {paid ? (
             <BountyBox color={color}>
               <PaidBounty

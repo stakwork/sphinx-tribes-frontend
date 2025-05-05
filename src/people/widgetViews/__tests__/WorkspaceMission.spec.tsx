@@ -93,7 +93,7 @@ describe('WorkspaceMission', () => {
     });
 
     render(
-      <TestWrapper>
+      <TestWrapper data-testid="workspace-mission-component">
         <WorkspaceMission />
       </TestWrapper>
     );

@@ -95,7 +95,7 @@ export default function NoneSpace(props: NoneSpaceProps) {
           ...props.style
         }}
         color={color}
-      >
+       data-testid="none-space-component">
         <Icon src={`/static/${props.img}`} style={{ width: 180, height: 180 }} color={color} />
 
         <div style={{ marginLeft: 20, padding: 20 }}>

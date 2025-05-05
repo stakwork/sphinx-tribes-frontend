@@ -11,7 +11,7 @@ describe('User Profile', () => {
   it('Should render edit profile button of self profile', () => {
     nock(user.url).get('/person/id/1').reply(200, {});
     render(
-      <MockStoreEnvironment hooks={[MOCK_ENVIRONMENT_HOOKS.SELF_PROFILE_STORE]}>
+      <MockStoreEnvironment hooks={[MOCK_ENVIRONMENT_HOOKS.SELF_PROFILE_STORE]} data-testid="user-info-desktop-view-component">
         <UserInfoDesktopView setShowSupport={() => null} />
       </MockStoreEnvironment>
     );

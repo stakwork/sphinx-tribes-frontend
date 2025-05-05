@@ -5,7 +5,7 @@ import AccessDeniedImage from '../../../public/static/access_denied.png';
 import { AccessImg, Container, DeniedSmall, DeniedText, Wrap } from './style';
 
 const AdminAccessDenied = () => (
-  <Container>
+  <Container data-testid="admin-access-denied-component">
     <Wrap>
       <AccessImg src={AccessDeniedImage} />
       <DeniedText>Access Denied</DeniedText>

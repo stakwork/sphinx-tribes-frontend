@@ -165,7 +165,7 @@ const BountyDescription = (props: BountiesDescriptionProps) => {
       <BountyDescriptionContainer
         style={{ ...props.style }}
         isBountyLandingPage={isBountyLandingPage}
-      >
+       data-testid="bounty-description-component">
         <Header isBountyLandingPage={isBountyLandingPage}>
           <div className="NameContainer">
             <NameTag

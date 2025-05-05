@@ -642,7 +642,7 @@ export const MyTable = ({
           </Options>
         </Header>
       </HeaderContainer>
-      <TableContainer>
+      <TableContainer data-testid="my-table-component">
         <Table>
           <TableRow freeze={!headerIsFrozen}>
             <TableHeaderData>Bounty</TableHeaderData>
