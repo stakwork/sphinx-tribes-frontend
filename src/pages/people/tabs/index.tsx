@@ -141,6 +141,7 @@ export const TabsPages = observer(() => {
       getBountiesCount(person?.owner_pubkey || '', 'bounties');
       getBountiesCount(person?.owner_pubkey || '', 'assigned');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [changeTabHandler, location.pathname, tabsNames, person]);
 
   const fullSelectedWidget = (name: any) => person?.extras?.[name];

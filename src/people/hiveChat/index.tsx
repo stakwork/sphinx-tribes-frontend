@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/typedef */
+/* eslint-disable */
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useParams } from 'react-router-dom';

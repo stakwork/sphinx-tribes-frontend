@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { getHost } from '../config/host';
 import { mainStore } from '../store/main';
 

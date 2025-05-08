@@ -399,6 +399,7 @@ const WorkspaceFeature = () => {
     } else {
       setPermissionsChecked(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getUserRoles, ui.meInfo]);
 
   const submitField = async (

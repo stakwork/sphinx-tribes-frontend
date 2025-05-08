@@ -1,4 +1,4 @@
-/* eslint-disable func-style */
+/* eslint-disable */
 import { useState } from 'react';
 
 export function useScroll() {

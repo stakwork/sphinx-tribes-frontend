@@ -3,7 +3,6 @@ import { orderBy } from 'lodash';
 import memo from 'memo-decorator';
 import { makeAutoObservable } from 'mobx';
 import api from '../../api';
-import { mainStore } from '../../store/main.ts';
 
 export type LeaderItem = {
   owner_pubkey: string;

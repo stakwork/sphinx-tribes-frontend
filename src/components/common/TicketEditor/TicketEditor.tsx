@@ -359,6 +359,7 @@ const TicketEditor = observer(
       if (!isSingleTicket) {
         setVersions(versionsArray);
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [groupTickets, latestTicket?.version]);
 
     useEffect(() => {

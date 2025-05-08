@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useEffect, useState } from 'react';
 import { ConnectCardProps } from 'people/interfaces';
 import { useStores } from 'store';

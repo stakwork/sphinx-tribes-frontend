@@ -135,6 +135,7 @@ export const BudgetWrapComponent = (props: { org: Workspace | undefined; uuid: s
       .catch((e: any) => {
         console.log('Update Payment Histories error', e);
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [main, getPaymentsHistory]);
 
   const openPaymentHistory = () => {

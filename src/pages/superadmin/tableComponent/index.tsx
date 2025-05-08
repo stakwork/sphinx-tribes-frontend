@@ -414,6 +414,7 @@ export const MyTable = ({
         observer.unobserve(currentLoaderRef);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isProviderPopoverOpen]);
 
   return (

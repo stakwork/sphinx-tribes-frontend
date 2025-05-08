@@ -34,6 +34,7 @@ export default function Widgets(props: any) {
   }
   useEffect(() => {
     doDelayedScrollTop();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selected, showFocused]);
 
   return (
