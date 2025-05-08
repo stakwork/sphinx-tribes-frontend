@@ -90,7 +90,7 @@ type Props = LeaderItem & {
 
 const color = colors.light;
 export const LeaerboardItem = ({ owner_pubkey, total_sats_earned, position }: Props) => (
-  <ItemContainer>
+  <ItemContainer data-testid="leaerboard-item-component">
     <EuiText color={colors.light.text2} className="position">
       #{position}
     </EuiText>
