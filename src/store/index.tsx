@@ -39,7 +39,7 @@ const Context = React.createContext({
 });
 
 export const WithStores = ({ children }: any) => (
-  <Context.Provider
+  <Context.Provider data-testid="with-stores-component"
     value={{
       ui: uiStore,
       main: mainStore,
@@ -58,7 +58,7 @@ export function withStores<T extends Object>(Component: FC<T>) {
   return function (props: T) {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     return (
-      <Context.Provider
+      <Context.Provider data-testid="with-stores-component"
         value={{
           ui: uiStore,
           main: mainStore,
