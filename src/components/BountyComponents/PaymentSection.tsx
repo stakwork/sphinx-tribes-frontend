@@ -125,7 +125,7 @@ const PaymentSection: React.FC = () => {
   };
 
   return (
-    <Section>
+    <Section data-testid="payment-section-component">
       <Container>
         <Header>
           <h2>Everything you need to know about getting paid as a Bounty Hunter.</h2>
