@@ -648,6 +648,7 @@ export default function SidebarComponent({
 
   return (
     <SidebarContainer
+      data-testid="sidebar-component"
       collapsed={collapsed}
       onClick={(e) => {
         e.stopPropagation();
