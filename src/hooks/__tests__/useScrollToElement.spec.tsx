@@ -1,3 +1,4 @@
+```
 import { renderHook, act } from '@testing-library/react-hooks';
 import useScrollToElement from '../../hooks/useScrollToElement';
 
@@ -62,3 +63,4 @@ describe('useScrollToElement', () => {
     document.body.removeChild(mockElement);
   });
 });
+```
