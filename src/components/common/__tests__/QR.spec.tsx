@@ -21,7 +21,7 @@ describe('QR Component', () => {
   nock(user.url).get('/person/id/1').reply(200, {});
   test('does display qr code', async () => {
     const value = 'test value';
-    render(<QR type={'connect'} value={value} size={10} />);
+    render(<QR data-testid="qr-component" type={'connect'} value={value} size={10} />);
 
     //Expect text to be there
     expect(screen.getByTestId('testid-qrcode')).toBeInTheDocument();
