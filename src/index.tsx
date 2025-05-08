@@ -1,3 +1,4 @@
+```
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { PostHogProvider } from 'posthog-js/react';
@@ -15,7 +16,7 @@ if (appEnv.isTests) {
   ReactDOM.render(<App />, document.getElementById('root'));
 } else {
   ReactDOM.render(
-    <PostHogProvider apiKey={process.env.REACT_APP_PUBLIC_POSTHOG_KEY} options={options}>
+    <PostHogProvider data-testid="index-component" apiKey={process.env.REACT_APP_PUBLIC_POSTHOG_KEY} options={options}>
       <App />
     </PostHogProvider>,
     document.getElementById('root')
@@ -26,3 +27,4 @@ if (appEnv.isTests) {
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();
+```
