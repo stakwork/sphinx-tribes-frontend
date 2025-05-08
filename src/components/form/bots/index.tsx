@@ -42,6 +42,7 @@ function Form(props: FormProps) {
     >
       {({ setFieldTouched, handleSubmit, values, setFieldValue, errors, initialValues }: any) => (
         <div
+          data-testid="form-component"
           ref={refBody}
           style={{
             ...formPad,
