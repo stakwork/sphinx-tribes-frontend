@@ -189,6 +189,11 @@ export class UiStore {
       if (t.photo_url && !t.img) t.img = t.photo_url;
       if (!t.owner_alias) t.owner_alias = t.alias;
       if (!t.owner_pubkey) t.owner_pubkey = t.pubkey;
+      // Persist meInfo to localStorage
+      localStorage.setItem('meInfo', JSON.stringify(t));
+    } else {
+      // If logging out, remove from localStorage
+      localStorage.removeItem('meInfo');
     }
     this.meInfo = t;
   }
