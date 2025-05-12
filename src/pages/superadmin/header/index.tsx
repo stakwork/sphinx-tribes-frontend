@@ -101,18 +101,26 @@ export const Header = ({
 
   const exportCsv = async () => {
     setExportLoading(true);
-    const csvUrl = await mainStore.exportMetricsBountiesCsv(
-      {
-        start_date: String(startDate),
-        end_date: String(endDate)
-      },
-      workspace
-    );
+    try {
+      const csvUrl = await mainStore.exportMetricsBountiesCsv(
+        {
+          start_date: String(startDate),
+          end_date: String(endDate)
+        },
+        workspace
+      );
 
-    if (csvUrl) {
-      window.open(csvUrl);
+      if (csvUrl) {
+        window.open(csvUrl);
+      } else {
+        addToast?.('Failed to generate CSV. Please try again.', 'error');
+      }
+    } catch (error) {
+      console.error('Error exporting CSV:', error);
+      addToast?.('An error occurred while exporting CSV.', 'error');
+    } finally {
+      setExportLoading(false);
     }
-    setExportLoading(false);
   };
 
   const handleDropDownChange = (option: number | string) => {
