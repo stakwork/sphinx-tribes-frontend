@@ -116,7 +116,8 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
     const fetchCodeSpace = async () => {
       try {
         const response = await main.getCodeSpace(workspaceUUID);
-        if (response && response.id) { // Check if response is valid and has an ID
+        if (response && response.id) {
+          // Check if response is valid and has an ID
           setCodeSpace(response);
           setGithubPat(response.githubPat || ''); // Initialize PAT state
           setUrlError(!isValidUrl(response.codeSpaceURL)); // Also validate fetched URL
@@ -197,9 +198,11 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
         await main.updateCodeSpace(payload, codeSpace.id);
         addToast('Success', 'success', 'Code Space updated successfully!');
       } else {
-         // Create new code space
+        // Create new code space
         // Remove id, createdAt, updatedAt before creating
-        const createPayload: Omit<CodeSpaceMap, 'id' | 'createdAt' | 'updatedAt'> & { githubPat?: string } = {
+        const createPayload: Omit<CodeSpaceMap, 'id' | 'createdAt' | 'updatedAt'> & {
+          githubPat?: string;
+        } = {
           workspaceID: workspaceUUID,
           codeSpaceURL: codeSpace.codeSpaceURL,
           userPubkey: ui.meInfo?.pubkey || '',
@@ -246,13 +249,13 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
           />
         </Wrapper>
         <Wrapper>
-           <Label>GitHub PAT:</Label>
-           <TextInput
-             type="password" // Use password type for masking
-             placeholder="Enter GitHub Personal Access Token"
-             value={githubPat}
-             onChange={handlePatChange}
-           />
+          <Label>GitHub PAT:</Label>
+          <TextInput
+            type="password" // Use password type for masking
+            placeholder="Enter GitHub Personal Access Token"
+            value={githubPat}
+            onChange={handlePatChange}
+          />
         </Wrapper>
         {urlError && (
           <p style={{ color: 'red', fontSize: '12px', marginLeft: '33%' }}>
