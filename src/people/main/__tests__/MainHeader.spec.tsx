@@ -26,7 +26,7 @@ jest.mock('../../../store', () => ({
 describe('Header Component', () => {
   test('renders Header component', () => {
     render(
-      <MemoryRouter>
+      <MemoryRouter data-testid="header-component">
         <Header />
       </MemoryRouter>
     );

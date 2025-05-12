@@ -46,7 +46,7 @@ interface AccessDeniedProps {
 }
 
 export const AccessDenied: React.FC<AccessDeniedProps> = ({ onClose }) => (
-  <Container>
+  <Container data-testid="access-denied-component">
     <Wrap>
       <AccessImg src={AccessDeniedImage} alt="Access Denied" />
       <DeniedText>Access Denied</DeniedText>

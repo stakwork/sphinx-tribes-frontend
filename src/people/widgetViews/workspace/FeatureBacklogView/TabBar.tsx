@@ -78,7 +78,7 @@ const TabBar: React.FC<TabBarProps> = ({ activeTab, onTabChange }) => {
   ];
 
   return (
-    <Container>
+    <Container data-testid="tab-bar-component">
       <TabWrapper>
         {tabs.map(({ id, label }) => (
           <TabButton key={id} isSelected={activeTab === id} onClick={() => onTabChange(id)}>

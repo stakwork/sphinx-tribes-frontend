@@ -292,7 +292,7 @@ export const SuperAdmin = () => {
       {!isSuperAdmin && permissionsChecked ? (
         <AdminAccessDenied />
       ) : (
-        <Container>
+        <Container data-testid="super-admin-component">
           <Header
             addToast={addToast}
             startDate={startDate}

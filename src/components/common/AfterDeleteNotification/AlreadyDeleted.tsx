@@ -17,7 +17,7 @@ export const AlreadyDeleted = ({ onClose, bountyTitle }: AlreadyDeletedProps) =>
   };
 
   return (
-    <BaseModal open onClose={closeHandler}>
+    <BaseModal open onClose={closeHandler} data-testid="already-deleted-component">
       <Stack
         position="relative"
         sx={{

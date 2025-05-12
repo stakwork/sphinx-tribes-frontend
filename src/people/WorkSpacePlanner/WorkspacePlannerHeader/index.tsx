@@ -164,7 +164,7 @@ const SearchComponent = ({
       </InverseToggle>
       {value && (
         <ClearButton onClick={onClear} title="Clear search">
-          ×
+          
         </ClearButton>
       )}
     </SearchControls>
@@ -311,7 +311,7 @@ export const WorkspacePlannerHeader = observer(
     return (
       <>
         <ActivitiesHeader uuid={uuid} />
-        <FillContainer>
+        <FillContainer data-testid="workspace-planner-header-component">
           <Filters>
             <FiltersRight>
               <NewStatusContainer>

@@ -180,7 +180,7 @@ const StakworkLogsPanel = ({ swwfLinks, logs, setLogs }: StakworkLogsPanelProps)
   }, [connections, swwfLinks, isVerboseLoggingEnabled, setLogs]);
 
   return (
-    <PanelWrapper collapsed={collapsed}>
+    <PanelWrapper collapsed={collapsed} data-testid="stakwork-logs-panel-component">
       <Header>
         <Title>Hive</Title>
         <CollapseButton onClick={() => setCollapsed(!collapsed)}>

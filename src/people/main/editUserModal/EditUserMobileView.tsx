@@ -9,7 +9,7 @@ export const EditUserMobileView = observer(() => {
   const { canEdit, closeHandler, person, modals } = useUserEdit();
 
   return (
-    <Modal fill visible={modals.userEditModal}>
+    <Modal fill visible={modals.userEditModal} data-testid="edit-user-mobile-view-component">
       <AboutFocusView
         person={person}
         canEdit={canEdit}

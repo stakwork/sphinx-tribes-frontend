@@ -134,7 +134,7 @@ const BountyProfileView = (props: BountiesProfileProps) => {
           ...props?.UserProfileContainerStyle
         }}
         isBountyLandingPage={props.isBountyLandingPage}
-      >
+       data-testid="bounty-profile-view-component">
         <UserImage
           style={{
             ...props.UserImageStyle

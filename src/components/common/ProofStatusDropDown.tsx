@@ -98,7 +98,7 @@ const StatusDropdown: React.FC<StatusDropdownProps> = observer(
           gap: '8px',
           position: 'relative'
         }}
-      >
+       data-testid="status-dropdown-component">
         <select
           value={newCurrent || ''}
           onChange={handleStatusChange}

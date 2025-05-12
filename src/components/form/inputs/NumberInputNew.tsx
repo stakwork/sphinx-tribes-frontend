@@ -70,7 +70,7 @@ export default function NumberInputNew({
   }, [textValue]);
 
   return (
-    <InputOuterBox color={color} borderColor={isError ? color.red2 : color.grayish.G600}>
+    <InputOuterBox color={color} borderColor={isError ? color.red2 : color.grayish.G600} data-testid="number-input-new-component">
       <FieldEnv
         color={color}
         onClick={() => {

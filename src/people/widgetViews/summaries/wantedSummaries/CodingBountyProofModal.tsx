@@ -96,7 +96,7 @@ const ProofModal = ({
   };
 
   return (
-    <BaseModal open onClose={closeModal}>
+    <BaseModal open onClose={closeModal} data-testid="proof-modal-component">
       <Box
         p={isMobile ? 2 : 4}
         bgcolor={palette.grayish.G950}

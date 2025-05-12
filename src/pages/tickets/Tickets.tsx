@@ -144,7 +144,7 @@ function BodyComponent() {
 
   if (loading) {
     return (
-      <Body style={{ justifyContent: 'center', alignItems: 'center' }}>
+      <Body style={{ justifyContent: 'center', alignItems: 'center' }} data-testid="body-component-component">
         <EuiLoadingSpinner size="xl" />
       </Body>
     );

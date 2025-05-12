@@ -60,7 +60,7 @@ export default function IconButton(props: IconButtonProps) {
       style={{ ...ButtonColors[props.color || 'primary'], ...props.style }}
       disabled={props.disabled}
       onClick={props.onClick}
-    >
+     data-testid="icon-button-component">
       <div style={{ display: 'flex', height: '100%', alignItems: 'center' }}>
         <MaterialIcon
           icon={props.icon}

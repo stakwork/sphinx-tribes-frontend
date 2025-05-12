@@ -154,7 +154,7 @@ export default function CreatableMultiSelectInputNew({ error, label, handleChang
       style={{
         paddingTop: '5px'
       }}
-    >
+     data-testid="creatable-multi-select-input-new-component">
       <EuiPopover
         className="EuiPopOver"
         anchorPosition="downCenter"

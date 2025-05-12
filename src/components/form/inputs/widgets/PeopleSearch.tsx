@@ -364,7 +364,7 @@ const InvitePeopleSearch = (props: InvitePeopleSearchProps) => {
   };
 
   return (
-    <SearchOuterContainer color={color}>
+    <SearchOuterContainer color={color} data-testid="invite-people-search-component">
       <div className="SearchSkillContainer">
         <div className="SearchContainer">
           <input

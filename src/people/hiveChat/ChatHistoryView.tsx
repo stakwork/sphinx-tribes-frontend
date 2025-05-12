@@ -440,7 +440,7 @@ export const ChatHistoryView: React.FC = observer(() => {
 
   if (loading) {
     return (
-      <Container collapsed={collapsed}>
+      <Container collapsed={collapsed} data-testid="chat-history-view-component">
         <LoadingContainer>
           <EuiLoadingSpinner size="l" />
         </LoadingContainer>
@@ -551,7 +551,7 @@ export const ChatHistoryView: React.FC = observer(() => {
           <ModalContent onClick={(e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()}>
             <ModalHeader>
               <ModalTitle>Rename Chat Title</ModalTitle>
-              <CloseButton onClick={() => setIsRenameModalOpen(false)}>×</CloseButton>
+              <CloseButton onClick={() => setIsRenameModalOpen(false)}></CloseButton>
             </ModalHeader>
             <Input
               value={newTitle}

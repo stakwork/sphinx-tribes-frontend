@@ -45,7 +45,7 @@ export default function Sel(props: SelProps) {
     })) || [];
 
   return (
-    <div id="dropdown-wrapper" style={{ position: 'relative', ...style }}>
+    <div id="dropdown-wrapper" style={{ position: 'relative', ...style }} data-testid="sel-component">
       <S
         placeholder={''}
         color={color}

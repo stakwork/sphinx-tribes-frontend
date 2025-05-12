@@ -48,7 +48,7 @@ const Text = styled.p`
 `;
 
 const PaidInvoice = (props: { amount: number }) => (
-  <Wrapper>
+  <Wrapper data-testid="paid-invoice-component">
     <ImgWrapper>
       <img src="/static/success.svg" alt="success" />
     </ImgWrapper>

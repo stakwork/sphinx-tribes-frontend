@@ -156,7 +156,7 @@ const AddFeatureCall: React.FC<AddFeatureCallProps> = ({
   };
 
   return (
-    <AddWorkspaceWrapper>
+    <AddWorkspaceWrapper data-testid="add-feature-call-component">
       <AddWorkspaceHeader>Edit Feature Call URL</AddWorkspaceHeader>
       <WorkspaceDetailsContainer>
         <WorkspaceInputContainer

@@ -261,7 +261,7 @@ function BotBody() {
 
   if (loading) {
     return (
-      <Body style={{ justifyContent: 'center', alignItems: 'center' }}>
+      <Body style={{ justifyContent: 'center', alignItems: 'center' }} data-testid="bot-body-component">
         <EuiLoadingSpinner size="xl" />
       </Body>
     );

@@ -7,7 +7,7 @@ export const People = () => {
   const { path } = useRouteMatch();
 
   return (
-    <Switch>
+    <Switch data-testid="people-component">
       <Route path={`${path}:uuid/`}>
         <PersonPage />
       </Route>

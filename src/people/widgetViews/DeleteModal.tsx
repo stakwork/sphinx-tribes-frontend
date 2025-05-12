@@ -54,7 +54,7 @@ const DeleteTicketModal = ({
   imgUrl,
   userDelete
 }: DeleteTicketModalProps) => (
-  <EuiOverlayMask>
+  <EuiOverlayMask data-testid="delete-ticket-modal-component">
     <EuiModal
       onClose={closeModal}
       style={{

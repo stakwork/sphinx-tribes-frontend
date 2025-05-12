@@ -108,7 +108,7 @@ const Calendar = ({ value = new Date(), onChange }: Props) => {
   };
 
   return (
-    <MainContainer>
+    <MainContainer data-testid="calendar-component">
       <DropDownContainer>
         <FlexiDiv>
           <ArrowBtn onClick={prevYear}>

@@ -50,7 +50,7 @@ describe('Bounties Component', () => {
     };
 
     render(
-      <Router history={history}>
+      <Router history={history} data-testid="bounties-component">
         <Bounties {...bountyProps} />
       </Router>
     );

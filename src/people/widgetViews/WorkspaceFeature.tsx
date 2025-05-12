@@ -606,7 +606,7 @@ const WorkspaceFeature = () => {
   return (
     <>
       <SidebarComponent uuid={workspaceData?.uuid || ''} />
-      <WorkspaceFeatureBody collapsed={collapsed}>
+      <WorkspaceFeatureBody collapsed={collapsed} data-testid="workspace-feature-component">
         <ActivitiesHeader uuid={workspaceData?.uuid || ''} />
         <FeatureHeadWrap>
           <FeatureHeadNameWrap>

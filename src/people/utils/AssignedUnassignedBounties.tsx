@@ -201,7 +201,7 @@ const Bounties = (props: BountiesProps) => {
           </div>
         </BountyContainer>
       ) : (
-        <BountyContainer color={color}>
+        <BountyContainer color={color} data-testid="bounties-component">
           <DescriptionPriceContainer
             data-testid="description-price-container"
             unAssignedBackgroundImage={'url("/static/unassigned_bounty_bg.svg")'}

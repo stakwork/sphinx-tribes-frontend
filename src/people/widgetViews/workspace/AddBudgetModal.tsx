@@ -233,7 +233,7 @@ const AddBudgetModal = (props: AddBudgetModalProps) => {
         borderRadius: '50%'
       }}
     >
-      <ModelWrapper>
+      <ModelWrapper data-testid="add-budget-modal-component">
         {lnInvoice && invoiceState === 'PENDING' && ui.meInfo?.owner_pubkey && (
           <InvoiceQrWrapper>
             <Invoice

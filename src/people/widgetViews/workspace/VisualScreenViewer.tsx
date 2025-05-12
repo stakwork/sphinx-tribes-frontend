@@ -392,7 +392,7 @@ const VisualScreenViewer: React.FC<VisualScreenViewerProps> = ({
   };
 
   return (
-    <ViewerContainer>
+    <ViewerContainer data-testid="visual-screen-viewer-component">
       {activeTab === 'logs' && sseArtifact && sseLogs.length > 0 && (
         <>
           <LogsScreenViewer sseLogs={sseLogs} />

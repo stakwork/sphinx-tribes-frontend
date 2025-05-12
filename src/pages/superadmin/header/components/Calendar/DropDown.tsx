@@ -31,7 +31,7 @@ const YearDropDown = ({ value, onYearChange }: YearDropDownProps) => {
   };
 
   return (
-    <List>
+    <List data-testid="year-drop-down-component">
       <DropDown id="year" value={selectedYear} onChange={changeYear}>
         <option value="" disabled hidden>
           Year

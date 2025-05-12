@@ -13,7 +13,7 @@ import {
 const skillList = ['Build skills', 'Register in our skills market', 'Get paid when agents work.'];
 
 export const SkillPageHeroSection = () => (
-  <StyledHeroWrapper>
+  <StyledHeroWrapper data-testid="skill-page-hero-section-component">
     <HeroContainer>
       <HeroColumn>
         <Title subtitle="For the LLM Power User">

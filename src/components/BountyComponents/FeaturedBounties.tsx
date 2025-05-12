@@ -38,7 +38,7 @@ export const FeaturedBounties: React.FC = observer(() => {
   const featuredBounties = bountyStore.getFeaturedBounties();
 
   return (
-    <FeaturedContainer>
+    <FeaturedContainer data-testid="featured-bounties-component">
       <FeaturedHeader>
         <h2>Featured Bounties</h2>
       </FeaturedHeader>

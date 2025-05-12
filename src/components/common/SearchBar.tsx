@@ -146,7 +146,7 @@ function SearchBar({
       width={width}
       height={height}
       marginLeft={marginLeft}
-    >
+     data-testid="search-bar-component">
       <label htmlFor="search" hidden>
         Search
       </label>

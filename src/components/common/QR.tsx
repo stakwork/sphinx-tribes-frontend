@@ -36,7 +36,7 @@ export default function QR(props: QRProps) {
     );
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div style={{ position: 'relative' }} data-testid="qr-component">
       <QRCode
         data-testid={'testid-qrcode'}
         bgColor={color.pureWhite}

@@ -53,7 +53,7 @@ export default function CreatableMultiSelectInput({
       <FieldEnv
         color={color}
         label={labeltext}
-        isTop={isTop || value?.length > 0}
+        isTop={isTop || value?.length  data-testid="creatable-multi-select-input-component"> 0}
         isFill={value?.length > 0}
       >
         <R>

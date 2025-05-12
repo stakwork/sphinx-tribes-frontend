@@ -192,7 +192,7 @@ export const WorkspaceHeader = ({
 
   return (
     <>
-      <FillContainer>
+      <FillContainer data-testid="workspace-header-component">
         <Header>
           <Leftheader>
             <ImageContainer src={img} width="72px" height="72px" alt="workspace icon" />

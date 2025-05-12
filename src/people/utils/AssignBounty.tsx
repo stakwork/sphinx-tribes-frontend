@@ -43,7 +43,7 @@ export default function AssignBounty(props: ConnectCardProps) {
   }, [main]);
 
   return (
-    <div onClick={(e: any) => e.stopPropagation()}>
+    <div onClick={(e: any) = data-testid="assign-bounty-component"> e.stopPropagation()}>
       <Modal style={props.modalStyle} overlayClick={() => props.dismiss()} visible={visible}>
         <div style={{ textAlign: 'center', paddingTop: 59, width: 310 }}>
           <div

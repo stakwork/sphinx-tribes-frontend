@@ -90,7 +90,7 @@ function BotSecret(props: BotSecretProps) {
           border: !full ? '1px dashed #618AFF' : '',
           background: !full ? '#618aff0a' : ''
         }}
-      >
+       data-testid="bot-secret-component">
         {full && (
           <Head>
             <RowWrap>

@@ -708,7 +708,7 @@ const PhasePlannerView: React.FC = observer(() => {
   }
 
   return (
-    <MainContent collapsed={collapsed}>
+    <MainContent collapsed={collapsed} data-testid="phase-planner-view-component">
       <FeatureBody>
         <ActivitiesHeader uuid={featureData?.workspace_uuid || ''} />
         <SidebarComponent uuid={featureData?.workspace_uuid || ''} />

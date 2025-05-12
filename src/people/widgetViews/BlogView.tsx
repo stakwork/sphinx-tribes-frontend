@@ -54,7 +54,7 @@ export default function BlogView(props: BlogPost) {
 
   const showImages = gallery && gallery.length;
   return (
-    <Wrap>
+    <Wrap data-testid="blog-view-component">
       <T>{title || 'No title'} </T>
       <Time>{moment(created).format('l') || 'No title'} </Time>
       <M>{markdown || 'No markdown'} </M>

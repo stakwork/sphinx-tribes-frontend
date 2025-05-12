@@ -104,7 +104,7 @@ const BountyPrice = (props: BountiesPriceProps) => {
           ...props.style
         }}
         isBountyLandingPage={props.isBountyLandingPage}
-      >
+       data-testid="bounty-price-component">
         <div
           style={{
             display: 'flex',

@@ -172,7 +172,7 @@ const Question = styled.li`
   position: relative;
 
   &:before {
-    content: '•';
+    content: '';
     position: absolute;
     left: 0;
     color: #4299e1;
@@ -354,7 +354,7 @@ const BackButton = styled.button`
     cursor: pointer;
 
     &:before {
-      content: '←';
+      content: '';
       margin-right: 0.5rem;
     }
   }
@@ -1067,7 +1067,7 @@ const Activities = observer(() => {
       <SidebarComponent uuid={uuid} defaultCollapsed={window.innerWidth <= 768} />
       <MainContainer collapsed={collapsed}>
         <ActivitiesHeader uuid={uuid} />
-        <ActivitiesContainer>
+        <ActivitiesContainer data-testid="activities-component">
           {isModalOpen && (
             <ModalOverlay
               collapsed={false}
@@ -1158,7 +1158,7 @@ const Activities = observer(() => {
                         <Item key={index}>
                           <span>{action}</span>
                           <RemoveButton onClick={() => removeItem('actions', index)}>
-                            ×
+                            
                           </RemoveButton>
                         </Item>
                       ))}
@@ -1177,7 +1177,7 @@ const Activities = observer(() => {
                         <Item key={index}>
                           <span>{question}</span>
                           <RemoveButton onClick={() => removeItem('questions', index)}>
-                            ×
+                            
                           </RemoveButton>
                         </Item>
                       ))}

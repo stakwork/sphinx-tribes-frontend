@@ -32,7 +32,7 @@ const mockStores = {
 
 const renderSidebar = (props = {}) =>
   render(
-    <BrowserRouter>
+    <BrowserRouter data-testid="sidebar-component">
       <SidebarComponent uuid="test-uuid" {...props} />
     </BrowserRouter>
   );

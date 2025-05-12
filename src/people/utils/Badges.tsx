@@ -466,7 +466,7 @@ function Badges(props: BadgesProps) {
   });
 
   return (
-    <Wrap>
+    <Wrap data-testid="badges-component">
       {loading && <PageLoadSpinner show={loading} />}
       {selectedBadge && !loading ? (
         <div style={{ width: '100%' }}>
