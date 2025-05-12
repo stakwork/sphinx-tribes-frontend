@@ -7,7 +7,7 @@ interface styledColor {
 interface ButtonContainerProps extends styledColor {
   topMargin?: string;
 }
-export const ButtonContainer = styled.div<ButtonContainerProps>`
+export const ButtonContainer = styled.div<ButtonContainerProps> data-testid="button-container-component"`
   width: 220px;
   height: 48px;
   display: flex;
