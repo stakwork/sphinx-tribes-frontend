@@ -94,7 +94,7 @@ export const LazyImgBg = (
   }, [inView, props.src]);
 
   return inView ? (
-    <ImgDiv loaded={imgLoaded} {...props} />
+    <ImgDiv data-testid="lazy-img-component" loaded={imgLoaded} {...props} />
   ) : (
     <div {...props} ref={placeholderRef} />
   );
