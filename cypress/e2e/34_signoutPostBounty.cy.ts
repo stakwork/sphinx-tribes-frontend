@@ -10,7 +10,7 @@ describe('Signed Out Post Bounty Flow ', () => {
     deliverables: 'We are good to go man'
   };
 
-  it('Validates sign-in requirements for posting a bounty, including modal display, signing in, and creating a bounty.', () => {
+  it('Validates sign-in requirements for posting a bounty, including modal display, signing in, and creating a bounty', () => {
     cy.visit('http://localhost:3007/bounties');
     cy.wait(1000);
 
