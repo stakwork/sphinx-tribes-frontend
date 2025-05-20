@@ -148,7 +148,7 @@
           "allowNamedExports": false
         }
       ],
-      "import/order": "error",
+      "import/order": "off",
       "camelcase": "off",
       "comma-dangle": "off",
       "@typescript-eslint/no-explicit-any": "off",
