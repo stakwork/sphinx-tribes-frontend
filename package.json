@@ -24,7 +24,15 @@
     "test-jest": "REACT_APP_IS_TEST=true NODE_ENV=test yarn jest --coverage --maxWorkers 2 --no-cache --transformIgnorePatterns \"./svg/\"",
     "start:local:win": "Set REACT_APP_LOCAL_ENV=true && craco start",
     "start:local:unix": "REACT_APP_LOCAL_ENV=true craco start",
-    "start:local": "node -e \"process.platform === 'win32' ? process.exit(1) : process.exit(0)\" && yarn start:local:unix || yarn start:local:win"
+    "start:local": "node -e \"process.platform === 'win32' ? process.exit(1) : process.exit(0)\" && yarn start:local:unix || yarn start:local:win",
+    "start": "react-scripts start",
+    "start:local": "react-scripts start",
+    "start:cypress": "react-scripts start",
+    "cy:open": "xvfb-run cypress open",
+    "cypress:run": "xvfb-run cypress run",
+    "cy:run:local": "xvfb-run cypress run --config-file cypress.config.local.js",
+    "cy:run:test": "xvfb-run cypress run --config-file cypress.config.test.js",
+    "cy:run:prod": "xvfb-run cypress run --config-file cypress.config.prod.js"
   },
   "resolutions": {
     "react-error-overlay": "6.0.9",
@@ -209,6 +217,6 @@
   },
   "devDependencies": {
     "@types/react-syntax-highlighter": "^15.5.13",
-    "cypress": "^13.6.3"
+    "cypress": "^14.3.3"
   }
 }

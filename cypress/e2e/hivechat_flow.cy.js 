@@ -1,0 +1,132 @@
+describe('Hivechat Conversation Flow with Mock Stakwork API', () => {
+  beforeEach(() => {
+    // Set up mock API responses
+    cy.mockStakworkAPI();
+    
+    // Login with test user
+    cy.login('testuser');
+    
+    // Navigate to hivechat view with placeholder workspace/chat IDs
+    // These should be replaced with actual or dynamically generated IDs in your implementation
+  cy.visit('/workspace/<actual-workspace-id>/hivechat/<actual-chat-id>');
+    cy.wait(2000); // Wait for page to fully load
+  });
+
+  it('Should complete the hivechat conversation flow with all artifacts rendering correctly', () => {
+    // 1. Select Chat mode in top right
+    cy.get('[data-testid="chat-mode-button"]').click();
+    cy.wait(500);
+    
+    // 2. Submit the initial message with @ticket mention
+    const initialMessage = 'Lets create a new @ticket to update the leaderboard';
+    cy.get('[data-testid="message-input"]')
+      .should('be.visible')
+      .type(initialMessage);
+    cy.get('[data-testid="send-message-button"]').click();
+    
+    // Wait for the first hivechat response
+    cy.wait('@hivechatResponse').then((interception) => {
+      // Verify response contains expected text artifact
+      expect(interception.response.body.value.artifacts).to.have.length.at.least(1);
+      expect(interception.response.body.value.artifacts[1].type).to.equal('text');
+    });
+    
+    // 3. Verify Text artifact is rendered with notification
+    cy.get('[data-testid="artifact-tab-Text"]')
+      .should('be.visible')
+      .and('have.attr', 'data-notification', 'true');
+    
+    cy.get('[data-testid="artifact-content-text"]')
+      .should('be.visible')
+      .should('contain', 'Market Research and Analysis');
+    
+    // Take screenshot to verify text artifact rendering
+    cy.screenshot('text-artifact-rendering');
+    
+    // 4. Send follow-up message "Yes sounds good"
+    cy.get('[data-testid="message-input"]')
+      .should('be.visible')
+      .clear()
+      .type('Yes sounds good');
+    cy.get('[data-testid="send-message-button"]').click();
+    
+    // Wait for the second hivechat response
+    cy.wait('@hivechatResponse').then((interception) => {
+      // Verify response contains code and screen artifacts
+      expect(interception.response.body.value.artifacts).to.have.length.at.least(2);
+      const artifactTypes = interception.response.body.value.artifacts.map(a => a.type);
+      expect(artifactTypes).to.include('action');
+      expect(artifactTypes).to.include('visual');
+      expect(artifactTypes).to.include('text');
+    });
+    
+    // 5. Verify Code artifact is rendered
+    cy.get('[data-testid="artifact-tab-Code"]')
+      .should('be.visible')
+      .and('have.attr', 'data-notification', 'true')
+      .click();
+    
+    cy.get('[data-testid="artifact-content-code"]')
+      .should('be.visible')
+      .should('contain', 'LeaderboardPage');
+    
+    // 6. Verify Screen artifact is rendered
+    cy.get('[data-testid="artifact-tab-Screen"]')
+      .should('be.visible')
+      .and('have.attr', 'data-notification', 'true')
+      .click();
+    
+    cy.get('[data-testid="artifact-content-screen"]')
+      .should('be.visible');
+    
+    // 7. Verify action dialog is displayed with error message
+    cy.get('[data-testid="action-dialog"]')
+      .should('be.visible')
+      .should('contain', 'I detected an error do you want to see the logs?');
+    
+    // Screenshot the action dialog
+    cy.screenshot('action-dialog');
+    
+    // 8. Click "Yes" button in action dialog
+    cy.get('[data-testid="action-dialog"]')
+      .contains('Yes')
+      .click();
+    
+    // Wait for the third hivechat response
+    cy.wait('@hivechatResponse').then((interception) => {
+      // Verify response contains logs and patch information
+      expect(interception.response.body.value.artifacts).to.have.length.at.least(1);
+      expect(interception.response.body.value.response).to.include('logs');
+    });
+    
+    // 9. Verify the logs and patch code are displayed
+    cy.get('[data-testid="artifact-content-code"]')
+      .should('be.visible')
+      .should('contain', 'applyPatch');
+    
+    // 10. Verify the second action dialog
+    cy.get('[data-testid="action-dialog"]')
+      .should('be.visible')
+      .should('contain', 'patch 1523.patch');
+    
+    // 11. Click "Yes" button in the second action dialog
+    cy.get('[data-testid="action-dialog"]')
+      .contains('Yes')
+      .click();
+    
+    // Wait for the final hivechat response
+    cy.wait('@hivechatResponse');
+    
+    // 12. Verify the conversation completed successfully
+    cy.get('[data-testid="message-history"]')
+      .should('contain', 'Patch applied successfully');
+    
+    // Take final screenshot
+    cy.screenshot('completed-flow');
+  });
+  
+  afterEach(() => {
+    // Clean up after test
+    cy.logout();
+  });
+});
