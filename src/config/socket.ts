@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { getHost } from './host';
 
 export const URL = (() => {
-  const isCodespaces = window.location.hostname.includes('app.github.dev');
+  const isCodespaces = window.location.hostname.includes('app.github.dev') || window.location.hostname.includes('workspaces.sphinx.chat');
 
   if (isCodespaces) {
     return `wss://${getHost()}/websocket`;
