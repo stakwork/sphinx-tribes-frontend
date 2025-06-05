@@ -7,6 +7,11 @@ export function getCodespacesBackendUrl() {
     const codespaceUrl = arr[0];
     return `${codespaceUrl}-5002.app.github.dev`;
   }
+  if (window.location.host.endsWith('-13008.workspaces.sphinx.chat')) {
+    const arr = window.location.host.split('-13008');
+    const codespaceUrl = arr[0];
+    return `${codespaceUrl}-5002.workspaces.sphinx.chat`;
+  }
   return '';
 }
 
