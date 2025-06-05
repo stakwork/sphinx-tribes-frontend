@@ -46,7 +46,7 @@ describe('SidebarComponent Tooltip Tests', () => {
   describe('Navigation Item Tooltips', () => {
     test('should show tooltip for activities when collapsed', async () => {
       renderSidebar({ defaultCollapsed: true });
-      const activitiesButton = screen.getByLabelText('Activities');
+      const activitiesButton = screen.getByLabelText('Home');
 
       fireEvent.mouseEnter(activitiesButton);
 

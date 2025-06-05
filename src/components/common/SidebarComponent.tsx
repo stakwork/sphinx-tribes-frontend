@@ -750,13 +750,13 @@ export default function SidebarComponent({
         collapsed={collapsed}
         onMouseEnter={(e) => handleMouseEnter(e, 'activities')}
         onMouseLeave={() => setHoveredItem(null)}
-        aria-label="Activities"
+        aria-label="Home"
       >
         <MaterialIcon icon="home" />
-        <span>Activities</span>
+        <span>Home</span>
         {(collapsed || hoveredItem === 'activities') && (
           <Tooltip visible={hoveredItem === 'activities'} top={tooltipTop} collapsed={collapsed}>
-            Activities
+            Home
           </Tooltip>
         )}
       </NavItem>
