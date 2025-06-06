@@ -143,6 +143,15 @@ export const Header = ({
         const newStartDate = currentEndDate.clone().subtract(selectedValue, 'days').unix();
         setStartDate(newStartDate);
       }
+    } else if (option === 'YTD') {
+      setDropdownText('YTD');
+      const startOfYear = moment().startOf('year').unix();
+      const today = moment().unix();
+      setStartDate(startOfYear);
+      setEndDate(today);
+      // Calculate days for YTD to maintain consistency with other options
+      const ytdDays = moment().diff(moment().startOf('year'), 'days') + 1;
+      setDateDiff(ytdDays);
     } else if (option === 'Custom') {
       setDropdownText('Custom');
       setShowCalendar(!showCalendar);
@@ -275,6 +284,7 @@ export const Header = ({
                   <li onClick={() => handleDropDownChange(30)}>30 Days</li>
                   <li onClick={() => handleDropDownChange(90)}>90 Days</li>
                   <li onClick={() => handleDropDownChange(moment().date())}>Current Month</li>
+                  <li onClick={() => handleDropDownChange('YTD')}>YTD</li>
                   <li>
                     <CustomButton onClick={() => handleDropDownChange('Custom')}>
                       Custom
