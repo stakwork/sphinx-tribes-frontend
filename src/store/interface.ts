@@ -875,6 +875,7 @@ export interface CodeSpaceMap {
   codeSpaceURL: string;
   userPubkey: string;
   githubPat?: string;
+  baseBranch?: string;
 }
 
 export type ChargeModel = 'Free' | 'PAYG';
