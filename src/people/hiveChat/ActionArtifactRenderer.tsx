@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { observer } from 'mobx-react-lite';
 import { renderMarkdown } from '../utils/RenderMarkdown.tsx';
@@ -122,6 +122,12 @@ export const ActionArtifactRenderer: React.FC<ActionArtifactRendererProps> = obs
       return null;
     }
 
+    useEffect(() => {
+      if (isActionCompleted) {
+        setIsActionSend(false);
+      }
+    }, [isActionCompleted, setIsActionSend]);
+
     const handleButtonClick = async (option: Option) => {
       if (isSending || isActionCompleted) return;
       setIsSending(true);
@@ -140,6 +146,7 @@ export const ActionArtifactRenderer: React.FC<ActionArtifactRendererProps> = obs
 
         if (option.action_type === 'chat' || option.option_response === 'textbox') {
           localStorage.setItem('active_webhook', option.webhook);
+          setIsSending(false);
           return;
         }
 
@@ -150,9 +157,12 @@ export const ActionArtifactRenderer: React.FC<ActionArtifactRendererProps> = obs
         }
       } catch (error) {
         console.error('Error sending action response:', error);
+        setIsActionSend(false);
       } finally {
         setIsSending(false);
-        setIsActionSend(false);
+        if (isActionCompleted) {
+          setIsActionSend(false);
+        }
       }
     };
 
