@@ -11,8 +11,14 @@ export type LeaderItem = {
   total_sats_earned: number;
 };
 
+type DailyEarning = {
+  date: string;
+  total_sats: number;
+};
+
 export class LeaderboardStore {
   private leaders: LeaderItem[] = [];
+  private dailyEarnings: DailyEarning[] = [];
 
   public isLoading = false;
   public error: any;
@@ -56,6 +62,18 @@ export class LeaderboardStore {
 
   get topEarners() {
     return this.sortedBySats;
+  }
+
+  @memo()
+  async fetchDailyEarnings() {
+    try {
+      const resp = await api.get('people/bounty/daily-earnings') as DailyEarning[];
+      this.dailyEarnings = resp;
+      return resp;
+    } catch (e) {
+      console.error('Error fetching daily earnings:', e);
+      return [];
+    }
   }
 }
 

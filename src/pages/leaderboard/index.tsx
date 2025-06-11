@@ -6,6 +6,7 @@ import { useStores } from 'store';
 import styled from 'styled-components';
 import { useBrowserTabTitle } from '../../hooks';
 import { LeaerboardItem } from './leaderboardItem';
+import { MonthlyChart } from './monthlyChart';
 import { Summary } from './summary';
 import { Top3 } from './top3';
 
@@ -81,6 +82,7 @@ export const LeaderboardPage = observer(() => {
           />
         )}
         <Top3 />
+        <MonthlyChart />
         {leaderboard?.others.map((item: any, index: number) => (
           <LeaerboardItem position={index + 4} key={item.owner_pubkey} {...item} />
         ))}
