@@ -41,8 +41,11 @@ export async function testUserLnUrlLogin(encode: string) {
 
   const codespaceUrl = getCodespacesBackendUrl();
 
-  if (codespaceUrl) {
+  if (codespaceUrl && rawUrl.includes('https://app.github.dev')) {
     rawUrl = rawUrl.replace('https://app.github.dev', `https://${codespaceUrl}`);
+  }
+  if (codespaceUrl && rawUrl.includes('https://workspaces.sphinx.chat')) {
+    rawUrl = rawUrl.replace('https://workspaces.sphinx.chat', `https://${codespaceUrl}`);
   }
 
   const url = new URL(rawUrl);
