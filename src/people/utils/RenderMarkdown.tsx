@@ -156,6 +156,18 @@ export function renderMarkdown(markdown: any, customStyles?: CustomStyles) {
               </pre>
             );
           },
+          a({ className, children, ...props }: any) {
+            return (
+              <a
+                className={className}
+                target="_blank"
+                rel="noopener noreferrer"
+                {...props}
+              >
+                {children}
+              </a>
+            );
+          },
           img({ className, ...props }: any) {
             return (
               <img
