@@ -105,13 +105,14 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
     setToasts([{ id: `${Date.now()}-codespace`, title, color, text }]);
   };
 
-  const isValidUrl = (url: string) => {
-    try {
-      const validUrl = new URL(url);
-      return validUrl.protocol === 'https:';
-    } catch {
-      return false;
-    }
+  const MAX_CODESPACE_URL_LENGTH = 200;
+  const INVALID_CODESPACE_CHARS = /[!@#$%^&*()=+\[\]{}|;'",<>\\]/;
+
+  const isValidCodeSpaceUrl = (url: string) => {
+    if (!url) return false;
+    if (url.length > MAX_CODESPACE_URL_LENGTH) return false;
+    if (INVALID_CODESPACE_CHARS.test(url)) return false;
+    return true;
   };
 
   useEffect(() => {
@@ -122,8 +123,8 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
           // Check if response is valid and has an ID
           setCodeSpace(response);
           setGithubPat(response.githubPat || ''); // Initialize PAT state
+          setUrlError(!isValidCodeSpaceUrl(response.codeSpaceURL));
           setBaseBranch(response.baseBranch || ''); // Initialize Base Branch state
-          setUrlError(!isValidUrl(response.codeSpaceURL)); // Also validate fetched URL
         } else {
           // Initialize state for creating a new code space
           setCodeSpace({
@@ -176,7 +177,7 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
     if (!codeSpace) return;
     const newUrl = e.target.value;
     setCodeSpace({ ...codeSpace, codeSpaceURL: newUrl });
-    setUrlError(!isValidUrl(newUrl));
+    setUrlError(!isValidCodeSpaceUrl(newUrl));
   };
 
   const handlePatChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -188,7 +189,7 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
   };
 
   const handleSave = async () => {
-    if (!codeSpace || !isValidUrl(codeSpace.codeSpaceURL)) return;
+    if (!codeSpace || !isValidCodeSpaceUrl(codeSpace.codeSpaceURL)) return;
 
     setIsLoading(true);
     try {
@@ -278,7 +279,7 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
         </Wrapper>
         {urlError && (
           <p style={{ color: 'red', fontSize: '12px', marginLeft: '33%' }}>
-            Invalid URL. Ensure it starts with https://
+            Invalid codespace. No special characters allowed and max {MAX_CODESPACE_URL_LENGTH} characters.
           </p>
         )}
         <ButtonGroup>
