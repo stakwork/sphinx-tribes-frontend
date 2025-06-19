@@ -8,7 +8,7 @@ import { PostBounty } from 'people/widgetViews/postBounty';
 import WantedView from 'people/widgetViews/WantedView';
 import PageLoadSpinner from 'people/utils/PageLoadSpinner';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Route, Switch, useHistory, useRouteMatch, useParams } from 'react-router-dom';
+import { Route, Switch, useRouteMatch, useParams } from 'react-router-dom';
 import { useStores } from 'store';
 import { paginationQueryLimit } from 'store/interface';
 import styled from 'styled-components';
@@ -91,7 +91,6 @@ export const Wanted = observer(() => {
   const { ui, main } = useStores();
   const { person, canEdit } = usePerson(ui.selectedPerson);
   const { path, url } = useRouteMatch();
-  const history = useHistory();
   const { uuid } = useParams<{ uuid: string }>();
   const [displayedBounties, setDisplayedBounties] = useState<BountyType[]>([]);
   const [loading, setIsLoading] = useState<boolean>(false);
@@ -164,18 +163,16 @@ export const Wanted = observer(() => {
       </Switch>
       {displayedBounties
         .filter((w: BountyType) => w.body.owner_id === person?.owner_pubkey)
-        .map((w: BountyType, i: any) => (
+        .map((w: BountyType) => (
           <Panel
-            href={`${url}/${w.body.id}/${i}`}
+            href={`/bounty/${w.body.id}`}
             key={w.body.id}
             data-testid={'user-created-bounty'}
             isMobile={false}
             onClick={(e: any) => {
               e.preventDefault();
               ui.setBountyPerson(person?.id);
-              history.push({
-                pathname: `${url}/${w.body.id}/${i}`
-              });
+              window.open(`/bounty/${w.body.id}`, '_blank');
             }}
           >
             <WantedView {...w.body} person={person} />

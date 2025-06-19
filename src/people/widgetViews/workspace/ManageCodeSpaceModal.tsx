@@ -74,6 +74,7 @@ interface CodeSpaceMap {
   codeSpaceURL: string;
   userPubkey: string;
   githubPat?: string;
+  baseBranch?: string;
 }
 
 interface CodeSpaceProps {
@@ -92,6 +93,7 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
   const { main, ui } = useStores();
   const [codeSpace, setCodeSpace] = useState<CodeSpaceMap | null>(null);
   const [githubPat, setGithubPat] = useState('');
+  const [baseBranch, setBaseBranch] = useState('');
   const [urlError, setUrlError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
@@ -117,10 +119,12 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
     const fetchCodeSpace = async () => {
       try {
         const response = await main.getCodeSpace(workspaceUUID);
-        if (response && response.id) { // Check if response is valid and has an ID
+        if (response && response.id) {
+          // Check if response is valid and has an ID
           setCodeSpace(response);
           setGithubPat(response.githubPat || ''); // Initialize PAT state
           setUrlError(!isValidCodeSpaceUrl(response.codeSpaceURL));
+          setBaseBranch(response.baseBranch || ''); // Initialize Base Branch state
         } else {
           // Initialize state for creating a new code space
           setCodeSpace({
@@ -180,15 +184,20 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
     setGithubPat(e.target.value);
   };
 
+  const handleBaseBranchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setBaseBranch(e.target.value);
+  };
+
   const handleSave = async () => {
     if (!codeSpace || !isValidCodeSpaceUrl(codeSpace.codeSpaceURL)) return;
 
     setIsLoading(true);
     try {
-      // Prepare the payload including the githubPat
+      // Prepare the payload including the githubPat and baseBranch
       const payload = {
         ...codeSpace,
         githubPat: githubPat, // Add the PAT from state
+        baseBranch: baseBranch, // Add the Base Branch from state
         workspaceID: workspaceUUID, // Ensure workspaceID is always set
         userPubkey: ui.meInfo?.pubkey || '' // Ensure userPubkey is always set
       };
@@ -198,13 +207,17 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
         await main.updateCodeSpace(payload, codeSpace.id);
         addToast('Success', 'success', 'Code Space updated successfully!');
       } else {
-         // Create new code space
+        // Create new code space
         // Remove id, createdAt, updatedAt before creating
-        const createPayload: Omit<CodeSpaceMap, 'id' | 'createdAt' | 'updatedAt'> & { githubPat?: string } = {
+        const createPayload: Omit<CodeSpaceMap, 'id' | 'createdAt' | 'updatedAt'> & {
+          githubPat?: string;
+          baseBranch?: string;
+        } = {
           workspaceID: workspaceUUID,
           codeSpaceURL: codeSpace.codeSpaceURL,
           userPubkey: ui.meInfo?.pubkey || '',
-          githubPat: githubPat
+          githubPat: githubPat,
+          baseBranch: baseBranch
         };
         const newCodeSpace = await main.createCodeSpace(createPayload);
         if (newCodeSpace) {
@@ -247,13 +260,22 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
           />
         </Wrapper>
         <Wrapper>
-           <Label>GitHub PAT:</Label>
-           <TextInput
-             type="password" // Use password type for masking
-             placeholder="Enter GitHub Personal Access Token"
-             value={githubPat}
-             onChange={handlePatChange}
-           />
+          <Label>GitHub PAT:</Label>
+          <TextInput
+            type="password" // Use password type for masking
+            placeholder="Enter GitHub Personal Access Token"
+            value={githubPat}
+            onChange={handlePatChange}
+          />
+        </Wrapper>
+        <Wrapper>
+          <Label>Base Branch:</Label>
+          <TextInput
+            type="text"
+            placeholder="Enter Base Branch (e.g., main, master)"
+            value={baseBranch}
+            onChange={handleBaseBranchChange}
+          />
         </Wrapper>
         {urlError && (
           <p style={{ color: 'red', fontSize: '12px', marginLeft: '33%' }}>

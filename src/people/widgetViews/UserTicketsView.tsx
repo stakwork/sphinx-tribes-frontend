@@ -78,10 +78,8 @@ const UserTickets = () => {
     setCheckboxIdToSelectedMap({ ...defaultStatus, [id]: !checkboxIdToSelectedMap[id] });
   };
 
-  function onPanelClick(id: number, index: number) {
-    history.push({
-      pathname: `${url}/${id}/${index}`
-    });
+  function onPanelClick(id: number) {
+    window.open(`/bounty/${id}`, '_blank');
   }
 
   const deleteTicket = async (payload: any) => {
@@ -152,7 +150,7 @@ const UserTickets = () => {
         const body = { ...item.body };
         return (
           <Panel
-            href={`${url}/${body.id}/${i}`}
+            href={`/bounty/${body.id}`}
             isMobile={isMobile}
             key={i + body?.created}
             data-testid={'user-personal-bounty-card'}
@@ -162,7 +160,7 @@ const UserTickets = () => {
               showName
               onPanelClick={(e: any) => {
                 e.preventDefault();
-                onPanelClick(body.id, i);
+                onPanelClick(body.id);
                 ui.setBountyPerson(person?.id);
                 setBountyOwner(person);
               }}

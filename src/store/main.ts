@@ -5073,7 +5073,12 @@ export class MainStore {
     }
   }
   // Update body type to allow githubPat
-  async createCodeSpace(body: Omit<CodeSpaceMap, 'id' | 'createdAt' | 'updatedAt'> & { githubPat?: string }): Promise<any> {
+  async createCodeSpace(
+    body: Omit<CodeSpaceMap, 'id' | 'createdAt' | 'updatedAt'> & {
+      githubPat?: string;
+      baseBranch?: string;
+    }
+  ): Promise<any> {
     try {
       if (!uiStore.meInfo) return null;
       const info = uiStore.meInfo;

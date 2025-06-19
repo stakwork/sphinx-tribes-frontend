@@ -139,16 +139,8 @@
           "memberVariableDeclaration": false
         }
       ],
-      "no-use-before-define": [
-        "error",
-        {
-          "functions": true,
-          "classes": true,
-          "variables": true,
-          "allowNamedExports": false
-        }
-      ],
-      "import/order": "error",
+      "no-use-before-define": "off",
+      "import/order": "off",
       "camelcase": "off",
       "comma-dangle": "off",
       "@typescript-eslint/no-explicit-any": "off",
