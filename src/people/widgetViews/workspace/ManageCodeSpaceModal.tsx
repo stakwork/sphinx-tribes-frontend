@@ -114,6 +114,12 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
     }
   };
 
+  const isValidCodeSpaceInput = (input: string) => {
+    // Allow both URLs and freetext entries (e.g., 'hive', 'tribes')
+    // Return true for any non-empty string
+    return input.trim().length > 0;
+  };
+
   useEffect(() => {
     const fetchCodeSpace = async () => {
       try {
@@ -123,7 +129,7 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
           setCodeSpace(response);
           setGithubPat(response.githubPat || ''); // Initialize PAT state
           setBaseBranch(response.baseBranch || ''); // Initialize Base Branch state
-          setUrlError(!isValidUrl(response.codeSpaceURL)); // Also validate fetched URL
+          setUrlError(!isValidCodeSpaceInput(response.codeSpaceURL)); // Also validate fetched input
         } else {
           // Initialize state for creating a new code space
           setCodeSpace({
@@ -176,7 +182,7 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
     if (!codeSpace) return;
     const newUrl = e.target.value;
     setCodeSpace({ ...codeSpace, codeSpaceURL: newUrl });
-    setUrlError(!isValidUrl(newUrl));
+    setUrlError(!isValidCodeSpaceInput(newUrl));
   };
 
   const handlePatChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -188,7 +194,7 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
   };
 
   const handleSave = async () => {
-    if (!codeSpace || !isValidUrl(codeSpace.codeSpaceURL)) return;
+    if (!codeSpace || !isValidCodeSpaceInput(codeSpace.codeSpaceURL)) return;
 
     setIsLoading(true);
     try {
@@ -278,7 +284,7 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
         </Wrapper>
         {urlError && (
           <p style={{ color: 'red', fontSize: '12px', marginLeft: '33%' }}>
-            Invalid URL. Ensure it starts with https://
+            Enter a valid codespace url or pool name.
           </p>
         )}
         <ButtonGroup>
