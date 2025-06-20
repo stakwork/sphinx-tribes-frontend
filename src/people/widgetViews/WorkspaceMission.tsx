@@ -7,22 +7,14 @@ import {
   Body,
   WorkspaceMissionBody,
   DataWrap,
-  DataWrap2,
-  LeftSection,
-  RightSection,
-  VerticalGrayLine,
-  HorizontalGrayLine,
   FieldWrap,
   Label,
   Data,
   OptionsWrap,
-  StyledListElement,
-  StyledList,
   EditPopoverTail,
   EditPopoverContent,
   EditPopoverText,
-  EditPopover,
-  WorkspaceFieldWrap
+  EditPopover
 } from 'pages/tickets/style';
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -47,7 +39,7 @@ import SidebarComponent from '../../components/common/SidebarComponent.tsx';
 import { useBrowserTabTitle } from '../../hooks';
 import AddCodeGraph from './workspace/AddCodeGraphModal';
 import AddFeatureCall from './workspace/AddFeatureCallModal.tsx';
-import { RowFlex, RepoName, FullNoBudgetWrap, FullNoBudgetText } from './workspace/style';
+import { FullNoBudgetWrap, FullNoBudgetText } from './workspace/style';
 import AddRepoModal from './workspace/AddRepoModal';
 import EditSchematic from './workspace/EditSchematicModal';
 import ManageWorkspaceUsersModal from './workspace/ManageWorkspaceUsersModal';
@@ -58,6 +50,27 @@ import TextSnippetModal from './workspace/TextSnippetModal.tsx';
 import ActivitiesHeader from './workspace/Activities/header.tsx';
 import AddChatWorkflow from './workspace/AddChatWorkflowModal.tsx';
 import ManageCodeSpaceModal from './workspace/ManageCodeSpaceModal.tsx';
+import {
+  Section,
+  SectionHeader,
+  SectionTitle,
+  SettingsContainer,
+  SectionRow,
+  ToolButton,
+  ToolsSection,
+  RepositoryItem,
+  RepositoryInfo,
+  RepositoryIcon,
+  RepositoryText,
+  RepositoryName,
+  RepositoryUrl,
+  IntegrationItem,
+  IntegrationInfo,
+  IntegrationIcon,
+  IntegrationContent,
+  IntegrationTitle,
+  IntegrationDescription
+} from './workspace/style.ts';
 
 const color = colors['light'];
 
@@ -74,32 +87,6 @@ const EuiLinkStyled = styled(EuiLink)<{ isMobile: boolean }>`
   background-color: #fff;
 `;
 
-const CodeGraphDetails = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-left: 24px;
-`;
-
-const CodeGraphRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #666;
-`;
-
-const CodeGraphLabel = styled.span`
-  font-size: 0.9em;
-  min-width: 80px;
-  color: #888;
-`;
-
-const CodeGraphValue = styled.span`
-  color: #333;
-  font-size: 0.9em;
-  word-break: break-all;
-`;
-
 const UrlLink = styled.a`
   word-wrap: break-word;
   word-break: break-all;
@@ -111,28 +98,6 @@ const UrlLink = styled.a`
 
   &:hover {
     text-decoration: underline;
-  }
-`;
-
-export const DataWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  padding: 20px 50px;
-  width: 90%;
-  margin: 0 auto;
-  align-items: left;
-  background: #fff;
-  border-radius: 6px;
-
-  @media only screen and (max-width: 900px) {
-    width: 90%;
-    padding: 30px 40px;
-  }
-
-  @media only screen and (max-width: 500px) {
-    width: 90%;
-    padding: 20px 10px;
-    flex-direction: column;
   }
 `;
 
@@ -345,10 +310,6 @@ const WorkspaceMission = () => {
 
   const closeCodeSpaceModal = () => {
     setCodeSpaceModal(false);
-  };
-
-  const updateCodeSpace = (url: string) => {
-    console.log(url);
   };
 
   const handleDeleteCodeGraph = async () => {
@@ -626,18 +587,15 @@ const WorkspaceMission = () => {
         <SidebarComponent uuid={uuid} />
         <WorkspaceMissionBody collapsed={collapsed}>
           <ActivitiesHeader uuid={uuid} />
-          <DataWrap style={{ marginTop: '20px', padding: '0px' }}>
-            <FieldWrap style={{ background: 'white' }}>
-              <BudgetWrapComponent uuid={uuid} org={workspaceData} />
-            </FieldWrap>
-          </DataWrap>
-          <DataWrapper
-            style={{
-              marginTop: '20px'
-            }}
-          >
-            <LeftSection>
-              <FieldWrap>
+          <SettingsContainer>
+            <DataWrap style={{ marginTop: '20px', padding: '0px' }}>
+              <FieldWrap style={{ background: 'white' }}>
+                <BudgetWrapComponent uuid={uuid} org={workspaceData} />
+              </FieldWrap>
+            </DataWrap>
+
+            <SectionRow>
+              <Section>
                 <Label>Mission</Label>
                 <Data>
                   <EditableField
@@ -654,12 +612,8 @@ const WorkspaceMission = () => {
                     defaultHeight="250px"
                   />
                 </Data>
-              </FieldWrap>
-              <HorizontalGrayLine />
-            </LeftSection>
-            <VerticalGrayLine />
-            <RightSection>
-              <FieldWrap>
+              </Section>
+              <Section>
                 <Label>Tactics and Objectives</Label>
                 <Data>
                   <EditableField
@@ -676,14 +630,11 @@ const WorkspaceMission = () => {
                     defaultHeight="250px"
                   />
                 </Data>
-              </FieldWrap>
-              <HorizontalGrayLine />
-            </RightSection>
-          </DataWrapper>
+              </Section>
+            </SectionRow>
 
-          <DataWrapper>
-            <LeftSection>
-              <FieldWrap>
+            <SectionRow>
+              <Section>
                 <Label>Schematic</Label>
                 <Data style={{ border: 'none', paddingLeft: '0px', padding: '5px 5px' }}>
                   <SchematicPreview
@@ -729,440 +680,139 @@ const WorkspaceMission = () => {
                     )}
                   </RowWrap>
                 </Data>
-              </FieldWrap>
-              <HorizontalGrayLine />
-            </LeftSection>
-            <RightSection>
-              <FieldWrap style={{ marginTop: '20px' }}>
-                <RowFlex style={{ gap: '25px', marginBottom: '15px' }}>
-                  <Label style={{ margin: 0 }}>People</Label>
+              </Section>
+              <Section>
+                <SectionHeader>
+                  <SectionTitle style={{ marginBottom: 0 }}>People</SectionTitle>
                   <EuiLinkStyled isMobile={isMobile} onClick={toggleManageUserModal}>
                     Manage
                   </EuiLinkStyled>
-                </RowFlex>
-                <AvatarGroup avatarList={avatarList} avatarSize="xl" maxGroupSize={5} />
-              </FieldWrap>
+                </SectionHeader>
+                <AvatarGroup avatarList={avatarList} avatarSize="xl" maxGroupSize={10} />
+              </Section>
+            </SectionRow>
 
-              <HorizontalGrayLine style={{ marginTop: '107px' }} />
-            </RightSection>
-          </DataWrapper>
-
-          <DataWrapper
-            style={{
-              marginBottom: '80px'
-            }}
-          >
-            <LeftSection>
-              <FieldWrap style={{ marginTop: '20px' }}>
-                <DataWrap2>
-                  <RowFlex>
-                    <Label>Repositories</Label>
-                    <Button
-                      onClick={() => openModal('add')}
-                      style={{
-                        borderRadius: '5px',
-                        margin: 0,
-                        marginLeft: 'auto'
-                      }}
-                      dataTestId="new-repository-btn"
-                      text="Add Repository"
-                    />
-                  </RowFlex>
-                  <StyledList>
-                    {repositories.map((repository: any) => (
-                      <StyledListElement key={repository?.id}>
-                        <OptionsWrap style={{ position: 'unset', display: 'contents' }}>
-                          <MaterialIcon
-                            icon={'more_horiz'}
-                            onClick={() => handleUserRepoOptionClick(repository?.id)}
-                            className="MaterialIcon"
-                            data-testid="repository-option-btn"
-                            style={{ transform: 'rotate(90deg)' }}
-                          />
-                          {currentOpenMenu === repository?.id && (
-                            <EditPopover>
-                              <EditPopoverTail bottom="-30px" left="-27px" />
-                              <EditPopoverContent
-                                onClick={() => {
-                                  openModal('edit', repository);
-                                  setCurrentOpenMenu(null);
-                                }}
-                                bottom="-60px"
-                                transform="translateX(-90%)"
-                              >
-                                <MaterialIcon
-                                  icon="edit"
-                                  style={{ fontSize: '20px', marginTop: '2px' }}
-                                />
-                                <EditPopoverText data-testid="repository-edit-btn">
-                                  Edit
-                                </EditPopoverText>
-                              </EditPopoverContent>
-                            </EditPopover>
-                          )}
-                        </OptionsWrap>
-                        <RepoName>{repository.name} : </RepoName>
-                        <EuiToolTip position="top" content={repository.url}>
-                          <a href={repository.url} target="_blank" rel="noreferrer">
-                            {repository.url}
-                          </a>
-                        </EuiToolTip>
-                      </StyledListElement>
-                    ))}
-                  </StyledList>
-                </DataWrap2>
-              </FieldWrap>
-
-              <FieldWrap style={{ marginTop: '20px' }}>
-                <DataWrap2>
-                  <RowFlex>
-                    <Label>Code Graph</Label>
-
-                    {!codeGraph && (
-                      <Button
-                        onClick={() => openCodeGraphModal('add')}
-                        style={{
-                          borderRadius: '5px',
-                          margin: 0,
-                          marginLeft: 'auto'
-                        }}
-                        dataTestId="new-codegraph-btn"
-                        text="Add Code Graph"
-                      />
-                    )}
-                  </RowFlex>
-                  {codeGraph && (
-                    <StyledList>
-                      <StyledListElement key={codeGraph.id}>
-                        <OptionsWrap style={{ position: 'unset', display: 'contents' }}>
-                          <MaterialIcon
-                            icon={'more_horiz'}
-                            onClick={() =>
-                              handleUserRepoOptionClick(codeGraph.id?.toString() ?? '')
-                            }
-                            className="MaterialIcon"
-                            data-testid={`codegraph-option-btn-${codeGraph.id}`}
-                            style={{ transform: 'rotate(90deg)' }}
-                          />
-                          {currentOpenMenu === codeGraph.id?.toString() && (
-                            <EditPopover>
-                              <EditPopoverTail bottom="-30px" left="-27px" />
-                              <EditPopoverContent
-                                onClick={() => {
-                                  openCodeGraphModal('edit', codeGraph);
-                                  setCurrentOpenMenu(null);
-                                }}
-                                bottom="-60px"
-                                transform="translateX(-90%)"
-                              >
-                                <MaterialIcon
-                                  icon="edit"
-                                  style={{ fontSize: '20px', marginTop: '2px' }}
-                                />
-                                <EditPopoverText data-testid={`codegraph-edit-btn-${codeGraph.id}`}>
-                                  Edit
-                                </EditPopoverText>
-                              </EditPopoverContent>
-                            </EditPopover>
-                          )}
-                        </OptionsWrap>
-                        <RepoName>{codeGraph.name}</RepoName>
-                        <CodeGraphDetails>
-                          <CodeGraphRow>
-                            <CodeGraphLabel>URL: </CodeGraphLabel>
-                            <EuiToolTip position="top" content={codeGraph.url}>
-                              <a href={codeGraph.url} target="_blank" rel="noreferrer">
-                                {codeGraph.url}
-                              </a>
-                            </EuiToolTip>
-                          </CodeGraphRow>
-                          {codeGraph.secret_alias && (
-                            <CodeGraphRow>
-                              <CodeGraphLabel>Secret Alias:</CodeGraphLabel>
-                              <CodeGraphValue>{codeGraph.secret_alias}</CodeGraphValue>
-                            </CodeGraphRow>
-                          )}
-                        </CodeGraphDetails>
-                      </StyledListElement>
-                    </StyledList>
-                  )}
-                </DataWrap2>
-              </FieldWrap>
-
-              <FieldWrap style={{ marginTop: '20px' }}>
-                <DataWrap2>
-                  <RowFlex>
-                    <Label>Feature Call</Label>
-                  </RowFlex>
-                  {!featureCall && (
-                    <StyledList>
-                      <StyledListElement key={1}>
-                        <OptionsWrap style={{ position: 'unset', display: 'contents' }}>
-                          <MaterialIcon
-                            icon={'more_horiz'}
-                            onClick={() => handleUserRepoOptionClick('feature_call_new')}
-                            className="MaterialIcon"
-                            data-testid={`featurecall-option-btn-${1}`}
-                            style={{ transform: 'rotate(90deg)' }}
-                          />
-                          {currentOpenMenu === 'feature_call_new' && (
-                            <EditPopover>
-                              <EditPopoverTail bottom="-30px" left="-27px" />
-                              <EditPopoverContent
-                                onClick={() => {
-                                  openFeatureCallModal('add');
-                                  setCurrentOpenMenu(null);
-                                }}
-                                bottom="-60px"
-                                transform="translateX(-90%)"
-                              >
-                                <MaterialIcon
-                                  icon="edit"
-                                  style={{ fontSize: '20px', marginTop: '2px' }}
-                                />
-                                <EditPopoverText data-testid={`featurecall-edit-btn-${1}`}>
-                                  Edit
-                                </EditPopoverText>
-                              </EditPopoverContent>
-                            </EditPopover>
-                          )}
-                        </OptionsWrap>
-                        <RepoName>Feature Call :</RepoName>
-                        <CodeGraphDetails>
-                          <CodeGraphRow>
-                            <CodeGraphLabel>URL: </CodeGraphLabel>
-                            <EuiToolTip position="top" content="placeholder">
-                              <a href="/" target="_blank" rel="noreferrer">
-                                Not Configured
-                              </a>
-                            </EuiToolTip>
-                          </CodeGraphRow>
-                        </CodeGraphDetails>
-                      </StyledListElement>
-                    </StyledList>
-                  )}
-
-                  {featureCall && (
-                    <StyledList>
-                      <StyledListElement key={featureCall.id}>
-                        <OptionsWrap style={{ position: 'unset', display: 'contents' }}>
-                          <MaterialIcon
-                            icon={'more_horiz'}
-                            onClick={() =>
-                              handleUserRepoOptionClick(`feature_call_${featureCall.id}`)
-                            }
-                            className="MaterialIcon"
-                            data-testid={`featurecall-option-btn-${featureCall.id}`}
-                            style={{ transform: 'rotate(90deg)' }}
-                          />
-                          {currentOpenMenu === `feature_call_${featureCall.id}` && (
-                            <EditPopover>
-                              <EditPopoverTail bottom="-30px" left="-27px" />
-                              <EditPopoverContent
-                                onClick={() => {
-                                  openFeatureCallModal('edit', featureCall);
-                                  setCurrentOpenMenu(null);
-                                }}
-                                bottom="-60px"
-                                transform="translateX(-90%)"
-                              >
-                                <MaterialIcon
-                                  icon="edit"
-                                  style={{ fontSize: '20px', marginTop: '2px' }}
-                                />
-                                <EditPopoverText
-                                  data-testid={`codegraph-edit-btn-${featureCall.id}`}
-                                >
-                                  Edit
-                                </EditPopoverText>
-                              </EditPopoverContent>
-                            </EditPopover>
-                          )}
-                        </OptionsWrap>
-                        <RepoName>Feature Call</RepoName>
-                        <CodeGraphDetails>
-                          <CodeGraphRow>
-                            <CodeGraphLabel>URL: </CodeGraphLabel>
-                            <EuiToolTip position="top" content={featureCall.url}>
-                              <UrlLink href={featureCall.url} target="_blank" rel="noreferrer">
-                                {featureCall.url}
-                              </UrlLink>
-                            </EuiToolTip>
-                          </CodeGraphRow>
-                        </CodeGraphDetails>
-                      </StyledListElement>
-                    </StyledList>
-                  )}
-                </DataWrap2>
-              </FieldWrap>
-
-              <FieldWrap style={{ marginTop: '20px' }}>
-                <DataWrap2>
-                  <RowFlex>
-                    <Label>Chat Workflow</Label>
-                  </RowFlex>
-                  {!selectedChatWorkflow && (
-                    <StyledList>
-                      <StyledListElement key={1}>
-                        <OptionsWrap style={{ position: 'unset', display: 'contents' }}>
-                          <MaterialIcon
-                            icon={'more_horiz'}
-                            onClick={() => handleUserRepoOptionClick('chat_workflow_new')}
-                            className="MaterialIcon"
-                            data-testid={`chatworkflow-option-btn-${1}`}
-                            style={{ transform: 'rotate(90deg)' }}
-                          />
-                          {currentOpenMenu === 'chat_workflow_new' && (
-                            <EditPopover>
-                              <EditPopoverTail bottom="-30px" left="-27px" />
-                              <EditPopoverContent
-                                onClick={() => {
-                                  openChatWorkflowModal('add');
-                                  setCurrentOpenMenu(null);
-                                }}
-                                bottom="-60px"
-                                transform="translateX(-90%)"
-                              >
-                                <MaterialIcon
-                                  icon="edit"
-                                  style={{ fontSize: '20px', marginTop: '2px' }}
-                                />
-                                <EditPopoverText data-testid={`chatworkflow-edit-btn-${1}`}>
-                                  Edit
-                                </EditPopoverText>
-                              </EditPopoverContent>
-                            </EditPopover>
-                          )}
-                        </OptionsWrap>
-                        <RepoName>Hive Chat :</RepoName>
-                        <CodeGraphDetails>
-                          <CodeGraphRow>
-                            <CodeGraphLabel>URL: </CodeGraphLabel>
-                            <EuiToolTip position="top" content="placeholder">
-                              <a href="/" target="_blank" rel="noreferrer">
-                                Not Configured
-                              </a>
-                            </EuiToolTip>
-                          </CodeGraphRow>
-                        </CodeGraphDetails>
-                      </StyledListElement>
-                    </StyledList>
-                  )}
-
-                  {selectedChatWorkflow && (
-                    <StyledList>
-                      <StyledListElement key={selectedChatWorkflow.id}>
-                        <OptionsWrap style={{ position: 'unset', display: 'contents' }}>
-                          <MaterialIcon
-                            icon={'more_horiz'}
-                            onClick={() =>
-                              handleUserRepoOptionClick(`chat_workflow_${selectedChatWorkflow.id}`)
-                            }
-                            className="MaterialIcon"
-                            data-testid={`chatworkflow-option-btn-${selectedChatWorkflow.id}`}
-                            style={{ transform: 'rotate(90deg)' }}
-                          />
-                          {currentOpenMenu === `chat_workflow_${selectedChatWorkflow.id}` && (
-                            <EditPopover>
-                              <EditPopoverTail bottom="-30px" left="-27px" />
-                              <EditPopoverContent
-                                onClick={() => {
-                                  openChatWorkflowModal('edit');
-                                  setCurrentOpenMenu(null);
-                                }}
-                                bottom="-60px"
-                                transform="translateX(-90%)"
-                              >
-                                <MaterialIcon
-                                  icon="edit"
-                                  style={{ fontSize: '20px', marginTop: '2px' }}
-                                />
-                                <EditPopoverText
-                                  data-testid={`chatworkflow-edit-btn-${selectedChatWorkflow.id}`}
-                                >
-                                  Edit
-                                </EditPopoverText>
-                              </EditPopoverContent>
-                            </EditPopover>
-                          )}
-                        </OptionsWrap>
-                        <RepoName>Hive Chat</RepoName>
-                        <CodeGraphDetails>
-                          <CodeGraphRow>
-                            <CodeGraphLabel>URL: </CodeGraphLabel>
-                            <EuiToolTip position="top" content={selectedChatWorkflow.url}>
-                              <UrlLink
-                                href={selectedChatWorkflow.url}
-                                target="_blank"
-                                rel="noreferrer"
-                              >
-                                {selectedChatWorkflow.url}
-                              </UrlLink>
-                            </EuiToolTip>
-                          </CodeGraphRow>
-                        </CodeGraphDetails>
-                      </StyledListElement>
-                    </StyledList>
-                  )}
-                </DataWrap2>
-              </FieldWrap>
-            </LeftSection>
-            <RightSection>
-              <WorkspaceFieldWrap>
+            <Section>
+              <SectionHeader>
+                <SectionTitle>Repositories</SectionTitle>
                 <Button
-                  style={{
-                    borderRadius: '5px',
-                    margin: '0 0 20px 0',
-                    padding: '10px 20px',
-                    width: '100%',
-                    backgroundColor: '#4285f4',
-                    color: 'white',
-                    textAlign: 'center',
-                    border: 'none',
-                    fontSize: '16px',
-                    cursor: 'pointer'
-                  }}
-                  onClick={() => openSnippetModal()}
-                  dataTestId="workspace-planner-btn"
-                  text="Manage Text snippets"
+                  onClick={() => openModal('add')}
+                  dataTestId="new-repository-btn"
+                  text="Add Repository"
+                  color="primary"
                 />
-                <Button
-                  style={{
-                    borderRadius: '5px',
-                    margin: 0,
-                    padding: '10px 20px',
-                    width: '100%',
-                    backgroundColor: '#4285f4',
-                    color: 'white',
-                    textAlign: 'center',
-                    border: 'none',
-                    fontSize: '16px',
-                    cursor: 'pointer'
-                  }}
-                  onClick={() => openCodeSpaceModal()}
-                  text="Manage My Code Space"
-                />
-                {featureFlags && (
+              </SectionHeader>
+              {repositories.map((repository: any) => (
+                <RepositoryItem key={repository?.id}>
+                  <RepositoryInfo>
+                    <RepositoryIcon>
+                      <MaterialIcon icon="code" />
+                    </RepositoryIcon>
+                    <RepositoryText>
+                      <RepositoryName>{repository.name}</RepositoryName>
+                      <RepositoryUrl href={repository.url} target="_blank" rel="noreferrer">
+                        {repository.url}
+                      </RepositoryUrl>
+                    </RepositoryText>
+                  </RepositoryInfo>
                   <Button
-                    style={{
-                      borderRadius: '5px',
-                      margin: '20px 0 0 0',
-                      padding: '10px 20px',
-                      width: '100%',
-                      backgroundColor: '#4285f4',
-                      color: 'white',
-                      textAlign: 'center',
-                      border: 'none',
-                      fontSize: '16px',
-                      cursor: 'pointer'
-                    }}
-                    onClick={() => refreshCodeSpace()}
-                    text="Refresh Code Graph"
+                    onClick={() => openModal('edit', repository)}
+                    text="Edit"
+                    color="link"
                   />
-                )}
-              </WorkspaceFieldWrap>
-            </RightSection>
-          </DataWrapper>
+                </RepositoryItem>
+              ))}
+              {repositories.length === 0 && <p>No repositories added yet.</p>}
+            </Section>
+
+            <Section>
+              <SectionTitle>Integrations</SectionTitle>
+              <IntegrationItem>
+                <IntegrationInfo>
+                  <IntegrationIcon>
+                    <MaterialIcon icon="hub" />
+                  </IntegrationIcon>
+                  <IntegrationContent>
+                    <IntegrationTitle>Code Graph</IntegrationTitle>
+                    <IntegrationDescription>
+                      {codeGraph
+                        ? `Connected to ${codeGraph.name}`
+                        : 'Not connected. Connect to a code graph for AI-powered features.'}
+                    </IntegrationDescription>
+                  </IntegrationContent>
+                </IntegrationInfo>
+                <Button
+                  onClick={() => openCodeGraphModal(codeGraph ? 'edit' : 'add', codeGraph || undefined)}
+                  text={codeGraph ? 'Edit' : 'Add'}
+                  color="link"
+                />
+              </IntegrationItem>
+              <IntegrationItem>
+                <IntegrationInfo>
+                  <IntegrationIcon>
+                    <MaterialIcon icon="call" />
+                  </IntegrationIcon>
+                  <IntegrationContent>
+                    <IntegrationTitle>Feature Call</IntegrationTitle>
+                    <IntegrationDescription>
+                      {featureCall
+                        ? `Webhook URL: ${featureCall.url}`
+                        : 'Not configured. Set up a webhook for feature calls.'}
+                    </IntegrationDescription>
+                  </IntegrationContent>
+                </IntegrationInfo>
+                <Button
+                  onClick={() => openFeatureCallModal(featureCall ? 'edit' : 'add', featureCall || undefined)}
+                  text={featureCall ? 'Edit' : 'Add'}
+                  color="link"
+                />
+              </IntegrationItem>
+              <IntegrationItem>
+                <IntegrationInfo>
+                  <IntegrationIcon>
+                    <MaterialIcon icon="chat" />
+                  </IntegrationIcon>
+                  <IntegrationContent>
+                    <IntegrationTitle>Hive Chat</IntegrationTitle>
+                    <IntegrationDescription>
+                      {selectedChatWorkflow
+                        ? `Connected to workflow: ${selectedChatWorkflow.url}`
+                        : 'Not configured. Set up a workflow for Hive Chat.'}
+                    </IntegrationDescription>
+                  </IntegrationContent>
+                </IntegrationInfo>
+                <Button
+                  onClick={() => openChatWorkflowModal(selectedChatWorkflow ? 'edit' : 'add')}
+                  text={selectedChatWorkflow ? 'Edit' : 'Add'}
+                  color="link"
+                />
+              </IntegrationItem>
+            </Section>
+            
+            <ToolsSection>
+              <ToolButton
+                onClick={() => openSnippetModal()}
+                dataTestId="workspace-planner-btn"
+                text="Manage Text snippets"
+                color="white"
+                leadingIcon="description"
+              />
+              <ToolButton
+                onClick={() => openCodeSpaceModal()}
+                text="Manage My Code Space"
+                color="white"
+                leadingIcon="code"
+              />
+              {featureFlags && (
+                <ToolButton
+                  onClick={() => refreshCodeSpace()}
+                  text="Refresh Code Graph"
+                  color="white"
+                  leadingIcon="refresh"
+                />
+              )}
+            </ToolsSection>
+          </SettingsContainer>
 
           <Modal
             visible={isModalVisible}
