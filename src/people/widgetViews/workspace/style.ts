@@ -997,6 +997,177 @@ export const BudgetButton = styled.button`
   }
 `;
 
+export const SettingsContainer = styled.div`
+  padding: 20px;
+  max-width: 100%;
+  margin: auto;
+
+  @media (min-width: 1200px) {
+    max-width: 1200px;
+  }
+`;
+
+export const Section = styled.div`
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.06), 0px 1px 3px rgba(0, 0, 0, 0.1);
+`;
+
+export const SectionTitle = styled.h2`
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  color: #3c3f41;
+`;
+
+export const SectionHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+
+  h2 {
+    margin-bottom: 0;
+  }
+`;
+
+export const SectionDescription = styled.p`
+  color: #5f6368;
+  margin-top: 4px;
+  margin-bottom: 16px;
+  font-size: 0.875rem;
+`;
+
+export const SectionRow = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+  }
+`;
+
+export const IntegrationItem = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid #f0f1f3;
+
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+  &:first-child {
+    padding-top: 0;
+  }
+`;
+
+export const IntegrationInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+`;
+
+export const IntegrationIcon = styled.div`
+  background: #f0f1f3;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const IntegrationContent = styled.div``;
+
+export const IntegrationTitle = styled.h3`
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0 0 4px 0;
+  color: #3c3f41;
+`;
+
+export const IntegrationDescription = styled.p`
+  color: #5f6368;
+  margin: 0;
+  font-size: 0.875rem;
+  word-break: break-all;
+`;
+
+export const ToolsSection = styled(Section)`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+`;
+
+export const ToolButton = styled(Button)`
+  width: 100%;
+  height: 48px;
+  display: flex;
+  justify-content: center;
+`;
+
+export const RepositoryItem = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f1f3;
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+export const RepositoryInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  overflow: hidden;
+`;
+
+export const RepositoryIcon = styled.div`
+  background: #f0f1f3;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+`;
+
+export const RepositoryText = styled.div`
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+`;
+
+export const RepositoryName = styled.span`
+  font-weight: 500;
+  color: #3c3f41;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+export const RepositoryUrl = styled.a`
+  color: #5f6368;
+  font-size: 0.875rem;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
 export const RowFlex = styled.div`
   display: flex;
   width: 100%;
