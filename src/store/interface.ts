@@ -874,6 +874,7 @@ export interface CodeSpaceMap {
   workspaceID: string;
   codeSpaceURL: string;
   userPubkey: string;
+  username?: string;
   githubPat?: string;
   baseBranch?: string;
 }
