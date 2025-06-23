@@ -73,6 +73,7 @@ interface CodeSpaceMap {
   workspaceID: string;
   codeSpaceURL: string;
   userPubkey: string;
+  username?: string;
   githubPat?: string;
   baseBranch?: string;
 }
@@ -92,6 +93,7 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
 }) => {
   const { main, ui } = useStores();
   const [codeSpace, setCodeSpace] = useState<CodeSpaceMap | null>(null);
+  const [username, setUsername] = useState('');
   const [githubPat, setGithubPat] = useState('');
   const [baseBranch, setBaseBranch] = useState('');
   const [urlError, setUrlError] = useState(false);
@@ -127,6 +129,7 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
         if (response && response.id) {
           // Check if response is valid and has an ID
           setCodeSpace(response);
+          setUsername(response.username || ''); // Initialize Username state
           setGithubPat(response.githubPat || ''); // Initialize PAT state
           setBaseBranch(response.baseBranch || ''); // Initialize Base Branch state
           setUrlError(!isValidCodeSpaceInput(response.codeSpaceURL)); // Also validate fetched input
@@ -185,6 +188,10 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
     setUrlError(!isValidCodeSpaceInput(newUrl));
   };
 
+  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUsername(e.target.value);
+  };
+
   const handlePatChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setGithubPat(e.target.value);
   };
@@ -198,9 +205,10 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
 
     setIsLoading(true);
     try {
-      // Prepare the payload including the githubPat and baseBranch
+      // Prepare the payload including the username, githubPat and baseBranch
       const payload = {
         ...codeSpace,
+        username: username, // Add the Username from state
         githubPat: githubPat, // Add the PAT from state
         baseBranch: baseBranch, // Add the Base Branch from state
         workspaceID: workspaceUUID, // Ensure workspaceID is always set
@@ -215,12 +223,14 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
         // Create new code space
         // Remove id, createdAt, updatedAt before creating
         const createPayload: Omit<CodeSpaceMap, 'id' | 'createdAt' | 'updatedAt'> & {
+          username?: string;
           githubPat?: string;
           baseBranch?: string;
         } = {
           workspaceID: workspaceUUID,
           codeSpaceURL: codeSpace.codeSpaceURL,
           userPubkey: ui.meInfo?.pubkey || '',
+          username: username,
           githubPat: githubPat,
           baseBranch: baseBranch
         };
@@ -262,6 +272,15 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
             value={codeSpace?.codeSpaceURL || ''}
             onChange={handleUrlChange}
             style={{ borderColor: urlError ? '#FF8F80' : '' }}
+          />
+        </Wrapper>
+        <Wrapper>
+          <Label>Username:</Label>
+          <TextInput
+            type="text"
+            placeholder="Enter Username"
+            value={username}
+            onChange={handleUsernameChange}
           />
         </Wrapper>
         <Wrapper>

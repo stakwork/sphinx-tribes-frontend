@@ -5075,6 +5075,7 @@ export class MainStore {
   // Update body type to allow githubPat
   async createCodeSpace(
     body: Omit<CodeSpaceMap, 'id' | 'createdAt' | 'updatedAt'> & {
+      username?: string;
       githubPat?: string;
       baseBranch?: string;
     }
