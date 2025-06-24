@@ -33,7 +33,7 @@ export const DeleteConfirmationModal = ({
   };
 
   return (
-    <BaseModal backdrop="white" open onClose={closeHandler}>
+    <BaseModal data-testid="delete-confirmation-modal-component" backdrop="white" open onClose={closeHandler}>
       <Stack minWidth={350} p={4} alignItems="center" spacing={3}>
         {customIcon}
         {children}
