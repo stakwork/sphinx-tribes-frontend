@@ -2,6 +2,7 @@ import React from 'react';
 
 export const image = (
   <svg
+    data-testid="image-component"
     width="224"
     height="192"
     viewBox="0 0 224 192"
