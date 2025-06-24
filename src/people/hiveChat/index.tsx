@@ -951,6 +951,13 @@ export const HiveChatView: React.FC = observer(() => {
   }, [logs]);
 
   useEffect(() => {
+    if (chatStatus && (chatStatus.status === 'success' || chatStatus.status === 'completed')) {
+      setIsChainVisible(false);
+      setIsActionSend(false);
+    }
+  }, [chatStatus]);
+
+  useEffect(() => {
     const loadInitialChat = async () => {
       setLoading(true);
       try {
@@ -1562,21 +1569,29 @@ export const HiveChatView: React.FC = observer(() => {
                     />
                   </React.Fragment>
                 ))}
-                {(isChainVisible || isActionSend) && (
-                  <MessageBubble isUser={false}>
-                    <HiveThoughts>Hive</HiveThoughts>
-                    <p>
-                      {lastLogLine
-                        ? lastLogLine
-                        : `Hi ${ui.meInfo?.owner_alias}, I've got your message. Let me have a think.`}
-                    </p>
-                  </MessageBubble>
-                )}
+                {(isChainVisible || isActionSend) &&
+                  (!chatStatus ||
+                    (chatStatus.status !== 'success' && chatStatus.status !== 'completed')) && (
+                    <MessageBubble isUser={false}>
+                      <HiveThoughts>Hive</HiveThoughts>
+                      <p>
+                        {lastLogLine
+                          ? lastLogLine
+                          : `Hi ${ui.meInfo?.owner_alias}, I've got your message. Let me have a think.`}
+                      </p>
+                    </MessageBubble>
+                  )}
               </ChatHistory>
 
               {chatStatus && (
                 <StatusWrapper>
-                  <ChatStatusDisplay chatStatus={chatStatus} />
+                  <ChatStatusDisplay
+                    chatStatus={{
+                      status: chatStatus.status,
+                      message: chatStatus.message,
+                      updatedAt: chatStatus.updatedAt
+                    }}
+                  />
                 </StatusWrapper>
               )}
 

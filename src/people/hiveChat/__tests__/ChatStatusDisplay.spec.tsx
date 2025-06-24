@@ -55,7 +55,7 @@ describe('ChatStatusDisplay', () => {
     });
   });
 
-  test('renders with long message text that wraps properly', () => {
+  test('renders with longs message text that wraps properly', () => {
     const chatStatus = {
       status: 'processing',
       message:
