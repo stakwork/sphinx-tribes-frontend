@@ -133,7 +133,7 @@ const InviteModal = (props: InviteProps) => {
           background: '#000',
           borderRadius: '50%'
         }}
-      >
+       data-testid="invite-modal-component">
         <Wrapper>
           <WithdrawModalTitle className="withdraw-title">Invite Users</WithdrawModalTitle>
           <ViewInvitesLink onClick={() => setShowInvites(true)}>[ View Invites ]</ViewInvitesLink>

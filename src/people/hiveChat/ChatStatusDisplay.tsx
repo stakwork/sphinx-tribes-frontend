@@ -35,7 +35,7 @@ const ChatStatusDisplay: React.FC<ChatStatusDisplayProps> = observer(({ chatStat
   const formattedTime = formatDistanceToNow(new Date(chatStatus.updatedAt), { addSuffix: true });
 
   return (
-    <StatusContainer isError={isError}>
+    <StatusContainer isError={isError} data-testid="chat-status-display-component">
       <StatusText>
         <strong>Hive:</strong> {chatStatus.message} Last Update: {formattedTime}
       </StatusText>

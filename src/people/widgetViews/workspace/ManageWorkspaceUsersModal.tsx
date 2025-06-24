@@ -163,7 +163,7 @@ const ManageWorkspaceUsersModal = (props: ManageWorkspaceUsersModalProps) => {
           background: '#000',
           borderRadius: '50%'
         }}
-      >
+       data-testid="manage-workspace-users-modal-component">
         <UserWrap>
           <UsersHeadWrap>
             <UsersHeader>Users</UsersHeader>

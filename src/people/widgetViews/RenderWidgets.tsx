@@ -102,7 +102,7 @@ function RenderWidgets({ widget }: RenderWidgetsProps) {
 
     function wrapIt(child: any) {
       if (single) {
-        return <Panel isMobile={isMobile}>{child}</Panel>;
+        return <Panel isMobile={isMobile} data-testid="render-widgets-component">{child}</Panel>;
       }
 
       const elementArray: any = [];

@@ -16,7 +16,7 @@ export const MainLayout: FC<MainLayoutProps> = ({
 
   return (
     <>
-      <div className="app" style={{ background: c.background }}>
+      <div className="app" style={{ background: c.background }} data-testid="main-layout-component">
         {header}
         {children}
       </div>

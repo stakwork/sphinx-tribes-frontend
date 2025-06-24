@@ -94,7 +94,7 @@ export const PostModal: FC<PostModalProps> = observer(
       return (
         <>
           {isOpen && (
-            <Modal visible={isOpen} fill={true}>
+            <Modal visible={isOpen} fill={true} data-testid="post-modal-component">
               <FocusedView
                 person={person}
                 canEdit={!canEdit}

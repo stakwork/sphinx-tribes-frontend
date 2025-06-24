@@ -63,7 +63,7 @@ const mockChats: Chat[] = [
 
 const renderSidebar = (props: any) =>
   render(
-    <BrowserRouter>
+    <BrowserRouter data-testid="sidebar-component-component">
       <SidebarComponent uuid="test-uuid" workspaces={[]} {...props} />
     </BrowserRouter>
   );

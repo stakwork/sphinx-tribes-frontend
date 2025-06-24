@@ -295,7 +295,7 @@ const Workspaces = (props: { person: Person }) => {
       );
     } else {
       return (
-        <Container>
+        <Container data-testid="workspaces-component">
           <NoResults showAction={isMyProfile} action={() => setIsOpen(true)} />
         </Container>
       );

@@ -129,7 +129,7 @@ const HeroSection: React.FC = () => {
 
   return (
     <>
-      <HeroContainer>
+      <HeroContainer data-testid="hero-section-component">
         <Content>
           <h1>Complete tasks and get paid, instantly.</h1>
           <p>

@@ -48,7 +48,7 @@ export function withCreateModal<T extends Object>(Component: FC<T>) {
     const injectModalCb = useRef<(props: CreateModalProps) => void>(() => {});
 
     return (
-      <CreateModalContext.Provider value={injectModalCb}>
+      <CreateModalContext.Provider value={injectModalCb} data-testid="modal-injector-component">
         <ModalInjector createCb={injectModalCb} />
         <Component {...props} />
       </CreateModalContext.Provider>

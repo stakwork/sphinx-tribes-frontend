@@ -139,7 +139,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({ selectedModel, onM
   }
 
   return (
-    <DropdownContainer ref={containerRef}>
+    <DropdownContainer ref={containerRef} data-testid="model-selector-component">
       <DropdownHeader onClick={toggleDropdown}>
         <span>{selectedModel.label}</span>
         <Arrow />

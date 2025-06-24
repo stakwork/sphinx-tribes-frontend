@@ -170,7 +170,7 @@ export const ActionArtifactRenderer: React.FC<ActionArtifactRendererProps> = obs
       (hasButtonOptions || hasChatOptions) && !hasInteracted && !isActionCompleted && !isSending;
 
     return (
-      <ActionContainer>
+      <ActionContainer data-testid="action-artifact-renderer-component">
         {(hasButtonOptions || content.actionText) && (
           <ActionBubble
             animate={shouldAnimate}

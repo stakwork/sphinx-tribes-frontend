@@ -69,7 +69,7 @@ const LogsScreenViewer: React.FC<LogsScreenViewerProps> = ({ sseLogs }) => {
   };
 
   return (
-    <CodeViewer>
+    <CodeViewer data-testid="logs-screen-viewer-component">
       <CopyButton onClick={copyToClipboard}>
         {copied ? <MaterialIcon icon="check" /> : <MaterialIcon icon="content_copy" />}
       </CopyButton>

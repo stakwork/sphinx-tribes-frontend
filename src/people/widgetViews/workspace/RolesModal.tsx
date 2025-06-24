@@ -182,7 +182,7 @@ const RolesModal = (props: UserRolesModalProps) => {
           background: '#000',
           borderRadius: '50%'
         }}
-      >
+       data-testid="roles-modal-component">
         <UserRolesWrap newDesign={true}>
           <UserRolesImage src={user?.img || avatarIcon} />
           <UserRolesName>{user?.unique_name}</UserRolesName>

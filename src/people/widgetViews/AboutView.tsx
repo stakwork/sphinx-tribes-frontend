@@ -242,7 +242,7 @@ export const AboutView = observer((props: AboutViewProps) => {
   const descriptionIsLong = description && description.length && description.length > 120;
 
   return (
-    <Wrap>
+    <Wrap data-testid="about-view-component">
       <D>
         {expand ? (
           <DExpand data-testid="user-description">{renderMarkdown(description)}</DExpand>

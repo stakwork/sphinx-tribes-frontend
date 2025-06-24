@@ -70,7 +70,7 @@ export default function Button(props: ButtonProps) {
       {...(props?.dataTestId ? { 'data-testid': props?.dataTestId } : {})}
       disabled={props.disabled}
       onClick={props.onClick}
-    >
+     data-testid="button-component">
       {props.children ? (
         props.children
       ) : props.wideButton ? (

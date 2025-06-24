@@ -205,7 +205,7 @@ const ProcessStakeModal: React.FC<ProcessStakeModalProps> = ({
         padding: '4px'
       }}
     >
-      <ModalWrapper>
+      <ModalWrapper data-testid="process-stake-modal-component">
         {isLoading ? (
           <div
             style={{

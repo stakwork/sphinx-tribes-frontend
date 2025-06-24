@@ -69,7 +69,7 @@ export default function NumberInput({
   const color = colors['light'];
 
   return (
-    <OuterContainer color={color}>
+    <OuterContainer color={color} data-testid="number-input-component">
       <FieldEnv
         color={color}
         onClick={() => {

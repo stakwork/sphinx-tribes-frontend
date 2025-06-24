@@ -93,7 +93,7 @@ export default function ConnectCard(props: ConnectCardProps) {
   const routeHint = person && person?.owner_route_hint ? `_${person.owner_route_hint}` : '';
 
   return (
-    <div onClick={(e: any) => e.stopPropagation()}>
+    <div onClick={(e: any) = data-testid="connect-card-component"> e.stopPropagation()}>
       <Modal
         style={props.modalStyle}
         overlayClick={() => {

@@ -53,7 +53,7 @@ function MobileView(props: any) {
       style={{ borderBottom: '2px solid #EBEDEF', position: 'relative' }}
       onClick={onPanelClick}
       key={titleString}
-    >
+     data-testid="mobile-view-component">
       {paid && (
         <Img
           src={'/static/paid_ribbon.svg'}

@@ -124,7 +124,7 @@ describe('RenderMarkdown Component', () => {
       });
     });
 
-    it('Performance / Scale – Very Long String as Children', () => {
+    it('Performance / Scale  Very Long String as Children', () => {
       const longString = 'x'.repeat(10000);
       const markdown = `\`\`\`\n${longString}\n\`\`\``;
 

@@ -161,7 +161,7 @@ const FeatureBountyModal = (props: FeatureBountyProps) => {
         background: '#000',
         borderRadius: '50%'
       }}
-    >
+     data-testid="feature-bounty-modal-component">
       <Wrapper>
         <ModalTitle>
           Featured Bounties{' '}

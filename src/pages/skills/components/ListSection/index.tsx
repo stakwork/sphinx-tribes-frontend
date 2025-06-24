@@ -7,7 +7,7 @@ interface SkillsListSectionProps {
 }
 
 export const SkillsListSection: React.FC<SkillsListSectionProps> = ({ id }) => (
-  <SectionContainer id={id}>
+  <SectionContainer id={id} data-testid="skills-list-section-component">
     <Title>Skills Marketplace</Title>
     <Description>Browse available AI skills</Description>
   </SectionContainer>

@@ -242,7 +242,7 @@ const WorkspacePlanner = observer(() => {
 
   if (loading || !permissionsChecked) {
     return (
-      <PlannerContainer collapsed={collapsed}>
+      <PlannerContainer collapsed={collapsed} data-testid="workspace-planner-component">
         <LoadingContainer>
           <EuiLoadingSpinner size="xl" />
         </LoadingContainer>

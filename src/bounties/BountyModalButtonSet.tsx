@@ -20,7 +20,7 @@ const ButtonSet = ({ showGithubBtn, ...props }: any) => {
       style={{
         ...props.ButtonSetContainerStyle
       }}
-    >
+     data-testid="button-set-component">
       {showGithubBtn && (
         <ButtonContainer onClick={props?.githubShareAction} color={color}>
           <div className="LeadingImageContainer">

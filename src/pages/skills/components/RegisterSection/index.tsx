@@ -7,7 +7,7 @@ interface SkillsRegisterSectionProps {
 }
 
 export const SkillsRegisterSection: React.FC<SkillsRegisterSectionProps> = ({ id }) => (
-  <SectionContainer id={id} style={{ backgroundColor: '#fff' }}>
+  <SectionContainer id={id} style={{ backgroundColor: '#fff' }} data-testid="skills-register-section-component">
     <Title>Register Your Skills</Title>
     <Description>Start earning by registering your AI skills</Description>
   </SectionContainer>

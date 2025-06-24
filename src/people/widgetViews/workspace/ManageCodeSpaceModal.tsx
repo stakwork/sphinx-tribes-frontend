@@ -249,7 +249,7 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
   };
 
   return (
-    <ModalContainer>
+    <ModalContainer data-testid="manage-code-space-modal-component">
       <Header>Code Space Management</Header>
       <ModalInnerWrapper>
         {workspaceName && (

@@ -124,7 +124,7 @@ const AssignUserRoles = (props: AssignUserModalProps) => {
         background: '#000',
         borderRadius: '50%'
       }}
-    >
+     data-testid="assign-user-roles-component">
       <AssignUserContainer>
         <UserInfoContainer>
           <AssignRoleUserImage

@@ -7,7 +7,7 @@ import {
 } from './components';
 
 export const SkillsPage: React.FC = () => (
-  <PageContainer>
+  <PageContainer data-testid="skills-page-component">
     <SkillPageHeroSection />
     <SkillsListSection id="skills" />
     <SkillsRegisterSection id="register" />

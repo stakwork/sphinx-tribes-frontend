@@ -76,7 +76,7 @@ export default function Widget(props: WidgetProps) {
   const highlight = objectOrArrayHasLength(state);
 
   return (
-    <Wrap onClick={() => props.setSelected(props)}>
+    <Wrap onClick={() = data-testid="widget-component"> props.setSelected(props)}>
       <Icon source={`/static/${props.icon || 'sphinx'}.png`} />
 
       <Title>{props.label}</Title>

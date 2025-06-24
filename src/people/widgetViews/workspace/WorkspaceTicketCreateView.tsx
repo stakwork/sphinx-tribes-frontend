@@ -342,7 +342,7 @@ const WorkspaceTicketCreateView: React.FC = observer(() => {
   }, []);
 
   return (
-    <MainContent collapsed={collapsed}>
+    <MainContent collapsed={collapsed} data-testid="workspace-ticket-create-view-component">
       <FeatureBody>
         <SidebarComponent uuid={workspaceId} />
         <ActivitiesHeader uuid={workspaceId} />

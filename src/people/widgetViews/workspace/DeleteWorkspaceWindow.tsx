@@ -70,7 +70,7 @@ const DeleteWorkspaceWindow = (props: { onDeleteWorkspace: () => void; close: ()
         width: isMobile ? '100%' : '551px',
         height: isMobile ? '100%' : '435px'
       }}
-    >
+     data-testid="delete-workspace-window-component">
       <DeleteConfirmation>
         <DeleteIcon src="/static/Delete.svg" alt="delete icon" />
         <DeleteText style={{ marginTop: '26px' }}>Are you sure you want to</DeleteText>

@@ -50,7 +50,7 @@ function SearchTextInput(props: SearchTextInputProps) {
   }
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div style={{ position: 'relative' }} data-testid="search-text-input-component">
       <Text
         {...props}
         onFocus={() => setExpand(true)}

@@ -30,7 +30,7 @@ const Users = (props: UserListProps) => {
     !isWorkspaceAdmin && !userHasRole(main.bountyRoles, userRoles, 'ADD ROLES');
 
   return (
-    <UsersList>
+    <UsersList data-testid="users-component">
       {users.map((user: Person, i: number) => {
         const isUser = user.owner_pubkey === ui.meInfo?.owner_pubkey;
         const settingsDisabled = isUser || addRolesDisabled;

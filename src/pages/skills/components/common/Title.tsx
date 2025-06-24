@@ -12,7 +12,7 @@ export interface TitleProps extends BaseChildrenProps {
 
 export function Title({ children, subtitle, style }: TitleProps) {
   return (
-    <Fragment>
+    <Fragment data-testid="title-component">
       {subtitle && <StyledSubtitle>{subtitle}</StyledSubtitle>}
       <StyledTitle style={style}>{children}</StyledTitle>
     </Fragment>

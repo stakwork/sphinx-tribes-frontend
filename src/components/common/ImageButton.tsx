@@ -69,7 +69,7 @@ const ImageButton = (props: ImageButtonProps) => (
     style={{
       ...props.ButtonContainerStyle
     }}
-  >
+   data-testid="image-button-component">
     {props.leadingImageSrc && (
       <div
         className="leadingImageContainer"

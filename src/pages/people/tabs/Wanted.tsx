@@ -198,7 +198,7 @@ export const Wanted = observer(() => {
   );
 
   return (
-    <Container>
+    <Container data-testid="wanted-component">
       <FilterHeader
         checkboxIdToSelectedMap={checkboxIdToSelectedMap}
         applyFilters={applyFilters}

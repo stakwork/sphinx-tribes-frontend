@@ -12,7 +12,7 @@ describe('NumberInputNew Component', () => {
         label="Test Label"
         name="testInput"
         value=""
-        handleChange={() => {
+        handleChange={() = data-testid="number-sats-input-component"> {
           ('');
         }}
         handleBlur={() => {

@@ -27,7 +27,7 @@ function Date({ label, value, handleChange, testId }: any) {
   };
 
   return (
-    <FieldEnv label={label} isTop={true} color={color}>
+    <FieldEnv label={label} isTop={true} color={color} data-testid="date-component">
       <DataPicker
         selectsEnd={true}
         selectsStart={true}

@@ -108,7 +108,7 @@ export default function Bot(props: BotProps) {
     if (small) {
       return (
         <Wrap
-          onClick={() => select(id, unique_name)}
+          onClick={() = data-testid="bot-component"> select(id, unique_name)}
           style={{
             background: selected ? '#F2F3F5' : '#fff'
           }}

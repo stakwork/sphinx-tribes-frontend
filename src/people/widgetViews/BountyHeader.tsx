@@ -457,7 +457,7 @@ const BountyHeader = ({
               : `0px solid ${color.grayish.G600}`
           }}
         >
-          <BountyHeaderDesk>
+          <BountyHeaderDesk data-testid="bounty-header-component">
             <B>
               <PostBounty widget={selectedWidget} />
               <IconButton

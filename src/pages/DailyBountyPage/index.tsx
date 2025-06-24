@@ -142,7 +142,7 @@ const DailyBountyPage: React.FC = () => {
 
   if (loading) {
     return (
-      <Body isMobile={isMobile} style={{ justifyContent: 'center', alignItems: 'center' }}>
+      <Body isMobile={isMobile} style={{ justifyContent: 'center', alignItems: 'center' }} data-testid="daily-bounty-page-component">
         <EuiLoadingSpinner size="xl" />
       </Body>
     );

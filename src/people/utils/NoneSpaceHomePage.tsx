@@ -76,7 +76,7 @@ export default function NoneSpaceHomePage(props: NoneSpaceProps) {
           width: '100%',
           ...props.style
         }}
-      >
+       data-testid="none-space-home-page-component">
         <H style={{ paddingLeft: 0, fontSize: '100px', fontFamily: 'Barlow' }}>{props.text}</H>
         <C style={{ paddingLeft: 0, fontFamily: 'Barlow' }}>{props.sub}</C>
 

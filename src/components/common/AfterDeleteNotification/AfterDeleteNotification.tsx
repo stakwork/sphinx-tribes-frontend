@@ -30,7 +30,7 @@ export const AfterDeleteNotification = ({
   const color = colors['light'];
 
   return (
-    <BaseModal backdrop="white" open onClose={closeHandler}>
+    <BaseModal backdrop="white" open onClose={closeHandler} data-testid="after-delete-notification-component">
       <Stack
         position="relative"
         sx={{

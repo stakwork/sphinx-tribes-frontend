@@ -57,7 +57,7 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
   disabled = false,
   selectedOption
 }) => (
-  <ButtonsContainer>
+  <ButtonsContainer data-testid="action-buttons-component">
     {options
       .filter((option) => option.action_type === 'button')
       .map((option, index) => {

@@ -48,7 +48,7 @@ function Form(props: FormProps) {
             ...wrapStyle,
             ...schema.outerContainerStyle
           }}
-        >
+         data-testid="form-component">
           <StyledFormWrapper>
             {schema.map((item: FormField) => (
               <Input

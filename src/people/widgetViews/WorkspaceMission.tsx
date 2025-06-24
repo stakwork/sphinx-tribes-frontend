@@ -585,7 +585,7 @@ const WorkspaceMission = () => {
     !editWorkspaceDisabled && (
       <>
         <SidebarComponent uuid={uuid} />
-        <WorkspaceMissionBody collapsed={collapsed}>
+        <WorkspaceMissionBody collapsed={collapsed} data-testid="workspace-mission-component">
           <ActivitiesHeader uuid={uuid} />
           <SettingsContainer>
             <DataWrap style={{ marginTop: '20px', padding: '0px' }}>

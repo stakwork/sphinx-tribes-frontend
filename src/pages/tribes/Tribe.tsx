@@ -138,7 +138,7 @@ export default function Tribe({
       className="col-md-6 col-lg-6  mb-2"
       id={uuid}
       title={''}
-    >
+     data-testid="tribe-component">
       <Content
         onClick={() => select(selected ? '' : uuid, unique_name)}
         style={{
