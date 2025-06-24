@@ -94,7 +94,7 @@ export const DataWrap = styled.div`
   display: flex;
   justify-content: space-between;
   padding: 20px 50px;
-  width: 90%;
+  width: 100%;
   margin: 0 auto;
   align-items: left;
   justify-content: center;
