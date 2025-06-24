@@ -130,6 +130,7 @@ const BountyProfileView = (props: BountiesProfileProps) => {
   return (
     <>
       <UserProfileContainer
+        data-testid="bounty-profile-view-component"
         style={{
           ...props?.UserProfileContainerStyle
         }}

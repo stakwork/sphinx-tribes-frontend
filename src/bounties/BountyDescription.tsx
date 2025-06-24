@@ -163,6 +163,7 @@ const BountyDescription = (props: BountiesDescriptionProps) => {
   return (
     <>
       <BountyDescriptionContainer
+        data-testid="bounty-description-component"
         style={{ ...props.style }}
         isBountyLandingPage={isBountyLandingPage}
       >
