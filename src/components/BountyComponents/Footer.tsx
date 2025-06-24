@@ -102,7 +102,7 @@ const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <FooterContainer isMobile={isMobile}>
+    <FooterContainer data-testid="footer-component" isMobile={isMobile}>
       <FooterContent isMobile={isMobile}>
         {isMobile ? (
           <>
@@ -142,7 +142,7 @@ const Footer: React.FC = () => {
               </LinksSection>
             </FooterNav>
 
-            <Copyright isMobile={isMobile}>Stakwork © Copyright {currentYear}</Copyright>
+            <Copyright isMobile={isMobile}>Stakwork  Copyright {currentYear}</Copyright>
           </>
         ) : (
           <>
@@ -157,7 +157,7 @@ const Footer: React.FC = () => {
                   alt="Freedom to Earn"
                 />
               </Logo>
-              <Copyright isMobile={isMobile}>Stakwork © Copyright {currentYear}</Copyright>
+              <Copyright isMobile={isMobile}>Stakwork  Copyright {currentYear}</Copyright>
             </LogoSection>
 
             <FooterNav aria-label="Footer Navigation">
