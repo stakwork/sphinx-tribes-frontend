@@ -97,7 +97,7 @@ function SearchableSelectInput({
 
   return (
     <>
-      <FieldEnv
+      <FieldEnv data-testid="searchable-select-input-component"
         color={color}
         label={labeltext}
         isTop={true}

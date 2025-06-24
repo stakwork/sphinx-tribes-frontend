@@ -84,7 +84,7 @@ export default function SwitchInput({
 
   return (
     <>
-      <Container style={style} color={color}>
+      <Container data-testid="switch-input-component" style={style} color={color}>
         <EuiText className="Label">{label}</EuiText>
         <EuiSwitch
           className="switcher"
