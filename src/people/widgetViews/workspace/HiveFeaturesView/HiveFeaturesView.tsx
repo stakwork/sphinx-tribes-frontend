@@ -1033,6 +1033,7 @@ const HiveFeaturesView = observer<HiveFeaturesViewProps>(() => {
                         </span>
                       </div>
                       <PlannerButton
+                        data-testid="phase-planner-btn"
                         onClick={(e) => {
                           e.stopPropagation();
                           history.push(`/feature/${featureUuid}/phase/${phaseID}/planner`);

@@ -73,12 +73,15 @@ describe('Test Kanban Board Filters', { testIsolation: false }, () => {
 
     cy.get('[data-testid="feature-filter-btn"]').click();
     cy.contains('Feature 100').click();
+    cy.wait(2000);
     cy.get('[data-testid="bounty-card"]').each(($card) => {
       cy.wrap($card).within(() => {
         cy.get('span').filter('[title^="Feature"]').should('have.attr', 'title', 'Feature 100');
       });
     });
+    cy.wait(2000);
     cy.get('[data-testid="clear-feature-filters-btn"]').click();
+    cy.wait(2000);
     cy.get('[data-testid="feature-filter-btn"]').click();
 
     cy.get('[data-testid="feature-filter-btn"]').click();
@@ -98,8 +101,10 @@ describe('Test Kanban Board Filters', { testIsolation: false }, () => {
     });
 
     cy.get('[data-testid="feature-filter-btn"]').click();
+    cy.get('[data-testid="feature-filter-dropdown"]').contains('Feature 100').click();
+    cy.wait(2000);
     cy.get('[data-testid="clear-feature-filters-btn"]').click();
-
+    cy.wait(2000);
     cy.get('[data-testid="status-filter-btn"]').click();
 
     cy.get('[data-testid="status-filter-dropdown"]')
