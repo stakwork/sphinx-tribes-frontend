@@ -161,7 +161,7 @@ export const TicketTextAreaComp = ({
   });
 
   return (
-    <div {...getRootProps()}>
+    <div data-testid="ticket-text-area-comp-component" {...getRootProps()}>
       <input {...getInputProps()} />
       <StyledTextArea
         ref={textAreaRef}
