@@ -15,7 +15,7 @@ if (appEnv.isTests) {
   ReactDOM.render(<App />, document.getElementById('root'));
 } else {
   ReactDOM.render(
-    <PostHogProvider apiKey={process.env.REACT_APP_PUBLIC_POSTHOG_KEY} options={options}>
+    <PostHogProvider data-testid="index-component" apiKey={process.env.REACT_APP_PUBLIC_POSTHOG_KEY} options={options}>
       <App />
     </PostHogProvider>,
     document.getElementById('root')
