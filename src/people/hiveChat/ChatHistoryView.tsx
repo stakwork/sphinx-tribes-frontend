@@ -263,6 +263,39 @@ const NewChatButton = styled.button`
   }
 `;
 
+const Tooltip = styled.div<{ visible: boolean; top: number; left: number }>`
+  position: fixed;
+  left: ${(props) => props.left}px;
+  background: rgba(31, 41, 55, 0.95);
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  max-width: 200px;
+  opacity: ${(props) => (props.visible ? 1 : 0)};
+  visibility: ${(props) => (props.visible ? 'visible' : 'hidden')};
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  top: ${(props) => props.top}px;
+  pointer-events: none;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  z-index: 1000;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: -6px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-style: solid;
+    border-width: 6px 6px 6px 0;
+    border-color: transparent rgba(31, 41, 55, 0.95) transparent transparent;
+  }
+`;
+
 export const ChatHistoryView: React.FC = observer(() => {
   const { workspaceId } = useParams<{ uuid: string; workspaceId: string }>();
   const { chat } = useStores();
@@ -275,6 +308,9 @@ export const ChatHistoryView: React.FC = observer(() => {
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [newTitle, setNewTitle] = useState('');
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const [tooltipTop, setTooltipTop] = useState(0);
+  const [tooltipLeft, setTooltipLeft] = useState(0);
   const { openDeleteConfirmation } = useDeleteConfirmationModal();
 
   useEffect(() => {
@@ -438,6 +474,17 @@ export const ChatHistoryView: React.FC = observer(() => {
     }
   };
 
+  const handleMouseEnter = (event: React.MouseEvent, itemName: string) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    setTooltipTop(rect.top + rect.height / 2 - 15);
+    setTooltipLeft(rect.right + 10);
+    setHoveredItem(itemName);
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredItem(null);
+  };
+
   if (loading) {
     return (
       <Container collapsed={collapsed}>
@@ -533,10 +580,23 @@ export const ChatHistoryView: React.FC = observer(() => {
           </ChatTable>
 
           <ButtonContainer>
-            <NewChatButton onClick={handleNewChat}>
+            <NewChatButton 
+              onClick={handleNewChat}
+              onMouseEnter={(e) => handleMouseEnter(e, 'new-chat')}
+              onMouseLeave={handleMouseLeave}
+            >
               <MaterialIcon icon="add" style={{ fontSize: '20px' }} />
               New Chat
             </NewChatButton>
+            {hoveredItem === 'new-chat' && (
+              <Tooltip 
+                visible={hoveredItem === 'new-chat'} 
+                top={tooltipTop} 
+                left={tooltipLeft}
+              >
+                New Chat
+              </Tooltip>
+            )}
           </ButtonContainer>
         </ChatHistoryContainer>
       </Container>
