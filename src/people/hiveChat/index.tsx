@@ -416,6 +416,38 @@ const AddButton = styled.button`
   }
 `;
 
+const AddButtonTooltip = styled.div<{ visible: boolean; top: number; left: number }>`
+  position: fixed;
+  left: ${(props) => props.left}px;
+  background: rgba(31, 41, 55, 0.95);
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  max-width: 200px;
+  opacity: ${(props) => (props.visible ? 1 : 0)};
+  visibility: ${(props) => (props.visible ? 'visible' : 'hidden')};
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  top: ${(props) => props.top}px;
+  pointer-events: none;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: -6px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-style: solid;
+    border-width: 6px 6px 6px 0;
+    border-color: transparent rgba(31, 41, 55, 0.95) transparent transparent;
+  }
+`;
+
 const DividerHandle = styled.div`
   position: absolute;
   width: 28px;
@@ -629,6 +661,9 @@ export const HiveChatView: React.FC = observer(() => {
   const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [isRefreshingTitle, setIsRefreshingTitle] = useState(false);
   const [sseLogs, setSseLogs] = useState<SSEMessage[]>([]);
+  const [hoveredAddButton, setHoveredAddButton] = useState(false);
+  const [addButtonTooltipTop, setAddButtonTooltipTop] = useState(0);
+  const [addButtonTooltipLeft, setAddButtonTooltipLeft] = useState(0);
   useBrowserTabTitle('Hive Chat');
 
   if (isVerboseLoggingEnabled) {
@@ -1434,6 +1469,17 @@ export const HiveChatView: React.FC = observer(() => {
     setViewerSectionWidth('100%');
   };
 
+  const handleAddButtonMouseEnter = (event: React.MouseEvent) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    setAddButtonTooltipTop(rect.top + rect.height / 2 - 15);
+    setAddButtonTooltipLeft(rect.right + 10);
+    setHoveredAddButton(true);
+  };
+
+  const handleAddButtonMouseLeave = () => {
+    setHoveredAddButton(false);
+  };
+
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -1504,9 +1550,23 @@ export const HiveChatView: React.FC = observer(() => {
                     Save
                   </SendButton>
                 )}
-                <AddButton onClick={() => handleNewChat()} disabled={isUpdatingTitle}>
+                <AddButton 
+                  onClick={() => handleNewChat()} 
+                  disabled={isUpdatingTitle}
+                  onMouseEnter={handleAddButtonMouseEnter}
+                  onMouseLeave={handleAddButtonMouseLeave}
+                >
                   <MaterialIcon icon="add" style={{ fontSize: '16px', color: '#5f6368' }} />
                 </AddButton>
+                {hoveredAddButton && (
+                  <AddButtonTooltip
+                    visible={hoveredAddButton}
+                    top={addButtonTooltipTop}
+                    left={addButtonTooltipLeft}
+                  >
+                    New Chat
+                  </AddButtonTooltip>
+                )}
                 {isMinimized && (
                   <AddButton onClick={handleRestore} title="Show Artifacts">
                     <MaterialIcon
