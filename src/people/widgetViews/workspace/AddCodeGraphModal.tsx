@@ -171,10 +171,10 @@ const AddCodeGraph: React.FC<AddCodeGraphProps> = ({
       <WorkspaceDetailsContainer>
         <WorkspaceInputContainer feature={true} style={{ color: graphNameError ? errcolor : '' }}>
           <WorkspaceLabel style={{ color: graphNameError ? errcolor : '' }}>
-            Code Graph name *
+            Name *
           </WorkspaceLabel>
           <TextInput
-            placeholder="Code Graph name"
+            placeholder="Enter project name"
             value={graphName}
             feature={true}
             data-testid="graph-name-input"
@@ -184,10 +184,10 @@ const AddCodeGraph: React.FC<AddCodeGraphProps> = ({
         </WorkspaceInputContainer>
         <WorkspaceInputContainer feature={true} style={{ color: graphUrlError ? errcolor : '' }}>
           <WorkspaceLabel style={{ color: graphUrlError ? errcolor : '' }}>
-            Code Graph url *
+            Swarm URL *
           </WorkspaceLabel>
           <TextInput
-            placeholder="Code Graph url"
+            placeholder="e.g. https://tribes.sphinx.chat/api"
             value={graphUrl}
             feature={true}
             data-testid="graph-url-input"
@@ -197,10 +197,10 @@ const AddCodeGraph: React.FC<AddCodeGraphProps> = ({
         </WorkspaceInputContainer>
         <WorkspaceInputContainer feature={true} style={{ color: secretAliasError ? errcolor : '' }}>
           <WorkspaceLabel style={{ color: secretAliasError ? errcolor : '' }}>
-            Secret Alias *
+            API Key *
           </WorkspaceLabel>
           <TextInput
-            placeholder="{{2b_SWARm38}}"
+            placeholder="e.g. {{SWARM_456789_API_KEY}}"
             value={secretAlias}
             feature={true}
             data-testid="secret-alias-input"
