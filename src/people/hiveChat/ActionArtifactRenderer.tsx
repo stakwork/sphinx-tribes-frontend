@@ -177,14 +177,17 @@ export const ActionArtifactRenderer: React.FC<ActionArtifactRendererProps> = obs
             onMouseEnter={() => setHasInteracted(true)}
             onFocus={() => setHasInteracted(true)}
           >
-            {content.actionText &&
-              renderMarkdown(content.actionText, {
-                codeBlockBackground: '#282c34',
-                textColor: '#abb2bf',
-                bubbleTextColor: '',
-                borderColor: '#444',
-                codeBlockFont: 'Courier New'
-              })}
+            {content.actionText.trim() !== '' && (
+              <>
+                {renderMarkdown(content.actionText.trim(), {
+                  codeBlockBackground: '#282c34',
+                  textColor: '#abb2bf',
+                  bubbleTextColor: '',
+                  borderColor: '#444',
+                  codeBlockFont: 'Courier New'
+                })}
+              </>
+            )}
 
             <ActionButtons
               options={content.options}
