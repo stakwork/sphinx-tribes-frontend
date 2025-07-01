@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useStores } from 'store';
 import { EuiGlobalToastList, EuiLoadingSpinner } from '@elastic/eui';
@@ -93,8 +93,36 @@ const AddRepo = (props: {
   const [repoUrl, setRepoUrl] = useState('');
   const [repoUrlError, setRepoUrlError] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [hasChanges, setHasChanges] = useState<boolean>(false);
+  const [originalValues, setOriginalValues] = useState({ name: '', url: '' });
   const { main } = useStores();
   const [toasts, setToasts] = useState<Toast[]>([]);
+
+  // Initialize form values and track original values for change detection
+  useEffect(() => {
+    if (modalType === 'edit') {
+      setRepoName(name || '');
+      setRepoUrl(url || '');
+      setOriginalValues({ name: name || '', url: url || '' });
+      setHasChanges(false);
+    } else {
+      setRepoName('');
+      setRepoUrl('');
+      setOriginalValues({ name: '', url: '' });
+      setHasChanges(false);
+    }
+  }, [modalType, name, url]);
+
+  // Check for changes in edit mode
+  useEffect(() => {
+    if (modalType === 'edit') {
+      const nameChanged = repoName !== originalValues.name;
+      const urlChanged = repoUrl !== originalValues.url;
+      setHasChanges(nameChanged || urlChanged);
+    } else {
+      setHasChanges(true); // Always allow creation when fields are valid
+    }
+  }, [repoName, repoUrl, originalValues, modalType]);
 
   const handleRepoNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
@@ -187,7 +215,9 @@ const AddRepo = (props: {
 
   return (
     <AddWorkspaceWrapper>
-      <AddWorkspaceHeader>Add New Repository</AddWorkspaceHeader>
+      <AddWorkspaceHeader>
+        {modalType === 'add' ? 'Add New Repository' : 'Edit Repository'}
+      </AddWorkspaceHeader>
       <WorkspaceDetailsContainer>
         <WorkspaceInputContainer feature={true} style={{ color: repoNameError ? errcolor : '' }}>
           <WorkspaceLabel style={{ color: repoNameError ? errcolor : '' }}>
@@ -195,7 +225,7 @@ const AddRepo = (props: {
           </WorkspaceLabel>
           <TextInput
             placeholder="Repository name"
-            value={repoName || name}
+            value={repoName}
             feature={true}
             data-testid="repo-name-input"
             onChange={handleRepoNameChange}
@@ -208,7 +238,7 @@ const AddRepo = (props: {
           </WorkspaceLabel>
           <TextInput
             placeholder="Repository url"
-            value={repoUrl || url}
+            value={repoUrl}
             feature={true}
             data-testid="repo-url-input"
             onChange={handleRepoUrlChange}
@@ -226,12 +256,14 @@ const AddRepo = (props: {
             Cancel
           </ActionButton>
           <ActionButton
-            disabled={repoNameError || !repoName || !repoUrl}
+            disabled={
+              repoNameError || !repoName || !repoUrl || (modalType === 'edit' && !hasChanges)
+            }
             data-testid="add-repo-btn"
             color="primary"
             onClick={handleSave}
           >
-            {isLoading ? <EuiLoadingSpinner size="m" /> : 'Save'}
+            {isLoading ? <EuiLoadingSpinner size="m" /> : modalType === 'add' ? 'Create' : 'Update'}
           </ActionButton>
           {modalType === 'edit' && (
             <ActionButton data-testid="delete-repo-btn" color="danger" onClick={handleDelete}>
