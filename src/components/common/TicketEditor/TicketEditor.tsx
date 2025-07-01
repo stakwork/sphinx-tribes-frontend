@@ -2,7 +2,14 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStores } from 'store';
-import { EuiGlobalToastList, EuiFlexGroup, EuiFlexItem, EuiPanel, EuiIcon } from '@elastic/eui';
+import {
+  EuiGlobalToastList,
+  EuiFlexGroup,
+  EuiFlexItem,
+  EuiPanel,
+  EuiIcon,
+  EuiLoadingSpinner
+} from '@elastic/eui';
 import { renderMarkdown } from 'people/utils/RenderMarkdown.tsx';
 import styled from 'styled-components';
 import history from 'config/history.ts';
@@ -292,8 +299,9 @@ const TicketEditor = observer(
     const [activeMode, setActiveMode] = useState<'preview' | 'edit'>('edit');
     const [isThinking, setIsThinking] = useState<'speed' | 'thinking'>('thinking');
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
-    const { main } = useStores();
+    const { chat, main } = useStores();
     const [isCreatingBounty, setIsCreatingBounty] = useState(false);
+    const [isStartingTask, setIsStartingTask] = useState(false);
     const [isOptionsMenuVisible, setIsOptionsMenuVisible] = useState(false);
     const [lastLogLine, setLastLogLine] = useState('');
     const ui = uiStore;
@@ -628,6 +636,55 @@ const TicketEditor = observer(
       }
     };
 
+    const handleStartTask = async () => {
+      if (isStartingTask) return;
+
+      setIsStartingTask(true);
+      try {
+        const newChat = await chat.createChat(workspaceUUID as string, 'New Chat');
+        const question = `${versionTicketData.name}\n\n${versionTicketData.description}`;
+
+        if (newChat && newChat.id) {
+          const sentMessage = await chat.sendMessage(
+            newChat.id,
+            question,
+            'gpt-4o',
+            websocketSessionId,
+            workspaceUUID,
+            'Build',
+            undefined
+          );
+          if (sentMessage) {
+            chat.addMessage(sentMessage);
+            setToasts([
+              {
+                id: `${Date.now()}-start-task-success`,
+                title: 'Task Started',
+                color: 'success',
+                text: 'Hive chat session started successfully!'
+              }
+            ]);
+          } else {
+            throw new Error('Failed to start task');
+          }
+
+          window.open(`/workspace/${workspaceUUID}/hivechat/${newChat.id}`, '_blank');
+        }
+      } catch (error) {
+        console.error('Error starting task:', error);
+        setToasts([
+          {
+            id: `${Date.now()}-start-task-error`,
+            title: 'Error',
+            color: 'danger',
+            text: 'Failed to start task. Please try again.'
+          }
+        ]);
+      } finally {
+        setIsStartingTask(false);
+      }
+    };
+
     const handleDeleteTicket = async () => {
       const success = await main.deleteTicket(ticketData.uuid);
       if (success) {
@@ -927,6 +984,14 @@ const TicketEditor = observer(
                   SW Run: {swwfLink}
                 </ActionButton>
               )}
+              <ActionButton
+                color="primary"
+                onClick={handleStartTask}
+                disabled={isStartingTask}
+                data-testid="start-task-btn"
+              >
+                {isStartingTask ? <EuiLoadingSpinner size="m" /> : 'Start Task'}
+              </ActionButton>
               <ActionButton
                 color="#49C998"
                 onClick={handleTicketBuilder}

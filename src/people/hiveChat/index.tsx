@@ -1094,7 +1094,7 @@ export const HiveChatView: React.FC = observer(() => {
 
   useEffect(() => {
     const checkForNewArtifacts = async () => {
-      if (!chatId || !isArtifactLoggingEnabled || messages?.length === 0) return;
+      if (!chatId || !isArtifactLoggingEnabled || !messages || messages.length === 0) return;
 
       const latestMessage = messages[messages.length - 1];
       if (latestMessage && latestMessage.id !== lastProcessedMessageId) {
