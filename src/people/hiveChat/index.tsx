@@ -1530,7 +1530,7 @@ export const HiveChatView: React.FC = observer(() => {
 
             <ChatBody>
               <ChatHistory ref={chatHistoryRef}>
-                {showSplash && messages.length === 0 && (
+                {showSplash && messages?.length === 0 && (
                   <SplashContainer>
                     <SplashScreen
                       user={{ alias: ui.meInfo?.owner_alias || 'User' }}
@@ -1538,7 +1538,7 @@ export const HiveChatView: React.FC = observer(() => {
                     />
                   </SplashContainer>
                 )}
-                {messages.map((msg: ChatMessage) => (
+                {messages?.map((msg: ChatMessage) => (
                   <React.Fragment key={msg.id}>
                     <MessageBubble isUser={msg.role === 'user'}>
                       {renderMarkdown(msg.message, {
