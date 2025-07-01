@@ -104,45 +104,49 @@ export class ChatHistoryStore implements ChatStore {
   }
 
   addArtifact(artifact: Artifact) {
-    const messageId = artifact.messageId || artifact.message_id;
+    try {
+      const messageId = artifact.messageId || artifact.message_id;
 
-    if (!messageId) {
-      console.error('Artifact is missing messageId:', artifact);
-      return;
-    }
-
-    this.artifacts.set(artifact.id, artifact);
-
-    if (!this.messageArtifacts[messageId]) {
-      this.messageArtifacts[messageId] = [];
-    }
-
-    const isDuplicate = this.messageArtifacts[messageId].some(
-      (a: Artifact) => a.id === artifact.id
-    );
-
-    if (!isDuplicate) {
-      this.messageArtifacts[messageId].push(artifact);
-    }
-
-    const message = this.findMessageById(messageId);
-    if (message?.chatId) {
-      const { chatId } = message;
-
-      if (!this.chatArtifacts[chatId]) {
-        this.chatArtifacts[chatId] = [];
+      if (!messageId) {
+        console.error('Artifact is missing messageId:', artifact);
+        return;
       }
 
-      const isDuplicateInChat = this.chatArtifacts[chatId].some(
+      this.artifacts.set(artifact.id, artifact);
+
+      if (!this.messageArtifacts[messageId]) {
+        this.messageArtifacts[messageId] = [];
+      }
+
+      const isDuplicate = this.messageArtifacts[messageId].some(
         (a: Artifact) => a.id === artifact.id
       );
 
-      if (!isDuplicateInChat) {
-        this.chatArtifacts = {
-          ...this.chatArtifacts,
-          [chatId]: [...this.chatArtifacts[chatId], artifact]
-        };
+      if (!isDuplicate) {
+        this.messageArtifacts[messageId].push(artifact);
       }
+
+      const message = this.findMessageById(messageId);
+      if (message?.chatId) {
+        const { chatId } = message;
+
+        if (!this.chatArtifacts[chatId]) {
+          this.chatArtifacts[chatId] = [];
+        }
+
+        const isDuplicateInChat = this.chatArtifacts[chatId].some(
+          (a: Artifact) => a.id === artifact.id
+        );
+
+        if (!isDuplicateInChat) {
+          this.chatArtifacts = {
+            ...this.chatArtifacts,
+            [chatId]: [...this.chatArtifacts[chatId], artifact]
+          };
+        }
+      }
+    } catch (error) {
+      console.error('Error adding Artifact:', error);
     }
   }
 
