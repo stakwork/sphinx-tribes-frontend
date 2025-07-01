@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/typedef */
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useParams } from 'react-router-dom';
 import { ChatMessage, Artifact, TextContent, SSEMessage, APIResponse } from 'store/interface';
@@ -1064,23 +1064,27 @@ export const HiveChatView: React.FC = observer(() => {
         if (textArtifacts) {
           setTextArtifact(textArtifacts);
         }
-
-        const systemMessages = messages?.filter((msg) => msg.role !== 'user');
-        const lastSystemMessageId =
-          systemMessages?.length > 0 ? systemMessages[systemMessages.length - 1].id : null;
-
-        if (lastSystemMessageId) {
-          const artifacts = chat.getMessageArtifacts(lastSystemMessageId);
-          for (const artifact of artifacts) {
-            if (artifact.type === 'action' && chat.isActionContent(artifact.content)) {
-              setActionArtifact(artifact);
-            }
-          }
-        }
       }
     };
     logArtifacts();
-  }, [chat, chatId, isArtifactLoggingEnabled, main, messages]);
+  }, [chat, chatId, isArtifactLoggingEnabled, main]);
+
+  useEffect(() => {
+    if (!messages || messages.length === 0) return;
+
+    const systemMessages = messages.filter((msg) => msg.role !== 'user');
+    const lastSystemMessageId =
+      systemMessages.length > 0 ? systemMessages[systemMessages.length - 1].id : null;
+
+    if (lastSystemMessageId) {
+      const artifacts = chat.getMessageArtifacts(lastSystemMessageId);
+      for (const artifact of artifacts) {
+        if (artifact.type === 'action' && chat.isActionContent(artifact.content)) {
+          setActionArtifact(artifact);
+        }
+      }
+    }
+  }, [messages, chat]);
 
   useEffect(() => {
     const processArtifacts = () => {
@@ -1092,75 +1096,79 @@ export const HiveChatView: React.FC = observer(() => {
     processArtifacts();
   }, []);
 
+  const latestMessage = useMemo(() => {
+    if (!messages || messages.length === 0) return null;
+    return messages[messages.length - 1];
+  }, [messages]);
+
   useEffect(() => {
     const checkForNewArtifacts = async () => {
-      if (!chatId || !isArtifactLoggingEnabled || !messages || messages.length === 0) return;
+      if (!chatId || !isArtifactLoggingEnabled || !latestMessage) return;
 
-      const latestMessage = messages[messages.length - 1];
-      if (latestMessage && latestMessage.id !== lastProcessedMessageId) {
-        setLastProcessedMessageId(latestMessage.id);
+      if (latestMessage.id === lastProcessedMessageId) return;
 
-        const res = await chat.loadArtifactsForChat(chatId);
+      setLastProcessedMessageId(latestMessage.id);
 
-        if (!res) return;
+      const res = await chat.loadArtifactsForChat(chatId);
 
-        const messageArtifacts = res.filter((artifact) => artifact.message_id === latestMessage.id);
+      if (!res) return;
 
-        const hasVisualUpdates = messageArtifacts.some(
-          (artifact) =>
-            artifact.type === 'visual' &&
-            artifact.content &&
-            'visual_type' in artifact.content &&
-            artifact.content.visual_type === 'screen'
-        );
+      const messageArtifacts = res.filter((artifact) => artifact.message_id === latestMessage.id);
 
-        const hasCodeUpdates = messageArtifacts.some(
-          (artifact) =>
-            artifact.type === 'text' &&
-            artifact.content &&
-            'text_type' in artifact.content &&
-            artifact.content.text_type === 'code'
-        );
+      const hasVisualUpdates = messageArtifacts.some(
+        (artifact) =>
+          artifact.type === 'visual' &&
+          artifact.content &&
+          'visual_type' in artifact.content &&
+          artifact.content.visual_type === 'screen'
+      );
 
-        const hasTextUpdates = messageArtifacts.some(
-          (artifact) =>
-            artifact.type === 'text' &&
-            artifact.content &&
-            'text_type' in artifact.content &&
-            artifact.content.text_type !== 'code' &&
-            artifact.content.text_type !== 'sse_logs'
-        );
+      const hasCodeUpdates = messageArtifacts.some(
+        (artifact) =>
+          artifact.type === 'text' &&
+          artifact.content &&
+          'text_type' in artifact.content &&
+          artifact.content.text_type === 'code'
+      );
 
-        const hasLogUpdates = messageArtifacts.some(
-          (artifact) =>
-            artifact.type === 'text' &&
-            artifact.content &&
-            'text_type' in artifact.content &&
-            artifact.content.text_type === 'sse_logs'
-        );
+      const hasTextUpdates = messageArtifacts.some(
+        (artifact) =>
+          artifact.type === 'text' &&
+          artifact.content &&
+          'text_type' in artifact.content &&
+          artifact.content.text_type !== 'code' &&
+          artifact.content.text_type !== 'sse_logs'
+      );
 
-        setUpdatedTabs({
-          logs: hasLogUpdates,
-          code: hasCodeUpdates,
-          visual: hasVisualUpdates,
-          text: hasTextUpdates
-        });
+      const hasLogUpdates = messageArtifacts.some(
+        (artifact) =>
+          artifact.type === 'text' &&
+          artifact.content &&
+          'text_type' in artifact.content &&
+          artifact.content.text_type === 'sse_logs'
+      );
 
-        const availableTabs = [
-          hasLogUpdates ? 'logs' : null,
-          hasCodeUpdates ? 'code' : null,
-          hasVisualUpdates ? 'screen' : null,
-          hasTextUpdates ? 'text' : null
-        ].filter(Boolean) as ('visual' | 'code' | 'text' | 'logs')[];
+      setUpdatedTabs({
+        logs: hasLogUpdates,
+        code: hasCodeUpdates,
+        visual: hasVisualUpdates,
+        text: hasTextUpdates
+      });
 
-        if (availableTabs?.length > 0 && !availableTabs.includes(artifactTab)) {
-          setArtifactTab(availableTabs[0]);
-        }
+      const availableTabs = [
+        hasLogUpdates ? 'logs' : null,
+        hasCodeUpdates ? 'code' : null,
+        hasVisualUpdates ? 'screen' : null,
+        hasTextUpdates ? 'text' : null
+      ].filter(Boolean) as ('visual' | 'code' | 'text' | 'logs')[];
+
+      if (availableTabs?.length > 0 && !availableTabs.includes(artifactTab)) {
+        setArtifactTab(availableTabs[0]);
       }
     };
 
     checkForNewArtifacts();
-  }, [chat, chatId, isArtifactLoggingEnabled, messages, lastProcessedMessageId, artifactTab]);
+  }, [chat, chatId, isArtifactLoggingEnabled, lastProcessedMessageId, artifactTab, latestMessage]);
 
   const handleUploadComplete = (url: string) => {
     setPdfUrl(url);
