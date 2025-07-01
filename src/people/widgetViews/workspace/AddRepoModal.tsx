@@ -257,20 +257,13 @@ const AddRepo = (props: {
           </ActionButton>
           <ActionButton
             disabled={
-              repoNameError || 
-              !repoName || 
-              !repoUrl || 
-              (modalType === 'edit' && !hasChanges)
+              repoNameError || !repoName || !repoUrl || (modalType === 'edit' && !hasChanges)
             }
             data-testid="add-repo-btn"
             color="primary"
             onClick={handleSave}
           >
-            {isLoading ? (
-              <EuiLoadingSpinner size="m" />
-            ) : (
-              modalType === 'add' ? 'Create' : 'Update'
-            )}
+            {isLoading ? <EuiLoadingSpinner size="m" /> : modalType === 'add' ? 'Create' : 'Update'}
           </ActionButton>
           {modalType === 'edit' && (
             <ActionButton data-testid="delete-repo-btn" color="danger" onClick={handleDelete}>
