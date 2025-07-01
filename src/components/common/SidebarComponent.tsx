@@ -363,6 +363,7 @@ const LogoutButton = styled.button<{ collapsed: boolean }>`
 const LogoutButtonText = styled.span<{ collapsed: boolean }>`
   display: ${({ collapsed }) => (collapsed ? 'none' : 'inline')};
   white-space: nowrap;
+  font-size: 17px;
 `;
 
 interface SidebarComponentProps {
