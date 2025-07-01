@@ -826,7 +826,7 @@ const WorkspaceMission = () => {
               zIndex: 20,
               maxHeight: '100%',
               borderRadius: '10px',
-              minWidth: isMobile ? '100%' : '25%',
+              minWidth: isMobile ? '100%' : '30%',
               minHeight: isMobile ? '100%' : '20%'
             }}
             overlayClick={closeRepoModal}
@@ -861,7 +861,7 @@ const WorkspaceMission = () => {
               zIndex: 20,
               maxHeight: '100%',
               borderRadius: '10px',
-              minWidth: isMobile ? '100%' : '25%',
+              minWidth: isMobile ? '100%' : '40%',
               minHeight: isMobile ? '100%' : '20%'
             }}
             overlayClick={toggleSchematicModal}
@@ -894,7 +894,7 @@ const WorkspaceMission = () => {
               zIndex: 20,
               maxHeight: '100%',
               borderRadius: '10px',
-              minWidth: isMobile ? '100%' : '30%',
+              minWidth: isMobile ? '100%' : '40%',
               minHeight: isMobile ? '100%' : '20%'
             }}
             overlayClick={closeCodeGraphModal}
@@ -930,7 +930,7 @@ const WorkspaceMission = () => {
               zIndex: 20,
               maxHeight: '100%',
               borderRadius: '10px',
-              minWidth: isMobile ? '100%' : '30%',
+              minWidth: isMobile ? '100%' : '40%',
               minHeight: isMobile ? '100%' : '20%'
             }}
             overlayClick={closeFeatureCallModal}
@@ -1007,7 +1007,7 @@ const WorkspaceMission = () => {
               zIndex: 20,
               maxHeight: '100%',
               borderRadius: '10px',
-              minWidth: isMobile ? '100%' : '30%',
+              minWidth: isMobile ? '100%' : '40%',
               minHeight: isMobile ? '100%' : '20%'
             }}
             overlayClick={closeChatWorkflowModal}
@@ -1040,7 +1040,7 @@ const WorkspaceMission = () => {
               zIndex: 20,
               maxHeight: '100%',
               borderRadius: '10px',
-              minWidth: isMobile ? '100%' : '30%',
+              minWidth: isMobile ? '100%' : '40%',
               minHeight: isMobile ? '100%' : '20%'
             }}
             overlayClick={closeCodeSpaceModal}
