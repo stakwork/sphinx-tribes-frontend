@@ -106,6 +106,17 @@ export const ActionArtifactRenderer: React.FC<ActionArtifactRendererProps> = obs
       (a: Artifact) => a.type === 'action' && chat.isActionContent(a.content)
     );
 
+    useEffect(() => {
+      if (isActionCompleted) {
+        setIsActionSend(false);
+      }
+    }, [isActionCompleted, setIsActionSend]);
+
+    if (!actionArtifact || !chat.isActionContent(actionArtifact.content)) {
+      return null;
+    }
+
+    console.log("actionArtifact", actionArtifact)
     const content = actionArtifact.content as ActionContent;
 
     const hasButtonOptions =
@@ -115,16 +126,6 @@ export const ActionArtifactRenderer: React.FC<ActionArtifactRendererProps> = obs
       content.options && content.options.some((option) => option.action_type === 'chat');
 
     if (!hasButtonOptions && !hasChatOptions) {
-      return null;
-    }
-
-    useEffect(() => {
-      if (isActionCompleted) {
-        setIsActionSend(false);
-      }
-    }, [isActionCompleted, setIsActionSend]);
-
-    if (!actionArtifact || !chat.isActionContent(actionArtifact.content)) {
       return null;
     }
 
