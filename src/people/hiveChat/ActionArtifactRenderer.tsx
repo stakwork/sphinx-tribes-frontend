@@ -118,10 +118,6 @@ export const ActionArtifactRenderer: React.FC<ActionArtifactRendererProps> = obs
     const hasChatOptions =
       content.options && content.options.some((option) => option.action_type === 'chat');
 
-    if (!hasButtonOptions && !hasChatOptions) {
-      return null;
-    }
-
     useEffect(() => {
       if (isActionCompleted) {
         setIsActionSend(false);
@@ -165,6 +161,10 @@ export const ActionArtifactRenderer: React.FC<ActionArtifactRendererProps> = obs
         }
       }
     };
+
+    if (!hasButtonOptions && !hasChatOptions) {
+      return null;
+    }
 
     const shouldAnimate =
       (hasButtonOptions || hasChatOptions) && !hasInteracted && !isActionCompleted && !isSending;
