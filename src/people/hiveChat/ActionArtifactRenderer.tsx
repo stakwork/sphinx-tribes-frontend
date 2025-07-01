@@ -106,10 +106,17 @@ export const ActionArtifactRenderer: React.FC<ActionArtifactRendererProps> = obs
       (a: Artifact) => a.type === 'action' && chat.isActionContent(a.content)
     );
 
+    useEffect(() => {
+      if (isActionCompleted) {
+        setIsActionSend(false);
+      }
+    }, [isActionCompleted, setIsActionSend]);
+
     if (!actionArtifact || !chat.isActionContent(actionArtifact.content)) {
       return null;
     }
 
+    console.log("actionArtifact", actionArtifact)
     const content = actionArtifact.content as ActionContent;
 
     const hasButtonOptions =
@@ -121,12 +128,6 @@ export const ActionArtifactRenderer: React.FC<ActionArtifactRendererProps> = obs
     if (!hasButtonOptions && !hasChatOptions) {
       return null;
     }
-
-    useEffect(() => {
-      if (isActionCompleted) {
-        setIsActionSend(false);
-      }
-    }, [isActionCompleted, setIsActionSend]);
 
     const handleButtonClick = async (option: Option) => {
       if (isSending || isActionCompleted) return;
