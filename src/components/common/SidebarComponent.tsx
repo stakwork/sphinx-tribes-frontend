@@ -618,7 +618,7 @@ export default function SidebarComponent({
   };
 
   const handleCodeGraphClick = () => {
-    history.push(`/workspace/${uuid}/code_graph`);
+    history.push(`/workspace/${uuid}/codegraph`);
   };
 
   const handleKanbanClick = () => {
@@ -818,7 +818,7 @@ export default function SidebarComponent({
       </NavItem>
 
       <NavItem
-        active={window.location.pathname.includes('code_graph')}
+        active={window.location.pathname.includes('codegraph')}
         onClick={handleCodeGraphClick}
         collapsed={collapsed}
         onMouseEnter={(e) => handleMouseEnter(e, 'codegraph')}
