@@ -7,7 +7,7 @@ import { useBountyCardStore } from 'store/bountyCard';
 import { userHasRole } from 'helpers';
 import MaterialIcon from '@material/react-material-icon';
 import { Body } from 'pages/tickets/style';
-import { RestrictedAccess } from 'components/common';
+import { RestrictedAccess } from 'components/common/RestrictedAccess';
 import { BountyCard, BountyCardStatus } from 'store/interface';
 import history from 'config/history';
 import { autorun } from 'mobx';

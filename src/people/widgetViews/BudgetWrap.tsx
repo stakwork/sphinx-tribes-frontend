@@ -11,7 +11,7 @@ import {
 import { satToUsd, userHasRole } from 'helpers';
 import { useStores } from 'store';
 import { EuiFlexGrid, EuiFlexItem, useIsWithinBreakpoints, EuiIcon } from '@elastic/eui';
-import { RestrictedAccess } from 'components/common';
+import { RestrictedAccess } from 'components/common/RestrictedAccess';
 import { Link, useRouteMatch } from 'react-router-dom';
 import { Button } from 'components/common';
 import { useLocalStorage } from 'hooks/useLocalStorage';
