@@ -158,12 +158,6 @@ const UserTickets = () => {
             <WantedView
               colors={color}
               showName
-              onPanelClick={(e: any) => {
-                e.preventDefault();
-                onPanelClick(body.id);
-                ui.setBountyPerson(person?.id);
-                setBountyOwner(person);
-              }}
               person={person}
               showModal={showModal}
               setDeletePayload={setDeletePayload}
