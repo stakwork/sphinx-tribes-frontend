@@ -1,6 +1,11 @@
 import React from 'react';
 import MaterialIcon from '@material/react-material-icon';
-import { FullNoBudgetWrap, FullNoBudgetText, NoBudgetWrap, NoBudgetText } from 'people/widgetViews/workspace/style';
+import {
+  FullNoBudgetWrap,
+  FullNoBudgetText,
+  NoBudgetWrap,
+  NoBudgetText
+} from 'people/widgetViews/workspace/style';
 
 interface RestrictedAccessProps {
   /** Whether access is restricted/disabled */
@@ -21,7 +26,8 @@ interface RestrictedAccessProps {
 
 const DEFAULT_MESSAGES = {
   page: 'You have restricted permissions and you are unable to view this page. Reach out to the workspace admin to get them updated.',
-  budget: 'You have restricted permissions and are unable to view the budget. Reach out to the workspace admin to get them updated.'
+  budget:
+    'You have restricted permissions and are unable to view the budget. Reach out to the workspace admin to get them updated.'
 };
 
 const DEFAULT_ICON_STYLE = {
@@ -45,7 +51,7 @@ export const RestrictedAccess: React.FC<RestrictedAccessProps> = ({
 
   const WrapperComponent = variant === 'full' ? FullNoBudgetWrap : NoBudgetWrap;
   const TextComponent = variant === 'full' ? FullNoBudgetText : NoBudgetText;
-  
+
   const finalMessage = message || DEFAULT_MESSAGES[context];
   const finalIconStyle = { ...DEFAULT_ICON_STYLE, ...iconStyle };
 

@@ -496,9 +496,7 @@ const FeatureBacklogView = observer(() => {
   }
 
   if (editWorkspaceDisabled) {
-    return (
-      <RestrictedAccess isRestricted={true} variant="full" context="page" />
-    );
+    return <RestrictedAccess isRestricted={true} variant="full" context="page" />;
   }
 
   return (
