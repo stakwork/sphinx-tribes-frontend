@@ -14,7 +14,9 @@ import { userHasRole } from 'helpers';
 
 const MainContainer = styled.div<{ collapsed: boolean }>`
   flex-grow: 1;
-  transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
+  transition:
+    margin-left 0.3s ease-in-out,
+    width 0.3s ease-in-out;
   margin-left: ${({ collapsed }) => (collapsed ? '50px' : '250px')};
   overflow: hidden;
 `;

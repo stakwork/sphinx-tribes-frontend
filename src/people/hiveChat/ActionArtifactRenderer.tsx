@@ -116,7 +116,7 @@ export const ActionArtifactRenderer: React.FC<ActionArtifactRendererProps> = obs
       return null;
     }
 
-    console.log("actionArtifact", actionArtifact)
+    console.log('actionArtifact', actionArtifact);
     const content = actionArtifact.content as ActionContent;
 
     const hasButtonOptions =
