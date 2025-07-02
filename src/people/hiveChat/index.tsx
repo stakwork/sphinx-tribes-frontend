@@ -11,6 +11,7 @@ import styled from 'styled-components';
 import { EuiLoadingSpinner } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
 import { chatHistoryStore } from 'store/chat.ts';
+import Tooltip from 'components/common/Tooltip';
 import { renderMarkdown } from '../utils/RenderMarkdown.tsx';
 import { UploadModal } from '../../components/UploadModal';
 import { useFeatureFlag, useBrowserTabTitle } from '../../hooks';
@@ -1504,9 +1505,11 @@ export const HiveChatView: React.FC = observer(() => {
                     Save
                   </SendButton>
                 )}
-                <AddButton onClick={() => handleNewChat()} disabled={isUpdatingTitle}>
-                  <MaterialIcon icon="add" style={{ fontSize: '16px', color: '#5f6368' }} />
-                </AddButton>
+                <Tooltip text="New Chat" position="right">
+                  <AddButton onClick={() => handleNewChat()} disabled={isUpdatingTitle}>
+                    <MaterialIcon icon="add" style={{ fontSize: '16px', color: '#5f6368' }} />
+                  </AddButton>
+                </Tooltip>
                 {isMinimized && (
                   <AddButton onClick={handleRestore} title="Show Artifacts">
                     <MaterialIcon
