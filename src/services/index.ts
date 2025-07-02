@@ -220,7 +220,8 @@ export class ChatService {
     contextTags?: ContextTag[],
     pdfUrl?: string,
     modelSelection?: string,
-    actionArtifact?: Artifact
+    actionArtifact?: Artifact,
+    simultaneousAttempts?: number
   ): Promise<ChatMessage | undefined> {
     try {
       if (!uiStore.meInfo) return undefined;
@@ -235,7 +236,8 @@ export class ChatService {
         workspaceUUID,
         pdf_url: pdfUrl,
         modelSelection,
-        mode
+        mode,
+        simultaneous_attempts: simultaneousAttempts || 1
       };
 
       if (

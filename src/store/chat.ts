@@ -360,6 +360,7 @@ export class ChatHistoryStore implements ChatStore {
     contextTags?: ContextTag[],
     pdfUrl?: string,
     actionArtifact?: Artifact,
+    simultaneousAttempts?: number,
     artifacts?: Artifact[]
   ): Promise<ChatMessage | undefined> {
     try {
@@ -372,7 +373,8 @@ export class ChatHistoryStore implements ChatStore {
         contextTags,
         pdfUrl,
         modelSelection,
-        actionArtifact
+        actionArtifact,
+        simultaneousAttempts
       );
       if (newMessage) {
         if (!this.chatMessages[chat_id]) {
