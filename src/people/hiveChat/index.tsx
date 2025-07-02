@@ -308,6 +308,47 @@ const AttachIcon = styled(MaterialIcon)`
   margin-right: 2px;
 `;
 
+const SimultaneousAttemptsContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 12px;
+`;
+
+const SimultaneousAttemptsDropdown = styled.select`
+  padding: 8px 12px;
+  border: 2px solid #848484;
+  border-radius: 8px;
+  background: white;
+  font-size: 14px;
+  font-weight: 500;
+  color: #5f6368;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+  min-width: 60px;
+
+  &:hover {
+    border-color: #4285f4;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: #4285f4;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    border-color: #e4e7eb;
+    color: #9aa0a6;
+  }
+`;
+
+const SimultaneousAttemptsIcon = styled(MaterialIcon)`
+  font-size: 18px;
+  color: #5f6368;
+`;
+
 const TabContainer = styled.div`
   display: flex;
   margin-left: 10px;
@@ -593,6 +634,7 @@ export const HiveChatView: React.FC = observer(() => {
     label: 'Open AI - 4o',
     value: 'gpt-4o'
   });
+  const [simultaneousAttempts, setSimultaneousAttempts] = useState<number>(1);
   const [artifactTab, setArtifactTab] = useState<'visual' | 'code' | 'text' | 'logs'>('logs');
   const [updatedTabs, setUpdatedTabs] = useState<Record<string, boolean>>({
     logs: false,
@@ -794,7 +836,8 @@ export const HiveChatView: React.FC = observer(() => {
         'Build',
         undefined,
         pdfUrl,
-        actionArtifact
+        actionArtifact,
+        simultaneousAttempts
       );
 
       if (sentMessage === undefined) {
@@ -1206,7 +1249,8 @@ export const HiveChatView: React.FC = observer(() => {
         'Build',
         undefined,
         pdfUrl,
-        actionArtifact
+        actionArtifact,
+        simultaneousAttempts
       );
 
       if (sentMessage) {
@@ -1603,6 +1647,19 @@ export const HiveChatView: React.FC = observer(() => {
                   placeholder="Type your message..."
                   disabled={isSending}
                 />
+                <SimultaneousAttemptsContainer>
+                  <SimultaneousAttemptsIcon icon="tune" />
+                  <SimultaneousAttemptsDropdown
+                    value={simultaneousAttempts}
+                    onChange={(e) => setSimultaneousAttempts(Number(e.target.value))}
+                    disabled={isSending}
+                    title="Simultaneous Attempts"
+                  >
+                    <option value={1}>1</option>
+                    <option value={2}>2</option>
+                    <option value={3}>3</option>
+                  </SimultaneousAttemptsDropdown>
+                </SimultaneousAttemptsContainer>
                 {isPdfUploadEnabled && (
                   <AttachButton onClick={() => setIsUploadModalOpen(true)} disabled={isSending}>
                     Attach
