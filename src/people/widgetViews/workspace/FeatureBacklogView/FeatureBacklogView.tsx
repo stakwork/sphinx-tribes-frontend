@@ -11,6 +11,7 @@ import { toCapitalize } from 'helpers/helpers-extended';
 import { DropResult } from 'react-beautiful-dnd';
 import { useStores } from 'store';
 import { userHasRole } from 'helpers';
+import { RestrictedAccess } from 'components/common/RestrictedAccess';
 import { Body } from 'pages/tickets/style';
 import { EuiLoadingSpinner } from '@elastic/eui';
 import ActivitiesHeader from '../HiveFeaturesView/header';
