@@ -11,6 +11,7 @@ import { toCapitalize } from 'helpers/helpers-extended';
 import { DropResult } from 'react-beautiful-dnd';
 import { useStores } from 'store';
 import { userHasRole } from 'helpers';
+import { RestrictedAccess } from 'components/common/RestrictedAccess';
 import { Body } from 'pages/tickets/style';
 import { EuiLoadingSpinner } from '@elastic/eui';
 import ActivitiesHeader from '../HiveFeaturesView/header';
@@ -495,22 +496,7 @@ const FeatureBacklogView = observer(() => {
   }
 
   if (editWorkspaceDisabled) {
-    return (
-      <FullNoBudgetWrap>
-        <MaterialIcon
-          icon={'lock'}
-          style={{
-            fontSize: 30,
-            cursor: 'pointer',
-            color: '#ccc'
-          }}
-        />
-        <FullNoBudgetText>
-          You have restricted permissions and you are unable to view this page. Reach out to the
-          workspace admin to get them updated.
-        </FullNoBudgetText>
-      </FullNoBudgetWrap>
-    );
+    return <RestrictedAccess isRestricted={true} variant="full" context="page" />;
   }
 
   return (
