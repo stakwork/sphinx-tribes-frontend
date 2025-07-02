@@ -11,6 +11,7 @@ import {
 import { satToUsd, userHasRole } from 'helpers';
 import { useStores } from 'store';
 import { EuiFlexGrid, EuiFlexItem, useIsWithinBreakpoints, EuiIcon } from '@elastic/eui';
+import { RestrictedAccess } from 'components/common';
 import { Link, useRouteMatch } from 'react-router-dom';
 import { Button } from 'components/common';
 import { useLocalStorage } from 'hooks/useLocalStorage';
@@ -233,20 +234,7 @@ export const BudgetWrapComponent = (props: { org: Workspace | undefined; uuid: s
       </ActionWrap>
       <BudgetWrap>
         {viewReportDisabled ? (
-          <NoBudgetWrap>
-            <MaterialIcon
-              icon={'lock'}
-              style={{
-                fontSize: 30,
-                cursor: 'pointer',
-                color: '#ccc'
-              }}
-            />
-            <NoBudgetText>
-              You have restricted permissions and are unable to view the budget. Reach out to the
-              workspace admin to get them updated.
-            </NoBudgetText>
-          </NoBudgetWrap>
+          <RestrictedAccess isRestricted={true} variant="compact" context="budget" />
         ) : (
           <BudgetStatsWrap>
             <EuiFlexGrid responsive={true} columns={isMobile ? 2 : 4}>
