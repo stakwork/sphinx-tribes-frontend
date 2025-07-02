@@ -496,20 +496,7 @@ const FeatureBacklogView = observer(() => {
 
   if (editWorkspaceDisabled) {
     return (
-      <FullNoBudgetWrap>
-        <MaterialIcon
-          icon={'lock'}
-          style={{
-            fontSize: 30,
-            cursor: 'pointer',
-            color: '#ccc'
-          }}
-        />
-        <FullNoBudgetText>
-          You have restricted permissions and you are unable to view this page. Reach out to the
-          workspace admin to get them updated.
-        </FullNoBudgetText>
-      </FullNoBudgetWrap>
+      <RestrictedAccess isRestricted={true} variant="full" context="page" />
     );
   }
 

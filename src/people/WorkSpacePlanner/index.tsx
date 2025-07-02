@@ -7,6 +7,7 @@ import { useBountyCardStore } from 'store/bountyCard';
 import { userHasRole } from 'helpers';
 import MaterialIcon from '@material/react-material-icon';
 import { Body } from 'pages/tickets/style';
+import { RestrictedAccess } from 'components/common';
 import { BountyCard, BountyCardStatus } from 'store/interface';
 import history from 'config/history';
 import { autorun } from 'mobx';
@@ -255,20 +256,7 @@ const WorkspacePlanner = observer(() => {
       <Body
         style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}
       >
-        <FullNoBudgetWrap>
-          <MaterialIcon
-            icon={'lock'}
-            style={{
-              fontSize: 30,
-              cursor: 'pointer',
-              color: '#ccc'
-            }}
-          />
-          <FullNoBudgetText>
-            You have restricted permissions and you are unable to view this page. Reach out to the
-            workspace admin to get them updated.
-          </FullNoBudgetText>
-        </FullNoBudgetWrap>
+        <RestrictedAccess isRestricted={true} variant="full" context="page" />
       </Body>
     );
   }
