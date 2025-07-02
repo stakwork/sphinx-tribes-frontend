@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import MaterialIcon from '@material/react-material-icon';
 
@@ -9,122 +9,123 @@ interface SimultaneousAttemptsSelectorProps {
 }
 
 const Container = styled.div`
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 8px;
   margin-right: 12px;
-  position: relative;
-  background-color: #f7f9fc;
+`;
+
+const DropdownButton = styled.button<{ disabled?: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 8px 8px 16px;
+  background: transparent;
+  border: 1px solid #5f6368;
   border-radius: 8px;
-  padding: 2px 8px;
-  border: 1px solid #e0e4e8;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background-color: #eef2f7;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  }
-
-  &:focus-within {
-    border-color: #4285f4;
-    box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
-  }
-`;
-
-const Label = styled.span`
-  font-size: 12px;
   color: #5f6368;
-  white-space: nowrap;
-  font-weight: 500;
-  user-select: none;
-  display: none;
-
-  @media (min-width: 768px) {
-    display: block;
-  }
-`;
-
-const Dropdown = styled.select`
-  padding: 6px 10px;
-  border: 2px solid transparent;
-  border-radius: 6px;
-  background: white;
+  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
   font-size: 14px;
   font-weight: 500;
-  color: #3c4043;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  min-width: 45px;
-  appearance: none;
-  text-align: center;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s;
+  height: fit-content;
+  align-self: center;
 
-  &:hover {
-    background-color: #f5f8ff;
-  }
-
-  &:focus {
-    outline: none;
+  &:hover:not(:disabled) {
+    background: rgba(95, 99, 104, 0.1);
     border-color: #4285f4;
-    box-shadow: 0 1px 3px rgba(66, 133, 244, 0.3);
   }
 
   &:disabled {
     opacity: 0.6;
-    cursor: not-allowed;
-    background-color: #f1f3f4;
+    border-color: #e4e7eb;
     color: #9aa0a6;
   }
 `;
 
 const Icon = styled(MaterialIcon)`
-  font-size: 18px;
-  color: #4285f4;
-  margin-right: -2px;
+  font-size: 16px;
+  margin-right: 4px;
 `;
 
-const DropdownWrapper = styled.div`
-  position: relative;
-  display: flex;
-  align-items: center;
+const NumberText = styled.span`
+  font-size: 14px;
+  margin-right: 4px;
 `;
 
 const ArrowIcon = styled(MaterialIcon)`
   font-size: 16px;
-  color: #5f6368;
-  position: absolute;
-  right: 6px;
-  pointer-events: none;
 `;
 
-const Tooltip = styled.div<{ visible: boolean }>`
+const DropdownMenu = styled.div<{ visible: boolean }>`
   position: absolute;
-  top: -40px;
-  left: 50%;
-  transform: translateX(-50%) translateY(${(props) => (props.visible ? '0' : '5px')});
-  background-color: rgba(32, 33, 36, 0.9);
-  color: white;
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-size: 12px;
-  white-space: nowrap;
-  visibility: ${(props) => (props.visible ? 'visible' : 'hidden')};
-  opacity: ${(props) => (props.visible ? 1 : 0)};
-  transition: all 0.2s ease;
+  bottom: calc(100% + 4px);
+  left: 0;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   z-index: 100;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  max-width: 250px;
-  text-align: center;
+  opacity: ${(props) => (props.visible ? 1 : 0)};
+  visibility: ${(props) => (props.visible ? 'visible' : 'hidden')};
+  transform: translateY(${(props) => (props.visible ? '0' : '10px')});
+  transition: all 0.2s ease;
+  width: 100%;
+  min-width: 120px;
+`;
 
-  &:after {
+const MenuItem = styled.div<{ active?: boolean }>`
+  padding: 10px 16px;
+  color: #3c4043;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+  background-color: ${(props) => (props.active ? '#f1f3f6' : 'transparent')};
+  display: flex;
+  align-items: center;
+
+  &:hover {
+    background-color: #f5f8ff;
+  }
+`;
+
+const Checkmark = styled(MaterialIcon)`
+  margin-left: auto;
+  font-size: 18px;
+  color: #4285f4;
+`;
+
+const Tooltip = styled.div<{ visible: boolean; top: number; left: number }>`
+  position: fixed;
+  left: ${(props) => props.left}px;
+  top: ${(props) => props.top}px;
+  background: rgba(31, 41, 55, 0.95);
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 500;
+  max-width: 200px;
+  opacity: ${(props) => (props.visible ? 1 : 0)};
+  visibility: ${(props) => (props.visible ? 'visible' : 'hidden')};
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  z-index: 1000;
+  transform: translateX(-50%) translateY(-100%) translateY(-8px);
+
+  &::after {
     content: '';
     position: absolute;
-    top: 100%;
     left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
+    bottom: -8px;
+    transform: translateX(-50%);
+    border-width: 8px 8px 0 8px;
     border-style: solid;
-    border-color: rgba(32, 33, 36, 0.9) transparent transparent transparent;
+    border-color: rgba(31, 41, 55, 0.95) transparent transparent transparent;
   }
 `;
 
@@ -133,30 +134,90 @@ const SimultaneousAttemptsSelector: React.FC<SimultaneousAttemptsSelectorProps> 
   onChange,
   disabled = false
 }) => {
+  const [showMenu, setShowMenu] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
+  const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    onChange(Number(e.target.value));
+  const handleSelect = (selectedValue: number) => {
+    if (!disabled) {
+      onChange(selectedValue);
+      setShowMenu(false);
+    }
   };
 
+  const toggleMenu = () => {
+    if (!disabled) {
+      setShowMenu(!showMenu);
+    }
+  };
+
+  const handleMouseEnter = () => {
+    if (buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setTooltipPosition({
+        top: rect.top - 8,
+        left: rect.left + rect.width / 2
+      });
+      setShowTooltip(true);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setShowTooltip(false);
+  };
+
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        showMenu &&
+        !event
+          .composedPath()
+          .some((el) => el instanceof Element && el.classList.contains('dropdown-area'))
+      ) {
+        setShowMenu(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [showMenu]);
+
   return (
-    <Container onMouseEnter={() => setShowTooltip(true)} onMouseLeave={() => setShowTooltip(false)}>
-      <Tooltip visible={showTooltip}>Number of simultaneous attempts</Tooltip>
-      <Icon icon="tune" />
-      <Label>Parallelism</Label>
-      <DropdownWrapper>
-        <Dropdown
-          value={value}
-          onChange={handleChange}
-          disabled={disabled}
-          title="Simultaneous Attempts"
-        >
-          <option value={1}>1</option>
-          <option value={2}>2</option>
-          <option value={3}>3</option>
-        </Dropdown>
+    <Container>
+      <DropdownButton
+        ref={buttonRef}
+        onClick={toggleMenu}
+        disabled={disabled}
+        className="dropdown-area"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        <Icon icon="layers" />
+        <NumberText>{value}</NumberText>
         <ArrowIcon icon="arrow_drop_down" />
-      </DropdownWrapper>
+      </DropdownButton>
+
+      {showTooltip && (
+        <Tooltip visible={showTooltip} top={tooltipPosition.top} left={tooltipPosition.left}>
+          Attempts
+        </Tooltip>
+      )}
+
+      <DropdownMenu visible={showMenu} className="dropdown-area">
+        <MenuItem active={value === 1} onClick={() => handleSelect(1)}>
+          1 version
+          {value === 1 && <Checkmark icon="check" />}
+        </MenuItem>
+        <MenuItem active={value === 2} onClick={() => handleSelect(2)}>
+          2 versions
+          {value === 2 && <Checkmark icon="check" />}
+        </MenuItem>
+        <MenuItem active={value === 3} onClick={() => handleSelect(3)}>
+          3 versions
+          {value === 3 && <Checkmark icon="check" />}
+        </MenuItem>
+      </DropdownMenu>
     </Container>
   );
 };
