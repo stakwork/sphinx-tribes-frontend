@@ -617,6 +617,10 @@ export default function SidebarComponent({
     history.push(`/workspace/${uuid}/feature_backlog`);
   };
 
+  const handleCodeGraphClick = () => {
+    history.push(`/workspace/${uuid}/codegraph`);
+  };
+
   const handleKanbanClick = () => {
     history.push(`/workspace/${uuid}/planner`);
   };
@@ -809,6 +813,23 @@ export default function SidebarComponent({
         {(collapsed || hoveredItem === 'backlog') && (
           <Tooltip visible={hoveredItem === 'backlog'} top={tooltipTop} collapsed={collapsed}>
             Feature Backlog
+          </Tooltip>
+        )}
+      </NavItem>
+
+      <NavItem
+        active={window.location.pathname.includes('codegraph')}
+        onClick={handleCodeGraphClick}
+        collapsed={collapsed}
+        onMouseEnter={(e) => handleMouseEnter(e, 'codegraph')}
+        onMouseLeave={() => setHoveredItem(null)}
+        aria-label="Code Graph"
+      >
+        <MaterialIcon icon="hub" />
+        <span>Code Graph</span>
+        {(collapsed || hoveredItem === 'codegraph') && (
+          <Tooltip visible={hoveredItem === 'codegraph'} top={tooltipTop} collapsed={collapsed}>
+            Code Graph
           </Tooltip>
         )}
       </NavItem>
