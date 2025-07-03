@@ -13,6 +13,7 @@ import PhasePlannerView from '../people/widgetViews/PhasePlannerView';
 import Activities from '../people/widgetViews/workspace/Activities/Activities';
 import WorkspaceTicketView from '../people/widgetViews/workspace/WorkspaceTicketView';
 import WorkspaceTicketCreateView from '../people/widgetViews/workspace/WorkspaceTicketCreateView.tsx';
+import CodeGraphView from '../people/widgetViews/workspace/CodeGraphView.tsx';
 import { HiveChatView } from '../people/hiveChat/index';
 import WorkSpacePlanner from '../people/WorkSpacePlanner/index';
 import HiveFeaturesView from '../people/widgetViews/workspace/HiveFeaturesView/HiveFeaturesView.tsx';
@@ -102,6 +103,9 @@ export const Pages = observer(({ mode }: { mode: AppMode }) => {
               </Route>
               <Route path="/workspace/:workspaceId/ticket">
                 <WorkspaceTicketCreateView />
+              </Route>
+              <Route path="/workspace/:workspaceId/codegraph">
+                <CodeGraphView />
               </Route>
               <Route path="/workspace/:uuid/planner">
                 <WorkSpacePlanner />
