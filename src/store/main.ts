@@ -5265,7 +5265,9 @@ export class MainStore {
     const payload = {
       env_vars: envVars.map(({ name, value }) => ({ name, value }))
     };
-    return api.put(`workspaces/${workspace_uuid}/env_vars`, payload, { 'Content-Type': 'application/json' });
+    return api.put(`workspaces/${workspace_uuid}/env_vars`, payload, {
+      'Content-Type': 'application/json'
+    });
   }
 }
 

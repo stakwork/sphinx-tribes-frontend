@@ -914,4 +914,5 @@ export interface EnvVar {
   value: string;
   masked?: boolean;
   _edited?: boolean; // local-only, for tracking changes
+  _show?: boolean;
 }

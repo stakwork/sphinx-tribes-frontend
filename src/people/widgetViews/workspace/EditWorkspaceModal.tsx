@@ -477,7 +477,7 @@ const EditWorkspaceModal = (props: EditWorkspaceModalProps) => {
           <WorkspaceEnvVarsModal
             open={showEnvVarsModal}
             onClose={() => setShowEnvVarsModal(false)}
-            workspaceUuid={org.uuid}
+            workspaceUuid={org?.uuid || ''}
           />
         </EditWorkspaceWrapper>
       </Modal>
