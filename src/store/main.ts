@@ -64,7 +64,8 @@ import {
   FeatureStatus,
   ChatWorkflow,
   ApiResponse,
-  CodeSpaceMap
+  CodeSpaceMap,
+  EnvVar
 } from './interface';
 
 function makeTorSaveURL(host: string, key: string) {
@@ -5244,6 +5245,27 @@ export class MainStore {
       console.log('Error generateStakeInvoice', e);
       return null;
     }
+  }
+
+  /**
+   * Fetch environment variables for a workspace
+   */
+  async getWorkspaceEnvVars(workspace_uuid: string): Promise<EnvVar[]> {
+    const res = await api.get(`workspaces/${workspace_uuid}/env_vars`);
+    // The backend returns an array of env vars
+    return res as EnvVar[];
+  }
+
+  /**
+   * Update environment variables for a workspace
+   * Only send new/changed values (not masked/unchanged)
+   */
+  async updateWorkspaceEnvVars(workspace_uuid: string, envVars: EnvVar[]): Promise<any> {
+    // Only send name/value (ignore masked/_edited)
+    const payload = {
+      env_vars: envVars.map(({ name, value }) => ({ name, value }))
+    };
+    return api.put(`workspaces/${workspace_uuid}/env_vars`, payload, { 'Content-Type': 'application/json' });
   }
 }
 
