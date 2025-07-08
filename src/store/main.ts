@@ -5250,10 +5250,29 @@ export class MainStore {
   /**
    * Fetch environment variables for a workspace
    */
-  async getWorkspaceEnvVars(workspace_uuid: string): Promise<EnvVar[]> {
-    const res = await api.get(`workspaces/${workspace_uuid}/env_vars`);
-    // The backend returns an array of env vars
-    return res as EnvVar[];
+  async getWorkspaceEnvVars(workspace_uuid: string): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+      const response = await fetch(`${TribesURL}/workspaces/${workspace_uuid}/env_vars`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json',
+          'x-session-id': this.getSessionId()
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return response.json();
+    } catch (e) {
+      console.log('Error getWorkspaceEnvVars', e);
+      return null;
+    }
   }
 
   /**
