@@ -23,6 +23,7 @@ import {
 } from './style';
 import { EditWorkspaceModalProps } from './interface';
 import DeleteWorkspaceWindow from './DeleteWorkspaceWindow';
+import WorkspaceEnvVarsModal from './WorkspaceEnvVarsModal';
 
 const color = colors['light'];
 
@@ -171,6 +172,8 @@ const EditWorkspaceModal = (props: EditWorkspaceModalProps) => {
   const [descriptionCharacterCount, setDescriptionCharacterCount] = useState(
     org?.description?.length || 0
   );
+  const [envVarsModalOpen, setEnvVarsModalOpen] = useState(false);
+  const [envVars, setEnvVars] = useState([]);
 
   const config = widgetConfigs.workspaces;
   const schema = [...config.schema];
@@ -276,6 +279,29 @@ const EditWorkspaceModal = (props: EditWorkspaceModalProps) => {
     }
   };
 
+  const handleOpenEnvVars = async () => {
+    if (org?.uuid) {
+      try {
+        const res = await main.getWorkspaceEnvVars(org.uuid);
+        setEnvVars(res?.config?.env_vars || []);
+        setEnvVarsModalOpen(true);
+      } catch (e) {
+        addToast('Failed to load environment variables', 'danger');
+      }
+    }
+  };
+  const handleSaveEnvVars = async (vars) => {
+    if (org?.uuid) {
+      try {
+        await main.updateWorkspaceEnvVars(org.uuid, vars);
+        addToast('Environment variables updated', 'success');
+        setEnvVarsModalOpen(false);
+      } catch (e) {
+        addToast('Failed to update environment variables', 'danger');
+      }
+    }
+  };
+
   return (
     <>
       <Modal
@@ -328,8 +354,10 @@ const EditWorkspaceModal = (props: EditWorkspaceModalProps) => {
                 maxWidth: 'calc(100% - 2.4rem)'
               }}
               color={'#ED7474'}
-              text={'Delete Workspace'}
-            />
+              text={undefined}
+            >
+              <span>Delete Workspace</span>
+            </Button>
           </EditWorkspaceRow>
           <EditWorkspaceRow>
             <WorkspaceEditImageWrapper>
@@ -449,8 +477,10 @@ const EditWorkspaceModal = (props: EditWorkspaceModalProps) => {
                       left: '527px'
                     }}
                     color={!values.name || !isValid || !dirty ? 'gray' : 'primary'}
-                    text={'Save changes'}
-                  />
+                    text={undefined}
+                  >
+                    <span>Save changes</span>
+                  </Button>
                 </InputWrapper>
               )}
             </Formik>
@@ -466,6 +496,15 @@ const EditWorkspaceModal = (props: EditWorkspaceModalProps) => {
           ) : (
             <></>
           )}
+          <Button onClick={handleOpenEnvVars} style={{ marginTop: 16 }}><span>Manage Environment Variables</span></Button>
+          <WorkspaceEnvVarsModal
+            isOpen={envVarsModalOpen}
+            close={() => setEnvVarsModalOpen(false)}
+            org={org}
+            envVars={envVars}
+            onSave={handleSaveEnvVars}
+            addToast={addToast}
+          />
         </EditWorkspaceWrapper>
       </Modal>
     </>

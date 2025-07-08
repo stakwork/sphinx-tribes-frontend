@@ -5245,6 +5245,14 @@ export class MainStore {
       return null;
     }
   }
+
+  async getWorkspaceEnvVars(workspace_uuid: string): Promise<any> {
+    return await api.get(`workspaces/${workspace_uuid}/env_vars`);
+  }
+
+  async updateWorkspaceEnvVars(workspace_uuid: string, envVars: Array<{ name: string; value: string }>): Promise<any> {
+    return await api.post(`workspaces/${workspace_uuid}/env_vars`, { env_vars: envVars }, { 'Content-Type': 'application/json' });
+  }
 }
 
 export const mainStore = new MainStore();

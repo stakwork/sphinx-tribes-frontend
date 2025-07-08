@@ -106,3 +106,16 @@ export interface PhaseOperationMessage {
   title: string;
   message: string;
 }
+
+export interface EnvVar {
+  name: string;
+  value: string;
+  masked?: boolean;
+}
+
+export interface WorkspaceEnvVarsModalProps extends ModalProps {
+  org?: Workspace;
+  envVars: EnvVar[];
+  onSave: (envVars: EnvVar[]) => void;
+  addToast: (title: string, color: 'danger' | 'success') => void;
+}
