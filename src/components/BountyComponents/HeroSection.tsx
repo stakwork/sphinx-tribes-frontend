@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import StartUpModal from '../../people/utils/StartUpModal';
-import { getHost } from '../../config';
 
 const HeroContainer = styled.section`
   background: #1a242e;
@@ -123,8 +122,7 @@ const HeroSection: React.FC = () => {
   };
 
   const handleViewBounties = () => {
-    const host = getHost();
-    window.location.href = `https://${host}/bounties`;
+    window.location.href = `${window.location.origin}/bounties`;
   };
 
   return (
