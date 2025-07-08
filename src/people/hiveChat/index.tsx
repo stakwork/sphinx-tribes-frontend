@@ -19,6 +19,7 @@ import VisualScreenViewer from '../widgetViews/workspace/VisualScreenViewer.tsx'
 import { ModelOption } from './modelSelector.tsx';
 import { ActionArtifactRenderer } from './ActionArtifactRenderer';
 import ChatStatusDisplay from './ChatStatusDisplay.tsx';
+import SimultaneousAttemptsSelector from './SimultaneousAttemptsSelector';
 
 import SplashScreen from './ChatSplashScreen';
 
@@ -308,6 +309,13 @@ const AttachIcon = styled(MaterialIcon)`
   margin-right: 2px;
 `;
 
+const SimultaneousAttemptsContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 12px;
+`;
+
 const TabContainer = styled.div`
   display: flex;
   margin-left: 10px;
@@ -593,6 +601,7 @@ export const HiveChatView: React.FC = observer(() => {
     label: 'Open AI - 4o',
     value: 'gpt-4o'
   });
+  const [simultaneousAttempts, setSimultaneousAttempts] = useState<number>(1);
   const [artifactTab, setArtifactTab] = useState<'visual' | 'code' | 'text' | 'logs'>('logs');
   const [updatedTabs, setUpdatedTabs] = useState<Record<string, boolean>>({
     logs: false,
@@ -794,7 +803,8 @@ export const HiveChatView: React.FC = observer(() => {
         'Build',
         undefined,
         pdfUrl,
-        actionArtifact
+        actionArtifact,
+        simultaneousAttempts
       );
 
       if (sentMessage === undefined) {
@@ -1206,7 +1216,8 @@ export const HiveChatView: React.FC = observer(() => {
         'Build',
         undefined,
         pdfUrl,
-        actionArtifact
+        actionArtifact,
+        simultaneousAttempts
       );
 
       if (sentMessage) {
@@ -1601,6 +1612,11 @@ export const HiveChatView: React.FC = observer(() => {
                   onChange={handleMessageChange}
                   onKeyPress={handleKeyPress}
                   placeholder="Type your message..."
+                  disabled={isSending}
+                />
+                <SimultaneousAttemptsSelector
+                  value={simultaneousAttempts}
+                  onChange={setSimultaneousAttempts}
                   disabled={isSending}
                 />
                 {isPdfUploadEnabled && (
