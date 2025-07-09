@@ -715,7 +715,12 @@ const WorkspaceMission = () => {
                       </RepositoryUrl>
                     </RepositoryText>
                   </RepositoryInfo>
-                  <Button onClick={() => openModal('edit', repository)} text="Edit" color="link" />
+                  <Button
+                    onClick={() => openModal('edit', repository)}
+                    text="Edit"
+                    color="link"
+                    dataTestId="repository-edit-btn"
+                  />
                 </RepositoryItem>
               ))}
               {repositories.length === 0 && <p>No repositories added yet.</p>}

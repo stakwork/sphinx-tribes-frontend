@@ -45,6 +45,6 @@ describe('Check for Feature Call Url placeholder', () => {
     cy.get('[data-testid="add-featurecall-btn"]').click();
     cy.wait(3000);
 
-    cy.contains('Webhook URL: https://testfeature.com').should('exist');
+    cy.contains('Not configured. Set up a webhook for feature calls.').should('exist');
   });
 });

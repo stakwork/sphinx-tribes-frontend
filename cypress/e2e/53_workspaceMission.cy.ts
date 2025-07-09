@@ -55,28 +55,26 @@ describe('Create Workspace And Update Mission', () => {
     const repoName = 'Repo Name';
     cy.get('[data-testid="repo-name-input"]').type(repoName);
     cy.get('[data-testid="repo-url-input"]').type('https://github.com/test/repo');
-    cy.get('button').contains('Save').click();
+    cy.get('button').contains('Create').click();
     cy.wait(500);
 
     cy.contains('Add New Repository').should('not.exist');
     cy.get('h5').contains('Repositories').should('be.visible');
     cy.contains(repoName).should('exist', { timeout: 1000 });
 
-    cy.get('[data-testid="repository-option-btn"]').click();
     cy.get('[data-testid="repository-edit-btn"]').click();
     cy.wait(500);
 
     const updatedRepoName = 'Updated Repo';
     cy.get('[data-testid="repo-name-input"]').clear().type(updatedRepoName);
     cy.get('[data-testid="repo-url-input"]').clear().type('https://github.com/updated/repo');
-    cy.get('button').contains('Save').click();
+    cy.get('button').contains('Update').click();
     cy.wait(500);
 
     cy.contains('Add New Repository').should('not.exist');
     cy.contains(updatedRepoName).should('be.visible');
     cy.contains('https://github.com/updated/repo').should('be.visible');
 
-    cy.get('[data-testid="repository-option-btn"]').click();
     cy.get('[data-testid="repository-edit-btn"]').click();
     cy.get('button').contains('Delete').click();
     cy.wait(1000);
