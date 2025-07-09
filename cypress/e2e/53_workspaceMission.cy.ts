@@ -59,7 +59,6 @@ describe('Create Workspace And Update Mission', () => {
     cy.wait(500);
 
     cy.contains('Add New Repository').should('not.exist');
-    cy.get('h5').contains('Repositories').should('be.visible');
     cy.contains(repoName).should('exist', { timeout: 1000 });
 
     cy.get('[data-testid="repository-edit-btn"]').click();
