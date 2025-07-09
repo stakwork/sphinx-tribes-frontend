@@ -67,7 +67,7 @@ describe('Create Workspace And Update Mission', () => {
     const updatedRepoName = 'Updated Repo';
     cy.get('[data-testid="repo-name-input"]').clear().type(updatedRepoName);
     cy.get('[data-testid="repo-url-input"]').clear().type('https://github.com/updated/repo');
-    cy.get('button').contains('Update').click();
+    cy.get('[data-testid="add-repo-btn"]').click();
     cy.wait(500);
 
     cy.contains('Add New Repository').should('not.exist');
