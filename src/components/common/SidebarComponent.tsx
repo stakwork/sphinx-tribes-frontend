@@ -16,6 +16,7 @@ import { useHistory } from 'react-router-dom';
 import { useStores } from 'store';
 import { Chat, Feature, Workspace } from 'store/interface';
 import styled from 'styled-components';
+import { useUserInfo } from '../../people/userInfo/hooks';
 import { Box } from '@mui/system';
 import { EuiLoadingSpinner } from '@elastic/eui';
 import {
@@ -50,6 +51,7 @@ const SidebarContainer = styled.div<{ collapsed: boolean }>`
   box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
   overflow-y: auto;
   cursor: ${({ collapsed }) => (collapsed ? 'pointer' : 'default')};
+  padding-bottom: 30px;
 
   @media (max-width: 768px) {
     width: ${({ collapsed }) => (collapsed ? '60px' : '100%')};
@@ -316,6 +318,54 @@ const Tooltip = styled.div<{ visible: boolean; top: number; collapsed: boolean }
   }
 `;
 
+const LogoutButtonContainer = styled.div<{ collapsed: boolean }>`
+  position: fixed;
+  bottom: -5px;
+  left: ${({ collapsed }) => (collapsed ? '10px' : '15px')};
+  width: ${({ collapsed }) => (collapsed ? '40px' : '220px')};
+  z-index: 10;
+  background: #f4f4f4;
+  padding: 10px 0;
+  padding-top: 0px !important;
+`;
+
+const LogoutButton = styled.button<{ collapsed: boolean }>`
+  width: ${({ collapsed }) => (collapsed ? '40px' : '100%')};
+  height: 40px;
+  padding: ${({ collapsed }) => (collapsed ? '0' : '0.5rem 1rem')};
+  border-radius: 0.375rem;
+  border: 1px solid var(--Input-Outline-1, #d0d5d8);
+  background: #fff;
+  box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.06);
+  color: #5f6368;
+  font-family: 'Barlow';
+  font-size: 0.875rem;
+  font-style: normal;
+  font-weight: 500;
+  letter-spacing: 0.00875rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: ${({ collapsed }) => (collapsed ? 'center' : 'flex-start')};
+  gap: 8px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #f5f5f5;
+    border-color: #b0b7bc;
+  }
+
+  &:active {
+    background-color: #e8e8e8;
+  }
+`;
+
+const LogoutButtonText = styled.span<{ collapsed: boolean }>`
+  display: ${({ collapsed }) => (collapsed ? 'none' : 'inline')};
+  white-space: nowrap;
+  font-size: 17px;
+`;
+
 interface SidebarComponentProps {
   uuid?: string;
   defaultCollapsed?: boolean;
@@ -352,6 +402,7 @@ export default function SidebarComponent({
   const [tooltipTop, setTooltipTop] = useState(0);
 
   const user_pubkey = ui.meInfo?.owner_pubkey;
+  const { logout } = useUserInfo();
 
   const getUserWorkspaces = useCallback(async () => {
     setIsLoading(true);
@@ -1126,6 +1177,25 @@ export default function SidebarComponent({
           />
         </Modal>
       )}
+
+      <LogoutButtonContainer collapsed={collapsed}>
+        <LogoutButton
+          collapsed={collapsed}
+          onClick={logout}
+          onMouseEnter={(e) => handleMouseEnter(e, 'logout')}
+          onMouseLeave={() => setHoveredItem(null)}
+          data-testid="sidebar-logout-button"
+          aria-label="Logout"
+        >
+          <MaterialIcon icon="logout" style={{ fontSize: 18 }} />
+          <LogoutButtonText collapsed={collapsed}>Sign out</LogoutButtonText>
+        </LogoutButton>
+        {(collapsed || hoveredItem === 'logout') && (
+          <Tooltip visible={hoveredItem === 'logout'} top={tooltipTop} collapsed={collapsed}>
+            Sign out
+          </Tooltip>
+        )}
+      </LogoutButtonContainer>
     </SidebarContainer>
   );
 }
