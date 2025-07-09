@@ -765,6 +765,7 @@ const WorkspaceMission = () => {
                   }
                   text={featureCall ? 'Edit' : 'Add'}
                   color="link"
+                  dataTestId="featurecall-add-btn-1"
                 />
               </IntegrationItem>
               <IntegrationItem>
