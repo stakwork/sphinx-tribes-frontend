@@ -5284,9 +5284,30 @@ export class MainStore {
     const payload = {
       env_vars: envVars.map(({ name, value }) => ({ name, value }))
     };
-    return api.put(`workspaces/${workspace_uuid}/env_vars`, payload, {
-      'Content-Type': 'application/json'
-    });
+
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+      const response = await fetch(`${TribesURL}/workspaces/${workspace_uuid}/env_vars`, {
+        method: 'PUT',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json',
+          'x-session-id': this.getSessionId()
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return response.json();
+    } catch (e) {
+      console.log('Error updateWorkspaceEnvVars', e);
+      return null;
+    }
   }
 }
 
