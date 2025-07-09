@@ -13,12 +13,10 @@ describe('Super Admin Bounties List', () => {
     deliverables: 'We are good to go man'
   };
 
-  beforeEach(() => {
-    cy.login(activeUser);
-    cy.wait(1000);
-  });
-
   it('Should create five bounties and verify they are listed in the admin page under different time frames', () => {
+    cy.login(activeUser);
+    cy.wait(3000);
+
     for (let i = 1; i <= 5; i++) {
       const updatedBounty = { ...bounty, title: `AliRazaTask${i}` };
       cy.create_bounty(updatedBounty);
