@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { observer } from 'mobx-react-lite';
 import { EnvVar } from '../../../store/interface';
 import { mainStore } from '../../../store/main';
-import { TextInput } from './style';
+import { TextInput, ActionButton } from './style';
 
 
 const AddEnvHeader = styled.h2`
@@ -145,24 +145,24 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
                       </button>
                     </td>
                     <td>
-                      <button onClick={() => handleDelete(idx)} style={{ color: 'red' }}>
+                      <ActionButton onClick={() => handleDelete(idx)} style={{ color: 'red' }}>
                         Remove
-                      </button>
+                      </ActionButton>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           )}
-          <button onClick={handleAdd} style={{ marginRight: 8 }}>
+          <ActionButton onClick={handleAdd} style={{ marginRight: 8 }}>
             Add Variable
-          </button>
-          <button onClick={handleSave} disabled={saving}>
+          </ActionButton>
+          <ActionButton onClick={handleSave} disabled={saving}>
             {saving ? 'Saving...' : 'Save'}
-          </button>
-          <button onClick={onClose} style={{ marginLeft: 8 }}>
+          </ActionButton>
+          <ActionButton onClick={onClose} style={{ marginLeft: 8 }}>
             Cancel
-          </button>
+          </ActionButton>
           {/* TODO: Validation, error display, better styling, accessibility */}
         </div>
       </div>
