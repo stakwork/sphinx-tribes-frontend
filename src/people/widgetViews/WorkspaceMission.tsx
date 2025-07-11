@@ -1067,36 +1067,11 @@ const WorkspaceMission = () => {
               userAlias={ui.meInfo?.owner_alias}
             />
           </Modal>
-          <Modal
-            visible={showEnvVarsModal}
-            style={{
-              height: '100%',
-              flexDirection: 'column'
-            }}
-            envStyle={{
-              marginTop: isMobile ? 64 : 0,
-              background: color.pureWhite,
-              zIndex: 20,
-              maxHeight: '100%',
-              borderRadius: '10px',
-              minWidth: isMobile ? '100%' : '40%',
-              minHeight: isMobile ? '100%' : '20%'
-            }}
-            overlayClick={() => setShowEnvVarsModal(false)}
-            bigCloseImage={() => setShowEnvVarsModal(false)}
-            bigCloseImageStyle={{
-              top: '-18px',
-              right: '-18px',
-              background: '#000',
-              borderRadius: '50%'
-            }}
-          >
           <WorkspaceEnvVarsModal
             open={showEnvVarsModal}
             onClose={() => setShowEnvVarsModal(false)}
             workspaceUuid={workspaceData?.uuid || ''}
           />
-          </Modal>
           <EuiGlobalToastList
             toasts={toasts}
             dismissToast={() => setToasts([])}
