@@ -6,22 +6,21 @@ import { mainStore } from '../../../store/main';
 import { TextInput, ActionButton } from './style';
 import { colors } from '../../../config/colors';
 
-
 const AddEnvHeader = styled.h2`
-   color: #3c3f41;
-   font-family: 'Barlow';
-   font-size: 1.875rem;
-   font-style: normal;
-   font-weight: 800;
-   line-height: 1.875rem;
-   margin-bottom: 0;
-   min-width: 100%;
+  color: #3c3f41;
+  font-family: 'Barlow';
+  font-size: 1.875rem;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 1.875rem;
+  margin-bottom: 0;
+  min-width: 100%;
 
-   @media only screen and (max-width: 500px) {
-     text-align: center;
-     font-size: 1.4rem;
-   }
- `;
+  @media only screen and (max-width: 500px) {
+    text-align: center;
+    font-size: 1.4rem;
+  }
+`;
 interface WorkspaceEnvVarsModalProps {
   open: boolean;
   onClose: () => void;
@@ -84,14 +83,14 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
         style={{
           background: 'rgba(0,0,0,0.3)',
           zIndex: 1000,
-					display: 'flex',
-					alignItems: 'center'
+          display: 'flex',
+          alignItems: 'center'
         }}
       >
         <div
           className="modal"
           style={{
-					position: 'relative',
+            position: 'relative',
             background: '#fff',
             margin: '5% auto',
             padding: 24,
@@ -99,11 +98,14 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
             maxWidth: 600,
             minWidth: 320,
             display: 'block',
-						height: 'auto'
+            height: 'auto'
           }}
         >
           <AddEnvHeader>Environment Variables</AddEnvHeader>
-          <p style={{fontSize: '14px', color: 'gray', marginTop: '20px', marginBottom: '0px'}}>Add any ENV variables your Stakgraph integration needs. These will be included in your configuration</p>
+          <p style={{ fontSize: '14px', color: 'gray', marginTop: '20px', marginBottom: '0px' }}>
+            Add any ENV variables your Stakgraph integration needs. These will be included in your
+            configuration
+          </p>
           {loading ? (
             <div>Loading...</div>
           ) : (
@@ -111,26 +113,34 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
               <tbody>
                 {envVars.map((v, idx) => (
                   <tr key={idx}>
-                    <td style={{paddingRight: '5px'}}>
-										<TextInput
-												placeholder="placeholder"
-												feature={true}
+                    <td style={{ paddingRight: '5px' }}>
+                      <TextInput
+                        placeholder="placeholder"
+                        feature={true}
                         value={v.name}
                         onChange={(e: any) => handleEdit(idx, 'name', e.target.value)}
                         style={{ width: '100%', marginRight: '5px' }}
-												/>
+                      />
                     </td>
-                    <td style={{paddingRight: '5px'}}>
-										<TextInput
-										placeholder="placeholder"
-										feature={true}
+                    <td style={{ paddingRight: '5px' }}>
+                      <TextInput
+                        placeholder="placeholder"
+                        feature={true}
                         value={v.value}
                         onChange={(e) => handleEdit(idx, 'value', e.target.value)}
                         style={{ width: '100%' }}
                       />
                     </td>
                     <td>
-                      <ActionButton onClick={() => handleDelete(idx)} style={{ marginTop: '0px', backgroundColor: colors.dark.grayish.G700, color: 'black', boxShadow: "none" }}>
+                      <ActionButton
+                        onClick={() => handleDelete(idx)}
+                        style={{
+                          marginTop: '0px',
+                          backgroundColor: colors.dark.grayish.G700,
+                          color: 'black',
+                          boxShadow: 'none'
+                        }}
+                      >
                         Remove
                       </ActionButton>
                     </td>
@@ -139,10 +149,23 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
               </tbody>
             </table>
           )}
-          <ActionButton onClick={handleAdd} style={{ marginRight: 8, marginTop: 0, color: 'black', backgroundColor: colors.dark.grayish.G700, boxShadow: 'none' }}>
+          <ActionButton
+            onClick={handleAdd}
+            style={{
+              marginRight: 8,
+              marginTop: 0,
+              color: 'black',
+              backgroundColor: colors.dark.grayish.G700,
+              boxShadow: 'none'
+            }}
+          >
             Add Variable
           </ActionButton>
-          <ActionButton onClick={handleSave} disabled={saving} style={{ marginRight: 8, marginTop: 0 }}>
+          <ActionButton
+            onClick={handleSave}
+            disabled={saving}
+            style={{ marginRight: 8, marginTop: 0 }}
+          >
             {saving ? 'Saving...' : 'Save'}
           </ActionButton>
           <ActionButton onClick={onClose} style={{ marginTop: 0 }}>
