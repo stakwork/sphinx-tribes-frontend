@@ -313,9 +313,6 @@ const WorkspaceMission = () => {
   const closeCodeSpaceModal = () => {
     setCodeSpaceModal(false);
   };
-  const closeCodeSpaceEnvModal = () => {
-    setCodeSpaceModal(false);
-  };
 
   const handleDeleteCodeGraph = async () => {
     try {
@@ -1072,7 +1069,7 @@ const WorkspaceMission = () => {
           </Modal>
           <WorkspaceEnvVarsModal
             open={showEnvVarsModal}
-            onClose={() => closeCodeSpaceEnvModal}
+            onClose={() => setCodeSpaceModal(false)}
             workspaceUuid={workspaceData?.uuid || ''}
           />
           <EuiGlobalToastList
