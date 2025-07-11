@@ -130,7 +130,7 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
                       />
                     </td>
                     <td>
-                      <ActionButton onClick={() => handleDelete(idx)} style={{ marginTop: '0px', backgroundColor: 'white', color: 'gray', boxShadow: "0px 3px 5px 0px rgba(97,138,255,0.5)" }}>
+                      <ActionButton onClick={() => handleDelete(idx)} style={{ marginTop: '0px', backgroundColor: colors.dark.grayish.G700, color: 'black', boxShadow: "none" }}>
                         Remove
                       </ActionButton>
                     </td>
@@ -139,7 +139,7 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
               </tbody>
             </table>
           )}
-          <ActionButton onClick={handleAdd} style={{ marginRight: 8, marginTop: 0, color: 'gray', backgroundColor: colors.dark.grayish.G700 }}>
+          <ActionButton onClick={handleAdd} style={{ marginRight: 8, marginTop: 0, color: 'black', backgroundColor: colors.dark.grayish.G700, boxShadow: 'none' }}>
             Add Variable
           </ActionButton>
           <ActionButton onClick={handleSave} disabled={saving} style={{ marginRight: 8, marginTop: 0 }}>
