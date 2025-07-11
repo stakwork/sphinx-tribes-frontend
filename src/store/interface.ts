@@ -908,3 +908,11 @@ export interface SkillInstall {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface EnvVar {
+  name: string;
+  value: string;
+  masked?: boolean;
+  _edited?: boolean; // local-only, for tracking changes
+  _show?: boolean;
+}
