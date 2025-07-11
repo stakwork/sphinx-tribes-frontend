@@ -81,7 +81,8 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
             padding: 24,
             borderRadius: 8,
             maxWidth: 600,
-            minWidth: 320
+            minWidth: 320,
+            display: 'block'
           }}
         >
           <h2>Workspace Environment Variables</h2>
