@@ -1,8 +1,26 @@
 import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
 import { observer } from 'mobx-react-lite';
 import { EnvVar } from '../../../store/interface';
 import { mainStore } from '../../../store/main';
+import { TextInput } from './style';
 
+
+const AddEnvHeader = styled.h2`
+   color: #3c3f41;
+   font-family: 'Barlow';
+   font-size: 1.875rem;
+   font-style: normal;
+   font-weight: 800;
+   line-height: 1.875rem;
+   margin-bottom: 0;
+   min-width: 100%;
+
+   @media only screen and (max-width: 500px) {
+     text-align: center;
+     font-size: 1.4rem;
+   }
+ `;
 interface WorkspaceEnvVarsModalProps {
   open: boolean;
   onClose: () => void;
@@ -83,7 +101,8 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
 						height: 'auto'
           }}
         >
-          <h2>Workspace Environment Variables</h2>
+          <AddEnvHeader>Environment Variables</AddEnvHeader>
+          <p>Add any ENV variables your Stakgraph integration needs. These will be included in your configuration</p>
           {loading ? (
             <div>Loading...</div>
           ) : (
@@ -100,12 +119,13 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
                 {envVars.map((v, idx) => (
                   <tr key={idx}>
                     <td>
-                      <input
-                        type="text"
+										<TextInput
+												placeholder="placeholder"
+												feature={true}
                         value={v.name}
-                        onChange={(e) => handleEdit(idx, 'name', e.target.value)}
+                        onChange={(e: any) => handleEdit(idx, 'name', e.target.value)}
                         style={{ width: '100%' }}
-                      />
+												/>
                     </td>
                     <td>
                       <input
