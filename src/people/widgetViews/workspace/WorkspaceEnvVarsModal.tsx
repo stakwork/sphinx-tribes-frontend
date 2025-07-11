@@ -64,7 +64,9 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
         className="modal-backdrop"
         style={{
           background: 'rgba(0,0,0,0.3)',
-          zIndex: 1000
+          zIndex: 1000,
+					display: 'flex',
+					alignItems: 'center'
         }}
       >
         <div
