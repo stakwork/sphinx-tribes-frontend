@@ -137,7 +137,7 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
                       </button>
                     </td>
                     <td>
-                      <ActionButton onClick={() => handleDelete(idx)} style={{ color: 'red' }}>
+                      <ActionButton onClick={() => handleDelete(idx)} style={{ marginTop: '0px' }}>
                         Remove
                       </ActionButton>
                     </td>
