@@ -107,14 +107,6 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
             <div>Loading...</div>
           ) : (
             <table style={{ width: '100%', marginBottom: 16 }}>
-              <thead>
-                <tr>
-                  <th>Key</th>
-                  <th>Value</th>
-                  <th></th>
-                  <th></th>
-                </tr>
-              </thead>
               <tbody>
                 {envVars.map((v, idx) => (
                   <tr key={idx}>
