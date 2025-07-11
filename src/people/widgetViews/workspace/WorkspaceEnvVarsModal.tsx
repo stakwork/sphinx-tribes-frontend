@@ -102,7 +102,7 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
           }}
         >
           <AddEnvHeader>Environment Variables</AddEnvHeader>
-          <p>Add any ENV variables your Stakgraph integration needs. These will be included in your configuration</p>
+          <p style={{fontSize: '14px', color: 'gray', marginTop: '20px', marginBottom: '0px'}}>Add any ENV variables your Stakgraph integration needs. These will be included in your configuration</p>
           {loading ? (
             <div>Loading...</div>
           ) : (
@@ -116,7 +116,7 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
 												feature={true}
                         value={v.name}
                         onChange={(e: any) => handleEdit(idx, 'name', e.target.value)}
-                        style={{ width: '100%' }}
+                        style={{ width: '100%', marginRight: '5px' }}
 												/>
                     </td>
                     <td>
@@ -129,15 +129,7 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
                       />
                     </td>
                     <td>
-                      <button
-                        onClick={() => handleToggleShow(idx)}
-                        title={v._show ? 'Hide' : 'Show'}
-                      >
-                        {v._show ? '🙈' : '👁️'}
-                      </button>
-                    </td>
-                    <td>
-                      <ActionButton onClick={() => handleDelete(idx)} style={{ marginTop: '0px' }}>
+                      <ActionButton onClick={() => handleDelete(idx)} style={{ marginTop: '0px', backgroundColor: 'white', color: 'gray' }}>
                         Remove
                       </ActionButton>
                     </td>
