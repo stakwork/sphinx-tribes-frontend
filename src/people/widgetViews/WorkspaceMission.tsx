@@ -1072,7 +1072,7 @@ const WorkspaceMission = () => {
           </Modal>
           <WorkspaceEnvVarsModal
             open={showEnvVarsModal}
-            onClose={closeCodeSpaceEnvModal}
+            onClose={() => closeCodeSpaceEnvModal}
             workspaceUuid={workspaceData?.uuid || ''}
           />
           <EuiGlobalToastList
