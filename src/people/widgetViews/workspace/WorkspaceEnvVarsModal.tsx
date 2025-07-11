@@ -110,7 +110,7 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
               <tbody>
                 {envVars.map((v, idx) => (
                   <tr key={idx}>
-                    <td>
+                    <td style={{paddingRight: '5px'}}>
 										<TextInput
 												placeholder="placeholder"
 												feature={true}
@@ -119,7 +119,7 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
                         style={{ width: '100%', marginRight: '5px' }}
 												/>
                     </td>
-                    <td>
+                    <td style={{paddingRight: '5px'}}>
 										<TextInput
 										placeholder="placeholder"
 										feature={true}
@@ -129,7 +129,7 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
                       />
                     </td>
                     <td>
-                      <ActionButton onClick={() => handleDelete(idx)} style={{ marginTop: '0px', backgroundColor: 'white', color: 'gray' }}>
+                      <ActionButton onClick={() => handleDelete(idx)} style={{ marginTop: '0px', backgroundColor: 'white', color: 'gray', boxShadow: "0px 3px 5px 0px rgba(97,138,255,0.5)" }}>
                         Remove
                       </ActionButton>
                     </td>
