@@ -48,6 +48,7 @@ import { EditableField } from './workspace/EditableField';
 import { Toast } from './workspace/interface';
 import TextSnippetModal from './workspace/TextSnippetModal.tsx';
 import ActivitiesHeader from './workspace/Activities/header.tsx';
+import WorkspaceEnvVarsModal from './workspace/WorkspaceEnvVarsModal';
 import AddChatWorkflow from './workspace/AddChatWorkflowModal.tsx';
 import ManageCodeSpaceModal from './workspace/ManageCodeSpaceModal.tsx';
 import {
@@ -149,6 +150,7 @@ const WorkspaceMission = () => {
   const [selectedChatWorkflow, setSelectedChatWorkflow] = useState<ChatWorkflow | null>(null);
   const [currentChatWorkflowUrl, setCurrentChatWorkflowUrl] = useState('');
   const [featureFlags, setFeatureFlags] = useState<any>({});
+  const [showEnvVarsModal, setShowEnvVarsModal] = useState(false);
 
   const openSnippetModal = () => {
     setSnippetModalVisible(true);
@@ -809,6 +811,12 @@ const WorkspaceMission = () => {
                 color="white"
                 leadingIcon="code"
               />
+              <ToolButton
+                onClick={() => setShowEnvVarsModal(true)}
+                text="Manage Env Vars"
+                color="white"
+                leadingIcon="code"
+              />
               {featureFlags && (
                 <ToolButton
                   onClick={() => refreshCodeSpace()}
@@ -1065,6 +1073,11 @@ const WorkspaceMission = () => {
               userAlias={ui.meInfo?.owner_alias}
             />
           </Modal>
+          <WorkspaceEnvVarsModal
+            open={showEnvVarsModal}
+            onClose={() => setShowEnvVarsModal(false)}
+            workspaceUuid={workspaceData?.uuid || ''}
+          />
           <EuiGlobalToastList
             toasts={toasts}
             dismissToast={() => setToasts([])}
