@@ -64,8 +64,7 @@ import {
   FeatureStatus,
   ChatWorkflow,
   ApiResponse,
-  CodeSpaceMap,
-  EnvVar
+  CodeSpaceMap
 } from './interface';
 
 function makeTorSaveURL(host: string, key: string) {
@@ -5243,69 +5242,6 @@ export class MainStore {
       return response.json();
     } catch (e) {
       console.log('Error generateStakeInvoice', e);
-      return null;
-    }
-  }
-
-  /**
-   * Fetch environment variables for a workspace
-   */
-  async getWorkspaceEnvVars(workspace_uuid: string): Promise<any> {
-    try {
-      if (!uiStore.meInfo) return null;
-      const info = uiStore.meInfo;
-      const response = await fetch(`${TribesURL}/workspaces/${workspace_uuid}/env_vars`, {
-        method: 'GET',
-        mode: 'cors',
-        headers: {
-          'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json',
-          'x-session-id': this.getSessionId()
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      return response.json();
-    } catch (e) {
-      console.log('Error getWorkspaceEnvVars', e);
-      return null;
-    }
-  }
-
-  /**
-   * Update environment variables for a workspace
-   * Only send new/changed values (not masked/unchanged)
-   */
-  async updateWorkspaceEnvVars(workspace_uuid: string, envVars: EnvVar[]): Promise<any> {
-    // Only send name/value (ignore masked/_edited)
-    const payload = {
-      env_vars: envVars.map(({ name, value }) => ({ name, value }))
-    };
-
-    try {
-      if (!uiStore.meInfo) return null;
-      const info = uiStore.meInfo;
-      const response = await fetch(`${TribesURL}/workspaces/${workspace_uuid}/env_vars`, {
-        method: 'PUT',
-        mode: 'cors',
-        headers: {
-          'x-jwt': info.tribe_jwt,
-          'Content-Type': 'application/json',
-          'x-session-id': this.getSessionId()
-        },
-        body: JSON.stringify(payload)
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      return response.json();
-    } catch (e) {
-      console.log('Error updateWorkspaceEnvVars', e);
       return null;
     }
   }
