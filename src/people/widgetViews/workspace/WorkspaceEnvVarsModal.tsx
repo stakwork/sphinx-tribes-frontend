@@ -128,8 +128,9 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
 												/>
                     </td>
                     <td>
-                      <input
-                        type={v._show ? 'text' : 'password'}
+										<TextInput
+										placeholder="placeholder"
+										feature={true}
                         value={v.value}
                         onChange={(e) => handleEdit(idx, 'value', e.target.value)}
                         style={{ width: '100%' }}
@@ -145,7 +146,7 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
                     </td>
                     <td>
                       <button onClick={() => handleDelete(idx)} style={{ color: 'red' }}>
-                        Delete
+                        Remove
                       </button>
                     </td>
                   </tr>
@@ -154,7 +155,7 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
             </table>
           )}
           <button onClick={handleAdd} style={{ marginRight: 8 }}>
-            Add
+            Add Variable
           </button>
           <button onClick={handleSave} disabled={saving}>
             {saving ? 'Saving...' : 'Save'}
