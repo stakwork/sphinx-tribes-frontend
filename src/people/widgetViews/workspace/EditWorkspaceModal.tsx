@@ -23,7 +23,6 @@ import {
 } from './style';
 import { EditWorkspaceModalProps } from './interface';
 import DeleteWorkspaceWindow from './DeleteWorkspaceWindow';
-import WorkspaceEnvVarsModal from './WorkspaceEnvVarsModal';
 
 const color = colors['light'];
 
@@ -172,7 +171,6 @@ const EditWorkspaceModal = (props: EditWorkspaceModalProps) => {
   const [descriptionCharacterCount, setDescriptionCharacterCount] = useState(
     org?.description?.length || 0
   );
-  const [showEnvVarsModal, setShowEnvVarsModal] = useState(false);
 
   const config = widgetConfigs.workspaces;
   const schema = [...config.schema];
@@ -308,12 +306,6 @@ const EditWorkspaceModal = (props: EditWorkspaceModalProps) => {
         <EditWorkspaceWrapper>
           <EditWorkspaceRow>
             <EditWorkspaceTitle>Edit Workspace</EditWorkspaceTitle>
-            <Button
-              style={{ marginLeft: 16 }}
-              onClick={() => setShowEnvVarsModal(true)}
-              text="Manage Env Vars"
-              color="#3C3F41"
-            />
             <Button
               disabled={!isWorkspaceAdmin}
               onClick={() => {
@@ -474,11 +466,6 @@ const EditWorkspaceModal = (props: EditWorkspaceModalProps) => {
           ) : (
             <></>
           )}
-          <WorkspaceEnvVarsModal
-            open={showEnvVarsModal}
-            onClose={() => setShowEnvVarsModal(false)}
-            workspaceUuid={org?.uuid || ''}
-          />
         </EditWorkspaceWrapper>
       </Modal>
     </>
