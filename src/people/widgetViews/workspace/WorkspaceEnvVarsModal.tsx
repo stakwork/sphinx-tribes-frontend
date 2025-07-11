@@ -70,6 +70,7 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
         <div
           className="modal"
           style={{
+					position: 'relative',
             background: '#fff',
             margin: '5% auto',
             padding: 24,
