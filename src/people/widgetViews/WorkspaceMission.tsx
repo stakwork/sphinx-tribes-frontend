@@ -48,6 +48,7 @@ import { EditableField } from './workspace/EditableField';
 import { Toast } from './workspace/interface';
 import TextSnippetModal from './workspace/TextSnippetModal.tsx';
 import ActivitiesHeader from './workspace/Activities/header.tsx';
+import WorkspaceEnvVarsModal from './workspace/WorkspaceEnvVarsModal';
 import AddChatWorkflow from './workspace/AddChatWorkflowModal.tsx';
 import ManageCodeSpaceModal from './workspace/ManageCodeSpaceModal.tsx';
 import {
@@ -579,6 +580,7 @@ const WorkspaceMission = () => {
 
   const toggleManageUserModal = () => setIsOpenUserManage(!isOpenUserManage);
   const updateWorkspaceUsers = (updatedUsers: Person[]) => setUsers(updatedUsers);
+  const [showEnvVarsModal, setShowEnvVarsModal] = useState(false);
 
   return (
     !loading &&
@@ -800,6 +802,12 @@ const WorkspaceMission = () => {
               <ToolButton
                 onClick={() => openCodeSpaceModal()}
                 text="Manage My Code Space"
+                color="white"
+                leadingIcon="code"
+              />
+              <ToolButton
+                onClick={() => setShowEnvVarsModal(true)}
+                text="Manage Env Vars"
                 color="white"
                 leadingIcon="code"
               />
@@ -1059,6 +1067,11 @@ const WorkspaceMission = () => {
               userAlias={ui.meInfo?.owner_alias}
             />
           </Modal>
+          <WorkspaceEnvVarsModal
+            open={showEnvVarsModal}
+            onClose={() => setShowEnvVarsModal(false)}
+            workspaceUuid={workspaceData?.uuid || ''}
+          />
           <EuiGlobalToastList
             toasts={toasts}
             dismissToast={() => setToasts([])}
