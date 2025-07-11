@@ -150,6 +150,7 @@ const WorkspaceMission = () => {
   const [selectedChatWorkflow, setSelectedChatWorkflow] = useState<ChatWorkflow | null>(null);
   const [currentChatWorkflowUrl, setCurrentChatWorkflowUrl] = useState('');
   const [featureFlags, setFeatureFlags] = useState<any>({});
+  const [showEnvVarsModal, setShowEnvVarsModal] = useState(false);
 
   const openSnippetModal = () => {
     setSnippetModalVisible(true);
@@ -310,6 +311,9 @@ const WorkspaceMission = () => {
   };
 
   const closeCodeSpaceModal = () => {
+    setCodeSpaceModal(false);
+  };
+  const closeCodeSpaceEnvModal = () => {
     setCodeSpaceModal(false);
   };
 
@@ -580,7 +584,6 @@ const WorkspaceMission = () => {
 
   const toggleManageUserModal = () => setIsOpenUserManage(!isOpenUserManage);
   const updateWorkspaceUsers = (updatedUsers: Person[]) => setUsers(updatedUsers);
-  const [showEnvVarsModal, setShowEnvVarsModal] = useState(false);
 
   return (
     !loading &&
@@ -1067,11 +1070,36 @@ const WorkspaceMission = () => {
               userAlias={ui.meInfo?.owner_alias}
             />
           </Modal>
-          <WorkspaceEnvVarsModal
-            open={showEnvVarsModal}
-            onClose={() => setShowEnvVarsModal(false)}
-            workspaceUuid={workspaceData?.uuid || ''}
-          />
+          <Modal
+            visible={showEnvVarsModal}
+            style={{
+              height: '100%',
+              flexDirection: 'column'
+            }}
+            envStyle={{
+              marginTop: isMobile ? 64 : 0,
+              background: color.pureWhite,
+              zIndex: 20,
+              maxHeight: '100%',
+              borderRadius: '10px',
+              minWidth: isMobile ? '100%' : '40%',
+              minHeight: isMobile ? '100%' : '20%'
+            }}
+            overlayClick={closeCodeSpaceEnvModal}
+            bigCloseImage={closeCodeSpaceEnvModal}
+            bigCloseImageStyle={{
+              top: '-18px',
+              right: '-18px',
+              background: '#000',
+              borderRadius: '50%'
+            }}
+          >
+            <WorkspaceEnvVarsModal
+              open={showEnvVarsModal}
+              onClose={closeCodeSpaceEnvModal}
+              workspaceUuid={workspaceData?.uuid || ''}
+            />
+          </Modal>
           <EuiGlobalToastList
             toasts={toasts}
             dismissToast={() => setToasts([])}

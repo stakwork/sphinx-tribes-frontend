@@ -27,6 +27,7 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
       }
     }, [open, workspaceUuid]);
 
+    if (!open) return null;
     const handleAdd = () => {
       setEnvVars([...envVars, { ...defaultEnvVar(), _show: false }]);
     };
@@ -57,8 +58,6 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
         setSaving(false);
       }
     };
-
-    if (!open) return null;
 
     return (
       <div
