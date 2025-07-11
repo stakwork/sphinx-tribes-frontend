@@ -138,13 +138,13 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
               </tbody>
             </table>
           )}
-          <ActionButton onClick={handleAdd} style={{ marginRight: 8 }}>
+          <ActionButton onClick={handleAdd} style={{ marginRight: 8, marginTop: 0 }}>
             Add Variable
           </ActionButton>
-          <ActionButton onClick={handleSave} disabled={saving}>
+          <ActionButton onClick={handleSave} disabled={saving} style={{ marginLeft: 8, marginTop: 0 }}>
             {saving ? 'Saving...' : 'Save'}
           </ActionButton>
-          <ActionButton onClick={onClose} style={{ marginLeft: 8 }}>
+          <ActionButton onClick={onClose} style={{ marginLeft: 8, marginTop: 0 }}>
             Cancel
           </ActionButton>
           {/* TODO: Validation, error display, better styling, accessibility */}
