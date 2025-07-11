@@ -4,6 +4,7 @@ import { observer } from 'mobx-react-lite';
 import { EnvVar } from '../../../store/interface';
 import { mainStore } from '../../../store/main';
 import { TextInput, ActionButton } from './style';
+import { colors } from '../../../config/colors';
 
 
 const AddEnvHeader = styled.h2`
@@ -138,7 +139,7 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
               </tbody>
             </table>
           )}
-          <ActionButton onClick={handleAdd} style={{ marginRight: 8, marginTop: 0, backgroundColor: 'white', color: 'gray' }}>
+          <ActionButton onClick={handleAdd} style={{ marginRight: 8, marginTop: 0, color: 'gray', backgroundColor: colors.dark.grayish.G700 }}>
             Add Variable
           </ActionButton>
           <ActionButton onClick={handleSave} disabled={saving} style={{ marginRight: 8, marginTop: 0 }}>
