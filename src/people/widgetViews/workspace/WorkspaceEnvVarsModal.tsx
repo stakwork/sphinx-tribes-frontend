@@ -63,11 +63,6 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
       <div
         className="modal-backdrop"
         style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
           background: 'rgba(0,0,0,0.3)',
           zIndex: 1000
         }}
@@ -81,7 +76,8 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
             borderRadius: 8,
             maxWidth: 600,
             minWidth: 320,
-            display: 'block'
+            display: 'block',
+						height: 'auto'
           }}
         >
           <h2>Workspace Environment Variables</h2>
