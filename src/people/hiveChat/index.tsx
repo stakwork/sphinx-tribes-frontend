@@ -2,7 +2,14 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useParams } from 'react-router-dom';
-import { ChatMessage, Artifact, TextContent, SSEMessage, APIResponse } from 'store/interface';
+import {
+  ChatMessage,
+  Artifact,
+  TextContent,
+  VisualContent,
+  SSEMessage,
+  APIResponse
+} from 'store/interface';
 import { useStores } from 'store';
 import { createSocketInstance } from 'config/socket';
 import SidebarComponent from 'components/common/SidebarComponent.tsx';
@@ -19,6 +26,7 @@ import VisualScreenViewer from '../widgetViews/workspace/VisualScreenViewer.tsx'
 import { ModelOption } from './modelSelector.tsx';
 import { ActionArtifactRenderer } from './ActionArtifactRenderer';
 import ChatStatusDisplay from './ChatStatusDisplay.tsx';
+import StaktrakRecorder from './StaktrakRecorder';
 
 import SplashScreen from './ChatSplashScreen';
 
@@ -629,6 +637,8 @@ export const HiveChatView: React.FC = observer(() => {
   const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [isRefreshingTitle, setIsRefreshingTitle] = useState(false);
   const [sseLogs, setSseLogs] = useState<SSEMessage[]>([]);
+  const [, setStaktrakReady] = useState(false);
+  const [iframeUrl, setIframeUrl] = useState('');
   useBrowserTabTitle('Hive Chat');
 
   if (isVerboseLoggingEnabled) {
@@ -1460,6 +1470,31 @@ export const HiveChatView: React.FC = observer(() => {
     }
   }, [isMobile, showArtifactView]);
 
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data && event.data.type === 'staktrak-setup') {
+        setStaktrakReady(true);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (artifactTab === 'visual' && visualArtifact && visualArtifact.length > 0) {
+      const currentVisual = visualArtifact[0];
+      if (currentVisual.content) {
+        const content = currentVisual.content as VisualContent;
+        if (content.url) {
+          setIframeUrl(content.url);
+        }
+      }
+    }
+  }, [artifactTab, visualArtifact]);
+
   if (loading) {
     return (
       <Container collapsed={collapsed} ref={containerRef}>
@@ -1726,6 +1761,8 @@ export const HiveChatView: React.FC = observer(() => {
                   sseLogs={sseLogs}
                   activeTab={artifactTab}
                 />
+
+                <StaktrakRecorder iframeUrl={iframeUrl} />
               </ViewerSection>
             </>
           )}
