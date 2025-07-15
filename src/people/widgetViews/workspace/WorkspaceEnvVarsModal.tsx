@@ -65,9 +65,9 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
     const handleSave = async () => {
       setSaving(true);
       // Only send new/changed values (not masked/unchanged)
-      const toSend = envVars.filter((v) => v._edited && v.value && !v.value.includes('*'));
+      //const toSend = envVars.filter((v) => v._edited && v.value && !v.value.includes('*'));
       try {
-        await mainStore.updateWorkspaceEnvVars(workspaceUuid, toSend);
+        await mainStore.updateWorkspaceEnvVars(workspaceUuid, envVars);
         onClose();
       } catch (e) {
         // TODO: error handling
@@ -127,6 +127,7 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
                         placeholder="placeholder"
                         feature={true}
                         value={v.value}
+                        type={'password'}
                         onChange={(e) => handleEdit(idx, 'value', e.target.value)}
                         style={{ width: '100%' }}
                       />
