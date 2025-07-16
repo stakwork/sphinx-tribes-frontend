@@ -6,6 +6,7 @@ import { mainStore } from '../../../store/main';
 import { TextInput, ActionButton } from './style';
 import { colors } from '../../../config/colors';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+
 const AddEnvHeader = styled.h2`
   color: #3c3f41;
   font-family: 'Barlow';
@@ -145,7 +146,7 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
                           translate: '-200%'
                         }}
                       >
-                        {showPassword ? <FaEye /> : <FaEyeSlash />}
+                        {showPassword ? <FaEye as any /> : <FaEyeSlash as any />}
                       </div>
                     </td>
                     <td>
