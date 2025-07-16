@@ -153,7 +153,11 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
                           translate: '-200%'
                         }}
                       >
-                        {showPassword ? <CustomIcon icon={FaEye} /> : <CustomIcon icon={FaEyeSlash} />}
+                        {showPassword ? (
+                          <CustomIcon icon={FaEye} />
+                        ) : (
+                          <CustomIcon icon={FaEyeSlash} />
+                        )}
                       </div>
                     </td>
                     <td>
