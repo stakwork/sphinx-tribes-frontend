@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { IconType } from 'react-icons';
 import styled from 'styled-components';
 import { observer } from 'mobx-react-lite';
 import { EnvVar } from '../../../store/interface';
@@ -27,6 +28,12 @@ interface WorkspaceEnvVarsModalProps {
   onClose: () => void;
   workspaceUuid: string;
 }
+
+interface IconProps {
+  icon: IconType;
+}
+
+const CustomIcon: React.FC<IconProps> = ({ icon: Icon }) => <Icon />;
 
 const defaultEnvVar = (): EnvVar => ({ name: '', value: '', masked: false, _edited: true });
 
@@ -146,7 +153,7 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
                           translate: '-200%'
                         }}
                       >
-                        {showPassword ? <FaEye as any /> : <FaEyeSlash as any />}
+                        {showPassword ? <CustomIcon icon={FaEye} /> : <CustomIcon icon={FaEyeSlash} />}
                       </div>
                     </td>
                     <td>
