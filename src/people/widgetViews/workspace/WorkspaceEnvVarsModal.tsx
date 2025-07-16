@@ -35,7 +35,6 @@ function eye(closeOrOpen: boolean): JSX.Element {
   return closeOrOpen ? <FontAwesomeIcon icon={faEye} /> : <FontAwesomeIcon icon={faEyeSlash} />;
 }
 
-
 const defaultEnvVar = (): EnvVar => ({ name: '', value: '', masked: false, _edited: true });
 
 const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
@@ -154,11 +153,7 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
                           translate: '-200%'
                         }}
                       >
-                        {showPassword ? (
-																eye(false)
-                        ) : (
-																eye(true)
-                        )}
+                        {showPassword ? eye(false) : eye(true)}
                       </div>
                     </td>
                     <td>
