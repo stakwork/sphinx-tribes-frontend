@@ -6,7 +6,9 @@ import { EnvVar } from '../../../store/interface';
 import { mainStore } from '../../../store/main';
 import { TextInput, ActionButton } from './style';
 import { colors } from '../../../config/colors';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
+//import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const AddEnvHeader = styled.h2`
   color: #3c3f41;
@@ -29,11 +31,10 @@ interface WorkspaceEnvVarsModalProps {
   workspaceUuid: string;
 }
 
-interface IconProps {
-  icon: IconType;
+function eye(closeOrOpen: boolean): JSX.Element {
+  return closeOrOpen ? <FontAwesomeIcon icon={faEye} /> : <FontAwesomeIcon icon={faEyeSlash} />;
 }
 
-const CustomIcon: React.FC<IconProps> = ({ icon: Icon }) => <Icon />;
 
 const defaultEnvVar = (): EnvVar => ({ name: '', value: '', masked: false, _edited: true });
 
@@ -154,9 +155,9 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
                         }}
                       >
                         {showPassword ? (
-                          <CustomIcon icon={FaEye} />
+																eye(false)
                         ) : (
-                          <CustomIcon icon={FaEyeSlash} />
+																eye(true)
                         )}
                       </div>
                     </td>
