@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react';
+import { IconType } from 'react-icons';
 import styled from 'styled-components';
 import { observer } from 'mobx-react-lite';
 import { EnvVar } from '../../../store/interface';
 import { mainStore } from '../../../store/main';
 import { TextInput, ActionButton } from './style';
 import { colors } from '../../../config/colors';
+//import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const AddEnvHeader = styled.h2`
   color: #3c3f41;
@@ -27,6 +31,10 @@ interface WorkspaceEnvVarsModalProps {
   workspaceUuid: string;
 }
 
+function eye(closeOrOpen: boolean): JSX.Element {
+  return closeOrOpen ? <FontAwesomeIcon icon={faEye} /> : <FontAwesomeIcon icon={faEyeSlash} />;
+}
+
 const defaultEnvVar = (): EnvVar => ({ name: '', value: '', masked: false, _edited: true });
 
 const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
@@ -34,6 +42,11 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
     const [envVars, setEnvVars] = useState<EnvVar[]>([]);
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+
+    const togglePasswordVisibility = () => {
+      setShowPassword(!showPassword);
+    };
 
     useEffect(() => {
       if (open && workspaceUuid) {
@@ -65,7 +78,7 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
     const handleSave = async () => {
       setSaving(true);
       // Only send new/changed values (not masked/unchanged)
-      const toSend = envVars.filter((v) => v._edited && v.value && !v.value.includes('*'));
+      const toSend = envVars.filter((v) => v.value && !v.value.includes('*'));
       try {
         await mainStore.updateWorkspaceEnvVars(workspaceUuid, toSend);
         onClose();
@@ -127,9 +140,21 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
                         placeholder="placeholder"
                         feature={true}
                         value={v.value}
+                        type={showPassword ? 'text' : 'password'}
                         onChange={(e) => handleEdit(idx, 'value', e.target.value)}
                         style={{ width: '100%' }}
                       />
+                    </td>
+                    <td>
+                      <div
+                        onClick={togglePasswordVisibility}
+                        style={{
+                          cursor: 'pointer',
+                          translate: '-200%'
+                        }}
+                      >
+                        {showPassword ? eye(false) : eye(true)}
+                      </div>
                     </td>
                     <td>
                       <ActionButton

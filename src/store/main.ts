@@ -5079,6 +5079,7 @@ export class MainStore {
       username?: string;
       githubPat?: string;
       baseBranch?: string;
+      poolAPIKey?: string;
     }
   ): Promise<any> {
     try {
