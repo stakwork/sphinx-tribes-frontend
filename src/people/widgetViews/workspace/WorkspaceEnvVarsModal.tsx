@@ -78,7 +78,8 @@ const WorkspaceEnvVarsModal: React.FC<WorkspaceEnvVarsModalProps> = observer(
     const handleSave = async () => {
       setSaving(true);
       // Only send new/changed values (not masked/unchanged)
-      const toSend = envVars.filter((v) => v.value && !v.value.includes('*'));
+      const toSend = envVars.filter((v) => v.value);
+
       try {
         await mainStore.updateWorkspaceEnvVars(workspaceUuid, toSend);
         onClose();
