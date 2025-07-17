@@ -5,6 +5,7 @@ import { generatePlaywrightTest } from '../../utils/staktrakUtils';
 
 interface StaktrakRecorderProps {
   iframeUrl: string;
+  activeTab?: 'visual' | 'code' | 'text' | 'logs';
 }
 
 interface Toast {
@@ -216,7 +217,7 @@ const ActionButton = styled.button<{ $primary?: boolean }>`
   }
 `;
 
-const StaktrakRecorder: React.FC<StaktrakRecorderProps> = ({ iframeUrl }) => {
+const StaktrakRecorder: React.FC<StaktrakRecorderProps> = ({ iframeUrl, activeTab }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [generatedTest, setGeneratedTest] = useState<string | null>(null);
@@ -661,6 +662,10 @@ const StaktrakRecorder: React.FC<StaktrakRecorderProps> = ({ iframeUrl }) => {
       ]);
     }
   }, [generatedTest, isModalOpen]);
+
+  if (activeTab !== undefined && activeTab !== 'visual') {
+    return null;
+  }
 
   return (
     <>

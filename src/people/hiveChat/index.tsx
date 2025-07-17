@@ -1762,7 +1762,7 @@ export const HiveChatView: React.FC = observer(() => {
                   activeTab={artifactTab}
                 />
 
-                <StaktrakRecorder iframeUrl={iframeUrl} />
+                <StaktrakRecorder iframeUrl={iframeUrl} activeTab={artifactTab} />
               </ViewerSection>
             </>
           )}
