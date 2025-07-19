@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { IconType } from 'react-icons';
 import styled from 'styled-components';
 import { observer } from 'mobx-react-lite';
 import { EnvVar } from '../../../store/interface';

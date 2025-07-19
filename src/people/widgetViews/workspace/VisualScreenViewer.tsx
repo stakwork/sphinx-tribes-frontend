@@ -262,6 +262,7 @@ const VisualScreenViewer: React.FC<VisualScreenViewerProps> = ({
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [codeCopied, setCodeCopied] = useState(false);
   const [textCopied, setTextCopied] = useState(false);
+  const [, setIsStaktrakInjected] = useState(false);
 
   useEffect(() => {
     if (visualArtifact.length > 0) {
@@ -272,6 +273,87 @@ const VisualScreenViewer: React.FC<VisualScreenViewerProps> = ({
       setTextIndex(0);
     }
   }, [visualArtifact.length, codeArtifact.length, textArtifact.length]);
+
+  const injectStaktrakScript = () => {
+    if (!iframeRef.current) return;
+
+    try {
+      const iframe = iframeRef.current;
+
+      const injectScriptIntoIframe = (iframeDocument: Document) => {
+        const existingScript = iframeDocument.querySelector('script[src="/static/staktrak.js"]');
+        if (existingScript) {
+          console.log('Staktrak script already injected');
+          return;
+        }
+
+        console.log('Injecting staktrak script into iframe');
+
+        const script = iframeDocument.createElement('script');
+        script.src = '/static/staktrak.js';
+        script.async = true;
+        script.defer = true;
+
+        script.onload = () => {
+          console.log('Staktrak script loaded successfully');
+
+          window.dispatchEvent(new CustomEvent('staktrak-ready'));
+          console.log('Staktrak ready event dispatched');
+        };
+
+        script.onerror = () => {
+          console.error('Error loading Staktrak script');
+        };
+
+        iframeDocument.head.appendChild(script);
+
+        const style = iframeDocument.createElement('style');
+        style.textContent = `
+          body.staktrak-selection-active {
+            cursor: crosshair !important;
+            position: relative;
+          }
+          body.staktrak-selection-active::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(66, 133, 244, 0.1);
+            pointer-events: none;
+            z-index: 9999;
+          }
+        `;
+        iframeDocument.head.appendChild(style);
+
+        setIsStaktrakInjected(true);
+      };
+
+      if (
+        iframe.contentWindow &&
+        iframe.contentDocument &&
+        iframe.contentDocument.readyState === 'complete'
+      ) {
+        console.log('Iframe already loaded, injecting script immediately');
+        injectScriptIntoIframe(iframe.contentDocument);
+        return;
+      }
+
+      console.log('Waiting for iframe to load before injecting script');
+      iframe.onload = () => {
+        if (!iframe.contentWindow || !iframe.contentDocument) {
+          console.error('Cannot access iframe contentDocument');
+          return;
+        }
+
+        console.log('Iframe loaded, injecting script');
+        injectScriptIntoIframe(iframe.contentDocument);
+      };
+    } catch (error) {
+      console.error('Failed to inject staktrak script:', error);
+    }
+  };
 
   const handleNext = () => {
     if (activeTab === 'visual') {
@@ -304,6 +386,7 @@ const VisualScreenViewer: React.FC<VisualScreenViewerProps> = ({
   const handleUrlSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && iframeRef.current) {
       iframeRef.current.src = currentUrl;
+      setIsStaktrakInjected(false);
     }
   };
 
@@ -316,9 +399,22 @@ const VisualScreenViewer: React.FC<VisualScreenViewerProps> = ({
       const content = currentVisual.content as VisualContent;
       if (content.url) {
         setCurrentUrl(content.url);
+        setIsStaktrakInjected(false);
       }
     }
   }, [activeTab, currentVisual]);
+
+  useEffect(() => {
+    if (activeTab === 'visual' && currentUrl) {
+      console.log('URL changed or activeTab is visual, injecting staktrak script for:', currentUrl);
+      setIsStaktrakInjected(false);
+      const timer = setTimeout(() => {
+        injectStaktrakScript();
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [activeTab, currentUrl]);
 
   const getCodeContent = (): { code: string; language: string } => {
     if (currentCode?.content && 'content' in currentCode.content) {
@@ -406,6 +502,7 @@ const VisualScreenViewer: React.FC<VisualScreenViewerProps> = ({
               ref={iframeRef}
               src={(currentVisual.content as VisualContent).url || ''}
               title="Visual Screen Viewer"
+              onLoad={injectStaktrakScript}
             />
           </IframeWrapper>
           <PaginationControls>
