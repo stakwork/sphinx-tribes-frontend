@@ -1,6 +1,6 @@
 import React from 'react';
-import { useState } from 'react';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 
 interface User {
   alias: string;
@@ -9,6 +9,10 @@ interface User {
 interface SplashScreenProps {
   user: User;
   onSendMessage: (message: string) => void;
+  isWorkspaceIncomplete?: boolean;
+  isPATExpired?: boolean;
+  workspaceUuid?: string;
+  disableInput?: boolean;
 }
 
 const SplashScreenContainer = styled.div`
@@ -39,15 +43,72 @@ const WelcomeHeader = styled.h1`
 const WelcomeTagline = styled.p`
   font-size: 1.2rem;
   color: #64748b;
-  margin-bottom: 2.5rem;
   line-height: 1.6;
   max-width: 600px;
 `;
 
-const SplashScreen: React.FC<SplashScreenProps> = ({ user, onSendMessage }) => {
-  const [visible, setVisible] = useState(true);
+const RequirementsList = styled.ul`
+  text-align: left;
+  width: fit-content;
+  color: #64748b;
+  font-size: 1.1rem;
+  line-height: 1.8;
+`;
 
-  if (!visible) return null;
+const RequirementItem = styled.li`
+  margin-bottom: 0.1px;
+`;
+
+const SettingsLink = styled(Link)`
+  display: inline-block;
+  padding: 10px 24px;
+  margin-left: 20px;
+  background-color: #4285f4;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s;
+
+  &:hover {
+    color: black;
+    background-color: #3367d6;
+    transform: translateY(-1px);
+    text-decoration: none;
+  }
+`;
+
+const SplashScreen: React.FC<SplashScreenProps> = ({
+  user,
+  isWorkspaceIncomplete,
+  isPATExpired,
+  workspaceUuid
+}) => {
+  if (isWorkspaceIncomplete || isPATExpired) {
+    return (
+      <SplashScreenContainer>
+        <WelcomeHeader>Workspace Incomplete</WelcomeHeader>
+        <WelcomeTagline>
+          {isPATExpired
+            ? 'Your GitHub Personal Access Token (PAT) has expired. Please update it in Settings.'
+            : 'To get started, please complete your workspace setup in the settings.'}
+        </WelcomeTagline>
+
+        {!isPATExpired && (
+          <>
+            <WelcomeTagline>You need to provide:</WelcomeTagline>
+            <RequirementsList>
+              <RequirementItem>Code Space URL</RequirementItem>
+              <RequirementItem>Code Graph URL</RequirementItem>
+              <RequirementItem>Secret Alias</RequirementItem>
+            </RequirementsList>
+          </>
+        )}
+
+        <SettingsLink to={`/workspace/${workspaceUuid}/mission`}>Go to Settings</SettingsLink>
+      </SplashScreenContainer>
+    );
+  }
 
   return (
     <SplashScreenContainer>
