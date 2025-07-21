@@ -27,7 +27,7 @@ import { ModelOption } from './modelSelector.tsx';
 import { ActionArtifactRenderer } from './ActionArtifactRenderer';
 import ChatStatusDisplay from './ChatStatusDisplay.tsx';
 import StaktrakRecorder from './StaktrakRecorder';
-
+import axios from 'axios';
 import SplashScreen from './ChatSplashScreen';
 
 interface RouteParams {
@@ -640,6 +640,10 @@ export const HiveChatView: React.FC = observer(() => {
   const [sseLogs, setSseLogs] = useState<SSEMessage[]>([]);
   const [, setStaktrakReady] = useState(false);
   const [iframeUrl, setIframeUrl] = useState('');
+  const [isWorkspaceComplete, setIsWorkspaceComplete] = useState<boolean>(false);
+  const [isPATExpired, setIsPATExpired] = useState<boolean>(false);
+  const [isValidating, setIsValidating] = useState<boolean>(true);
+  const [workspaceData, setWorkspaceData] = useState<any>(null);
   useBrowserTabTitle('Hive Chat');
 
   if (isVerboseLoggingEnabled) {
@@ -790,6 +794,19 @@ export const HiveChatView: React.FC = observer(() => {
   const handleSendMessage = async (messageToSend?: string) => {
     const messageText = messageToSend || message;
     if (!messageText.trim() || isSending) return;
+
+    if (!isWorkspaceComplete || isPATExpired) {
+      ui.setToasts([
+        {
+          title: 'Cannot Send Message',
+          color: 'danger',
+          text: isPATExpired
+            ? 'Your GitHub PAT has expired. Please update it in settings.'
+            : 'Your workspace setup is incomplete. Please check settings.'
+        }
+      ]);
+      return;
+    }
 
     setIsSending(true);
     try {
@@ -1341,6 +1358,18 @@ export const HiveChatView: React.FC = observer(() => {
     (textArtifact && textArtifact.length > 0);
 
   const handleSplashMessage = async (msg: string) => {
+    if (!isWorkspaceComplete || isPATExpired) {
+      ui.setToasts([
+        {
+          title: 'Cannot Send Message',
+          color: 'danger',
+          text: isPATExpired
+            ? 'Your GitHub PAT has expired. Please update it in settings.'
+            : 'Your workspace setup is incomplete. Please check settings.'
+        }
+      ]);
+      return;
+    }
     setMessage(msg);
     setIsSending(true);
 
@@ -1835,7 +1864,76 @@ export const HiveChatView: React.FC = observer(() => {
     }
   }, [isTestingMode, artifactTab]);
 
-  if (loading) {
+  const validateGitHubPAT = async (pat: string): Promise<boolean> => {
+    if (!pat) return false;
+
+    try {
+      const response = await axios.get('https://api.github.com/user', {
+        headers: {
+          Authorization: `token ${pat}`
+        }
+      });
+
+      return response.status === 200;
+    } catch (error) {
+      console.error('Error validating GitHub PAT:', error);
+      return false;
+    }
+  };
+
+  const checkWorkspaceSetup = useCallback(async () => {
+    if (!uuid) return;
+
+    setIsValidating(true);
+    try {
+      const workspace = await main.getUserWorkspaceByUuid(uuid);
+      setWorkspaceData(workspace);
+
+      if (!workspace) {
+        setIsWorkspaceComplete(false);
+        setIsValidating(false);
+        return;
+      }
+
+      const codeGraph = await main.getWorkspaceCodeGraph(uuid);
+
+      const hasCodeGraphUrl = codeGraph && codeGraph.url;
+      const hasSecretAlias = codeGraph && codeGraph.secret_alias;
+
+      let patValid = false;
+      const codeSpaceConfig = await main.getCodeSpaceConfig(uuid);
+
+      const hasCodespaceUrl = codeSpaceConfig && codeSpaceConfig.url;
+      const hasUsername = codeSpaceConfig && codeSpaceConfig.username;
+      const hasPAT = codeSpaceConfig && codeSpaceConfig.pat;
+
+      if (hasPAT) {
+        patValid = await validateGitHubPAT(codeSpaceConfig.pat);
+        setIsPATExpired(!!(!patValid && hasPAT));
+      }
+
+      const isComplete = !!(
+        hasCodeGraphUrl &&
+        hasSecretAlias &&
+        hasCodespaceUrl &&
+        hasUsername &&
+        hasPAT &&
+        patValid
+      );
+      setIsWorkspaceComplete(isComplete);
+    } catch (error) {
+      console.error('Error checking workspace setup:', error);
+      setIsWorkspaceComplete(false);
+    } finally {
+      setIsValidating(false);
+    }
+  }, [uuid, main]);
+
+  useEffect(() => {
+    checkWorkspaceSetup();
+  }, [checkWorkspaceSetup]);
+
+  if (loading || isValidating) {
     return (
       <Container collapsed={collapsed} ref={containerRef}>
         <LoadingContainer>
@@ -1902,6 +2000,10 @@ export const HiveChatView: React.FC = observer(() => {
                     <SplashScreen
                       user={{ alias: ui.meInfo?.owner_alias || 'User' }}
                       onSendMessage={handleSplashMessage}
+                      isWorkspaceIncomplete={!isWorkspaceComplete}
+                      isPATExpired={isPATExpired}
+                      workspaceUuid={uuid}
+                      disableInput={!isWorkspaceComplete || isPATExpired}
                     />
                   </SplashContainer>
                 )}
@@ -1975,18 +2077,25 @@ export const HiveChatView: React.FC = observer(() => {
                   value={message}
                   onChange={handleMessageChange}
                   onKeyPress={handleKeyPress}
-                  placeholder="Type your message..."
-                  disabled={isSending}
+                  placeholder={
+                    !isWorkspaceComplete || isPATExpired
+                      ? 'Complete workspace setup to send messages'
+                      : 'Type your message...'
+                  }
+                  disabled={isSending || !isWorkspaceComplete || isPATExpired}
                 />
                 {isPdfUploadEnabled && (
-                  <AttachButton onClick={() => setIsUploadModalOpen(true)} disabled={isSending}>
+                  <AttachButton
+                    onClick={() => setIsUploadModalOpen(true)}
+                    disabled={isSending || !isWorkspaceComplete || isPATExpired}
+                  >
                     Attach
                     <AttachIcon icon="attach_file" />
                   </AttachButton>
                 )}
                 <SendButton
                   onClick={() => handleSendMessage()}
-                  disabled={!message.trim() || isSending}
+                  disabled={!message.trim() || isSending || !isWorkspaceComplete || isPATExpired}
                 >
                   Send
                 </SendButton>

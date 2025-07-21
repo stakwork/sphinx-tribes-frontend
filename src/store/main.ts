@@ -5310,6 +5310,24 @@ export class MainStore {
       return null;
     }
   }
+
+  async getCodeSpaceConfig(
+    workspace_uuid: string
+  ): Promise<{ url: string; username: string; pat: string } | null> {
+    try {
+      const response = await this.getCodeSpace(workspace_uuid);
+      if (!response) return null;
+
+      return {
+        url: response.codeSpaceURL || '',
+        username: response.username || '',
+        pat: response.githubPat || ''
+      };
+    } catch (e) {
+      console.log('Error getting code space config', e);
+      return null;
+    }
+  }
 }
 
 export const mainStore = new MainStore();
