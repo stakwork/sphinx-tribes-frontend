@@ -206,9 +206,9 @@ const EditWorkspaceModal = (props: EditWorkspaceModalProps) => {
       const formData = new FormData();
       if (rawSelectedFile) {
         formData.append('file', rawSelectedFile);
-        console.log('Form Data: ' + formData);
+        console.log('Form Data: ' + JSON.stringify(formData));
         const file = await main.uploadFile(formData);
-        console.log('File: ' + file);
+        console.log('File: ' + JSON.stringify(file));
         if (file && file.ok) {
           img = await file.json();
         } else {
