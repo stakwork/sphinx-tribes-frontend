@@ -205,6 +205,8 @@ const EditWorkspaceModal = (props: EditWorkspaceModalProps) => {
       let img = '';
       const formData = new FormData();
       if (rawSelectedFile) {
+        console.log('rawSelectedFile: ' + JSON.stringify(rawSelectedFile));
+        console.log('selectedImage: ' + JSON.stringify(selectedImage));
         formData.append('file', rawSelectedFile);
         console.log('Form Data: ' + JSON.stringify(formData));
         const file = await main.uploadFile(formData);
@@ -251,6 +253,7 @@ const EditWorkspaceModal = (props: EditWorkspaceModalProps) => {
   const handleFileInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
     if (file) {
+      console.log('File: ' + JSON.stringify(file));
       // Display the selected image
       const imageUrl = URL.createObjectURL(file);
       setSelectedImage(imageUrl);
@@ -264,6 +267,7 @@ const EditWorkspaceModal = (props: EditWorkspaceModalProps) => {
     event.preventDefault();
     const file = event.dataTransfer.files[0];
     if (file) {
+      console.log('File: ' + JSON.stringify(file));
       const imageUrl = URL.createObjectURL(file);
       setSelectedImage(imageUrl);
       setRawSelectedFile(file);
