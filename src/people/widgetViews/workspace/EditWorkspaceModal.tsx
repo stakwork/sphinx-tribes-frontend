@@ -205,13 +205,22 @@ const EditWorkspaceModal = (props: EditWorkspaceModalProps) => {
       let img = '';
       const formData = new FormData();
       if (rawSelectedFile) {
-        console.log('rawSelectedFile: ' + JSON.stringify(rawSelectedFile));
-        console.log('selectedImage: ' + JSON.stringify(selectedImage));
+        console.log('rawSelectedFile:', {
+          name: rawSelectedFile.name,
+          size: rawSelectedFile.size,
+          type: rawSelectedFile.type,
+          lastModified: rawSelectedFile.lastModified
+        });
+        console.log('selectedImage:', selectedImage);
         formData.append('file', rawSelectedFile);
-        console.log('Form Data: ' + JSON.stringify(formData));
-        console.log('Form Data entries: ' + JSON.stringify(formData.entries()));
+        console.log('Form Data:', Object.fromEntries(formData));
         const file = await main.uploadFile(formData);
-        console.log('File: ' + JSON.stringify(file));
+        console.log('File:', {
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          lastModified: file.lastModified
+        });
         if (file && file.ok) {
           img = await file.json();
         } else {
@@ -254,7 +263,12 @@ const EditWorkspaceModal = (props: EditWorkspaceModalProps) => {
   const handleFileInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
     if (file) {
-      console.log('File: ' + JSON.stringify(file));
+      console.log('File:', {
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        lastModified: file.lastModified
+      });
       // Display the selected image
       const imageUrl = URL.createObjectURL(file);
       setSelectedImage(imageUrl);
@@ -268,7 +282,12 @@ const EditWorkspaceModal = (props: EditWorkspaceModalProps) => {
     event.preventDefault();
     const file = event.dataTransfer.files[0];
     if (file) {
-      console.log('File: ' + JSON.stringify(file));
+      console.log('File:', {
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        lastModified: file.lastModified
+      });
       const imageUrl = URL.createObjectURL(file);
       setSelectedImage(imageUrl);
       setRawSelectedFile(file);
