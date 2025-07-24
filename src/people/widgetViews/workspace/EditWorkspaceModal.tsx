@@ -261,6 +261,7 @@ const EditWorkspaceModal = (props: EditWorkspaceModalProps) => {
   const isWorkspaceAdmin = props.org?.owner_pubkey === ui.meInfo?.owner_pubkey;
 
   const handleFileInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    console.log('Event files:', e.target.files);
     const file = e.target.files && e.target.files[0];
     if (file) {
       console.log('File:', {
