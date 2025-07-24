@@ -2390,6 +2390,26 @@ export class MainStore {
     try {
       if (!uiStore.meInfo) return null;
       const info = uiStore.meInfo;
+
+      // Inspect FormData
+      for (const [key, value] of body.entries()) {
+        console.log(`${key}:`, value);
+        if (value instanceof File) {
+          console.log(`File name: ${value.name}, Size: ${value.size}, Type: ${value.type}`);
+
+          // Read file content
+          const reader = new FileReader();
+          reader.onload = () => {
+            console.log(`File content:`, reader.result);
+          };
+          reader.onerror = () => {
+            console.log(`Error reading file:`, reader.error);
+          };
+          // Read as text, data URL, or other format depending on file type
+          reader.readAsText(value); // or readAsDataURL for images, etc.
+        }
+      }
+
       const r: any = await fetch(`${TribesURL}/meme_upload`, {
         method: 'POST',
         mode: 'cors',
