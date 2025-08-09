@@ -110,6 +110,7 @@ export const BaseModal = ({ children, backdrop, ...props }: BaseModalProps) => {
 
   return (
     <StyledModal
+      data-testid="base-modal-component"
       {...props}
       slots={{ backdrop: StyledBackdrop }}
       slotProps={{
