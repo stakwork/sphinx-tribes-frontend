@@ -1,3 +1,4 @@
+```
 import { mainStore } from 'store/main';
 import { uiStore } from 'store/ui';
 import { usePeopleSearchHandler } from 'hooks';
@@ -20,3 +21,4 @@ describe('People Search Handler Hook', () => {
     });
   });
 });
+```
