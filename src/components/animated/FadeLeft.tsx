@@ -86,7 +86,7 @@ export default function FadeLeft(props: FadeLeftProps) {
 
   if (withOverlay) {
     return (
-      <Overlay style={{ ...style, background: '#000000cc', opacity: !noFade ? opacity : 1 }}>
+      <Overlay data-testid="fade-left-component" style={{ ...style, background: '#000000cc', opacity: !noFade ? opacity : 1 }}>
         <Fader
           id="sphinx-top-level-overlay"
           onClick={(e: any) => {
