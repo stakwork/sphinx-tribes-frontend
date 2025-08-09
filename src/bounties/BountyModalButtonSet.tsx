@@ -150,7 +150,7 @@ const ButtonSet = ({ showGithubBtn, ...props }: any) => {
         </ButtonContainer>
       )}
 
-      <ButtonContainer topMargin={'16px'} onClick={props.copyURLAction} color={color}>
+      <ButtonContainer data-testid="copy-bounty-url" topMargin={'16px'} onClick={props.copyURLAction} color={color}>
         <div className="LeadingImageContainer">
           <img
             className="buttonImage"
