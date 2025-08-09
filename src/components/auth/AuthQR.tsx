@@ -77,7 +77,7 @@ function AuthQR(props: AuthProps) {
   }, []);
 
   return (
-    <ConfirmWrap style={{ ...props.style }}>
+    <ConfirmWrap data-testid="auth-qr-component" style={{ ...props.style }}>
       {challenge ? (
         <QR size={203} style={{ width: 203 }} value={qrString} />
       ) : (
