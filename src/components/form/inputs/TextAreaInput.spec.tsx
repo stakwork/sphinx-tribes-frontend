@@ -36,7 +36,7 @@ describe('TextAreaInput', () => {
       workspaceid: 'csvm3cqtu2rphloa7870'
     };
 
-    render(<TextAreaInput {...mockProps} />);
+    render(<TextAreaInput data-testid="text-area-input-component" {...mockProps} />);
     const textArea = screen.getByTestId('checktextarea');
 
     expect(textArea).toHaveAttribute('readonly'); // Check if the textarea has the 'readonly' attribute
@@ -75,7 +75,7 @@ describe('TextAreaInput', () => {
       workspaceid: 'csvm3cqtu2rphloa7870'
     };
 
-    render(<TextAreaInput {...mockProps} />);
+    render(<TextAreaInput data-testid="text-area-input-component" {...mockProps} />);
     const textArea = screen.getByTestId('checktextarea');
 
     expect(textArea).not.toHaveAttribute('readonly'); // Check if the textarea does not have the 'readonly' attribute
