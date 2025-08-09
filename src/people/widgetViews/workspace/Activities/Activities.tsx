@@ -124,7 +124,7 @@ export const SelectActivityState = styled(EmptyState)`
   justify-content: center;
 `;
 
-const ModalOverlay = styled.div<{ collapsed: boolean }>`
+export const ModalOverlay = styled.div<{ collapsed: boolean }>`
   position: ${({ collapsed }) => (collapsed ? 'static' : 'fixed')};
   top: 0;
   left: 0;
@@ -133,24 +133,33 @@ const ModalOverlay = styled.div<{ collapsed: boolean }>`
   background: rgba(0, 0, 0, 0.5);
   z-index: 999;
   transition: all 0.3s ease;
-  display: ${({ collapsed }) => (collapsed ? 'none' : 'block')};
+  display: ${({ collapsed }) => (collapsed ? 'none' : 'flex')};
+
+  margin-top: 30px;
+  align-items: center;
+  justify-content: center;
 `;
 
 const ModalContent = styled.div`
   background: white;
-  padding: 20px;
   border-radius: 8px;
   width: 90%;
   max-width: 600px;
-  max-height: 90vh;
-  overflow-y: auto;
+  position: relative;
   margin: 20px 0;
 `;
 
 const Form = styled.form`
   display: flex;
   flex-direction: column;
+  padding: 20px;
+  max-height: 80vh;
+  overflow-y: auto;
   gap: 1rem;
+`;
+
+const ModalHeading = styled.h2`
+  margin: 20px 0 0 20px;
 `;
 
 const Feedback = styled.div`
@@ -235,6 +244,25 @@ const ActionButtons = styled.div`
     padding: 1rem;
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
   }
+`;
+
+const CloseButton = styled.button`
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 32px;
+  height: 32px;
+  background: #000;
+  color: #fff;
+  font-size: 1.7rem;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
 `;
 
 const DeleteButton = styled(Button)`
@@ -1077,7 +1105,14 @@ const Activities = observer(() => {
               }}
             >
               <ModalContent onClick={(e) => e.stopPropagation()}>
-                <h2>Create New Activity</h2>
+                <CloseButton
+                  onClick={() => {
+                    setIsModalOpen(false);
+                  }}
+                >
+                  &times;
+                </CloseButton>
+                <ModalHeading>Create New Activity</ModalHeading>
                 <Form onSubmit={handleSubmit}>
                   <FormField>
                     <label>Title</label>
