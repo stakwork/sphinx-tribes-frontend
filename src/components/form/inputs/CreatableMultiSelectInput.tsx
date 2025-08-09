@@ -49,7 +49,7 @@ export default function CreatableMultiSelectInput({
   const [isTop, setIsTop] = useState<boolean>(false);
 
   return (
-    <>
+    <> data-testid="creatable-multi-select-input-component"
       <FieldEnv
         color={color}
         label={labeltext}
