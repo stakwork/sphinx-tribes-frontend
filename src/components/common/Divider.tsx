@@ -7,5 +7,5 @@ const D = styled.div`
   width: 100%;
 `;
 export default function Divider(props: { style?: React.CSSProperties }) {
-  return <D style={{ ...props.style }} data-testid={'testid-divider'} />;
+  return <D data-testid="divider-component" style={{ ...props.style }} data-testid={'testid-divider'} />;
 }

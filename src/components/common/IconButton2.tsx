@@ -203,6 +203,7 @@ export default function IconButton(props: IconButtonProps) {
     </T>
   ) : (
     <B
+      data-testid="icon-button-component"
       id={id}
       style={{
         ...colors[color],
