@@ -10,7 +10,7 @@ export type PaymentConfirmationModalProps = PropsWithChildren<{
   onCancel?: () => void;
 }>;
 
-export const PaymentConfirmationModal = ({
+export const PaymentConfirmationModal = data-testid="payment-confirmation-modal-component" ({
   onClose,
   children,
   onCancel,
