@@ -1,3 +1,4 @@
+```
 import { uiStore } from '../store/ui';
 
 // eslint-disable-next-line @typescript-eslint/no-inferrable-types
@@ -14,3 +15,5 @@ export const satToUsd = (amount: number = 0) => {
 };
 
 export * from './helpers-extended';
+
+```
