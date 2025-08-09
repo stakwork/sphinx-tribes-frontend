@@ -21,7 +21,7 @@ describe('Elements', () => {
   nock(user.url).get('/person/id/1').reply(200, {});
   test('Title', async () => {
     const TitleText = 'Title Text';
-    render(<Title>{TitleText}</Title>);
+    render(<Title data-testid="elements-component">{TitleText}</Title>);
 
     expect(screen.queryByText(TitleText)).toBeInTheDocument();
   });
