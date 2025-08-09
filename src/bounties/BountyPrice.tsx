@@ -100,6 +100,7 @@ const BountyPrice = (props: BountiesPriceProps) => {
   return (
     <>
       <PriceContainer
+        data-testid="bounty-price-component"
         style={{
           ...props.style
         }}
