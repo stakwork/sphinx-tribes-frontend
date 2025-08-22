@@ -29,6 +29,7 @@ import ChatStatusDisplay from './ChatStatusDisplay.tsx';
 import StaktrakRecorder from './StaktrakRecorder';
 import axios from 'axios';
 import SplashScreen from './ChatSplashScreen';
+import { ERROR_MESSAGES } from '../utils/Constants';
 
 interface RouteParams {
   uuid: string;
@@ -798,11 +799,11 @@ export const HiveChatView: React.FC = observer(() => {
     if (!isWorkspaceComplete || isPATExpired) {
       ui.setToasts([
         {
-          title: 'Cannot Send Message',
+          title: ERROR_MESSAGES.CANNOT_SEND_MESSAGE,
           color: 'danger',
           text: isPATExpired
-            ? 'Your GitHub PAT has expired. Please update it in settings.'
-            : 'Your workspace setup is incomplete. Please check settings.'
+            ? ERROR_MESSAGES.GITHUB_PAT_EXPIRED
+            : ERROR_MESSAGES.WORKSPACE_SETUP_INCOMPLETE
         }
       ]);
       return;
@@ -1361,11 +1362,11 @@ export const HiveChatView: React.FC = observer(() => {
     if (!isWorkspaceComplete || isPATExpired) {
       ui.setToasts([
         {
-          title: 'Cannot Send Message',
+          title: ERROR_MESSAGES.CANNOT_SEND_MESSAGE,
           color: 'danger',
           text: isPATExpired
-            ? 'Your GitHub PAT has expired. Please update it in settings.'
-            : 'Your workspace setup is incomplete. Please check settings.'
+            ? ERROR_MESSAGES.GITHUB_PAT_EXPIRED
+            : ERROR_MESSAGES.WORKSPACE_SETUP_INCOMPLETE
         }
       ]);
       return;
@@ -2079,8 +2080,8 @@ export const HiveChatView: React.FC = observer(() => {
                   onKeyPress={handleKeyPress}
                   placeholder={
                     !isWorkspaceComplete || isPATExpired
-                      ? 'Complete workspace setup to send messages'
-                      : 'Type your message...'
+                      ? ERROR_MESSAGES.COMPLETE_WORKSPACE_SETUP
+                      : ERROR_MESSAGES.TYPE_MESSAGE_PLACEHOLDER
                   }
                   disabled={isSending || !isWorkspaceComplete || isPATExpired}
                 />
