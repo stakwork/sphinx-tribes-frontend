@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import StartUpModal from '../../people/utils/StartUpModal';
-import { getHost } from '../../config';
+import { useHistory } from 'react-router-dom';
 
 const HeroContainer = styled.section`
   background: #1a242e;
@@ -117,14 +117,14 @@ const Button = styled.button<{ variant: 'primary' | 'secondary' }>`
 
 const HeroSection: React.FC = () => {
   const [isOpenStartupModal, setIsOpenStartupModal] = useState(false);
+  const history = useHistory();
 
   const handleStartEarning = () => {
     setIsOpenStartupModal(true);
   };
 
   const handleViewBounties = () => {
-    const host = getHost();
-    window.location.href = `https://${host}/bounties`;
+    history.push('/bounties');
   };
 
   return (

@@ -29,22 +29,22 @@ describe('Check for Feature Call Url placeholder', () => {
       });
     cy.wait(1000);
 
-    cy.contains('Not Configured').should('exist', { timeout: 1000 });
-    cy.get('[data-testid="featurecall-option-btn-1"]').click();
+    cy.contains('Not configured. Set up a webhook for feature calls.').should('exist', {
+      timeout: 1000
+    });
+    cy.get('[data-testid="featurecall-add-btn-1"]').click();
     cy.wait(1000);
 
-    cy.get('[data-testid="featurecall-edit-btn-1"]').click();
+    cy.contains('Feature Call URL').should('exist');
     cy.wait(1000);
-
-    cy.contains('Edit Feature Call URL').should('exist');
     cy.get('[data-testid="feature-call-url-input"]').should('have.value', '');
 
     cy.get('[data-testid="feature-call-url-input"]').type('https://testfeature.com');
     cy.wait(1000);
 
     cy.get('[data-testid="add-featurecall-btn"]').click();
-    cy.wait(2000);
+    cy.wait(3000);
 
-    cy.contains('Not Configured').should('exist');
+    cy.contains('Not configured. Set up a webhook for feature calls.').should('exist');
   });
 });

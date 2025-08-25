@@ -1,0 +1,159 @@
+[
+  {
+    "id": "ed086a68-6b23-4a64-9e40-6a0ed6780b16",
+    "message_id": "d1puv6sopisuogv68pdg",
+    "type": "text",
+    "content": {
+      "chatID": "cvojui4opisvo7pfuin0",
+      "sse_url": "https://postman-echo.com/server-events/5",
+      "text_type": "sse_logs"
+    },
+    "created_at": "2025-07-13T17:40:43.821834Z",
+    "updated_at": "2025-07-13T17:40:43.821834Z"
+  },
+  {
+    "id": "new-sse-logs-artifact",
+    "message_id": "d1puv6sopisuogv68pdg",
+    "type": "text",
+    "content": {
+      "content": "This is a log message that should be properly parsed and displayed",
+      "text_type": "sse_logs"
+    },
+    "created_at": "2025-07-14T10:40:43.821834Z",
+    "updated_at": "2025-07-14T10:40:43.821834Z"
+  },
+  {
+    "id": "67240cc2-b910-4e16-9509-b29e037582b0",
+    "message_id": "d1puv6sopisuogv68pdg",
+    "type": "sse_connection",
+    "content": {
+      "delay": "1000",
+      "sse_url": "https://postman-echo.com/server-events/5",
+      "webhook_url": "https://hook.otherstuff.ai/hook"
+    },
+    "created_at": "2025-07-13T17:40:43.815947Z",
+    "updated_at": "2025-07-13T17:40:43.815947Z"
+  },
+  {
+    "id": "796faac5-3561-497d-b294-1b3217bc7a70",
+    "message_id": "d1puv6sopisuogv68pdg",
+    "type": "text",
+    "content": {
+      "content": "function applyPatch(fileSystem) {\n  const targetFile = fileSystem.getFile('/src/core/utils.js');\n  const buggyLine = targetFile.findLine('return obj.data.results.filter(x => x);');\n  targetFile.replaceLine(buggyLine, 'return obj?.data?.results?.filter(x => x) || [];');\n  console.log('PATCH-001: Fixed null reference exception in results filtering');\n}",
+      "language": "typescript",
+      "text_type": "code"
+    },
+    "created_at": "2025-07-13T17:40:43.809903Z",
+    "updated_at": "2025-07-13T17:40:43.809903Z"
+  },
+  {
+    "id": "091d47ba-2c82-4f27-837d-9cf4d6885949",
+    "message_id": "d1puv6sopisuogv68pdg",
+    "type": "action",
+    "content": {
+      "actionText": "how about we fix this with patch 1523.patch",
+      "options": [
+        {
+          "action_type": "chat",
+          "option_label": "Give me feedback",
+          "option_response": "textbox",
+          "webhook": "https://jobs.stakwork.com/customer_webhooks/v1?webhook_step_name=webhook3&project_id=106485186&customer_id=7294&webhook_source=Hive"
+        },
+        {
+          "action_type": "button",
+          "option_label": "Yes",
+          "option_response": "Yes",
+          "webhook": "https://jobs.stakwork.com/customer_webhooks/v1?webhook_step_name=webhook3&project_id=106485186&customer_id=7294&webhook_source=Hive"
+        }
+      ]
+    },
+    "created_at": "2025-07-13T17:40:43.803261Z",
+    "updated_at": "2025-07-13T17:40:43.803261Z"
+  },
+  {
+    "id": "ff012293-ca0d-4e04-b483-bdcc1c71897a",
+    "message_id": "cvok0ocopisvo7pfuip0",
+    "type": "text",
+    "content": {
+      "code_metadata": {
+        "Action": "Modify",
+        "Change": "Add GetPeopleCount handler function",
+        "File": "stakwork/sphinx-tribes/handlers/bounty.go"
+      },
+      "content": "import React, { useState, useEffect } from 'react';\nimport { Search } from 'lucide-react';\n\nconst LeaderboardPage = () => {\n  // Sample data - in a real app, this would come from an API\n  const [players, setPlayers] = useState([\n    { id: 1, rank: 1, name: \"Alex Johnson\", score: 9850, wins: 42, losses: 5, winRate: 89, team: \"Cosmic Crushers\" },\n    { id: 2, rank: 2, name: \"Taylor Swift\", score: 9720, wins: 40, losses: 8, winRate: 83, team: \"Melody Masters\" },\n    { id: 3, rank: 3, name: \"Sam Rodriguez\", score: 9340, wins: 38, losses: 10, winRate: 79, team: \"Rapid Raiders\" },\n    { id: 4, rank: 4, name: \"Maria Chen\", score: 9120, wins: 36, losses: 12, winRate: 75, team: \"Tech Titans\" },\n    { id: 5, rank: 5, name: \"Jordan Wilson\", score: 8930, wins: 35, losses: 15, winRate: 70, team: \"Phoenix Force\" },\n    { id: 6, rank: 6, name: \"Jamie Lee\", score: 8760, wins: 34, losses: 16, winRate: 68, team: \"Cosmic Crushers\" },\n    { id: 7, rank: 7, name: \"Casey Morgan\", score: 8650, wins: 33, losses: 17, winRate: 66, team: \"Rapid Raiders\" },\n    { id: 8, rank: 8, name: \"Riley Parker\", score: 8520, wins: 31, losses: 19, winRate: 62, team: \"Tech Titans\" },\n    { id: 9, rank: 9, name: \"Quinn Smith\", score: 8340, wins: 30, losses: 20, winRate: 60, team: \"Phoenix Force\" },\n    { id: 10, rank: 10, name: \"Avery Thomas\", score: 8120, wins: 28, losses: 22, winRate: 56, team: \"Melody Masters\" },\n  ]);\n\n  // State for filtered players display\n  const [filteredPlayers, setFilteredPlayers] = useState(players);\n  \n  // Filter states\n  const [searchTerm, setSearchTerm] = useState('');\n  const [teamFilter, setTeamFilter] = useState('');\n  const [minWinRate, setMinWinRate] = useState(0);\n  \n  // Get unique teams for filter dropdown\n  const teams = [...new Set(players.map(player => player.team))];\n  \n  // Apply filters whenever filter criteria change\n  useEffect(() => {\n    let result = players;\n    \n    // Apply search filter\n    if (searchTerm) {\n      result = result.filter(player => \n        player.name.toLowerCase().includes(searchTerm.toLowerCase())\n      );\n    }\n    \n    // Apply team filter\n    if (teamFilter) {\n      result = result.filter(player => player.team === teamFilter);\n    }\n    \n    // Apply win rate filter\n    if (minWinRate > 0) {\n      result = result.filter(player => player.winRate >= minWinRate);\n    }\n    \n    setFilteredPlayers(result);\n  }, [searchTerm, teamFilter, minWinRate, players]);\n  \n  // Reset all filters\n  const resetFilters = () => {\n    setSearchTerm('');\n    setTeamFilter('');\n    setMinWinRate(0);\n  };\n\n  return (\n    <div className=\"bg-gray-50 min-h-screen p-6\">\n      <div className=\"max-w-6xl mx-auto\">\n        <h1 className=\"text-3xl font-bold text-gray-900 mb-6\">Player Leaderboard</h1>\n        \n        {/* Filter section */}\n        <div className=\"bg-white rounded-lg shadow p-4 mb-6\">\n          <h2 className=\"text-xl font-semibold mb-4\">Filters</h2>\n          <div className=\"grid grid-cols-1 md:grid-cols-4 gap-4\">\n            {/* Search filter */}\n            <div className=\"relative\">\n              <div className=\"absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none\">\n                <Search size={18} className=\"text-gray-400\" />\n              </div>\n              <input\n                type=\"text\"\n                placeholder=\"Search players...\"\n                className=\"pl-10 w-full border border-gray-300 rounded-md p-2\"\n                value={searchTerm}\n                onChange={(e) => setSearchTerm(e.target.value)}\n              />\n            </div>\n            \n            {/* Team filter */}\n            <div>\n              <select\n                className=\"w-full border border-gray-300 rounded-md p-2\"\n                value={teamFilter}\n                onChange={(e) => setTeamFilter(e.target.value)}\n              >\n                <option value=\"\">All Teams</option>\n                {teams.map(team => (\n                  <option key={team} value={team}>{team}</option>\n                ))}\n              </select>\n            </div>\n            \n            {/* Win rate filter */}\n            <div className=\"flex items-center\">\n              <span className=\"mr-2 whitespace-nowrap\">Min Win Rate:</span>\n              <input\n                type=\"range\"\n                min=\"0\"\n                max=\"100\"\n                value={minWinRate}\n                onChange={(e) => setMinWinRate(parseInt(e.target.value))}\n                className=\"w-full\"\n              />\n              <span className=\"ml-2 w-8\">{minWinRate}%</span>\n            </div>\n            \n            {/* Reset button */}\n            <button\n              onClick={resetFilters}\n              className=\"bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded\"\n            >\n              Reset Filters\n            </button>\n          </div>\n        </div>\n        \n        {/* Results info */}\n        <div className=\"flex justify-between mb-4\">\n          <div className=\"text-gray-600\">\n            Showing {filteredPlayers.length} of {players.length} players\n          </div>\n        </div>\n        \n        {/* Leaderboard table */}\n        <div className=\"bg-white rounded-lg shadow overflow-x-auto\">\n          <table className=\"min-w-full\">\n            <thead className=\"bg-gray-100\">\n              <tr>\n                <th className=\"p-4 text-left font-medium text-gray-500\">Rank</th>\n                <th className=\"p-4 text-left font-medium text-gray-500\">Player</th>\n                <th className=\"p-4 text-left font-medium text-gray-500\">Team</th>\n                <th className=\"p-4 text-left font-medium text-gray-500\">Score</th>\n                <th className=\"p-4 text-left font-medium text-gray-500\">W/L</th>\n                <th className=\"p-4 text-left font-medium text-gray-500\">Win Rate</th>\n              </tr>\n            </thead>\n            <tbody className=\"divide-y divide-gray-200\">\n              {filteredPlayers.map((player, index) => (\n                <tr key={player.id} className=\"hover:bg-gray-50\">\n                  <td className=\"p-4\">\n                    <div className=\"font-medium\">{player.rank}</div>\n                  </td>\n                  <td className=\"p-4\">\n                    <div className=\"font-medium\">{player.name}</div>\n                  </td>\n                  <td className=\"p-4\">{player.team}</td>\n                  <td className=\"p-4 font-semibold\">{player.score.toLocaleString()}</td>\n                  <td className=\"p-4\">{player.wins}/{player.losses}</td>\n                  <td className=\"p-4\">\n                    <div className=\"flex items-center\">\n                      <div className=\"w-full bg-gray-200 rounded-full h-2\">\n                        <div \n                          className=\"bg-blue-600 h-2 rounded-full\" \n                        \n                        ></div>\n                      </div>\n                      <span className=\"ml-2\">{player.winRate}%</span>\n                    </div>\n                  </td>\n                </tr>\n              ))}\n              \n              {filteredPlayers.length === 0 && (\n                <tr>\n                  <td colSpan=\"6\" className=\"p-4 text-center text-gray-500\">\n                    No players match your filters. Try adjusting your criteria.\n                  </td>\n                </tr>\n              )}\n            </tbody>\n          </table>\n        </div>\n      </div>\n    </div>\n  );\n};\n\nexport default LeaderboardPage;",
+      "text_type": "code"
+    },
+    "created_at": "2025-04-05T14:38:25.523864Z",
+    "updated_at": "2025-04-05T14:38:25.523864Z"
+  },
+  {
+    "id": "a311ae18-e000-4afb-afad-aa2e7952efd4",
+    "message_id": "cvok0ocopisvo7pfuip0",
+    "type": "visual",
+    "content": {
+      "url": "http://localhost:3000/leaderboard",
+      "visual_type": "screen"
+    },
+    "created_at": "2025-04-05T14:38:25.335545Z",
+    "updated_at": "2025-04-05T14:38:25.335545Z"
+  },
+  {
+    "id": "3e050269-f900-45ff-b881-7aaab454c30f",
+    "message_id": "cvok0ocopisvo7pfuip0",
+    "type": "action",
+    "content": {
+      "actionText": "I detected an error do you want to see the logs?",
+      "options": [
+        {
+          "action_type": "chat",
+          "option_label": "Give me feedback",
+          "option_response": "textbox",
+          "webhook": "https://jobs.stakwork.com/customer_webhooks/v1?webhook_step_name=webhook2&project_id=106485186&customer_id=7294&webhook_source=Hive"
+        },
+        {
+          "action_type": "button",
+          "option_label": "Yes",
+          "option_response": "Yes",
+          "webhook": "https://jobs.stakwork.com/customer_webhooks/v1?webhook_step_name=webhook2&project_id=106485186&customer_id=7294&webhook_source=Hive"
+        },
+        {
+          "action_type": "button",
+          "option_label": "Ok",
+          "option_response": "Ok",
+          "webhook": "https://jobs.stakwork.com/customer_webhooks/v1?webhook_step_name=webhook2&project_id=106485186&customer_id=7294&webhook_source=Hive"
+        }
+      ]
+    },
+    "created_at": "2025-04-05T14:38:25.145284Z",
+    "updated_at": "2025-04-05T14:38:25.145284Z"
+  },
+  {
+    "id": "95ca4cea-769b-4272-9a9f-7edfc7742746",
+    "message_id": "cvojuocopisvo7pfuio0",
+    "type": "text",
+    "content": {
+      "content": "Creating a plan for market domination in the sock industry requires a strategic approach that includes understanding market trends, identifying unique selling propositions, and leveraging effective marketing and distribution strategies. Here's a high-level plan:\n\n### 1. Market Research and Analysis\n- **Identify Trends:** Conduct thorough market research to understand current trends, consumer preferences, and emerging technologies in the sock industry (e.g., sustainable materials, smart socks with sensors).- **Competitive Analysis:** Analyze key competitors to understand their strengths, weaknesses, pricing models, and market positioning.\n- **Target Audience:** Define and segment your target audience (e.g., athletes, fashion-conscious consumers, eco-friendly buyers).\n\n### 2. Product Development\n\n- **Unique Selling Proposition (USP):** Develop a unique angle for your socks, such as innovative materials, customizable designs, or enhanced comfort features.\n- **Quality and Design:** Focus on high-quality materials and appealing design to differentiate your products from competitors.\n- **Sustainability:** Incorporate sustainable practices and materials to appeal to environmentally conscious consumers.\n\n### 3. Branding and Positioning\n\n- **Brand Identity:** Create a strong, recognizable brand identity that resonates with your target audience.- **Storytelling:** Use storytelling to communicate your brand values and mission, emphasizing your unique offerings and benefits.\n\n### 4. Distribution Strategy\n\n- **Online Presence:** Develop a robust online sales platform with a user-friendly e-commerce site and leverage marketplaces like Amazon and Etsy.\n- **Retail Partnerships:** Establish partnerships with retail stores and boutiques to increase visibility and accessibility.\n- **Direct-to-Consumer (DTC):** Consider a DTC model to build a direct relationship with customers, allowing for personalized marketing and feedback collection.\n\n### 5. Marketing and Promotion\n\n- **Digital Marketing:** Utilize SEO, content marketing, social media advertising, and influencer partnerships to reach a broader audience.\n\n- **Promotions and Loyalty Programs:** Offer promotions, discounts, and loyalty programs to attract and retain customers.\n\n- **Community Engagement:** Build an online community around your brand through social media interaction and user-generated content.\n\n### 6. Operational Excellence\n\n- **Supply Chain Efficiency:** Optimize your supply chain to reduce costs and improve delivery times.\n\n\n\n- **Scalability:** Develop scalable business processes to accommodate growth and expansion.\n\n### 7. Customer Experience.\n\nCan we keep going here does the page scale and scroll?\n\nCan we keep going here does the page scale and scroll?\n\nCan we keep going here does the page scale and scroll? ",
+      "text_type": "markdown"
+    },
+    "created_at": "2025-04-05T14:34:10.08285Z",
+    "updated_at": "2025-04-05T14:34:10.08285Z"
+  },
+  {
+    "id": "3abcd530-a5b1-4e67-bdf5-73e05a1910cf",
+    "message_id": "cvojuocopisvo7pfuio0",
+    "type": "action",
+    "content": {
+      "actionText": "",
+      "options": [
+        {
+          "action_type": "chat",
+          "option_label": "Give me feedback",
+          "option_response": "textbox",
+          "webhook": "https://jobs.stakwork.com/customer_webhooks/v1?webhook_step_name=webhook1&project_id=106485186&customer_id=7294&webhook_source=Hive"
+        }
+      ]
+    },
+    "created_at": "2025-04-05T14:34:10.041326Z",
+    "updated_at": "2025-04-05T14:34:10.041326Z"
+  }
+]

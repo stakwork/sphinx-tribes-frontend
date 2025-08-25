@@ -76,6 +76,7 @@ interface CodeSpaceMap {
   username?: string;
   githubPat?: string;
   baseBranch?: string;
+  poolAPIKey?: string;
 }
 
 interface CodeSpaceProps {
@@ -96,6 +97,7 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
   const [username, setUsername] = useState('');
   const [githubPat, setGithubPat] = useState('');
   const [baseBranch, setBaseBranch] = useState('');
+  const [poolAPIKey, setPoolAPIKey] = useState('');
   const [urlError, setUrlError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
@@ -132,6 +134,7 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
           setUsername(response.username || ''); // Initialize Username state
           setGithubPat(response.githubPat || ''); // Initialize PAT state
           setBaseBranch(response.baseBranch || ''); // Initialize Base Branch state
+          setPoolAPIKey(response.poolAPIKey || '');
           setUrlError(!isValidCodeSpaceInput(response.codeSpaceURL)); // Also validate fetched input
         } else {
           // Initialize state for creating a new code space
@@ -200,6 +203,10 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
     setBaseBranch(e.target.value);
   };
 
+  const handlePoolAPIKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPoolAPIKey(e.target.value);
+  };
+
   const handleSave = async () => {
     if (!codeSpace || !isValidCodeSpaceInput(codeSpace.codeSpaceURL)) return;
 
@@ -211,6 +218,7 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
         username: username, // Add the Username from state
         githubPat: githubPat, // Add the PAT from state
         baseBranch: baseBranch, // Add the Base Branch from state
+        poolAPIKey: poolAPIKey,
         workspaceID: workspaceUUID, // Ensure workspaceID is always set
         userPubkey: ui.meInfo?.pubkey || '' // Ensure userPubkey is always set
       };
@@ -232,7 +240,8 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
           userPubkey: ui.meInfo?.pubkey || '',
           username: username,
           githubPat: githubPat,
-          baseBranch: baseBranch
+          baseBranch: baseBranch,
+          poolAPIKey: poolAPIKey
         };
         const newCodeSpace = await main.createCodeSpace(createPayload);
         if (newCodeSpace) {
@@ -299,6 +308,15 @@ const ManageCodeSpaceModal: React.FC<CodeSpaceProps> = ({
             placeholder="Enter Base Branch (e.g., main, master)"
             value={baseBranch}
             onChange={handleBaseBranchChange}
+          />
+        </Wrapper>
+        <Wrapper>
+          <Label>Pool API Key:</Label>
+          <TextInput
+            type="password"
+            placeholder="Enter Pool API Key"
+            value={poolAPIKey}
+            onChange={handlePoolAPIKeyChange}
           />
         </Wrapper>
         {urlError && (

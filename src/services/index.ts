@@ -9,6 +9,7 @@ import {
   ContextTag
 } from '../store/interface';
 import { uiStore } from '../store/ui';
+import { staktrakService } from './staktrakService';
 
 export class ChatService {
   async getLatestChatStatus(chatId: string): Promise<ChatStatuses | undefined> {
@@ -487,3 +488,4 @@ export class ChatService {
 }
 
 export const chatService = new ChatService();
+export { staktrakService };
