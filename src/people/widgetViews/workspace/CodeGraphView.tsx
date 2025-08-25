@@ -120,7 +120,7 @@ const CodeGraphView: React.FC = observer(() => {
         <ActivitiesHeader uuid={workspaceId} />
         <ContentContainer>
           <Title>Code Graph</Title>
-          <p>This is the Code Graph page. Content will be added here.</p>
+          <p>Coming soon.</p>
         </ContentContainer>
       </MainContainer>
     </>

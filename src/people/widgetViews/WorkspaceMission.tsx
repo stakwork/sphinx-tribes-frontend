@@ -48,6 +48,7 @@ import { EditableField } from './workspace/EditableField';
 import { Toast } from './workspace/interface';
 import TextSnippetModal from './workspace/TextSnippetModal.tsx';
 import ActivitiesHeader from './workspace/Activities/header.tsx';
+import WorkspaceEnvVarsModal from './workspace/WorkspaceEnvVarsModal';
 import AddChatWorkflow from './workspace/AddChatWorkflowModal.tsx';
 import ManageCodeSpaceModal from './workspace/ManageCodeSpaceModal.tsx';
 import {
@@ -149,6 +150,7 @@ const WorkspaceMission = () => {
   const [selectedChatWorkflow, setSelectedChatWorkflow] = useState<ChatWorkflow | null>(null);
   const [currentChatWorkflowUrl, setCurrentChatWorkflowUrl] = useState('');
   const [featureFlags, setFeatureFlags] = useState<any>({});
+  const [showEnvVarsModal, setShowEnvVarsModal] = useState(false);
 
   const openSnippetModal = () => {
     setSnippetModalVisible(true);
@@ -715,7 +717,12 @@ const WorkspaceMission = () => {
                       </RepositoryUrl>
                     </RepositoryText>
                   </RepositoryInfo>
-                  <Button onClick={() => openModal('edit', repository)} text="Edit" color="link" />
+                  <Button
+                    onClick={() => openModal('edit', repository)}
+                    text="Edit"
+                    color="link"
+                    dataTestId="repository-edit-btn"
+                  />
                 </RepositoryItem>
               ))}
               {repositories.length === 0 && <p>No repositories added yet.</p>}
@@ -765,6 +772,7 @@ const WorkspaceMission = () => {
                   }
                   text={featureCall ? 'Edit' : 'Add'}
                   color="link"
+                  dataTestId="featurecall-add-btn-1"
                 />
               </IntegrationItem>
               <IntegrationItem>
@@ -800,6 +808,12 @@ const WorkspaceMission = () => {
               <ToolButton
                 onClick={() => openCodeSpaceModal()}
                 text="Manage My Code Space"
+                color="white"
+                leadingIcon="code"
+              />
+              <ToolButton
+                onClick={() => setShowEnvVarsModal(true)}
+                text="Manage Env Vars"
                 color="white"
                 leadingIcon="code"
               />
@@ -1059,6 +1073,11 @@ const WorkspaceMission = () => {
               userAlias={ui.meInfo?.owner_alias}
             />
           </Modal>
+          <WorkspaceEnvVarsModal
+            open={showEnvVarsModal}
+            onClose={() => setShowEnvVarsModal(false)}
+            workspaceUuid={workspaceData?.uuid || ''}
+          />
           <EuiGlobalToastList
             toasts={toasts}
             dismissToast={() => setToasts([])}

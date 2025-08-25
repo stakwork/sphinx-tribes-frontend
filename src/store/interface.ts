@@ -877,6 +877,7 @@ export interface CodeSpaceMap {
   username?: string;
   githubPat?: string;
   baseBranch?: string;
+  poolAPIKey?: string;
 }
 
 export type ChargeModel = 'Free' | 'PAYG';
@@ -907,4 +908,12 @@ export interface SkillInstall {
   installFile: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface EnvVar {
+  name: string;
+  value: string;
+  masked?: boolean;
+  _edited?: boolean; // local-only, for tracking changes
+  _show?: boolean;
 }

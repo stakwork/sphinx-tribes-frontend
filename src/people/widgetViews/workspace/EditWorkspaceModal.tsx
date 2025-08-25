@@ -205,10 +205,20 @@ const EditWorkspaceModal = (props: EditWorkspaceModalProps) => {
       let img = '';
       const formData = new FormData();
       if (rawSelectedFile) {
+        console.log('rawSelectedFile:', {
+          name: rawSelectedFile.name,
+          size: rawSelectedFile.size,
+          type: rawSelectedFile.type,
+          lastModified: rawSelectedFile.lastModified
+        });
+        console.log('selectedImage:', selectedImage);
         formData.append('file', rawSelectedFile);
+        console.log('Form Data:', Object.fromEntries(formData));
         const file = await main.uploadFile(formData);
         if (file && file.ok) {
           img = await file.json();
+        } else {
+          alert('Failed to upload file');
         }
       }
 
@@ -245,8 +255,15 @@ const EditWorkspaceModal = (props: EditWorkspaceModalProps) => {
   const isWorkspaceAdmin = props.org?.owner_pubkey === ui.meInfo?.owner_pubkey;
 
   const handleFileInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    console.log('Event files:', e.target.files);
     const file = e.target.files && e.target.files[0];
     if (file) {
+      console.log('File:', {
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        lastModified: file.lastModified
+      });
       // Display the selected image
       const imageUrl = URL.createObjectURL(file);
       setSelectedImage(imageUrl);
@@ -260,6 +277,12 @@ const EditWorkspaceModal = (props: EditWorkspaceModalProps) => {
     event.preventDefault();
     const file = event.dataTransfer.files[0];
     if (file) {
+      console.log('File:', {
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        lastModified: file.lastModified
+      });
       const imageUrl = URL.createObjectURL(file);
       setSelectedImage(imageUrl);
       setRawSelectedFile(file);

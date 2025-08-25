@@ -9,12 +9,10 @@ describe('Admin Statistics Custom Date Range', () => {
     amount: '123'
   };
 
-  beforeEach(() => {
-    cy.login(activeUser);
-    cy.wait(1000);
-  });
-
   it('Creates 25 bounties, navigates to Admin page, and verifies bounties count and visibility', () => {
+    cy.login(activeUser);
+    cy.wait(3000);
+
     for (let i = 1; i <= 25; i++) {
       const updatedBounty = { ...bounty, title: `UmerJobs${i}` };
       cy.create_bounty(updatedBounty);
