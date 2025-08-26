@@ -188,4 +188,19 @@ const nonWidgetConfigs = {
   }
 };
 
-export { MAX_UPLOAD_SIZE, widgetConfigs, formDropdownOptions, badges, nonWidgetConfigs };
+const ERROR_MESSAGES = {
+  CANNOT_SEND_MESSAGE: 'Cannot Send Message',
+  GITHUB_PAT_EXPIRED: 'Your GitHub PAT has expired. Please update it in settings.',
+  WORKSPACE_SETUP_INCOMPLETE: 'Your workspace setup is incomplete. Please check settings.',
+  COMPLETE_WORKSPACE_SETUP: 'Complete workspace setup to send messages',
+  TYPE_MESSAGE_PLACEHOLDER: 'Type your message...'
+};
+
+export {
+  MAX_UPLOAD_SIZE,
+  widgetConfigs,
+  formDropdownOptions,
+  badges,
+  nonWidgetConfigs,
+  ERROR_MESSAGES
+};

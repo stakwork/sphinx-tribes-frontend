@@ -64,7 +64,8 @@ import {
   FeatureStatus,
   ChatWorkflow,
   ApiResponse,
-  CodeSpaceMap
+  CodeSpaceMap,
+  EnvVar
 } from './interface';
 
 function makeTorSaveURL(host: string, key: string) {
@@ -2389,6 +2390,24 @@ export class MainStore {
     try {
       if (!uiStore.meInfo) return null;
       const info = uiStore.meInfo;
+
+      // Inspect FormData
+      const entries = Array.from(body.entries());
+      for (const [key, value] of entries) {
+        console.log(`${key}:`, value);
+        if (value instanceof File) {
+          console.log(`File name: ${value.name}, Size: ${value.size}, Type: ${value.type}`);
+          const reader = new FileReader();
+          reader.onload = () => {
+            console.log(`File content:`, reader.result);
+          };
+          reader.onerror = () => {
+            console.log(`Error reading file:`, reader.error);
+          };
+          reader.readAsText(value);
+        }
+      }
+
       const r: any = await fetch(`${TribesURL}/meme_upload`, {
         method: 'POST',
         mode: 'cors',
@@ -5078,6 +5097,7 @@ export class MainStore {
       username?: string;
       githubPat?: string;
       baseBranch?: string;
+      poolAPIKey?: string;
     }
   ): Promise<any> {
     try {
@@ -5242,6 +5262,87 @@ export class MainStore {
       return response.json();
     } catch (e) {
       console.log('Error generateStakeInvoice', e);
+      return null;
+    }
+  }
+
+  /**
+   * Fetch environment variables for a workspace
+   */
+  async getWorkspaceEnvVars(workspace_uuid: string): Promise<any> {
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+      const response = await fetch(`${TribesURL}/workspaces/${workspace_uuid}/env_vars`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json',
+          'x-session-id': this.getSessionId()
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return response.json();
+    } catch (e) {
+      console.log('Error getWorkspaceEnvVars', e);
+      return null;
+    }
+  }
+
+  /**
+   * Update environment variables for a workspace
+   * Only send new/changed values (not masked/unchanged)
+   */
+  async updateWorkspaceEnvVars(workspace_uuid: string, envVars: EnvVar[]): Promise<any> {
+    // Only send name/value (ignore masked/_edited)
+    const payload = {
+      env_vars: envVars.map(({ name, value }) => ({ name, value }))
+    };
+
+    try {
+      if (!uiStore.meInfo) return null;
+      const info = uiStore.meInfo;
+      const response = await fetch(`${TribesURL}/workspaces/${workspace_uuid}/env_vars`, {
+        method: 'PUT',
+        mode: 'cors',
+        headers: {
+          'x-jwt': info.tribe_jwt,
+          'Content-Type': 'application/json',
+          'x-session-id': this.getSessionId()
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return response.json();
+    } catch (e) {
+      console.log('Error updateWorkspaceEnvVars', e);
+      return null;
+    }
+  }
+
+  async getCodeSpaceConfig(
+    workspace_uuid: string
+  ): Promise<{ url: string; username: string; pat: string } | null> {
+    try {
+      const response = await this.getCodeSpace(workspace_uuid);
+      if (!response) return null;
+
+      return {
+        url: response.codeSpaceURL || '',
+        username: response.username || '',
+        pat: response.githubPat || ''
+      };
+    } catch (e) {
+      console.log('Error getting code space config', e);
       return null;
     }
   }

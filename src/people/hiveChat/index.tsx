@@ -2,7 +2,14 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useParams } from 'react-router-dom';
-import { ChatMessage, Artifact, TextContent, SSEMessage, APIResponse } from 'store/interface';
+import {
+  ChatMessage,
+  Artifact,
+  TextContent,
+  VisualContent,
+  SSEMessage,
+  APIResponse
+} from 'store/interface';
 import { useStores } from 'store';
 import { createSocketInstance } from 'config/socket';
 import SidebarComponent from 'components/common/SidebarComponent.tsx';
@@ -20,8 +27,10 @@ import VisualScreenViewer from '../widgetViews/workspace/VisualScreenViewer.tsx'
 import { ModelOption } from './modelSelector.tsx';
 import { ActionArtifactRenderer } from './ActionArtifactRenderer';
 import ChatStatusDisplay from './ChatStatusDisplay.tsx';
-
+import StaktrakRecorder from './StaktrakRecorder';
+import axios from 'axios';
 import SplashScreen from './ChatSplashScreen';
+import { ERROR_MESSAGES } from '../utils/Constants';
 
 interface RouteParams {
   uuid: string;
@@ -629,7 +638,14 @@ export const HiveChatView: React.FC = observer(() => {
   const lastRefreshTime = useRef<number>(Date.now()).current;
   const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [isRefreshingTitle, setIsRefreshingTitle] = useState(false);
+  const [isTestingMode, setIsTestingMode] = useState(false);
   const [sseLogs, setSseLogs] = useState<SSEMessage[]>([]);
+  const [, setStaktrakReady] = useState(false);
+  const [iframeUrl, setIframeUrl] = useState('');
+  const [isWorkspaceComplete, setIsWorkspaceComplete] = useState<boolean>(false);
+  const [isPATExpired, setIsPATExpired] = useState<boolean>(false);
+  const [isValidating, setIsValidating] = useState<boolean>(true);
+  const [workspaceData, setWorkspaceData] = useState<any>(null);
   useBrowserTabTitle('Hive Chat');
 
   if (isVerboseLoggingEnabled) {
@@ -638,6 +654,8 @@ export const HiveChatView: React.FC = observer(() => {
 
   const refreshChatHistory = useCallback(async () => {
     try {
+      if (isTestingMode) return;
+
       await chat.loadChatHistory(chatId);
       const selectedChat = chat.getChat(chatId);
       if (selectedChat?.title) {
@@ -668,7 +686,7 @@ export const HiveChatView: React.FC = observer(() => {
         }
       ]);
     }
-  }, [chat, chatId, ui]);
+  }, [chat, chatId, ui, isTestingMode]);
 
   useEffect(() => {
     if (!chatId) return;
@@ -681,7 +699,7 @@ export const HiveChatView: React.FC = observer(() => {
       }
 
       refreshIntervalRef.current = setInterval(() => {
-        if (document.visibilityState === 'visible' && !isEditingTitle) {
+        if (document.visibilityState === 'visible' && !isEditingTitle && !isTestingMode) {
           if (Date.now() - lastRefreshTime > 1000) {
             refreshChatHistory();
           }
@@ -697,12 +715,12 @@ export const HiveChatView: React.FC = observer(() => {
         refreshIntervalRef.current = null;
       }
     };
-  }, [chatId, refreshChatHistory, isEditingTitle, lastRefreshTime]);
+  }, [chatId, refreshChatHistory, isEditingTitle, lastRefreshTime, isTestingMode]);
 
   useEffect(() => {
     const refreshChatOnFocus = async () => {
       try {
-        if (document.visibilityState === 'visible' && !isEditingTitle) {
+        if (document.visibilityState === 'visible' && !isEditingTitle && !isTestingMode) {
           if (Date.now() - lastRefreshTime > 1000) {
             await refreshChatHistory();
           }
@@ -719,7 +737,7 @@ export const HiveChatView: React.FC = observer(() => {
       window.removeEventListener('visibilitychange', refreshChatOnFocus);
       window.removeEventListener('focus', refreshChatOnFocus);
     };
-  }, [refreshChatHistory, isEditingTitle, lastRefreshTime]);
+  }, [refreshChatHistory, isEditingTitle, lastRefreshTime, isTestingMode]);
 
   const updateChatTitle = async (
     chatId: string,
@@ -779,41 +797,158 @@ export const HiveChatView: React.FC = observer(() => {
     const messageText = messageToSend || message;
     if (!messageText.trim() || isSending) return;
 
+    if (!isWorkspaceComplete || isPATExpired) {
+      ui.setToasts([
+        {
+          title: ERROR_MESSAGES.CANNOT_SEND_MESSAGE,
+          color: 'danger',
+          text: isPATExpired
+            ? ERROR_MESSAGES.GITHUB_PAT_EXPIRED
+            : ERROR_MESSAGES.WORKSPACE_SETUP_INCOMPLETE
+        }
+      ]);
+      return;
+    }
+
     setIsSending(true);
     try {
-      let socketId = websocketSessionId;
-      if (socketId === '') {
-        socketId = localStorage.getItem('websocket_token') || '';
-      }
+      if (messageText.includes('@Testing')) {
+        try {
+          setIsTestingMode(true);
 
-      const sentMessage = await chat.sendMessage(
-        chatId,
-        messageText,
-        selectedModel.value,
-        socketId,
-        uuid,
-        'Build',
-        undefined,
-        pdfUrl,
-        actionArtifact
-      );
+          const dummyDataResponse = await fetch('/docker/chat_dummy_data.json');
+          const dummyData = await dummyDataResponse.json();
 
-      if (sentMessage === undefined) {
-        setMessage('');
-      }
+          const userMessage: ChatMessage = {
+            id: `user-${Date.now()}`,
+            chatId: chatId,
+            message: messageText,
+            role: 'user',
+            timestamp: new Date().toISOString(),
+            status: 'sent',
+            source: 'user'
+          };
+          chat.addMessage(userMessage);
 
-      if (sentMessage) {
-        chat.addMessage(sentMessage);
-        setMessage('');
-        setPdfUrl('');
-        setShowSplash(false);
+          const assistantMessage: ChatMessage = {
+            id: `assistant-${Date.now()}`,
+            chatId: chatId,
+            message:
+              "Here's the test data you requested. I've loaded the dummy data from chat_dummy_data.json.",
+            role: 'assistant',
+            timestamp: new Date().toISOString(),
+            status: 'sent',
+            source: 'agent'
+          };
+          chat.addMessage(assistantMessage);
 
-        const textarea = document.querySelector('textarea');
-        if (textarea) {
-          textarea.style.height = '60px';
+          dummyData.forEach((item: any) => {
+            const artifact: Artifact = {
+              id: item.id,
+              messageId: item.message_id,
+              type: item.type as 'text' | 'visual' | 'action',
+              content: item.content
+            };
+            chat.addArtifact(artifact);
+          });
+
+          const sseArtifacts = dummyData.filter(
+            (artifact) => artifact.type === 'text' && artifact.content?.text_type === 'sse_logs'
+          );
+          if (sseArtifacts.length > 0) setSseArtifact(sseArtifacts);
+
+          const visualArtifacts = dummyData.filter(
+            (artifact) => artifact.type === 'visual' && artifact.content?.visual_type === 'screen'
+          );
+          if (visualArtifacts.length > 0) setVisualArtifact(visualArtifacts);
+
+          const codeArtifacts = dummyData.filter(
+            (artifact) => artifact.type === 'text' && artifact.content?.text_type === 'code'
+          );
+          if (codeArtifacts.length > 0) setCodeArtifacts(codeArtifacts);
+
+          const textArtifacts = dummyData.filter(
+            (artifact) =>
+              artifact.type === 'text' &&
+              artifact.content?.text_type !== 'code' &&
+              artifact.content?.text_type !== 'sse_logs'
+          );
+          if (textArtifacts.length > 0) setTextArtifact(textArtifacts);
+
+          const actionArtifacts = dummyData.filter((artifact) => artifact.type === 'action');
+          if (actionArtifacts.length > 0) setActionArtifact(actionArtifacts[0]);
+
+          setMessage('');
+          setPdfUrl('');
+          setShowSplash(false);
+
+          if (visualArtifacts.length > 0) {
+            setArtifactTab('visual');
+            setUpdatedTabs({ logs: false, code: false, visual: true, text: false });
+          } else if (codeArtifacts.length > 0) {
+            setArtifactTab('code');
+            setUpdatedTabs({ logs: false, code: true, visual: false, text: false });
+          } else if (textArtifacts.length > 0) {
+            setArtifactTab('text');
+            setUpdatedTabs({ logs: false, code: false, visual: false, text: true });
+          } else if (sseArtifacts.length > 0) {
+            setArtifactTab('logs');
+            setUpdatedTabs({ logs: true, code: false, visual: false, text: false });
+          }
+
+          const textarea = document.querySelector('textarea');
+          if (textarea) textarea.style.height = '60px';
+
+          if (chatHistoryRef.current) {
+            chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
+          }
+        } catch (error) {
+          console.error('Error loading dummy data:', error);
+          ui.setToasts([
+            {
+              title: 'Error',
+              color: 'danger',
+              text: 'Failed to load dummy data'
+            }
+          ]);
         }
-        if (chatHistoryRef.current) {
-          chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
+      } else {
+        setIsTestingMode(false);
+
+        let socketId = websocketSessionId;
+        if (socketId === '') {
+          socketId = localStorage.getItem('websocket_token') || '';
+        }
+
+        const sentMessage = await chat.sendMessage(
+          chatId,
+          messageText,
+          selectedModel.value,
+          socketId,
+          uuid,
+          'Build',
+          undefined,
+          pdfUrl,
+          actionArtifact
+        );
+
+        if (sentMessage === undefined) {
+          setMessage('');
+        }
+
+        if (sentMessage) {
+          chat.addMessage(sentMessage);
+          setMessage('');
+          setPdfUrl('');
+          setShowSplash(false);
+
+          const textarea = document.querySelector('textarea');
+          if (textarea) {
+            textarea.style.height = '60px';
+          }
+          if (chatHistoryRef.current) {
+            chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
+          }
         }
       }
     } catch (error) {
@@ -831,7 +966,9 @@ export const HiveChatView: React.FC = observer(() => {
   };
 
   useEffect(() => {
-    const initializeChat = async () => {
+    const loadInitialChat = async () => {
+      if (isTestingMode) return;
+
       setLoading(true);
       try {
         if (chatId) {
@@ -859,8 +996,10 @@ export const HiveChatView: React.FC = observer(() => {
       }
     };
 
-    initializeChat();
-  }, [chatId, chat]);
+    if (chatId) {
+      loadInitialChat();
+    }
+  }, [chatId, refreshChatHistory, isTestingMode]);
 
   const onTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newTitle = event.target.value;
@@ -883,6 +1022,11 @@ export const HiveChatView: React.FC = observer(() => {
 
     socket.onmessage = async (event: MessageEvent) => {
       console.log('Raw websocket message received:', event.data);
+
+      if (isTestingMode) {
+        console.log('In testing mode, ignoring websocket message');
+        return;
+      }
 
       try {
         const data = JSON.parse(event.data);
@@ -935,15 +1079,20 @@ export const HiveChatView: React.FC = observer(() => {
         }
       ]);
     };
-  }, [ui, refreshChatHistory, chatId, chat]);
+  }, [ui, refreshChatHistory, chatId, chat, isTestingMode]);
 
   useEffect(() => {
+    if (isTestingMode) {
+      console.log('In testing mode, skipping log WebSocket connection');
+      return;
+    }
+
     const ws = connectToLogWebSocket(projectId, chatId, setLogs, isVerboseLoggingEnabled);
 
     return () => {
       ws.close();
     };
-  }, [projectId, chatId, isVerboseLoggingEnabled, isActionSend]);
+  }, [projectId, chatId, isVerboseLoggingEnabled, isActionSend, isTestingMode]);
 
   useEffect(() => {
     if (logs?.length > 0) {
@@ -960,6 +1109,8 @@ export const HiveChatView: React.FC = observer(() => {
 
   useEffect(() => {
     const loadInitialChat = async () => {
+      if (isTestingMode) return;
+
       setLoading(true);
       try {
         await refreshChatHistory();
@@ -974,12 +1125,14 @@ export const HiveChatView: React.FC = observer(() => {
     if (chatId) {
       loadInitialChat();
     }
-  }, [chatId, refreshChatHistory]);
+  }, [chatId, refreshChatHistory, isTestingMode]);
 
   const messages = chat.chatMessages[chatId];
 
   useEffect(() => {
     const logArtifacts = async () => {
+      if (isTestingMode) return;
+
       if (chatId && isArtifactLoggingEnabled) {
         const res = await chat.loadArtifactsForChat(chatId);
         console.log('Artifacts for that chat', res);
@@ -1081,7 +1234,7 @@ export const HiveChatView: React.FC = observer(() => {
       }
     };
     logArtifacts();
-  }, [chat, chatId, isArtifactLoggingEnabled, main, messages]);
+  }, [chat, chatId, isArtifactLoggingEnabled, main, messages, isTestingMode]);
 
   useEffect(() => {
     const processArtifacts = () => {
@@ -1095,7 +1248,14 @@ export const HiveChatView: React.FC = observer(() => {
 
   useEffect(() => {
     const checkForNewArtifacts = async () => {
-      if (!chatId || !isArtifactLoggingEnabled || !messages || messages.length === 0) return;
+      if (
+        !chatId ||
+        !isArtifactLoggingEnabled ||
+        !messages ||
+        messages.length === 0 ||
+        isTestingMode
+      )
+        return;
 
       const latestMessage = messages[messages.length - 1];
       if (latestMessage && latestMessage.id !== lastProcessedMessageId) {
@@ -1161,7 +1321,15 @@ export const HiveChatView: React.FC = observer(() => {
     };
 
     checkForNewArtifacts();
-  }, [chat, chatId, isArtifactLoggingEnabled, messages, lastProcessedMessageId, artifactTab]);
+  }, [
+    chat,
+    chatId,
+    isArtifactLoggingEnabled,
+    messages,
+    lastProcessedMessageId,
+    artifactTab,
+    isTestingMode
+  ]);
 
   const handleUploadComplete = (url: string) => {
     setPdfUrl(url);
@@ -1192,34 +1360,195 @@ export const HiveChatView: React.FC = observer(() => {
     (textArtifact && textArtifact.length > 0);
 
   const handleSplashMessage = async (msg: string) => {
+    if (!isWorkspaceComplete || isPATExpired) {
+      ui.setToasts([
+        {
+          title: ERROR_MESSAGES.CANNOT_SEND_MESSAGE,
+          color: 'danger',
+          text: isPATExpired
+            ? ERROR_MESSAGES.GITHUB_PAT_EXPIRED
+            : ERROR_MESSAGES.WORKSPACE_SETUP_INCOMPLETE
+        }
+      ]);
+      return;
+    }
     setMessage(msg);
     setIsSending(true);
 
     try {
-      const socketId = websocketSessionId || localStorage.getItem('websocket_token') || '';
+      if (msg.includes('@Testing')) {
+        try {
+          setIsTestingMode(true);
 
-      const sentMessage = await chat.sendMessage(
-        chatId,
-        msg,
-        selectedModel.value,
-        socketId,
-        uuid,
-        'Build',
-        undefined,
-        pdfUrl,
-        actionArtifact
-      );
+          const dummyDataResponse = await fetch('/docker/chat_dummy_data.json');
+          const dummyData = await dummyDataResponse.json();
 
-      if (sentMessage) {
-        chat.addMessage(sentMessage);
-        setMessage('');
-        setPdfUrl('');
-        const textarea = document.querySelector('textarea');
-        if (textarea) {
-          textarea.style.height = '60px';
+          const userMessage: ChatMessage = {
+            id: `user-${Date.now()}`,
+            chatId: chatId,
+            message: msg,
+            role: 'user',
+            timestamp: new Date().toISOString(),
+            status: 'sent',
+            source: 'user'
+          };
+          chat.addMessage(userMessage);
+
+          const assistantMessage: ChatMessage = {
+            id: `assistant-${Date.now()}`,
+            chatId: chatId,
+            message:
+              "Here's the test data you requested. I've loaded the dummy data from chat_dummy_data.json.",
+            role: 'assistant',
+            timestamp: new Date().toISOString(),
+            status: 'sent',
+            source: 'agent'
+          };
+          chat.addMessage(assistantMessage);
+
+          dummyData.forEach((item: any) => {
+            const artifact: Artifact = {
+              id: item.id,
+              messageId: item.message_id,
+              type: item.type as 'text' | 'visual' | 'action',
+              content: item.content
+            };
+            chat.addArtifact(artifact);
+          });
+
+          const sseArtifacts = dummyData.filter(
+            (artifact) => artifact.type === 'text' && artifact.content?.text_type === 'sse_logs'
+          );
+          if (sseArtifacts.length > 0) {
+            setSseArtifact(sseArtifacts);
+
+            try {
+              console.log('Attempting to fetch SSE logs from dummy data file');
+
+              let sseLogsData;
+              let loaded = false;
+
+              const pathsToTry = [
+                './docker/sselogs_dummy_data.json',
+                '/docker/sselogs_dummy_data.json',
+                '../public/docker/sselogs_dummy_data.json',
+                '/public/docker/sselogs_dummy_data.json'
+              ];
+
+              for (const path of pathsToTry) {
+                try {
+                  console.log(`Trying to fetch SSE logs from: ${path}`);
+                  const response = await fetch(path);
+                  if (response.ok) {
+                    sseLogsData = await response.json();
+                    console.log(`Successfully loaded SSE logs from: ${path}`);
+                    loaded = true;
+                    break;
+                  }
+                } catch (err) {
+                  console.log(`Failed to load from ${path}:`, err);
+                }
+              }
+
+              if (!loaded) {
+                throw new Error('Failed to load SSE logs from any path');
+              }
+
+              if (sseLogsData?.success && Array.isArray(sseLogsData.data.messages)) {
+                console.log('Setting SSE logs:', sseLogsData.data.messages.length, 'messages');
+                setSseLogs(sseLogsData.data.messages);
+
+                setArtifactTab('logs');
+                setUpdatedTabs({ logs: true, code: false, visual: false, text: false });
+              }
+            } catch (error) {
+              console.error('Failed to load dummy SSE logs:', error);
+            }
+          }
+
+          const visualArtifacts = dummyData.filter(
+            (artifact) => artifact.type === 'visual' && artifact.content?.visual_type === 'screen'
+          );
+          if (visualArtifacts.length > 0) setVisualArtifact(visualArtifacts);
+
+          const codeArtifacts = dummyData.filter(
+            (artifact) => artifact.type === 'text' && artifact.content?.text_type === 'code'
+          );
+          if (codeArtifacts.length > 0) setCodeArtifacts(codeArtifacts);
+
+          const textArtifacts = dummyData.filter(
+            (artifact) =>
+              artifact.type === 'text' &&
+              artifact.content?.text_type !== 'code' &&
+              artifact.content?.text_type !== 'sse_logs'
+          );
+          if (textArtifacts.length > 0) setTextArtifact(textArtifacts);
+
+          const actionArtifacts = dummyData.filter((artifact) => artifact.type === 'action');
+          if (actionArtifacts.length > 0) setActionArtifact(actionArtifacts[0]);
+
+          setMessage('');
+          setPdfUrl('');
+          setShowSplash(false);
+
+          if (visualArtifacts.length > 0) {
+            setArtifactTab('visual');
+            setUpdatedTabs({ logs: false, code: false, visual: true, text: false });
+          } else if (codeArtifacts.length > 0) {
+            setArtifactTab('code');
+            setUpdatedTabs({ logs: false, code: true, visual: false, text: false });
+          } else if (textArtifacts.length > 0) {
+            setArtifactTab('text');
+            setUpdatedTabs({ logs: false, code: false, visual: false, text: true });
+          } else if (sseArtifacts.length > 0) {
+            setArtifactTab('logs');
+            setUpdatedTabs({ logs: true, code: false, visual: false, text: false });
+          }
+
+          const textarea = document.querySelector('textarea');
+          if (textarea) textarea.style.height = '60px';
+
+          if (chatHistoryRef.current) {
+            chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
+          }
+        } catch (error) {
+          console.error('Error loading dummy data:', error);
+          ui.setToasts([
+            {
+              title: 'Error',
+              color: 'danger',
+              text: 'Failed to load dummy data'
+            }
+          ]);
         }
-        if (chatHistoryRef.current) {
-          chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
+      } else {
+        setIsTestingMode(false);
+
+        const socketId = websocketSessionId || localStorage.getItem('websocket_token') || '';
+
+        const sentMessage = await chat.sendMessage(
+          chatId,
+          msg,
+          selectedModel.value,
+          socketId,
+          uuid,
+          'Build',
+          undefined,
+          pdfUrl,
+          actionArtifact
+        );
+
+        if (sentMessage) {
+          chat.addMessage(sentMessage);
+          setMessage('');
+          setPdfUrl('');
+          const textarea = document.querySelector('textarea');
+          if (textarea) {
+            textarea.style.height = '60px';
+          }
+          if (chatHistoryRef.current) {
+            chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
+          }
         }
       }
     } catch (error) {
@@ -1332,7 +1661,7 @@ export const HiveChatView: React.FC = observer(() => {
 
   const refreshChatTitle = useCallback(async () => {
     // Use ref for internal state check to avoid dependency cycle
-    if (isEditingTitle || isRefreshingTitleRef.current) return;
+    if (isEditingTitle || isRefreshingTitleRef.current || isTestingMode) return;
 
     try {
       // Track refreshing state in ref
@@ -1356,7 +1685,7 @@ export const HiveChatView: React.FC = observer(() => {
       isRefreshingTitleRef.current = false;
       setIsRefreshingTitle(false);
     }
-  }, [chat, chatId, uuid, title, isEditingTitle]); // Removed isRefreshingTitle from deps
+  }, [chat, chatId, uuid, title, isEditingTitle, isTestingMode]);
 
   useEffect(() => {
     if (!chatId || !uuid) return;
@@ -1369,7 +1698,7 @@ export const HiveChatView: React.FC = observer(() => {
       }
 
       titleRefreshIntervalRef.current = setInterval(() => {
-        if (document.visibilityState === 'visible' && !isEditingTitle) {
+        if (document.visibilityState === 'visible' && !isEditingTitle && !isTestingMode) {
           if (Date.now() - lastTitleRefreshTimeRef.current > 1000) {
             refreshChatTitle();
           }
@@ -1385,11 +1714,11 @@ export const HiveChatView: React.FC = observer(() => {
         titleRefreshIntervalRef.current = null;
       }
     };
-  }, [chatId, uuid, refreshChatTitle, isEditingTitle]);
+  }, [chatId, uuid, refreshChatTitle, isEditingTitle, isTestingMode]);
 
   useEffect(() => {
     const refreshTitleOnFocus = () => {
-      if (document.visibilityState === 'visible' && !isEditingTitle) {
+      if (document.visibilityState === 'visible' && !isEditingTitle && !isTestingMode) {
         if (Date.now() - lastTitleRefreshTimeRef.current > 1000) {
           refreshChatTitle();
         }
@@ -1403,7 +1732,7 @@ export const HiveChatView: React.FC = observer(() => {
       window.removeEventListener('visibilitychange', refreshTitleOnFocus);
       window.removeEventListener('focus', refreshTitleOnFocus);
     };
-  }, [refreshChatTitle, isEditingTitle]);
+  }, [refreshChatTitle, isEditingTitle, isTestingMode]);
 
   const handleMinimizeToggle = () => {
     setIsMinimized((prev) => {
@@ -1461,7 +1790,152 @@ export const HiveChatView: React.FC = observer(() => {
     }
   }, [isMobile, showArtifactView]);
 
-  if (loading) {
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data && event.data.type === 'staktrak-setup') {
+        setStaktrakReady(true);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (artifactTab === 'visual' && visualArtifact && visualArtifact.length > 0) {
+      const currentVisual = visualArtifact[0];
+      if (currentVisual.content) {
+        const content = currentVisual.content as VisualContent;
+        if (content.url) {
+          setIframeUrl(content.url);
+        }
+      }
+    }
+  }, [artifactTab, visualArtifact]);
+
+  useEffect(() => {
+    if (isTestingMode && artifactTab === 'logs') {
+      const loadDummySSELogs = async () => {
+        try {
+          console.log('Loading dummy SSE logs for testing mode');
+          let sseLogsData;
+          let loaded = false;
+
+          const pathsToTry = [
+            './docker/sselogs_dummy_data.json',
+            '/docker/sselogs_dummy_data.json',
+            '../public/docker/sselogs_dummy_data.json',
+            '/public/docker/sselogs_dummy_data.json'
+          ];
+
+          for (const path of pathsToTry) {
+            try {
+              console.log(`Trying to fetch SSE logs from: ${path}`);
+              const response = await fetch(path);
+              if (response.ok) {
+                sseLogsData = await response.json();
+                console.log(`Successfully loaded SSE logs from: ${path}`);
+                loaded = true;
+                break;
+              }
+            } catch (err) {
+              console.log(`Failed to load from ${path}:`, err);
+            }
+          }
+
+          if (!loaded) {
+            console.error('Failed to load SSE logs from any path');
+            return;
+          }
+
+          if (sseLogsData?.success && Array.isArray(sseLogsData.data.messages)) {
+            console.log(`Setting ${sseLogsData.data.messages.length} SSE logs`);
+            setSseLogs(sseLogsData.data.messages);
+
+            setArtifactTab('logs');
+            setUpdatedTabs({ logs: true, code: false, visual: false, text: false });
+          }
+        } catch (error) {
+          console.error('Failed to load dummy SSE logs:', error);
+        }
+      };
+
+      loadDummySSELogs();
+    }
+  }, [isTestingMode, artifactTab]);
+
+  const validateGitHubPAT = async (pat: string): Promise<boolean> => {
+    if (!pat) return false;
+
+    try {
+      const response = await axios.get('https://api.github.com/user', {
+        headers: {
+          Authorization: `token ${pat}`
+        }
+      });
+
+      return response.status === 200;
+    } catch (error) {
+      console.error('Error validating GitHub PAT:', error);
+      return false;
+    }
+  };
+
+  const checkWorkspaceSetup = useCallback(async () => {
+    if (!uuid) return;
+
+    setIsValidating(true);
+    try {
+      const workspace = await main.getUserWorkspaceByUuid(uuid);
+      setWorkspaceData(workspace);
+
+      if (!workspace) {
+        setIsWorkspaceComplete(false);
+        setIsValidating(false);
+        return;
+      }
+
+      const codeGraph = await main.getWorkspaceCodeGraph(uuid);
+
+      const hasCodeGraphUrl = codeGraph && codeGraph.url;
+      const hasSecretAlias = codeGraph && codeGraph.secret_alias;
+
+      let patValid = false;
+      const codeSpaceConfig = await main.getCodeSpaceConfig(uuid);
+
+      const hasCodespaceUrl = codeSpaceConfig && codeSpaceConfig.url;
+      const hasUsername = codeSpaceConfig && codeSpaceConfig.username;
+      const hasPAT = codeSpaceConfig && codeSpaceConfig.pat;
+
+      if (hasPAT) {
+        patValid = await validateGitHubPAT(codeSpaceConfig.pat);
+        setIsPATExpired(!!(!patValid && hasPAT));
+      }
+
+      const isComplete = !!(
+        hasCodeGraphUrl &&
+        hasSecretAlias &&
+        hasCodespaceUrl &&
+        hasUsername &&
+        hasPAT &&
+        patValid
+      );
+      setIsWorkspaceComplete(isComplete);
+    } catch (error) {
+      console.error('Error checking workspace setup:', error);
+      setIsWorkspaceComplete(false);
+    } finally {
+      setIsValidating(false);
+    }
+  }, [uuid, main]);
+
+  useEffect(() => {
+    checkWorkspaceSetup();
+  }, [checkWorkspaceSetup]);
+
+  if (loading || isValidating) {
     return (
       <Container collapsed={collapsed} ref={containerRef}>
         <LoadingContainer>
@@ -1530,6 +2004,10 @@ export const HiveChatView: React.FC = observer(() => {
                     <SplashScreen
                       user={{ alias: ui.meInfo?.owner_alias || 'User' }}
                       onSendMessage={handleSplashMessage}
+                      isWorkspaceIncomplete={!isWorkspaceComplete}
+                      isPATExpired={isPATExpired}
+                      workspaceUuid={uuid}
+                      disableInput={!isWorkspaceComplete || isPATExpired}
                     />
                   </SplashContainer>
                 )}
@@ -1603,18 +2081,25 @@ export const HiveChatView: React.FC = observer(() => {
                   value={message}
                   onChange={handleMessageChange}
                   onKeyPress={handleKeyPress}
-                  placeholder="Type your message..."
-                  disabled={isSending}
+                  placeholder={
+                    !isWorkspaceComplete || isPATExpired
+                      ? ERROR_MESSAGES.COMPLETE_WORKSPACE_SETUP
+                      : ERROR_MESSAGES.TYPE_MESSAGE_PLACEHOLDER
+                  }
+                  disabled={isSending || !isWorkspaceComplete || isPATExpired}
                 />
                 {isPdfUploadEnabled && (
-                  <AttachButton onClick={() => setIsUploadModalOpen(true)} disabled={isSending}>
+                  <AttachButton
+                    onClick={() => setIsUploadModalOpen(true)}
+                    disabled={isSending || !isWorkspaceComplete || isPATExpired}
+                  >
                     Attach
                     <AttachIcon icon="attach_file" />
                   </AttachButton>
                 )}
                 <SendButton
                   onClick={() => handleSendMessage()}
-                  disabled={!message.trim() || isSending}
+                  disabled={!message.trim() || isSending || !isWorkspaceComplete || isPATExpired}
                 >
                   Send
                 </SendButton>
@@ -1729,6 +2214,8 @@ export const HiveChatView: React.FC = observer(() => {
                   sseLogs={sseLogs}
                   activeTab={artifactTab}
                 />
+
+                <StaktrakRecorder iframeUrl={iframeUrl} activeTab={artifactTab} />
               </ViewerSection>
             </>
           )}
