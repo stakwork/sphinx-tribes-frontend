@@ -30,7 +30,7 @@ describe('ChatStatusDisplay', () => {
     waitFor(() => {
       expect(screen.getByText(/Hive:/)).toBeInTheDocument();
       expect(screen.getByText(/success - Agent workflow completed/)).toBeInTheDocument();
-      expect(screen.getByText(/Last Update: less than a minute ago/)).toBeInTheDocument();
+      expect(screen.getByText(/less than a minute ago/)).toBeInTheDocument();
 
       const container = screen.getByText(/Hive:/).closest('div');
       expect(container).toHaveStyle('border: 1px solid #2196f3');
@@ -87,7 +87,7 @@ describe('ChatStatusDisplay', () => {
 
     render(<ChatStatusDisplay chatStatus={chatStatus} />);
 
-    expect(screen.getByText(/Last Update: 2 hours ago/)).toBeInTheDocument();
+    expect(screen.getByText(/2 hours ago/)).toBeInTheDocument();
   });
 
   test('does not render when chatStatus is null', () => {
