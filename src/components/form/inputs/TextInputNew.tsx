@@ -70,7 +70,7 @@ const TextContainer = styled.div<styledProps>`
 export default function TextInputNew({ label, value, handleChange, readOnly, testId }: Props) {
   const color = colors['light'];
   return (
-    <TextContainer color={color}>
+    <TextContainer data-testid="text-input-new-component" color={color}>
       <div className="label-float">
         <input
           type="text"

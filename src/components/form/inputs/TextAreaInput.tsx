@@ -250,7 +250,7 @@ export default function TextAreaInput({
   };
 
   return (
-    <div>
+    <div data-testid="text-area-input-component">
       <CopyButtonGroup>
         <SnippetDropdown items={filteredSnippets} onSelect={handleSnippetSelect} />
         <SwitcherContainer>
