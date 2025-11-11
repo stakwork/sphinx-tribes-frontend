@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import posthog from 'posthog-js';
 import { PostHogProvider } from 'posthog-js/react';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
@@ -7,15 +8,16 @@ import '@elastic/eui/dist/eui_theme_dark.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import { appEnv } from './config/env';
 
-const options = {
-  api_host: process.env.REACT_APP_PUBLIC_POSTHOG_HOST
-};
-
 if (appEnv.isTests) {
   ReactDOM.render(<App />, document.getElementById('root'));
 } else {
+  posthog.init(process.env.REACT_APP_PUBLIC_POSTHOG_KEY || '', {
+    api_host: process.env.REACT_APP_PUBLIC_POSTHOG_HOST || '',
+    capture_pageview: false,
+    person_profiles: 'identified_only'
+  });
   ReactDOM.render(
-    <PostHogProvider apiKey={process.env.REACT_APP_PUBLIC_POSTHOG_KEY} options={options}>
+    <PostHogProvider client={posthog}>
       <App />
     </PostHogProvider>,
     document.getElementById('root')
