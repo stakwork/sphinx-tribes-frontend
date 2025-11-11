@@ -108,6 +108,7 @@ const ProofModal = ({
         <CopyButtonGroup>
           <ProofActionButton
             color="primary"
+            data-testid="submit-proof-handler"
             onClick={handleSubmit}
             disabled={!value.trim()}
             style={{
