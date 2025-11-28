@@ -24,7 +24,7 @@ export default function SelectInput({ label, options, value, handleChange, testI
   }, [isSelectOpen, active]);
 
   return (
-    <OuterContainer color={color}>
+    <OuterContainer data-testid="select-input-component" color={color}>
       <Select
         isOpen={isSelectOpen}
         testId={testId}

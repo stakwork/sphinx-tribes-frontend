@@ -82,7 +82,7 @@ export default function NumberInputNew({
   }
 
   return (
-    <InputOuterBox color={color} borderColor={isError ? color.red2 : color.grayish.G600}>
+    <InputOuterBox data-testid="number-input-new-component" color={color} borderColor={isError ? color.red2 : color.grayish.G600}>
       <input
         className="inputText"
         id={name}
