@@ -17,6 +17,7 @@ const ButtonSet = ({ showGithubBtn, ...props }: any) => {
   const color = colors['light'];
   return (
     <ButtonSetContainer
+      data-testid="button-set-component"
       style={{
         ...props.ButtonSetContainerStyle
       }}
