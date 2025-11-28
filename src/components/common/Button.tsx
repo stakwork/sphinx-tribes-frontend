@@ -56,6 +56,7 @@ export default function Button(props: ButtonProps) {
 
   return (
     <B
+      data-testid="button-component"
       id={id}
       style={{
         ...commonColors[props.color ? props.color : 'primary'],

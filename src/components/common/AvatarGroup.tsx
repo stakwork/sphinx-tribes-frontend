@@ -32,7 +32,7 @@ export const AvatarGroup = (props: AvatarGroupProps) => {
   `;
 
   return (
-    <Wrapper>
+    <Wrapper data-testid="avatar-group-component">
       {numExtra > 0 && (
         <EuiAvatar
           name={`Plus ${numExtra} more`}
