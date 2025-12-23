@@ -8,9 +8,9 @@ export const BountyComponents = () => {
     useFeatureFlag('display_home_featBounty');
 
   return (
-    <>
+    <React.Fragment data-testid="bounty-components-component">
       <BountySteps />
       {!isFeatureBountyLoading && isFeatureBountyEnabled && <FeaturedBounties />}
-    </>
+    </React.Fragment>
   );
 };
