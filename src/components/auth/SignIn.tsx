@@ -131,7 +131,7 @@ function SignIn(props: AuthProps) {
   }, []);
 
   return useObserver(() => (
-    <div>
+    <div data-testid="sign-in-component">
       {showSignIn ? (
         <Column>
           <SphinxAppLoginDeepLink
