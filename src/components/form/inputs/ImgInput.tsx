@@ -135,7 +135,7 @@ function ImageInput({ note, value, handleChange, notProfilePic, imageIcon }: Pro
   const defaultIcon = notProfilePic ? backgroundIcon : avatarIcon;
 
   return (
-    <ImageWrap>
+    <ImageWrap data-testid="image-input-component">
       <Dropzone multiple={false} onDrop={dropzoneUpload} maxSize={MAX_UPLOAD_SIZE}>
         {({ getRootProps, getInputProps, isDragActive }: any) => (
           <DropzoneStuff>

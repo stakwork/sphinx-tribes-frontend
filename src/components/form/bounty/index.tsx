@@ -532,6 +532,7 @@ function Form(props: FormProps) {
 
         return (
           <Wrap
+            data-testid="form-component"
             ref={refBody}
             style={{
               ...formPad,

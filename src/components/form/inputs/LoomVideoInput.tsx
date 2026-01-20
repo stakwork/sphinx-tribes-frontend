@@ -6,6 +6,7 @@ export default function LoomVideoInput({ value, handleChange, handleBlur, handle
   return (
     <>
       <LoomViewerRecorder
+        data-testid="loom-video-input-component"
         name="loomVideo"
         onChange={(e: any) => {
           handleChange(e);

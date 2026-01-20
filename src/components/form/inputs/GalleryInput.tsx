@@ -131,7 +131,7 @@ function GalleryInput({ value, handleChange }: Props) {
   }
 
   return (
-    <>
+    <> data-testid="gallery-input-component"
       <Wrapper>
         {picsrcArray &&
           picsrcArray.map((v: any, i: number) => (

@@ -128,7 +128,7 @@ function Form(props: FormProps) {
       validationSchema={validator(schema)}
     >
       {({ setFieldTouched, handleSubmit, values, setFieldValue, errors, initialValues }: any) => (
-        <Wrap ref={refBody} style={{ width: '100%' }}>
+        <Wrap data-testid="form-component" ref={refBody} style={{ width: '100%' }}>
           {props.isFirstTimeScreen && schema ? (
             <>
               <div
