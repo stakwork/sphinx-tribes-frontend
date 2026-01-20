@@ -5,7 +5,7 @@ interface PriceContainerProps {
   priceBackground?: string;
   session_text_color?: string;
 }
-export const PriceOuterContainer = styled.div<PriceContainerProps>`
+export const PriceOuterContainer = styled.div<PriceContainerProps> data-testid="price-outer-container-component"`
   display: flex;
   align-items: center;
   height: 33px;

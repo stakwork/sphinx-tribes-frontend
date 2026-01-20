@@ -64,6 +64,7 @@ const ButtonContainer = styled.div<ButtonContainerProps>`
 `;
 const ImageButton = (props: ImageButtonProps) => (
   <ButtonContainer
+    data-testid="image-button-component"
     disabled={props.disabled}
     onClick={props?.buttonAction}
     style={{
