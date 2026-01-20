@@ -1,3 +1,4 @@
+```
 import { EuiText } from '@elastic/eui';
 import MaterialIcon from '@material/react-material-icon';
 import React from 'react';
@@ -130,6 +131,7 @@ const BountyProfileView = (props: BountiesProfileProps) => {
   return (
     <>
       <UserProfileContainer
+        data-testid="bounty-profile-view-component"
         style={{
           ...props?.UserProfileContainerStyle
         }}
@@ -215,3 +217,4 @@ const BountyProfileView = (props: BountiesProfileProps) => {
 };
 
 export default observer(BountyProfileView);
+```

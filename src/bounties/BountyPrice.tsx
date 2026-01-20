@@ -1,3 +1,4 @@
+```
 import { EuiText } from '@elastic/eui';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
@@ -100,6 +101,7 @@ const BountyPrice = (props: BountiesPriceProps) => {
   return (
     <>
       <PriceContainer
+        data-testid="bounty-price-component"
         style={{
           ...props.style
         }}
@@ -180,3 +182,4 @@ const BountyPrice = (props: BountiesPriceProps) => {
 };
 
 export default BountyPrice;
+```
