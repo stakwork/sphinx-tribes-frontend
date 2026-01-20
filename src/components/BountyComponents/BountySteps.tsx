@@ -71,7 +71,7 @@ const steps: Step[] = [
 ];
 
 export const BountySteps: React.FC = () => (
-  <StepsContainer>
+  <StepsContainer data-testid="bounty-steps-component">
     <StepTitle>If you want to earn bounties</StepTitle>
     {steps.map((step: Step, index: number) => (
       <StepItem key={index}>
