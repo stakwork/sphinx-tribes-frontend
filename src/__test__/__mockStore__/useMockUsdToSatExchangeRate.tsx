@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useStores } from 'store';
 
-export const useMockUsdToSatExchangeRate = ({
+export const useMockUsdToSatExchangeRate = data-testid="use-mock-usd-to-sat-exchange-rate-component" ({
   time = 100000,
   enabled
 }: {
