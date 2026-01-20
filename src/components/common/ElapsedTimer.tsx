@@ -117,7 +117,7 @@ const ElapsedTimerBase: React.FC<ElapsedTimerProps> = ({ bountyId }: ElapsedTime
   }
 
   return (
-    <TimerContainer>
+    <TimerContainer data-testid="elapsed-timer-component">
       <Label>Elapsed</Label>
       <Time>{elapsedTime}</Time>
     </TimerContainer>

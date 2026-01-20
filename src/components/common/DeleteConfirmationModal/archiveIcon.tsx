@@ -1,7 +1,7 @@
 import React from 'react';
 
 export const archiveIcon = (
-  <svg width="28" height="30" viewBox="0 0 28 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg data-testid="archive-icon-component" width="28" height="30" viewBox="0 0 28 30" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
       d="M24.5 3.75H3.5C2.11929 3.75 1 4.86929 1 6.25V8.75C1 10.1307 2.11929 11.25 3.5 11.25H24.5C25.8807 11.25 27 10.1307 27 8.75V6.25C27 4.86929 25.8807 3.75 24.5 3.75Z"
       stroke="#D0D5D8"
