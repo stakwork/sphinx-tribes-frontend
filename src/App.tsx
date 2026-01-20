@@ -1,3 +1,4 @@
+```
 import React, { useCallback, useEffect } from 'react';
 /* eslint-disable func-style */
 import '@material/react-material-icon/dist/material-icon.css';
@@ -106,7 +107,7 @@ function App() {
   }, [uiStore.meInfo]);
 
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider data-testid="app-component" theme={theme}>
       <Router history={history}>
         <ModeDispatcher>{(mode: any) => <Pages mode={mode} />}</ModeDispatcher>
       </Router>
@@ -115,3 +116,4 @@ function App() {
 }
 
 export default withProviders(App);
+```

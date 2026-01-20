@@ -1,3 +1,4 @@
+```
 import { makeAutoObservable } from 'mobx';
 import { mainStore } from './main.ts';
 import { QuickBountyItem, QuickTicketItem } from './interface.ts';
@@ -98,3 +99,4 @@ class QuickBountyTicketStore {
 }
 
 export const quickBountyTicketStore = new QuickBountyTicketStore();
+```
