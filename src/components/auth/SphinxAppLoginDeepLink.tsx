@@ -87,7 +87,7 @@ export default function SphinxAppLoginDeeplink(props: AuthProps) {
   }, [challenge, ts]);
 
   return (
-    <ConfirmWrap>
+    <ConfirmWrap data-testid="sphinx-app-login-deeplink-component">
       <InnerWrap>
         <div style={{ marginBottom: 50 }}>Opening Sphinx...</div>
         <EuiLoadingSpinner size="xl" />
