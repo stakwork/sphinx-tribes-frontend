@@ -999,12 +999,8 @@ export const BudgetButton = styled.button`
 
 export const SettingsContainer = styled.div`
   padding: 20px;
-  max-width: 100%;
+  width: clamp(100%, 75vw, 1600px);
   margin: auto;
-
-  @media (min-width: 1200px) {
-    max-width: 1200px;
-  }
 `;
 
 export const Section = styled.div`
@@ -1105,7 +1101,7 @@ export const ToolsSection = styled(Section)`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 16px;
-  margin-bottom: 5%;
+  margin-bottom: clamp(50px, 8vh, 120px);
 `;
 
 export const ToolButton = styled(Button)`
