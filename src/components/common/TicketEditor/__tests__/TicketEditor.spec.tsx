@@ -111,7 +111,7 @@ describe('TicketEditor Thinking/Speed Toggle', () => {
     (useFeatureFlag as jest.Mock).mockReturnValue({ isEnabled: false });
 
     await waitFor(() => {
-      render(<TicketEditor {...defaultProps} />);
+      render(<TicketEditor data-testid="ticket-editor-component" {...defaultProps} />);
     });
 
     expect(
@@ -123,7 +123,7 @@ describe('TicketEditor Thinking/Speed Toggle', () => {
     (useFeatureFlag as jest.Mock).mockReturnValue({ isEnabled: true });
 
     await waitFor(() => {
-      render(<TicketEditor {...defaultProps} />);
+      render(<TicketEditor data-testid="ticket-editor-component" {...defaultProps} />);
     });
 
     expect(screen.getByRole('radiogroup', { name: /toggle thinking mode/i })).toBeInTheDocument();
@@ -135,7 +135,7 @@ describe('TicketEditor Thinking/Speed Toggle', () => {
     (useFeatureFlag as jest.Mock).mockReturnValue({ isEnabled: true });
 
     await waitFor(() => {
-      render(<TicketEditor {...defaultProps} />);
+      render(<TicketEditor data-testid="ticket-editor-component" {...defaultProps} />);
     });
 
     const thinkingButton = screen.getByRole('radio', { name: /thinking/i });
@@ -149,7 +149,7 @@ describe('TicketEditor Thinking/Speed Toggle', () => {
     (useFeatureFlag as jest.Mock).mockReturnValue({ isEnabled: true });
 
     await waitFor(() => {
-      render(<TicketEditor {...defaultProps} />);
+      render(<TicketEditor data-testid="ticket-editor-component" {...defaultProps} />);
     });
 
     const thinkingButton = screen.getByRole('radio', { name: /thinking/i });
@@ -173,7 +173,7 @@ describe('TicketEditor Thinking/Speed Toggle', () => {
     (useFeatureFlag as jest.Mock).mockReturnValue({ isEnabled: true });
 
     await waitFor(() => {
-      render(<TicketEditor {...defaultProps} />);
+      render(<TicketEditor data-testid="ticket-editor-component" {...defaultProps} />);
     });
 
     const toggleContainer = screen.getByRole('radiogroup', { name: /toggle thinking mode/i });
@@ -210,7 +210,7 @@ describe('TicketEditor Thinking/Speed Toggle', () => {
     (useFeatureFlag as jest.Mock).mockReturnValue({ isEnabled: true });
 
     await waitFor(() => {
-      render(<TicketEditor {...defaultProps} />);
+      render(<TicketEditor data-testid="ticket-editor-component" {...defaultProps} />);
     });
 
     const toggleContainer = screen.getByRole('radiogroup', { name: /toggle thinking mode/i });
@@ -230,7 +230,7 @@ describe('TicketEditor Thinking/Speed Toggle', () => {
     (useFeatureFlag as jest.Mock).mockReturnValue({ isEnabled: true });
 
     await waitFor(() => {
-      render(<TicketEditor {...defaultProps} />);
+      render(<TicketEditor data-testid="ticket-editor-component" {...defaultProps} />);
     });
 
     const toggleContainer = screen.getByRole('radiogroup', { name: /toggle thinking mode/i });
@@ -250,7 +250,7 @@ describe('TicketEditor Thinking/Speed Toggle', () => {
     (useFeatureFlag as jest.Mock).mockReturnValue({ isEnabled: true });
 
     await waitFor(() => {
-      render(<TicketEditor {...defaultProps} />);
+      render(<TicketEditor data-testid="ticket-editor-component" {...defaultProps} />);
     });
 
     const toggleContainer = screen.getByRole('radiogroup', { name: /toggle thinking mode/i });
@@ -287,7 +287,7 @@ describe('TicketEditor Thinking/Speed Toggle', () => {
     (useFeatureFlag as jest.Mock).mockReturnValue({ isEnabled: false });
 
     await waitFor(() => {
-      render(<TicketEditor {...defaultProps} />);
+      render(<TicketEditor data-testid="ticket-editor-component" {...defaultProps} />);
     });
 
     const container = screen.getByTestId('ticket-textarea').parentElement;

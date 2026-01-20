@@ -72,7 +72,7 @@ describe('TicketTextAreaComp', () => {
       json: () => Promise.resolve('https://example.com/image.png')
     });
 
-    render(<TicketTextAreaComp {...defaultProps} />);
+    render(<TicketTextAreaComp data-testid="ticket-text-area-comp-component" {...defaultProps} />);
     const textarea = screen.getByTestId('ticket-textarea');
 
     const file = new File(['dummy content'], 'test.png', { type: 'image/png' });

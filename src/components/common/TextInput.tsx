@@ -25,7 +25,7 @@ export default function TextInput({
 }: TextInputProps) {
   const color = colors['light'];
   return (
-    <div>
+    <div data-testid="text-input-component">
       <StyledLabel>{label}</StyledLabel>
       <FieldText
         color={color}
