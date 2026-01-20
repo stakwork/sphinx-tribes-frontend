@@ -91,7 +91,7 @@ const StatusDropdown: React.FC<StatusDropdownProps> = observer(
     }, [shouldSetAccepted, proofId, onStatusUpdate]);
 
     return (
-      <div
+      <div data-testid="status-dropdown-component"
         style={{
           display: 'flex',
           alignItems: 'center',

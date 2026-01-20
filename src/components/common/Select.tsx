@@ -143,7 +143,7 @@ export default function CustomSelect(props: SelProps) {
   };
 
   return (
-    <DropdownContainer ref={dropdownRef} style={{ ...props.style }} data-testid={props.testId}>
+    <DropdownContainer data-testid="custom-select-component" ref={dropdownRef} style={{ ...props.style }} data-testid={props.testId}>
       <StyledLabel isFocused={isFocused} hasContent={props.value}>
         {props.placeholder}
       </StyledLabel>
