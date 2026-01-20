@@ -106,7 +106,7 @@ function App() {
   }, [uiStore.meInfo]);
 
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider data-testid="app-component" theme={theme}>
       <Router history={history}>
         <ModeDispatcher>{(mode: any) => <Pages mode={mode} />}</ModeDispatcher>
       </Router>
