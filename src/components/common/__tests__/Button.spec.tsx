@@ -24,7 +24,7 @@ describe('Button Component', () => {
     const mockOnClick = jest.fn();
 
     render(
-      <Button
+      <Button data-testid="button-component"
         id={'1'}
         icon={''}
         height={10}
