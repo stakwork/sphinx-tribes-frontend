@@ -1,3 +1,4 @@
+```
 import { renderHook } from '@testing-library/react-hooks';
 import { useStores } from 'store';
 import { waitFor } from '@testing-library/react';
@@ -101,3 +102,4 @@ describe('useMockSelfProfileStore', () => {
     });
   });
 });
+```

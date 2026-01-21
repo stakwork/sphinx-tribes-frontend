@@ -1,3 +1,4 @@
+```
 import { renderHook } from '@testing-library/react-hooks';
 import { act } from '@testing-library/react';
 import { useStores } from 'store';
@@ -157,3 +158,4 @@ describe('useMockUsdToSatExchangeRate', () => {
     expect(mockSetUsdToSatsExchangeRate).toHaveBeenCalledTimes(1);
   });
 });
+```

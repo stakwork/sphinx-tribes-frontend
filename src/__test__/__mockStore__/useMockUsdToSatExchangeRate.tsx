@@ -1,3 +1,4 @@
+```
 import { useEffect } from 'react';
 import { useStores } from 'store';
 
@@ -32,3 +33,4 @@ export const useMockUsdToSatExchangeRate = ({
     }
   }, [time, ui, enabled]);
 };
+```
