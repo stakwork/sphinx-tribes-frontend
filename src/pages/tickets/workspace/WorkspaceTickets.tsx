@@ -99,6 +99,8 @@ function WorkspaceBodyComponent() {
       .filter((key: string) => newCheckboxIdToSelectedMapLanguage[key])
       .join(',');
     setLanguageString(languageString);
+    setCurrentItems(queryLimit);
+    setPage(1);
 
     main.setBountyLanguages(languageString);
   };

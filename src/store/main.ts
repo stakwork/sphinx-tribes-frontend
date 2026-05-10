@@ -694,7 +694,7 @@ export class MainStore {
           Completed: true,
           Pending: false,
           Failed: false,
-          languageString: '',
+          languages: '',
           direction: 'desc',
           search: uiStore.searchText ?? ''
         };
@@ -1087,7 +1087,7 @@ export class MainStore {
       }
 
       const data = await response.json();
-      
+
       if (data && data.length) {
         const ps3: any[] = [];
         for (let i = 0; i < data.length; i++) {
@@ -1187,7 +1187,7 @@ export class MainStore {
           Completed: true,
           Pending: false,
           Failed: false,
-          languageString: '',
+          languages: '',
           direction: 'desc'
         };
       }

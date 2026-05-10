@@ -129,6 +129,8 @@ export const WorkspaceHeader = ({
         page: 1,
         resetPage: true,
         ...checkboxIdToSelectedMap,
+        languages: languageString,
+        direction: sortDirection,
         search: searchText
       });
     } else {
@@ -154,7 +156,7 @@ export const WorkspaceHeader = ({
         page: 1,
         resetPage: true,
         ...checkboxIdToSelectedMap,
-        languageString,
+        languages: languageString,
         direction: sortDirection
       });
     }
