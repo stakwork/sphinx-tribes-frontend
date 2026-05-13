@@ -3,6 +3,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { useHistory, useParams } from 'react-router-dom';
 import { useStores } from 'store';
 import { activityStore } from 'store/activityStore';
+import { IActivity } from 'store/interface';
 import { createAndNavigateToHivechat } from '../../../../utils/hivechatUtils';
 import Activities from './Activities';
 
@@ -56,7 +57,7 @@ describe('Activities', () => {
     push: jest.fn()
   };
 
-  const mockRootActivities = [
+  const mockRootActivities: IActivity[] = [
     {
       ID: '123',
       title: 'Test Feature Activity',
@@ -72,7 +73,9 @@ describe('Activities', () => {
       thread_id: '123',
       feedback: '',
       actions: [],
-      questions: []
+      questions: [],
+      sequence: 1,
+      status: 'TODO'
     },
     {
       ID: '456',
@@ -89,7 +92,9 @@ describe('Activities', () => {
       thread_id: '456',
       feedback: '',
       actions: [],
-      questions: []
+      questions: [],
+      sequence: 1,
+      status: 'TODO'
     }
   ];
 
@@ -122,8 +127,17 @@ describe('Activities', () => {
     (useParams as jest.Mock).mockReturnValue({ uuid: 'workspace-uuid' });
     (createAndNavigateToHivechat as jest.Mock).mockResolvedValue(true);
 
-    const mockedActivityStore = activityStore as jest.Mocked<typeof activityStore>;
-    mockedActivityStore.rootActivities = mockRootActivities as any;
+    const mockedActivityStore = activityStore as typeof activityStore & {
+      fetchWorkspaceActivities: jest.Mock;
+      getThreadResponses: jest.Mock;
+      createThreadResponse: jest.Mock;
+      createActivity: jest.Mock;
+      deleteActivity: jest.Mock;
+      updateActivity: jest.Mock;
+      rootActivities: IActivity[];
+    };
+
+    mockedActivityStore.rootActivities = mockRootActivities;
     mockedActivityStore.fetchWorkspaceActivities.mockResolvedValue(undefined);
     mockedActivityStore.getThreadResponses.mockResolvedValue([]);
     mockedActivityStore.createThreadResponse.mockResolvedValue(null);
