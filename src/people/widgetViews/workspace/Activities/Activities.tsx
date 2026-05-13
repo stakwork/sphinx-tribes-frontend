@@ -129,22 +129,74 @@ const ModalOverlay = styled.div<{ collapsed: boolean }>`
   top: 0;
   left: 0;
   width: ${({ collapsed }) => (collapsed ? '0' : '100%')};
-  height: 100%;
+  height: ${({ collapsed }) => (collapsed ? '0' : '100vh')};
   background: rgba(0, 0, 0, 0.5);
-  z-index: 999;
+  z-index: 1003;
   transition: all 0.3s ease;
-  display: ${({ collapsed }) => (collapsed ? 'none' : 'block')};
+  display: ${({ collapsed }) => (collapsed ? 'none' : 'flex')};
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  overflow-y: auto;
+  box-sizing: border-box;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+    align-items: flex-start;
+  }
 `;
 
 const ModalContent = styled.div`
   background: white;
+  position: relative;
   padding: 20px;
   border-radius: 8px;
-  width: 90%;
+  width: min(600px, 100%);
   max-width: 600px;
   max-height: 90vh;
   overflow-y: auto;
-  margin: 20px 0;
+  margin: auto;
+  box-sizing: border-box;
+
+  @media (max-width: 768px) {
+    max-height: calc(100vh - 2rem);
+    margin-top: 0;
+  }
+`;
+
+const ModalHeader = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+`;
+
+const ModalTitle = styled.h2`
+  margin: 0;
+  font-size: 1.5rem;
+`;
+
+const ModalCloseButton = styled.button`
+  border: none;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  font-size: 1.5rem;
+  line-height: 1;
+  padding: 0;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 9999px;
+
+  &:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+  }
 `;
 
 const Form = styled.form`
@@ -577,6 +629,11 @@ const Activities = observer(() => {
     });
     setIsModalOpen(true);
     setSelectedActivity(activity);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    resetForm();
   };
 
   const resetForm = () => {
@@ -1071,13 +1128,21 @@ const Activities = observer(() => {
           {isModalOpen && (
             <ModalOverlay
               collapsed={false}
-              onClick={() => {
-                setIsModalOpen(false);
-                resetForm();
-              }}
+              data-testid="activity-modal-overlay"
+              onClick={handleCloseModal}
             >
-              <ModalContent onClick={(e) => e.stopPropagation()}>
-                <h2>Create New Activity</h2>
+              <ModalContent data-testid="activity-modal-content" onClick={(e) => e.stopPropagation()}>
+                <ModalHeader>
+                  <ModalTitle>Create New Activity</ModalTitle>
+                  <ModalCloseButton
+                    type="button"
+                    aria-label="Close modal"
+                    data-testid="close-activity-modal"
+                    onClick={handleCloseModal}
+                  >
+                    ×
+                  </ModalCloseButton>
+                </ModalHeader>
                 <Form onSubmit={handleSubmit}>
                   <FormField>
                     <label>Title</label>
