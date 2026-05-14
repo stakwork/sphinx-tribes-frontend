@@ -7,6 +7,7 @@ import MaterialIcon from '@material/react-material-icon';
 import TicketEditor from 'components/common/TicketEditor/TicketEditor';
 import { useStores } from 'store';
 import { userHasRole } from 'helpers';
+import { normalizePhaseTicket } from 'helpers/phaseTickets';
 import { EuiLoadingSpinner } from '@elastic/eui';
 import { Body } from 'pages/tickets/style';
 import {
@@ -433,7 +434,13 @@ const PhasePlannerView: React.FC = observer(() => {
   const getPhaseTickets = useCallback(async () => {
     if (!feature_uuid || !phase_uuid) return;
     const data = await main.getTicketDataByPhase(feature_uuid, phase_uuid);
-    return data;
+    if (!Array.isArray(data)) return data;
+
+    return data
+      .map((ticket: Ticket, index: number) =>
+        normalizePhaseTicket(ticket, feature_uuid, phase_uuid, index + 1)
+      )
+      .filter((ticket: Ticket | undefined): ticket is Ticket => Boolean(ticket));
   }, [feature_uuid, phase_uuid, main]);
 
   const getTotalBounties = useCallback(
@@ -477,9 +484,6 @@ const PhasePlannerView: React.FC = observer(() => {
             phaseTicketStore.clearPhaseTickets(phase_uuid);
 
             for (const ticket of phaseTickets) {
-              if (ticket.UUID) {
-                ticket.uuid = ticket.UUID;
-              }
               phaseTicketStore.addTicket(ticket);
             }
             setPhaseData(phase);

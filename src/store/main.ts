@@ -9,6 +9,7 @@ import api from '../api';
 import { getHostIncludingDockerHosts } from '../config/host';
 import { TribesURL } from '../config/host';
 import { convertLocaleToNumber, randomString } from '../helpers';
+import { extractPhaseTickets } from '../helpers/phaseTickets';
 import { getUserAvatarPlaceholder } from './lib';
 import { uiStore } from './ui';
 import {
@@ -3833,9 +3834,13 @@ export class MainStore {
         }
       });
 
-      return r.json();
+      if (typeof r.ok === 'boolean' && !r.ok) {
+        throw new Error(`Failed to fetch phase tickets: ${r.status}`);
+      }
+
+      return extractPhaseTickets(await r.json());
     } catch (e) {
-      console.error('getFeaturePhaseByUUID', e);
+      console.error('getTicketDataByPhase', e);
       return undefined;
     }
   }
