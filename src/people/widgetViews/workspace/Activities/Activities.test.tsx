@@ -1,6 +1,8 @@
 import React from 'react';
+import '@testing-library/jest-dom';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import { useStores } from 'store';
+import { activityStore } from 'store/activityStore';
 import { useHistory, useParams } from 'react-router-dom';
 import { createAndNavigateToHivechat } from '../../../../utils/hivechatUtils';
 import Activities from './Activities';
@@ -9,8 +11,45 @@ jest.mock('../../../../utils/hivechatUtils', () => ({
   createAndNavigateToHivechat: jest.fn()
 }));
 
+jest.mock(
+  'components/common/SidebarComponent',
+  () =>
+    function MockSidebarComponent() {
+      return <div data-testid="sidebar" />;
+    }
+);
+
+jest.mock('people/utils/RenderMarkdown', () => ({
+  renderMarkdown: (content: string) => content
+}));
+
+jest.mock(
+  './header',
+  () =>
+    function MockActivitiesHeader() {
+      return <div data-testid="activities-header" />;
+    }
+);
+
+jest.mock('remark-gfm', () => null);
+
+jest.mock('rehype-raw', () => null);
+
 jest.mock('store', () => ({
   useStores: jest.fn()
+}));
+
+jest.mock('store/activityStore', () => ({
+  activityStore: {
+    rootActivities: [],
+    fetchWorkspaceActivities: jest.fn().mockResolvedValue(true),
+    getActivity: jest.fn(),
+    getThreadResponses: jest.fn().mockReturnValue([]),
+    createActivity: jest.fn(),
+    createThreadResponse: jest.fn(),
+    updateActivity: jest.fn(),
+    deleteActivity: jest.fn().mockResolvedValue(true)
+  }
 }));
 
 jest.mock('react-router-dom', () => ({
@@ -23,46 +62,58 @@ describe('Activities', () => {
     createChat: jest.fn()
   };
 
+  const mockMain = {
+    getWorkspaceFeatures: jest.fn().mockResolvedValue([]),
+    getFeaturePhases: jest.fn().mockResolvedValue([]),
+    getUserWorkspaceByUuid: jest.fn().mockResolvedValue({ owner_pubkey: 'owner-pubkey' }),
+    getUserRoles: jest.fn().mockResolvedValue([]),
+    bountyRoles: []
+  };
+
   const mockUI = {
     setToasts: jest.fn(),
-    meInfo: { owner_alias: 'TestUser' }
+    meInfo: { owner_alias: 'TestUser', owner_pubkey: 'owner-pubkey' },
+    _meInfo: { owner_alias: 'TestUser', owner_pubkey: 'owner-pubkey' }
   };
 
   const mockHistory = {
     push: jest.fn()
   };
 
-  const mockActivityStore = {
-    rootActivities: [
-      {
-        ID: '123',
-        title: 'Test Feature Activity',
-        content: 'This is test content for the feature activity',
-        content_type: 'feature_creation',
-        workspace: 'workspace-uuid',
-        time_created: '2023-01-01T00:00:00Z'
-      },
-      {
-        ID: '456',
-        title: 'Non-Feature Activity',
-        content: 'This is a general update',
-        content_type: 'general_update',
-        workspace: 'workspace-uuid',
-        time_created: '2023-01-02T00:00:00Z'
-      }
-    ],
-    loadActivities: jest.fn().mockResolvedValue(true),
-    getActivity: jest
-      .fn()
-      .mockImplementation((id) => mockActivityStore.rootActivities.find((a) => a.ID === id))
-  };
+  const activities = [
+    {
+      id: '123',
+      ID: '123',
+      title: 'Test Feature Activity',
+      content: 'This is test content for the feature activity',
+      content_type: 'feature_creation',
+      workspace: 'workspace-uuid',
+      time_created: '2023-01-01T00:00:00Z'
+    },
+    {
+      id: '456',
+      ID: '456',
+      title: 'Non-Feature Activity',
+      content: 'This is a general update',
+      content_type: 'general_update',
+      workspace: 'workspace-uuid',
+      time_created: '2023-01-02T00:00:00Z'
+    }
+  ];
 
   beforeEach(() => {
     jest.clearAllMocks();
+    Object.assign(activityStore, {
+      rootActivities: activities,
+      fetchWorkspaceActivities: jest.fn().mockResolvedValue(true),
+      getActivity: jest.fn().mockImplementation((id) => activities.find((a) => a.ID === id)),
+      getThreadResponses: jest.fn().mockReturnValue([]),
+      deleteActivity: jest.fn().mockResolvedValue(true)
+    });
     (useStores as jest.Mock).mockReturnValue({
+      main: mockMain,
       chat: mockChat,
-      ui: mockUI,
-      activityStore: mockActivityStore
+      ui: mockUI
     });
     (useHistory as jest.Mock).mockReturnValue(mockHistory);
     (useParams as jest.Mock).mockReturnValue({ uuid: 'workspace-uuid' });
@@ -71,57 +122,76 @@ describe('Activities', () => {
   });
 
   test('renders Build with Hivechat button for feature_creation content type', async () => {
-    waitFor(() => {
-      const { getByTestId, getAllByTestId } = render(<Activities />);
+    const { getByTestId, getAllByTestId } = render(<Activities />);
 
-      expect(mockActivityStore.loadActivities).toHaveBeenCalled();
-
-      const activityItems = getAllByTestId('touch-target');
-      fireEvent.click(activityItems[0]);
-
-      const detailsPanel = getByTestId('activity-details');
-      expect(detailsPanel).toBeInTheDocument();
-
-      const buildButton = getByTestId('build-with-hivechat-btn');
-      expect(buildButton).toBeInTheDocument();
-      expect(buildButton.textContent).toBe('Build with Hivechat');
+    await waitFor(() => {
+      expect(activityStore.fetchWorkspaceActivities).toHaveBeenCalled();
     });
+
+    const activityItems = getAllByTestId('touch-target');
+    fireEvent.click(activityItems[0]);
+
+    const detailsPanel = getByTestId('activity-details');
+    expect(detailsPanel).toBeInTheDocument();
+
+    const buildButton = getByTestId('build-with-hivechat-btn');
+    expect(buildButton).toBeInTheDocument();
+    expect(buildButton.textContent).toBe('Build with Hivechat');
+  });
+
+  test('opens reply modal visibly with close button', async () => {
+    const { getAllByTestId, getByText, getByLabelText, queryByText } = render(<Activities />);
+
+    await waitFor(() => {
+      expect(activityStore.fetchWorkspaceActivities).toHaveBeenCalledWith('workspace-uuid');
+    });
+
+    fireEvent.click(getAllByTestId('touch-target')[0]);
+    fireEvent.click(getByText('Reply'));
+
+    expect(getByText('Create New Activity')).toBeInTheDocument();
+    const closeButton = getByLabelText('Close create activity modal');
+    expect(closeButton).toBeInTheDocument();
+
+    fireEvent.click(closeButton);
+
+    expect(queryByText('Create New Activity')).not.toBeInTheDocument();
   });
 
   test('does not render Build with Hivechat button for non-feature_creation content types', async () => {
-    waitFor(() => {
-      const { queryByTestId, getAllByTestId } = render(<Activities />);
+    const { queryByTestId, getAllByTestId } = render(<Activities />);
 
-      expect(mockActivityStore.loadActivities).toHaveBeenCalled();
-
-      const activityItems = getAllByTestId('touch-target');
-      fireEvent.click(activityItems[1]);
-
-      const buildButton = queryByTestId('build-with-hivechat-btn');
-      expect(buildButton).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(activityStore.fetchWorkspaceActivities).toHaveBeenCalled();
     });
+
+    const activityItems = getAllByTestId('touch-target');
+    fireEvent.click(activityItems[1]);
+
+    const buildButton = queryByTestId('build-with-hivechat-btn');
+    expect(buildButton).not.toBeInTheDocument();
   });
 
   test('clicking Build with Hivechat button calls createAndNavigateToHivechat', async () => {
-    waitFor(() => {
-      const { getByTestId, getAllByTestId } = render(<Activities />);
+    const { getByTestId, getAllByTestId } = render(<Activities />);
 
-      expect(mockActivityStore.loadActivities).toHaveBeenCalled();
-
-      const activityItems = getAllByTestId('touch-target');
-      fireEvent.click(activityItems[0]);
-
-      const buildButton = getByTestId('build-with-hivechat-btn');
-      fireEvent.click(buildButton);
-
-      expect(createAndNavigateToHivechat).toHaveBeenCalledWith(
-        'workspace-uuid',
-        'Test Feature Activity',
-        'This is test content for the feature activity',
-        mockChat,
-        mockUI,
-        mockHistory
-      );
+    await waitFor(() => {
+      expect(activityStore.fetchWorkspaceActivities).toHaveBeenCalled();
     });
+
+    const activityItems = getAllByTestId('touch-target');
+    fireEvent.click(activityItems[0]);
+
+    const buildButton = getByTestId('build-with-hivechat-btn');
+    fireEvent.click(buildButton);
+
+    expect(createAndNavigateToHivechat).toHaveBeenCalledWith(
+      'workspace-uuid',
+      'Test Feature Activity',
+      'This is test content for the feature activity',
+      mockChat,
+      mockUI,
+      mockHistory
+    );
   });
 });
