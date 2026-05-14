@@ -191,6 +191,68 @@ describe('MobileView component', () => {
     expect(completionDate).toBeInTheDocument();
   });
 
+  it('shows submit proof on mobile for the assigned hunter', async () => {
+    const originalInnerWidth = window.innerWidth;
+    const mockGetFeatureFlags = jest.spyOn(mainStore, 'getFeatureFlags').mockResolvedValue({
+      success: true,
+      data: []
+    });
+    const mockGetUserRoles = jest.spyOn(mainStore, 'getUserRoles').mockResolvedValue([]);
+    const mockGetUserWorkspaceByUuid = jest
+      .spyOn(mainStore, 'getUserWorkspaceByUuid')
+      .mockResolvedValue({
+        owner_pubkey: 'bounty-owner-pubkey'
+      } as any);
+
+    Object.defineProperty(window, 'innerWidth', {
+      configurable: true,
+      writable: true,
+      value: 899
+    });
+
+    uiStore.setMeInfo({
+      ...user,
+      owner_pubkey: 'assigned-hunter-pubkey',
+      owner_alias: 'Assigned Hunter'
+    });
+
+    render(
+      <MobileView
+        {...defaultProps}
+        owner_id="bounty-owner-pubkey"
+        person={
+          {
+            owner_pubkey: 'bounty-owner-pubkey',
+            owner_alias: 'Bounty Owner'
+          } as any
+        }
+        assignee={
+          {
+            owner_pubkey: 'assigned-hunter-pubkey',
+            owner_alias: 'Assigned Hunter'
+          } as any
+        }
+        isAssigned={true}
+      />
+    );
+
+    expect(await screen.findByText('Submit Proof')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(mockGetFeatureFlags).toHaveBeenCalled();
+      expect(mockGetUserRoles).toHaveBeenCalled();
+      expect(mockGetUserWorkspaceByUuid).toHaveBeenCalled();
+    });
+
+    Object.defineProperty(window, 'innerWidth', {
+      configurable: true,
+      writable: true,
+      value: originalInnerWidth
+    });
+    mockGetFeatureFlags.mockRestore();
+    mockGetUserRoles.mockRestore();
+    mockGetUserWorkspaceByUuid.mockRestore();
+  });
+
   it('Test that on clicking on "not assigned", a pop up should appear to invite a developer including "type to search" box, a "skills" box, and a recommendation of 5 hunters.', async () => {
     const props: CodingBountiesProps = {
       ...defaultProps,

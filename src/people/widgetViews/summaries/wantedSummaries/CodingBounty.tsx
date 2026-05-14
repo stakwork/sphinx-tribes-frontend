@@ -715,6 +715,24 @@ function MobileView(props: CodingBountiesProps) {
     openModal();
   };
 
+  const submitProofButton = isAssignee && (
+    <Button
+      iconSize={14}
+      width={'100%'}
+      height={48}
+      color="withdraw"
+      onClick={() => setIsOpenProofModal(true)}
+      style={{
+        marginBottom: '20px'
+      }}
+      ButtonTextStyle={{
+        fontSize: '15px',
+        fontFamily: 'Barlow'
+      }}
+      text="Submit Proof"
+    />
+  );
+
   useEffect(() => {
     setPaidStatus(paid);
   }, [paid]);
@@ -773,26 +791,10 @@ function MobileView(props: CodingBountiesProps) {
         assigneeValue={assigneeValue}
         peopleList={peopleList}
         handleAssigneeDetails={handleAssigneeDetails}
+        submitProofButton={submitProofButton}
         markPaidOrUnpaid={
           hasAccess && (
             <>
-              {isAssignee && (
-                <Button
-                  iconSize={14}
-                  width={'100%'}
-                  height={48}
-                  color="withdraw"
-                  onClick={() => setIsOpenProofModal(true)}
-                  style={{
-                    marginBottom: '20px'
-                  }}
-                  ButtonTextStyle={{
-                    fontSize: '15px',
-                    fontFamily: 'Barlow'
-                  }}
-                  text="Submit Proof"
-                />
-              )}
               <IconButton
                 width={'100%'}
                 height={48}
