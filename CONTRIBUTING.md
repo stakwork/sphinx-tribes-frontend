@@ -1,57 +1,80 @@
-# Frontend Contributing Guidelines 💻
+# Frontend Contributing Guidelines
 
-Thank you for considering contributing to our project! Here are some guidelines to ensure smooth collaboration.
+Thank you for contributing to Sphinx Tribes. These guidelines keep code, styling, and pull
+request reviews consistent across the frontend.
 
-### File Naming Convention 📁
+## File And Naming Standards
 
-- All React component files should be named in Pascal case (e.g., `MyComponent`).
-- React component functions should also be named in Pascal case (e.g., `function MyComponent() {}`).
-- Folders should be named in camel case (e.g., `peopleData`).
-- Typescript files should follow camel case.
-- Only the `index.tsx` files should be named in lowercase.
+- Name React component files in PascalCase, for example `BountyCard.tsx`.
+- Name React component functions in PascalCase, for example `function BountyCard() {}`.
+- Name folders and non-component TypeScript files in camelCase.
+- Use lowercase `index.ts` and `index.tsx` files only for module entry points.
+- Prefer named types and interfaces for shared data shapes. Keep local-only types near the
+  component or helper that uses them.
 
-### Prettier Fixing 🛠️
+## React And TypeScript Standards
 
-- Run the following command to fix Prettier errors before submitting:
-  ```
-  yarn run prettier
-  ```
+- Keep components focused on rendering and user interaction. Move reusable business logic into
+  helpers, stores, or hooks.
+- Prefer existing hooks, stores, helpers, and components before adding new abstractions.
+- Use explicit return types on exported helpers and store methods.
+- Avoid `any` for new shared APIs. If an existing component uses `any`, keep the change scoped and
+  add a narrower type when it reduces risk.
+- Keep async handlers defensive: handle failed requests, loading states, and empty states.
+- Do not introduce broad refactors in bug-fix pull requests. Keep the diff tied to the issue.
 
-### Eslint Fixing 🚨
+## Styling And Colors
 
-- Run the following command to fix ESLint issues and ensure all test cases pass:
-  ```
-  yarn run eslint
-  ```
+- Reuse colors from `src/config/colors.ts` when a matching token exists.
+- Do not hardcode new color values unless the design requires a new token. If a color is reused,
+  add or reuse a named token instead.
+- Prefer the project's existing styled-component patterns for nearby code.
+- Keep responsive styles close to the component they affect, and test mobile behavior when editing
+  mobile layouts.
+- Preserve spacing, border radius, typography, and button behavior from the surrounding UI unless
+  the issue explicitly asks for a visual change.
 
-### Getting Started 🚀
+## Validation Before Opening A PR
 
-1. Fork the repository.
-2. Create a new branch for your contribution:
-   ```
-   git checkout -b feature/your-feature
-   ```
-3. Make your changes.
-4. Commit your changes:
-   ```
-   git commit -m "Add your meaningful commit message"
-   ```
-5. Push to your fork:
-   ```
-   git push origin feature/your-feature
-   ```
-6. Open a pull request to the `main` branch of the original repository.
+Run the narrowest checks that cover your change:
 
-### Code Review ⚙️
+```bash
+yarn eslint <changed files> --max-warnings 100 --ext .ts --ext .tsx
+yarn jest <changed test file or related spec> --runInBand --no-cache --coverage=false
+yarn prettier:check
+```
 
-All code contributions, including those with commit access, must go through a pull request and be approved by a core developer before being merged. This ensures a proper review of all the code.
+If your change only touches documentation, run:
 
-## About Sphinx Bounties 💬
+```bash
+yarn prettier:check
+```
 
-A Unique bounty platform that rewards in Bitcoin. Join [Sphinx Chat](https://buy.sphinx.chat/), accomplish a bounty, and start earning Bitcoin! Explore our [website](https://people.sphinx.chat) for a list of available bounties.
+If a check cannot run locally, mention the reason in the pull request.
 
-### Thank You ❤️
+## Pull Request Checklist
 
-We appreciate your contribution to our project! Your efforts make a difference, and we look forward to collaborating with you. 
+- Link the issue that the PR fixes.
+- Summarize the behavior change and user impact.
+- Include screenshots or video for visible UI changes.
+- Add or update focused tests for bug fixes and shared behavior.
+- Keep commits and PR titles concise and descriptive.
+- Rebase or update from the target branch before requesting review.
 
-Feel free to connect with us on our [Sphinx Community](https://people.sphinx.chat/) and follow us on [Twitter](https://twitter.com/stakwork) for updates.
+## Code Review Standards
+
+All code contributions, including those from maintainers with commit access, must go through a
+pull request and be approved by a core developer before merge.
+
+Reviewers should check:
+
+- The change solves the linked issue without unrelated refactors.
+- New code follows the naming, styling, and validation standards above.
+- Edge cases, loading states, empty states, permissions, and mobile behavior are handled when
+  relevant.
+- Tests or manual validation are appropriate for the risk of the change.
+
+## About Sphinx Bounties
+
+Sphinx Bounties rewards contributors for completing work in the Sphinx ecosystem. Explore available
+bounties at [people.sphinx.chat](https://people.sphinx.chat).
