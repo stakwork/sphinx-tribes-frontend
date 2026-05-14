@@ -55,14 +55,15 @@ function WorkspaceBodyComponent() {
   }, [main, ui.meInfo]);
 
   const getTotalBounties = useCallback(
-    async (uuid: any, statusData: any) => {
+    async (uuid: any, statusData: any, languages?: string) => {
       const WorkspaceTotalBounties = await main.getTotalWorkspaceBountyCount(
         uuid,
         statusData?.Open,
         statusData?.Assigned,
         statusData?.Paid,
         statusData?.Pending,
-        statusData?.Failed
+        statusData?.Failed,
+        languages
       );
       setTotalBounties(WorkspaceTotalBounties);
     },
@@ -70,8 +71,8 @@ function WorkspaceBodyComponent() {
   );
 
   useEffect(() => {
-    getTotalBounties(uuid, checkboxIdToSelectedMap);
-  }, [checkboxIdToSelectedMap, getTotalBounties, uuid]);
+    getTotalBounties(uuid, checkboxIdToSelectedMap, languageString);
+  }, [checkboxIdToSelectedMap, getTotalBounties, languageString, uuid]);
 
   const onChangeStatus = (optionId: any) => {
     const newCheckboxIdToSelectedMap = {
@@ -83,7 +84,7 @@ function WorkspaceBodyComponent() {
     // set the store status, to enable the accurate navigation modal call
     main.setWorkspaceBountiesStatus(newCheckboxIdToSelectedMap);
     setCheckboxIdToSelectedMap(newCheckboxIdToSelectedMap);
-    getTotalBounties(uuid, newCheckboxIdToSelectedMap);
+    getTotalBounties(uuid, newCheckboxIdToSelectedMap, languageString);
     // set data to default
     setCurrentItems(queryLimit);
     setPage(1);
@@ -101,6 +102,9 @@ function WorkspaceBodyComponent() {
     setLanguageString(languageString);
 
     main.setBountyLanguages(languageString);
+    getTotalBounties(uuid, checkboxIdToSelectedMap, languageString);
+    setCurrentItems(queryLimit);
+    setPage(1);
   };
 
   const onPanelClick = (activeWorkspace: string, item: any) => {

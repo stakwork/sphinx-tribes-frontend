@@ -4424,12 +4424,19 @@ export class MainStore {
     assigned: boolean,
     paid: boolean,
     pending: boolean,
-    failed: boolean
+    failed: boolean,
+    languages?: string
   ): Promise<number> {
     try {
-      const count = await api.get(
-        `workspaces/bounties/${uuid}/count?Open=${open}&Assigned=${assigned}&Paid=${paid}&Pending=${pending}&Failed=${failed}`
-      );
+      const query = new URLSearchParams({
+        Open: String(open),
+        Assigned: String(assigned),
+        Paid: String(paid),
+        Pending: String(pending),
+        Failed: String(failed),
+        ...(languages ? { languages } : {})
+      });
+      const count = await api.get(`workspaces/bounties/${uuid}/count?${query.toString()}`);
       return await count;
     } catch (e) {
       console.log('fetch failed getTotalWorkspaceBountyCount: ', e);
