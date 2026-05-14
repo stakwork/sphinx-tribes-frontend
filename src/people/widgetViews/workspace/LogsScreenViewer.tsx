@@ -36,6 +36,31 @@ const LogItem = styled.div`
   border-bottom: 1px solid #444;
 `;
 
+const LogText = styled.pre`
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  font-family: inherit;
+`;
+
+const LogToggleButton = styled.button`
+  margin-top: 8px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #9ad1ff;
+  cursor: pointer;
+  font: inherit;
+
+  &:hover {
+    color: #c8e6ff;
+    text-decoration: underline;
+  }
+`;
+
+const LOG_RAW_PREVIEW_CHAR_LIMIT = 2000;
+
 interface SSEEvent {
   event_type: string;
   id: string;
@@ -57,11 +82,62 @@ interface LogsScreenViewerProps {
   sseLogs: SSEMessage[];
 }
 
+const stringifyLogEvent = (event: SSEEvent): string => {
+  try {
+    return JSON.stringify(event, null, 2);
+  } catch {
+    return String(event);
+  }
+};
+
+const getRawPreview = (raw: string): { text: string; truncated: boolean; hiddenCount: number } => {
+  if (raw.length <= LOG_RAW_PREVIEW_CHAR_LIMIT) {
+    return { text: raw, truncated: false, hiddenCount: 0 };
+  }
+
+  return {
+    text: raw.slice(0, LOG_RAW_PREVIEW_CHAR_LIMIT),
+    truncated: true,
+    hiddenCount: raw.length - LOG_RAW_PREVIEW_CHAR_LIMIT
+  };
+};
+
+const getCollapsedLogText = (event: SSEEvent): { text: string; truncated: boolean } => {
+  const rawPreview = getRawPreview(event.raw || '');
+  const lines = [`event_type: ${event.event_type}`, `id: ${event.id}`, `raw: ${rawPreview.text}`];
+
+  if (rawPreview.truncated) {
+    lines.push(`... raw payload truncated. ${rawPreview.hiddenCount} characters hidden.`);
+  }
+
+  return {
+    text: lines.join('\n'),
+    truncated: rawPreview.truncated
+  };
+};
+
+const LogEntry: React.FC<{ log: SSEMessage }> = ({ log }) => {
+  const [expanded, setExpanded] = useState(false);
+  const collapsedLog = getCollapsedLogText(log.event);
+  const visibleLogText = expanded ? stringifyLogEvent(log.event) : collapsedLog.text;
+
+  return (
+    <LogItem>
+      <LogText>{visibleLogText}</LogText>
+      {collapsedLog.truncated && (
+        <LogToggleButton onClick={() => setExpanded((current) => !current)}>
+          {expanded ? 'Show less' : 'View full details'}
+        </LogToggleButton>
+      )}
+    </LogItem>
+  );
+};
+
 const LogsScreenViewer: React.FC<LogsScreenViewerProps> = ({ sseLogs }) => {
   const [copied, setCopied] = useState(false);
 
   const copyToClipboard = () => {
-    const logText = sseLogs.map((log) => JSON.stringify(log.event)).join('\n');
+    const logText = sseLogs.map((log) => stringifyLogEvent(log.event)).join('\n');
     navigator.clipboard.writeText(logText).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -74,7 +150,7 @@ const LogsScreenViewer: React.FC<LogsScreenViewerProps> = ({ sseLogs }) => {
         {copied ? <MaterialIcon icon="check" /> : <MaterialIcon icon="content_copy" />}
       </CopyButton>
       {sseLogs.length > 0 ? (
-        sseLogs.map((log) => <LogItem key={log.id}>{JSON.stringify(log.event)}</LogItem>)
+        sseLogs.map((log) => <LogEntry key={log.id} log={log} />)
       ) : (
         <LogItem>No logs available.</LogItem>
       )}
