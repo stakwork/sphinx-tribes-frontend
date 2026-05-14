@@ -8,7 +8,7 @@ import { PostBounty } from 'people/widgetViews/postBounty';
 import WantedView from 'people/widgetViews/WantedView';
 import PageLoadSpinner from 'people/utils/PageLoadSpinner';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Route, Switch, useRouteMatch, useParams } from 'react-router-dom';
+import { Route, Switch, useRouteMatch, useParams, useHistory } from 'react-router-dom';
 import { useStores } from 'store';
 import { paginationQueryLimit } from 'store/interface';
 import styled from 'styled-components';
@@ -92,6 +92,7 @@ export const Wanted = observer(() => {
   const { person, canEdit } = usePerson(ui.selectedPerson);
   const { path, url } = useRouteMatch();
   const { uuid } = useParams<{ uuid: string }>();
+  const history = useHistory();
   const [displayedBounties, setDisplayedBounties] = useState<BountyType[]>([]);
   const [loading, setIsLoading] = useState<boolean>(false);
   const [page, setPage] = useState(1);
@@ -172,7 +173,7 @@ export const Wanted = observer(() => {
             onClick={(e: any) => {
               e.preventDefault();
               ui.setBountyPerson(person?.id);
-              window.open(`/bounty/${w.body.id}`, '_blank');
+              history.push(`/bounty/${w.body.id}`);
             }}
           >
             <WantedView {...w.body} person={person} />
