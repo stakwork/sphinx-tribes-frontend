@@ -36,6 +36,31 @@ const LogItem = styled.div`
   border-bottom: 1px solid #444;
 `;
 
+const LogText = styled.pre`
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  font-family: inherit;
+`;
+
+const LogToggleButton = styled.button`
+  margin-top: 8px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #9ad1ff;
+  cursor: pointer;
+  font: inherit;
+
+  &:hover {
+    color: #c8e6ff;
+    text-decoration: underline;
+  }
+`;
+
+const LOG_PREVIEW_CHAR_LIMIT = 2000;
+
 interface SSEEvent {
   event_type: string;
   id: string;
@@ -57,11 +82,53 @@ interface LogsScreenViewerProps {
   sseLogs: SSEMessage[];
 }
 
+const stringifyLogEvent = (event: SSEEvent): string => {
+  try {
+    return JSON.stringify(event, null, 2);
+  } catch {
+    return String(event);
+  }
+};
+
+const getLogPreview = (logText: string): { text: string; truncated: boolean } => {
+  if (logText.length <= LOG_PREVIEW_CHAR_LIMIT) {
+    return { text: logText, truncated: false };
+  }
+
+  const hiddenCharacterCount = logText.length - LOG_PREVIEW_CHAR_LIMIT;
+
+  return {
+    text: `${logText.slice(
+      0,
+      LOG_PREVIEW_CHAR_LIMIT
+    )}\n\n... log truncated. ${hiddenCharacterCount} characters hidden.`,
+    truncated: true
+  };
+};
+
+const LogEntry: React.FC<{ log: SSEMessage }> = ({ log }) => {
+  const [expanded, setExpanded] = useState(false);
+  const fullLogText = stringifyLogEvent(log.event);
+  const preview = getLogPreview(fullLogText);
+  const visibleLogText = expanded || !preview.truncated ? fullLogText : preview.text;
+
+  return (
+    <LogItem>
+      <LogText>{visibleLogText}</LogText>
+      {preview.truncated && (
+        <LogToggleButton onClick={() => setExpanded((current) => !current)}>
+          {expanded ? 'Show less' : 'View full details'}
+        </LogToggleButton>
+      )}
+    </LogItem>
+  );
+};
+
 const LogsScreenViewer: React.FC<LogsScreenViewerProps> = ({ sseLogs }) => {
   const [copied, setCopied] = useState(false);
 
   const copyToClipboard = () => {
-    const logText = sseLogs.map((log) => JSON.stringify(log.event)).join('\n');
+    const logText = sseLogs.map((log) => stringifyLogEvent(log.event)).join('\n');
     navigator.clipboard.writeText(logText).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -74,7 +141,7 @@ const LogsScreenViewer: React.FC<LogsScreenViewerProps> = ({ sseLogs }) => {
         {copied ? <MaterialIcon icon="check" /> : <MaterialIcon icon="content_copy" />}
       </CopyButton>
       {sseLogs.length > 0 ? (
-        sseLogs.map((log) => <LogItem key={log.id}>{JSON.stringify(log.event)}</LogItem>)
+        sseLogs.map((log) => <LogEntry key={log.id} log={log} />)
       ) : (
         <LogItem>No logs available.</LogItem>
       )}
