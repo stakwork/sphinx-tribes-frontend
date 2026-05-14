@@ -36,6 +36,13 @@ function addMethod(m: string): (url: string, data?: any, incomingHeaders?: any) 
         formData.append('file', new Blob([file], { type }), filename);
         opts.body = formData;
       }
+      if (incomingHeaders) {
+        Object.entries(incomingHeaders).forEach(([key, value]) => {
+          if (typeof value === 'string') {
+            headers[key] = value;
+          }
+        });
+      }
       opts.headers = new Headers(headers);
       opts.method = m === 'UPLOAD' ? 'POST' : m;
       if (m === 'BLOB') opts.method = 'GET';

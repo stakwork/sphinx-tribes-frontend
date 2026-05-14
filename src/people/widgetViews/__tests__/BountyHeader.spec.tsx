@@ -5,6 +5,8 @@ import '@testing-library/jest-dom';
 import BountyHeader from '../BountyHeader';
 import { BountyHeaderProps } from '../../interfaces';
 import { mainStore } from '../../../store/main';
+import { uiStore } from '../../../store/ui';
+import { user } from '../../../__test__/__mockData__/user';
 import * as hooks from '../../../hooks';
 
 const mockHistoryPush = jest.fn();
@@ -54,6 +56,7 @@ jest.mock('../../../hooks', () => ({
 describe('BountyHeader Component', () => {
   beforeEach(() => {
     jest.spyOn(mainStore, 'getBountyHeaderData').mockReset();
+    uiStore.setMeInfo(user);
     (hooks.useIsMobile as jest.Mock).mockReturnValue(false);
   });
 
@@ -79,6 +82,16 @@ describe('BountyHeader Component', () => {
   test('should render the filters', () => {
     render(<BountyHeader {...mockProps} />);
     expect(screen.getByText(/Filter/i)).toBeInTheDocument();
+  });
+
+  test('should call onChangeStatus when Assigned to me is selected', async () => {
+    render(<BountyHeader {...mockProps} />);
+    fireEvent.click(screen.getByText('Filter'));
+
+    const assignedToMeCheckbox = await screen.findByRole('checkbox', { name: 'Assigned to me' });
+    fireEvent.click(assignedToMeCheckbox);
+
+    expect(mockProps.onChangeStatus).toHaveBeenCalledWith('myAssigned');
   });
 
   test('should display the MobileFilterCount with correct number when filters are selected in mobile view', async () => {

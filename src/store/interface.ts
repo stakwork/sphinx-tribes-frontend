@@ -187,6 +187,7 @@ export interface QueryParams {
   provider?: string;
   workspace?: string;
   status?: string;
+  myAssigned?: boolean;
 }
 
 export interface ClaimOnLiquid {
@@ -296,6 +297,7 @@ export interface BountyStatus {
   Paid: boolean;
   Pending: boolean;
   Failed: boolean;
+  myAssigned?: boolean;
 }
 
 export interface WorkspaceBudget {
@@ -394,7 +396,8 @@ export const defaultWorkspaceBountyStatus: BountyStatus = {
   Paid: false,
   Completed: false,
   Pending: false,
-  Failed: false
+  Failed: false,
+  myAssigned: false
 };
 
 export const defaultSuperAdminBountyStatus: BountyStatus = {
@@ -403,7 +406,8 @@ export const defaultSuperAdminBountyStatus: BountyStatus = {
   Completed: false,
   Paid: false,
   Pending: false,
-  Failed: false
+  Failed: false,
+  myAssigned: false
 };
 
 export const defaultBountyStatus: BountyStatus = {
@@ -412,7 +416,8 @@ export const defaultBountyStatus: BountyStatus = {
   Completed: false,
   Paid: false,
   Pending: false,
-  Failed: false
+  Failed: false,
+  myAssigned: false
 };
 
 export const queryLimitTribes = 100;

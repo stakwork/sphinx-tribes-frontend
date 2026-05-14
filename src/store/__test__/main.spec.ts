@@ -1257,6 +1257,47 @@ describe('Main store', () => {
     expect(store.peopleBounties[0].body.coding_languages).toEqual(filterCriteria.coding_languages);
   });
 
+  it('should send the user JWT when filtering bounties assigned to me', async () => {
+    const store = new MainStore();
+    const filterCriteria = {
+      limit: 25,
+      page: 1,
+      sortBy: 'created',
+      Open: true,
+      Assigned: true,
+      Paid: false,
+      myAssigned: true
+    };
+
+    const apiResponse = {
+      status: 200,
+      ok: true,
+      json: async () => Promise.resolve([filterBounty])
+    };
+    fetchStub.callsFake((url: string, options?: RequestInit) => {
+      const urlObj = new URL(url);
+      const params = urlObj.searchParams;
+      const headers = options?.headers as Headers;
+
+      const isValidBaseUrl =
+        urlObj.origin === `http://${getHost()}` && urlObj.pathname === '/gobounties/all';
+
+      const isAssignedToMeRequest =
+        params.get('myAssigned') === 'true' &&
+        params.get('Open') === 'false' &&
+        headers.get('x-jwt') === user.tribe_jwt;
+
+      if (isValidBaseUrl && isAssignedToMeRequest) {
+        return Promise.resolve(apiResponse);
+      }
+    });
+
+    await store.getPeopleBounties(filterCriteria);
+
+    sinon.assert.called(fetchStub);
+    expect(fetchStub.calledOnce).toEqual(true);
+  });
+
   it('should successfully fetch workspace users', async () => {
     const mockUsers: Person[] = [
       {

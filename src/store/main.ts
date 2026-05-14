@@ -709,10 +709,22 @@ export class MainStore {
       search: uiStore.searchText ?? ''
     };
 
+    if (queryParams.myAssigned && !uiStore.meInfo?.tribe_jwt) {
+      queryParams = { ...queryParams, myAssigned: false };
+    }
+    if (queryParams.myAssigned) {
+      queryParams = { ...queryParams, Open: false };
+    }
+
     const query2 = makeQueryParams(queryLimit, params ? queryParams : this.getWantedsPrevParams);
+    const headers = queryParams.myAssigned
+      ? {
+          'x-jwt': uiStore.meInfo?.tribe_jwt || ''
+        }
+      : undefined;
 
     try {
-      const ps2 = await api.get(`gobounties/all?${query2}`);
+      const ps2 = await api.get(`gobounties/all?${query2}`, undefined, headers);
 
       const ps3: any[] = [];
 
@@ -1087,7 +1099,7 @@ export class MainStore {
       }
 
       const data = await response.json();
-      
+
       if (data && data.length) {
         const ps3: any[] = [];
         for (let i = 0; i < data.length; i++) {
