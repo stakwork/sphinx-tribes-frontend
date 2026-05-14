@@ -9,10 +9,16 @@ jest.mock('store', () => ({
   useStores: jest.fn()
 }));
 
+jest.mock('../../../people/widgetViews/workspace/WorkspaceBudget.tsx', () => ({
+  __esModule: true,
+  default: ({ org }: any) => <span>{org.name}</span>
+}));
+
 const mockStores = {
   chat: {
     createChat: jest.fn(),
-    getWorkspaceChats: jest.fn()
+    getWorkspaceChats: jest.fn(),
+    getWorkspaceChatsWithPagination: jest.fn()
   },
   ui: {
     setToasts: jest.fn(),
@@ -37,10 +43,82 @@ const renderSidebar = (props = {}) =>
     </BrowserRouter>
   );
 
+const resizeWindow = (width: number) => {
+  Object.defineProperty(window, 'innerWidth', {
+    configurable: true,
+    writable: true,
+    value: width
+  });
+  fireEvent(window, new Event('resize'));
+};
+
 describe('SidebarComponent Tooltip Tests', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    resizeWindow(1024);
+    mockStores.main.workspaces = [];
+    mockStores.main.getUserWorkspaces.mockResolvedValue([]);
+    mockStores.main.getWorkspaceFeatures.mockResolvedValue([]);
+    mockStores.chat.getWorkspaceChatsWithPagination.mockResolvedValue({
+      chats: [],
+      total: 0
+    });
     (useStores as jest.Mock).mockReturnValue(mockStores);
+  });
+
+  describe('Mobile sidebar behavior', () => {
+    test('starts collapsed on mobile and opens from the hamburger control', () => {
+      resizeWindow(375);
+      renderSidebar();
+
+      const openButton = screen.getByRole('button', { name: 'Open sidebar' });
+      expect(openButton).toHaveAttribute('aria-expanded', 'false');
+
+      fireEvent.click(openButton);
+
+      expect(screen.getByRole('button', { name: 'Collapse sidebar' })).toHaveAttribute(
+        'aria-expanded',
+        'true'
+      );
+      expect(screen.getByTestId('sidebar-mobile-backdrop')).toBeInTheDocument();
+      expect(screen.getByLabelText('Activities')).toBeInTheDocument();
+    });
+
+    test('closes the mobile sidebar from the backdrop', () => {
+      resizeWindow(375);
+      renderSidebar();
+
+      fireEvent.click(screen.getByRole('button', { name: 'Open sidebar' }));
+      fireEvent.click(screen.getByTestId('sidebar-mobile-backdrop'));
+
+      expect(screen.getByRole('button', { name: 'Open sidebar' })).toHaveAttribute(
+        'aria-expanded',
+        'false'
+      );
+    });
+
+    test('closes the mobile sidebar after selecting a navigation item', () => {
+      resizeWindow(375);
+      renderSidebar();
+
+      fireEvent.click(screen.getByRole('button', { name: 'Open sidebar' }));
+      fireEvent.click(screen.getByLabelText('Activities'));
+
+      expect(screen.getByRole('button', { name: 'Open sidebar' })).toHaveAttribute(
+        'aria-expanded',
+        'false'
+      );
+    });
+
+    test('keeps the desktop sidebar expanded by default', () => {
+      renderSidebar();
+
+      expect(screen.getByRole('button', { name: 'Collapse sidebar' })).toHaveAttribute(
+        'aria-expanded',
+        'true'
+      );
+      expect(screen.getByLabelText('Activities')).toBeInTheDocument();
+    });
   });
 
   describe('Navigation Item Tooltips', () => {
@@ -137,12 +215,12 @@ describe('SidebarComponent Tooltip Tests', () => {
     });
 
     test('should show tooltip for workspace switcher', async () => {
-      waitFor(() => {
-        renderSidebar({ defaultCollapsed: false });
-        const dropdownButton = screen.getByTestId('workspace-dropdown');
+      renderSidebar({ defaultCollapsed: false });
+      const dropdownButton = screen.getByTestId('workspace-dropdown');
 
-        fireEvent.mouseEnter(dropdownButton);
+      fireEvent.mouseEnter(dropdownButton);
 
+      await waitFor(() => {
         expect(screen.getByText('Switch Workspace')).toBeInTheDocument();
       });
     });
@@ -150,12 +228,12 @@ describe('SidebarComponent Tooltip Tests', () => {
 
   describe('Tooltip Behavior', () => {
     test('should not show tooltips when sidebar is expanded', async () => {
-      waitFor(() => {
-        renderSidebar({ defaultCollapsed: false });
-        const activitiesButton = screen.getByLabelText('Activities');
+      renderSidebar({ defaultCollapsed: false });
+      const activitiesButton = screen.getByLabelText('Activities');
 
-        fireEvent.mouseEnter(activitiesButton);
+      fireEvent.mouseEnter(activitiesButton);
 
+      await waitFor(() => {
         expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
       });
     });
@@ -193,12 +271,12 @@ describe('SidebarComponent Tooltip Tests', () => {
     });
 
     test('should not show kanban tooltips when sidebar is expanded', async () => {
-      waitFor(() => {
-        renderSidebar({ defaultCollapsed: false });
-        const activitiesButton = screen.getByLabelText('Kanban');
+      renderSidebar({ defaultCollapsed: false });
+      const activitiesButton = screen.getByLabelText('Kanban');
 
-        fireEvent.mouseEnter(activitiesButton);
+      fireEvent.mouseEnter(activitiesButton);
 
+      await waitFor(() => {
         expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
       });
     });
