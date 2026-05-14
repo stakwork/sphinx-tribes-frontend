@@ -8,6 +8,7 @@ import { uiStore } from 'store/ui';
 import './App.css';
 import { ThemeProvider, createTheme } from '@mui/system';
 import { usePostHog } from 'posthog-js/react';
+import { persistReferredByFromSearch } from 'helpers/referral';
 import { ModeDispatcher } from './config/ModeDispatcher';
 import { Pages } from './pages';
 import { appEnv } from './config/env';
@@ -89,6 +90,8 @@ function App() {
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
+    persistReferredByFromSearch(window.location.search);
+
     const prefillParam = urlParams.get('prefill');
     const action = urlParams.get('action');
 

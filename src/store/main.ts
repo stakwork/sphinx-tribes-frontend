@@ -9,6 +9,7 @@ import api from '../api';
 import { getHostIncludingDockerHosts } from '../config/host';
 import { TribesURL } from '../config/host';
 import { convertLocaleToNumber, randomString } from '../helpers';
+import { appendStoredReferredBy } from '../helpers/referral';
 import { getUserAvatarPlaceholder } from './lib';
 import { uiStore } from './ui';
 import {
@@ -1739,9 +1740,7 @@ export class MainStore {
 
     const r = await fetch(`${TribesURL}/person`, {
       method: 'POST',
-      body: JSON.stringify({
-        ...body
-      }),
+      body: JSON.stringify(appendStoredReferredBy(body)),
       mode: 'cors',
       headers: {
         'x-jwt': info.tribe_jwt,
