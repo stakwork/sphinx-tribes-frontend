@@ -41,6 +41,71 @@ import { bech32 } from 'bech32';
 const EC = require('elliptic').ec;
 
 const v2AdminToken = 'xyzxyzxyz';
+const defaultTestImageBase64 =
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=';
+
+function parseMemeUploadResponse(responseText: string): string {
+  const parsed = JSON.parse(responseText);
+
+  if (typeof parsed === 'string') {
+    return parsed;
+  }
+
+  if (parsed && typeof parsed.url === 'string') {
+    return parsed.url;
+  }
+
+  throw new Error('Unexpected meme upload response');
+}
+
+Cypress.Commands.add('uploadImageToMemeServer', (options = {}) => {
+  const {
+    base64 = defaultTestImageBase64,
+    fileName = 'cypress-test-image.png',
+    mimeType = 'image/png',
+    tribesUrl = 'http://localhost:13000',
+    jwt,
+    expectedStatus = 200
+  } = options;
+
+  return cy.window().then((win) => {
+    const uploadJwt = jwt || win.localStorage.getItem('tribe_jwt') || '';
+    const byteCharacters = win.atob(base64);
+    const byteNumbers = new Array(byteCharacters.length);
+
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+
+    const blob = new win.Blob([new Uint8Array(byteNumbers)], { type: mimeType });
+    const formData = new win.FormData();
+    formData.append('file', blob, fileName);
+
+    return new Cypress.Promise<string>((resolve, reject) => {
+      const request = new win.XMLHttpRequest();
+      request.open('POST', `${tribesUrl}/meme_upload`);
+      if (uploadJwt) {
+        request.setRequestHeader('x-jwt', uploadJwt);
+      }
+
+      request.onload = () => {
+        if (request.status !== expectedStatus) {
+          reject(new Error(`Meme upload failed with status ${request.status}`));
+          return;
+        }
+
+        try {
+          resolve(parseMemeUploadResponse(request.responseText));
+        } catch (error) {
+          reject(error);
+        }
+      };
+
+      request.onerror = () => reject(new Error('Meme upload request failed'));
+      request.send(formData);
+    });
+  });
+});
 
 Cypress.Commands.add('login', (userAlias: string) => {
   let user;
