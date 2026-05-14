@@ -16,6 +16,8 @@
     "eject": "craco eject",
     "lint": "eslint src --max-warnings 100 --ext .ts --ext .tsx --ignore-pattern *.spec.tsx --ignore-pattern *.spec.ts",
     "lint:fix": "npm run lint -- --fix",
+    "testids:check": "node scripts/check-data-testids.js --check",
+    "testids:update": "node scripts/check-data-testids.js --update",
     "prettier": "npx prettier --config .prettierrc.json -w ./src ./cypress",
     "prettier:check": "npx prettier --config .prettierrc.json --check ./src",
     "prepare": "husky install .husky",
