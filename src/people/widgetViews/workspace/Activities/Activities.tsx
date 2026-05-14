@@ -12,6 +12,7 @@ import { useStores } from 'store';
 import { useParams, useHistory } from 'react-router-dom';
 import { renderMarkdown } from 'people/utils/RenderMarkdown';
 import SidebarComponent from 'components/common/SidebarComponent';
+import { useDeleteConfirmationModal } from 'components/common';
 import { Body } from 'pages/tickets/style';
 import { Phase, Toast } from '../interface';
 import { FullNoBudgetWrap, FullNoBudgetText } from '../style';
@@ -415,6 +416,7 @@ const Activities = observer(() => {
   const [activityPreviewMode, setActivityPreviewMode] = useState<'preview' | 'edit'>('preview');
   const [editedContent, setEditedContent] = useState('');
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const { openDeleteConfirmation } = useDeleteConfirmationModal();
 
   let interval: NodeJS.Timeout | number | null = null;
 
@@ -675,23 +677,44 @@ const Activities = observer(() => {
     }
   };
 
-  const handleDeleteActivity = async (activityId: string) => {
-    if (window.confirm('Are you sure you want to delete this activity?')) {
-      try {
-        const success = await activityStore.deleteActivity(activityId);
-        if (success) {
-          if (selectedActivity?.ID === activityId) {
-            setSelectedActivity(null);
-          }
-          await activityStore.fetchWorkspaceActivities(uuid);
-        } else {
-          alert('Failed to delete activity');
-        }
-      } catch (error) {
-        console.error('Error deleting activity:', error);
-        alert('Failed to delete activity');
+  const addActivityToast = (title: string, text: string, color: Toast['color']) => {
+    setToasts([
+      {
+        id: `${Date.now()}-activity-delete`,
+        title,
+        color,
+        text
       }
+    ]);
+  };
+
+  const deleteActivity = async (activityId: string) => {
+    try {
+      const success = await activityStore.deleteActivity(activityId);
+      if (success) {
+        if (selectedActivity?.ID === activityId) {
+          setSelectedActivity(null);
+        }
+        await activityStore.fetchWorkspaceActivities(uuid);
+        addActivityToast('Success', 'Activity deleted successfully', 'success');
+      } else {
+        addActivityToast('Error', 'Failed to delete activity', 'danger');
+      }
+    } catch (error) {
+      console.error('Error deleting activity:', error);
+      addActivityToast('Error', 'Failed to delete activity', 'danger');
     }
+  };
+
+  const handleDeleteActivity = (activityId: string) => {
+    openDeleteConfirmation({
+      onDelete: () => deleteActivity(activityId),
+      children: (
+        <div style={{ fontSize: 20, textAlign: 'center' }}>
+          Are you sure you want to delete this activity?
+        </div>
+      )
+    });
   };
 
   const removeItem = (field: 'actions' | 'questions', index: number) => {
