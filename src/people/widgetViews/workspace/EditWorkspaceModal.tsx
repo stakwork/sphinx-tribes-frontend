@@ -270,7 +270,8 @@ const EditWorkspaceModal = (props: EditWorkspaceModalProps) => {
       setRawSelectedFile(file);
     } else {
       // Handle the case where the user cancels the file dialog
-      setSelectedImage('');
+      setSelectedImage(org?.img || '');
+      setRawSelectedFile(null);
     }
   };
   const handleDrop = (event: DragEvent<HTMLDivElement>) => {
@@ -399,83 +400,90 @@ const EditWorkspaceModal = (props: EditWorkspaceModalProps) => {
                 initialValues,
                 isValid,
                 dirty
-              }: any) => (
-                <InputWrapper>
-                  {schema.map((item: FormField) => (
-                    <InputContainer key={item.name} style={item.style}>
-                      <LabelWrapper>
-                        <Label nameColor={nameColor} descColor={descColor} name={item.name}>
-                          {item.label}
-                        </Label>
-                        {item.maxCharacterLimit ? (
-                          <SecondaryText
-                            nameColor={nameColor}
-                            descColor={descColor}
-                            name={item.name}
-                          >
-                            {item.name === 'name' ? nameCharacterCount : descriptionCharacterCount}/
-                            {item.maxCharacterLimit}
-                          </SecondaryText>
-                        ) : null}
-                      </LabelWrapper>
-                      <Input
-                        {...item}
-                        key={item.name}
-                        name={item.name}
-                        testId={item.name}
-                        values={values}
-                        errors={errors}
-                        value={values[item.name]}
-                        error={errors[item.name]}
-                        initialValues={initialValues}
-                        setColor={handleColor}
-                        deleteErrors={() => {
-                          if (errors[item.name]) delete errors[item.name];
-                        }}
-                        handleChange={(e: any) => {
-                          setFieldValue(item.name, e);
-                          if (item.name === 'name') {
-                            setNameCharacterCount(e.length);
-                          } else if (item.name === 'description') {
-                            setDescriptionCharacterCount(e.length);
-                          }
-                        }}
-                        setFieldValue={(e: any, f: any) => {
-                          setFieldValue(e, f);
-                        }}
-                        setFieldTouched={setFieldTouched}
-                        handleBlur={() => setFieldTouched(item.name, false)}
-                        handleFocus={() => setFieldTouched(item.name, true)}
-                        borderType={'bottom'}
-                        imageIcon={true}
-                        style={{
-                          width: '100%',
-                          ...item.style,
-                          maxHeight: isMobile ? '145px' : 'auto'
-                        }}
-                        newDesign
-                      />
-                    </InputContainer>
-                  ))}
-                  <Button
-                    disabled={!values.name || !isValid || !dirty}
-                    onClick={() => handleSubmit()}
-                    loading={loading}
-                    style={{
-                      width: '100%',
-                      maxWidth: isMobile ? '100%' : '256px',
-                      height: '50px',
-                      borderRadius: '5px',
-                      alignSelf: 'center',
-                      position: isMobile ? 'initial' : 'absolute',
-                      top: '390px',
-                      left: '527px'
-                    }}
-                    color={!values.name || !isValid || !dirty ? 'gray' : 'primary'}
-                    text={'Save changes'}
-                  />
-                </InputWrapper>
-              )}
+              }: any) => {
+                const imageChanged = Boolean(rawSelectedFile);
+                const canSave = Boolean(values.name && isValid && (dirty || imageChanged));
+
+                return (
+                  <InputWrapper>
+                    {schema.map((item: FormField) => (
+                      <InputContainer key={item.name} style={item.style}>
+                        <LabelWrapper>
+                          <Label nameColor={nameColor} descColor={descColor} name={item.name}>
+                            {item.label}
+                          </Label>
+                          {item.maxCharacterLimit ? (
+                            <SecondaryText
+                              nameColor={nameColor}
+                              descColor={descColor}
+                              name={item.name}
+                            >
+                              {item.name === 'name'
+                                ? nameCharacterCount
+                                : descriptionCharacterCount}
+                              /{item.maxCharacterLimit}
+                            </SecondaryText>
+                          ) : null}
+                        </LabelWrapper>
+                        <Input
+                          {...item}
+                          key={item.name}
+                          name={item.name}
+                          testId={item.name}
+                          values={values}
+                          errors={errors}
+                          value={values[item.name]}
+                          error={errors[item.name]}
+                          initialValues={initialValues}
+                          setColor={handleColor}
+                          deleteErrors={() => {
+                            if (errors[item.name]) delete errors[item.name];
+                          }}
+                          handleChange={(e: any) => {
+                            setFieldValue(item.name, e);
+                            if (item.name === 'name') {
+                              setNameCharacterCount(e.length);
+                            } else if (item.name === 'description') {
+                              setDescriptionCharacterCount(e.length);
+                            }
+                          }}
+                          setFieldValue={(e: any, f: any) => {
+                            setFieldValue(e, f);
+                          }}
+                          setFieldTouched={setFieldTouched}
+                          handleBlur={() => setFieldTouched(item.name, false)}
+                          handleFocus={() => setFieldTouched(item.name, true)}
+                          borderType={'bottom'}
+                          imageIcon={true}
+                          style={{
+                            width: '100%',
+                            ...item.style,
+                            maxHeight: isMobile ? '145px' : 'auto'
+                          }}
+                          newDesign
+                        />
+                      </InputContainer>
+                    ))}
+                    <Button
+                      disabled={!canSave}
+                      onClick={() => handleSubmit()}
+                      loading={loading}
+                      style={{
+                        width: '100%',
+                        maxWidth: isMobile ? '100%' : '256px',
+                        height: '50px',
+                        borderRadius: '5px',
+                        alignSelf: 'center',
+                        position: isMobile ? 'initial' : 'absolute',
+                        top: '390px',
+                        left: '527px'
+                      }}
+                      color={canSave ? 'primary' : 'gray'}
+                      text={'Save changes'}
+                    />
+                  </InputWrapper>
+                );
+              }}
             </Formik>
           </EditWorkspaceRow>
           <EditWorkspaceRow>
