@@ -1257,6 +1257,47 @@ describe('Main store', () => {
     expect(store.peopleBounties[0].body.coding_languages).toEqual(filterCriteria.coding_languages);
   });
 
+  it('should send the user JWT when filtering bounties assigned to me', async () => {
+    const store = new MainStore();
+    const filterCriteria = {
+      limit: 25,
+      page: 1,
+      sortBy: 'created',
+      Open: true,
+      Assigned: true,
+      Paid: false,
+      myAssigned: true
+    };
+
+    const apiResponse = {
+      status: 200,
+      ok: true,
+      json: async () => Promise.resolve([filterBounty])
+    };
+    fetchStub.callsFake((url: string, options?: RequestInit) => {
+      const urlObj = new URL(url);
+      const params = urlObj.searchParams;
+      const headers = options?.headers as Headers;
+
+      const isValidBaseUrl =
+        urlObj.origin === `http://${getHost()}` && urlObj.pathname === '/gobounties/all';
+
+      const isAssignedToMeRequest =
+        params.get('myAssigned') === 'true' &&
+        params.get('Open') === 'false' &&
+        headers.get('x-jwt') === user.tribe_jwt;
+
+      if (isValidBaseUrl && isAssignedToMeRequest) {
+        return Promise.resolve(apiResponse);
+      }
+    });
+
+    await store.getPeopleBounties(filterCriteria);
+
+    sinon.assert.called(fetchStub);
+    expect(fetchStub.calledOnce).toEqual(true);
+  });
+
   it('should successfully fetch workspace users', async () => {
     const mockUsers: Person[] = [
       {
@@ -2749,17 +2790,17 @@ describe('setPeople', () => {
   });
 
   test('Invalid Data Type', () => {
-    // @ts-expect-error
+    // @ts-expect-error - verifies runtime validation rejects object input.
     expect(() => mainStore.setPeople({ name: 'Invalid', age: 50 })).toThrow(TypeError);
   });
 
   test('Null Input', () => {
-    // @ts-expect-error
+    // @ts-expect-error - verifies runtime validation rejects null input.
     expect(() => mainStore.setPeople(null)).toThrow(TypeError);
   });
 
   test('Undefined Input', () => {
-    // @ts-expect-error
+    // @ts-expect-error - verifies runtime validation rejects undefined input.
     expect(() => mainStore.setPeople(undefined)).toThrow(TypeError);
   });
 
@@ -2775,17 +2816,17 @@ describe('setPeople', () => {
 
   test('Array with Mixed Valid and Invalid Objects', () => {
     // TypeScript should prevent this from compiling.
-    // @ts-expect-error
+    // @ts-expect-error - verifies runtime validation rejects mixed invalid input.
     expect(() => mainStore.setPeople([validInput[0], { invalid: 'data' }])).toThrow(TypeError);
   });
 
   test('Array with Null Elements', () => {
-    // @ts-expect-error
+    // @ts-expect-error - verifies runtime validation rejects null array items.
     expect(() => mainStore.setPeople([validInput[0], null])).toThrow(TypeError);
   });
 
   test('Array with Undefined Elements', () => {
-    // @ts-expect-error
+    // @ts-expect-error - verifies runtime validation rejects undefined array items.
     expect(() => mainStore.setPeople([validInput[0], undefined])).toThrow(TypeError);
   });
 });

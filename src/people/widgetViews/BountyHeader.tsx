@@ -378,6 +378,9 @@ const BountyHeader = ({
     pending: 0,
     failed: 0
   });
+  const assignmentFilterOptions = ui.meInfo?.tribe_jwt
+    ? [{ id: 'myAssigned', label: 'Assigned to me', value: 'myAssigned' }]
+    : [];
 
   useEffect(() => {
     // Fetch counts from the API
@@ -568,6 +571,18 @@ const BountyHeader = ({
                         onChangeStatus(id);
                       }}
                     />
+                    {assignmentFilterOptions.length > 0 && (
+                      <>
+                        <EuiText className="leftBoxHeading">ASSIGNMENT</EuiText>
+                        <EuiCheckboxGroup
+                          options={assignmentFilterOptions}
+                          idToSelectedMap={checkboxIdToSelectedMap}
+                          onChange={(id: any) => {
+                            onChangeStatus(id);
+                          }}
+                        />
+                      </>
+                    )}
                   </EuiPopOverCheckboxLeft>
                   <PopOverRightBox color={color}>
                     <EuiText className="rightBoxHeading">Tags</EuiText>
@@ -730,6 +745,18 @@ const BountyHeader = ({
                       onChangeStatus(id);
                     }}
                   />
+                  {assignmentFilterOptions.length > 0 && (
+                    <>
+                      <EuiText className="leftBoxHeading">ASSIGNMENT</EuiText>
+                      <EuiCheckboxGroup
+                        options={assignmentFilterOptions}
+                        idToSelectedMap={checkboxIdToSelectedMap}
+                        onChange={(id: any) => {
+                          onChangeStatus(id);
+                        }}
+                      />
+                    </>
+                  )}
                 </EuiPopOverCheckboxLeft>
                 <PopOverRightBox color={color}>
                   <EuiText className="rightBoxHeading">Tags</EuiText>
