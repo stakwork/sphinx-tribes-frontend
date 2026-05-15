@@ -187,6 +187,7 @@ export interface QueryParams {
   provider?: string;
   workspace?: string;
   status?: string;
+  Open?: boolean | string;
   myAssigned?: boolean;
 }
 

@@ -9,6 +9,24 @@ import { uiStore } from '../../../store/ui';
 import { user } from '../../../__test__/__mockData__/user';
 import * as hooks from '../../../hooks';
 
+jest.mock('people/utils/RenderMarkdown', () => ({
+  renderMarkdown: (value: string) => value
+}));
+
+jest.mock('api', () => ({
+  __esModule: true,
+  default: {
+    get: jest.fn().mockResolvedValue({
+      open: 0,
+      assigned: 0,
+      completed: 0,
+      paid: 0,
+      pending: 0,
+      failed: 0
+    })
+  }
+}));
+
 const mockHistoryPush = jest.fn();
 const mockHistory = jest.fn();
 jest.mock('react-router-dom', () => ({
@@ -55,7 +73,11 @@ jest.mock('../../../hooks', () => ({
 }));
 describe('BountyHeader Component', () => {
   beforeEach(() => {
-    jest.spyOn(mainStore, 'getBountyHeaderData').mockReset();
+    jest.spyOn(mainStore, 'getBountyHeaderData').mockResolvedValue({
+      people: [],
+      developer_count: 0,
+      bounties_count: 0
+    });
     uiStore.setMeInfo(user);
     (hooks.useIsMobile as jest.Mock).mockReturnValue(false);
   });
@@ -110,9 +132,11 @@ describe('BountyHeader Component', () => {
   test('should display the total developer count from the mock API', async () => {
     jest.setTimeout(20000);
     const mockDeveloperCount = 100;
-    jest
-      .spyOn(mainStore, 'getBountyHeaderData')
-      .mockResolvedValue({ developer_count: mockDeveloperCount });
+    jest.spyOn(mainStore, 'getBountyHeaderData').mockResolvedValue({
+      people: [],
+      developer_count: mockDeveloperCount,
+      bounties_count: 0
+    });
 
     render(<BountyHeader {...mockProps} />);
 

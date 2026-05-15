@@ -73,13 +73,16 @@ function makeTorSaveURL(host: string, key: string) {
 }
 
 function makeQueryParams(limit: number, queryParams?: QueryParams): string {
-  const adaptedParams = {
+  const adaptedParams = Object.entries({
     ...queryParams,
-    limit: String(limit),
-    ...(queryParams?.resetPage ? { resetPage: String(queryParams.resetPage) } : {}),
-    ...(queryParams?.page ? { page: String(queryParams.page) } : {}),
-    ...(queryParams?.languages ? { languages: queryParams.languages } : {})
-  } as Record<string, string>;
+    limit
+  }).reduce<Record<string, string>>((params, [key, value]) => {
+    if (value !== undefined) {
+      params[key] = String(value);
+    }
+
+    return params;
+  }, {});
 
   const searchParams = new URLSearchParams(adaptedParams);
 

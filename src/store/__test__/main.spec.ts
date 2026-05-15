@@ -2790,17 +2790,17 @@ describe('setPeople', () => {
   });
 
   test('Invalid Data Type', () => {
-    // @ts-expect-error
+    // @ts-expect-error - verifies runtime validation rejects object input.
     expect(() => mainStore.setPeople({ name: 'Invalid', age: 50 })).toThrow(TypeError);
   });
 
   test('Null Input', () => {
-    // @ts-expect-error
+    // @ts-expect-error - verifies runtime validation rejects null input.
     expect(() => mainStore.setPeople(null)).toThrow(TypeError);
   });
 
   test('Undefined Input', () => {
-    // @ts-expect-error
+    // @ts-expect-error - verifies runtime validation rejects undefined input.
     expect(() => mainStore.setPeople(undefined)).toThrow(TypeError);
   });
 
@@ -2816,17 +2816,17 @@ describe('setPeople', () => {
 
   test('Array with Mixed Valid and Invalid Objects', () => {
     // TypeScript should prevent this from compiling.
-    // @ts-expect-error
+    // @ts-expect-error - verifies runtime validation rejects mixed invalid input.
     expect(() => mainStore.setPeople([validInput[0], { invalid: 'data' }])).toThrow(TypeError);
   });
 
   test('Array with Null Elements', () => {
-    // @ts-expect-error
+    // @ts-expect-error - verifies runtime validation rejects null array items.
     expect(() => mainStore.setPeople([validInput[0], null])).toThrow(TypeError);
   });
 
   test('Array with Undefined Elements', () => {
-    // @ts-expect-error
+    // @ts-expect-error - verifies runtime validation rejects undefined array items.
     expect(() => mainStore.setPeople([validInput[0], undefined])).toThrow(TypeError);
   });
 });
