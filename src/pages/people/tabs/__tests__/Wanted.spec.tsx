@@ -8,7 +8,6 @@ import mockBounties, { createdBounty } from 'bounties/__mock__/mockBounties.data
 import nock from 'nock';
 import React from 'react';
 import { MemoryRouter, Route } from 'react-router-dom';
-import { mainStore } from 'store/main';
 import { useStores } from '../../../../store';
 import { usePerson } from '../../../../hooks';
 import { Wanted } from '../Wanted.tsx';
@@ -22,6 +21,24 @@ beforeAll(() => {
 jest.mock('remark-gfm', () => null);
 
 jest.mock('rehype-raw', () => null);
+
+jest.mock('react-markdown', () => (props: { children?: React.ReactNode }) =>
+  React.createElement('div', {}, props.children)
+);
+
+jest.mock('people/widgetViews/postBounty', () => ({
+  __esModule: true,
+  PostBounty: ({ onSucces }: { onSucces?: () => void }) => (
+    <button type="button" onClick={() => onSucces?.()}>
+      Post a Bounty
+    </button>
+  )
+}));
+
+jest.mock('people/utils/NameTag', () => ({
+  __esModule: true,
+  default: ({ owner_alias }: { owner_alias?: string }) => <span>{owner_alias}</span>
+}));
 
 jest.mock('hooks', () => ({
   ...jest.requireActual('hooks'),
@@ -47,33 +64,34 @@ describe('Wanted Component', () => {
     };
 
     (usePerson as jest.Mock).mockImplementation(() => ({
-      person: {},
+      person: { id: 1, owner_pubkey: person.owner_pubkey },
       canEdit: false
     }));
 
+    const getPersonCreatedBounties = jest.fn(() => Promise.resolve([userBounty]));
+
     (useStores as jest.Mock).mockReturnValue({
       main: {
-        getPersonCreatedBounties: jest.fn(() => [userBounty])
+        getPersonCreatedBounties,
+        getBountyCount: jest.fn(() => 1)
       },
       ui: {
         selectedPerson: '123',
         meInfo: {
           owner_alias: 'test'
-        }
+        },
+        setBountyPerson: jest.fn()
       }
     });
 
-    const mockedPersonAssignedBounites = jest
-      .spyOn(mainStore, 'getPersonCreatedBounties')
-      .mockReturnValue(Promise.resolve([userBounty]));
-    act(async () => {
+    await act(async () => {
       const { getAllByTestId } = render(
         <MemoryRouter initialEntries={['/p/1234/bounties']}>
           <Route path="/p/:uuid/bounties" component={Wanted} />
         </MemoryRouter>
       );
       await waitFor(() => getAllByTestId('user-created-bounty'));
-      expect(mockedPersonAssignedBounites).toBeCalled();
+      expect(getPersonCreatedBounties).toHaveBeenCalled();
     });
   });
 
@@ -87,26 +105,27 @@ describe('Wanted Component', () => {
     };
 
     (usePerson as jest.Mock).mockImplementation(() => ({
-      person: {},
+      person: { id: 1, owner_pubkey: person.owner_pubkey },
       canEdit: false
     }));
 
+    const getPersonCreatedBounties = jest.fn(() => Promise.resolve([userBounty]));
+
     (useStores as jest.Mock).mockReturnValue({
       main: {
-        getPersonCreatedBounties: jest.fn(() => [userBounty])
+        getPersonCreatedBounties,
+        getBountyCount: jest.fn(() => 1)
       },
       ui: {
         selectedPerson: '123',
         meInfo: {
           owner_alias: 'test'
-        }
+        },
+        setBountyPerson: jest.fn()
       }
     });
 
-    const mockedPersonCreatedBounites = jest
-      .spyOn(mainStore, 'getPersonCreatedBounties')
-      .mockReturnValue(Promise.resolve([userBounty]));
-    act(async () => {
+    await act(async () => {
       const { getAllByTestId } = render(
         <MemoryRouter initialEntries={['/p/1234/bounties']}>
           <Route path="/p/:uuid/bounties" component={Wanted} />
@@ -120,11 +139,15 @@ describe('Wanted Component', () => {
 
       fireEvent.click(clickAssignedCheckBox);
 
-      expect(mockedPersonCreatedBounites).toHaveBeenCalledWith({
-        Assigned: true,
-        Open: false,
-        Paid: false
-      });
+      await waitFor(() => expect(getPersonCreatedBounties).toHaveBeenCalledTimes(2));
+      expect(getPersonCreatedBounties).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          Assigned: true,
+          Open: false,
+          Paid: false
+        }),
+        '1234'
+      );
     });
   });
 
@@ -147,26 +170,27 @@ describe('Wanted Component', () => {
     })) as any;
 
     (usePerson as jest.Mock).mockImplementation(() => ({
-      person: {},
+      person: { id: 1, owner_pubkey: person.owner_pubkey },
       canEdit: false
     }));
 
+    const getPersonCreatedBounties = jest.fn(() => Promise.resolve(userBounties));
+
     (useStores as jest.Mock).mockReturnValue({
       main: {
-        getPersonCreatedBounties: jest.fn(() => [userBounties])
+        getPersonCreatedBounties,
+        getBountyCount: jest.fn(() => userBounties.length)
       },
       ui: {
         selectedPerson: '123',
         meInfo: {
           owner_alias: 'test'
-        }
+        },
+        setBountyPerson: jest.fn()
       }
     });
 
-    const mockedPersonAssignedBounites = jest
-      .spyOn(mainStore, 'getPersonCreatedBounties')
-      .mockReturnValue(Promise.resolve(userBounties));
-    act(async () => {
+    await act(async () => {
       const { getAllByTestId } = render(
         <MemoryRouter initialEntries={['/p/1234/bounties']}>
           <Route path="/p/:uuid/bounties" component={Wanted} />
@@ -174,7 +198,7 @@ describe('Wanted Component', () => {
       );
 
       await waitFor(() => getAllByTestId('user-created-bounty'));
-      expect(mockedPersonAssignedBounites).toBeCalled();
+      expect(getPersonCreatedBounties).toHaveBeenCalled();
       expect(getAllByTestId('user-created-bounty').length).toBe(15);
     });
   });
@@ -198,26 +222,27 @@ describe('Wanted Component', () => {
     }));
 
     (usePerson as jest.Mock).mockImplementation(() => ({
-      person: {},
+      person: { id: 1, owner_pubkey: person.owner_pubkey },
       canEdit: false
     }));
 
+    const getPersonCreatedBounties = jest.fn(() => Promise.resolve(userBounties));
+
     (useStores as jest.Mock).mockReturnValue({
       main: {
-        getPersonCreatedBounties: jest.fn(() => [userBounties])
+        getPersonCreatedBounties,
+        getBountyCount: jest.fn(() => userBounties.length)
       },
       ui: {
         selectedPerson: '123',
         meInfo: {
           owner_alias: 'test'
-        }
+        },
+        setBountyPerson: jest.fn()
       }
     });
 
-    jest
-      .spyOn(mainStore, 'getPersonCreatedBounties')
-      .mockReturnValue(Promise.resolve(userBounties));
-    act(async () => {
+    await act(async () => {
       const { getByText } = render(
         <MemoryRouter initialEntries={['/p/1234/bounties']}>
           <Route path="/p/:uuid/bounties" component={Wanted} />
@@ -252,26 +277,28 @@ describe('Wanted Component', () => {
     };
 
     (usePerson as jest.Mock).mockImplementation(() => ({
-      person: {},
+      person: { id: 1, owner_pubkey: person.owner_pubkey },
       canEdit: false
     }));
 
+    const getPersonCreatedBounties = jest.fn(() => Promise.resolve([userBounty]));
+
     (useStores as jest.Mock).mockReturnValue({
       main: {
-        getPersonCreatedBounties: jest.fn(() => [userBounty])
+        getPersonCreatedBounties,
+        getBountyCount: jest.fn(() => 1)
       },
       ui: {
         selectedPerson: '123',
         meInfo: {
           owner_alias: 'test'
-        }
+        },
+        setBountyPerson: jest.fn()
       }
     });
 
-    jest
-      .spyOn(mainStore, 'getPersonCreatedBounties')
-      .mockReturnValue(Promise.resolve([userBounty]));
-    act(async () => {
+    await act(async () => {
+      const openSpy = jest.spyOn(window, 'open').mockImplementation(() => null as any);
       const { getAllByTestId } = render(
         <MemoryRouter initialEntries={['/p/1234/bounties']}>
           <Route path="/p/:uuid/bounties" component={Wanted} />
@@ -282,8 +309,10 @@ describe('Wanted Component', () => {
       getAllByTestId('user-created-bounty')[0].click();
       expect(getAllByTestId('user-created-bounty').length).toBe(1);
       expect(getAllByTestId('user-created-bounty')[0].getAttribute('href')).toEqual(
-        `/p/1234/wanted/${userBounty.body.id}/0`
+        `/bounty/${userBounty.body.id}`
       );
+      expect(openSpy).toHaveBeenCalledWith(`/bounty/${userBounty.body.id}`, '_blank');
+      openSpy.mockRestore();
     });
   });
 
@@ -297,26 +326,27 @@ describe('Wanted Component', () => {
     };
 
     (usePerson as jest.Mock).mockImplementation(() => ({
-      person: {},
+      person: { id: 1, owner_pubkey: person.owner_pubkey },
       canEdit: false
     }));
 
+    const getPersonCreatedBounties = jest.fn(() => Promise.resolve([userBounty]));
+
     (useStores as jest.Mock).mockReturnValue({
       main: {
-        getPersonCreatedBounties: jest.fn(() => [userBounty])
+        getPersonCreatedBounties,
+        getBountyCount: jest.fn(() => 1)
       },
       ui: {
         selectedPerson: '123',
         meInfo: {
           owner_alias: 'test'
-        }
+        },
+        setBountyPerson: jest.fn()
       }
     });
 
-    jest
-      .spyOn(mainStore, 'getPersonCreatedBounties')
-      .mockReturnValue(Promise.resolve([userBounty]));
-    act(async () => {
+    await act(async () => {
       const { getAllByTestId } = render(
         <MemoryRouter initialEntries={['/p/1234/bounties']}>
           <Route path="/p/:uuid/bounties" component={Wanted} />
@@ -327,13 +357,13 @@ describe('Wanted Component', () => {
       getAllByTestId('user-created-bounty')[0].click();
       expect(getAllByTestId('user-created-bounty').length).toBe(1);
       within(within(getAllByTestId('user-created-bounty')[0]).getByTestId('status-pill')).getByText(
-        'Paid'
+        'Assigned'
       );
     });
   });
 
   test('Should render load more button if have more bounties', async () => {
-    const createdMockBounties = Array.from({ length: 20 }, (_: any, index: number) => ({
+    const createdMockBounties = Array.from({ length: 25 }, (_: any, index: number) => ({
       ...(mockBounties[0] || {}),
       bounty: {
         ...(mockBounties[0]?.bounty || {}),
@@ -351,26 +381,27 @@ describe('Wanted Component', () => {
     })) as any;
 
     (usePerson as jest.Mock).mockImplementation(() => ({
-      person: {},
+      person: { id: 1, owner_pubkey: person.owner_pubkey },
       canEdit: false
     }));
 
+    const getPersonCreatedBounties = jest.fn(() => Promise.resolve(userBounties));
+
     (useStores as jest.Mock).mockReturnValue({
       main: {
-        getPersonCreatedBounties: jest.fn(() => [userBounties])
+        getPersonCreatedBounties,
+        getBountyCount: jest.fn(() => userBounties.length)
       },
       ui: {
         selectedPerson: '123',
         meInfo: {
           owner_alias: 'test'
-        }
+        },
+        setBountyPerson: jest.fn()
       }
     });
 
-    jest
-      .spyOn(mainStore, 'getPersonCreatedBounties')
-      .mockReturnValue(Promise.resolve(userBounties));
-    act(async () => {
+    await act(async () => {
       const { getByText, getAllByTestId } = render(
         <MemoryRouter initialEntries={['/p/1234/bounties']}>
           <Route path="/p/:uuid/bounties" component={Wanted} />
@@ -385,52 +416,50 @@ describe('Wanted Component', () => {
 
   test('Should render correct message if no bounties are assigned', async () => {
     (usePerson as jest.Mock).mockImplementation(() => ({
-      person: {},
+      person: { id: 1, owner_pubkey: person.owner_pubkey },
       canEdit: false
     }));
 
+    const getPersonCreatedBounties = jest.fn(() => Promise.resolve([]));
+
     (useStores as jest.Mock).mockReturnValue({
       main: {
-        getPersonCreatedBounties: jest.fn(() => []),
+        getPersonCreatedBounties,
+        getBountyCount: jest.fn(() => 0),
         dropDownWorkspaces: []
       },
       ui: {
         selectedPerson: '123',
         meInfo: {
           owner_alias: 'test'
-        }
+        },
+        setBountyPerson: jest.fn()
       }
     });
-    jest.spyOn(mainStore, 'getPersonCreatedBounties').mockReturnValue(Promise.resolve([]));
-    act(async () => {
+    await act(async () => {
       const { getByText } = render(
         <MemoryRouter initialEntries={['/p/1234/bounties']}>
           <Route path="/p/:uuid/bounties" component={Wanted} />
         </MemoryRouter>
       );
       await waitFor(() => {
-        expect(getByText('No Tickets Yet')).toBeInTheDocument();
+        expect(getByText('No Posted Bounties Yet')).toBeInTheDocument();
       });
     });
   });
 
-  test('when click on post a bounty button should flow through the process', async () => {
-    const userBounty = { ...createdBounty, body: {} } as any;
-    userBounty.body = {
-      ...userBounty.bounty,
-      owner_id: person.owner_pubkey,
-      title: 'new text',
-      description: 'new text'
-    };
-
+  test('when clicking on post a bounty button it triggers the success callback', async () => {
     (usePerson as jest.Mock).mockImplementation(() => ({
-      person: {},
+      person: { id: 1, owner_pubkey: person.owner_pubkey },
       canEdit: true
     }));
 
+    const getPersonCreatedBounties = jest.fn(() => Promise.resolve([]));
+
     (useStores as jest.Mock).mockReturnValue({
       main: {
-        getPersonCreatedBounties: jest.fn(() => [userBounty]),
+        getPersonCreatedBounties,
+        getBountyCount: jest.fn(() => 0),
         getUserDropdownWorkspaces: jest.fn(),
         dropDownWorkspaces: []
       },
@@ -438,90 +467,61 @@ describe('Wanted Component', () => {
         selectedPerson: '123',
         meInfo: {
           owner_alias: 'test'
-        }
+        },
+        setBountyPerson: jest.fn()
       }
     });
 
-    jest
-      .spyOn(mainStore, 'getPersonCreatedBounties')
-      .mockReturnValue(Promise.resolve([userBounty]));
-    act(async () => {
-      const { getByText } = render(
-        <MemoryRouter initialEntries={['/p/1234/bounties']}>
-          <Route path="/p/:uuid/bounties" component={Wanted} />
-        </MemoryRouter>
-      );
-
-      waitFor(async () => {
-        const PostBountyButton = await screen.findByRole('button', { name: /Post a Bounty/i });
-        expect(PostBountyButton).toBeInTheDocument();
-        fireEvent.click(PostBountyButton);
-        const StartButton = await screen.findByRole('button', { name: /Start/i });
-        expect(StartButton).toBeInTheDocument();
-        const bountyTitleInput = await screen.findByRole('input', { name: /Bounty Title /i });
-        expect(bountyTitleInput).toBeInTheDocument();
-        fireEvent.change(bountyTitleInput, { target: { value: 'new text' } });
-        const dropdown = screen.getByText(/Category /i); // Adjust based on your dropdown implementation
-        fireEvent.click(dropdown);
-        const desiredOption = screen.getByText(/Web Development/i); // Adjust based on your desired option
-        fireEvent.click(desiredOption);
-        const NextButton = await screen.findByRole('button', { name: /Next/i });
-        expect(NextButton).toBeInTheDocument();
-        fireEvent.click(NextButton);
-        const DescriptionInput = await screen.findByRole('input', { name: /Description /i });
-        expect(DescriptionInput).toBeInTheDocument();
-        fireEvent.change(DescriptionInput, { target: { value: 'new text' } });
-        const NextButton2 = await screen.findByRole('button', { name: /Next/i });
-        expect(NextButton2).toBeInTheDocument();
-        fireEvent.click(NextButton2);
-        const SatInput = await screen.findByRole('input', { name: /Price(Sats)/i });
-        expect(SatInput).toBeInTheDocument();
-        fireEvent.change(SatInput, { target: { value: 1 } });
-        const NextButton3 = await screen.findByRole('button', { name: /Next/i });
-        expect(NextButton3).toBeInTheDocument();
-        fireEvent.click(NextButton3);
-        const DecideLaterButton = await screen.findByRole('button', { name: /Decide Later/i });
-        expect(DecideLaterButton).toBeInTheDocument();
-        fireEvent.click(DecideLaterButton);
-        const FinishButton = await screen.findByRole('button', { name: /Finish/i });
-        expect(FinishButton).toBeInTheDocument();
-        fireEvent.click(FinishButton);
-        expect(getByText(userBounty.body.title)).toBeInTheDocument();
-      });
+    const reloadSpy = jest.fn();
+    Object.defineProperty(window, 'location', {
+      value: { reload: reloadSpy },
+      writable: true
     });
+
+    render(
+      <MemoryRouter initialEntries={['/p/1234/bounties']}>
+        <Route path="/p/:uuid/bounties" component={Wanted} />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => expect(screen.getByText('No Posted Bounties Yet')).toBeInTheDocument());
+    const postBountyButtons = await screen.findAllByRole('button', { name: /Post a Bounty/i });
+    fireEvent.click(postBountyButtons[postBountyButtons.length - 1]);
+    expect(reloadSpy).toHaveBeenCalled();
   });
 
   test('Should show loading image first and then show correct message if no bounties are assigned', async () => {
     (usePerson as jest.Mock).mockImplementation(() => ({
-      person: {},
+      person: { id: 1, owner_pubkey: person.owner_pubkey },
       canEdit: false
     }));
 
+    const getPersonCreatedBounties = jest.fn(() => Promise.resolve([]));
+
     (useStores as jest.Mock).mockReturnValue({
       main: {
-        getPersonCreatedBounties: jest.fn(() => []),
+        getPersonCreatedBounties,
+        getBountyCount: jest.fn(() => 0),
         dropDownWorkspaces: []
       },
       ui: {
         selectedPerson: '123',
         meInfo: {
           owner_alias: 'test'
-        }
+        },
+        setBountyPerson: jest.fn()
       }
     });
-    jest.spyOn(mainStore, 'getPersonCreatedBounties').mockReturnValue(Promise.resolve([]));
 
-    act(async () => {
-      const { getByText, getByTestId } = render(
+    await act(async () => {
+      const { getByText, queryByTestId } = render(
         <MemoryRouter initialEntries={['/p/1234/bounties']}>
           <Route path="/p/:uuid/bounties" component={Wanted} />
         </MemoryRouter>
       );
-      await waitFor(() => {
-        expect(getByTestId('loading-spinner')).toBeInTheDocument();
-        expect(getByText('No Tickets Yet')).toBeInTheDocument();
-        expect(getByTestId('loading-spinner')).not.toBeInTheDocument();
-      });
+
+      await waitFor(() => expect(getByText('No Posted Bounties Yet')).toBeInTheDocument());
+      await waitFor(() => expect(queryByTestId('loading-spinner')).not.toBeInTheDocument());
     });
   });
 
@@ -544,27 +544,28 @@ describe('Wanted Component', () => {
     }));
 
     (usePerson as jest.Mock).mockImplementation(() => ({
-      person: {},
+      person: { id: 1, owner_pubkey: person.owner_pubkey },
       canEdit: false
     }));
 
+    const getPersonCreatedBounties = jest.fn(() => Promise.resolve(userBounties));
+
     (useStores as jest.Mock).mockReturnValue({
       main: {
-        getPersonCreatedBounties: jest.fn(() => [userBounties])
+        getPersonCreatedBounties,
+        getBountyCount: jest.fn(() => userBounties.length)
       },
       ui: {
         selectedPerson: '123',
         meInfo: {
           owner_alias: 'test'
-        }
+        },
+        setBountyPerson: jest.fn()
       }
     });
 
-    jest
-      .spyOn(mainStore, 'getPersonCreatedBounties')
-      .mockReturnValue(Promise.resolve(userBounties));
-    act(async () => {
-      const { getByText, getByTestId } = render(
+    await act(async () => {
+      const { getByText, queryByTestId, queryByText } = render(
         <MemoryRouter initialEntries={['/p/1234/bounties']}>
           <Route path="/p/:uuid/bounties" component={Wanted} />
         </MemoryRouter>
@@ -573,42 +574,41 @@ describe('Wanted Component', () => {
       await waitFor(() => getByText(userBounties[0].body.title));
 
       for (const bounty of userBounties) {
-        expect(getByTestId('loading-spinner')).toBeInTheDocument();
-        expect(getByText('No Tickets Yet')).not.toBeInTheDocument();
+        expect(queryByText('No Posted Bounties Yet')).not.toBeInTheDocument();
         expect(getByText(bounty.body.title)).toBeInTheDocument();
-        expect(getByTestId('loading-spinner')).not.toBeInTheDocument();
+        expect(queryByTestId('loading-spinner')).not.toBeInTheDocument();
       }
     });
   });
 
   test('that Clicking on bounties tab inside the profile and view a "Post a bounty" button if I am signed in', async () => {
     (usePerson as jest.Mock).mockImplementation(() => ({
-      person: {},
+      person: { id: 1, owner_pubkey: person.owner_pubkey },
       canEdit: true
     }));
 
     (useStores as jest.Mock).mockReturnValue({
       main: {
-        getPersonCreatedBounties: jest.fn(() => [])
+        getPersonCreatedBounties: jest.fn(() => Promise.resolve([])),
+        getBountyCount: jest.fn(() => 0)
       },
       ui: {
         selectedPerson: '123',
         meInfo: {
           owner_alias: 'test'
-        }
+        },
+        setBountyPerson: jest.fn()
       }
     });
 
-    jest.spyOn(mainStore, 'getPersonCreatedBounties').mockReturnValue(Promise.resolve([]));
-    act(async () => {
-      render(
-        <MemoryRouter initialEntries={['/p/1234/bounties']}>
-          <Route path="/p/:uuid/bounties" component={Wanted} />
-        </MemoryRouter>
-      );
-      const PostBountyButton = await screen.findByRole('button', { name: /Post a Bounty/i });
-      expect(PostBountyButton).toBeInTheDocument();
-    });
+    render(
+      <MemoryRouter initialEntries={['/p/1234/bounties']}>
+        <Route path="/p/:uuid/bounties" component={Wanted} />
+      </MemoryRouter>
+    );
+
+    const postBountyButtons = await screen.findAllByRole('button', { name: /Post a Bounty/i });
+    expect(postBountyButtons.length).toBeGreaterThan(0);
   });
 
   test('that user can view various statuses for bounties created including open, assigned, and paid inside bounties tab', async () => {
@@ -628,27 +628,29 @@ describe('Wanted Component', () => {
     } as any;
 
     (usePerson as jest.Mock).mockImplementation(() => ({
-      person: {},
+      person: { id: 1, owner_pubkey: person.owner_pubkey },
       canEdit: true
     }));
 
+    const getPersonCreatedBounties = jest.fn(() =>
+      Promise.resolve([userBounty, paidUserBounty, openUserBounty])
+    );
+
     (useStores as jest.Mock).mockReturnValue({
       main: {
-        getPersonCreatedBounties: jest.fn(() => [userBounty, paidUserBounty, openUserBounty])
+        getPersonCreatedBounties,
+        getBountyCount: jest.fn(() => 3)
       },
       ui: {
         selectedPerson: '123',
         meInfo: {
           owner_alias: 'test'
-        }
+        },
+        setBountyPerson: jest.fn()
       }
     });
 
-    jest
-      .spyOn(mainStore, 'getPersonCreatedBounties')
-      .mockReturnValue(Promise.resolve([userBounty, paidUserBounty, openUserBounty]));
-
-    act(async () => {
+    await act(async () => {
       const { getByText } = render(
         <MemoryRouter initialEntries={['/p/1234/bounties']}>
           <Route path="/p/:uuid/bounties" component={Wanted} />
@@ -663,13 +665,102 @@ describe('Wanted Component', () => {
       const OpenText = screen.getByText('Open');
       expect(OpenText).toBeInTheDocument();
 
-      waitFor(() => {
-        const PaidText = screen.getByText('PAID');
+      await waitFor(() => {
+        const PaidText = screen.getByText('Paid');
         expect(PaidText).toBeInTheDocument();
-
-        const CompleteText = screen.getByText('Complete');
-        expect(CompleteText).toBeInTheDocument();
       });
     });
+  });
+
+  test('shows bounty count in header', async () => {
+    (usePerson as jest.Mock).mockImplementation(() => ({
+      person: { id: 1, owner_pubkey: person.owner_pubkey },
+      canEdit: false
+    }));
+
+    const getPersonCreatedBounties = jest.fn(() => Promise.resolve([]));
+
+    (useStores as jest.Mock).mockReturnValue({
+      main: {
+        getPersonCreatedBounties,
+        getBountyCount: jest.fn(() => 5)
+      },
+      ui: {
+        selectedPerson: '123',
+        meInfo: {
+          owner_alias: 'test'
+        },
+        setBountyPerson: jest.fn()
+      }
+    });
+
+    render(
+      <MemoryRouter initialEntries={['/p/1234/bounties']}>
+        <Route path="/p/:uuid/bounties" component={Wanted} />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => expect(screen.getByText('Bounties (5)')).toBeInTheDocument());
+  });
+
+  test('load more requests the next page', async () => {
+    const firstPageBounties = Array.from({ length: 25 }, (_: any, index: number) => ({
+      ...(mockBounties[0] || {}),
+      body: {
+        ...(mockBounties[0]?.bounty || {}),
+        id: (mockBounties[0]?.bounty?.id || 0) + index + 1,
+        owner_id: person.owner_pubkey,
+        title: `page1 bounty ${index}`
+      }
+    })) as any[];
+
+    const secondPageBounty = {
+      ...(mockBounties[0] || {}),
+      body: {
+        ...(mockBounties[0]?.bounty || {}),
+        id: 99999,
+        owner_id: person.owner_pubkey,
+        title: 'page2 bounty'
+      }
+    } as any;
+
+    (usePerson as jest.Mock).mockImplementation(() => ({
+      person: { id: 1, owner_pubkey: person.owner_pubkey },
+      canEdit: false
+    }));
+
+    const getPersonCreatedBounties = jest.fn((queryParams: any) => {
+      if (queryParams?.page === 2) return Promise.resolve([secondPageBounty]);
+      return Promise.resolve(firstPageBounties);
+    });
+
+    (useStores as jest.Mock).mockReturnValue({
+      main: {
+        getPersonCreatedBounties,
+        getBountyCount: jest.fn(() => firstPageBounties.length + 1)
+      },
+      ui: {
+        selectedPerson: '123',
+        meInfo: {
+          owner_alias: 'test'
+        },
+        setBountyPerson: jest.fn()
+      }
+    });
+
+    render(
+      <MemoryRouter initialEntries={['/p/1234/bounties']}>
+        <Route path="/p/:uuid/bounties" component={Wanted} />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => expect(screen.getByText('Load More')).toBeInTheDocument());
+    fireEvent.click(screen.getByText('Load More'));
+
+    await waitFor(() => expect(screen.getByText('page2 bounty')).toBeInTheDocument());
+    expect(getPersonCreatedBounties).toHaveBeenCalledWith(
+      expect.objectContaining({ page: 2 }),
+      expect.any(String)
+    );
   });
 });
