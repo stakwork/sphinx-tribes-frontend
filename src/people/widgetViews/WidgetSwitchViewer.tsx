@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { memo, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { observer } from 'mobx-react-lite';
 import { useIsMobile } from 'hooks/uiHooks';
@@ -69,14 +69,108 @@ export const LoadMoreContainer = styled.div<PanelProps>`
   }
 `;
 
+interface ViewerListItemProps {
+  activeWorkspace: any;
+  color: any;
+  featuredBountyIdSet: Set<string>;
+  fromBountyPage?: boolean;
+  isBountyLandingPage?: boolean;
+  isMobile: boolean;
+  item: any;
+  onPanelClick?: (activeWorkspace: any, body: any) => void;
+  panelStyles: any;
+  selectedWidget: string;
+  setDeletePayload: (payload: object) => void;
+  showModal: () => void;
+  userAvatarPlaceholder: (ownerPubkey: string) => string;
+}
+
+const ViewerListItem = memo((props: ViewerListItemProps) => {
+  const {
+    activeWorkspace,
+    color,
+    featuredBountyIdSet,
+    fromBountyPage,
+    isBountyLandingPage,
+    isMobile,
+    item,
+    onPanelClick,
+    panelStyles,
+    selectedWidget,
+    setDeletePayload,
+    showModal,
+    userAvatarPlaceholder
+  } = props;
+  const { person, body, organization } = item;
+  const displayPerson = {
+    ...person,
+    img: person.img || userAvatarPlaceholder(person.owner_pubkey)
+  };
+  const isFeatured = featuredBountyIdSet.has(body.id.toString());
+
+  const conditionalStyles = body?.paid
+    ? {
+        border: isMobile ? `2px 0 0 0 solid ${color.grayish.G600}` : '',
+        boxShadow: 'none'
+      }
+    : isFeatured
+    ? {
+        border: '',
+        borderRadius: '12px'
+      }
+    : {};
+
+  return (
+    <Panel
+      color={color}
+      isMobile={isMobile}
+      isAssignee={!!body.assignee}
+      style={{
+        ...panelStyles,
+        ...conditionalStyles,
+        cursor: 'pointer',
+        padding: isFeatured ? '2px' : 0,
+        overflow: 'hidden',
+        background: 'transparent',
+        minHeight: !isMobile ? '160px' : '',
+        maxHeight: 'auto',
+        boxShadow: 'none'
+      }}
+    >
+      {selectedWidget === 'post' ? (
+        <PostView showName person={displayPerson} {...body} />
+      ) : selectedWidget === 'offer' ? (
+        <OfferView showName person={displayPerson} {...body} />
+      ) : selectedWidget === 'bounties' ? (
+        <WantedView
+          showName
+          onPanelClick={() => {
+            if (onPanelClick) onPanelClick(activeWorkspace, body);
+          }}
+          person={displayPerson}
+          showModal={showModal}
+          isBountyLandingPage={isBountyLandingPage}
+          setDeletePayload={setDeletePayload}
+          fromBountyPage={fromBountyPage}
+          activeWorkspace={activeWorkspace}
+          {...body}
+          {...organization}
+        />
+      ) : null}
+    </Panel>
+  );
+});
+
+ViewerListItem.displayName = 'ViewerListItem';
+
 function WidgetSwitchViewer(props: any) {
   const color = colors['light'];
   const { main, ui } = useStores();
   const isMobile = useIsMobile();
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [deletePayload, setDeletePayload] = useState<object>({});
-  const closeModal = () => setShowDeleteModal(false);
-  const showModal = () => setShowDeleteModal(true);
+  const closeModal = useCallback(() => setShowDeleteModal(false), []);
+  const showModal = useCallback(() => setShowDeleteModal(true), []);
 
   const {
     currentItems,
@@ -99,83 +193,106 @@ function WidgetSwitchViewer(props: any) {
   const WorkspaceBountiesTotal = WorkspaceTotalBounties ?? 0;
   const page = propsPage ?? 0;
 
-  const panelStyles = isMobile
-    ? {
-        minHeight: 132
-      }
-    : {
-        minWidth: isBountyLandingPage ? '900px' : '1100px',
-        maxWidth: isBountyLandingPage ? '900px' : '1100px',
-        marginBottom: 16,
-        borderRadius: '10px',
-        display: 'flex',
-        justifyContent: 'center'
-      };
+  const panelStyles = useMemo(
+    () =>
+      isMobile
+        ? {
+            minHeight: 132
+          }
+        : {
+            minWidth: isBountyLandingPage ? '900px' : '1100px',
+            maxWidth: isBountyLandingPage ? '900px' : '1100px',
+            marginBottom: 16,
+            borderRadius: '10px',
+            display: 'flex',
+            justifyContent: 'center'
+          },
+    [isBountyLandingPage, isMobile]
+  );
 
   const { peoplePosts, peopleBounties, phaseBounties, peopleOffers } = main;
   const { selectedWidget, onPanelClick, org_uuid } = props;
 
-  const featuredBountyIds = bountyStore
-    .getFeaturedBounties()
-    .map((b: FeaturedBounty) => b.bountyId);
+  const featuredBounties = bountyStore.getFeaturedBounties();
+  const featuredBountyIdSet = useMemo(
+    () => new Set(featuredBounties.map((b: FeaturedBounty) => b.bountyId)),
+    [featuredBounties]
+  );
 
-  const sortBounties = (bounties: any[]) => {
-    const featured: any[] = [];
-    const regular: any[] = [];
+  const sortBounties = useMemo(
+    () => (bounties: any[]) => {
+      const featured: any[] = [];
+      const regular: any[] = [];
 
-    bounties.forEach((item: any) => {
-      if (featuredBountyIds.includes(item.body.id.toString())) {
-        featured.push(item);
-      } else {
-        regular.push(item);
-      }
-    });
+      bounties.forEach((item: any) => {
+        if (featuredBountyIdSet.has(item.body.id.toString())) {
+          featured.push(item);
+        } else {
+          regular.push(item);
+        }
+      });
 
-    return [...featured, ...regular];
-  };
+      return [...featured, ...regular];
+    },
+    [featuredBountyIdSet]
+  );
 
-  const listSource = {
-    post: peoplePosts,
-    bounties: selectedWidget === 'bounties' ? sortBounties(peopleBounties) : peopleBounties,
-    offer: peopleOffers
-  };
+  const listSource = useMemo(
+    () => ({
+      post: peoplePosts,
+      bounties: selectedWidget === 'bounties' ? sortBounties(peopleBounties) : peopleBounties,
+      offer: peopleOffers
+    }),
+    [peopleBounties, peopleOffers, peoplePosts, selectedWidget, sortBounties]
+  );
 
-  const phaseListSource = {
-    post: peoplePosts,
-    bounties: selectedWidget === 'bounties' ? sortBounties(phaseBounties) : phaseBounties,
-    offer: peopleOffers
-  };
+  const phaseListSource = useMemo(
+    () => ({
+      post: peoplePosts,
+      bounties: selectedWidget === 'bounties' ? sortBounties(phaseBounties) : phaseBounties,
+      offer: peopleOffers
+    }),
+    [peopleOffers, peoplePosts, phaseBounties, selectedWidget, sortBounties]
+  );
 
-  const activeList = [...listSource[selectedWidget]].filter(({ body, person }: any) => {
-    const value = { ...body };
+  const activeList = useMemo(
+    () =>
+      [...listSource[selectedWidget]].filter(({ body, person }: any) => {
+        const value = body;
 
-    const isOwner = ui.meInfo?.owner_pubkey === person?.owner_pubkey;
-    const isAssignee = value.assignee?.owner_pubkey === ui.meInfo?.owner_pubkey;
+        const isOwner = ui.meInfo?.owner_pubkey === person?.owner_pubkey;
+        const isAssignee = value.assignee?.owner_pubkey === ui.meInfo?.owner_pubkey;
 
-    if (!value.show && !isOwner && !isAssignee) {
-      return false;
-    }
+        if (!value.show && !isOwner && !isAssignee) {
+          return false;
+        }
 
-    if (org_uuid) {
-      return value.org_uuid === org_uuid;
-    }
-    return true;
-  });
+        if (org_uuid) {
+          return value.org_uuid === org_uuid;
+        }
+        return true;
+      }),
+    [listSource, org_uuid, selectedWidget, ui.meInfo?.owner_pubkey]
+  );
 
-  const activePhaseList = [...phaseListSource[selectedWidget]].filter(({ body, person }: any) => {
-    const value = { ...body };
-    const isOwner = ui.meInfo?.owner_pubkey === person?.owner_pubkey;
-    const isAssignee = value.assignee?.owner_pubkey === ui.meInfo?.owner_pubkey;
+  const activePhaseList = useMemo(
+    () =>
+      [...phaseListSource[selectedWidget]].filter(({ body, person }: any) => {
+        const value = body;
+        const isOwner = ui.meInfo?.owner_pubkey === person?.owner_pubkey;
+        const isAssignee = value.assignee?.owner_pubkey === ui.meInfo?.owner_pubkey;
 
-    if (!value.show && !isOwner && !isAssignee) {
-      return false;
-    }
+        if (!value.show && !isOwner && !isAssignee) {
+          return false;
+        }
 
-    if (org_uuid) {
-      return value.org_uuid === org_uuid;
-    }
-    return true;
-  });
+        if (org_uuid) {
+          return value.org_uuid === org_uuid;
+        }
+        return true;
+      }),
+    [org_uuid, phaseListSource, selectedWidget, ui.meInfo?.owner_pubkey]
+  );
 
   const foundDynamicSchema = widgetConfigs[selectedWidget]?.schema?.find(
     (f: any) => f.dynamicSchemas
@@ -252,150 +369,52 @@ function WidgetSwitchViewer(props: any) {
 
   const listItems =
     activeList && activeList.length ? (
-      activeList.slice(0, currentItems).map((item: any, i: number) => {
-        const { person, body, organization } = item;
-        person.img = person.img || main.getUserAvatarPlaceholder(person.owner_pubkey);
-
-        const isFeatured = featuredBountyIds.includes(body.id.toString());
-
-        const conditionalStyles = body?.paid
-          ? {
-              border: isMobile ? `2px 0 0 0 solid ${color.grayish.G600}` : '',
-              boxShadow: 'none'
-            }
-          : isFeatured
-          ? {
-              border: '',
-              borderRadius: '12px'
-            }
-          : {};
-
-        return (
-          <Panel
+      activeList
+        .slice(0, currentItems)
+        .map((item: any, i: number) => (
+          <ViewerListItem
+            activeWorkspace={activeWorkspace}
             color={color}
+            featuredBountyIdSet={featuredBountyIdSet}
+            fromBountyPage={props.fromBountyPage}
+            isBountyLandingPage={isBountyLandingPage}
             isMobile={isMobile}
-            key={person?.owner_pubkey + i + body?.created}
-            isAssignee={!!body.assignee}
-            style={{
-              ...panelStyles,
-              ...conditionalStyles,
-              cursor: 'pointer',
-              padding: isFeatured ? '2px' : 0,
-              overflow: 'hidden',
-              background: 'transparent',
-              minHeight: !isMobile ? '160px' : '',
-              maxHeight: 'auto',
-              boxShadow: 'none'
-            }}
-          >
-            {selectedWidget === 'post' ? (
-              <PostView
-                showName
-                key={`${i + person.owner_pubkey}pview`}
-                person={person}
-                {...body}
-              />
-            ) : selectedWidget === 'offer' ? (
-              <OfferView
-                showName
-                key={`${i + person.owner_pubkey}oview`}
-                person={person}
-                {...body}
-              />
-            ) : selectedWidget === 'bounties' ? (
-              <WantedView
-                showName
-                onPanelClick={() => {
-                  if (onPanelClick) onPanelClick(activeWorkspace, body);
-                }}
-                person={person}
-                showModal={showModal}
-                isBountyLandingPage={isBountyLandingPage}
-                setDeletePayload={setDeletePayload}
-                fromBountyPage={props.fromBountyPage}
-                activeWorkspace={activeWorkspace}
-                {...body}
-                {...organization}
-              />
-            ) : null}
-          </Panel>
-        );
-      })
+            item={item}
+            key={`${item.person?.owner_pubkey}-${item.body?.id || item.body?.created}-${i}`}
+            onPanelClick={onPanelClick}
+            panelStyles={panelStyles}
+            selectedWidget={selectedWidget}
+            setDeletePayload={setDeletePayload}
+            showModal={showModal}
+            userAvatarPlaceholder={main.getUserAvatarPlaceholder}
+          />
+        ))
     ) : (
       <NoResults loaded={!!languageString} />
     );
 
   const phaseListItems =
     activePhaseList && activePhaseList.length ? (
-      activePhaseList.slice(0, currentItems).map((item: any, i: number) => {
-        const { person, body, organization } = item;
-        person.img = person.img || main.getUserAvatarPlaceholder(person.owner_pubkey);
-
-        const isFeatured = featuredBountyIds.includes(body.id.toString());
-
-        const conditionalStyles = body?.paid
-          ? {
-              border: isMobile ? `2px 0 0 0 solid ${color.grayish.G600}` : '',
-              boxShadow: 'none'
-            }
-          : isFeatured
-          ? {
-              border: '',
-              borderRadius: '12px'
-            }
-          : {};
-
-        return (
-          <Panel
+      activePhaseList
+        .slice(0, currentItems)
+        .map((item: any, i: number) => (
+          <ViewerListItem
+            activeWorkspace={activeWorkspace}
             color={color}
+            featuredBountyIdSet={featuredBountyIdSet}
+            fromBountyPage={props.fromBountyPage}
+            isBountyLandingPage={isBountyLandingPage}
             isMobile={isMobile}
-            key={person?.owner_pubkey + i + body?.created}
-            isAssignee={!!body.assignee}
-            style={{
-              ...panelStyles,
-              ...conditionalStyles,
-              cursor: 'pointer',
-              padding: isFeatured ? '2px' : 0,
-              overflow: 'hidden',
-              background: 'transparent',
-              minHeight: !isMobile ? '160px' : '',
-              maxHeight: 'auto',
-              boxShadow: 'none'
-            }}
-          >
-            {selectedWidget === 'post' ? (
-              <PostView
-                showName
-                key={`${i + person.owner_pubkey}pview`}
-                person={person}
-                {...body}
-              />
-            ) : selectedWidget === 'offer' ? (
-              <OfferView
-                showName
-                key={`${i + person.owner_pubkey}oview`}
-                person={person}
-                {...body}
-              />
-            ) : selectedWidget === 'bounties' ? (
-              <WantedView
-                showName
-                onPanelClick={() => {
-                  if (onPanelClick) onPanelClick(activeWorkspace, body);
-                }}
-                person={person}
-                showModal={showModal}
-                isBountyLandingPage={isBountyLandingPage}
-                setDeletePayload={setDeletePayload}
-                fromBountyPage={props.fromBountyPage}
-                activeWorkspace={activeWorkspace}
-                {...body}
-                {...organization}
-              />
-            ) : null}
-          </Panel>
-        );
-      })
+            item={item}
+            key={`${item.person?.owner_pubkey}-${item.body?.id || item.body?.created}-${i}`}
+            onPanelClick={onPanelClick}
+            panelStyles={panelStyles}
+            selectedWidget={selectedWidget}
+            setDeletePayload={setDeletePayload}
+            showModal={showModal}
+            userAvatarPlaceholder={main.getUserAvatarPlaceholder}
+          />
+        ))
     ) : (
       <NoResults loaded={!!languageString} />
     );

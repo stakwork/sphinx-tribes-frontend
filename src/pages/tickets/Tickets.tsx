@@ -66,19 +66,21 @@ function BodyComponent() {
     } else {
       setCheckboxIdToSelectedMap(main.bountiesStatus);
     }
-  }, [searchParams, loading, main.bountiesStatus]);
+  }, [main, searchParams, loading, main.bountiesStatus]);
 
   useEffect(() => {
     (async () => {
-      await main.getOpenGithubIssues();
-      await main.getBadgeList();
-      await main.getPeople();
-      await main.getPeopleBounties({
-        page: 1,
-        resetPage: true,
-        ...checkboxIdToSelectedMap,
-        languages: languageString
-      });
+      await Promise.all([
+        main.getOpenGithubIssues(),
+        main.getBadgeList(),
+        main.getPeople(),
+        main.getPeopleBounties({
+          page: 1,
+          resetPage: true,
+          ...checkboxIdToSelectedMap,
+          languages: languageString
+        })
+      ]);
       setLoading(false);
     })();
   }, [main, checkboxIdToSelectedMap, languageString, searchParams]);
