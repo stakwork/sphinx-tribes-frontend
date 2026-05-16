@@ -135,7 +135,7 @@ export const BudgetWrapComponent = (props: { org: Workspace | undefined; uuid: s
       .catch((e: any) => {
         console.log('Update Payment Histories error', e);
       });
-  }, [main, getPaymentsHistory]);
+  }, [main, uuid, getPaymentsHistory]);
 
   const openPaymentHistory = () => {
     updateWorkspaceBudget();
@@ -270,7 +270,7 @@ export const BudgetWrapComponent = (props: { org: Workspace | undefined; uuid: s
               <EuiFlexItem>
                 <BudgetData background="#9157F612" borderColor="#A76CF34D">
                   <BudgetBountyLink>
-                    <Link target="_blank" to={'/bounties?status=completed'}>
+                    <Link target="_blank" to={`/workspace/bounties/${uuid}?status=completed`}>
                       <EuiIcon type="popout" color="#9157F6" />
                     </Link>
                   </BudgetBountyLink>
@@ -293,7 +293,7 @@ export const BudgetWrapComponent = (props: { org: Workspace | undefined; uuid: s
               <EuiFlexItem>
                 <BudgetData background="#49C99812" borderColor="#49C9984D">
                   <BudgetBountyLink>
-                    <Link target="_blank" to={'/bounties?status=assigned'}>
+                    <Link target="_blank" to={`/workspace/bounties/${uuid}?status=assigned`}>
                       <EuiIcon type="popout" color="#2FB379" />
                     </Link>
                   </BudgetBountyLink>
@@ -316,7 +316,7 @@ export const BudgetWrapComponent = (props: { org: Workspace | undefined; uuid: s
               <EuiFlexItem>
                 <BudgetData background="#618AFF12" borderColor="#618AFF4D">
                   <BudgetBountyLink>
-                    <Link target="_blank" to={'/bounties?status=open'}>
+                    <Link target="_blank" to={`/workspace/bounties/${uuid}?status=open`}>
                       <EuiIcon type="popout" color="#5078F2" />
                     </Link>
                   </BudgetBountyLink>

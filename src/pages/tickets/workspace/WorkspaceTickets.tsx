@@ -5,13 +5,18 @@ import BountyHeader from 'people/widgetViews/BountyHeader';
 import WidgetSwitchViewer from 'people/widgetViews/WidgetSwitchViewer';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { colors } from '../../../config/colors';
 import { useIsMobile } from '../../../hooks';
 import { useStores } from '../../../store';
 import { WorkspaceBody, Body, Backdrop } from '../style';
-import { Workspace, queryLimit } from '../../../store/interface';
+import { Workspace, defaultWorkspaceBountyStatus, queryLimit } from '../../../store/interface';
 import { WorkspaceHeader } from './workspaceHeader';
+
+function useQuery() {
+  const { search } = useLocation();
+  return React.useMemo(() => new URLSearchParams(search), [search]);
+}
 
 function WorkspaceBodyComponent() {
   const { main, ui } = useStores();
@@ -33,10 +38,38 @@ function WorkspaceBodyComponent() {
   const color = colors['light'];
   const history = useHistory();
   const isMobile = useIsMobile();
+  const searchParams = useQuery();
 
   useEffect(() => {
     setCheckboxIdToSelectedMap(main.workspaceBountiesStatus);
   }, [main.workspaceBountiesStatus]);
+
+  useEffect(() => {
+    const status = searchParams.get('status');
+    let nextStatus;
+
+    if (status === 'completed') {
+      nextStatus = {
+        ...defaultWorkspaceBountyStatus,
+        Completed: true
+      };
+    } else if (status === 'assigned') {
+      nextStatus = {
+        ...defaultWorkspaceBountyStatus,
+        Assigned: true
+      };
+    } else if (status === 'open') {
+      nextStatus = {
+        ...defaultWorkspaceBountyStatus,
+        Open: true
+      };
+    }
+
+    if (nextStatus) {
+      setCheckboxIdToSelectedMap(nextStatus);
+      main.setWorkspaceBountiesStatus(nextStatus);
+    }
+  }, [main, searchParams]);
 
   useEffect(() => {
     (async () => {
