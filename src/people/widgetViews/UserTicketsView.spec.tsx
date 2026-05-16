@@ -12,6 +12,16 @@ import { mainStore } from 'store/main';
 import UserTickets from './UserTicketsView';
 
 beforeAll(() => {
+  Object.defineProperty(window, 'localStorage', {
+    value: {
+      clear: jest.fn(),
+      getItem: jest.fn(),
+      removeItem: jest.fn(),
+      setItem: jest.fn()
+    },
+    writable: true
+  });
+
   nock.disableNetConnect();
   setupStore();
   mockUsehistory();
