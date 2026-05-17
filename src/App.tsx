@@ -3,7 +3,7 @@ import React, { useCallback, useEffect } from 'react';
 import '@material/react-material-icon/dist/material-icon.css';
 import history from 'config/history';
 import { withProviders } from 'providers';
-import { Router } from 'react-router-dom';
+import { Router, useLocation } from 'react-router-dom';
 import { uiStore } from 'store/ui';
 import './App.css';
 import { ThemeProvider, createTheme } from '@mui/system';
@@ -12,12 +12,23 @@ import { ModeDispatcher } from './config/ModeDispatcher';
 import { Pages } from './pages';
 import { appEnv } from './config/env';
 import { mainStore } from './store/main';
+import { persistReferralQuery } from './helpers/referral';
 
 let exchangeRateInterval: any = null;
 
 const theme = createTheme({
   spacing: 8
 });
+
+function ReferralTracker() {
+  const location = useLocation();
+
+  useEffect(() => {
+    persistReferralQuery(location.search);
+  }, [location.search]);
+
+  return null;
+}
 
 function App() {
   const posthog = usePostHog();
@@ -108,6 +119,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <Router history={history}>
+        <ReferralTracker />
         <ModeDispatcher>{(mode: any) => <Pages mode={mode} />}</ModeDispatcher>
       </Router>
     </ThemeProvider>
