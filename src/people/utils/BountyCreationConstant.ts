@@ -23,7 +23,7 @@ export const BountyDetailsCreationData = {
     sub_heading: ' ',
     schema: ['org_uuid', 'one_sentence_summary', 'ticket_url', 'phase_uuid', 'feature_uuid'],
     schema2: ['wanted_type', 'coding_languages'],
-    required: ['one_sentence_summary', 'wanted_type'],
+    required: ['org_uuid', 'one_sentence_summary', 'wanted_type'],
     outerContainerStyle: {
       minWidth: '712px', // Retains the current minimum width
       maxWidth: 'min(75vw, calc(712px * 2.5))', // 2.5x the minimum width (712 * 2.5 = 1780)
