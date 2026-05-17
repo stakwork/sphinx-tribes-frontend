@@ -667,6 +667,25 @@ export class MainStore {
     this.bountyLanguages = languages;
   }
 
+  mergeUniqueBounties(bounties: PersonBounty[], additionalBounties: PersonBounty[]): PersonBounty[] {
+    const seen = new Set();
+
+    return [...bounties, ...additionalBounties].filter((item: PersonBounty) => {
+      const id = item?.body?.id;
+
+      if (id === undefined || id === null) {
+        return true;
+      }
+
+      if (seen.has(id)) {
+        return false;
+      }
+
+      seen.add(id);
+      return true;
+    });
+  }
+
   getWantedsPrevParams?: QueryParams = {};
   async getPeopleBounties(params: any = {}): Promise<PersonBounty[]> {
     let queryParams: QueryParams = {
@@ -748,20 +767,32 @@ export class MainStore {
         }
       }
 
+      const isAssignedFilterActive =
+        (queryParams as any)?.Assigned === true || (queryParams as any)?.Assigned === 'true';
+      const shouldIncludePersonalAssignedBounties = isAssignedFilterActive && uiStore.meInfo?.uuid;
+      const assignedQueryParams = { ...queryParams };
+      delete assignedQueryParams.resetPage;
+      const assignedBounties = shouldIncludePersonalAssignedBounties
+        ? await this.getPersonAssignedBounties(assignedQueryParams, uiStore.meInfo?.uuid)
+        : [];
+      const visibleBounties = assignedBounties.length
+        ? this.mergeUniqueBounties(ps3, assignedBounties)
+        : ps3;
+
       if (queryParams && queryParams.resetPage) {
-        this.setPeopleBounties(ps3);
+        this.setPeopleBounties(visibleBounties);
         uiStore.setPeopleBountiesPageNumber(1);
       } else {
         const wanteds = this.doPageListMerger(
           this.peopleBounties,
-          ps3,
+          visibleBounties,
           (n: any) => uiStore.setPeopleBountiesPageNumber(n),
           queryParams,
           'bounties'
         );
         this.setPeopleBounties(wanteds);
       }
-      return ps3;
+      return visibleBounties;
     } catch (e) {
       console.log('fetch failed getPeopleBounties: ', e);
       return [];
