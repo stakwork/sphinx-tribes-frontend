@@ -97,6 +97,23 @@ const BigX = styled.div<styledProps>`
   cursor: pointer;
   z-index: 10;
 `;
+
+const BigCloseImageButton = styled.button<styledProps>`
+  position: absolute;
+  top: 8px;
+  right: -48px;
+  height: 40px;
+  width: 40px;
+  cursor: pointer;
+  z-index: 10;
+  border: none;
+  padding: 0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
 const Env = styled.div<styledProps>`
   width: 312px;
   min-height: 254px;
@@ -183,22 +200,18 @@ export default function Modal(props: ModalProps) {
           )}
 
           {bigCloseImage && (
-            <div
+            <BigCloseImageButton
               data-testid="close-btn"
-              style={{
-                height: '40px',
-                width: '40px',
-                position: 'absolute',
-                top: '8px',
-                right: '-48px',
-                cursor: 'pointer',
-                zIndex: 10,
-                ...bigCloseImageStyle
+              type="button"
+              aria-label="Close modal"
+              style={bigCloseImageStyle}
+              onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                e.stopPropagation();
+                bigCloseImage();
               }}
-              onClick={bigCloseImage}
             >
               <img src="/static/Close.svg" alt="close_svg" height={'100%'} width={'100%'} />
-            </div>
+            </BigCloseImageButton>
           )}
 
           {prevArrow && (

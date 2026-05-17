@@ -911,6 +911,15 @@ textarea.qr-string {
   width: 24px;
 }
 
+button[data-test-subj='toastCloseButton'] {
+  color: #3c3f41 !important;
+  opacity: 1 !important;
+}
+
+button[data-test-subj='toastCloseButton'] svg {
+  fill: currentColor !important;
+}
+
 @media (max-width: 767px) {
   #header-right {
     margin-top: 10px;
