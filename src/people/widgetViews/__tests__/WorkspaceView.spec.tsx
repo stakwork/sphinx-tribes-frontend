@@ -231,4 +231,46 @@ describe('WorkspaceView Component', () => {
       });
     });
   });
+
+  it('test signed-out viewers can view workspace bounties without manage actions', async () => {
+    const viewerWorkspace = {
+      ...workspaces[0],
+      bounty_count: 2
+    };
+
+    uiStore.setMeInfo(null as any);
+    jest.spyOn(mainStore, 'getUserRoles').mockReturnValue(Promise.resolve([]));
+    jest.spyOn(mainStore, 'getWorkspaceUser').mockReturnValue(Promise.resolve({} as any));
+    mainStore.setWorkspaces([viewerWorkspace]);
+
+    render(<WorkspaceView person={person} />);
+
+    const viewBountiesBtn = await screen.findByRole('button', {
+      name: 'View Bounties open_in_new_tab'
+    });
+
+    expect(viewBountiesBtn).toBeEnabled();
+    expect(screen.queryByRole('button', { name: 'Manage' })).not.toBeInTheDocument();
+    expect(screen.queryByText('Add Workspace')).not.toBeInTheDocument();
+  });
+
+  it('test signed-in viewers on another profile cannot add or manage workspaces', async () => {
+    const otherPerson = {
+      ...person,
+      owner_pubkey: 'other-owner-pubkey'
+    };
+
+    uiStore.setMeInfo(user);
+    jest.spyOn(mainStore, 'getUserRoles').mockReturnValue(Promise.resolve([]));
+    jest.spyOn(mainStore, 'getWorkspaceUser').mockReturnValue(Promise.resolve({} as any));
+    mainStore.setWorkspaces([{ ...workspaces[0], bounty_count: 1 }]);
+
+    render(<WorkspaceView person={otherPerson} />);
+
+    expect(
+      await screen.findByRole('button', { name: 'View Bounties open_in_new_tab' })
+    ).toBeEnabled();
+    expect(screen.queryByText('Add Workspace')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Manage' })).not.toBeInTheDocument();
+  });
 });
