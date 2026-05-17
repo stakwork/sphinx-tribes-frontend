@@ -234,6 +234,7 @@ describe('Wanted Component', () => {
 
   test('should redirect to bounty page when bounty card is clicked', async () => {
     const mockPush = jest.fn();
+    const openSpy = jest.spyOn(window, 'open').mockImplementation(jest.fn());
 
     jest.mock('react-router-dom', () => ({
       ...jest.requireActual('react-router-dom'),
@@ -282,9 +283,12 @@ describe('Wanted Component', () => {
       getAllByTestId('user-created-bounty')[0].click();
       expect(getAllByTestId('user-created-bounty').length).toBe(1);
       expect(getAllByTestId('user-created-bounty')[0].getAttribute('href')).toEqual(
-        `/p/1234/wanted/${userBounty.body.id}/0`
+        `/bounty/${userBounty.body.id}`
       );
+      expect(openSpy).toHaveBeenCalledWith(`/bounty/${userBounty.body.id}`, '_blank');
     });
+
+    openSpy.mockRestore();
   });
 
   test('should render status assigned if ticket is assigned', async () => {
