@@ -854,6 +854,26 @@ describe('WorkspaceDetails', () => {
     });
   });
 
+  it('opens deposit modal from organization budget actions', async () => {
+    render(
+      <MemoryRouter>
+        <WorkspaceDetails
+          close={closeFn}
+          getWorkspaces={getWorkspaceFn}
+          org={workspace}
+          resetWorkspace={resetWorkspaceFn}
+        />
+      </MemoryRouter>
+    );
+
+    const depositBtn = await screen.findByRole('button', { name: 'Deposit' });
+    fireEvent.click(depositBtn);
+
+    expect(await screen.findByRole('heading', { name: 'Deposit' })).toBeInTheDocument();
+    expect(screen.getByTestId('input-amount')).toBeInTheDocument();
+    expect(screen.getByTestId('generate-button')).toBeDisabled();
+  });
+
   it('should disable edit and add user button if user is not admin', async () => {
     jest.spyOn(mainStore, 'getPersonAssignedBounties').mockReturnValue(Promise.resolve([]));
     jest.spyOn(mainStore, 'pollWorkspaceBudgetInvoices').mockReturnValue(Promise.resolve([]));
