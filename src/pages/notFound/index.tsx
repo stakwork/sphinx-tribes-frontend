@@ -1,5 +1,6 @@
-import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { usePostHog } from 'posthog-js/react';
+import React, { useEffect } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import {
   NotFoundPageContainer,
   ContentWrapper,
@@ -14,6 +15,15 @@ import {
 
 export function NotFoundPage() {
   const history = useHistory();
+  const location = useLocation();
+  const posthog = usePostHog();
+
+  useEffect(() => {
+    posthog?.capture('not_found_page_view', {
+      path: location.pathname,
+      search: location.search
+    });
+  }, [location.pathname, location.search, posthog]);
 
   return (
     <NotFoundPageContainer>
