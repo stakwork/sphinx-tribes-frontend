@@ -1257,6 +1257,66 @@ describe('Main store', () => {
     expect(store.peopleBounties[0].body.coding_languages).toEqual(filterCriteria.coding_languages);
   });
 
+  it('should include signed-in user assigned bounties when filtering assigned bounties', async () => {
+    const store = new MainStore();
+    const makeAssignedBounty = (id: number, title: string) => ({
+      ...mockBounties[0],
+      bounty: {
+        ...mockBounties[0].bounty,
+        id,
+        title,
+        assignee: user.owner_pubkey
+      },
+      assignee: {
+        ...mockBounties[0].assignee,
+        owner_pubkey: user.owner_pubkey
+      }
+    });
+    const publicAssignedBounty = makeAssignedBounty(1, 'public assigned bounty');
+    const privateAssignedBounty = makeAssignedBounty(2, 'private assigned bounty');
+    const duplicateAssignedBounty = makeAssignedBounty(1, 'duplicate assigned bounty');
+
+    fetchStub.callsFake((url: string) => {
+      const urlObj = new URL(url);
+
+      if (urlObj.origin === `http://${getHost()}` && urlObj.pathname === '/gobounties/all') {
+        expect(urlObj.searchParams.get('Assigned')).toEqual('true');
+        return Promise.resolve({
+          status: 200,
+          ok: true,
+          json: async () => Promise.resolve([publicAssignedBounty])
+        });
+      }
+
+      if (
+        urlObj.origin === `http://${getHost()}` &&
+        urlObj.pathname === `/people/wanteds/assigned/${user.uuid}`
+      ) {
+        expect(urlObj.searchParams.get('Assigned')).toEqual('true');
+        expect(urlObj.searchParams.get('resetPage')).toBeNull();
+        return Promise.resolve({
+          status: 200,
+          ok: true,
+          json: async () => Promise.resolve([duplicateAssignedBounty, privateAssignedBounty])
+        });
+      }
+
+      return Promise.reject(new Error(`Unexpected URL ${url}`));
+    });
+
+    const bounties = await store.getPeopleBounties({
+      resetPage: true,
+      page: 1,
+      Open: false,
+      Assigned: true,
+      Paid: false
+    });
+
+    expect(fetchStub.calledTwice).toEqual(true);
+    expect(bounties.map((bounty) => bounty.body.id)).toEqual([1, 2]);
+    expect(store.peopleBounties.map((bounty) => bounty.body.id)).toEqual([1, 2]);
+  });
+
   it('should successfully fetch workspace users', async () => {
     const mockUsers: Person[] = [
       {
