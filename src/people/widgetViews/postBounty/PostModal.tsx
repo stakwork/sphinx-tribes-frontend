@@ -96,6 +96,8 @@ export const PostModal: FC<PostModalProps> = observer(
           {isOpen && (
             <Modal visible={isOpen} fill={true}>
               <FocusedView
+                ReCallBounties={ReCallBounties}
+                newDesign={true}
                 person={person}
                 canEdit={!canEdit}
                 selectedIndex={focusIndex}
