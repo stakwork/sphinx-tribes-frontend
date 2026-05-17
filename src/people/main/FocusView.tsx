@@ -59,6 +59,7 @@ function FocusedView(props: FocusViewProps) {
   const [editable, setEditable] = useState<boolean>(!canEdit);
   const [isEditButtonDisable, setIsEditButtonDisable] = useState(false);
   const [toasts, setToasts]: any = useState([]);
+  const submitingRef = useRef(false);
 
   const scrollDiv: any = useRef(null);
   const formRef: any = useRef(null);
@@ -242,19 +243,26 @@ function FocusedView(props: FocusViewProps) {
 
   // eslint-disable-next-line @typescript-eslint/no-inferrable-types
   async function submitForm(body: any, notEdit?: boolean) {
-    if (submiting) return;
+    if (submitingRef.current) return;
+    submitingRef.current = true;
 
     try {
       let newBody = cloneDeep(body);
       newBody = await preSubmitFunctions(newBody);
 
-      if (!newBody) return; // avoid saving bad state
+      if (!newBody) {
+        submitingRef.current = false;
+        return;
+      } // avoid saving bad state
       if (!newBody.description) {
         addToast();
       }
 
       const info = ui.meInfo as any;
-      if (!info) return console.log('no meInfo');
+      if (!info) {
+        submitingRef.current = false;
+        return console.log('no meInfo');
+      }
       setLoading(true);
       setIsEditButtonDisable(true);
       setSubmiting(true);
@@ -302,6 +310,7 @@ function FocusedView(props: FocusViewProps) {
 
       setIsEditButtonDisable(false);
       setSubmiting(false);
+      submitingRef.current = false;
       if (props?.onSuccess) props.onSuccess();
 
       if (notEdit === true) {
@@ -314,6 +323,10 @@ function FocusedView(props: FocusViewProps) {
       )
         props?.ReCallBounties();
     } catch {
+      submitingRef.current = false;
+      setIsEditButtonDisable(false);
+      setSubmiting(false);
+      setLoading(false);
       setToasts([
         {
           id: '1',
