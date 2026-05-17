@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import Modal from './Modal';
 
 describe('<Modal /> Arrow Buttons', () => {
@@ -17,5 +18,16 @@ describe('<Modal /> Arrow Buttons', () => {
     const nextArrow = screen.getByText('chevron_right');
     fireEvent.click(nextArrow);
     expect(nextArrowFunction).toHaveBeenCalled();
+  });
+
+  test('renders new arrow icon buttons without primary blue backgrounds', () => {
+    render(<Modal prevArrowNew={jest.fn()} nextArrowNew={jest.fn()} visible={true} />);
+
+    expect(screen.getByText('chevron_left').closest('button')).toHaveStyle({
+      background: '#ffffff00'
+    });
+    expect(screen.getByText('chevron_right').closest('button')).toHaveStyle({
+      background: '#ffffff00'
+    });
   });
 });

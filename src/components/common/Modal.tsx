@@ -236,6 +236,10 @@ export default function Modal(props: ModalProps) {
             <LNew color={color}>
               <CircL color={color}>
                 <IconButton
+                  color="noColor"
+                  width={62}
+                  height={88}
+                  style={{ padding: 0 }}
                   iconStyle={{ color: color.pureWhite }}
                   icon={'chevron_left'}
                   onClick={(e: any) => {
@@ -250,6 +254,10 @@ export default function Modal(props: ModalProps) {
             <RNew color={color}>
               <CircR color={color}>
                 <IconButton
+                  color="noColor"
+                  width={62}
+                  height={88}
+                  style={{ padding: 0 }}
                   icon={'chevron_right'}
                   iconStyle={{ color: color.pureWhite }}
                   onClick={(e: any) => {
