@@ -1,4 +1,5 @@
 import React from 'react';
+import '@testing-library/jest-dom/extend-expect';
 import sinon from 'sinon';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { mainStore } from 'store/main';
@@ -40,6 +41,23 @@ jest.setTimeout(10000);
 
 const mockPush = jest.fn();
 const mockGoBack = jest.fn();
+const mockMain = {
+  getOpenGithubIssues: jest.fn(),
+  getBadgeList: jest.fn(),
+  getPeople: jest.fn(),
+  getPeopleBounties: jest.fn(),
+  getTotalBountyCount: jest.fn(),
+  setBountiesStatus: jest.fn(),
+  setBountyLanguages: jest.fn(),
+  getTribesByOwner: jest.fn(),
+  bountiesStatus: defaultBountyStatus
+};
+const mockUi = {
+  meInfo: {},
+  toasts: [],
+  setToasts: jest.fn()
+};
+
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useHistory: () => ({
@@ -55,22 +73,8 @@ jest.mock('react-router-dom', () => ({
 
 jest.mock('../../../store', () => ({
   useStores: jest.fn(() => ({
-    main: {
-      getOpenGithubIssues: jest.fn(),
-      getBadgeList: jest.fn(),
-      getPeople: jest.fn(),
-      getPeopleBounties: jest.fn(),
-      getTotalBountyCount: jest.fn(),
-      setBountiesStatus: jest.fn(),
-      setBountyLanguages: jest.fn(),
-      getTribesByOwner: jest.fn(),
-      bountiesStatus: defaultBountyStatus
-    },
-    ui: {
-      meInfo: {},
-      toasts: [], // Assuming toasts is an array
-      setToasts: jest.fn()
-    }
+    main: mockMain,
+    ui: mockUi
   }))
 }));
 
@@ -81,7 +85,31 @@ beforeAll(() => {
 
 jest.mock('people/widgetViews/WidgetSwitchViewer', () => ({
   __esModule: true,
-  default: () => <div data-testid="widget-switch-viewer" />
+  default: (props: any) => (
+    <div data-testid="widget-switch-viewer">
+      <span data-testid="selected-widget">{props.selectedWidget}</span>
+      <span data-testid="current-items">{props.currentItems}</span>
+      <span data-testid="total-bounties">{props.totalBounties}</span>
+      <span data-testid="language-string">{props.languageString}</span>
+      <span data-testid="status-map">{JSON.stringify(props.checkboxIdToSelectedMap)}</span>
+      <button onClick={() => props.setCurrentItems(props.currentItems + 25)}>Load More</button>
+      <button onClick={() => props.onPanelClick({}, { id: 88 })}>Open Bounty</button>
+    </div>
+  )
+}));
+
+jest.mock('people/widgetViews/BountyHeader', () => ({
+  __esModule: true,
+  default: (props: any) => (
+    <div data-testid="bounty-header">
+      <button data-testid="status-assigned-filter" onClick={() => props.onChangeStatus('Assigned')}>
+        Assigned
+      </button>
+      <button data-testid="language-1-filter" onClick={() => props.onChangeLanguage(1)}>
+        JavaScript
+      </button>
+    </div>
+  )
 }));
 
 // Mock the getPeopleBounties function to return mock data
@@ -92,7 +120,7 @@ jest.mock('../../../store/main', () => ({
 
 jest.mock('react-router', () => ({
   ...jest.requireActual('react-router'),
-  useHistory: () => ({ push: jest.fn() })
+  useHistory: () => ({ push: mockPush })
 }));
 
 jest.mock('../../../hooks', () => ({
@@ -104,6 +132,74 @@ jest.mock('mobx-react-lite', () => ({
 }));
 
 describe('Tickets Component', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockPush.mockClear();
+    mockMain.bountiesStatus = defaultBountyStatus;
+    mockMain.getOpenGithubIssues.mockResolvedValue([]);
+    mockMain.getBadgeList.mockResolvedValue([]);
+    mockMain.getPeople.mockResolvedValue([]);
+    mockMain.getPeopleBounties.mockResolvedValue(mockBounties);
+    mockMain.getTotalBountyCount.mockResolvedValue(40);
+    mockUi.meInfo = { owner_pubkey: 'owner-pubkey' };
+    mockUi.toasts = [];
+  });
+
+  it('loads bounty home page data with the default bounty filters', async () => {
+    render(<Tickets />);
+
+    await waitFor(() => {
+      expect(mockMain.getOpenGithubIssues).toHaveBeenCalled();
+      expect(mockMain.getBadgeList).toHaveBeenCalled();
+      expect(mockMain.getPeople).toHaveBeenCalled();
+      expect(mockMain.getPeopleBounties).toHaveBeenCalledWith({
+        page: 1,
+        resetPage: true,
+        ...defaultBountyStatus,
+        languages: ''
+      });
+    });
+
+    expect(screen.getByTestId('selected-widget')).toHaveTextContent('bounties');
+    expect(screen.getByTestId('current-items')).toHaveTextContent('25');
+    expect(screen.getByTestId('total-bounties')).toHaveTextContent('40');
+  });
+
+  it('updates bounty filters and language filters from the home page header', async () => {
+    render(<Tickets />);
+
+    await waitFor(() => expect(screen.getByTestId('widget-switch-viewer')).toBeInTheDocument());
+
+    fireEvent.click(screen.getByTestId('status-assigned-filter'));
+
+    await waitFor(() => {
+      expect(mockMain.setBountiesStatus).toHaveBeenCalledWith({
+        ...defaultBountyStatus,
+        Assigned: true
+      });
+      expect(screen.getByTestId('status-map')).toHaveTextContent('"Assigned":true');
+    });
+
+    fireEvent.click(screen.getByTestId('language-1-filter'));
+
+    await waitFor(() => {
+      expect(mockMain.setBountyLanguages).toHaveBeenCalledWith('1');
+      expect(screen.getByTestId('language-string')).toHaveTextContent('1');
+    });
+  });
+
+  it('loads more bounty rows and routes to a bounty modal URL from the home page list', async () => {
+    render(<Tickets />);
+
+    await waitFor(() => expect(screen.getByTestId('widget-switch-viewer')).toBeInTheDocument());
+
+    fireEvent.click(screen.getByText('Load More'));
+    expect(screen.getByTestId('current-items')).toHaveTextContent('50');
+
+    fireEvent.click(screen.getByText('Open Bounty'));
+    expect(mockPush).toHaveBeenCalledWith('/bounty/88');
+  });
+
   it('renders the component and displays bounty title, estimated hours, sats amount equals that of each mocked bounty', async () => {
     render(<Tickets />);
 
