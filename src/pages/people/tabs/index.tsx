@@ -84,6 +84,10 @@ const RouteData = styled.div<RouteDataProps>`
 `;
 
 const tabs = widgetConfigs;
+
+const getTabId = (name: string) => `profile-tab-${name}`;
+const getTabPanelId = (name: string) => `profile-tabpanel-${name}`;
+
 export const TabsPages = observer(() => {
   const location = useLocation();
   const { ui, main } = useStores();
@@ -147,13 +151,16 @@ export const TabsPages = observer(() => {
 
   return (
     <Container isMobile={isMobile}>
-      <Tabs canEdit={canEdit}>
+      <Tabs canEdit={canEdit} role="tablist" aria-label="Profile content tabs">
         {tabs &&
           tabsNames.map((name: any, i: number) => {
             const t = tabs[name];
             const { label } = t;
+            const tabId = getTabId(name);
+            const panelId = getTabPanelId(name);
 
             const selected = location.pathname.includes(name);
+            const tabIndex = selected ? 0 : -1;
             const hasExtras = !!person?.extras?.[name]?.length;
             let count: any = 0;
             const dataTestId = `${label}-tab`;
@@ -179,9 +186,33 @@ export const TabsPages = observer(() => {
                 key={i}
                 style={{ height: 64, alignItems: 'center' }}
                 selected={selected}
+                role="tab"
+                id={tabId}
+                aria-selected={selected}
+                aria-controls={panelId}
+                aria-label={label}
+                tabIndex={tabIndex}
                 data-testid={dataTestId}
                 onClick={() => {
                   changeTabHandler(name);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    changeTabHandler(name);
+                  }
+                  if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    const nextIndex =
+                      e.key === 'ArrowRight'
+                        ? (i + 1) % tabsNames.length
+                        : (i - 1 + tabsNames.length) % tabsNames.length;
+                    const nextTabName = tabsNames[nextIndex];
+                    changeTabHandler(nextTabName);
+                    window.setTimeout(() => {
+                      document.getElementById(getTabId(nextTabName))?.focus();
+                    }, 0);
+                  }
                 }}
               >
                 {label}
@@ -193,7 +224,7 @@ export const TabsPages = observer(() => {
       <Switch>
         {tabsNames.map((name: any) => (
           <Route key={name} path={`${path}${name}`}>
-            <RouteWrap>
+            <RouteWrap role="tabpanel" id={getTabPanelId(name)} aria-labelledby={getTabId(name)}>
               <RouteData fullSelectedWidget={fullSelectedWidget}>
                 {name === 'bounties' && <Wanted />}
                 <RenderWidgets widget={name} />
