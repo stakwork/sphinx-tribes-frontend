@@ -78,7 +78,7 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
 
     if (bountyId) {
       const isNumeric = /^\d+$/.test(bountyId);
-      
+
       if (isNumeric) {
         bounty = await main.getBountyById(Number(bountyId), unlockCode);
         bountyIndex = await main.getBountyIndexById(Number(bountyId));
@@ -198,7 +198,11 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
     } else {
       try {
         const bountyId = await main.getNextBountyByCreated(created);
-        history.replace(`/bounty/${bountyId}`);
+        if (bountyId === 0) {
+          addToast('There are no more bounties to display!', 'primary');
+        } else {
+          history.replace(`/bounty/${bountyId}`);
+        }
       } catch (e) {
         console.error(e);
       }
@@ -222,7 +226,11 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
     } else {
       try {
         const bountyId = await main.getPreviousBountyByCreated(created);
-        history.replace(`/bounty/${bountyId}`);
+        if (bountyId === 0) {
+          addToast('There are no more bounties to display!', 'primary');
+        } else {
+          history.replace(`/bounty/${bountyId}`);
+        }
       } catch (e) {
         console.error(e);
       }
