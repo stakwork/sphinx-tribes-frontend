@@ -34,6 +34,8 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
   const [visible, setVisible] = useState(false);
   const [isDeleted, setisDeleted] = useState(false);
   const [accessDenied, setAccessDenied] = useState(false);
+  const [hidePrevArrow, setHidePrevArrow] = useState(false);
+  const [hideNextArrow, setHideNextArrow] = useState(false);
 
   const [toasts, setToasts]: any = useState([]);
 
@@ -78,7 +80,7 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
 
     if (bountyId) {
       const isNumeric = /^\d+$/.test(bountyId);
-      
+
       if (isNumeric) {
         bounty = await main.getBountyById(Number(bountyId), unlockCode);
         bountyIndex = await main.getBountyIndexById(Number(bountyId));
@@ -166,6 +168,11 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
     getBounty();
   }, [getBounty, removeNextAndPrev]);
 
+  useEffect(() => {
+    setHidePrevArrow(false);
+    setHideNextArrow(false);
+  }, [bountyId, activeWorkspace]);
+
   const isDirectAccess = useCallback(() => !document.referrer, [location.pathname]);
 
   const goBack = () => {
@@ -188,6 +195,7 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
       try {
         const bountyId = await main.getWorkspaceNextBountyByCreated(activeWorkspace, created);
         if (bountyId === 0) {
+          setHidePrevArrow(true);
           addToast('There are no more bounties to display!', 'primary');
         } else {
           history.replace(`/bounty/${bountyId}`);
@@ -198,7 +206,12 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
     } else {
       try {
         const bountyId = await main.getNextBountyByCreated(created);
-        history.replace(`/bounty/${bountyId}`);
+        if (bountyId === 0) {
+          setHidePrevArrow(true);
+          addToast('There are no more bounties to display!', 'primary');
+        } else {
+          history.replace(`/bounty/${bountyId}`);
+        }
       } catch (e) {
         console.error(e);
       }
@@ -212,6 +225,7 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
       try {
         const bountyId = await main.getWorkspacePreviousBountyByCreated(activeWorkspace, created);
         if (bountyId === 0) {
+          setHideNextArrow(true);
           addToast('There are no more bounties to display!', 'primary');
         } else {
           history.replace(`/bounty/${bountyId}`);
@@ -222,7 +236,12 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
     } else {
       try {
         const bountyId = await main.getPreviousBountyByCreated(created);
-        history.replace(`/bounty/${bountyId}`);
+        if (bountyId === 0) {
+          setHideNextArrow(true);
+          addToast('There are no more bounties to display!', 'primary');
+        } else {
+          history.replace(`/bounty/${bountyId}`);
+        }
       } catch (e) {
         console.error(e);
       }
@@ -324,8 +343,8 @@ export const TicketModalPage = observer(({ setConnectPerson }: Props) => {
               right: '-50px',
               borderRadius: '50%'
             }}
-            prevArrowNew={removeNextAndPrev ? undefined : prevArrHandler}
-            nextArrowNew={removeNextAndPrev ? undefined : nextArrHandler}
+            prevArrowNew={removeNextAndPrev || hidePrevArrow ? undefined : prevArrHandler}
+            nextArrowNew={removeNextAndPrev || hideNextArrow ? undefined : nextArrHandler}
           >
             <EuiGlobalToastList toasts={toasts} dismissToast={removeToast} toastLifeTimeMs={5000} />
             <FocusedView
