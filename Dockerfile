@@ -19,6 +19,10 @@ ENV REACT_APP_PUBLIC_POSTHOG_HOST=$REACT_APP_PUBLIC_POSTHOG_HOST
 RUN yarn run build
 
 FROM nginx:alpine
+
+# Security: ALPINE-CVE-2026-87636 - ensure libxslt >= 1.1.43-r4
+RUN apk upgrade --no-cache libxslt
+
 ARG REACT_APP_PUBLIC_POSTHOG_KEY
 ARG REACT_APP_PUBLIC_POSTHOG_HOST
 
