@@ -369,6 +369,7 @@ export interface CodingViewProps extends WantedSummaryProps {
   isCopied?: boolean;
   payBounty?: ReactNode;
   markUnpaid?: ReactNode;
+  submitProofButton?: ReactNode;
   showPayBounty?: boolean;
   paid: boolean;
   // owner_id: string;

@@ -85,7 +85,8 @@ export default function MobileView(props: CodingViewProps) {
     assigneeHandlerOpen,
     assigneeValue,
     peopleList,
-    handleAssigneeDetails
+    handleAssigneeDetails,
+    submitProofButton
   } = props;
 
   const color = colors['light'];
@@ -448,6 +449,7 @@ export default function MobileView(props: CodingViewProps) {
             />
           </ButtonRow>
 
+          {submitProofButton}
           {hasAccess && isAssigner && markPaidOrUnpaid}
           <LoomViewerRecorder readOnly loomEmbedUrl={loomEmbedUrl} style={{ marginBottom: 20 }} />
 
