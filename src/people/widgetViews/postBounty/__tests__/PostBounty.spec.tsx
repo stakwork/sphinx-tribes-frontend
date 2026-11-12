@@ -6,6 +6,7 @@ import React from 'react';
 import { setupStore } from '../../../../__test__/__mockData__/setupStore';
 import { user } from '../../../../__test__/__mockData__/user';
 import { mockUsehistory } from '../../../../__test__/__mockFn__/useHistory';
+import { PostBounty } from '../PostBounty';
 import { PostModal } from '../PostModal';
 
 beforeAll(() => {
@@ -23,6 +24,32 @@ jest.mock('rehype-raw', () => {});
 describe('Post bounty', () => {
   nock(user.url).get('/person/id/1').reply(200, { user });
   nock(user.url).get('/ask').reply(200, {});
+
+  test('signed-in post bounty button opens and cancels the bounty type modal', async () => {
+    render(<PostBounty widget="bounties" />);
+
+    fireEvent.click(await screen.findByRole('button', { name: /Post a Bounty/i }));
+
+    expect(screen.getByRole('alertdialog')).toBeInTheDocument();
+    expect(screen.getByText('Freelance Job Request')).toBeInTheDocument();
+    expect(screen.getByText('Live Help')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('close-btn'));
+
+    await waitFor(() => {
+      expect(screen.queryByText('Choose Bounty type')).not.toBeInTheDocument();
+    });
+  });
+
+  test('signed-in post bounty start button opens the first bounty form step', async () => {
+    render(<PostBounty widget="bounties" />);
+
+    fireEvent.click(await screen.findByRole('button', { name: /Post a Bounty/i }));
+    fireEvent.click(screen.getByText('Start'));
+
+    expect(screen.getByText('Basic info')).toBeInTheDocument();
+    expect(screen.getByText('Bounty Title *')).toBeInTheDocument();
+  });
 
   test('display error message if bounty fails to create', () => {
     const closeHandler = jest.fn();
