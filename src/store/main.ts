@@ -1448,7 +1448,7 @@ export class MainStore {
     type?: string
   ) {
     if (!newList || !newList.length) {
-      if (queryParams.search) {
+      if (queryParams?.search && queryParams?.resetPage) {
         // if search and no results, return nothing
         return [];
       } else {
