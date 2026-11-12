@@ -97,13 +97,14 @@ const widgetConfigs = {
     noneSpace: {
       me: {
         img: 'no_wanted.png',
-        text: 'Make a list of github tickets you want help on.',
-        buttonText: 'Add New Ticket',
+        text: 'No Posted Bounties Yet',
+        sub: 'Post a bounty to get help on a ticket.',
+        buttonText: 'Post a Bounty',
         buttonIcon: 'local_offer'
       },
       otherUser: {
         img: 'no_wanted2.png',
-        text: 'No Tickets Yet',
+        text: 'No Posted Bounties Yet',
         sub: 'Looks like this person doesn’t need anything yet.'
       }
     }

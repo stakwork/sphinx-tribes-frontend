@@ -52,13 +52,15 @@ interface FilterHeaderProps {
   applyFilters: (id: string) => void;
   canEdit: boolean;
   Status: string[];
+  bountyCount: number | null;
 }
 
 const FilterHeader: React.FC<FilterHeaderProps> = ({
   checkboxIdToSelectedMap,
   applyFilters,
   canEdit,
-  Status
+  Status,
+  bountyCount
 }: FilterHeaderProps): JSX.Element => (
   <div
     style={{
@@ -69,7 +71,7 @@ const FilterHeader: React.FC<FilterHeaderProps> = ({
       alignItems: 'center'
     }}
   >
-    <h4>Bounties </h4>
+    <h4>{`Bounties${typeof bountyCount === 'number' ? ` (${bountyCount})` : ''}`}</h4>
     <PopoverCheckbox className="CheckboxOuter" color={colors['light']}>
       <EuiCheckboxGroup
         style={{ display: 'flex', alignItems: 'center', gap: 20, marginRight: 50 }}
@@ -96,6 +98,7 @@ export const Wanted = observer(() => {
   const [loading, setIsLoading] = useState<boolean>(false);
   const [page, setPage] = useState(1);
   const [hasMoreBounties, setHasMoreBounties] = useState(true);
+  const [bountyCount, setBountyCount] = useState<number | null>(null);
 
   const defaultStatus: Record<string, boolean> = {
     Open: false,
@@ -131,6 +134,12 @@ export const Wanted = observer(() => {
     setIsLoading(false);
   }, [main, uuid, checkboxIdToSelectedMap, isOwner]);
 
+  const getBountiesCount = useCallback(async () => {
+    if (!person?.owner_pubkey) return;
+    const count = await main.getBountyCount(person.owner_pubkey, 'bounties');
+    setBountyCount(count);
+  }, [main, person?.owner_pubkey]);
+
   const nextBounties = async () => {
     const nextPage = page + 1;
     setPage(nextPage);
@@ -153,6 +162,10 @@ export const Wanted = observer(() => {
   useEffect(() => {
     getUserTickets();
   }, [main, checkboxIdToSelectedMap, getUserTickets]);
+
+  useEffect(() => {
+    getBountiesCount();
+  }, [getBountiesCount]);
 
   const renderBounties = () => (
     <>
@@ -204,6 +217,7 @@ export const Wanted = observer(() => {
         applyFilters={applyFilters}
         canEdit={canEdit}
         Status={Status}
+        bountyCount={bountyCount}
       />
       {loading && <PageLoadSpinner show={loading} />}
       {!loading && displayedBounties.length === 0 ? (
