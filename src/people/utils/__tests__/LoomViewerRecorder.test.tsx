@@ -139,4 +139,23 @@ describe('LoomViewerRecorder', () => {
       expect(sdkButtonMock.on).toHaveBeenCalledTimes(2);
     });
   });
+
+  it('renders Loom share URLs as embeddable iframe URLs', () => {
+    (isSupported as jest.Mock).mockResolvedValue({
+      supported: false,
+      error: 'Browser not supported'
+    });
+
+    const { container } = render(
+      <LoomViewerRecorder
+        readOnly={true}
+        style={defaultStyle}
+        loomEmbedUrl="https://www.loom.com/share/abc123?sid=test"
+      />
+    );
+
+    const iframe = container.querySelector('iframe');
+    expect(iframe).toBeInTheDocument();
+    expect(iframe).toHaveAttribute('src', 'https://www.loom.com/embed/abc123?sid=test');
+  });
 });
