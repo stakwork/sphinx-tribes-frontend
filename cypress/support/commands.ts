@@ -41,6 +41,17 @@ import { bech32 } from 'bech32';
 const EC = require('elliptic').ec;
 
 const v2AdminToken = 'xyzxyzxyz';
+const workspaceLogoPngBase64 =
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=';
+
+function getWorkspaceLogoFile(fileName = 'workspace-logo.png') {
+  return {
+    contents: Cypress.Buffer.from(workspaceLogoPngBase64, 'base64'),
+    fileName,
+    mimeType: 'image/png',
+    lastModified: Date.now()
+  };
+}
 
 Cypress.Commands.add('login', (userAlias: string) => {
   let user;
@@ -431,6 +442,12 @@ Cypress.Commands.add('create_workspace', (workspace) => {
 
   if (workspace.github) {
     cy.get('[placeholder="Github link..."]').type(workspace.github);
+  }
+
+  if (workspace.imageFileName) {
+    cy.get('#file-input').selectFile(getWorkspaceLogoFile(workspace.imageFileName), {
+      force: true
+    });
   }
 
   cy.contains('* Required fields').next().click();
