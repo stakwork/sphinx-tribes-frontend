@@ -8,6 +8,11 @@ import { mainStore } from '../../../store/main.ts';
 import { uiStore } from '../../../store/ui.ts';
 import * as helpers from '../../../helpers/helpers-extended.ts';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+jest.mock('remark-gfm', () => {});
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+jest.mock('rehype-raw', () => {});
+
 jest.mock('../../../store/main.ts', () => ({
   mainStore: {
     getUserRoles: jest.fn(),
@@ -102,6 +107,32 @@ describe('WorkspaceHeader Component', () => {
     render(<WorkspaceHeader {...MockProps} />);
     await waitFor(() => {
       fireEvent.click(screen.getByText('Post a Bounty'));
+    });
+  });
+
+  it('shows and controls the first post bounty step for signed-in bounty managers', async () => {
+    // @ts-ignore
+    uiStore.meInfo = { pubkey: '' };
+    jest.spyOn(helpers, 'userCanManageBounty').mockResolvedValue(true);
+
+    render(<WorkspaceHeader {...MockProps} />);
+
+    fireEvent.click(await screen.findByText('Post a Bounty'));
+
+    expect(await screen.findByRole('alertdialog')).toBeInTheDocument();
+    expect(screen.getByText('Choose Bounty type')).toBeInTheDocument();
+    expect(screen.getByText('Freelance Job Request')).toBeInTheDocument();
+    expect(screen.getByText('Live Help')).toBeInTheDocument();
+    expect(screen.getByText('Coming soon')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('Start'));
+
+    expect(await screen.findByText('Basic info')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('close-btn'));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
     });
   });
 
