@@ -62,6 +62,6 @@ export const Img = styled.div<ImageProps>`
   @media (max-width: 768px) {
     width: 100px;
     height: 100px;
-    margin-top: 50px;
+    margin-top: 24px;
   }
 `;
