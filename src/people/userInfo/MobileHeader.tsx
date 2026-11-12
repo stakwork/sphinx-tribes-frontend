@@ -5,13 +5,18 @@ import React from 'react';
 export const HeaderMobile = ({ goBack, canEdit, logout, onEdit }: PeopleMobileeHeaderProps) => (
   <div
     style={{
-      position: 'absolute',
-      top: 20,
+      position: 'sticky',
+      top: 0,
       left: 0,
       display: 'flex',
       justifyContent: 'space-between',
+      alignItems: 'center',
       width: '100%',
-      padding: '0 20px'
+      minHeight: 64,
+      padding: '0 20px',
+      background: '#ffffff',
+      borderBottom: '1px solid #ebedef',
+      zIndex: 10
     }}
   >
     <IconButton onClick={goBack} icon="arrow_back" />
