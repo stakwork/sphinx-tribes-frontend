@@ -88,6 +88,30 @@ describe('UserTickets', () => {
     });
   });
 
+  it('links assigned bounty cards to the new bounty URL', async () => {
+    const userBounty = { ...mockBounties[0], body: {} } as any;
+    userBounty.body = {
+      ...mockBounties[0].bounty,
+      owner_id: person.owner_pubkey,
+      title: 'test bounty here'
+    } as any;
+    jest
+      .spyOn(mainStore, 'getPersonAssignedBounties')
+      .mockReturnValue(Promise.resolve([userBounty]));
+
+    await act(async () => {
+      const { getByTestId } = render(
+        <MemoryRouter initialEntries={['/p/1234/assigned']}>
+          <Route path="/p/:uuid/assigned" component={UserTickets} />
+        </MemoryRouter>
+      );
+
+      const bountyCard = await waitFor(() => getByTestId('user-personal-bounty-card'));
+
+      expect(bountyCard).toHaveAttribute('href', `/bounty/${userBounty.body.id}`);
+    });
+  });
+
   it('renders price matching the bounty', async () => {
     const userBounty = { ...mockBounties[0], body: {} } as any;
     userBounty.body = {
