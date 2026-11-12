@@ -232,7 +232,7 @@ describe('Wanted Component', () => {
     });
   });
 
-  test('should redirect to bounty page when bounty card is clicked', async () => {
+  test('should use public bounty URL when bounty card is clicked', async () => {
     const mockPush = jest.fn();
 
     jest.mock('react-router-dom', () => ({
@@ -282,7 +282,7 @@ describe('Wanted Component', () => {
       getAllByTestId('user-created-bounty')[0].click();
       expect(getAllByTestId('user-created-bounty').length).toBe(1);
       expect(getAllByTestId('user-created-bounty')[0].getAttribute('href')).toEqual(
-        `/p/1234/wanted/${userBounty.body.id}/0`
+        `/bounty/${userBounty.body.id}`
       );
     });
   });
