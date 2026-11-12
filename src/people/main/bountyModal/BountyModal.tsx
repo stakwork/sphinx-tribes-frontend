@@ -8,6 +8,7 @@ import { useStores } from 'store';
 import { BountyModalProps } from 'people/interfaces';
 import { PersonBounty } from 'store/interface';
 import FocusedView from '../FocusView';
+import ConnectCard from '../../utils/ConnectCard';
 
 const config = widgetConfigs.bounties;
 export const BountyModal = ({ basePath, fromPage, bountyOwner }: BountyModalProps) => {
@@ -18,13 +19,14 @@ export const BountyModal = ({ basePath, fromPage, bountyOwner }: BountyModalProp
     uuid: string;
   }>();
 
-  const { ui, main } = useStores();
+  const { ui, main, modals } = useStores();
   const { person } = usePerson(ui.selectedPerson);
   const [bounty, setBounty] = useState<PersonBounty[]>([]);
   const [afterEdit, setAfterEdit] = useState(false);
   const [loading, setLoading] = useState(true);
   const [ToDisplay, setToDisplay] = useState<any>();
   const [hasAccess, setHasAccess] = useState(false);
+  const [connectPerson, setConnectPerson] = useState<any>(null);
 
   const personToDisplay = fromPage === 'usertickets' ? bountyOwner : person;
 
@@ -32,10 +34,21 @@ export const BountyModal = ({ basePath, fromPage, bountyOwner }: BountyModalProp
     await main.getPersonCreatedBounties({}, uuid);
     await main.getPersonAssignedBounties({}, uuid);
 
+    setConnectPerson(null);
     ui.setBountyPerson(0);
     history.push({
       pathname: basePath
     });
+  };
+
+  const openConnectModal = () => {
+    if (ui.meInfo) {
+      setConnectPerson(ToDisplay || bounty[0]?.person || personToDisplay);
+      return;
+    }
+
+    onGoBack();
+    modals.setStartupModal(true);
   };
 
   const checkAccess = useCallback(
@@ -137,6 +150,20 @@ export const BountyModal = ({ basePath, fromPage, bountyOwner }: BountyModalProp
     );
   }
 
+  const connectModal = connectPerson ? (
+    <ConnectCard
+      dismiss={() => setConnectPerson(null)}
+      modalStyle={{
+        top: '-64px',
+        height: 'calc(100% + 64px)'
+      }}
+      person={connectPerson}
+      visible={true}
+    />
+  ) : (
+    <></>
+  );
+
   if (isMobile) {
     return (
       <Modal visible={true} fill={true}>
@@ -151,7 +178,9 @@ export const BountyModal = ({ basePath, fromPage, bountyOwner }: BountyModalProp
           setAfterEdit={setAfterEdit}
           bounty={bounty}
           fromBountyPage={true}
+          extraModalFunction={openConnectModal}
         />
+        {connectModal}
       </Modal>
     );
   }
@@ -193,7 +222,9 @@ export const BountyModal = ({ basePath, fromPage, bountyOwner }: BountyModalProp
         getBounty={getBounty}
         fromBountyPage={true}
         setAfterEdit={setAfterEdit}
+        extraModalFunction={openConnectModal}
       />
+      {connectModal}
     </Modal>
   );
 };
