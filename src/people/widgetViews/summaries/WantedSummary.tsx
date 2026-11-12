@@ -13,6 +13,7 @@ import { useStores } from '../../../store';
 import { LanguageObject, awards } from '../../utils/languageLabelStyle';
 import NameTag from '../../utils/NameTag';
 import { sendToRedirect } from '../../../helpers';
+import { buildReferralUrl } from '../../../helpers/referral';
 import {
   CodingLanguageLabel,
   WantedSummaryProps,
@@ -375,7 +376,7 @@ function WantedSummary(props: WantedSummaryProps) {
   }
 
   const handleCopyUrl = () => {
-    navigator.clipboard.writeText(`${window.location.origin}${bountyPath}`);
+    navigator.clipboard.writeText(buildReferralUrl(bountyPath, ui.meInfo?.uuid));
     setIsCopied(true);
 
     setTimeout(() => {
