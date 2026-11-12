@@ -13,6 +13,13 @@ import * as helpers from 'helpers';
 import { TicketModalPage } from '../TicketModalPage';
 import { withCreateModal } from '../../../components/common/withCreateModal';
 
+declare const fetchMock: any;
+
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+jest.mock('remark-gfm', () => () => {});
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+jest.mock('rehype-raw', () => () => {});
+
 jest.mock('hooks', () => ({
   useIsMobile: jest.fn(),
   useFeatureFlag: jest.fn().mockReturnValue({ isEnabled: true })
@@ -20,17 +27,20 @@ jest.mock('hooks', () => ({
 
 const mockPush = jest.fn();
 const mockGoBack = jest.fn();
+const mockReplace = jest.fn();
+let mockLocationState: any;
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useHistory: () => ({
     push: mockPush,
-    goBack: mockGoBack
+    goBack: mockGoBack,
+    replace: mockReplace
   }),
   useLocation: () => ({
     pathname: '/bounty/1239',
     search: '',
-    state: {}
+    state: mockLocationState
   }),
   useParams: () => ({
     uuid: 'ck95pe04nncjnaefo08g',
@@ -47,6 +57,11 @@ jest.mock('helpers', () => ({
 
 describe('TicketModalPage Component', () => {
   beforeEach(() => {
+    mockLocationState = undefined;
+    mainStore.setActiveWorkspace('');
+    fetchMock.doMock();
+    fetchMock.mockResponse(JSON.stringify([]));
+
     const mockIntersectionObserver = jest.fn();
     mockIntersectionObserver.mockReturnValue({
       observe: () => null,
@@ -58,6 +73,9 @@ describe('TicketModalPage Component', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
+    fetchMock.resetMocks();
+    fetchMock.dontMock();
+    mainStore.setActiveWorkspace('');
   });
 
   it('reder ticket modal', async () => {
@@ -809,6 +827,86 @@ describe('TicketModalPage Component', () => {
       expect(screen.getByText('chevron_right')).toBeInTheDocument();
       expect(screen.getByText('chevron_left')).toBeInTheDocument();
     });
+  });
+
+  it('hides the public next arrow and keeps the user off the deleted bounty page at list end', async () => {
+    jest
+      .spyOn(mainStore, 'getBountyById')
+      .mockReturnValue(
+        Promise.resolve([
+          { ...newBounty, body: { ...mockBountiesMutated[1].body, assignee: user } }
+        ])
+      );
+    jest.spyOn(mainStore, 'getBountyIndexById').mockReturnValue(Promise.resolve(1239));
+    jest.spyOn(mainStore, 'getNextBountyByCreated').mockResolvedValueOnce(0);
+
+    await act(async () => {
+      render(
+        <MemoryRouter initialEntries={['/bounty/1234']}>
+          <Route path="/bounty/:bountyId" component={TicketModalPage} />
+        </MemoryRouter>
+      );
+    });
+
+    await waitFor(() => screen.getByText('chevron_left'));
+    fireEvent.click(screen.getByText('chevron_left'));
+
+    await waitFor(() => expect(screen.queryByText('chevron_left')).not.toBeInTheDocument());
+    expect(mockReplace).not.toHaveBeenCalledWith('/bounty/0');
+    expect(screen.getByText('There are no more bounties to display!')).toBeInTheDocument();
+  });
+
+  it('hides the workspace previous arrow and keeps the user off the deleted bounty page at list end', async () => {
+    mockLocationState = { activeWorkspace: 'workspace-uuid' };
+    jest
+      .spyOn(mainStore, 'getBountyById')
+      .mockReturnValue(
+        Promise.resolve([
+          { ...newBounty, body: { ...mockBountiesMutated[1].body, assignee: user } }
+        ])
+      );
+    jest.spyOn(mainStore, 'getBountyIndexById').mockReturnValue(Promise.resolve(1239));
+    jest.spyOn(mainStore, 'getWorkspacePreviousBountyByCreated').mockResolvedValueOnce(0);
+
+    await act(async () => {
+      render(
+        <MemoryRouter initialEntries={['/workspace/bounties/workspace-uuid/bounty/1234']}>
+          <Route path="/workspace/bounties/:uuid/bounty/:bountyId" component={TicketModalPage} />
+        </MemoryRouter>
+      );
+    });
+
+    await waitFor(() => screen.getByText('chevron_right'));
+    fireEvent.click(screen.getByText('chevron_right'));
+
+    await waitFor(() => expect(screen.queryByText('chevron_right')).not.toBeInTheDocument());
+    expect(mockReplace).not.toHaveBeenCalledWith('/bounty/0');
+    expect(screen.getByText('There are no more bounties to display!')).toBeInTheDocument();
+  });
+
+  it('navigates to the exact public bounty returned by the L/R lookup', async () => {
+    jest
+      .spyOn(mainStore, 'getBountyById')
+      .mockReturnValue(
+        Promise.resolve([
+          { ...newBounty, body: { ...mockBountiesMutated[1].body, assignee: user } }
+        ])
+      );
+    jest.spyOn(mainStore, 'getBountyIndexById').mockReturnValue(Promise.resolve(1239));
+    jest.spyOn(mainStore, 'getPreviousBountyByCreated').mockResolvedValueOnce(5678);
+
+    await act(async () => {
+      render(
+        <MemoryRouter initialEntries={['/bounty/1234']}>
+          <Route path="/bounty/:bountyId" component={TicketModalPage} />
+        </MemoryRouter>
+      );
+    });
+
+    await waitFor(() => screen.getByText('chevron_right'));
+    fireEvent.click(screen.getByText('chevron_right'));
+
+    await waitFor(() => expect(mockReplace).toHaveBeenCalledWith('/bounty/5678'));
   });
 
   it('checks for enabled state of the delete button based on no assignment status', async () => {
