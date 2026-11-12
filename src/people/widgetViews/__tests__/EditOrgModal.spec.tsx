@@ -9,6 +9,10 @@ jest.mock('../../../store', () => ({
   useStores: jest.fn()
 }));
 
+jest.mock('remark-gfm', () => null);
+
+jest.mock('rehype-raw', () => null);
+
 const mockUpdateWorkspace = jest.fn();
 const mockAddToast = jest.fn();
 
@@ -30,7 +34,7 @@ const mockWorkspace: Workspace = {
 };
 
 const props = {
-  ...mockWorkspace,
+  org: mockWorkspace,
   isOpen: true,
   onDelete: () => null,
   resetWorkspace: () => null,
@@ -41,10 +45,12 @@ const props = {
 beforeEach(() => {
   mockUpdateWorkspace.mockReset();
   mockAddToast.mockReset();
+  URL.createObjectURL = jest.fn(() => 'blob:workspace-logo-preview');
 
   (useStores as jest.Mock).mockReturnValue({
     main: {
-      updateWorkspace: mockUpdateWorkspace
+      updateWorkspace: mockUpdateWorkspace,
+      uploadFile: jest.fn()
     },
     ui: {
       meInfo: { owner_pubkey: 'xyz456' }
@@ -86,6 +92,26 @@ describe('EditWorkspaceModal Component', () => {
   test('displays the Delete button', () => {
     render(<EditWorkspaceModal {...props} />);
     expect(screen.getByText(/Delete Workspace/i)).toBeInTheDocument();
+  });
+
+  test('enables Save changes when only the organization image is updated', async () => {
+    render(<EditWorkspaceModal {...props} />);
+
+    const saveChangesButton = screen.getByText('Save changes').closest('button');
+    expect(saveChangesButton).toBeDisabled();
+
+    const fileInput = document.querySelector('#file-input') as HTMLInputElement;
+    const imageFile = new File(['logo'], 'logo.png', { type: 'image/png' });
+
+    fireEvent.change(fileInput, {
+      target: {
+        files: [imageFile]
+      }
+    });
+
+    await waitFor(() => {
+      expect(saveChangesButton).toBeEnabled();
+    });
   });
 
   test('Save button is enabled if name have a value, and website, github, logo, description are empty', async () => {
