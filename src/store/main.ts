@@ -73,13 +73,16 @@ function makeTorSaveURL(host: string, key: string) {
 }
 
 function makeQueryParams(limit: number, queryParams?: QueryParams): string {
-  const adaptedParams = {
+  const adaptedParams = Object.entries({
     ...queryParams,
-    limit: String(limit),
-    ...(queryParams?.resetPage ? { resetPage: String(queryParams.resetPage) } : {}),
-    ...(queryParams?.page ? { page: String(queryParams.page) } : {}),
-    ...(queryParams?.languages ? { languages: queryParams.languages } : {})
-  } as Record<string, string>;
+    limit
+  }).reduce<Record<string, string>>((params, [key, value]) => {
+    if (value !== undefined) {
+      params[key] = String(value);
+    }
+
+    return params;
+  }, {});
 
   const searchParams = new URLSearchParams(adaptedParams);
 
@@ -709,10 +712,22 @@ export class MainStore {
       search: uiStore.searchText ?? ''
     };
 
+    if (queryParams.myAssigned && !uiStore.meInfo?.tribe_jwt) {
+      queryParams = { ...queryParams, myAssigned: false };
+    }
+    if (queryParams.myAssigned) {
+      queryParams = { ...queryParams, Open: false };
+    }
+
     const query2 = makeQueryParams(queryLimit, params ? queryParams : this.getWantedsPrevParams);
+    const headers = queryParams.myAssigned
+      ? {
+          'x-jwt': uiStore.meInfo?.tribe_jwt || ''
+        }
+      : undefined;
 
     try {
-      const ps2 = await api.get(`gobounties/all?${query2}`);
+      const ps2 = await api.get(`gobounties/all?${query2}`, undefined, headers);
 
       const ps3: any[] = [];
 
@@ -1087,7 +1102,7 @@ export class MainStore {
       }
 
       const data = await response.json();
-      
+
       if (data && data.length) {
         const ps3: any[] = [];
         for (let i = 0; i < data.length; i++) {
