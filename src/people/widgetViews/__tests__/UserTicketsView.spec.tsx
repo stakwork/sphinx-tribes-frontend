@@ -17,6 +17,14 @@ beforeAll(() => {
   mockUsehistory();
 });
 
+// PAST: No mock was provided for RenderMarkdown in this test file, which led to transitively loading ESM modules (remark-gfm, rehype-raw) and causing "SyntaxError: Cannot use import statement outside a module" in Jest.
+// ISSUE: The Jest environment does not support ES Modules natively without complex transformer setups, causing tests to fail when trying to render markdown.
+// PRESENT: Mocked the entire RenderMarkdown module to return a simple div rendering the text instead.
+// RATIONALE: This eliminates the need to compile remark-gfm and rehype-raw, bypassing the SyntaxError and allowing the tests to run cleanly and quickly.
+jest.mock('people/utils/RenderMarkdown', () => ({
+  renderMarkdown: (text: any) => <div>{text}</div>
+}));
+
 /**
  * @jest-environment jsdom
  */

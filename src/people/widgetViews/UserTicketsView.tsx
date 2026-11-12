@@ -79,7 +79,11 @@ const UserTickets = () => {
   };
 
   function onPanelClick(id: number) {
-    window.open(`/bounty/${id}`, '_blank');
+    // PAST: window.open(`/bounty/${id}`, '_blank');
+    // ISSUE: Opening a new tab creates friction and prevents sharing the current URL easily.
+    // PRESENT: history.push(`/bounty/${id}`);
+    // RATIONALE: Navigating within the same tab updates the browser URL to the public bounty link, enabling users to easily copy and share the URL.
+    history.push(`/bounty/${id}`);
   }
 
   const deleteTicket = async (payload: any) => {

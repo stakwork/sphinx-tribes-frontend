@@ -391,10 +391,16 @@ function Header() {
       return (
         <EuiHeader
           id="header"
+          // PAST: EuiHeader on mobile was rendered without a specified zIndex and position in its inline style.
+          // ISSUE: The SidebarComponent on mobile has z-index: 1000 and position: fixed, which causes the sidebar to overlap and obscure the mobile navigation header.
+          // PRESENT: Added zIndex: 1001 and position: 'relative' to the mobile EuiHeader inline style.
+          // RATIONALE: Specifying zIndex: 1001 and position: 'relative' forces the mobile header to stack on top of the sidebar (z-index: 1000), making the header fully visible and accessible.
           style={{
             color: '#fff',
             background: headerBackground,
-            paddingBottom: 0
+            paddingBottom: 0,
+            zIndex: 1001,
+            position: 'relative'
           }}
         >
           <div className="container">
