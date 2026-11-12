@@ -230,6 +230,7 @@ function WidgetSwitchViewer(props: any) {
     await main.getPeopleBounties({
       limit: queryLimit,
       page: currentPage,
+      ...(languageString ? { languages: languageString } : {}),
       ...props.checkboxIdToSelectedMap
     });
   };
@@ -246,6 +247,7 @@ function WidgetSwitchViewer(props: any) {
     await main.getSpecificWorkspaceBounties(uuid, {
       limit: queryLimit,
       page: currentPage,
+      ...(languageString ? { languages: languageString } : {}),
       ...props.checkboxIdToSelectedMap
     });
   };

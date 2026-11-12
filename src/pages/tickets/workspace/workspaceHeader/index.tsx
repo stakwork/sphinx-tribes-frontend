@@ -124,11 +124,14 @@ export const WorkspaceHeader = ({
   };
 
   const handleSearch = (searchText: string) => {
+    const languageParams = languageString ? { languages: languageString } : {};
+
     if (workspace_uuid) {
       main.getSpecificWorkspaceBounties(workspace_uuid, {
         page: 1,
         resetPage: true,
         ...checkboxIdToSelectedMap,
+        ...languageParams,
         search: searchText
       });
     } else {
@@ -149,12 +152,14 @@ export const WorkspaceHeader = ({
   };
 
   useEffect(() => {
+    const languageParams = languageString ? { languages: languageString } : {};
+
     if (workspace_uuid) {
       main.getSpecificWorkspaceBounties(workspace_uuid, {
         page: 1,
         resetPage: true,
         ...checkboxIdToSelectedMap,
-        languageString,
+        ...languageParams,
         direction: sortDirection
       });
     }
