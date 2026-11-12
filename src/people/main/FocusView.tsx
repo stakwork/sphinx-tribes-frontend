@@ -290,7 +290,7 @@ function FocusedView(props: FocusViewProps) {
       }
 
       await main.saveBounty(newBody);
-      if (newBody.assignee === '' && getBounty) {
+      if (newBody.id && getBounty) {
         setAfterEdit && setAfterEdit(true);
         await getBounty();
       }
