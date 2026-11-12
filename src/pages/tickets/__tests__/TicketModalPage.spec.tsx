@@ -506,6 +506,72 @@ describe('TicketModalPage Component', () => {
     });
   });
 
+  it('clicks the bounty action buttons for github, tribe, copy link, and twitter', async () => {
+    (useIsMobile as jest.Mock).mockReturnValue(false);
+    uiStore.setMeInfo(user);
+
+    const clipboardWrite = jest.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', {
+      value: { writeText: clipboardWrite },
+      configurable: true
+    });
+
+    const clickedUrls: string[] = [];
+    const anchorClickSpy = jest
+      .spyOn(HTMLAnchorElement.prototype, 'click')
+      .mockImplementation(function (this: HTMLAnchorElement) {
+        clickedUrls.push(this.href);
+      });
+
+    const ticketUrl = 'https://github.com/stakwork/sphinx-tribes/issues/871';
+    const tribe = 'sphinx-test';
+    const bountyBody = {
+      ...mockBountiesMutated[1].body,
+      id: 871,
+      owner_id: user.owner_pubkey,
+      owner: user,
+      ticket_url: ticketUrl,
+      tribe
+    };
+
+    jest.spyOn(mainStore, 'getBountyById').mockReturnValue(
+      Promise.resolve([
+        {
+          ...newBounty,
+          person: { ...newBounty.person, owner_alias: user.alias },
+          body: bountyBody
+        }
+      ])
+    );
+    jest.spyOn(mainStore, 'getBountyIndexById').mockReturnValue(Promise.resolve(1234));
+
+    await act(async () => {
+      const { getByText } = render(
+        <MemoryRouter initialEntries={['/bounty/871']}>
+          <Route path="/bounty/:bountyId" component={TicketModalPage} />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => getByText('Github Ticket'));
+
+      fireEvent.click(getByText('Github Ticket'));
+      expect(clickedUrls).toContain(ticketUrl);
+
+      fireEvent.click(getByText(tribe));
+      expect(clickedUrls).toContain(`https://community.sphinx.chat/t/${tribe}`);
+
+      fireEvent.click(getByText('Copy Link'));
+      expect(clipboardWrite).toHaveBeenCalledWith(`${window.location.origin}/bounty/871`);
+
+      fireEvent.click(getByText('Share to Twitter'));
+      expect(clickedUrls.some((url: string) => url.includes('twitter.com/intent/tweet'))).toBe(
+        true
+      );
+    });
+
+    anchorClickSpy.mockRestore();
+  });
+
   it('that if a hunter is not assigned, there should be an empty profile image.', async () => {
     jest
       .spyOn(mainStore, 'getBountyById')
