@@ -675,10 +675,11 @@ export const wantedOtherSchema: FormField[] = [
 export const wantedCodingTaskSchema: FormField[] = [
   {
     name: 'org_uuid',
-    label: 'Workspace (optional)',
+    label: 'Workspace *',
     type: 'select',
     options: [],
-    validator: strValidatorNotRequired,
+    required: true,
+    validator: strValidator,
     testId: 'Workspace'
   },
   {
