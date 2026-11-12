@@ -7,6 +7,7 @@ declare namespace Cypress {
     create_workspace_bounty(workspaceBounty: Bounty): void;
     lnurl_login(seed?: string): Chainable<string>;
     create_workspace(Workspace: Workspace): void;
+    uploadImageToMemeServer(options?: MemeUploadOptions): Chainable<string>;
     pay_invoice(details: InvoiceDetail): void;
     add_invoice(details: AddInvoice): Promise<any>;
     clickAlias(userAlias: string): void;
@@ -52,6 +53,15 @@ declare namespace Cypress {
     website?: string;
     github?: string;
     feature_call?: string;
+  };
+
+  type MemeUploadOptions = {
+    base64?: string;
+    fileName?: string;
+    mimeType?: string;
+    tribesUrl?: string;
+    jwt?: string;
+    expectedStatus?: number;
   };
 
   type InvoiceDetail = {
