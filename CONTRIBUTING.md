@@ -1,57 +1,57 @@
-# Frontend Contributing Guidelines 💻
+# Frontend Contributing Guidelines
 
-Thank you for considering contributing to our project! Here are some guidelines to ensure smooth collaboration.
+Thank you for contributing to Sphinx Tribes Frontend.
 
-### File Naming Convention 📁
+### File Naming Convention
 
-- All React component files should be named in Pascal case (e.g., `MyComponent`).
-- React component functions should also be named in Pascal case (e.g., `function MyComponent() {}`).
-- Folders should be named in camel case (e.g., `peopleData`).
-- Typescript files should follow camel case.
-- Only the `index.tsx` files should be named in lowercase.
+- React component files should be Pascal case (for example, `MyComponent.tsx`).
+- React component functions should also be Pascal case (for example, `function MyComponent()`).
+- Folders should be camel case (for example, `peopleData`).
+- TypeScript utility files should be camel case.
+- Only `index.tsx` files should be lowercase.
 
-### Prettier Fixing 🛠️
+### Formatting and Lint
 
-- Run the following command to fix Prettier errors before submitting:
-  ```
+- Run formatting before submitting:
+
+  ```bash
   yarn run prettier
   ```
 
-### Eslint Fixing 🚨
+- Run lint:
 
-- Run the following command to fix ESLint issues and ensure all test cases pass:
-  ```
-  yarn run eslint
+  ```bash
+  yarn run lint
   ```
 
-### Getting Started 🚀
+For review standards (function patterns, color usage, reviewer expectations, and PR process), see [docs/CONTRIBUTION.md](docs/CONTRIBUTION.md).
+
+### Getting Started
 
 1. Fork the repository.
 2. Create a new branch for your contribution:
-   ```
+   ```bash
    git checkout -b feature/your-feature
    ```
 3. Make your changes.
 4. Commit your changes:
-   ```
+   ```bash
    git commit -m "Add your meaningful commit message"
    ```
 5. Push to your fork:
-   ```
+   ```bash
    git push origin feature/your-feature
    ```
 6. Open a pull request to the `main` branch of the original repository.
 
-### Code Review ⚙️
+### Code Review
 
-All code contributions, including those with commit access, must go through a pull request and be approved by a core developer before being merged. This ensures a proper review of all the code.
+All code contributions, including those with commit access, must go through a pull request and be approved by a core developer before merge.
 
-## About Sphinx Bounties 💬
+## About Sphinx Bounties
 
-A Unique bounty platform that rewards in Bitcoin. Join [Sphinx Chat](https://buy.sphinx.chat/), accomplish a bounty, and start earning Bitcoin! Explore our [website](https://people.sphinx.chat) for a list of available bounties.
+A unique bounty platform that rewards in Bitcoin. Join [Sphinx Chat](https://buy.sphinx.chat/), accomplish a bounty, and start earning Bitcoin! Explore our [website](https://people.sphinx.chat) for available bounties.
 
-### Thank You ❤️
+### Thank You
 
-We appreciate your contribution to our project! Your efforts make a difference, and we look forward to collaborating with you. 
-
-Feel free to connect with us on our [Sphinx Community](https://people.sphinx.chat/) and follow us on [Twitter](https://twitter.com/stakwork) for updates.
+Thank you for helping move the project forward. We appreciate your contribution.
