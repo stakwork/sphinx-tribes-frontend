@@ -18,4 +18,13 @@ describe('<Modal /> Arrow Buttons', () => {
     fireEvent.click(nextArrow);
     expect(nextArrowFunction).toHaveBeenCalled();
   });
+
+  test('renders the image close control as a clickable labelled button', () => {
+    const closeFunction = jest.fn();
+    render(<Modal bigCloseImage={closeFunction} visible={true} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Close modal' }));
+
+    expect(closeFunction).toHaveBeenCalled();
+  });
 });
