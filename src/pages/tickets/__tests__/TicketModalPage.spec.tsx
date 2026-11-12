@@ -150,6 +150,39 @@ describe('TicketModalPage Component', () => {
     });
   });
 
+  it('keeps the bounty modal open when the signed-in hunter clicks I can help', async () => {
+    (useIsMobile as jest.Mock).mockReturnValue(false);
+    uiStore.setMeInfo(user);
+
+    jest
+      .spyOn(mainStore, 'getBountyById')
+      .mockReturnValue(
+        Promise.resolve([
+          { ...newBounty, body: { ...mockBountiesMutated[1].body, assignee: { owner_alias: '' } } }
+        ])
+      );
+    jest.spyOn(mainStore, 'getBountyIndexById').mockReturnValue(Promise.resolve(1234));
+
+    const connectFn = jest.fn();
+    await act(async () => {
+      const { getByText, getByTestId } = render(
+        <MemoryRouter initialEntries={['/bounty/1234']}>
+          <Route
+            path="/bounty/:bountyId"
+            render={(props: any) => <TicketModalPage setConnectPerson={connectFn} {...props} />}
+          />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => getByText('I can help'));
+      fireEvent.click(getByText('I can help'));
+
+      expect(connectFn).toHaveBeenCalled();
+      expect(getByTestId('testid-modal')).toBeInTheDocument();
+      expect(getByText(mockBountiesMutated[1].body.title)).toBeInTheDocument();
+    });
+  });
+
   it('render bounty title, description, estimated hours and sats', async () => {
     jest
       .spyOn(mainStore, 'getBountyById')
@@ -213,6 +246,71 @@ describe('TicketModalPage Component', () => {
       await waitFor(() => getByText('Share to Twitter'));
       expect(getByText('Share to Twitter')).toBeInTheDocument();
     });
+  });
+
+  it('clicks the bounty github, tribe, copy link, and twitter action buttons', async () => {
+    (useIsMobile as jest.Mock).mockReturnValue(false);
+    uiStore.setMeInfo(user);
+
+    const clipboardWrite = jest.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', {
+      value: { writeText: clipboardWrite },
+      configurable: true
+    });
+
+    const clickedUrls: string[] = [];
+    const anchorClickSpy = jest
+      .spyOn(HTMLAnchorElement.prototype, 'click')
+      .mockImplementation(function (this: HTMLAnchorElement) {
+        clickedUrls.push(this.href);
+      });
+
+    const ticketUrl = 'https://github.com/stakwork/sphinx-tribes/issues/871';
+    const tribe = 'sphinx-test';
+
+    jest.spyOn(mainStore, 'getBountyById').mockReturnValue(
+      Promise.resolve([
+        {
+          ...newBounty,
+          person: { ...newBounty.person, owner_alias: user.alias },
+          body: {
+            ...mockBountiesMutated[1].body,
+            id: 871,
+            owner_id: user.owner_pubkey,
+            owner: user,
+            ticket_url: ticketUrl,
+            tribe
+          }
+        }
+      ])
+    );
+    jest.spyOn(mainStore, 'getBountyIndexById').mockReturnValue(Promise.resolve(1234));
+
+    await act(async () => {
+      const { getByText } = render(
+        <MemoryRouter initialEntries={['/bounty/871']}>
+          <Route path="/bounty/:bountyId" component={TicketModalPage} />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => getByText('Github Ticket'));
+
+      fireEvent.click(getByText('Github Ticket'));
+      expect(clickedUrls).toContain(ticketUrl);
+
+      fireEvent.click(getByText(tribe));
+      expect(clickedUrls).toContain(`https://community.sphinx.chat/t/${tribe}`);
+
+      fireEvent.click(getByText('Copy Link'));
+      expect(clipboardWrite).toHaveBeenCalledWith(`${window.location.origin}/bounty/871`);
+
+      fireEvent.click(getByText('Share to Twitter'));
+      expect(clickedUrls.some((url: string) => url.includes('twitter.com/intent/tweet'))).toBe(
+        true
+      );
+    });
+
+    anchorClickSpy.mockRestore();
   });
 
   it('should render github ticket link button', async () => {
