@@ -9,16 +9,8 @@ import styled from 'styled-components';
 import { PeopleList } from './peopleList';
 import { TabsPages } from './tabs';
 
-// eslint-disable-next-line @typescript-eslint/no-inferrable-types
-const getHtml = (owner_pubkey: string = '', img: string = '') => `
-<sphinx-widget pubkey=${owner_pubkey}
-  amount="500"
-  title="Support Me"
-  subtitle="Because I'm awesome"
-  buttonlabel="Donate"
-  defaultinterval="weekly"
-  imgurl="${img || 'https://i.scdn.co/image/28747994a80c78bc2824c2561d101db405926a37'}"
-  ></sphinx-widget>`;
+const SUPPORT_WIDGET_FALLBACK_IMAGE =
+  'https://i.scdn.co/image/28747994a80c78bc2824c2561d101db405926a37';
 
 const Content = styled.div`
   display: flex;
@@ -104,13 +96,16 @@ export const PersonPage = observer(() => {
         }}
       >
         <>
-          {person?.owner_pubkey && person?.img && (
-            <div
-              dangerouslySetInnerHTML={{
-                __html: getHtml(person.owner_pubkey, person?.img)
-              }}
-            />
-          )}
+          {person?.owner_pubkey &&
+            React.createElement('sphinx-widget', {
+              pubkey: person.owner_pubkey,
+              amount: '500',
+              title: 'Support Me',
+              subtitle: "Because I'm awesome",
+              buttonlabel: 'Donate',
+              defaultinterval: 'weekly',
+              imgurl: person.img || SUPPORT_WIDGET_FALLBACK_IMAGE
+            })}
         </>
       </Modal>
     </Content>
