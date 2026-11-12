@@ -246,7 +246,8 @@ function WidgetSwitchViewer(props: any) {
     await main.getSpecificWorkspaceBounties(uuid, {
       limit: queryLimit,
       page: currentPage,
-      ...props.checkboxIdToSelectedMap
+      ...props.checkboxIdToSelectedMap,
+      languages: languageString
     });
   };
 

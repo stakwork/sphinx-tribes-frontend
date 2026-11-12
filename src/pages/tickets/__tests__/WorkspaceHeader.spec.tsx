@@ -135,8 +135,10 @@ describe('WorkspaceHeader Component', () => {
     expect(mainStore.getSpecificWorkspaceBounties).toHaveBeenCalledWith(MockProps.workspace_uuid, {
       page: 1,
       resetPage: true,
-      search: searchText,
-      ...MockProps.checkboxIdToSelectedMap
+      ...MockProps.checkboxIdToSelectedMap,
+      languages: MockProps.languageString,
+      direction: 'desc',
+      search: searchText
     });
   });
 
@@ -165,7 +167,8 @@ describe('WorkspaceHeader Component', () => {
         expect(mainStore.getSpecificWorkspaceBounties).toHaveBeenCalledWith(
           expect.anything(),
           expect.objectContaining({
-            direction: 'desc'
+            direction: 'desc',
+            languages: MockProps.languageString
           })
         );
 
@@ -179,7 +182,8 @@ describe('WorkspaceHeader Component', () => {
         expect(mainStore.getSpecificWorkspaceBounties).toHaveBeenCalledWith(
           expect.anything(),
           expect.objectContaining({
-            direction: 'asc'
+            direction: 'asc',
+            languages: MockProps.languageString
           })
         );
       });
@@ -200,7 +204,8 @@ describe('WorkspaceHeader Component', () => {
           page: 1,
           resetPage: true,
           ...updatedCheckboxIdToSelectedMap,
-          languageString: MockProps.languageString
+          languages: MockProps.languageString,
+          direction: 'desc'
         }
       );
     });
@@ -292,7 +297,7 @@ describe('WorkspaceHeader Component', () => {
 
     const newProps = {
       ...MockProps,
-      checkboxIdToSelectedMap: newCheckboxIdToSelectedMapLanguage
+      checkboxIdToSelectedMapLanguage: newCheckboxIdToSelectedMapLanguage
     };
 
     rerender(<WorkspaceHeader {...newProps} />);
@@ -301,6 +306,20 @@ describe('WorkspaceHeader Component', () => {
 
     await waitFor(() => {
       expect(screen.getByText(`${selectedCount}`)).toBeInTheDocument();
+    });
+  });
+
+  it('passes selected skills as languages when fetching workspace bounties', async () => {
+    render(<WorkspaceHeader {...MockProps} languageString="Javascript,Typescript" />);
+
+    await waitFor(() => {
+      expect(mainStore.getSpecificWorkspaceBounties).toHaveBeenCalledWith(
+        MockProps.workspace_uuid,
+        expect.objectContaining({
+          languages: 'Javascript,Typescript',
+          direction: 'desc'
+        })
+      );
     });
   });
 
