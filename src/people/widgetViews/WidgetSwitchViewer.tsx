@@ -9,6 +9,7 @@ import { uiStore } from '../../store/ui';
 import { colors } from '../../config/colors';
 import { useStores } from '../../store';
 import { widgetConfigs } from '../utils/Constants';
+import { bountyHeaderLanguageFilter } from '../utils/filterValidation';
 import { bountyStore, FeaturedBounty } from '../../store/bountyStore';
 import OfferView from './OfferView';
 import WantedView from './WantedView';
@@ -157,7 +158,12 @@ function WidgetSwitchViewer(props: any) {
     }
 
     if (org_uuid) {
-      return value.org_uuid === org_uuid;
+      // filter workspace bounties by the selected skills (coding languages)
+      const matchesLanguageFilter = bountyHeaderLanguageFilter(
+        value.codingLanguage ?? [],
+        props.checkboxIdToSelectedMapLanguage ?? {}
+      );
+      return value.org_uuid === org_uuid && matchesLanguageFilter;
     }
     return true;
   });
@@ -172,7 +178,12 @@ function WidgetSwitchViewer(props: any) {
     }
 
     if (org_uuid) {
-      return value.org_uuid === org_uuid;
+      // keep phase bounties consistent with the workspace skill filter
+      const matchesLanguageFilter = bountyHeaderLanguageFilter(
+        value.codingLanguage ?? [],
+        props.checkboxIdToSelectedMapLanguage ?? {}
+      );
+      return value.org_uuid === org_uuid && matchesLanguageFilter;
     }
     return true;
   });
