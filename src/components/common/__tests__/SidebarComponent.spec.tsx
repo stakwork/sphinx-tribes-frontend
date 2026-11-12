@@ -5,6 +5,10 @@ import { BrowserRouter } from 'react-router-dom';
 import { useStores } from 'store';
 import SidebarComponent from '../SidebarComponent';
 
+jest.mock('remark-gfm', () => null);
+
+jest.mock('rehype-raw', () => null);
+
 jest.mock('store', () => ({
   useStores: jest.fn()
 }));
@@ -44,6 +48,20 @@ describe('SidebarComponent Tooltip Tests', () => {
   });
 
   describe('Navigation Item Tooltips', () => {
+    test('should offset the mobile sidebar below the global header', () => {
+      renderSidebar({ defaultCollapsed: true });
+
+      const injectedStyles = Array.from(document.head.querySelectorAll('style'))
+        .map((style) => style.textContent)
+        .join(' ')
+        .replace(/\s/g, '');
+
+      expect(injectedStyles).toContain('@media(max-width:768px)');
+      expect(injectedStyles).toContain('top:96px;');
+      expect(injectedStyles).toContain('height:calc(100vh-96px);');
+      expect(injectedStyles).toContain('margin-top:14px;');
+    });
+
     test('should show tooltip for activities when collapsed', async () => {
       renderSidebar({ defaultCollapsed: true });
       const activitiesButton = screen.getByLabelText('Activities');

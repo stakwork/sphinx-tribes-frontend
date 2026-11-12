@@ -32,6 +32,9 @@ import { Toast } from '../../people/widgetViews/workspace/interface.ts';
 import { archiveIcon } from './DeleteConfirmationModal/archiveIcon.tsx';
 
 const color = colors['light'];
+// Mobile PeopleHeader includes the logo row and tabs; keep the fixed sidebar below it.
+const MOBILE_HEADER_OFFSET = '96px';
+const MOBILE_HAMBURGER_OFFSET = '14px';
 
 const IconWrapper = styled.div`
   margin-bottom: 4px;
@@ -53,6 +56,8 @@ const SidebarContainer = styled.div<{ collapsed: boolean }>`
 
   @media (max-width: 768px) {
     width: ${({ collapsed }) => (collapsed ? '60px' : '100%')};
+    top: ${MOBILE_HEADER_OFFSET};
+    height: calc(100vh - ${MOBILE_HEADER_OFFSET});
   }
 
   &::-webkit-scrollbar {
@@ -78,7 +83,7 @@ const HamburgerButton = styled.button<{ topPosition?: string }>`
   z-index: 1000;
 
   @media (max-width: 768px) {
-    margin-top: ${(props) => props.topPosition || '110px'};
+    margin-top: ${(props) => props.topPosition || MOBILE_HAMBURGER_OFFSET};
     transition: left 0.3s ease-in-out;
   }
 `;
