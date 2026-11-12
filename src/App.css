@@ -63,6 +63,15 @@ button:focus-visible {
     outline 0.2s ease;
 }
 
+.euiToast [data-test-subj='toastCloseButton'] {
+  opacity: 1 !important;
+  color: #3c3f41 !important;
+}
+
+.euiToast [data-test-subj='toastCloseButton'] svg {
+  fill: currentColor !important;
+}
+
 .app {
   position: fixed;
   top: 0;

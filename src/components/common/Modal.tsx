@@ -138,6 +138,19 @@ export default function Modal(props: ModalProps) {
       }
     : {};
 
+  const handleBigCloseImageClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+    bigCloseImage?.();
+  };
+
+  const handleBigCloseImageKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      event.stopPropagation();
+      bigCloseImage?.();
+    }
+  };
+
   return (
     <Portal>
       <FadeLeft
@@ -184,7 +197,9 @@ export default function Modal(props: ModalProps) {
 
           {bigCloseImage && (
             <div
+              aria-label="Close modal"
               data-testid="close-btn"
+              role="button"
               style={{
                 height: '40px',
                 width: '40px',
@@ -192,10 +207,12 @@ export default function Modal(props: ModalProps) {
                 top: '8px',
                 right: '-48px',
                 cursor: 'pointer',
-                zIndex: 10,
+                zIndex: 100,
                 ...bigCloseImageStyle
               }}
-              onClick={bigCloseImage}
+              tabIndex={0}
+              onClick={handleBigCloseImageClick}
+              onKeyDown={handleBigCloseImageKeyDown}
             >
               <img src="/static/Close.svg" alt="close_svg" height={'100%'} width={'100%'} />
             </div>
