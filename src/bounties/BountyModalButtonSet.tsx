@@ -13,6 +13,13 @@ const ButtonSetContainer = styled.div`
   min-height: 300px;
 `;
 
+const TribeButtonText = styled(EuiText)`
+  max-width: 108px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
+
 const ButtonSet = ({ showGithubBtn, ...props }: any) => {
   const color = colors['light'];
   return (
@@ -100,9 +107,9 @@ const ButtonSet = ({ showGithubBtn, ...props }: any) => {
               width={'32px'}
             />
           </div>
-          <EuiText className="ButtonText">
-            {props.tribe.slice(0, 14)} {props.tribe.length > 14 && '...'}
-          </EuiText>
+          <TribeButtonText className="ButtonText" title={props.tribe}>
+            {props.tribe}
+          </TribeButtonText>
           <div className="ImageContainer">
             <img
               className="buttonImage"
@@ -133,11 +140,9 @@ const ButtonSet = ({ showGithubBtn, ...props }: any) => {
               width={'32px'}
             />
           </div>
-          <EuiText className="ButtonText">
-            {props.tribe
-              ? props.tribe.slice(0, 14) + (props.tribe.length > 14 ? '...' : '')
-              : 'No Tribe'}
-          </EuiText>
+          <TribeButtonText className="ButtonText" title={props.tribe || 'No Tribe'}>
+            {props.tribe || 'No Tribe'}
+          </TribeButtonText>
           <div className="ImageContainer">
             <img
               className="buttonImage"

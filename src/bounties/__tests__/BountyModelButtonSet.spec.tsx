@@ -23,4 +23,13 @@ describe('BountyModalButtonSet Component', () => {
     const tribeButton = screen.getByText(/kotlin/i);
     expect(tribeButton).toBeInTheDocument();
   });
+
+  it('keeps long tribe names intact for CSS ellipsis', () => {
+    render(<ButtonSet tribe="Bounty Hunters Tribe" />);
+
+    const tribeButton = screen.getByText('Bounty Hunters Tribe');
+    expect(tribeButton).toBeInTheDocument();
+    expect(tribeButton).toHaveAttribute('title', 'Bounty Hunters Tribe');
+    expect(screen.queryByText('Bounty Hunters T...')).not.toBeInTheDocument();
+  });
 });
