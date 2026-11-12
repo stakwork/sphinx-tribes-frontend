@@ -133,18 +133,54 @@ const ModalOverlay = styled.div<{ collapsed: boolean }>`
   background: rgba(0, 0, 0, 0.5);
   z-index: 999;
   transition: all 0.3s ease;
-  display: ${({ collapsed }) => (collapsed ? 'none' : 'block')};
+  display: ${({ collapsed }) => (collapsed ? 'none' : 'flex')};
+  justify-content: center;
+  align-items: flex-start;
+  box-sizing: border-box;
+  padding: 72px 20px 24px;
+  overflow-y: auto;
+
+  @media (max-width: 768px) {
+    padding: 24px 12px;
+  }
 `;
 
 const ModalContent = styled.div`
+  position: relative;
   background: white;
   padding: 20px;
   border-radius: 8px;
   width: 90%;
   max-width: 600px;
-  max-height: 90vh;
+  max-height: calc(100vh - 96px);
   overflow-y: auto;
-  margin: 20px 0;
+  margin: 0 auto;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.2);
+
+  @media (max-width: 768px) {
+    max-height: calc(100vh - 48px);
+    width: 100%;
+  }
+`;
+
+const CloseModalButton = styled.button`
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+
+  &:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+  }
 `;
 
 const Form = styled.form`
@@ -1077,6 +1113,16 @@ const Activities = observer(() => {
               }}
             >
               <ModalContent onClick={(e) => e.stopPropagation()}>
+                <CloseModalButton
+                  type="button"
+                  aria-label="Close create activity modal"
+                  onClick={() => {
+                    setIsModalOpen(false);
+                    resetForm();
+                  }}
+                >
+                  ×
+                </CloseModalButton>
                 <h2>Create New Activity</h2>
                 <Form onSubmit={handleSubmit}>
                   <FormField>
